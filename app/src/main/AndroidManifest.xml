@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.eveningoutpost.dexdrip" >
+
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <application
+        android:name="com.activeandroid.app.Application"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:theme="@style/AppTheme" >
+        <meta-data
+            android:name="AA_DB_NAME"
+            android:value="DexDrip.db" />
+        <meta-data
+            android:name="AA_DB_VERSION"
+            android:value="5" />
+
+        <!-- <provider android:authorities="com.example" android:exported="false" android:name="com.activeandroid.content.ContentProvider" /> -->
+
+        <activity
+            android:name="com.eveningoutpost.dexdrip.Home"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.eveningoutpost.dexdrip.BluetoothScan"
+            android:label="@string/title_activity_bluetooth_scan" >
+        </activity>
+
+        <service
+            android:name="com.eveningoutpost.dexdrip.DexCollectionService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+
+        <activity
+            android:name="com.eveningoutpost.dexdrip.BgReadingTable"
+            android:label="Bg Readings Table" >
+        </activity>
+        <activity
+            android:name="com.eveningoutpost.dexdrip.AddCalibration"
+            android:label="@string/title_activity_add_calibration" >
+        </activity>
+        <activity
+            android:name="com.eveningoutpost.dexdrip.AddComparison"
+            android:label="Add Comparison" >
+        </activity>
+        <activity
+            android:name="com.eveningoutpost.dexdrip.StartNewSensor"
+            android:label="@string/title_activity_start_new_sensor" >
+        </activity>
+        <activity
+            android:name="com.eveningoutpost.dexdrip.StopSensor"
+            android:label="@string/title_activity_stop_sensor" >
+        </activity>
+
+        <receiver android:name="com.eveningoutpost.dexdrip.AutoStart" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.eveningoutpost.dexdrip.AutoStartSync" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="com.eveningoutpost.dexdrip.CalibrationDataTable"
+            android:label="@string/title_activity_calibration_data_table" >
+        </activity>
+
+        <service
+            android:name="com.eveningoutpost.dexdrip.SyncService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+
+        <activity
+            android:name="com.eveningoutpost.dexdrip.FakeNumbers"
+            android:label="@string/title_activity_fake_numbers" >
+        </activity>
+        <activity
+            android:name="com.eveningoutpost.dexdrip.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
+        </activity>
+        <activity
+            android:name="com.eveningoutpost.dexdrip.DoubleCalibrationActivity"
+            android:label="@string/title_activity_double_calibration" >
+        </activity>
+        <activity
+            android:name="com.eveningoutpost.dexdrip.CalibrationOverride"
+            android:label="@string/title_activity_calibration_override" >
+        </activity>
+    </application>
+
+</manifest>
