@@ -20,7 +20,6 @@ public class NavDrawerBuilder {
     public final List<String> nav_drawer_options() {
         List<String> options = new ArrayList<String>();
         options.add("DexDrip");
-//        options.add("Decay");
         options.add("Calibration Graph");
 
         options.add("BG Data Table");
@@ -49,7 +48,6 @@ public class NavDrawerBuilder {
     public final List<Intent> nav_drawer_intents(Context context) {
         List<Intent> options = new ArrayList<Intent>();
         options.add(new Intent(context, Home.class));
-//        options.add(new Intent(context, HomeDecay.class));
         options.add(new Intent(context, CalibrationGraph.class));
 
         options.add(new Intent(context, BgReadingTable.class));

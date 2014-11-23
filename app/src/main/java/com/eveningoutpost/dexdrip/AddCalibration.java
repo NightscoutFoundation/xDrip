@@ -54,7 +54,6 @@ public class AddCalibration extends Activity implements NavigationDrawerFragment
                     int intValue = Integer.parseInt(value.getText().toString());
 
                     Calibration calibration = Calibration.create(intValue);
-                    CalibrationDecay calibrationDecay = CalibrationDecay.create(intValue);
                     if (calibration.slope <= 0.5 || calibration.slope >= 1.25) {
                         Toast.makeText(getApplicationContext(), "WHOA, That seems crazy, you may want to double check that!", Toast.LENGTH_LONG).show();
                     }

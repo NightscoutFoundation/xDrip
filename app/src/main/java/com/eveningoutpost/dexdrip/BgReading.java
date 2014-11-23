@@ -317,38 +317,17 @@ public class BgReading extends Model {
             BgReading second_latest = last_3.get(1);
             BgReading third_latest = last_3.get(2);
 
-            double y_3 = calculated_value;
-            double x_3 = timestamp;
-            double y_2 = second_latest.calculated_value;
-            double x_2 = second_latest.timestamp;
-            double y_1 = third_latest.calculated_value;
-            double x_1 = third_latest.timestamp;
+            double y3 = calculated_value;
+            double x3 = timestamp;
+            double y2 = second_latest.calculated_value;
+            double x2 = second_latest.timestamp;
+            double y1 = third_latest.calculated_value;
+            double x1 = third_latest.timestamp;
 
-
-            Log.w(TAG, "BGReading x_1: " + x_1);
-            Log.w(TAG, "BGReading y_1: " + y_1);
-            Log.w(TAG, "BGReading x_2: " + x_2);
-            Log.w(TAG, "BGReading y_2: " + y_2);
-            Log.w(TAG, "BGReading x_3: " + x_3);
-            Log.w(TAG, "BGReading y_3: " + y_3);
-
-            a = y_1/((x_1-x_2)*(x_1-x_3)) + y_2/((x_2-x_1)*(x_2-x_3)) + y_3/((x_3-x_1)*(x_3-x_2));
-
-            b = (-y_1*(x_2+x_3)/((x_1-x_2)*(x_1-x_3))
-                    -y_2*(x_1+x_3)/((x_2-x_1)*(x_2-x_3))
-                    -y_3*(x_1+x_2)/((x_3-x_1)*(x_3-x_2)));
-
-            c = (y_1*x_2*x_3/((x_1-x_2)*(x_1-x_3))
-                    +y_2*x_1*x_3/((x_2-x_1)*(x_2-x_3))
-                    +y_3*x_1*x_2/((x_3-x_1)*(x_3-x_2)));
-//            double denom = (x1 - x2) * (x1 - x3) * (x2 - x3);
-//            ra = (x3 * (y2 - y1) + x2 * (y1 - y3) + x1 * (y3 - y2)) / denom;
-//            rb = (x3 * x3 * (y1 - y2) + x2 * x2 * (y3 - y1) + x1 * x1 * (y2 - y3)) / denom;
-//            rc = (x2 * x3 * (x2 - x3) * y1 + x3 * x1 * (x3 - x1) * y2 + x1 * x2 * (x1 - x2) * y3) / denom;
-//            double denom = (x1 - x2) * (x1 - x3) * (x2 - x3);
-//            a = a;
-//            b = b;
-//            c = c;
+            double denom = (x1 - x2) * (x1 - x3) * (x2 - x3);
+            a = (x3 * (y2 - y1) + x2 * (y1 - y3) + x1 * (y3 - y2)) / denom;
+            b = (x3 * x3 * (y1 - y2) + x2 * x2 * (y3 - y1) + x1 * x1 * (y2 - y3)) / denom;
+            c = (x2 * x3 * (x2 - x3) * y1 + x3 * x1 * (x3 - x1) * y2 + x1 * x2 * (x1 - x2) * y3) / denom;
 
             Log.w(TAG, "BG PARABOLIC RATES: "+a+"x^2 + "+b+"x + "+c);
 
@@ -364,10 +343,6 @@ public class BgReading extends Model {
                 double y1 = (double)second_latest.calculated_value;
                 double x1 = second_latest.timestamp;
 
-                Log.w(TAG, "BGReading x1: " + x1);
-                Log.w(TAG, "BGReading y1: " + y1);
-                Log.w(TAG, "BGReading x2: " + x2);
-                Log.w(TAG, "BGReading y2: " + y2);
                 if(y1 == y2) {
                     b = 0;
                 } else {
@@ -394,31 +369,17 @@ public class BgReading extends Model {
             BgReading second_latest = last_3.get(1);
             BgReading third_latest = last_3.get(2);
 
-            double y_3 = age_adjusted_raw_value;
-            double x_3 = timestamp;
-            double y_2 = second_latest.age_adjusted_raw_value;
-            double x_2 = second_latest.timestamp;
-            double y_1 = third_latest.age_adjusted_raw_value;
-            double x_1 = third_latest.timestamp;
+            double y3 = age_adjusted_raw_value;
+            double x3 = timestamp;
+            double y2 = second_latest.age_adjusted_raw_value;
+            double x2 = second_latest.timestamp;
+            double y1 = third_latest.age_adjusted_raw_value;
+            double x1 = third_latest.timestamp;
 
-            double a = y_1/((x_1-x_2)*(x_1-x_3)) + y_2/((x_2-x_1)*(x_2-x_3)) + y_3/((x_3-x_1)*(x_3-x_2));
-
-            double b = (-y_1*(x_2+x_3)/((x_1-x_2)*(x_1-x_3))
-                    -y_2*(x_1+x_3)/((x_2-x_1)*(x_2-x_3))
-                    -y_3*(x_1+x_2)/((x_3-x_1)*(x_3-x_2)));
-
-            double c = (y_1*x_2*x_3/((x_1-x_2)*(x_1-x_3))
-                    +y_2*x_1*x_3/((x_2-x_1)*(x_2-x_3))
-                    +y_3*x_1*x_2/((x_3-x_1)*(x_3-x_2)));
-//            double denom = (x1 - x2) * (x1 - x3) * (x2 - x3);
-//            ra = (x3 * (y2 - y1) + x2 * (y1 - y3) + x1 * (y3 - y2)) / denom;
-//            rb = (x3 * x3 * (y1 - y2) + x2 * x2 * (y3 - y1) + x1 * x1 * (y2 - y3)) / denom;
-//            rc = (x2 * x3 * (x2 - x3) * y1 + x3 * x1 * (x3 - x1) * y2 + x1 * x2 * (x1 - x2) * y3) / denom;
-//            double denom = (x1 - x2) * (x1 - x3) * (x2 - x3);
-            ra = a;
-            rb = b;
-            rc = c;
-
+            double denom = (x1 - x2) * (x1 - x3) * (x2 - x3);
+            ra = (x3 * (y2 - y1) + x2 * (y1 - y3) + x1 * (y3 - y2)) / denom;
+            rb = (x3 * x3 * (y1 - y2) + x2 * x2 * (y3 - y1) + x1 * x1 * (y2 - y3)) / denom;
+            rc = (x2 * x3 * (x2 - x3) * y1 + x3 * x1 * (x3 - x1) * y2 + x1 * x2 * (x1 - x2) * y3) / denom;
             Log.w(TAG, "RAW PARABOLIC RATES: "+a+"x^2 + "+b+"x + "+c);
             save();
         } else if (last_3.size() == 2) {
@@ -451,14 +412,6 @@ public class BgReading extends Model {
             Log.w(TAG, "RAW PARABOLIC RATES: "+a+"x^2 + "+b+"x + "+c);
             save();
         }
-    }
-
-    public String gson() {
-        Gson gson = new GsonBuilder()
-                .excludeFieldsWithoutExposeAnnotation()
-                .registerTypeAdapter(Date.class, new DateTypeAdapter())
-                .create();
-        return gson.toJson(this);
     }
 
     public String toS() {
