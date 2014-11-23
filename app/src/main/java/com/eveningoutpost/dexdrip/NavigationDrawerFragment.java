@@ -77,7 +77,7 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
-        NavDrawerBuilder navDrawerBuilder = new NavDrawerBuilder();
+        navDrawerBuilder = new NavDrawerBuilder();
         List<String> menu_option_list = navDrawerBuilder.nav_drawer_options();
         String[] menu_options = menu_option_list.toArray(new String[menu_option_list.size()]);
 
@@ -111,6 +111,27 @@ public class NavigationDrawerFragment extends Fragment {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
+
+//        mDrawerListView = (ListView) inflater.inflate(
+//                R.layout.fragment_navigation_drawer, container, false);
+//        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                selectItem(position);
+//            }
+//        });
+
+//        navDrawerBuilder = new NavDrawerBuilder();
+//        List<String> menu_option_list = navDrawerBuilder.nav_drawer_options();
+//        String[] menu_options = menu_option_list.toArray(new String[menu_option_list.size()]);
+
+        mDrawerListView.setAdapter(new ArrayAdapter<String>(
+                getActionBar().getThemedContext(),
+                android.R.layout.simple_list_item_activated_1,
+                android.R.id.text1,
+                menu_options
+        ));
+
 
         mDrawerToggle = new ActionBarDrawerToggle(
                 getActivity(),

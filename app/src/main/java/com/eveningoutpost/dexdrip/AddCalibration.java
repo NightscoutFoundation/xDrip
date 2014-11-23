@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 
 public class AddCalibration extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -53,7 +54,10 @@ public class AddCalibration extends Activity implements NavigationDrawerFragment
                     int intValue = Integer.parseInt(value.getText().toString());
 
                     Calibration calibration = Calibration.create(intValue);
-
+                    CalibrationDecay calibrationDecay = CalibrationDecay.create(intValue);
+                    if (calibration.slope <= 0.5 || calibration.slope >= 1.25) {
+                        Toast.makeText(getApplicationContext(), "WHOA, That seems crazy, you may want to double check that!", Toast.LENGTH_LONG).show();
+                    }
                     Log.w("CALBIRATION ENTERED: ", "" + intValue);
                     Intent tableIntent = new Intent(v.getContext(), Home.class);
                     startActivity(tableIntent);

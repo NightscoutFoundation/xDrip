@@ -45,6 +45,10 @@ public class Calibration extends Model {
     @Expose
     @Column(name = "raw_value")
     public double raw_value;
+//
+//    @Expose
+//    @Column(name = "filtered_value")
+//    public double filtered_value;
 
     @Expose
     @Column(name = "adjusted_raw_value")
@@ -91,12 +95,24 @@ public class Calibration extends Model {
     public String sensor_uuid;
 
     public static void initialCalibration(int bg1, int bg2) {
+        List<Calibration> pastCalibrations = Calibration.allForSensor();
+        if (pastCalibrations != null) {
+            for(Calibration calibration : pastCalibrations){
+                calibration.slope_confidence = 0;
+                calibration.sensor_confidence = 0;
+                calibration.save();
+            }
+        }
+
         Calibration higherCalibration = new Calibration();
         Calibration lowerCalibration = new Calibration();
         Sensor sensor = Sensor.currentSensor();
         List<BgReading> bgReadings = BgReading.latest_by_size(2);
         BgReading bgReading1 = bgReadings.get(0);
         BgReading bgReading2 = bgReadings.get(1);
+        BgReading highBgReading;
+        BgReading lowBgReading;
+
 
         int higher_bg;
         int lower_bg;
@@ -111,42 +127,54 @@ public class Calibration extends Model {
             lower_bg = bg1 - 1;
         }
 
+        if (bgReading1.raw_data > bgReading2.raw_data) {
+            highBgReading = bgReading1;
+            lowBgReading = bgReading2;
+        } else if (bgReading2.raw_data  > bgReading1.raw_data ) {
+            highBgReading = bgReading2;
+            lowBgReading = bgReading1;
+        } else {
+            highBgReading = bgReading2;
+            lowBgReading = bgReading1;
+        }
+
+
         int lowerAdjust = 0;
-        if (bgReading1.age_adjusted_raw_value == bgReading2.age_adjusted_raw_value) {
+        if (highBgReading.age_adjusted_raw_value == lowBgReading.age_adjusted_raw_value) {
             lowerAdjust = 2;
         }
         higherCalibration.bg = higher_bg;
         higherCalibration.slope = 0;
         higherCalibration.intercept = higher_bg;
         higherCalibration.sensor = sensor;
-        higherCalibration.estimate_raw_at_time_of_calibration = bgReading1.age_adjusted_raw_value;
-        higherCalibration.raw_value = bgReading1.raw_data;
+        higherCalibration.estimate_raw_at_time_of_calibration = highBgReading.age_adjusted_raw_value;
+        higherCalibration.raw_value = highBgReading.raw_data;
         higherCalibration.save();
 
         lowerCalibration.bg = lower_bg;
         lowerCalibration.slope = 0;
         lowerCalibration.intercept = lower_bg;
         lowerCalibration.sensor = sensor;
-        lowerCalibration.estimate_raw_at_time_of_calibration = bgReading2.age_adjusted_raw_value - lowerAdjust;
-        lowerCalibration.raw_value = bgReading2.raw_data;
+        lowerCalibration.estimate_raw_at_time_of_calibration = lowBgReading.age_adjusted_raw_value - lowerAdjust;
+        lowerCalibration.raw_value = lowBgReading.raw_data;
         lowerCalibration.save();
 
-        bgReading1.calculated_value = higher_bg;
-        bgReading1.calibration_flag = true;
-        bgReading1.save();
-        higherCalibration.bgReading = bgReading1;
+        highBgReading.calculated_value = higher_bg;
+        highBgReading.calibration_flag = true;
+        highBgReading.save();
+        higherCalibration.bgReading = highBgReading;
         higherCalibration.save();
 
-        bgReading2.calculated_value = lower_bg;
-        bgReading2.calibration_flag = true;
-        bgReading2.save();
-        lowerCalibration.bgReading = bgReading2;
+        lowBgReading.calculated_value = lower_bg;
+        lowBgReading.calibration_flag = true;
+        lowBgReading.save();
+        lowerCalibration.bgReading = lowBgReading;
         lowerCalibration.save();
 
-        bgReading1.find_new_curve();
-        bgReading1.find_new_raw_curve();
-        bgReading2.find_new_curve();
-        bgReading2.find_new_raw_curve();
+        highBgReading.find_new_curve();
+        highBgReading.find_new_raw_curve();
+        lowBgReading.find_new_curve();
+        lowBgReading.find_new_raw_curve();
 
         List<Calibration> calibrations = new ArrayList<Calibration>();
         calibrations.add(lowerCalibration);
@@ -161,6 +189,11 @@ public class Calibration extends Model {
             Log.w("Using estimated RAW: ", "" + calibration.bg);
             calibration.distance_from_estimate = 0;
             calibration.sensor_confidence = ((-0.0018 * calibration.bg * calibration.bg) + (0.6657 * calibration.bg) + 36.7505) / 100;
+            Log.w(TAG, "CALIBRATIONS TIME DIF: " + ""+(int)(calibration.timestamp - sensor.started_at));
+            Log.w(TAG, "CALIBRATIONS TIME SENS: " + ""+(int)(sensor.started_at));
+            Log.w(TAG, "CALIBRATIONS TIME CALIB: " + ""+(int)(calibration.timestamp));
+            Log.w(TAG, "CALIBRATIONS TIME PERCENTAGE NOW: " + ""+(int)Calibration.first().sensor_age_at_time_of_estimation);
+
             calibration.sensor_age_at_time_of_estimation = calibration.timestamp - sensor.started_at;
             calibration.uuid = UUID.randomUUID().toString();
             calibration.save();
@@ -212,8 +245,8 @@ public class Calibration extends Model {
 
                 double estimated_raw_bg = BgReading.estimated_raw_bg(new Date().getTime());
                 calibration.raw_timestamp = bgReading.timestamp;
-                if (estimated_raw_bg - calibration.raw_value > 40) {
-                    calibration.estimate_raw_at_time_of_calibration = calibration.raw_value;
+                if (Math.abs(estimated_raw_bg - bgReading.age_adjusted_raw_value) > 20) {
+                    calibration.estimate_raw_at_time_of_calibration = bgReading.age_adjusted_raw_value;
                     Log.w("Using previous RAW: ", "" + estimated_raw_bg);
                 } else {
                     calibration.estimate_raw_at_time_of_calibration = estimated_raw_bg;
@@ -222,6 +255,15 @@ public class Calibration extends Model {
                 double distance = calibration.bg - estimated_raw_bg;
                 calibration.distance_from_estimate = (distance < 0) ? -distance : distance;
                 calibration.sensor_confidence = ((-0.0018 * bg * bg) + (0.6657 * bg) + 36.7505) / 100;
+                if (calibration.sensor_confidence <= 0) {
+                    calibration.sensor_confidence = 0;
+                }
+                Log.w(TAG, "CALIBRATIONS TIME DIF: " + ""+(int)(calibration.timestamp - sensor.started_at));
+                Log.w(TAG, "CALIBRATIONS TIME SENS: " + ""+(int)(sensor.started_at));
+                Log.w(TAG, "CALIBRATIONS TIME CALIB: " + ""+(int)(calibration.timestamp));
+                Log.w(TAG, "CALIBRATIONS TIME PERCENTAGE NOW: " + ""+(int)Calibration.first().sensor_age_at_time_of_estimation);
+
+
                 calibration.sensor_age_at_time_of_estimation = calibration.timestamp - sensor.started_at;
                 calibration.uuid = UUID.randomUUID().toString();
                 calibration.save();
@@ -234,7 +276,7 @@ public class Calibration extends Model {
             Log.w("CALIBRATION", "No sesnor, cant save!");
         }
 
-        return calibration;
+        return Calibration.last();
     }
 
     public static Calibration last() {
@@ -280,6 +322,16 @@ public class Calibration extends Model {
 
     }
 
+    public static List<Calibration> allForSensor() {
+        Sensor sensor = Sensor.currentSensor();
+        if (sensor == null) { return null; }
+        return new Select()
+                .from(Calibration.class)
+                .where("Sensor = ? ", sensor.getId())
+                .orderBy("_ID desc")
+                .execute();
+
+    }
     public static void calculate_w_l_s() {
         if (Sensor.isActive()) {
             double l = 0;
@@ -302,15 +354,17 @@ public class Calibration extends Model {
 
                     Log.w(TAG, "Calibration bg: " + calibration.bg);
                     w = calibration.calculateWeight();
-                    l += (w * (calibrations.size() * 0.2));
+                    Log.w(TAG, "=====CALIBRATIONS WEIGHT: " + ""+w);
+                    l += (w);
                     m += (w * calibration.estimate_raw_at_time_of_calibration);
                     n += (w * calibration.estimate_raw_at_time_of_calibration * calibration.estimate_raw_at_time_of_calibration);
                     p += (w * calibration.bg);
                     q += (w * calibration.estimate_raw_at_time_of_calibration * calibration.bg);
                 }
                 Calibration last_calibration = Calibration.last();
-                w = last_calibration.calculateWeight();
+                w = (last_calibration.calculateWeight() * (calibrations.size() * 0.2));
                 l += (w);
+                Log.w(TAG, "=====CALIBRATIONS WEIGHT: " + ""+w);
                 m += (w * last_calibration.estimate_raw_at_time_of_calibration);
                 n += (w * last_calibration.estimate_raw_at_time_of_calibration * last_calibration.estimate_raw_at_time_of_calibration);
                 p += (w * last_calibration.bg);
@@ -320,7 +374,16 @@ public class Calibration extends Model {
                 Calibration calibration = Calibration.last();
                 calibration.intercept = ((n * p) - (m * q)) / d;
                 calibration.slope = ((l * q) - (m * p)) / d;
-
+                if (calibration.slope < 0.5) {
+                    calibration.slope = calibration.slopeOOBHandler();
+                    if (calibration.slope == 0) { calibration.slope = 0.5; }
+                    calibration.intercept = calibration.bg - (calibration.estimate_raw_at_time_of_calibration * calibration.slope);
+                }
+                if (calibration.slope > 1.3) {
+                    calibration.slope = calibration.slopeOOBHandler();
+                    if (calibration.slope == 0) { calibration.slope = 1.3; }
+                    calibration.intercept = calibration.bg - (calibration.estimate_raw_at_time_of_calibration * calibration.slope);
+                }
                 Log.w(TAG, "Calculated Calibration Slope: " + calibration.slope);
                 Log.w(TAG, "Calculated Calibration intercept: " + calibration.intercept);
                 calibration.save();
@@ -329,6 +392,17 @@ public class Calibration extends Model {
         } else {
             Log.w(TAG, "NO Current active sensor found!!");
         }
+    }
+    private double slopeOOBHandler() {
+        double adjustedSlope = 0;
+        List<Calibration> calibrations = Calibration.latest(3);
+        if (calibrations.size() == 3) {
+            Calibration lastUsedCalibration = calibrations.get(1);
+            if (lastUsedCalibration.slope >= 0.5 && lastUsedCalibration.slope <= 1.3 && lastUsedCalibration.distance_from_estimate < 25) {
+                return lastUsedCalibration.slope;
+            }
+        }
+        return adjustedSlope;
     }
 
     private static List<Calibration> calibrations_for_sensor(Sensor sensor) {
@@ -340,13 +414,23 @@ public class Calibration extends Model {
     }
 
     private double calculateWeight() {
-        double time_percentage = sensor_age_at_time_of_estimation / Calibration.first().sensor_age_at_time_of_estimation;
-        return  ((((slope_confidence + sensor_confidence) * time_percentage)) / 2);
+        Log.w(TAG, "CALIBRATIONS TIME PERCENTAGE WEIGHT: " + ""+(int)sensor_age_at_time_of_estimation);
+        Log.w(TAG, "CALIBRATIONS TIME PERCENTAGE NOW:  " + ""+(int)Calibration.first().sensor_age_at_time_of_estimation);
+        double firstTimeStarted =   Calibration.first().sensor_age_at_time_of_estimation;
+        double lastTimeStarted =   Calibration.last().sensor_age_at_time_of_estimation;
+        double time_percentage = (sensor_age_at_time_of_estimation - firstTimeStarted) / (lastTimeStarted - firstTimeStarted);
+        Log.w(TAG, "CALIBRATIONS TIME PERCENTAGE WEIGHT: " + ""+(time_percentage + 0.1));
+        time_percentage = (time_percentage + .01);
+        if(sensor_confidence == 0 && slope_confidence == 0){ return 0; }
+        if (time_percentage > 1) { time_percentage = 1; }
+        double calculated_confidence = (((((slope_confidence + sensor_confidence) * (time_percentage))) / 2) * 100);
+        if (calculated_confidence <= 1) { return 1; }
+        return calculated_confidence;
     }
 
     public static void adjustRecentBgReadings() {
         List<Calibration> calibrations = Calibration.latest(3);
-        List<BgReading> bgReadings = BgReading.latest(20);
+        List<BgReading> bgReadings = BgReading.latest(30);
         if (calibrations.size() == 3) {
             int denom = bgReadings.size();
             Calibration latestCalibration = calibrations.get(0);
@@ -357,6 +441,14 @@ public class Calibration extends Model {
                 bgReading.calculated_value = ((newYvalue * (denom - i)) + (oldYValue * ( i ))) / denom;
                 bgReading.save();
                 i += 1;
+            }
+        } else if (calibrations.size() == 2) {
+            Calibration latestCalibration = calibrations.get(0);
+            for (BgReading bgReading : bgReadings) {
+                double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
+                bgReading.calculated_value = newYvalue;
+                bgReading.save();
+
             }
         }
         bgReadings.get(0).find_new_raw_curve();
@@ -370,5 +462,14 @@ public class Calibration extends Model {
         calculate_w_l_s();
         adjustRecentBgReadings();
         CalibrationSendQueue.addToQueue(this);
+    }
+
+    public String toS() {
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                .serializeSpecialFloatingPointValues()
+                .create();
+        return gson.toJson(this);
     }
 }

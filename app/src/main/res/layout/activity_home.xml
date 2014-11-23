@@ -28,15 +28,28 @@
 
                 <RelativeLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="50dp">
-
+                    android:layout_height="50dp"
+                    android:id="@+id/textContainer">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:id="@+id/currentBgValueRealTime"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="#FF0000"
+                        android:id="@+id/notices"
+                        android:layout_toStartOf="@+id/currentBgValueRealTime"
                         android:layout_centerVertical="true"
-                        android:layout_centerHorizontal="true" />
+                        android:paddingEnd="10dp"
+                        android:paddingStart="10dp"
+                        android:gravity="left|top" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/currentBgValueRealTime"
+                        android:gravity="right"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:paddingEnd="20dp"
+                        android:textSize="25dp" />
                 </RelativeLayout>
 
                 <lecho.lib.hellocharts.view.LineChartView
