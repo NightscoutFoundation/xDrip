@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">DexDrip</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_bluetooth_scan">BluetoothScan</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="menu_scan">Scan</string>
+    <string name="menu_stop">Stop</string>
+    <string name="error_bluetooth_not_supported">Error: Bluetooth not supported by this device</string>
+    <string name="unknown_device">Unrecognized Device</string>
+    <string name="connecting_to_device">Connecting to device</string>
+    <string name="title_activity_raw_data_table">RawDataTable</string>
+    <string name="title_activity_calculated_data_table">CalculatedDataTable</string>
+    <string name="title_activity_add_calibration">AddCalibration</string>
+    <string name="title_activity_start_new_sensor">StartNewSensor</string>
+    <string name="title_activity_stop_sensor">StopSensor</string>
+    <string name="title_activity_nav_drawer">NavDrawer</string>
+    <string name="title_section1">Home</string>
+    <string name="title_section2">Add Calibration</string>
+    <string name="title_section3">Start Sensor</string>
+    <string name="title_section4">Stop Sensor</string>
+    <string name="title_section5">Scan for BT</string>
+    <string name="title_section6">Raw Data Table</string>
+    <string name="title_section7">Calibration Table</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
+
+    <string-array name="menu_options">
+        <item>Dex Drip</item>
+        <item>Enter Calibration</item>
+        <item>Calculated Data Table</item>
+        <item>Raw Data Table</item>
+        <item>Calibration Table</item>
+        <item>Start Sensor</item>
+        <item>Stop Sensor</item>
+        <item>Scan for BT</item>
+    </string-array>
+
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_calibration_data_table">CalibrationDataTable</string>
+    <string name="title_activity_fake_numbers">FakeNumbers</string>
+    <string name="title_activity_double_calibration">DoubleCalibrationActivity</string>
+    <string name="title_activity_calibration_override">CalibrationOverride</string>
+    <string name="title_activity_calibration_graph">CalibrationGraph</string>
+
+</resources>
