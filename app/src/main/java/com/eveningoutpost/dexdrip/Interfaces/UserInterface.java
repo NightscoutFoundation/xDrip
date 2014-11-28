@@ -1,4 +1,6 @@
-package com.eveningoutpost.dexdrip;
+package com.eveningoutpost.dexdrip.Interfaces;
+
+import com.eveningoutpost.dexdrip.Models.User;
 
 import retrofit.Callback;
 import retrofit.http.Body;

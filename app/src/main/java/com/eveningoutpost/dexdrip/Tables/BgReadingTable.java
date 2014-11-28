@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip;
+package com.eveningoutpost.dexdrip.Tables;
 
 import android.app.ListActivity;
 import android.database.Cursor;
@@ -7,6 +7,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.widget.SimpleCursorAdapter;
 
 import com.activeandroid.Cache;
+import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
+import com.eveningoutpost.dexdrip.R;
 
 
 public class BgReadingTable extends ListActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {

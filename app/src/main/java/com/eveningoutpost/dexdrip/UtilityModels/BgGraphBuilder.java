@@ -1,4 +1,8 @@
-package com.eveningoutpost.dexdrip;
+package com.eveningoutpost.dexdrip.UtilityModels;
+
+import android.graphics.Color;
+
+import com.eveningoutpost.dexdrip.Models.BgReading;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,7 +25,7 @@ import lecho.lib.hellocharts.view.Chart;
  * Created by stephenblack on 11/15/14.
  */
 public class BgGraphBuilder {
-    public double  end_time = new Date().getTime() + (60000 * 20);
+    public double  end_time = new Date().getTime() + (60000 * 10);
     public double  start_time = end_time - (60000 * 60 * 24);
 
     //TODO: Make these editable via settings
@@ -35,7 +39,7 @@ public class BgGraphBuilder {
     private List<PointValue> inRangeValues = new ArrayList<PointValue>();
     private List<PointValue> highValues = new ArrayList<PointValue>();
     private List<PointValue> lowValues = new ArrayList<PointValue>();
-    public Viewport tempViewport;
+    public Viewport viewport;
 
 
     public LineChartData lineData() {
@@ -49,10 +53,9 @@ public class BgGraphBuilder {
         LineChartData previewLineData = new LineChartData(lineData());
         previewLineData.setAxisYLeft(yAxis());
         previewLineData.setAxisXBottom(previewXAxis());
-//        previewLineData.getLines().get(0).setColor(Utils.DEFAULT_DARKEN_COLOR);
-//        previewLineData.getLines().get(1).setColor(Utils.DEFAULT_DARKEN_COLOR);
-//        previewLineData.getLines().get(2).setColor(Utils.DEFAULT_DARKEN_COLOR);
-//        previewLineData.getLines().get(3).setColor(Utils.DEFAULT_DARKEN_COLOR);
+        previewLineData.getLines().get(4).setPointRadius(2);
+        previewLineData.getLines().get(5).setPointRadius(2);
+        previewLineData.getLines().get(6).setPointRadius(2);
         return previewLineData;
     }
 
@@ -73,16 +76,16 @@ public class BgGraphBuilder {
         Line highValuesLine = new Line(highValues);
         highValuesLine.setColor(Utils.COLOR_ORANGE);
         highValuesLine.setHasLines(false);
-        highValuesLine.setPointRadius(2);
+        highValuesLine.setPointRadius(3);
         highValuesLine.setHasPoints(true);
         return highValuesLine;
     }
 
     public Line lowValuesLine() {
         Line lowValuesLine = new Line(lowValues);
-        lowValuesLine.setColor(Utils.COLOR_RED);
+        lowValuesLine.setColor(Color.parseColor("#C30909"));
         lowValuesLine.setHasLines(false);
-        lowValuesLine.setPointRadius(2);
+        lowValuesLine.setPointRadius(3);
         lowValuesLine.setHasPoints(true);
         return lowValuesLine;
     }
@@ -91,7 +94,7 @@ public class BgGraphBuilder {
         Line inRangeValuesLine = new Line(inRangeValues);
         inRangeValuesLine.setColor(Utils.COLOR_BLUE);
         inRangeValuesLine.setHasLines(false);
-        inRangeValuesLine.setPointRadius(2);
+        inRangeValuesLine.setPointRadius(3);
         inRangeValuesLine.setHasPoints(true);
         return inRangeValuesLine;
     }
@@ -101,7 +104,11 @@ public class BgGraphBuilder {
             if (bgReading.calculated_value >= highMark) {
                 highValues.add(new PointValue((float)bgReading.timestamp, (float)bgReading.calculated_value));
             } else if (bgReading.calculated_value <= lowMark) {
-                lowValues.add(new PointValue((float)bgReading.timestamp, (float)bgReading.calculated_value));
+                if (bgReading.calculated_value <= 30 && bgReading.calculated_value > 0) {
+                    lowValues.add(new PointValue((float)bgReading.timestamp, (float)30));
+                } else  if (bgReading.calculated_value > 30) {
+                    lowValues.add(new PointValue((float) bgReading.timestamp, (float) bgReading.calculated_value));
+                }
             } else {
                 inRangeValues.add(new PointValue((float)bgReading.timestamp, (float)bgReading.calculated_value));
             }
@@ -125,8 +132,8 @@ public class BgGraphBuilder {
         lowLineValues.add(new PointValue((float)end_time, lowMark));
         Line lowLine = new Line(lowLineValues);
         lowLine.setHasPoints(false);
-        lowLine.setAreaTransparency(30);
-        lowLine.setColor(Utils.COLOR_RED);
+        lowLine.setAreaTransparency(50);
+        lowLine.setColor(Color.parseColor("#C30909"));
         lowLine.setStrokeWidth(1);
         lowLine.setFilled(true);
         return lowLine;
@@ -163,6 +170,7 @@ public class BgGraphBuilder {
         yAxis.setValues(axisValues);
         yAxis.setHasLines(true);
         yAxis.setMaxLabelChars(5);
+        yAxis.setInside(true);
         return yAxis;
     }
     public Axis xAxis() {
@@ -189,6 +197,7 @@ public class BgGraphBuilder {
         }
         xAxis.setValues(xAxisValues);
         xAxis.setHasLines(true);
+//        xAxis.setInside(true);
         return xAxis;
     }
 
@@ -209,10 +218,10 @@ public class BgGraphBuilder {
 
     /////////VIEWPORT RELATED//////////////
     public Viewport advanceViewport(Chart chart, Chart previewChart) {
-        tempViewport = new Viewport(chart.getMaximumViewport());
-        tempViewport.inset((float)(86400000 / 2.5), 0);
-        double distance_to_move = (new Date().getTime()) - tempViewport.left - (((tempViewport.right - tempViewport.left) /2));
-        tempViewport.offset((float) distance_to_move, 0);
-        return tempViewport;
+        viewport = new Viewport(previewChart.getMaximumViewport());
+        viewport.inset((float)(86400000 / 2.5), 0);
+        double distance_to_move = (new Date().getTime()) - viewport.left - (((viewport.right - viewport.left) /2));
+        viewport.offset((float) distance_to_move, 0);
+        return viewport;
     }
 }

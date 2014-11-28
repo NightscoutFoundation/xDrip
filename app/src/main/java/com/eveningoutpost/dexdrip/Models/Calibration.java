@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip;
+package com.eveningoutpost.dexdrip.Models;
 
 import android.provider.BaseColumns;
 import android.util.Log;
@@ -7,6 +7,9 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
+import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -189,10 +192,6 @@ public class Calibration extends Model {
             Log.w("Using estimated RAW: ", "" + calibration.bg);
             calibration.distance_from_estimate = 0;
             calibration.sensor_confidence = ((-0.0018 * calibration.bg * calibration.bg) + (0.6657 * calibration.bg) + 36.7505) / 100;
-            Log.w(TAG, "CALIBRATIONS TIME DIF: " + ""+(int)(calibration.timestamp - sensor.started_at));
-            Log.w(TAG, "CALIBRATIONS TIME SENS: " + ""+(int)(sensor.started_at));
-            Log.w(TAG, "CALIBRATIONS TIME CALIB: " + ""+(int)(calibration.timestamp));
-            Log.w(TAG, "CALIBRATIONS TIME PERCENTAGE NOW: " + ""+(int)Calibration.first().sensor_age_at_time_of_estimation);
 
             calibration.sensor_age_at_time_of_estimation = calibration.timestamp - sensor.started_at;
             calibration.uuid = UUID.randomUUID().toString();
@@ -220,9 +219,7 @@ public class Calibration extends Model {
 
         if (sensor != null) {
             BgReading bgReading = BgReading.last();
-            if (bgReading == null) {
-                //TODO: add something here to handle calibration with no data to compare against
-            } else {
+            if (bgReading != null) {
                 calibration.sensor = sensor;
                 calibration.bg = bg;
 
@@ -258,11 +255,6 @@ public class Calibration extends Model {
                 if (calibration.sensor_confidence <= 0) {
                     calibration.sensor_confidence = 0;
                 }
-                Log.w(TAG, "CALIBRATIONS TIME DIF: " + ""+(int)(calibration.timestamp - sensor.started_at));
-                Log.w(TAG, "CALIBRATIONS TIME SENS: " + ""+(int)(sensor.started_at));
-                Log.w(TAG, "CALIBRATIONS TIME CALIB: " + ""+(int)(calibration.timestamp));
-                Log.w(TAG, "CALIBRATIONS TIME PERCENTAGE NOW: " + ""+(int)Calibration.first().sensor_age_at_time_of_estimation);
-
 
                 calibration.sensor_age_at_time_of_estimation = calibration.timestamp - sensor.started_at;
                 calibration.uuid = UUID.randomUUID().toString();
@@ -273,7 +265,7 @@ public class Calibration extends Model {
                 CalibrationSendQueue.addToQueue(calibration);
             }
         } else {
-            Log.w("CALIBRATION", "No sesnor, cant save!");
+            Log.w("CALIBRATION", "No sensor, cant save!");
         }
 
         return Calibration.last();
@@ -299,15 +291,10 @@ public class Calibration extends Model {
     public static boolean can_calibrate() {
         BgReading bgReading = BgReading.last();
         double time = new Date().getTime();
-        if (Sensor.isActive()) {
-            if (time - bgReading.timestamp < 900) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
+        if (Sensor.isActive() && time - bgReading.timestamp < 900) {
+            return true;
         }
+        return false;
     }
 
     public static List<Calibration> latest(int number) {
@@ -339,7 +326,7 @@ public class Calibration extends Model {
             double n = 0;
             double p = 0;
             double q = 0;
-            double w = 0;
+            double w;
             Sensor sensor = Sensor.currentSensor();
             List<Calibration> calibrations = calibrations_for_sensor(sensor);
             if (calibrations.size() == 1) {
@@ -362,7 +349,7 @@ public class Calibration extends Model {
                     q += (w * calibration.estimate_raw_at_time_of_calibration * calibration.bg);
                 }
                 Calibration last_calibration = Calibration.last();
-                w = (last_calibration.calculateWeight() * (calibrations.size() * 0.2));
+                w = (last_calibration.calculateWeight() * (calibrations.size() * 0.1));
                 l += (w);
                 Log.w(TAG, "=====CALIBRATIONS WEIGHT: " + ""+w);
                 m += (w * last_calibration.estimate_raw_at_time_of_calibration);
@@ -379,9 +366,9 @@ public class Calibration extends Model {
                     if (calibration.slope == 0) { calibration.slope = 0.5; }
                     calibration.intercept = calibration.bg - (calibration.estimate_raw_at_time_of_calibration * calibration.slope);
                 }
-                if (calibration.slope > 1.3) {
+                if (calibration.slope > 1.4) {
                     calibration.slope = calibration.slopeOOBHandler();
-                    if (calibration.slope == 0) { calibration.slope = 1.3; }
+                    if (calibration.slope == 0) { calibration.slope = 1.4; }
                     calibration.intercept = calibration.bg - (calibration.estimate_raw_at_time_of_calibration * calibration.slope);
                 }
                 Log.w(TAG, "Calculated Calibration Slope: " + calibration.slope);
@@ -398,7 +385,7 @@ public class Calibration extends Model {
         List<Calibration> calibrations = Calibration.latest(3);
         if (calibrations.size() == 3) {
             Calibration lastUsedCalibration = calibrations.get(1);
-            if (lastUsedCalibration.slope >= 0.5 && lastUsedCalibration.slope <= 1.3 && lastUsedCalibration.distance_from_estimate < 25) {
+            if (lastUsedCalibration.slope >= 0.5 && lastUsedCalibration.slope <= 1.4 && lastUsedCalibration.distance_from_estimate < 25) {
                 return lastUsedCalibration.slope;
             }
         }
@@ -414,8 +401,6 @@ public class Calibration extends Model {
     }
 
     private double calculateWeight() {
-        Log.w(TAG, "CALIBRATIONS TIME PERCENTAGE WEIGHT: " + ""+(int)sensor_age_at_time_of_estimation);
-        Log.w(TAG, "CALIBRATIONS TIME PERCENTAGE NOW:  " + ""+(int)Calibration.first().sensor_age_at_time_of_estimation);
         double firstTimeStarted =   Calibration.first().sensor_age_at_time_of_estimation;
         double lastTimeStarted =   Calibration.last().sensor_age_at_time_of_estimation;
         double time_percentage = (sensor_age_at_time_of_estimation - firstTimeStarted) / (lastTimeStarted - firstTimeStarted);
@@ -471,5 +456,13 @@ public class Calibration extends Model {
                 .serializeSpecialFloatingPointValues()
                 .create();
         return gson.toJson(this);
+    }
+
+    public void rawValueOverride(double rawValue) {
+        estimate_bg_at_time_of_calibration = rawValue;
+        save();
+        calculate_w_l_s();
+        adjustRecentBgReadings();
+        CalibrationSendQueue.addToQueue(this);
     }
 }

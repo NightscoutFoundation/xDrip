@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.eveningoutpost.dexdrip.Services.DexCollectionService;
+
 /**
  * Created by stephenblack on 11/3/14.
  */

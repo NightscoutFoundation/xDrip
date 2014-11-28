@@ -11,6 +11,8 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
+import com.eveningoutpost.dexdrip.Models.BgReading;
+
 import java.util.Calendar;
 
 

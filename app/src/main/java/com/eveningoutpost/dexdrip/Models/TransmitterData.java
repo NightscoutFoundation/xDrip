@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip;
+package com.eveningoutpost.dexdrip.Models;
 
 import android.provider.BaseColumns;
 
@@ -35,6 +35,8 @@ public class TransmitterData extends Model {
     public static TransmitterData create(byte[] buffer, int len) {
         TransmitterData transmitterData = new TransmitterData();
                 StringBuilder data_string = new StringBuilder();
+        if (len < 9) { return null; };
+
         for (int i = 0; i < len; ++i) {
             data_string.append((char) buffer[i]);
         }

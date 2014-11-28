@@ -3,6 +3,11 @@ package com.eveningoutpost.dexdrip;
 import android.content.Context;
 import android.content.Intent;
 
+import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Tables.BgReadingTable;
+import com.eveningoutpost.dexdrip.Tables.CalibrationDataTable;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,9 +37,8 @@ public class NavDrawerBuilder {
                     if(bGreadings_in_last_24_mins.size() >= 3) {
                         if (time_now - last_two_calibrations.get(0).timestamp < 5*60000) { options.add("Override Calibration"); }
                         options.add("Add Calibration");
-                        options.add("Add Comparison");
                     } else { options.add("Cannot Calibrate right now"); }
-                    if (last_two_calibrations.get(0).slope == 1.5 || last_two_calibrations.get(0).slope == 0.5) { options.add("Add Double Calibration"); }
+                    if (last_two_calibrations.get(0).slope >= 1.4 || last_two_calibrations.get(0).slope <= 0.5) { options.add("Add Double Calibration"); }
                 } else { options.add("Add Double Calibration"); }
             }
             options.add("Stop Sensor");
@@ -61,9 +65,8 @@ public class NavDrawerBuilder {
                     if(bGreadings_in_last_24_mins.size() >= 3) {
                          if (time_now - last_two_calibrations.get(0).timestamp < 5*60000) { options.add(new Intent(context, CalibrationOverride.class)); }
                         options.add(new Intent(context, AddCalibration.class));
-                        options.add(new Intent(context, AddComparison.class));
                     } else { options.add(new Intent(context, Home.class)); }
-                    if (last_two_calibrations.get(0).slope == 1.5 || last_two_calibrations.get(0).slope == 0.5) { options.add(new Intent(context, DoubleCalibrationActivity.class)); }
+                    if (last_two_calibrations.get(0).slope >= 1.4 || last_two_calibrations.get(0).slope <= 0.5) { options.add(new Intent(context, DoubleCalibrationActivity.class)); }
                 } else { options.add(new Intent(context, DoubleCalibrationActivity.class)); }
             }
             options.add(new Intent(context, StopSensor.class));

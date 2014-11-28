@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="android:Theme.Material.Light">
+    <style name="AppTheme" parent="android:ThemeOverlay.Material">
+        <item name="android:background">#212121</item>
+        <item name="android:actionBarStyle">@style/MyActionBar</item>
+    </style>
+
+    <!-- ActionBar styles -->
+    <style name="MyActionBar"
+        parent="@android:style/Widget.Material.ActionBar">
+        <item name="android:background">#212121</item>
     </style>
 </resources>

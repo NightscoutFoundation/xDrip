@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip;
+package com.eveningoutpost.dexdrip.Models;
 
 import android.provider.BaseColumns;
 import android.util.Log;
@@ -7,6 +7,8 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -22,7 +24,7 @@ public class BgReading extends Model {
     private final static String TAG = BgReading.class.getSimpleName();
     //TODO: Have these as adjustable settings!!
     public final static double BESTOFFSET = (60000 * 0); // Assume readings are about x minutes off from actual!
-    public final static double SLOPEREADAHEAD = (60000 * 5); // Forcast the rate of change 5 minutes out!
+    public final static double SLOPEREADAHEAD = (60000 * 3); // Forcast the rate of change 3 minutes out!
 
     @Column(name = "sensor", index = true)
     public Sensor sensor;
@@ -103,19 +105,15 @@ public class BgReading extends Model {
         return slope;
     }
 
-    public static String activePrediction() {
-        DecimalFormat df = new DecimalFormat("#");
-        df.setMaximumFractionDigits(0);
-
+    public static double activePrediction() {
         BgReading bgReading = BgReading.lastNoSenssor();
         if (bgReading != null) {
-            double time = new Date().getTime() + BESTOFFSET;
-            double estimate = ((bgReading.a * time * time) + (bgReading.b * time) + bgReading.c);
-            Log.w(TAG, "ESTIMATE BG" + estimate);
-            return df.format(estimate);
-        } else {
-            return "120";
+            double currentTime = new Date().getTime();
+            if (currentTime >=  bgReading.timestamp + (60000 * 7)) { currentTime = bgReading.timestamp + (60000 * 7); }
+            double time = currentTime + BESTOFFSET;
+            return ((bgReading.a * time * time) + (bgReading.b * time) + bgReading.c);
         }
+        return 0;
     }
 
     //*******CLASS METHODS***********//
@@ -167,22 +165,20 @@ public class BgReading extends Model {
                     bgReading.age_adjusted_raw_value = (raw_data/1000);
                 }
 
-                bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
+                BgReading lastBgReading = BgReading.last();
+                if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp)){
+                    lastBgReading.calibration.rawValueOverride( BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value));
+                }
 
+                bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
                 Log.w(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
 
                 bgReading.save();
-
                 bgReading.perform_calculations();
-
                 BgSendQueue.addToQueue(bgReading, "create");
             }
         }
-         Gson gson = new GsonBuilder()
-                .excludeFieldsWithoutExposeAnnotation()
-                .registerTypeAdapter(Date.class, new DateTypeAdapter())
-                .create();
-        Log.w("BG GSON: ", gson.toJson(bgReading));
+        Log.w("BG GSON: ",bgReading.toS());
 
         return bgReading;
     }
@@ -245,17 +241,12 @@ public class BgReading extends Model {
 
     public static double estimated_bg(double timestamp) {
         timestamp = timestamp + BESTOFFSET;
-        double estimate;
         BgReading latest = BgReading.last();
         if (latest == null) {
-            Log.w(TAG, "No data yet, assume perfect!");
-            estimate = 120;
+            return 0;
         } else {
-            estimate = (latest.a * timestamp * timestamp) + (latest.b * timestamp) + latest.c;
+            return (latest.a * timestamp * timestamp) + (latest.b * timestamp) + latest.c;
         }
-
-        Log.w(TAG, "ESTIMATE CALC BG" + estimate);
-        return estimate;
     }
 
     public static double estimated_raw_bg(double timestamp) {
@@ -271,8 +262,6 @@ public class BgReading extends Model {
         Log.w(TAG, "ESTIMATE RAW BG" + estimate);
         return estimate;
     }
-
-
 
     //*******INSTANCE METHODS***********//
     public void perform_calculations() {
@@ -324,10 +313,9 @@ public class BgReading extends Model {
             double y1 = third_latest.calculated_value;
             double x1 = third_latest.timestamp;
 
-            double denom = (x1 - x2) * (x1 - x3) * (x2 - x3);
-            a = (x3 * (y2 - y1) + x2 * (y1 - y3) + x1 * (y3 - y2)) / denom;
-            b = (x3 * x3 * (y1 - y2) + x2 * x2 * (y3 - y1) + x1 * x1 * (y2 - y3)) / denom;
-            c = (x2 * x3 * (x2 - x3) * y1 + x3 * x1 * (x3 - x1) * y2 + x1 * x2 * (x1 - x2) * y3) / denom;
+            a = y1/((x1-x2)*(x1-x3))+y2/((x2-x1)*(x2-x3))+y3/((x3-x1)*(x3-x2));
+            b = (-y1*(x2+x3)/((x1-x2)*(x1-x3))-y2*(x1+x3)/((x2-x1)*(x2-x3))-y3*(x1+x2)/((x3-x1)*(x3-x2)));
+            c = (y1*x2*x3/((x1-x2)*(x1-x3))+y2*x1*x3/((x2-x1)*(x2-x3))+y3*x1*x2/((x3-x1)*(x3-x2)));
 
             Log.w(TAG, "BG PARABOLIC RATES: "+a+"x^2 + "+b+"x + "+c);
 
@@ -338,9 +326,9 @@ public class BgReading extends Model {
                 BgReading latest = last_3.get(0);
                 BgReading second_latest = last_3.get(1);
 
-                double y2 = (double)latest.calculated_value;
+                double y2 = latest.calculated_value;
                 double x2 = timestamp;
-                double y1 = (double)second_latest.calculated_value;
+                double y1 = second_latest.calculated_value;
                 double x1 = second_latest.timestamp;
 
                 if(y1 == y2) {
@@ -363,6 +351,7 @@ public class BgReading extends Model {
             save();
         }
     }
+
     public void find_new_raw_curve() {
         List<BgReading> last_3 = BgReading.latest(3);
         if (last_3.size() == 3) {
@@ -376,11 +365,11 @@ public class BgReading extends Model {
             double y1 = third_latest.age_adjusted_raw_value;
             double x1 = third_latest.timestamp;
 
-            double denom = (x1 - x2) * (x1 - x3) * (x2 - x3);
-            ra = (x3 * (y2 - y1) + x2 * (y1 - y3) + x1 * (y3 - y2)) / denom;
-            rb = (x3 * x3 * (y1 - y2) + x2 * x2 * (y3 - y1) + x1 * x1 * (y2 - y3)) / denom;
-            rc = (x2 * x3 * (x2 - x3) * y1 + x3 * x1 * (x3 - x1) * y2 + x1 * x2 * (x1 - x2) * y3) / denom;
-            Log.w(TAG, "RAW PARABOLIC RATES: "+a+"x^2 + "+b+"x + "+c);
+            ra = y1/((x1-x2)*(x1-x3))+y2/((x2-x1)*(x2-x3))+y3/((x3-x1)*(x3-x2));
+            rb = (-y1*(x2+x3)/((x1-x2)*(x1-x3))-y2*(x1+x3)/((x2-x1)*(x2-x3))-y3*(x1+x2)/((x3-x1)*(x3-x2)));
+            rc = (y1*x2*x3/((x1-x2)*(x1-x3))+y2*x1*x3/((x2-x1)*(x2-x3))+y3*x1*x2/((x3-x1)*(x3-x2)));
+
+            Log.w(TAG, "RAW PARABOLIC RATES: "+ra+"x^2 + "+rb+"x + "+rc);
             save();
         } else if (last_3.size() == 2) {
             BgReading latest = last_3.get(0);
@@ -396,11 +385,11 @@ public class BgReading extends Model {
                 rb = (y2 - y1)/(x2 - x1);
             }
             ra = 0;
-            rc = -1 * ((latest.b * x1) - y1);
+            rc = -1 * ((latest.rb * x1) - y1);
 
             Log.w(TAG, "Not enough data to calculate parabolic rates - assume Linear data");
 
-            Log.w(TAG, "RAW PARABOLIC RATES: "+a+"x^2 + "+b+"x + "+c);
+            Log.w(TAG, "RAW PARABOLIC RATES: "+ra+"x^2 + "+rb+"x + "+rc);
             save();
         } else {
             Log.w(TAG, "Not enough data to calculate parabolic rates - assume static data");
@@ -409,9 +398,13 @@ public class BgReading extends Model {
             rb = 0;
             rc = latest_entry.age_adjusted_raw_value;
 
-            Log.w(TAG, "RAW PARABOLIC RATES: "+a+"x^2 + "+b+"x + "+c);
             save();
         }
+    }
+    public static double weightedAverageRaw(double timeA, double timeB, double calibrationTime, double rawA, double rawB) {
+        double relativeSlope = (rawB -  rawA)/(timeB - timeA);
+        double relativeIntercept = rawA - (relativeSlope * timeA);
+        return ((relativeSlope * calibrationTime) + relativeIntercept);
     }
 
     public String toS() {
@@ -422,6 +415,7 @@ public class BgReading extends Model {
                 .create();
         return gson.toJson(this);
     }
+
 
     //TODO: Add Sync instance method
 

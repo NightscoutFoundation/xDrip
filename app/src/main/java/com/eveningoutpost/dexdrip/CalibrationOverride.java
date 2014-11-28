@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.Models.Calibration;
+
 
 public class CalibrationOverride extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
         Button button;

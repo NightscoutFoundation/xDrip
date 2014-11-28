@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip;
+package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.provider.BaseColumns;
 
@@ -6,6 +6,7 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.Models.Calibration;
 
 import java.util.List;
 
