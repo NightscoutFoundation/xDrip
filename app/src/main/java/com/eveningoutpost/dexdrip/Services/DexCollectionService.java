@@ -323,7 +323,6 @@ public class DexCollectionService extends Service {
         TransmitterData transmitterData = TransmitterData.create(buffer, len);
         if (transmitterData != null) {
             Sensor sensor = Sensor.currentSensor();
-
             if (sensor != null) {
                 BgReading bgReading = BgReading.create(transmitterData.raw_data);
                 sensor.latest_battery_level = transmitterData.sensor_battery_level;

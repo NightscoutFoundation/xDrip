@@ -70,8 +70,6 @@ public class FakeNumbers extends Activity {
                 int intValue = Integer.parseInt(value.getText().toString());
 
                 BgReading bgReading = BgReading.create(intValue * 1000);
-//                bgReading.calculated_value = intValue;
-//                bgReading.timestamp = startTime;
                 bgReading.save();
                 Intent intent = new Intent(getApplicationContext(), Home.class);
                 startActivity(intent);
