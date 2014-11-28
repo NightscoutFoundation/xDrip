@@ -1,7 +1,14 @@
-package com.eveningoutpost.dexdrip;
+package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.Interfaces.BgReadingInterface;
+import com.eveningoutpost.dexdrip.Interfaces.CalibrationInterface;
+import com.eveningoutpost.dexdrip.Interfaces.SensorInterface;
+import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.Models.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
@@ -116,29 +123,6 @@ public class RestCalls {
         );
     }
 
-
-    public static void sendComparison(final ComparisonSendQueue comparisonSendQueue) {
-        User user = User.currentUser();
-        comparisonInterface().createComparison(user.uuid, comparisonSendQueue.comparison, new Callback<Gson>() {
-                    @Override
-                    public void success(Gson gsonResponse, Response response) {
-                        comparisonSendQueue.success = true;
-                        comparisonSendQueue.save();
-                    }
-                    @Override
-                    public void failure(RetrofitError error) {
-                        Response response = error.getResponse();
-                        Log.w("REST CALL ERROR:", "****************");
-                        Log.w("REST CALL STATUS:", "" + response.getStatus());
-                        Log.w("REST CALL REASON:", response.getReason());
-                    }
-                }
-        );
-    }
-
-
-
-
     public static BgReadingInterface bgReadingInterface() {
         RestAdapter adapter = adapterBuilder().build();
             BgReadingInterface bgReadingInterface =
@@ -160,15 +144,6 @@ public class RestCalls {
                 adapter.create(CalibrationInterface.class);
         return calibrationInterface;
     }
-
-    public static ComparisonInterface comparisonInterface() {
-        RestAdapter adapter = adapterBuilder().build();
-        ComparisonInterface comparisonInterface =
-                adapter.create(ComparisonInterface.class);
-        return comparisonInterface();
-    }
-
-
 
     public static RestAdapter.Builder adapterBuilder() {
         RestAdapter.Builder adapterBuilder = new RestAdapter.Builder();

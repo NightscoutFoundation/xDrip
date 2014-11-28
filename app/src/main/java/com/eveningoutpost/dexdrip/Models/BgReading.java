@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip;
+package com.eveningoutpost.dexdrip.Models;
 
 import android.provider.BaseColumns;
 import android.util.Log;
@@ -7,6 +7,8 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -17,16 +19,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-@Table(name = "BgReadingDecay", id = BaseColumns._ID)
-public class BgReadingDecay extends Model {
-    private final static String TAG = BgReadingDecay.class.getSimpleName();
-    public final static double BESTOFFSET = 0;
+@Table(name = "BgReadings", id = BaseColumns._ID)
+public class BgReading extends Model {
+    private final static String TAG = BgReading.class.getSimpleName();
+    //TODO: Have these as adjustable settings!!
+    public final static double BESTOFFSET = (60000 * 0); // Assume readings are about x minutes off from actual!
+    public final static double SLOPEREADAHEAD = (60000 * 3); // Forcast the rate of change 3 minutes out!
 
     @Column(name = "sensor", index = true)
     public Sensor sensor;
 
     @Column(name = "calibration", index = true)
-    public CalibrationDecay calibration;
+    public Calibration calibration;
 
     @Expose
     @Column(name = "timestamp", index = true)
@@ -95,33 +99,29 @@ public class BgReadingDecay extends Model {
     public boolean synced;
 
     public static double activeSlope() {
-        BgReadingDecay bgReading = BgReadingDecay.lastNoSenssor();
+        BgReading bgReading = BgReading.lastNoSenssor();
         double slope = (2 * bgReading.a * (new Date().getTime() + BESTOFFSET)) + bgReading.b;
         Log.w(TAG, "ESTIMATE SLOPE" + slope);
         return slope;
     }
 
-    public static String activePrediction() {
-        DecimalFormat df = new DecimalFormat("#");
-        df.setMaximumFractionDigits(0);
-
-        BgReadingDecay bgReading = BgReadingDecay.lastNoSenssor();
+    public static double activePrediction() {
+        BgReading bgReading = BgReading.lastNoSenssor();
         if (bgReading != null) {
-            double time = new Date().getTime() + BESTOFFSET;
-            double estimate = ((bgReading.a * time * time) + (bgReading.b * time) + bgReading.c);
-            Log.w(TAG, "ESTIMATE BG" + estimate);
-            return df.format(estimate);
-        } else {
-            return "120";
+            double currentTime = new Date().getTime();
+            if (currentTime >=  bgReading.timestamp + (60000 * 7)) { currentTime = bgReading.timestamp + (60000 * 7); }
+            double time = currentTime + BESTOFFSET;
+            return ((bgReading.a * time * time) + (bgReading.b * time) + bgReading.c);
         }
+        return 0;
     }
 
     //*******CLASS METHODS***********//
-    public static BgReadingDecay create(double raw_data) {
-        BgReadingDecay bgReading = new BgReadingDecay();
+    public static BgReading create(double raw_data) {
+        BgReading bgReading = new BgReading();
         Sensor sensor = Sensor.currentSensor();
         if (sensor != null) {
-            CalibrationDecay calibration = CalibrationDecay.last();
+            Calibration calibration = Calibration.last();
             if (calibration == null) {
                 bgReading.sensor = sensor;
                 bgReading.sensor_uuid = sensor.uuid;
@@ -157,85 +157,83 @@ public class BgReadingDecay extends Model {
                 bgReading.synced = false;
 
                 //TODO: THIS IS A BIG SILLY IDEA, THIS WILL HAVE TO CHANGE ONCE WE GET SOME REAL DATA FROM THE START OF SENSOR LIFE
-                double adjust_for = (86400000 * 1.8) - bgReading.time_since_sensor_started;
+                double adjust_for = (86400000 * 2.1) - bgReading.time_since_sensor_started;
                 if (adjust_for > 0) {
-                    bgReading.age_adjusted_raw_value = (((30 / 20) * (adjust_for / (86400000 * 1.8))) * (raw_data/1000)) + (raw_data/1000);
+                    bgReading.age_adjusted_raw_value = (((3 / 2) * (adjust_for / (86400000 * 2.1))) * (raw_data/1000)) + (raw_data/1000);
                     Log.w("RAW VALUE ADJUSTMENT: ", "FROM:" + (raw_data/1000) + " TO: " + bgReading.age_adjusted_raw_value);
                 } else {
                     bgReading.age_adjusted_raw_value = (raw_data/1000);
                 }
 
-                bgReading.calculated_value = ((0.6898 * bgReading.age_adjusted_raw_value) + calibration.intercept);
+                BgReading lastBgReading = BgReading.last();
+                if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp)){
+                    lastBgReading.calibration.rawValueOverride( BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value));
+                }
 
+                bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
                 Log.w(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
 
                 bgReading.save();
-
                 bgReading.perform_calculations();
-
-//                BgSendQueue.addToQueue(bgReading, "create");
+                BgSendQueue.addToQueue(bgReading, "create");
             }
         }
-         Gson gson = new GsonBuilder()
-                .excludeFieldsWithoutExposeAnnotation()
-                .registerTypeAdapter(Date.class, new DateTypeAdapter())
-                .create();
-        Log.w("BG GSON: ", gson.toJson(bgReading));
+        Log.w("BG GSON: ",bgReading.toS());
 
         return bgReading;
     }
 
-    public static BgReadingDecay last() {
+    public static BgReading last() {
         Sensor sensor = Sensor.currentSensor();
         return new Select()
-                .from(BgReadingDecay.class)
+                .from(BgReading.class)
                 .where("Sensor = ? ", sensor.getId())
                 .orderBy("_ID desc")
                 .executeSingle();
     }
-    public static List<BgReadingDecay> latest_by_size(int number) {
+    public static List<BgReading> latest_by_size(int number) {
         Sensor sensor = Sensor.currentSensor();
         return new Select()
-                .from(BgReadingDecay.class)
+                .from(BgReading.class)
                 .where("Sensor = ? ", sensor.getId())
-                .orderBy("raw_data desc")
+                .orderBy("_ID desc")
                 .limit(number)
                 .execute();
     }
 
-    public static BgReadingDecay lastNoSenssor() {
+    public static BgReading lastNoSenssor() {
         return new Select()
-                .from(BgReadingDecay.class)
+                .from(BgReading.class)
                 .orderBy("_ID desc")
                 .executeSingle();
     }
-    public static List<BgReadingDecay> latest(int number) {
+    public static List<BgReading> latest(int number) {
         Sensor sensor = Sensor.currentSensor();
         if (sensor == null) { return null; }
         return new Select()
-                .from(BgReadingDecay.class)
+                .from(BgReading.class)
                 .where("Sensor = ? ", sensor.getId())
                 .orderBy("_ID desc")
                 .limit(number)
                 .execute();
     }
 
-    public static List<BgReadingDecay> latestForGraph(int number, double startTime) {
+    public static List<BgReading> latestForGraph(int number, double startTime) {
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(1);
 
         return new Select()
-                .from(BgReadingDecay.class)
+                .from(BgReading.class)
                 .where("timestamp >= " + df.format(startTime))
                 .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
     }
 
-    public static List<BgReadingDecay> last24Minutes() {
-        double timestamp = (new Date().getTime()) - (60000 * 24);
+    public static List<BgReading> last24Minutes() {
+        double timestamp = (new Date().getTime()) - (60000 * 25);
         return new Select()
-                .from(BgReadingDecay.class)
+                .from(BgReading.class)
                 .where("timestamp >= " + timestamp)
                 .orderBy("_ID desc")
                 .execute();
@@ -243,26 +241,21 @@ public class BgReadingDecay extends Model {
 
     public static double estimated_bg(double timestamp) {
         timestamp = timestamp + BESTOFFSET;
-        double estimate;
-        BgReadingDecay latest = BgReadingDecay.last();
+        BgReading latest = BgReading.last();
         if (latest == null) {
-            Log.w(TAG, "No data yet, assume perfect!");
-            estimate = 120;
+            return 0;
         } else {
-            estimate = (latest.a * timestamp * timestamp) + (latest.b * timestamp) + latest.c;
+            return (latest.a * timestamp * timestamp) + (latest.b * timestamp) + latest.c;
         }
-
-        Log.w(TAG, "ESTIMATE CALC BG" + estimate);
-        return estimate;
     }
 
     public static double estimated_raw_bg(double timestamp) {
         timestamp = timestamp + BESTOFFSET;
         double estimate;
-        BgReadingDecay latest = BgReadingDecay.last();
+        BgReading latest = BgReading.last();
         if (latest == null) {
             Log.w(TAG, "No data yet, assume perfect!");
-            estimate = 16060;
+            estimate = 160;
         } else {
             estimate = (latest.ra * timestamp * timestamp) + (latest.rb * timestamp) + latest.rc;
         }
@@ -270,11 +263,9 @@ public class BgReadingDecay extends Model {
         return estimate;
     }
 
-
-
     //*******INSTANCE METHODS***********//
     public void perform_calculations() {
-        CalibrationDecay calibration = CalibrationDecay.last();
+        Calibration calibration = Calibration.last();
         if (calibration == null) {
             Log.w(TAG, "NO CALIBRATION DATA, CANNOT CALCULATE CURRENT VALUES.");
         } else {
@@ -288,9 +279,9 @@ public class BgReadingDecay extends Model {
     }
 
     public void find_slope() {
-        List<BgReadingDecay> last_2 = BgReadingDecay.latest(2);
+        List<BgReading> last_2 = BgReading.latest(2);
         if (last_2.size() == 2) {
-            BgReadingDecay second_latest = last_2.get(1);
+            BgReading second_latest = last_2.get(1);
             double y1 = calculated_value;
             double x1 = timestamp;
             double y2 = second_latest.calculated_value;
@@ -310,43 +301,21 @@ public class BgReadingDecay extends Model {
     }
 
     public void find_new_curve() {
-        List<BgReadingDecay> last_3 = BgReadingDecay.latest(3);
+        List<BgReading> last_3 = BgReading.latest(3);
         if (last_3.size() == 3) {
-            BgReadingDecay second_latest = last_3.get(1);
-            BgReadingDecay third_latest = last_3.get(2);
+            BgReading second_latest = last_3.get(1);
+            BgReading third_latest = last_3.get(2);
 
-            double y_3 = calculated_value;
-            double x_3 = timestamp;
-            double y_2 = second_latest.calculated_value;
-            double x_2 = second_latest.timestamp;
-            double y_1 = third_latest.calculated_value;
-            double x_1 = third_latest.timestamp;
+            double y3 = calculated_value;
+            double x3 = timestamp;
+            double y2 = second_latest.calculated_value;
+            double x2 = second_latest.timestamp;
+            double y1 = third_latest.calculated_value;
+            double x1 = third_latest.timestamp;
 
-
-            Log.w(TAG, "BGReading x_1: " + x_1);
-            Log.w(TAG, "BGReading y_1: " + y_1);
-            Log.w(TAG, "BGReading x_2: " + x_2);
-            Log.w(TAG, "BGReading y_2: " + y_2);
-            Log.w(TAG, "BGReading x_3: " + x_3);
-            Log.w(TAG, "BGReading y_3: " + y_3);
-
-            a = y_1/((x_1-x_2)*(x_1-x_3)) + y_2/((x_2-x_1)*(x_2-x_3)) + y_3/((x_3-x_1)*(x_3-x_2));
-
-            b = (-y_1*(x_2+x_3)/((x_1-x_2)*(x_1-x_3))
-                    -y_2*(x_1+x_3)/((x_2-x_1)*(x_2-x_3))
-                    -y_3*(x_1+x_2)/((x_3-x_1)*(x_3-x_2)));
-
-            c = (y_1*x_2*x_3/((x_1-x_2)*(x_1-x_3))
-                    +y_2*x_1*x_3/((x_2-x_1)*(x_2-x_3))
-                    +y_3*x_1*x_2/((x_3-x_1)*(x_3-x_2)));
-//            double denom = (x1 - x2) * (x1 - x3) * (x2 - x3);
-//            ra = (x3 * (y2 - y1) + x2 * (y1 - y3) + x1 * (y3 - y2)) / denom;
-//            rb = (x3 * x3 * (y1 - y2) + x2 * x2 * (y3 - y1) + x1 * x1 * (y2 - y3)) / denom;
-//            rc = (x2 * x3 * (x2 - x3) * y1 + x3 * x1 * (x3 - x1) * y2 + x1 * x2 * (x1 - x2) * y3) / denom;
-//            double denom = (x1 - x2) * (x1 - x3) * (x2 - x3);
-//            a = a;
-//            b = b;
-//            c = c;
+            a = y1/((x1-x2)*(x1-x3))+y2/((x2-x1)*(x2-x3))+y3/((x3-x1)*(x3-x2));
+            b = (-y1*(x2+x3)/((x1-x2)*(x1-x3))-y2*(x1+x3)/((x2-x1)*(x2-x3))-y3*(x1+x2)/((x3-x1)*(x3-x2)));
+            c = (y1*x2*x3/((x1-x2)*(x1-x3))+y2*x1*x3/((x2-x1)*(x2-x3))+y3*x1*x2/((x3-x1)*(x3-x2)));
 
             Log.w(TAG, "BG PARABOLIC RATES: "+a+"x^2 + "+b+"x + "+c);
 
@@ -354,18 +323,14 @@ public class BgReadingDecay extends Model {
         } else if (last_3.size() == 2) {
 
             Log.w(TAG, "Not enough data to calculate parabolic rates - assume Linear");
-                BgReadingDecay latest = last_3.get(0);
-                BgReadingDecay second_latest = last_3.get(1);
+                BgReading latest = last_3.get(0);
+                BgReading second_latest = last_3.get(1);
 
-                double y2 = (double)latest.calculated_value;
+                double y2 = latest.calculated_value;
                 double x2 = timestamp;
-                double y1 = (double)second_latest.calculated_value;
+                double y1 = second_latest.calculated_value;
                 double x1 = second_latest.timestamp;
 
-                Log.w(TAG, "BGReading x1: " + x1);
-                Log.w(TAG, "BGReading y1: " + y1);
-                Log.w(TAG, "BGReading x2: " + x2);
-                Log.w(TAG, "BGReading y2: " + y2);
                 if(y1 == y2) {
                     b = 0;
                 } else {
@@ -386,42 +351,29 @@ public class BgReadingDecay extends Model {
             save();
         }
     }
+
     public void find_new_raw_curve() {
-        List<BgReadingDecay> last_3 = BgReadingDecay.latest(3);
+        List<BgReading> last_3 = BgReading.latest(3);
         if (last_3.size() == 3) {
-            BgReadingDecay second_latest = last_3.get(1);
-            BgReadingDecay third_latest = last_3.get(2);
+            BgReading second_latest = last_3.get(1);
+            BgReading third_latest = last_3.get(2);
 
-            double y_3 = age_adjusted_raw_value;
-            double x_3 = timestamp;
-            double y_2 = second_latest.age_adjusted_raw_value;
-            double x_2 = second_latest.timestamp;
-            double y_1 = third_latest.age_adjusted_raw_value;
-            double x_1 = third_latest.timestamp;
+            double y3 = age_adjusted_raw_value;
+            double x3 = timestamp;
+            double y2 = second_latest.age_adjusted_raw_value;
+            double x2 = second_latest.timestamp;
+            double y1 = third_latest.age_adjusted_raw_value;
+            double x1 = third_latest.timestamp;
 
-            double a = y_1/((x_1-x_2)*(x_1-x_3)) + y_2/((x_2-x_1)*(x_2-x_3)) + y_3/((x_3-x_1)*(x_3-x_2));
+            ra = y1/((x1-x2)*(x1-x3))+y2/((x2-x1)*(x2-x3))+y3/((x3-x1)*(x3-x2));
+            rb = (-y1*(x2+x3)/((x1-x2)*(x1-x3))-y2*(x1+x3)/((x2-x1)*(x2-x3))-y3*(x1+x2)/((x3-x1)*(x3-x2)));
+            rc = (y1*x2*x3/((x1-x2)*(x1-x3))+y2*x1*x3/((x2-x1)*(x2-x3))+y3*x1*x2/((x3-x1)*(x3-x2)));
 
-            double b = (-y_1*(x_2+x_3)/((x_1-x_2)*(x_1-x_3))
-                    -y_2*(x_1+x_3)/((x_2-x_1)*(x_2-x_3))
-                    -y_3*(x_1+x_2)/((x_3-x_1)*(x_3-x_2)));
-
-            double c = (y_1*x_2*x_3/((x_1-x_2)*(x_1-x_3))
-                    +y_2*x_1*x_3/((x_2-x_1)*(x_2-x_3))
-                    +y_3*x_1*x_2/((x_3-x_1)*(x_3-x_2)));
-//            double denom = (x1 - x2) * (x1 - x3) * (x2 - x3);
-//            ra = (x3 * (y2 - y1) + x2 * (y1 - y3) + x1 * (y3 - y2)) / denom;
-//            rb = (x3 * x3 * (y1 - y2) + x2 * x2 * (y3 - y1) + x1 * x1 * (y2 - y3)) / denom;
-//            rc = (x2 * x3 * (x2 - x3) * y1 + x3 * x1 * (x3 - x1) * y2 + x1 * x2 * (x1 - x2) * y3) / denom;
-//            double denom = (x1 - x2) * (x1 - x3) * (x2 - x3);
-            ra = a;
-            rb = b;
-            rc = c;
-
-            Log.w(TAG, "RAW PARABOLIC RATES: "+a+"x^2 + "+b+"x + "+c);
+            Log.w(TAG, "RAW PARABOLIC RATES: "+ra+"x^2 + "+rb+"x + "+rc);
             save();
         } else if (last_3.size() == 2) {
-            BgReadingDecay latest = last_3.get(0);
-            BgReadingDecay second_latest = last_3.get(1);
+            BgReading latest = last_3.get(0);
+            BgReading second_latest = last_3.get(1);
 
             double y2 = latest.age_adjusted_raw_value;
             double x2 = timestamp;
@@ -433,30 +385,26 @@ public class BgReadingDecay extends Model {
                 rb = (y2 - y1)/(x2 - x1);
             }
             ra = 0;
-            rc = -1 * ((latest.b * x1) - y1);
+            rc = -1 * ((latest.rb * x1) - y1);
 
             Log.w(TAG, "Not enough data to calculate parabolic rates - assume Linear data");
 
-            Log.w(TAG, "RAW PARABOLIC RATES: "+a+"x^2 + "+b+"x + "+c);
+            Log.w(TAG, "RAW PARABOLIC RATES: "+ra+"x^2 + "+rb+"x + "+rc);
             save();
         } else {
             Log.w(TAG, "Not enough data to calculate parabolic rates - assume static data");
-            BgReadingDecay latest_entry = BgReadingDecay.lastNoSenssor();
+            BgReading latest_entry = BgReading.lastNoSenssor();
             ra = 0;
             rb = 0;
             rc = latest_entry.age_adjusted_raw_value;
 
-            Log.w(TAG, "RAW PARABOLIC RATES: "+a+"x^2 + "+b+"x + "+c);
             save();
         }
     }
-
-    public String gson() {
-        Gson gson = new GsonBuilder()
-                .excludeFieldsWithoutExposeAnnotation()
-                .registerTypeAdapter(Date.class, new DateTypeAdapter())
-                .create();
-        return gson.toJson(this);
+    public static double weightedAverageRaw(double timeA, double timeB, double calibrationTime, double rawA, double rawB) {
+        double relativeSlope = (rawB -  rawA)/(timeB - timeA);
+        double relativeIntercept = rawA - (relativeSlope * timeA);
+        return ((relativeSlope * calibrationTime) + relativeIntercept);
     }
 
     public String toS() {
@@ -467,6 +415,8 @@ public class BgReadingDecay extends Model {
                 .create();
         return gson.toJson(this);
     }
+
+
     //TODO: Add Sync instance method
 
 }

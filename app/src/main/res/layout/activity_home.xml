@@ -6,75 +6,76 @@
     <!-- As the main content view, the view below consumes the entire
          space available using match_parent in both dimensions. -->
     <FrameLayout android:id="@+id/container" android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent" >
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-        android:layout_height="match_parent" android:paddingLeft="1dp"
-        android:paddingRight="1dp"
-        android:paddingTop="1dp"
-        android:paddingBottom="1dp" tools:context=".Home">
+            xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:layout_weight="0.85"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp" tools:context=".Home"
+            android:layout_marginTop="0dp">
 
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#C30909"
+                android:id="@+id/notices"
+                android:background="#07000000"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
+                android:gravity="left|top"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:text="test testtesttest" />
+
+            <lecho.lib.hellocharts.view.LineChartView
+                android:id="@+id/chart"
                 android:layout_width="match_parent"
+                android:layout_alignParentStart="false"
+                android:layout_alignParentEnd="true"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingBottom="1dp"
-                android:paddingLeft="1dp"
-                android:paddingRight="1dp"
-                android:paddingTop="1dp"
-                tools:context="lecho.lib.hellocharts.samples.PreviewLineChartActivity$PlaceholderFragment" >
+                android:layout_marginTop="25dp">
+            </lecho.lib.hellocharts.view.LineChartView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#07000000"
+                android:id="@+id/currentBgValueRealTime"
+                android:gravity="right"
+                android:layout_alignParentEnd="true"
+                android:paddingEnd="20dp"
+                android:textSize="35dp"
+                android:paddingTop="0dp"
+                android:text="105" />
+        </RelativeLayout>
 
-                <RelativeLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="50dp"
-                    android:id="@+id/textContainer">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="#FF0000"
-                        android:id="@+id/notices"
-                        android:layout_toStartOf="@+id/currentBgValueRealTime"
-                        android:layout_centerVertical="true"
-                        android:paddingEnd="10dp"
-                        android:paddingStart="10dp"
-                        android:gravity="left|top" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/currentBgValueRealTime"
-                        android:gravity="right"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentEnd="true"
-                        android:paddingEnd="20dp"
-                        android:textSize="25dp" />
-                </RelativeLayout>
+        <lecho.lib.hellocharts.view.PreviewLineChartView
+            android:id="@+id/chart_preview"
+            android:layout_width="wrap_content"
+            android:layout_weight=".15"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_height="0dp">
+        </lecho.lib.hellocharts.view.PreviewLineChartView>
 
-                <lecho.lib.hellocharts.view.LineChartView
-                    android:id="@+id/chart"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" >
-                </lecho.lib.hellocharts.view.LineChartView>
 
-                <!--<View-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="2dp"-->
-                    <!--android:layout_marginBottom="8dp"-->
-                    <!--android:layout_marginTop="8dp"-->
-                    <!--android:background="@android:color/darker_gray" />-->
+        </LinearLayout>
 
-                <lecho.lib.hellocharts.view.PreviewLineChartView
-                    android:id="@+id/chart_preview"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="0.29" >
-                </lecho.lib.hellocharts.view.PreviewLineChartView>
 
-            </LinearLayout>
-    </RelativeLayout>
+
+
+
 
     <fragment android:id="@+id/navigation_drawer"
         android:layout_width="@dimen/navigation_drawer_width" android:layout_height="match_parent"

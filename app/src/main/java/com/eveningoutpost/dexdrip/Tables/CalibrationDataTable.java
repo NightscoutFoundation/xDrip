@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip;
+package com.eveningoutpost.dexdrip.Tables;
 
 import android.app.ListActivity;
 import android.database.Cursor;
@@ -8,12 +8,14 @@ import android.view.View;
 import android.widget.SimpleCursorAdapter;
 
 import com.activeandroid.Cache;
+import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
+import com.eveningoutpost.dexdrip.R;
 
 import java.util.ArrayList;
 
 
-public class SensorDataTable extends ListActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-    private String menu_name = "Sensor Data Table";
+public class CalibrationDataTable extends ListActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+    private String menu_name = "Calibration Data Table";
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
     private ArrayList<String> results = new ArrayList<String>();
@@ -39,17 +41,18 @@ public class SensorDataTable extends ListActivity implements NavigationDrawerFra
     }
 
     private void getData() {
-        Cursor cursor = Cache.openDatabase().rawQuery("Select * from Sensors order by _ID desc", null);
+        Cursor cursor = Cache.openDatabase().rawQuery("Select * from Calibration order by _ID desc", null);
 
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
                 R.layout.raw_data_list_item,
                 cursor,
-                new String[] { "started_at", "latest_battery_level", "uuid", "uuid" },
+                new String[] { "estimate_raw_at_time_of_calibration", "raw_value", "slope", "intercept" },
                 new int[] { R.id.raw_data_id, R.id.raw_data_value , R.id.raw_data_slope, R.id.raw_data_timestamp });
 
         this.setListAdapter(adapter);
 //        ListView listView = (ListView) findViewById(R.id.list);
 //        listView.setAdapter(adapter);
     }
+
 
 }

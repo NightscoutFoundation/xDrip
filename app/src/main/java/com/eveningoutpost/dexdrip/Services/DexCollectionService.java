@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.eveningoutpost.dexdrip;
+package com.eveningoutpost.dexdrip.Services;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -34,6 +34,11 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
+import com.eveningoutpost.dexdrip.Models.TransmitterData;
 
 import java.util.UUID;
 
@@ -280,10 +285,6 @@ public class DexCollectionService extends Service {
         mBluetoothGatt.disconnect();
     }
 
-    /**
-     * After using a given BLE device, the app must call this method to ensure resources are
-     * released properly.
-     */
     public void close() {
         if (mBluetoothGatt == null) {
             return;
@@ -292,13 +293,6 @@ public class DexCollectionService extends Service {
         mBluetoothGatt = null;
     }
 
-    /**
-     * Request a read on a given {@code BluetoothGattCharacteristic}. The read result is reported
-     * asynchronously through the {@code BluetoothGattCallback#onCharacteristicRead(android.bluetooth.BluetoothGatt, android.bluetooth.BluetoothGattCharacteristic, int)}
-     * callback.
-     *
-     * @param characteristic The characteristic to read from.
-     */
     public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
@@ -327,15 +321,16 @@ public class DexCollectionService extends Service {
     public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
 
         TransmitterData transmitterData = TransmitterData.create(buffer, len);
-        Sensor sensor = Sensor.currentSensor();
+        if (transmitterData != null) {
+            Sensor sensor = Sensor.currentSensor();
 
-        if (sensor != null) {
-            BgReading bgReading = BgReading.create(transmitterData.raw_data);
-            BgReadingDecay bgReadingDecay = BgReadingDecay.create(transmitterData.raw_data);
-            sensor.latest_battery_level = transmitterData.sensor_battery_level;
-            sensor.save();
-        } else {
-            Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
+            if (sensor != null) {
+                BgReading bgReading = BgReading.create(transmitterData.raw_data);
+                sensor.latest_battery_level = transmitterData.sensor_battery_level;
+                sensor.save();
+            } else {
+                Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
+            }
         }
     }
 }

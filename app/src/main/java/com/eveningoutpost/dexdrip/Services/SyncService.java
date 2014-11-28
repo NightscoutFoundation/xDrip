@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip;
+package com.eveningoutpost.dexdrip.Services;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -7,6 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+
+import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
+import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
+import com.eveningoutpost.dexdrip.UtilityModels.RestCalls;
+import com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue;
 
 public class SyncService extends Service {
     int mStartMode;
@@ -39,9 +44,6 @@ public class SyncService extends Service {
             }
             for (CalibrationSendQueue job : CalibrationSendQueue.queue()) {
                 RestCalls.sendCalibration(job);
-            }
-            for (ComparisonSendQueue job : ComparisonSendQueue.queue()) {
-                RestCalls.sendComparison(job);
             }
             for (BgSendQueue job : BgSendQueue.queue()) {
                 RestCalls.sendBgReading(job);

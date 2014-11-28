@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip;
+package com.eveningoutpost.dexdrip.UtilityModels;
 
 /**
  * Created by stephenblack on 10/26/14.

@@ -11,6 +11,8 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
+import com.eveningoutpost.dexdrip.Models.BgReading;
+
 import java.util.Calendar;
 
 
@@ -68,7 +70,6 @@ public class FakeNumbers extends Activity {
                 int intValue = Integer.parseInt(value.getText().toString());
 
                 BgReading bgReading = BgReading.create(intValue * 1000);
-                BgReadingDecay bgReadingDecay = BgReadingDecay.create(intValue * 1000);
 //                bgReading.calculated_value = intValue;
 //                bgReading.timestamp = startTime;
                 bgReading.save();
