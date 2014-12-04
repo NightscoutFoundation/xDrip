@@ -1,0 +1,38 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="notifications"
+        android:title="BG Alerts"
+        android:summary="Alert when BG readings cross the threshold."
+        android:defaultValue="false" />
+    <CheckBoxPreference
+        android:dependency="notifications"
+        android:key="vibrate"
+        android:title="Vibrate on alerts"
+        android:defaultValue="false" />
+    <CheckBoxPreference
+        android:dependency="notifications"
+        android:key="lights"
+        android:title="Flash lights on alerts"
+        android:defaultValue="false" />
+    <CheckBoxPreference
+        android:dependency="notifications"
+        android:key="play_sound"
+        android:title="Play sound on alerts"
+        android:defaultValue="false" />
+    <RingtonePreference
+        android:dependency="play_sound"
+        android:key="notification_sound"
+        android:title="Alert Sound"
+        android:ringtoneType="notification"
+        android:summary="Set sound used for BG Alerts."
+        android:defaultValue="content://settings/system/notification_sound" />
+    <EditTextPreference
+        android:dependency="notifications"
+        android:key="snooze"
+        android:title="Alert Snooze"
+        android:numeric="integer"
+        android:summary="When readings continue out of range, wait this many minutes before alerting again."
+        android:defaultValue="20" />
+
+</PreferenceScreen>

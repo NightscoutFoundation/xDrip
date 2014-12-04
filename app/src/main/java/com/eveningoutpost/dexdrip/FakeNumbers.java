@@ -13,8 +13,6 @@ import android.widget.TimePicker;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 
-import java.util.Calendar;
-
 
 public class FakeNumbers extends Activity {
     public Button button;
@@ -26,8 +24,6 @@ public class FakeNumbers extends Activity {
         setContentView(R.layout.activity_fake_numbers);
 
         button = (Button)findViewById(R.id.log);
-        dp = (DatePicker)findViewById(R.id.datePicker);
-        tp = (TimePicker)findViewById(R.id.timePicker);
         addListenerOnButton();
 
     }
@@ -61,15 +57,10 @@ public class FakeNumbers extends Activity {
 
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(dp.getYear(), dp.getMonth(), dp.getDayOfMonth(),
-                        tp.getCurrentHour(), tp.getCurrentMinute(), 0);
-                long startTime = calendar.getTime().getTime();
                 EditText value = (EditText) findViewById(R.id.bg_value);
                 int intValue = Integer.parseInt(value.getText().toString());
 
-                BgReading bgReading = BgReading.create(intValue * 1000);
+                BgReading bgReading = BgReading.create(intValue * 1000, getApplicationContext());
                 bgReading.save();
                 Intent intent = new Intent(getApplicationContext(), Home.class);
                 startActivity(intent);

@@ -8,8 +8,8 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
@@ -50,6 +50,9 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_notification, false);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
         startService(new Intent(this, DexCollectionService.class));
         setContentView(R.layout.activity_home);
 
@@ -69,12 +72,13 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         registerReceiver(_broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
+        holdViewport.set(0, 0, 0, 0);
         setupCharts();
         updateCurrentBgInfo();
     }
 
     public void setupCharts() {
-        bgGraphBuilder = new BgGraphBuilder();
+        bgGraphBuilder = new BgGraphBuilder(this);
         updateStuff = false;
         chart = (LineChartView) findViewById(R.id.chart);
         chart.setZoomType(ZoomType.HORIZONTAL);
@@ -99,8 +103,6 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         public void onViewportChanged(Viewport newViewport) {
             if (!updatingPreviewViewport) {
                 updatingChartViewport = true;
-//            chart.setZoomEnabled(false);
-//            chart.setZoomLevel(1, 1, 1, true);
                 previewChart.setZoomType(ZoomType.HORIZONTAL);
                 previewChart.setCurrentViewport(newViewport, false);
                 updatingChartViewport = false;
@@ -113,8 +115,6 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         public void onViewportChanged(Viewport newViewport) {
             if (!updatingChartViewport) {
                 updatingPreviewViewport = true;
-//            chart.setZoomEnabled(false);
-//            chart.setZoomLevel(1, 1, 1, true);
                 chart.setZoomType(ZoomType.HORIZONTAL);
                 chart.setCurrentViewport(newViewport, false);
                 tempViewport = newViewport;
@@ -122,7 +122,6 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
             }
             if (updateStuff == true) {
                 holdViewport.set(newViewport.left, newViewport.top, newViewport.right, newViewport.bottom);
-                Log.w("VIEWPORTS", "SET HOLDVIEWPORT " + holdViewport.toString());
             }
         }
 
@@ -134,12 +133,9 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     }
 
     public void setViewport() {
-        if (tempViewport.left == 0.0 || holdViewport.right  >= (new Date().getTime())) {
-            Log.w("VIEWPORTS   ", "ADVANCING " +  (holdViewport.right - new Date().getTime()));
-            Log.w("VIEWPORTS   ", "ADVANCING LEFT" +  (int)(tempViewport.left));
+        if (tempViewport.left == 0.0 || holdViewport.left == 0.0 || holdViewport.right  >= (new Date().getTime())) {
             previewChart.setCurrentViewport(bgGraphBuilder.advanceViewport(chart, previewChart), false);
         } else {
-            Log.w("VIEWPORTS    ", "USING HOLDVIEWPORT " + holdViewport.toString());
             previewChart.setCurrentViewport(holdViewport, false);
         }
     }
@@ -184,6 +180,8 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     }
 
     public void displayCurrentInfo() {
+
+
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(0);
 
@@ -203,26 +201,8 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
                 if (lastBgreading != null) {
-                    double slope = (float) (BgReading.activeSlope() * 60000);
-
-                    String arrow;
-                    if (slope <= (-3.5)) {
-                        arrow = "\u21ca";
-                    } else if (slope <= (-2)) {
-                        arrow = "\u2193";
-                    } else if (slope <= (-1)) {
-                        arrow = "\u2198";
-                    } else if (slope <= (1)) {
-                        arrow = "\u2192";
-                    } else if (slope <= (2)) {
-                        arrow = "\u2197";
-                    } else if (slope <= (3.5)) {
-                        arrow = "\u2191";
-                    } else {
-                        arrow = "\u21c8";
-                    }
                     estimate = BgReading.activePrediction();
-                    currentBgValueText.setText(df.format(estimate) + " " + arrow);
+                    currentBgValueText.setText(df.format(estimate) + " " + BgReading.slopeArrow());
                 }
             }
             if(estimate <= bgGraphBuilder.lowMark) {

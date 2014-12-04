@@ -24,21 +24,20 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:theme="@style/AppTheme"
-        >
+        android:theme="@style/AppTheme" >
         <meta-data
             android:name="AA_DB_NAME"
             android:value="DexDrip.db" />
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="7" />
+            android:value="9" />
 
         <!-- <provider android:authorities="com.example" android:exported="false" android:name="com.activeandroid.content.ContentProvider" /> -->
 
         <activity
             android:name="com.eveningoutpost.dexdrip.Home"
-            android:launchMode="singleInstance"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:launchMode="singleInstance" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -51,17 +50,17 @@
         </activity>
 
         <service
-            android:name=".Services.DexCollectionService"
+            android:name="com.eveningoutpost.dexdrip.Services.DexCollectionService"
             android:enabled="true"
             android:exported="true" >
         </service>
 
         <activity
-            android:name=".Tables.BgReadingTable"
+            android:name="com.eveningoutpost.dexdrip.Tables.BgReadingTable"
             android:label="Bg Readings Table" >
         </activity>
         <activity
-            android:name=".Tables.SensorDataTable"
+            android:name="com.eveningoutpost.dexdrip.Tables.SensorDataTable"
             android:label="Sensor Table" >
         </activity>
         <activity
@@ -84,12 +83,12 @@
         </receiver>
 
         <activity
-            android:name=".Tables.CalibrationDataTable"
+            android:name="com.eveningoutpost.dexdrip.Tables.CalibrationDataTable"
             android:label="@string/title_activity_calibration_data_table" >
         </activity>
 
         <service
-            android:name=".Services.SyncService"
+            android:name="com.eveningoutpost.dexdrip.Services.SyncService"
             android:enabled="true"
             android:exported="true" >
         </service>
@@ -114,6 +113,10 @@
         <activity
             android:name="com.eveningoutpost.dexdrip.CalibrationGraph"
             android:label="@string/title_activity_calibration_graph" >
+        </activity>
+        <activity
+            android:name="com.eveningoutpost.dexdrip.SettingsActivity"
+            android:label="@string/title_activity_settings" >
         </activity>
     </application>
 

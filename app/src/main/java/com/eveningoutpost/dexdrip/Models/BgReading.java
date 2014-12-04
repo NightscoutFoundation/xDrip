@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import android.content.Context;
 import android.provider.BaseColumns;
 import android.util.Log;
 
@@ -8,7 +9,9 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
+import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -117,7 +120,7 @@ public class BgReading extends Model {
     }
 
     //*******CLASS METHODS***********//
-    public static BgReading create(double raw_data) {
+    public static BgReading create(double raw_data, Context context) {
         BgReading bgReading = new BgReading();
         Sensor sensor = Sensor.currentSensor();
         if (sensor != null) {
@@ -175,12 +178,47 @@ public class BgReading extends Model {
 
                 bgReading.save();
                 bgReading.perform_calculations();
+                bgReading.checkForNotifications(context);
                 BgSendQueue.addToQueue(bgReading, "create");
             }
         }
         Log.w("BG GSON: ",bgReading.toS());
 
         return bgReading;
+    }
+
+    public void checkForNotifications(Context context) {
+        //TODO: get high and low from settings, not from graph builder
+        BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
+        double high = bgGraphBuilder.highMark;
+        double low = bgGraphBuilder.lowMark;
+        if (calculated_value >= high || calculated_value <= low) {
+            Notifications.bgAlert(calculated_value, slopeArrow(), context);
+        } else {
+            Notifications.clearBgAlert(context);
+        }
+
+
+    }
+    public static String slopeArrow() {
+        double slope = (float) (BgReading.activeSlope() * 60000);
+        String arrow;
+        if (slope <= (-3.5)) {
+            arrow = "\u21ca";
+        } else if (slope <= (-2)) {
+            arrow = "\u2193";
+        } else if (slope <= (-1)) {
+            arrow = "\u2198";
+        } else if (slope <= (1)) {
+            arrow = "\u2192";
+        } else if (slope <= (2)) {
+            arrow = "\u2197";
+        } else if (slope <= (3.5)) {
+            arrow = "\u2191";
+        } else {
+            arrow = "\u21c8";
+        }
+        return arrow;
     }
 
     public static BgReading last() {
