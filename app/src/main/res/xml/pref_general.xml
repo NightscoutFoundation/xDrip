@@ -1,0 +1,19 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="Acceptable BG range"
+        android:key="bgRange">
+        <EditTextPreference
+            android:key="highValue"
+            android:title="High Value"
+            android:numeric="integer"
+            android:summary="The maximum value you consider to be in range."
+            android:defaultValue="170" />
+        <EditTextPreference
+            android:key="lowValue"
+            android:title="Low Value"
+            android:numeric="integer"
+            android:summary="The minimum value you consider to be in range."
+            android:defaultValue="70" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

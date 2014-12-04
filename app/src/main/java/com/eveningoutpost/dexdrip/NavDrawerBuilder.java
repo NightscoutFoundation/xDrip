@@ -44,6 +44,7 @@ public class NavDrawerBuilder {
             options.add("Stop Sensor");
         } else { options.add("Start Sensor"); }
         options.add("Scan for BT");
+        options.add("Settings");
 //        options.add("Fake Numbers");
 //        options.add("Add Double Calibration");
         return options;
@@ -72,6 +73,7 @@ public class NavDrawerBuilder {
             options.add(new Intent(context, StopSensor.class));
         } else { options.add(new Intent(context, StartNewSensor.class)); }
         options.add(new Intent(context, BluetoothScan.class));
+        options.add(new Intent(context, SettingsActivity.class));
 //        options.add(new Intent(context, FakeNumbers.class));
 //        options.add(new Intent(context, DoubleCalibrationActivity.class));
         return options;
