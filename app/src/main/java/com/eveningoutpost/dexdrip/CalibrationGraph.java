@@ -71,7 +71,7 @@ public class CalibrationGraph extends Activity implements NavigationDrawerFragme
 
     public void setupCharts() {
         chart = (LineChartView) findViewById(R.id.chart);
-        List<Calibration> calibrations = Calibration.latest(100);
+        List<Calibration> calibrations = Calibration.allForSensor();
         List<PointValue> values = new ArrayList<PointValue>();
         for (Calibration calibration : calibrations) {
             values.add(new PointValue((float)calibration.estimate_raw_at_time_of_calibration, (float)calibration.bg));
