@@ -315,6 +315,8 @@ public class Calibration extends Model {
         return new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())
+                .where("slope_confidence != 0")
+                .where("sensor_confidence != 0")
                 .orderBy("_ID desc")
                 .execute();
 
@@ -396,6 +398,8 @@ public class Calibration extends Model {
         return new Select()
                 .from(Calibration.class)
                 .where("Sensor = ?", sensor.getId())
+                .where("slope_confidence != 0")
+                .where("sensor_confidence != 0")
                 .orderBy("_ID desc")
                 .execute();
     }

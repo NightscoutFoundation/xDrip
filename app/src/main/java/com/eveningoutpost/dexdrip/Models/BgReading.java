@@ -160,9 +160,9 @@ public class BgReading extends Model {
                 bgReading.synced = false;
 
                 //TODO: THIS IS A BIG SILLY IDEA, THIS WILL HAVE TO CHANGE ONCE WE GET SOME REAL DATA FROM THE START OF SENSOR LIFE
-                double adjust_for = (86400000 * 2.1) - bgReading.time_since_sensor_started;
+                double adjust_for = (86400000 * 1.9) - bgReading.time_since_sensor_started;
                 if (adjust_for > 0) {
-                    bgReading.age_adjusted_raw_value = (((3 / 2) * (adjust_for / (86400000 * 2.1))) * (raw_data/1000)) + (raw_data/1000);
+                    bgReading.age_adjusted_raw_value = (((.45) * (adjust_for / (86400000 * 1.9))) * (raw_data/1000)) + (raw_data/1000);
                     Log.w("RAW VALUE ADJUSTMENT: ", "FROM:" + (raw_data/1000) + " TO: " + bgReading.age_adjusted_raw_value);
                 } else {
                     bgReading.age_adjusted_raw_value = (raw_data/1000);
