@@ -20,24 +20,7 @@ import android.text.TextUtils;
 
 import java.util.List;
 
-/**
- * A {@link PreferenceActivity} that presents a set of application settings. On
- * handset devices, settings are presented as a single list. On tablets,
- * settings are split by category, with category headers shown to the left of
- * the list of settings.
- * <p/>
- * See <a href="http://developer.android.com/design/patterns/settings.html">
- * Android Design: Settings</a> for design guidelines and the <a
- * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
- * API Guide</a> for more information on developing a Settings UI.
- */
 public class SettingsActivity extends PreferenceActivity {
-    /**
-     * Determines whether to always show the simplified settings UI, where
-     * settings are presented in a single list. When false, settings are shown
-     * as a master/detail two-pane view on tablets. When true, a single pane is
-     * shown on tablets.
-     */
     private static final boolean ALWAYS_SIMPLE_PREFS = false;
 
 
@@ -48,11 +31,6 @@ public class SettingsActivity extends PreferenceActivity {
         setupSimplePreferencesScreen();
     }
 
-    /**
-     * Shows the simplified settings UI if the device configuration if the
-     * device configuration dictates that a simplified, single-pane UI should be
-     * shown.
-     */
     private void setupSimplePreferencesScreen() {
         if (!isSimplePreferences(this)) {
             return;
@@ -66,13 +44,17 @@ public class SettingsActivity extends PreferenceActivity {
 
         // Add 'notifications' preferences, and a corresponding header.
         PreferenceCategory fakeHeader = new PreferenceCategory(this);
-        fakeHeader.setTitle(R.string.pref_header_notifications);
         getPreferenceScreen().addPreference(fakeHeader);
-        addPreferencesFromResource(R.xml.pref_notification);
+        addPreferencesFromResource(R.xml.pref_bg_notification);
 
-        // Add 'data and sync' preferences, and a corresponding header.
+
         fakeHeader = new PreferenceCategory(this);
-        fakeHeader.setTitle(R.string.pref_header_data_sync);
+        getPreferenceScreen().addPreference(fakeHeader);
+        addPreferencesFromResource(R.xml.pref_calibration_notfication);
+        // Add 'data and sync' preferences, and a corresponding header.
+
+        fakeHeader = new PreferenceCategory(this);
+//        fakeHeader.setTitle(R.string.pref_header_data_sync);
         getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_data_sync);
 
@@ -81,7 +63,8 @@ public class SettingsActivity extends PreferenceActivity {
         // to reflect the new value, per the Android Design guidelines.
         bindPreferenceSummaryToValue(findPreference("highValue"));
         bindPreferenceSummaryToValue(findPreference("lowValue"));
-        bindPreferenceSummaryToValue(findPreference("snooze"));
+        bindPreferenceSummaryToValue(findPreference("bg_snooze"));
+        bindPreferenceSummaryToValue(findPreference("calibration_snooze"));
         bindPreferenceSummaryToValue(findPreference("sync_frequency"));
     }
 
@@ -228,7 +211,7 @@ public class SettingsActivity extends PreferenceActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_notification);
+            addPreferencesFromResource(R.xml.pref_bg_notification);
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are

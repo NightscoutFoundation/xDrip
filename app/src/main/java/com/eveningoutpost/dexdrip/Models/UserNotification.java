@@ -15,7 +15,6 @@ import java.util.Date;
 
 @Table(name = "Notifications", id = BaseColumns._ID)
 public class UserNotification extends Model {
-    public int snoozeMinutes = 20;
 
     @Column(name = "timestamp", index = true)
     public double timestamp;
@@ -26,14 +25,40 @@ public class UserNotification extends Model {
     @Column(name = "bg_alert")
     public boolean bg_alert;
 
-    @Column(name = "cleared", index = true)
-    public boolean cleared;
+    @Column(name = "calibration_alert")
+    public boolean calibration_alert;
+
+    @Column(name = "double_calibration_alert")
+    public boolean double_calibration_alert;
+
+    @Column(name = "extra_calibration_alert")
+    public boolean extra_calibration_alert;
 
     public static UserNotification lastBgAlert() {
         return new Select()
                 .from(UserNotification.class)
                 .where("bg_alert = ?", true)
-                .where("cleared = ?", false)
+                .orderBy("_ID desc")
+                .executeSingle();
+    }
+    public static UserNotification lastCalibrationAlert() {
+        return new Select()
+                .from(UserNotification.class)
+                .where("calibration_alert = ?", true)
+                .orderBy("_ID desc")
+                .executeSingle();
+    }
+    public static UserNotification lastDoubleCalibrationAlert() {
+        return new Select()
+                .from(UserNotification.class)
+                .where("double_calibration_alert = ?", true)
+                .orderBy("_ID desc")
+                .executeSingle();
+    }
+    public static UserNotification lastExtraCalibrationAlert() {
+        return new Select()
+                .from(UserNotification.class)
+                .where("extra_calibration_alert = ?", true)
                 .orderBy("_ID desc")
                 .executeSingle();
     }
@@ -42,9 +67,14 @@ public class UserNotification extends Model {
         UserNotification userNotification = new UserNotification();
         userNotification.timestamp = new Date().getTime();
         userNotification.message = message;
-        userNotification.cleared = false;
         if (type == "bg_alert") {
             userNotification.bg_alert = true;
+        } else if (type == "calibration_alert") {
+            userNotification.calibration_alert = true;
+        } else if (type == "double_calibration_alert") {
+            userNotification.double_calibration_alert = true;
+        } else if (type == "extra_calibration_alert") {
+            userNotification.extra_calibration_alert = true;
         }
         userNotification.save();
         return userNotification;

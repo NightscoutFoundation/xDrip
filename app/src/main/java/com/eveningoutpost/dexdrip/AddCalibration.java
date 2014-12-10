@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.Calibration;
 
@@ -46,10 +45,7 @@ public class AddCalibration extends Activity implements NavigationDrawerFragment
                     EditText value = (EditText) findViewById(R.id.bg_value);
                     int intValue = Integer.parseInt(value.getText().toString());
 
-                    Calibration calibration = Calibration.create(intValue);
-                    if (calibration.slope <= 0.5 || calibration.slope >= 1.4) {
-                        Toast.makeText(getApplicationContext(), "WHOA, That seems crazy, you may want to double check that!", Toast.LENGTH_LONG).show();
-                    }
+                    Calibration calibration = Calibration.create(intValue, getApplicationContext());
                     Log.w("CALBIRATION ENTERED: ", "" + intValue);
                     Intent tableIntent = new Intent(v.getContext(), Home.class);
                     startActivity(tableIntent);
