@@ -9,7 +9,6 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Sensor;
-import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.google.gson.Gson;
@@ -178,7 +177,7 @@ public class BgReading extends Model {
 
                 bgReading.save();
                 bgReading.perform_calculations();
-                bgReading.checkForNotifications(context);
+                Notifications.notificationSetter(context);
                 BgSendQueue.addToQueue(bgReading, "create");
             }
         }
@@ -187,19 +186,6 @@ public class BgReading extends Model {
         return bgReading;
     }
 
-    public void checkForNotifications(Context context) {
-        //TODO: get high and low from settings, not from graph builder
-        BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
-        double high = bgGraphBuilder.highMark;
-        double low = bgGraphBuilder.lowMark;
-        if (calculated_value >= high || calculated_value <= low) {
-            Notifications.bgAlert(calculated_value, slopeArrow(), context);
-        } else {
-            Notifications.clearBgAlert(context);
-        }
-
-
-    }
     public static String slopeArrow() {
         double slope = (float) (BgReading.activeSlope() * 60000);
         String arrow;

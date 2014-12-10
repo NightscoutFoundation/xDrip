@@ -72,7 +72,7 @@ public class DoubleCalibrationActivity  extends Activity implements NavigationDr
                         if(!string_value_2.matches("")) {
                             int intValue_1 = Integer.parseInt(string_value_1);
                             int intValue_2 = Integer.parseInt(string_value_2);
-                            Calibration.initialCalibration(intValue_1, intValue_2);
+                            Calibration.initialCalibration(intValue_1, intValue_2, getApplicationContext());
 
                             Intent tableIntent = new Intent(v.getContext(), Home.class);
                             startActivity(tableIntent);

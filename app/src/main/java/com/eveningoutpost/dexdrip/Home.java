@@ -51,7 +51,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
-        PreferenceManager.setDefaultValues(this, R.xml.pref_notification, false);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_bg_notification, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
         startService(new Intent(this, DexCollectionService.class));
         setContentView(R.layout.activity_home);
