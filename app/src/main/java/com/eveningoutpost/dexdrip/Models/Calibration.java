@@ -161,12 +161,14 @@ public class Calibration extends Model {
 
         highBgReading.calculated_value = higher_bg;
         highBgReading.calibration_flag = true;
+        highBgReading.calibration = higherCalibration;
         highBgReading.save();
         higherCalibration.bgReading = highBgReading;
         higherCalibration.save();
 
         lowBgReading.calculated_value = lower_bg;
         lowBgReading.calibration_flag = true;
+        lowBgReading.calibration = lowerCalibration;
         lowBgReading.save();
         lowerCalibration.bgReading = lowBgReading;
         lowerCalibration.save();
@@ -202,7 +204,7 @@ public class Calibration extends Model {
                     .serializeSpecialFloatingPointValues()
                     .create();
             Log.w("CALIBRATION: ", calibration.toS());
-            CalibrationRequest.createOffset(calibration.bg, 40);
+            CalibrationRequest.createOffset(calibration.bg, 45);
         }
         Notifications.notificationSetter(context);
     }
