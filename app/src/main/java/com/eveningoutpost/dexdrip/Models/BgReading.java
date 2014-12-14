@@ -168,10 +168,11 @@ public class BgReading extends Model {
                 }
 
                 BgReading lastBgReading = BgReading.last();
-                if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp)){
-                    lastBgReading.calibration.rawValueOverride( BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value));
+                if (lastBgReading != null && lastBgReading.calibration != null) {
+                    if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp)) {
+                        lastBgReading.calibration.rawValueOverride(BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value));
+                    }
                 }
-
                 bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
                 Log.w(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
 
