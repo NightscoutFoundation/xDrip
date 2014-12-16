@@ -45,6 +45,7 @@ Android Application that collects dexcom signals, allows calibrations, and (soon
 
 
 # LINKS
+* [Project Site](http://stephenblackwasalreadytaken.github.io/DexDrip/)
 * [What you will need & Diagrams](https://github.com/StephenBlackWasAlreadyTaken/DexDrip/blob/gh-pages/hardware_setup.md)
 * [Wixel App](https://github.com/StephenBlackWasAlreadyTaken/wixel-DexDrip)
 * [Android App](https://github.com/StephenBlackWasAlreadyTaken/DexDrip)
