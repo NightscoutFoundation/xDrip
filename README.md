@@ -42,3 +42,9 @@ Android Application that collects dexcom signals, allows calibrations, and (soon
 * That thing Im doing looks dumb? Thats because I dont know anything about java, I did a lot of things to make it do what I want that Im sure are not correct
 * Why do you not use camel casing all the time? Because I didnt know that was a thing until I was halfway into this project, I really dont know java
 * So why are these activities and not fragments? Because I also didnt know those were things until I was halfway in
+
+
+# LINKS
+* [What you will need & Diagrams](https://github.com/StephenBlackWasAlreadyTaken/DexDrip/blob/gh-pages/hardware_setup.md)
+* [Wixel App](https://github.com/StephenBlackWasAlreadyTaken/wixel-DexDrip)
+* [Android App](https://github.com/StephenBlackWasAlreadyTaken/DexDrip)
