@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 
@@ -156,7 +157,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         final TextView currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
         final TextView notificationText = (TextView)findViewById(R.id.notices);
         notificationText.setText("");
-        if(ActiveBluetoothDevice.first() != null) {
+        if(ActiveBluetoothDevice.first() != null || WixelReader.IsConfigured()) {
             if (Sensor.isActive() && (Sensor.currentSensor().started_at + (60000 * 60 * 2)) < new Date().getTime()) {
                 if (BgReading.latest(2).size() > 1) {
                     List<Calibration> calibrations = Calibration.latest(2);
@@ -178,7 +179,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 notificationText.setText("Now start your sensor");
             }
         } else {
-            notificationText.setText("First pair with your BT device!");
+            notificationText.setText("First pair with your BT device, or configure your wifi wixel reader!");
         }
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);

@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
+import com.eveningoutpost.dexdrip.Services.WixelReader;
 
 /**
  * Created by stephenblack on 12/22/14.
@@ -21,10 +22,14 @@ public class CollectionServiceStarter {
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
 
         if(collection_method.compareTo("BluetoothWixel") == 0) {
+            stopWifWixelThread();
             startBtWixelService();
+        } else  if(collection_method.compareTo("WifiWixel") == 0) {
+            stopBtWixelService();
+            startWifWixelThread();
         }
 
-            Log.d("CollectionServiceStarter ", collection_method);
+        Log.d("CollectionServiceStarter ", collection_method);
     }
 
 
@@ -38,4 +43,13 @@ public class CollectionServiceStarter {
             mContext.stopService(new Intent(mContext, DexCollectionService.class));
         }
     }
+
+    private void startWifWixelThread() {
+        WixelReader.sStart(mContext);
+    }
+
+    private void stopWifWixelThread() {
+        WixelReader.sStop();
+    }
+
 }
