@@ -26,7 +26,7 @@ public class SensorSendQueue extends Model {
     public static SensorSendQueue nextSensorJob() {
         SensorSendQueue job = new Select()
                 .from(SensorSendQueue.class)
-                .where("success !=", true)
+                .where("success =", false)
                 .orderBy("_ID desc")
                 .limit(1)
                 .executeSingle();
@@ -36,7 +36,7 @@ public class SensorSendQueue extends Model {
     public static List<SensorSendQueue> queue() {
         return new Select()
                 .from(SensorSendQueue.class)
-                .where("success !=", true)
+                .where("success = ?", false)
                 .orderBy("_ID desc")
                 .execute();
     }

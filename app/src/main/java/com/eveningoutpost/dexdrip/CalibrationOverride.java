@@ -70,7 +70,7 @@ public class CalibrationOverride extends Activity implements NavigationDrawerFra
                     if (!string_value.matches("")) {
                         int intValue = Integer.parseInt(string_value);
 
-                         Calibration.last().overrideCalibration(intValue);
+                         Calibration.last().overrideCalibration(intValue, getApplicationContext());
 
                          Intent tableIntent = new Intent(v.getContext(), Home.class);
                          startActivity(tableIntent);

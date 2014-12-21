@@ -141,6 +141,7 @@ public class DexCollectionService extends Service {
                 System.currentTimeMillis() + (1000 * 60 * 3),
                 PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0)
         );
+        stopSelf();
     }
 
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {

@@ -1,7 +1,10 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.BatteryManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -30,6 +33,7 @@ import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -37,6 +41,8 @@ import java.util.TimeZone;
  * THIS CLASS WAS BUILT BY THE NIGHTSCOUT GROUP FOR THEIR NIGHTSCOUT ANDROID UPLOADER
  * https://github.com/nightscout/android-uploader/
  * I have modified this class to make it fit my needs
+ * Modifications include field remappings and lists instead of arrays
+ * A DTO would probably be a better future implementation
  * -Stephen Black
  */
 public class NightscoutUploader {
@@ -56,38 +62,36 @@ public class NightscoutUploader {
         }
 
         public boolean upload(BgReading glucoseDataSet, Calibration meterRecord, Calibration calRecord) {
-            BgReading[] glucoseDataSets = new BgReading[1];
-            glucoseDataSets[0] = glucoseDataSet;
-            Calibration[] meterRecords = new Calibration[1];
-            meterRecords[0] = meterRecord;
-            Calibration[] calRecords = new Calibration[1];
-            calRecords[0] = calRecord;
+            List<BgReading> glucoseDataSets = new ArrayList<BgReading>();
+            glucoseDataSets.add(glucoseDataSet);
+            List<Calibration> meterRecords = new ArrayList<Calibration>();
+            meterRecords.add(meterRecord);
+            List<Calibration> calRecords = new ArrayList<Calibration>();
+            calRecords.add(calRecord);
             return upload(glucoseDataSets, meterRecords, calRecords);
         }
 
-        public boolean upload(BgReading[] glucoseDataSets, Calibration[] meterRecords, Calibration[] calRecords) {
-
+        public boolean upload(List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) {
             boolean mongoStatus = false;
             boolean apiStatus = false;
 
             if (enableRESTUpload) {
                 long start = System.currentTimeMillis();
-                Log.i(TAG, String.format("Starting upload of %s record using a REST API", glucoseDataSets.length));
+                Log.i(TAG, String.format("Starting upload of %s record using a REST API", glucoseDataSets.size()));
                 apiStatus = doRESTUpload(prefs, glucoseDataSets, meterRecords, calRecords);
-                Log.i(TAG, String.format("Finished upload of %s record using a REST API in %s ms", glucoseDataSets.length, System.currentTimeMillis() - start));
+                Log.i(TAG, String.format("Finished upload of %s record using a REST API in %s ms", glucoseDataSets.size(), System.currentTimeMillis() - start));
             }
 
             if (enableMongoUpload) {
-                long start = System.currentTimeMillis();
-                Log.i(TAG, String.format("Starting upload of %s record using a Mongo", glucoseDataSets.length));
+                double start = new Date().getTime();
                 mongoStatus = doMongoUpload(prefs, glucoseDataSets, meterRecords, calRecords);
-                Log.i(TAG, String.format("Finished upload of %s record using a Mongo in %s ms", glucoseDataSets.length + meterRecords.length, System.currentTimeMillis() - start));
+                Log.i(TAG, String.format("Finished upload of %s record using a Mongo in %s ms", glucoseDataSets.size() + meterRecords.size(), System.currentTimeMillis() - start));
             }
 
-            return apiStatus || mongoStatus;
+                return apiStatus || mongoStatus;
         }
 
-        private boolean doRESTUpload(SharedPreferences prefs, BgReading[] glucoseDataSets, Calibration[] meterRecords, Calibration[] calRecords) {
+        private boolean doRESTUpload(SharedPreferences prefs, List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) {
             String baseURLSettings = prefs.getString("cloud_storage_api_base", "");
             ArrayList<String> baseURIs = new ArrayList<String>();
 
@@ -113,7 +117,7 @@ public class NightscoutUploader {
             return true;
         }
 
-        private void doRESTUploadTo(String baseURI, BgReading[] glucoseDataSets, Calibration[] meterRecords, Calibration[] calRecords) {
+        private void doRESTUploadTo(String baseURI, List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) {
             try {
                 int apiVersion = 0;
                 if (baseURI.endsWith("/v1/")) apiVersion = 1;
@@ -225,7 +229,7 @@ public class NightscoutUploader {
                     }
                 }
 
-                if (apiVersion >= 1 && prefs.getBoolean("cloud_cal_data", false)) {
+                if (apiVersion >= 1) {
                     for (Calibration calRecord : calRecords) {
 
                         JSONObject json = new JSONObject();
@@ -268,14 +272,12 @@ public class NightscoutUploader {
             json.put("device", "dexcom");
             json.put("date", record.timestamp);
             json.put("dateString", format.format(record.timestamp));
-            json.put("sgv", record.calculated_value);
-            json.put("direction", "FLAT"); //TODO: get these values!
+            json.put("sgv", (int)record.calculated_value);
+            json.put("direction", record.slopeName());
             json.put("type", "sgv");
-            if (prefs.getBoolean("cloud_sensor_data", false)) {
-                json.put("filtered", record.age_adjusted_raw_value); //TODO: change to actual filtered when I start storing it
-                json.put("unfiltered", record.age_adjusted_raw_value);
-                json.put("rssi", "100");
-            }
+            json.put("filtered", record.age_adjusted_raw_value); //TODO: change to actual filtered when I start storing it
+            json.put("unfiltered", record.age_adjusted_raw_value);
+            json.put("rssi", "100");
         }
 
         private void populateLegacyAPIEntry(JSONObject json, BgReading record) throws Exception {
@@ -284,8 +286,8 @@ public class NightscoutUploader {
             json.put("device", "dexcom");
             json.put("date", record.timestamp);
             json.put("dateString", format.format(record.timestamp));
-            json.put("sgv", record.calculated_value);
-            json.put("direction", "FLAT"); // TODO: Send these values!
+            json.put("sgv", (int)record.calculated_value);
+            json.put("direction", record.slopeName());
         }
 
         private void populateV1APIMeterReadingEntry(JSONObject json, Calibration record) throws Exception {
@@ -317,7 +319,7 @@ public class NightscoutUploader {
             Log.i(TAG, "devicestatusURL: " + devicestatusURL);
 
             JSONObject json = new JSONObject();
-            json.put("uploaderBattery", 100); //TODO: get the actual battery level
+            json.put("uploaderBattery", getBatteryLevel());
             String jsonString = json.toString();
 
             HttpPost post = new HttpPost(devicestatusURL);
@@ -335,8 +337,8 @@ public class NightscoutUploader {
             httpclient.execute(post, responseHandler);
         }
 
-        private boolean doMongoUpload(SharedPreferences prefs, BgReading[] glucoseDataSets,
-                                      Calibration[] meterRecords, Calibration[] calRecords) {
+        private boolean doMongoUpload(SharedPreferences prefs, List<BgReading> glucoseDataSets,
+                                      List<Calibration> meterRecords,  List<Calibration> calRecords) {
             SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss a");
             format.setTimeZone(TimeZone.getDefault());
 
@@ -356,25 +358,23 @@ public class NightscoutUploader {
 
                     // get collection
                     DBCollection dexcomData = db.getCollection(collectionName.trim());
-                    Log.i(TAG, "The number of EGV records being sent to MongoDB is " + glucoseDataSets.length);
+                    Log.i(TAG, "The number of EGV records being sent to MongoDB is " + glucoseDataSets.size());
                     for (BgReading record : glucoseDataSets) {
                         // make db object
                         BasicDBObject testData = new BasicDBObject();
                         testData.put("device", "dexcom");
                         testData.put("date", record.timestamp);
                         testData.put("dateString", format.format(record.timestamp));
-                        testData.put("sgv", record.calculated_value);
-                        testData.put("direction", "FLAT"); //TODO: get these values!
+                        testData.put("sgv", (int)record.calculated_value);
+                        testData.put("direction", record.slopeName());
                         testData.put("type", "sgv");
-                        if (prefs.getBoolean("cloud_sensor_data", false)) {
-                            testData.put("filtered", record.age_adjusted_raw_value); //TODO: change to actual filtered when I start storing it
-                            testData.put("unfiltered", record.age_adjusted_raw_value);
-                            testData.put("rssi", "100");
-                        }
+                        testData.put("filtered", record.age_adjusted_raw_value); //TODO: change to actual filtered when I start storing it
+                        testData.put("unfiltered", record.age_adjusted_raw_value);
+                        testData.put("rssi", "100");
                         dexcomData.update(testData, testData, true, false, WriteConcern.UNACKNOWLEDGED);
                     }
 
-                    Log.i(TAG, "The number of MBG records being sent to MongoDB is " + meterRecords.length);
+                    Log.i(TAG, "The number of MBG records being sent to MongoDB is " + meterRecords.size());
                     for (Calibration meterRecord : meterRecords) {
                         // make db object
                         BasicDBObject testData = new BasicDBObject();
@@ -386,27 +386,23 @@ public class NightscoutUploader {
                         dexcomData.update(testData, testData, true, false, WriteConcern.UNACKNOWLEDGED);
                     }
 
-                    // TODO: might be best to merge with the the glucose data but will require time
-                    // analysis to match record with cal set, for now this will do
-                    if (prefs.getBoolean("cloud_cal_data", false)) {
-                        for (Calibration calRecord : calRecords) {
-                            // make db object
-                            BasicDBObject testData = new BasicDBObject();
-                            testData.put("device", "dexcom");
-                            testData.put("date", calRecord.timestamp);
-                            testData.put("dateString", format.format(calRecord.timestamp));
-                            testData.put("slope", (int)(calRecord.slope * 1000));
-                            testData.put("intercept", (int) calRecord.intercept);
-                            testData.put("scale", 1000);
-                            testData.put("type", "cal");
-                            dexcomData.update(testData, testData, true, false, WriteConcern.UNACKNOWLEDGED);
-                        }
+                    for (Calibration calRecord : calRecords) {
+                        // make db object
+                        BasicDBObject testData = new BasicDBObject();
+                        testData.put("device", "dexcom");
+                        testData.put("date", calRecord.timestamp);
+                        testData.put("dateString", format.format(calRecord.timestamp));
+                        testData.put("slope", (int)(calRecord.slope * 1000));
+                        testData.put("intercept", (int) calRecord.intercept);
+                        testData.put("scale", 1000);
+                        testData.put("type", "cal");
+                        dexcomData.update(testData, testData, true, false, WriteConcern.UNACKNOWLEDGED);
                     }
 
                     // TODO: quick port from original code, revisit before release
                     DBCollection dsCollection = db.getCollection(dsCollectionName);
                     BasicDBObject devicestatus = new BasicDBObject();
-                    devicestatus.put("uploaderBattery", 100); //TODO: get actual battery level!!
+                    devicestatus.put("uploaderBattery", getBatteryLevel());
                     devicestatus.put("created_at", new Date());
                     dsCollection.insert(devicestatus, WriteConcern.UNACKNOWLEDGED);
 
@@ -420,4 +416,13 @@ public class NightscoutUploader {
             }
             return false;
         }
+    public int getBatteryLevel() {
+        Intent batteryIntent = mContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        if(level == -1 || scale == -1) {
+            return 50;
+        }
+        return (int)(((float)level / (float)scale) * 100.0f);
+    }
 }
