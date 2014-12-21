@@ -3,63 +3,67 @@
     <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
          dismiss it. -->
     <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+    <PreferenceCategory
+        android:title="Data Sync"
+        android:key="dataSync">
 
-    <PreferenceScreen
-        android:key="cloud_storage_mongo"
-        android:title="@string/pref_title_mongodb"
-        android:summary="@string/pref_summary_mongodb_enabled">
+        <PreferenceScreen
+            android:key="cloud_storage_mongo"
+            android:title="@string/pref_title_mongodb"
+            android:summary="@string/pref_summary_mongodb_enabled">
 
-    <CheckBoxPreference
-        android:key="cloud_storage_mongodb_enable"
-        android:title="Enable Nightscout Mongo DB sync"
-        android:defaultValue="false" />
-    <EditTextPreference
-        android:dependency="cloud_storage_mongodb_enable"
-        android:title="Mongo DB Uri"
-        android:key="cloud_storage_mongodb_uri"
-        android:dialogTitle="@string/pref_dialog_mongodb_uri"
-        android:dialogMessage="@string/pref_message_mongodb_uri"
-        android:defaultValue="@string/pref_default_mongodb_uri">
-    </EditTextPreference>
-    <EditTextPreference
-        android:dependency="cloud_storage_mongodb_enable"
-        android:title="@string/pref_title_mongodb_collection"
-        android:key="cloud_storage_mongodb_collection"
-        android:dialogTitle="@string/pref_dialog_mongodb_collection"
-        android:dialogMessage="@string/pref_message_mongodb_collection"
-        android:defaultValue="@string/pref_default_mongodb_collection">
-    </EditTextPreference>
-    <EditTextPreference
-        android:dependency="cloud_storage_mongodb_enable"
-        android:title="@string/pref_title_mongodb_device_status_collection"
-        android:key="cloud_storage_mongodb_device_status_collection"
-        android:dialogTitle="@string/pref_dialog_mongodb_device_status_collection"
-        android:dialogMessage="@string/pref_message_mongodb_device_status_collection"
-        android:defaultValue="@string/pref_default_mongodb_device_status_collection">
-    </EditTextPreference>
+            <CheckBoxPreference
+                android:key="cloud_storage_mongodb_enable"
+                android:title="Enable Nightscout Mongo DB sync"
+                android:defaultValue="false" />
+            <EditTextPreference
+                android:dependency="cloud_storage_mongodb_enable"
+                android:title="Mongo DB Uri"
+                android:key="cloud_storage_mongodb_uri"
+                android:dialogTitle="@string/pref_dialog_mongodb_uri"
+                android:dialogMessage="@string/pref_message_mongodb_uri"
+                android:defaultValue="@string/pref_default_mongodb_uri">
+            </EditTextPreference>
+            <EditTextPreference
+                android:dependency="cloud_storage_mongodb_enable"
+                android:title="@string/pref_title_mongodb_collection"
+                android:key="cloud_storage_mongodb_collection"
+                android:dialogTitle="@string/pref_dialog_mongodb_collection"
+                android:dialogMessage="@string/pref_message_mongodb_collection"
+                android:defaultValue="@string/pref_default_mongodb_collection">
+            </EditTextPreference>
+            <EditTextPreference
+                android:dependency="cloud_storage_mongodb_enable"
+                android:title="@string/pref_title_mongodb_device_status_collection"
+                android:key="cloud_storage_mongodb_device_status_collection"
+                android:dialogTitle="@string/pref_dialog_mongodb_device_status_collection"
+                android:dialogMessage="@string/pref_message_mongodb_device_status_collection"
+                android:defaultValue="@string/pref_default_mongodb_device_status_collection">
+            </EditTextPreference>
 
-</PreferenceScreen>
+        </PreferenceScreen>
 
-    <PreferenceScreen
-        android:key="cloud_storage_api"
-        android:title="@string/pref_title_api"
-        android:summary="@string/pref_summary_api_enabled">
-
-        <SwitchPreference
-            android:title="@string/pref_title_api_enabled"
-            android:key="cloud_storage_api_enable"
-            android:disableDependentsState="false"
+        <PreferenceScreen
+            android:key="cloud_storage_api"
+            android:title="@string/pref_title_api"
             android:summary="@string/pref_summary_api_enabled">
-        </SwitchPreference>
-        <EditTextPreference
-            android:dependency="cloud_storage_api_enable"
-            android:title="@string/pref_title_api_url"
-            android:key="cloud_storage_api_base"
-            android:dialogTitle="@string/pref_dialog_api_url"
-            android:dialogMessage="@string/pref_message_api_url"
-            android:defaultValue="@string/pref_default_api_url">
-        </EditTextPreference>
 
-    </PreferenceScreen>
+            <SwitchPreference
+                android:title="@string/pref_title_api_enabled"
+                android:key="cloud_storage_api_enable"
+                android:disableDependentsState="false"
+                android:summary="@string/pref_summary_api_enabled">
+            </SwitchPreference>
+            <EditTextPreference
+                android:dependency="cloud_storage_api_enable"
+                android:title="@string/pref_title_api_url"
+                android:key="cloud_storage_api_base"
+                android:dialogTitle="@string/pref_dialog_api_url"
+                android:dialogMessage="@string/pref_message_api_url"
+                android:defaultValue="@string/pref_default_api_url">
+            </EditTextPreference>
+
+        </PreferenceScreen>
+    </PreferenceCategory>
 
 </PreferenceScreen>
