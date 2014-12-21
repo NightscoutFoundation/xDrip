@@ -170,7 +170,7 @@ public class BgReading extends Model {
                 BgReading lastBgReading = BgReading.last();
                 if (lastBgReading != null && lastBgReading.calibration != null) {
                     if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp)) {
-                        lastBgReading.calibration.rawValueOverride(BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value));
+                        lastBgReading.calibration.rawValueOverride(BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value), context);
                     }
                 }
                 bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
@@ -179,7 +179,7 @@ public class BgReading extends Model {
                 bgReading.save();
                 bgReading.perform_calculations();
                 Notifications.notificationSetter(context);
-                BgSendQueue.addToQueue(bgReading, "create");
+                BgSendQueue.addToQueue(bgReading, "create", context);
             }
         }
         Log.w("BG GSON: ",bgReading.toS());
@@ -204,6 +204,27 @@ public class BgReading extends Model {
             arrow = "\u2191";
         } else {
             arrow = "\u21c8";
+        }
+        return arrow;
+    }
+
+    public String slopeName() {
+        double slope = (float) (calculated_value_slope * 60000);
+        String arrow = "NONE";
+        if (slope <= (-3.5)) {
+            arrow = "DOUBLE_DOWN";
+        } else if (slope <= (-2)) {
+            arrow = "SINGLE_DOWN";
+        } else if (slope <= (-1)) {
+            arrow = "FORTY_FIVE_DOWN";
+        } else if (slope <= (1)) {
+            arrow = "FLAT";
+        } else if (slope <= (2)) {
+            arrow = "FORTY_FIVE_UP";
+        } else if (slope <= (3.5)) {
+            arrow = "SINGLE_UP";
+        } else {
+            arrow = "DOUBLE_UP";
         }
         return arrow;
     }

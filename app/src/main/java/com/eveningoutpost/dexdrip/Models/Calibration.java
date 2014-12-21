@@ -197,7 +197,7 @@ public class Calibration extends Model {
 
             calculate_w_l_s();
             adjustRecentBgReadings();
-            CalibrationSendQueue.addToQueue(calibration);
+            CalibrationSendQueue.addToQueue(calibration, context);
             Gson gson = new GsonBuilder()
                     .excludeFieldsWithoutExposeAnnotation()
                     .registerTypeAdapter(Date.class, new DateTypeAdapter())
@@ -222,7 +222,7 @@ public class Calibration extends Model {
 
                 bgReading.calibration_flag = true;
                 bgReading.save();
-                BgSendQueue.addToQueue(bgReading, "update");
+                BgSendQueue.addToQueue(bgReading, "update", context);
 
                 calibration.timestamp = new Date().getTime();
                 calibration.raw_value = bgReading.raw_data;
@@ -252,7 +252,7 @@ public class Calibration extends Model {
 
                 calculate_w_l_s();
                 adjustRecentBgReadings();
-                CalibrationSendQueue.addToQueue(calibration);
+                CalibrationSendQueue.addToQueue(calibration, context);
                 Notifications.notificationSetter(context);
                 Calibration.requestCalibrationIfRangeTooNarrow();
             }
@@ -481,13 +481,13 @@ public class Calibration extends Model {
         bgReadings.get(0).find_new_curve();
     }
 
-    public void overrideCalibration(int value) {
+    public void overrideCalibration(int value, Context context) {
         bg = value;
         estimate_raw_at_time_of_calibration = raw_value;
         save();
         calculate_w_l_s();
         adjustRecentBgReadings();
-        CalibrationSendQueue.addToQueue(this);
+        CalibrationSendQueue.addToQueue(this, context);
     }
 
     public String toS() {
@@ -499,12 +499,12 @@ public class Calibration extends Model {
         return gson.toJson(this);
     }
 
-    public void rawValueOverride(double rawValue) {
+    public void rawValueOverride(double rawValue, Context context) {
         estimate_bg_at_time_of_calibration = rawValue;
         save();
         calculate_w_l_s();
         adjustRecentBgReadings();
-        CalibrationSendQueue.addToQueue(this);
+        CalibrationSendQueue.addToQueue(this, context);
     }
 
     public static void requestCalibrationIfRangeTooNarrow() {

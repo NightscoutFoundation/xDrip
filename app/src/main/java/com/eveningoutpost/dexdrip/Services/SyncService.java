@@ -5,16 +5,29 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
+import com.eveningoutpost.dexdrip.UtilityModels.MongoSendTask;
+import com.eveningoutpost.dexdrip.UtilityModels.NightscoutUploader;
 import com.eveningoutpost.dexdrip.UtilityModels.RestCalls;
 import com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SyncService extends Service {
     int mStartMode;
+    private Context mContext;
+    private Boolean enableRESTUpload;
+    private Boolean enableMongoUpload;
+    private SharedPreferences prefs;
 
     @Override
     public void onCreate() {
@@ -23,6 +36,7 @@ public class SyncService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        attemptSend();
         PendingIntent pending = PendingIntent.getService(this, 0, new Intent(this, SyncService.class), 0);
         AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pending);
@@ -33,11 +47,18 @@ public class SyncService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public void attemptSend() {
+        mContext = getApplicationContext();
+        prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        enableRESTUpload = prefs.getBoolean("cloud_storage_api_enable", false);
+        enableMongoUpload = prefs.getBoolean("cloud_storage_mongodb_enable", false);
+
+        if (enableRESTUpload || enableMongoUpload) {
+            syncToMogoDb();
+        }
         if (false) {
             for (SensorSendQueue job : SensorSendQueue.queue()) {
                 RestCalls.sendSensor(job);
@@ -58,5 +79,11 @@ public class SyncService extends Service {
                 System.currentTimeMillis() + (1000 * 30 * 5),
                 PendingIntent.getService(this, 0, new Intent(this, SyncService.class), 0)
         );
+        stopSelf();
+    }
+
+    public void syncToMogoDb() {
+        MongoSendTask task = new MongoSendTask(getApplicationContext());
+        task.execute();
     }
 }
