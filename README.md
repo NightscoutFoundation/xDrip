@@ -4,6 +4,7 @@ DexDrip
 Android Application that collects dexcom signals, allows calibrations, and (soon) uploads to a secure server
 
 ## Features that are complete
+* Nightscout Uploading
 * Basic Notifications (above or below threshold)
 * Calibration Notifications
 * Graph of BG levels (with scroll, zoom, and day preview)
