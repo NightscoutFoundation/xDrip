@@ -85,9 +85,10 @@ public class CalibrationGraph extends Activity implements NavigationDrawerFragme
 
         Calibration calibration = Calibration.last();
         List<PointValue> lineValues = new ArrayList<PointValue>();
-        lineValues.add(new PointValue((float)start_x, (float)(start_x * calibration.slope + calibration.intercept)));
-        lineValues.add(new PointValue((float)end_x, (float)(end_x * calibration.slope + calibration.intercept)));
-
+        if(calibration != null) {
+            lineValues.add(new PointValue((float) start_x, (float) (start_x * calibration.slope + calibration.intercept)));
+            lineValues.add(new PointValue((float) end_x, (float) (end_x * calibration.slope + calibration.intercept)));
+        }
         Line calibrationLine = new Line(lineValues);
         calibrationLine.setColor(Utils.COLOR_RED);
         calibrationLine.setHasLines(true);

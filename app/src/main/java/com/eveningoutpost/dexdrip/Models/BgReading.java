@@ -209,19 +209,19 @@ public class BgReading extends Model {
     }
 
     public String slopeName() {
-        double slope = (float) (calculated_value_slope * 60000);
+        double slope_by_minute = calculated_value_slope * 60000;
         String arrow = "NONE";
-        if (slope <= (-3.5)) {
+        if (slope_by_minute <= (-3.5)) {
             arrow = "DOUBLE_DOWN";
-        } else if (slope <= (-2)) {
+        } else if (slope_by_minute <= (-2)) {
             arrow = "SINGLE_DOWN";
-        } else if (slope <= (-1)) {
+        } else if (slope_by_minute <= (-1)) {
             arrow = "FORTY_FIVE_DOWN";
-        } else if (slope <= (1)) {
+        } else if (slope_by_minute <= (1)) {
             arrow = "FLAT";
-        } else if (slope <= (2)) {
+        } else if (slope_by_minute <= (2)) {
             arrow = "FORTY_FIVE_UP";
-        } else if (slope <= (3.5)) {
+        } else if (slope_by_minute <= (3.5)) {
             arrow = "SINGLE_UP";
         } else {
             arrow = "DOUBLE_UP";
@@ -276,8 +276,8 @@ public class BgReading extends Model {
                 .execute();
     }
 
-    public static List<BgReading> last24Minutes() {
-        double timestamp = (new Date().getTime()) - (60000 * 25);
+    public static List<BgReading> last30Minutes() {
+        double timestamp = (new Date().getTime()) - (60000 * 30);
         return new Select()
                 .from(BgReading.class)
                 .where("timestamp >= " + timestamp)
