@@ -57,8 +57,7 @@
                     android:layout_alignParentEnd="true"
                     android:paddingEnd="20dp"
                     android:textSize="50dp"
-                    android:paddingTop="0dp"
-                    android:text="105" />
+                    android:paddingTop="0dp" />
             </RelativeLayout>
 
             <lecho.lib.hellocharts.view.PreviewLineChartView
