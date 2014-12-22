@@ -114,7 +114,9 @@ public class Notifications {
         notificationDismiss(BgNotificationId);
     }
     public static void clearAllCalibrationNotifications() {
-        notificationDismiss(BgNotificationId);
+        notificationDismiss(calibrationNotificationId);
+        notificationDismiss(extraCalibrationNotificationId);
+        notificationDismiss(doubleCalibrationNotificationId);
     }
 
 
@@ -181,8 +183,6 @@ public class Notifications {
             notificationUpdate(title, content, intent, BgNotificationId);
         }
     }
-
-
 
     public static void calibrationRequest() {
         UserNotification userNotification = UserNotification.lastCalibrationAlert();
