@@ -37,9 +37,11 @@
             android:launchMode="singleInstance" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
+            <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
         </activity>
         <activity
             android:name="com.eveningoutpost.dexdrip.BluetoothScan"
@@ -51,6 +53,12 @@
             android:enabled="true"
             android:exported="true" >
         </service>
+        <service
+            android:name="com.eveningoutpost.dexdrip.Services.WixelUsbCollectionService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+
 
         <activity
             android:name="com.eveningoutpost.dexdrip.Tables.BgReadingTable"

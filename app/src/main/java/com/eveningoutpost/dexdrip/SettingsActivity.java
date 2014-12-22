@@ -41,6 +41,10 @@ public class SettingsActivity extends PreferenceActivity {
 
         fakeHeader = new PreferenceCategory(this);
         getPreferenceScreen().addPreference(fakeHeader);
+        addPreferencesFromResource(R.xml.pref_data_source);
+
+        fakeHeader = new PreferenceCategory(this);
+        getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_data_sync);
 
         bindPreferenceSummaryToValue(findPreference("highValue"));
@@ -51,6 +55,7 @@ public class SettingsActivity extends PreferenceActivity {
         bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_collection"));
         bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_device_status_collection"));
         bindPreferenceSummaryToValue(findPreference("cloud_storage_api_base"));
+        bindPreferenceSummaryToValue(findPreference("dex_collection_method"));
     }
 
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
