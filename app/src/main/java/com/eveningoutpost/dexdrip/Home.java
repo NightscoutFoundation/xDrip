@@ -17,6 +17,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 
 import java.text.DecimalFormat;
 import java.util.Date;
@@ -53,7 +54,8 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_bg_notification, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
-        startService(new Intent(this, DexCollectionService.class));
+
+
         setContentView(R.layout.activity_home);
 
     }
@@ -61,6 +63,10 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     @Override
     protected void onResume(){
         super.onResume();
+
+        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter();
+        collectionServiceStarter.start(getApplicationContext());
+
         _broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context ctx, Intent intent) {

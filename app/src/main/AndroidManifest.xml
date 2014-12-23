@@ -103,11 +103,6 @@
             android:label="@string/title_activity_fake_numbers" >
         </activity>
         <activity
-            android:name="com.eveningoutpost.dexdrip.LoginActivity"
-            android:label="@string/title_activity_login"
-            android:windowSoftInputMode="adjustResize|stateVisible" >
-        </activity>
-        <activity
             android:name="com.eveningoutpost.dexdrip.DoubleCalibrationActivity"
             android:label="@string/title_activity_double_calibration" >
         </activity>

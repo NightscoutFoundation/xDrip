@@ -15,6 +15,7 @@ import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Sensor;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
+import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,8 +26,9 @@ import java.util.List;
 public class WixelUsbCollectionService extends Service {
     private final static String TAG = WixelUsbCollectionService.class.getSimpleName();
     boolean stop = false;
+    private static UsbSerialDriver sDriver = null;
+    private SerialInputOutputManager mSerialIoManager;
     int mStartMode;
-
 
     @Override
     public void onCreate() {
@@ -38,6 +40,9 @@ public class WixelUsbCollectionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        PendingIntent pending = PendingIntent.getService(this, 0, new Intent(this, WixelUsbCollectionService.class), 0);
+        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pending);
 
         startUsbListener();
         return mStartMode;
@@ -55,46 +60,29 @@ public class WixelUsbCollectionService extends Service {
 
     private void startUsbListener() {
         UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
+        UsbSerialDriver sDriver = UsbSerialProber.acquire(manager);
 
-// Find the first available driver.
-        UsbSerialDriver driver = UsbSerialProber.acquire(manager);
-
-        if (driver != null) {
+        if (sDriver != null) {
             try {
-                driver.open();
+                sDriver.open();
+                sDriver.setBaudRate(9600);
+            } catch (IOException e) {
+                Log.e(TAG, "Error setting up device: " + e.getMessage(), e);
                 try {
-                    driver.setBaudRate(9600);
-                    byte buffer[] = new byte[1000];
+                    sDriver.close();
+                } catch (IOException e2) {
 
-                    while(!stop) {
-                        try
-                        {
-                            int size = driver.read(buffer, 30000);
-                            if (size > 0) {
-                                buffer[size] = 0;
-                                setSerialDataToTransmitterRawData(buffer, size);
-                            }
-                        }
-                        catch (IOException e)
-                        {
-                            stop = true;
-                        }
-                    }
-                    int numBytesRead = driver.read(buffer, 1000);
-                    Log.d(TAG, "Read " + numBytesRead + " bytes.");
-                } catch (IOException e) {
-                    // Deal with error.
-                } finally {
-                    driver.close();
+                    Log.e(TAG, "Cant even close device, cool!");
                 }
-            } catch (IOException e){
-            //TODO: Deal with an error opening here!
+                sDriver = null;
+                return;
             }
         }
+        onDeviceStateChange();
     }
 
+//TODO: refactor this as it now exists in two places...
     public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
-
         TransmitterData transmitterData = TransmitterData.create(buffer, len);
         if (transmitterData != null) {
             Sensor sensor = Sensor.currentSensor();
@@ -107,4 +95,33 @@ public class WixelUsbCollectionService extends Service {
             }
         }
     }
+
+    private void onDeviceStateChange() {
+        stopIoManager();
+        startIoManager();
+    }
+
+    private void stopIoManager() {
+        if (mSerialIoManager != null) {
+            mSerialIoManager.stop();
+            mSerialIoManager = null;
+        }
+    }
+
+    private void startIoManager() {
+        if (sDriver != null) {
+            mSerialIoManager = new SerialInputOutputManager(sDriver, mListener);
+            mSerialIoManager.run();
+        }
+    }
+
+    private final SerialInputOutputManager.Listener mListener =
+            new SerialInputOutputManager.Listener() {
+                @Override
+                public void onRunError(Exception e) { Log.d(TAG, "ERROR, Listener stopped"); }
+
+                @Override
+                public void onNewData(final byte[] data) { setSerialDataToTransmitterRawData(data, data.length); }
+            };
+
 }
