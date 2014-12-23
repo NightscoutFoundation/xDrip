@@ -10,6 +10,9 @@ import android.hardware.usb.UsbManager;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.TransmitterData;
+import com.eveningoutpost.dexdrip.Sensor;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 
@@ -21,6 +24,7 @@ import java.util.List;
  */
 public class WixelUsbCollectionService extends Service {
     private final static String TAG = WixelUsbCollectionService.class.getSimpleName();
+    boolean stop = false;
     int mStartMode;
 
 
@@ -51,31 +55,56 @@ public class WixelUsbCollectionService extends Service {
 
     private void startUsbListener() {
         UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
-        List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
-        if (availableDrivers.isEmpty()) {
-            return;
-        }
 
-// Open a connection to the first available driver.
-        UsbSerialDriver driver = availableDrivers.get(0);
-        UsbDeviceConnection connection = manager.openDevice(driver.getDevice());
-        if (connection == null) {
-            // You probably need to call UsbManager.requestPermission(driver.getDevice(), ..)
-            return;
-        }
+// Find the first available driver.
+        UsbSerialDriver driver = UsbSerialProber.acquire(manager);
 
-// Read some data! Most have just one port (port 0).
-        UsbSerialPort port = driver.getPort(0);
-        port.open(connection);
-        try {
-            port.setBaudRate(115200);
-            byte buffer[] = new byte[16];
-            int numBytesRead = port.read(buffer, 1000);
-            Log.d(TAG, "Read " + numBytesRead + " bytes.");
-        } catch (IOException e) {
-            // Deal with error.
-        } finally {
-            port.close();
+        if (driver != null) {
+            try {
+                driver.open();
+                try {
+                    driver.setBaudRate(9600);
+                    byte buffer[] = new byte[1000];
+
+                    while(!stop) {
+                        try
+                        {
+                            int size = driver.read(buffer, 30000);
+                            if (size > 0) {
+                                buffer[size] = 0;
+                                setSerialDataToTransmitterRawData(buffer, size);
+                            }
+                        }
+                        catch (IOException e)
+                        {
+                            stop = true;
+                        }
+                    }
+                    int numBytesRead = driver.read(buffer, 1000);
+                    Log.d(TAG, "Read " + numBytesRead + " bytes.");
+                } catch (IOException e) {
+                    // Deal with error.
+                } finally {
+                    driver.close();
+                }
+            } catch (IOException e){
+            //TODO: Deal with an error opening here!
+            }
+        }
+    }
+
+    public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
+
+        TransmitterData transmitterData = TransmitterData.create(buffer, len);
+        if (transmitterData != null) {
+            Sensor sensor = Sensor.currentSensor();
+            if (sensor != null) {
+                BgReading bgReading = BgReading.create(transmitterData.raw_data, this);
+                sensor.latest_battery_level = transmitterData.sensor_battery_level;
+                sensor.save();
+            } else {
+                Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
+            }
         }
     }
 }

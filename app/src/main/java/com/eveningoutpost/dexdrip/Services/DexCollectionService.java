@@ -181,10 +181,7 @@ public class DexCollectionService extends Service {
                                          BluetoothGattCharacteristic characteristic,
                                          int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Log.w(TAG, "Aaaaaaaaaa something went right!");
                 broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
-            } else {
-                Log.w(TAG, "Aaaaaaaaaa something went wrong!");
             }
         }
 
@@ -196,21 +193,14 @@ public class DexCollectionService extends Service {
 };
 
     private void broadcastUpdate(final String action) {
-        Log.w(TAG, "broadcastUpdate - string"+action);
     }
 
     private void broadcastUpdate(final String action,
                                  final BluetoothGattCharacteristic characteristic) {
-        Log.w(TAG, "broadcastUpdate - characteristic");
-
         final byte[] data = characteristic.getValue();
-        Log.i(TAG, "data - "+characteristic.getValue());
 
         if (data != null && data.length > 0) {
             setSerialDataToTransmitterRawData(data, data.length);
-            Log.w(TAG, "################   DexDrip Data Received!");
-        } else {
-            Log.w(TAG, "################   DexDrip Data empty!");
         }
     }
 
