@@ -212,19 +212,19 @@ public class BgReading extends Model {
         double slope_by_minute = calculated_value_slope * 60000;
         String arrow = "NONE";
         if (slope_by_minute <= (-3.5)) {
-            arrow = "DOUBLE_DOWN";
+            arrow = "DoubleDown";
         } else if (slope_by_minute <= (-2)) {
-            arrow = "SINGLE_DOWN";
+            arrow = "SingleDown";
         } else if (slope_by_minute <= (-1)) {
-            arrow = "FORTY_FIVE_DOWN";
+            arrow = "FourtyFiveDown";
         } else if (slope_by_minute <= (1)) {
-            arrow = "FLAT";
+            arrow = "Flat";
         } else if (slope_by_minute <= (2)) {
-            arrow = "FORTY_FIVE_UP";
+            arrow = "FourtyFiveUp";
         } else if (slope_by_minute <= (3.5)) {
-            arrow = "SINGLE_UP";
+            arrow = "SingleUp";
         } else {
-            arrow = "DOUBLE_UP";
+            arrow = "DoubleUp";
         }
         return arrow;
     }
