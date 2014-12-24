@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+            android:title="Data Source"
+            android:key="dataSource">
+
+        <ListPreference
+            android:key="dex_collection_method"
+            android:title="Dexcom Data Collection Method"
+            android:summary="How are you going to receive data from your Dexcom?"
+            android:entries="@array/DexCollectionMethods"
+            android:entryValues="@array/DexCollectionMethodValues"
+            android:defaultValue="BluetoothWixel"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>
