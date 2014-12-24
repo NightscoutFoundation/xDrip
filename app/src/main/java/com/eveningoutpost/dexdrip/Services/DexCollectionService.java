@@ -194,18 +194,15 @@ public class DexCollectionService extends Service {
 };
 
     private void broadcastUpdate(final String action) {
-        Log.w(TAG, "broadcastUpdate - string"+action);
     }
 
     private void broadcastUpdate(final String action,
                                  final BluetoothGattCharacteristic characteristic) {
 
         final byte[] data = characteristic.getValue();
-        Log.i(TAG, "data - "+characteristic.getValue());
 
         if (data != null && data.length > 0) {
             setSerialDataToTransmitterRawData(data, data.length);
-            Log.d(TAG, "DexDrip Data Received!");
         }
     }
 
