@@ -141,6 +141,7 @@ public class DexCollectionService extends Service {
                 System.currentTimeMillis() + (1000 * 60 * 3),
                 PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0)
         );
+        close();
         stopSelf();
     }
 
@@ -181,10 +182,7 @@ public class DexCollectionService extends Service {
                                          BluetoothGattCharacteristic characteristic,
                                          int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Log.w(TAG, "Aaaaaaaaaa something went right!");
                 broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
-            } else {
-                Log.w(TAG, "Aaaaaaaaaa something went wrong!");
             }
         }
 
@@ -201,16 +199,13 @@ public class DexCollectionService extends Service {
 
     private void broadcastUpdate(final String action,
                                  final BluetoothGattCharacteristic characteristic) {
-        Log.w(TAG, "broadcastUpdate - characteristic");
 
         final byte[] data = characteristic.getValue();
         Log.i(TAG, "data - "+characteristic.getValue());
 
         if (data != null && data.length > 0) {
             setSerialDataToTransmitterRawData(data, data.length);
-            Log.w(TAG, "################   DexDrip Data Received!");
-        } else {
-            Log.w(TAG, "################   DexDrip Data empty!");
+            Log.d(TAG, "DexDrip Data Received!");
         }
     }
 
@@ -287,11 +282,13 @@ public class DexCollectionService extends Service {
     }
 
     public void close() {
+        disconnect();
         if (mBluetoothGatt == null) {
             return;
         }
         mBluetoothGatt.close();
         mBluetoothGatt = null;
+        mConnectionState = STATE_DISCONNECTED;
     }
 
     public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
