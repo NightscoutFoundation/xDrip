@@ -29,9 +29,13 @@ public class CollectionServiceStarter {
 
 
     private void startBtWixelService() {
-        mContext.startService(new Intent(mContext, DexCollectionService.class));
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            mContext.startService(new Intent(mContext, DexCollectionService.class));
+    	}
     }
     private void stopBtWixelService() {
-        mContext.stopService(new Intent(mContext, DexCollectionService.class));
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            mContext.stopService(new Intent(mContext, DexCollectionService.class));
+        }
     }
 }

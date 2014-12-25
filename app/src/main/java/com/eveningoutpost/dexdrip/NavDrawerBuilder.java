@@ -44,7 +44,9 @@ public class NavDrawerBuilder {
             }
             options.add("Stop Sensor");
         } else { options.add("Start Sensor"); }
-        options.add("Scan for BT");
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            options.add("Scan for BT");
+        }
         options.add("Settings");
 //        options.add("Fake Numbers");
 //        options.add("Add Double Calibration");
@@ -74,7 +76,9 @@ public class NavDrawerBuilder {
             }
             options.add(new Intent(context, StopSensor.class));
         } else { options.add(new Intent(context, StartNewSensor.class)); }
-        options.add(new Intent(context, BluetoothScan.class));
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            options.add(new Intent(context, BluetoothScan.class));
+        }
         options.add(new Intent(context, SettingsActivity.class));
 //        options.add(new Intent(context, FakeNumbers.class));
 //        options.add(new Intent(context, DoubleCalibrationActivity.class));
