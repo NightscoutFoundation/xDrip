@@ -82,7 +82,6 @@ public class DexCollectionService extends Service {
         foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), this);
         foregroundServiceStarter.start();
         mContext = getApplicationContext();
-
         listenForChangeInSettings();
         Log.w(TAG, "STARTING SERVICE");
 
@@ -108,6 +107,8 @@ public class DexCollectionService extends Service {
                 System.currentTimeMillis() + (1000 * 60),
                 PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0)
         );
+        close();
+        foregroundServiceStarter.stop();
     }
 
     //TODO: Move this somewhere more reusable
@@ -176,9 +177,6 @@ public class DexCollectionService extends Service {
                 System.currentTimeMillis() + (1000 * 60 * 3),
                 PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0)
         );
-        close();
-        foregroundServiceStarter.stop();
-        stopSelf();
     }
 
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
