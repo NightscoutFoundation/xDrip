@@ -52,7 +52,7 @@ public class StartNewSensor extends Activity implements NavigationDrawerFragment
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         NavDrawerBuilder navDrawerBuilder = new NavDrawerBuilder();
-        List<String> menu_option_list = navDrawerBuilder.nav_drawer_options();
+        List<String> menu_option_list = navDrawerBuilder.nav_drawer_options(getApplicationContext());
         int menu_position = menu_option_list.indexOf(menu_name);
 
         if (position != menu_position) {

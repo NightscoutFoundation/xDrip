@@ -15,16 +15,25 @@ import com.eveningoutpost.dexdrip.Services.WixelReader;
 public class CollectionServiceStarter {
     private Context mContext;
 
+    public static boolean isBTWixel(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
+        if(collection_method.compareTo("BluetoothWixel") == 0) {
+            return true;
+        }
+        return false;
+    }
+    
     public void start(Context context) {
         mContext = context;
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
 
-        if(collection_method.compareTo("BluetoothWixel") == 0) {
+        if(isBTWixel(context)) {
             stopWifWixelThread();
             startBtWixelService();
-        } else  if(collection_method.compareTo("WifiWixel") == 0) {
+        } else {
             stopBtWixelService();
             startWifWixelThread();
         }
