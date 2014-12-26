@@ -28,6 +28,8 @@ proguard/
 #local
 /local.properties
 /.idea/*
+.idea/vcs.xml
+*.idea*
 *manifest-merger-debug-report.txt
 *manifest-merger-release-report.txt
 *.ds_store

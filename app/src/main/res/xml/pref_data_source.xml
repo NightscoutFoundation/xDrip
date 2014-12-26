@@ -12,6 +12,11 @@
             android:entries="@array/DexCollectionMethods"
             android:entryValues="@array/DexCollectionMethodValues"
             android:defaultValue="BluetoothWixel"/>
+        <CheckBoxPreference
+            android:key="run_service_in_foreground"
+            android:title="Run Collection Service in foreground"
+            android:summary="Running in foreground prevents android from killing the service to free up memory but it creates an annoying notification."
+            android:defaultValue="false" />
     </PreferenceCategory>
 
 </PreferenceScreen>

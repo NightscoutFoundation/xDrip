@@ -29,14 +29,18 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 
@@ -49,10 +53,13 @@ public class DexCollectionService extends Service {
     private String mDeviceAddress;
     private boolean is_connected = false;
 
+    public final DexCollectionService dexCollectionService = this;
+
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
+    private ForegroundServiceStarter foregroundServiceStarter;
     private int mConnectionState = STATE_DISCONNECTED;
     int mStartMode;
 
@@ -72,7 +79,13 @@ public class DexCollectionService extends Service {
 
     @Override
     public void onCreate() {
+        foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), this);
+        foregroundServiceStarter.start();
+        mContext = getApplicationContext();
+
+        listenForChangeInSettings();
         Log.w(TAG, "STARTING SERVICE");
+
     }
 
     @Override
@@ -84,7 +97,7 @@ public class DexCollectionService extends Service {
         attemptConnection();
         this.startService(new Intent(this, SyncService.class));
 
-        return mStartMode;
+        return START_STICKY;
     }
 
     @Override
@@ -95,6 +108,28 @@ public class DexCollectionService extends Service {
                 System.currentTimeMillis() + (1000 * 60),
                 PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0)
         );
+    }
+
+    //TODO: Move this somewhere more reusable
+    public void listenForChangeInSettings() {
+        SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                if(key.compareTo("run_service_in_foreground") == 0) {
+                    if (prefs.getBoolean("run_service_in_foreground", false)) {
+                        foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), dexCollectionService);
+                        foregroundServiceStarter.start();
+                    } else {
+                        dexCollectionService.stopForeground(true);
+                    }
+                }
+                if(key.compareTo("dex_collection_method") == 0) {
+                    CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter();
+                    collectionServiceStarter.start(getApplicationContext());
+                }
+            }
+        };
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        prefs.registerOnSharedPreferenceChangeListener(listener);
     }
 
     public void attemptConnection() {
@@ -142,6 +177,7 @@ public class DexCollectionService extends Service {
                 PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0)
         );
         close();
+        foregroundServiceStarter.stop();
         stopSelf();
     }
 
