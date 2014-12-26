@@ -11,6 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -64,7 +66,12 @@ public class WixelReader  extends Thread {
         sStarted = false;
     }
     
-    public static boolean IsConfigured() {
+    public static boolean IsConfigured(Context ctx) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        String recieversIpAddresses = prefs.getString("wifi_recievers_addresses", "");
+        if(recieversIpAddresses == null || recieversIpAddresses.equals("") ) {
+            return false;
+        }
         return true;
     }
 
@@ -266,7 +273,12 @@ public class WixelReader  extends Thread {
     	try {
 	        while (!mStop && !interrupted()) {
 	        	// try to read one object...
-	        	TransmitterRawData[] LastReadingArr = Read("37.142.132.223:50005,37.142.132.223:50010" ,1);
+                TransmitterRawData[] LastReadingArr = null;
+                if(WixelReader.IsConfigured(mContext)) {
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+                    String recieversIpAddresses = prefs.getString("wifi_recievers_addresses", "");
+	        		LastReadingArr = Read(recieversIpAddresses ,1);
+                }
 	        	if (LastReadingArr != null  && LastReadingArr.length  > 0) {
 	        		// Last in the array is the most updated reading we have.
 	        		TransmitterRawData LastReading = LastReadingArr[LastReadingArr.length -1];

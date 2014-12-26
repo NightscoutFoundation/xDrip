@@ -15,11 +15,13 @@
     android:layout_width="87dp"
     android:layout_height="wrap_content"
     android:textSize="12dp"/>
-<TextView android:id="@+id/raw_data_slope"
+
+    <TextView android:id="@+id/raw_data_slope"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textSize="12dp"/>
-<TextView android:id="@+id/raw_data_timestamp"
+
+    <TextView android:id="@+id/raw_data_timestamp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textSize="12dp"/>

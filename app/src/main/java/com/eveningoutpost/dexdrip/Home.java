@@ -54,6 +54,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_bg_notification, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_wifi, false);
 
 
         setContentView(R.layout.activity_home);
@@ -157,7 +158,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         final TextView currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
         final TextView notificationText = (TextView)findViewById(R.id.notices);
         notificationText.setText("");
-        if(ActiveBluetoothDevice.first() != null || WixelReader.IsConfigured()) {
+        if(ActiveBluetoothDevice.first() != null || WixelReader.IsConfigured(getApplicationContext())) {
             if (Sensor.isActive() && (Sensor.currentSensor().started_at + (60000 * 60 * 2)) < new Date().getTime()) {
                 if (BgReading.latest(2).size() > 1) {
                     List<Calibration> calibrations = Calibration.latest(2);

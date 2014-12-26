@@ -47,6 +47,10 @@ public class SettingsActivity extends PreferenceActivity {
         getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_data_sync);
 
+        fakeHeader = new PreferenceCategory(this);
+        getPreferenceScreen().addPreference(fakeHeader);
+        addPreferencesFromResource(R.xml.pref_wifi);
+        
         bindPreferenceSummaryToValue(findPreference("highValue"));
         bindPreferenceSummaryToValue(findPreference("lowValue"));
         bindPreferenceSummaryToValue(findPreference("bg_snooze"));
@@ -56,6 +60,7 @@ public class SettingsActivity extends PreferenceActivity {
         bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_device_status_collection"));
         bindPreferenceSummaryToValue(findPreference("cloud_storage_api_base"));
         bindPreferenceSummaryToValue(findPreference("dex_collection_method"));
+        bindPreferenceSummaryToValue(findPreference("wifi_recievers_addresses"));
     }
 
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
