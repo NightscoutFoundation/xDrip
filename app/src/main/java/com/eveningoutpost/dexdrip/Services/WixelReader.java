@@ -64,6 +64,9 @@ public class WixelReader  extends Thread {
             Log.e(TAG, "cought InterruptedException, could not wait for the wixel thread to exit");
         }
         sStarted = false;
+        // A stopped thread can not start again, so we need to kill it and will start a new one
+        // on demand
+        singleton = null;
     }
     
     public static boolean IsConfigured(Context ctx) {
