@@ -75,10 +75,11 @@ public class WixelReader  extends Thread {
         return true;
     }
 
-    public static boolean allmostEquals( TransmitterRawData e1, TransmitterRawData e2) 
+    public static boolean almostEquals( TransmitterRawData e1, TransmitterRawData e2) 
     {
         // relative time is in ms
-        if (Math.abs(e1.RelativeTime - e2.RelativeTime) < 5000 ) {
+        if ((Math.abs(e1.RelativeTime - e2.RelativeTime) < 120 * 1000 ) &&
+                (e1.TransmissionId == e2.TransmissionId)) {
             return true;
         }
         return false;
@@ -100,7 +101,7 @@ public class WixelReader  extends Thread {
                 merged.addAll(list1);
                 break;
             }
-            if (allmostEquals(list1.get(0), list2.get(0))) {
+            if (almostEquals(list1.get(0), list2.get(0))) {
                 list2.remove(0);
                 merged.add(list1.remove(0));
                 continue;
