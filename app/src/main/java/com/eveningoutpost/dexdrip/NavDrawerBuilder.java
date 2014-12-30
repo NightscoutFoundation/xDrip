@@ -7,6 +7,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Tables.BgReadingTable;
 import com.eveningoutpost.dexdrip.Tables.CalibrationDataTable;
+import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,7 +23,7 @@ public class NavDrawerBuilder {
     public final boolean is_active_sensor = Sensor.isActive();
     public final double time_now = new Date().getTime();
 
-    public final List<String> nav_drawer_options() {
+    public final List<String> nav_drawer_options(Context context) {
         List<String> options = new ArrayList<String>();
         options.add("DexDrip");
         if(is_active_sensor) {
@@ -44,7 +45,11 @@ public class NavDrawerBuilder {
             }
             options.add("Stop Sensor");
         } else { options.add("Start Sensor"); }
-        options.add("Scan for BT");
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            if(CollectionServiceStarter.isBTWixel(context)) {
+                options.add("Scan for BT");
+            }
+        }
         options.add("Settings");
 //        options.add("Fake Numbers");
 //        options.add("Add Double Calibration");
@@ -74,7 +79,11 @@ public class NavDrawerBuilder {
             }
             options.add(new Intent(context, StopSensor.class));
         } else { options.add(new Intent(context, StartNewSensor.class)); }
-        options.add(new Intent(context, BluetoothScan.class));
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            if(CollectionServiceStarter.isBTWixel(context)) {
+                options.add(new Intent(context, BluetoothScan.class));
+            }
+        }
         options.add(new Intent(context, SettingsActivity.class));
 //        options.add(new Intent(context, FakeNumbers.class));
 //        options.add(new Intent(context, DoubleCalibrationActivity.class));

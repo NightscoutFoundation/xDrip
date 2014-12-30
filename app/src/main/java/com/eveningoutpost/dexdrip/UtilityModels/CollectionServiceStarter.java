@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
+import com.eveningoutpost.dexdrip.Services.WixelReader;
 
 /**
  * Created by stephenblack on 12/22/14.
@@ -14,24 +15,50 @@ import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 public class CollectionServiceStarter {
     private Context mContext;
 
+    public static boolean isBTWixel(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
+        if(collection_method.compareTo("BluetoothWixel") == 0) {
+            return true;
+        }
+        return false;
+    }
+    
     public void start(Context context) {
         mContext = context;
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
 
-        if(collection_method.compareTo("BluetoothWixel") == 0) {
+        if(isBTWixel(context)) {
+            stopWifWixelThread();
             startBtWixelService();
+        } else {
+            stopBtWixelService();
+            startWifWixelThread();
         }
 
-            Log.d("CollectionServiceStarter ", collection_method);
+        Log.d("CollectionServiceStarter ", collection_method);
     }
 
 
     private void startBtWixelService() {
-        mContext.startService(new Intent(mContext, DexCollectionService.class));
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            mContext.startService(new Intent(mContext, DexCollectionService.class));
+    	}
     }
     private void stopBtWixelService() {
-        mContext.stopService(new Intent(mContext, DexCollectionService.class));
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            mContext.stopService(new Intent(mContext, DexCollectionService.class));
+        }
     }
+
+    private void startWifWixelThread() {
+        WixelReader.sStart(mContext);
+    }
+
+    private void stopWifWixelThread() {
+        WixelReader.sStop();
+    }
+
 }

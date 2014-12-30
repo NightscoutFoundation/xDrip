@@ -2,9 +2,11 @@
 <resources>
     <string-array name="DexCollectionMethods">
         <item>Bluetooth Wixel</item>
+        <item>Wifi Wixel</item>
     </string-array>
 
     <string-array name="DexCollectionMethodValues">
         <item>BluetoothWixel</item>
+        <item>WifiWixel</item>
     </string-array>
 </resources>

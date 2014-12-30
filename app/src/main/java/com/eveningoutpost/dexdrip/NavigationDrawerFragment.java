@@ -78,7 +78,7 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
         navDrawerBuilder = new NavDrawerBuilder();
-        List<String> menu_option_list = navDrawerBuilder.nav_drawer_options();
+        List<String> menu_option_list = navDrawerBuilder.nav_drawer_options(getActivity());
         String[] menu_options = menu_option_list.toArray(new String[menu_option_list.size()]);
 
         mDrawerListView.setAdapter(new ArrayAdapter<String>(
@@ -97,7 +97,7 @@ public class NavigationDrawerFragment extends Fragment {
     public void setUp(int fragmentId, DrawerLayout drawerLayout, String current_activity, Context context) {
         navDrawerBuilder = new NavDrawerBuilder();
         menu_name = current_activity;
-        menu_option_list = navDrawerBuilder.nav_drawer_options();
+        menu_option_list = navDrawerBuilder.nav_drawer_options(context);
         String[] menu_options = menu_option_list.toArray(new String[menu_option_list.size()]);
         menu_position = menu_option_list.indexOf(menu_name);
        intent_list = navDrawerBuilder.nav_drawer_intents(context);

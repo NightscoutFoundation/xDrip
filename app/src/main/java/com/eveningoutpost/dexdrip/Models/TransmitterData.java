@@ -48,4 +48,14 @@ public class TransmitterData extends Model {
         transmitterData.save();
         return transmitterData;
     }
+
+    public static TransmitterData create(int raw_data ,int sensor_battery_level, long timestamp) {
+        TransmitterData transmitterData = new TransmitterData();
+        transmitterData.sensor_battery_level = sensor_battery_level;
+        transmitterData.raw_data = raw_data ;
+        transmitterData.timestamp = timestamp;
+        transmitterData.uuid = UUID.randomUUID().toString();
+        transmitterData.save();
+        return transmitterData;
+    }
 }

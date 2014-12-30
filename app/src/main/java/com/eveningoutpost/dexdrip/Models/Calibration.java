@@ -40,8 +40,6 @@ public class Calibration extends Model {
     @Column(name = "sensor", index = true)
     public Sensor sensor;
 
-    @Column(name = "bgReading")
-    public BgReading bgReading;
 
     @Expose
     @Column(name = "bg")
@@ -163,14 +161,14 @@ public class Calibration extends Model {
         highBgReading.calibration_flag = true;
         highBgReading.calibration = higherCalibration;
         highBgReading.save();
-        higherCalibration.bgReading = highBgReading;
+        higherCalibration.raw_timestamp = highBgReading.timestamp;
         higherCalibration.save();
 
         lowBgReading.calculated_value = lower_bg;
         lowBgReading.calibration_flag = true;
         lowBgReading.calibration = lowerCalibration;
         lowBgReading.save();
-        lowerCalibration.bgReading = lowBgReading;
+        lowerCalibration.raw_timestamp = lowBgReading.timestamp;
         lowerCalibration.save();
 
         highBgReading.find_new_curve();
@@ -183,11 +181,9 @@ public class Calibration extends Model {
         calibrations.add(higherCalibration);
 
         for(Calibration calibration : calibrations) {
-            BgReading bgReading = calibration.bgReading;
             calibration.timestamp = new Date().getTime();
             calibration.sensor_uuid = sensor.uuid;
             calibration.slope_confidence = .5;
-            calibration.raw_timestamp = bgReading.timestamp;
             calibration.distance_from_estimate = 0;
             calibration.sensor_confidence = ((-0.0018 * calibration.bg * calibration.bg) + (0.6657 * calibration.bg) + 36.7505) / 100;
 
