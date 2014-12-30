@@ -4,6 +4,7 @@
          dismiss it. -->
     <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
     <PreferenceCategory
+        android:dependency="I_understand"
         android:title="Data Sync"
         android:key="dataSync">
 
