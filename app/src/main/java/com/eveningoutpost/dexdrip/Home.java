@@ -186,7 +186,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 if((android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
                     notificationText.setText("First pair with your BT device");
                 } else {
-                    notificationText.setText("Your device has to be android 4.3 and up to support wifi wixel");
+                    notificationText.setText("Your device has to be android 4.3 and up to support Bluetooth wixel");
                 }
             } else {
                 notificationText.setText("First configure your wifi wixel reader ip addresses");
