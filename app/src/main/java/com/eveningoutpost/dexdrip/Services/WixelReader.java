@@ -163,7 +163,7 @@ public class WixelReader  extends Thread {
         } catch(Exception e) {
             // We had some error, need to move on...
             System.out.println("read from host failed cought expation" + hostAndIp);
-            Log.e(TAG, "read from host failed" + hostAndIp);
+            Log.e(TAG, "read from host failed " + hostAndIp);
 
             return null;
             
@@ -197,10 +197,10 @@ public class WixelReader  extends Thread {
         }
         List<TransmitterRawData> mergedData= MergeLists(allTransmitterRawData);
         
+        int retSize = Math.min(numberOfRecords, mergedData.size());
+        TransmitterRawData []trd_array = new TransmitterRawData[retSize];
+        mergedData.subList(mergedData.size() - retSize, mergedData.size()).toArray(trd_array);
         
-        TransmitterRawData []trd_array;
-        trd_array = new TransmitterRawData[mergedData.size()];
-        mergedData.toArray(trd_array);
         System.out.println("Final Results========================================================================");
         for (int i= 0; i < trd_array.length; i++) {
  //           System.out.println( trd_array[i].toTableString());
@@ -252,8 +252,14 @@ public class WixelReader  extends Thread {
 
                 //System.out.println( "data size " +data.length() + " data = "+ data);
                 TransmitterRawData trd = gson.fromJson(data, TransmitterRawData.class);
+                trd.CaptureDateTime = System.currentTimeMillis() - trd.RelativeTime;
+
                 trd_list.add(0,trd);
-                //System.out.println( trd.toTableString());
+                //  System.out.println( trd.toTableString());
+                if(trd_list.size() == numberOfRecords) {
+                	// We have the data we want, let's get out
+                	break;
+                }
             }
 
 
@@ -302,8 +308,9 @@ public class WixelReader  extends Thread {
         }
     }
     
-
-    public void runx()
+    // this function is only a test function. It is used to set many points fast in order to allow
+    // faster testing without real data.
+    public void runFake()
     {
         // let's start by faking numbers....
         int i = 0;
