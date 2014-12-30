@@ -1,5 +1,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
+        android:dependency="I_understand"
         android:title="Acceptable BG range"
         android:key="bgRange">
         <EditTextPreference

@@ -2,6 +2,8 @@ package com.eveningoutpost.dexdrip;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -25,6 +27,13 @@ public class NavDrawerBuilder {
 
     public final List<String> nav_drawer_options(Context context) {
         List<String> options = new ArrayList<String>();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean IUnderstand = prefs.getBoolean("I_understand", false);
+        if(IUnderstand == false) {
+            options.add("Settings");
+            return options;
+        }
+
         options.add("DexDrip");
         if(is_active_sensor) {
             options.add("Calibration Graph");
@@ -58,6 +67,13 @@ public class NavDrawerBuilder {
 
     public final List<Intent> nav_drawer_intents(Context context) {
         List<Intent> options = new ArrayList<Intent>();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean IUnderstand = prefs.getBoolean("I_understand", false);
+        if(IUnderstand == false) {
+            options.add(new Intent(context, SettingsActivity.class));
+            return options;
+        }
+
         options.add(new Intent(context, Home.class));
         if(is_active_sensor) {
             options.add(new Intent(context, CalibrationGraph.class));
