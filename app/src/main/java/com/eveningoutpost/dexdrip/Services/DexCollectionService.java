@@ -84,7 +84,6 @@ public class DexCollectionService extends Service {
         mContext = getApplicationContext();
         listenForChangeInSettings();
         Log.w(TAG, "STARTING SERVICE");
-
     }
 
     @Override
@@ -103,7 +102,7 @@ public class DexCollectionService extends Service {
     public void onDestroy() {
         AlarmManager alarm = (AlarmManager)getSystemService(ALARM_SERVICE);
         alarm.set(
-                alarm.ELAPSED_REALTIME_WAKEUP,
+                alarm.RTC_WAKEUP,
                 System.currentTimeMillis() + (1000 * 60),
                 PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0)
         );
@@ -173,8 +172,8 @@ public class DexCollectionService extends Service {
     public void setRetryTimer() {
         AlarmManager alarm = (AlarmManager)getSystemService(ALARM_SERVICE);
         alarm.set(
-                alarm.ELAPSED_REALTIME_WAKEUP,
-                System.currentTimeMillis() + (1000 * 60 * 3),
+                alarm.RTC_WAKEUP,
+                System.currentTimeMillis() + (1000 * 60 * 1),
                 PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0)
         );
     }
@@ -191,7 +190,13 @@ public class DexCollectionService extends Service {
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 mConnectionState = STATE_DISCONNECTED;
                 Log.i(TAG, "Disconnected from GATT server.");
-                setRetryTimer();
+                is_connected = connect(mDeviceAddress);
+                if (is_connected) {
+                    Log.i(TAG, "connected to device");
+                } else {
+                    Log.i(TAG, "Unable to connect to device");
+                    setRetryTimer();
+                }
             }
         }
 

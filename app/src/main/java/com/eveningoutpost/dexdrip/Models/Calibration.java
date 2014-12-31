@@ -354,23 +354,18 @@ public class Calibration extends Model {
                 calibration.slope = 0;
                 calibration.save();
             } else {
-                Log.w(TAG, "CALIBRATIONS USED: " + calibrations.size());
                 for (Calibration calibration : calibrations) {
-                    Log.w(TAG, "Calibration estimate: " + calibration.estimate_raw_at_time_of_calibration);
-
-                    Log.w(TAG, "Calibration bg: " + calibration.bg);
                     w = calibration.calculateWeight();
-                    Log.w(TAG, "=====CALIBRATIONS WEIGHT: " + ""+w);
                     l += (w);
                     m += (w * calibration.estimate_raw_at_time_of_calibration);
                     n += (w * calibration.estimate_raw_at_time_of_calibration * calibration.estimate_raw_at_time_of_calibration);
                     p += (w * calibration.bg);
                     q += (w * calibration.estimate_raw_at_time_of_calibration * calibration.bg);
                 }
+
                 Calibration last_calibration = Calibration.last();
                 w = (last_calibration.calculateWeight() * (calibrations.size() * 0.15));
                 l += (w);
-                Log.w(TAG, "=====CALIBRATIONS WEIGHT: " + ""+w);
                 m += (w * last_calibration.estimate_raw_at_time_of_calibration);
                 n += (w * last_calibration.estimate_raw_at_time_of_calibration * last_calibration.estimate_raw_at_time_of_calibration);
                 p += (w * last_calibration.bg);
@@ -380,20 +375,20 @@ public class Calibration extends Model {
                 Calibration calibration = Calibration.last();
                 calibration.intercept = ((n * p) - (m * q)) / d;
                 calibration.slope = ((l * q) - (m * p)) / d;
-                if (calibration.slope < 0.5) {
+                if ((calibrations.size() == 2 && calibration.slope < 0.88) || (calibration.slope < 0.5)) {
                     calibration.slope = calibration.slopeOOBHandler();
                     if (calibration.slope == 0) { calibration.slope = 0.5; }
                     calibration.intercept = calibration.bg - (calibration.estimate_raw_at_time_of_calibration * calibration.slope);
                     CalibrationRequest.createOffset(calibration.bg, 35);
                 }
-                if (calibration.slope > 1.4) {
+                if ((calibrations.size() == 2 && calibration.slope > 1.3) || (calibration.slope > 1.4)) {
                     calibration.slope = calibration.slopeOOBHandler();
                     if (calibration.slope == 0) { calibration.slope = 1.4; }
                     calibration.intercept = calibration.bg - (calibration.estimate_raw_at_time_of_calibration * calibration.slope);
                     CalibrationRequest.createOffset(calibration.bg, 35);
                 }
-                Log.w(TAG, "Calculated Calibration Slope: " + calibration.slope);
-                Log.w(TAG, "Calculated Calibration intercept: " + calibration.intercept);
+                Log.d(TAG, "Calculated Calibration Slope: " + calibration.slope);
+                Log.d(TAG, "Calculated Calibration intercept: " + calibration.intercept);
                 calibration.save();
             }
         } else {
@@ -405,23 +400,22 @@ public class Calibration extends Model {
         List<Calibration> calibrations = Calibration.latest(3);
         if (calibrations.size() == 3) {
             Calibration lastUsedCalibration = calibrations.get(1);
+            Calibration latestCalibration = calibrations.get(0);
             if (lastUsedCalibration.slope >= 0.5 && lastUsedCalibration.slope <= 1.4 && lastUsedCalibration.distance_from_estimate < 35) {
                 return lastUsedCalibration.slope;
             } else {
-                if (lastUsedCalibration.sensor_age_at_time_of_estimation < (60000 * 60 * 24 * 5)) { // 432000000
-                    return ((-0.048) * (lastUsedCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.12;
+                if (latestCalibration.sensor_age_at_time_of_estimation < (60000 * 60 * 24 * 5)) { // 432000000
+                    return ((-0.048) * (latestCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.12;
                 } else {
                     return 0.88;
                 }
             }
         } else if (calibrations.size() == 2) {
-            Calibration lastUsedCalibration = calibrations.get(1);
-            if (lastUsedCalibration.slope >= 0.5 && lastUsedCalibration.slope <= 1.4) {
-                if (lastUsedCalibration.sensor_age_at_time_of_estimation < (60000 * 60 * 24 * 5)) { // 432000000
-                    return ((-0.048) * (lastUsedCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.12;
-                } else {
-                    return 0.88;
-                }
+            Calibration lastUsedCalibration = calibrations.get(0);
+            if (lastUsedCalibration.sensor_age_at_time_of_estimation < (60000 * 60 * 24 * 5)) { // 432000000
+                return ((-0.048) * (lastUsedCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.12;
+            } else {
+                return 0.88;
             }
         }
         return adjustedSlope;

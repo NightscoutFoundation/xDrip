@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private LineChartView chart;
     private PreviewLineChartView previewChart;
+    SharedPreferences prefs;
     Viewport tempViewport = new Viewport();
     Viewport holdViewport = new Viewport();
     public float left;
@@ -57,13 +59,25 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         PreferenceManager.setDefaultValues(this, R.xml.pref_wifi, false);
 
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        checkEula();
         setContentView(R.layout.activity_home);
 
+    }
+
+    public void checkEula() {
+        boolean IUnderstand = prefs.getBoolean("I_understand", false);
+        if (!IUnderstand) {
+            Intent intent = new Intent(getApplicationContext(), LicenseAgreementActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     @Override
     protected void onResume(){
         super.onResume();
+        checkEula();
 
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter();
         collectionServiceStarter.start(getApplicationContext());
@@ -159,7 +173,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         final TextView notificationText = (TextView)findViewById(R.id.notices);
         notificationText.setText("");
         boolean isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
-        if((isBTWixel &&ActiveBluetoothDevice.first() != null) || 
+        if((isBTWixel &&ActiveBluetoothDevice.first() != null) ||
             (!isBTWixel && WixelReader.IsConfigured(getApplicationContext()))) {
             if (Sensor.isActive() && (Sensor.currentSensor().started_at + (60000 * 60 * 2)) < new Date().getTime()) {
                 if (BgReading.latest(2).size() > 1) {
@@ -197,8 +211,6 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     }
 
     public void displayCurrentInfo() {
-
-
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(0);
 
@@ -219,7 +231,15 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
             } else {
                 if (lastBgreading != null) {
                     estimate = BgReading.activePrediction();
-                    currentBgValueText.setText(df.format(estimate) + " " + BgReading.slopeArrow());
+                    String stringEstimate;
+                    if (estimate >= 400) {
+                        stringEstimate = "HIGH";
+                    } else if (estimate <= 40) {
+                        stringEstimate = "LOW";
+                    } else {
+                        stringEstimate = df.format(estimate);
+                    }
+                    currentBgValueText.setText( stringEstimate + " " + BgReading.slopeArrow());
                 }
             }
             if(estimate <= bgGraphBuilder.lowMark) {

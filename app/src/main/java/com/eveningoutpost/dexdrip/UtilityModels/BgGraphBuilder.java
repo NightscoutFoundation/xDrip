@@ -32,7 +32,6 @@ public class BgGraphBuilder {
     public double  start_time = end_time - (60000 * 60 * 24);
     public Context context;
     public SharedPreferences prefs;
-    //TODO: Make these editable via settings
     public int highMark;
     public int lowMark;
     public final int defaultMinY = 40;
@@ -112,16 +111,16 @@ public class BgGraphBuilder {
 
     private void addBgReadingValues() {
         for (BgReading bgReading : bgReadings) {
-            if (bgReading.calculated_value >= highMark) {
-                highValues.add(new PointValue((float)bgReading.timestamp, (float)bgReading.calculated_value));
-            } else if (bgReading.calculated_value <= lowMark) {
-                if (bgReading.calculated_value <= 30 && bgReading.calculated_value > 0) {
-                    lowValues.add(new PointValue((float)bgReading.timestamp, (float)30));
-                } else  if (bgReading.calculated_value > 30) {
-                    lowValues.add(new PointValue((float) bgReading.timestamp, (float) bgReading.calculated_value));
-                }
+            if (bgReading.calculated_value >= 400) {
+                highValues.add(new PointValue((float) bgReading.timestamp, (float)400));
+            } else if (bgReading.calculated_value >= highMark) {
+                highValues.add(new PointValue((float) bgReading.timestamp, (float) bgReading.calculated_value));
+            } else if (bgReading.calculated_value >= lowMark) {
+                inRangeValues.add(new PointValue((float) bgReading.timestamp, (float) bgReading.calculated_value));
+            } else if (bgReading.calculated_value >= 40) {
+                lowValues.add(new PointValue((float)bgReading.timestamp, (float) bgReading.calculated_value));
             } else {
-                inRangeValues.add(new PointValue((float)bgReading.timestamp, (float)bgReading.calculated_value));
+                lowValues.add(new PointValue((float)bgReading.timestamp, (float)40));
             }
         }
     }
@@ -178,8 +177,6 @@ public class BgGraphBuilder {
         for(int j = 1; j <= 12; j += 1) {
             axisValues.add(new AxisValue(j * 50));
         }
-//        axisValues.add(new AxisValue(highMark));
-//        axisValues.add(new AxisValue(lowMark));
         yAxis.setValues(axisValues);
         yAxis.setHasLines(true);
         yAxis.setMaxLabelChars(5);
@@ -211,7 +208,6 @@ public class BgGraphBuilder {
         }
         xAxis.setValues(xAxisValues);
         xAxis.setHasLines(true);
-//        xAxis.setInside(true);
         return xAxis;
     }
 

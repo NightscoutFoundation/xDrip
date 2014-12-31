@@ -3,7 +3,6 @@
 
     <string name="pref_I_understand_title"> I UNDERSTAND AND AGREE</string>
     <string name="pref_I_understand_summery">DexDrip MUST NOT BE USED TO MAKE MEDICAL DECISIONS. THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION. </string>
-    
     <string name="app_name">DexDrip</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -30,6 +29,7 @@
     <string name="title_section7">Calibration Table</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_license_agreement">End User License Agreement</string>
     <string name="action_example">Example action</string>
 
     <string-array name="menu_options">
@@ -49,36 +49,28 @@
     <string name="title_activity_double_calibration">DoubleCalibrationActivity</string>
     <string name="title_activity_calibration_override">CalibrationOverride</string>
     <string name="title_activity_calibration_graph">CalibrationGraph</string>
-
-
     <string name="pref_header_cloud_storage">Cloud Storage</string>
 
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>
-
     <string name="pref_title_mongo_enabled">Enabled</string>
     <string name="pref_summary_mongodb_enabled">If you\'re using MongoLab and Azure this should be enabled</string>
-
     <string name="pref_title_mongodb_uri">URI</string>
     <string name="pref_dialog_mongodb_uri">Enter MongoDB URI"</string>
     <string name="pref_message_mongodb_uri">Replace example values in {}\'s with your correct values</string>
     <string name="pref_default_mongodb_uri">mongodb://{user}:{password}@{host}.mongolab.com:{11111}/{database}</string>
-
     <string name="pref_title_mongodb_collection">Collection name</string>
     <string name="pref_dialog_mongodb_collection">Enter collection name</string>
     <string name="pref_message_mongodb_collection">This is the name of the collection where the CGM data will be stored</string>
     <string name="pref_default_mongodb_collection">entries</string>
-
     <string name="pref_title_mongodb_device_status_collection">Device Status collection name</string>
     <string name="pref_dialog_mongodb_device_status_collection">Enter Device Status collection name"</string>
     <string name="pref_message_mongodb_device_status_collection">This is the name of the collection where the battery and other device data will be stored</string>
     <string name="pref_default_mongodb_device_status_collection">devicestatus</string>
     <!-- API Settings -->
     <string name="pref_title_api">API Upload (REST)</string>
-
     <string name="pref_title_api_enabled">Enabled</string>
     <string name="pref_summary_api_enabled">The REST API is an alternative to direct mongodb upload</string>
-
     <string name="pref_title_api_url">Base URL</string>
     <string name="pref_dialog_api_url">Enter Base API URL</string>
     <string name="pref_message_api_url">This only the base URL, the uploader will automatically append /entries for the POST.  API_SECRET on the server should match yourpassphrase in this setting.</string>
@@ -87,5 +79,5 @@
     <!-- wifi Settings -->
     <string name="wifi_recievers_dialog_title">Enter ip addresses and ports of receivers</string>
     <string name="wifi_recievers_dialog_message">Comma separated list of ip:port (for example 37.142.132.220:50005,37.142.132.220:50006)</string>
-    
+
 </resources>
