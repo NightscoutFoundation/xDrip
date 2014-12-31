@@ -159,7 +159,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         final TextView notificationText = (TextView)findViewById(R.id.notices);
         notificationText.setText("");
         boolean isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
-        if((isBTWixel &&ActiveBluetoothDevice.first() != null) || 
+        if((isBTWixel &&ActiveBluetoothDevice.first() != null) ||
             (!isBTWixel && WixelReader.IsConfigured(getApplicationContext()))) {
             if (Sensor.isActive() && (Sensor.currentSensor().started_at + (60000 * 60 * 2)) < new Date().getTime()) {
                 if (BgReading.latest(2).size() > 1) {
@@ -197,8 +197,6 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     }
 
     public void displayCurrentInfo() {
-
-
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(0);
 
@@ -219,7 +217,15 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
             } else {
                 if (lastBgreading != null) {
                     estimate = BgReading.activePrediction();
-                    currentBgValueText.setText(df.format(estimate) + " " + BgReading.slopeArrow());
+                    String stringEstimate;
+                    if (estimate >= 400) {
+                        stringEstimate = "HIGH";
+                    } else if (estimate <= 40) {
+                        stringEstimate = "LOW";
+                    } else {
+                        stringEstimate = df.format(estimate);
+                    }
+                    currentBgValueText.setText( stringEstimate + " " + BgReading.slopeArrow());
                 }
             }
             if(estimate <= bgGraphBuilder.lowMark) {

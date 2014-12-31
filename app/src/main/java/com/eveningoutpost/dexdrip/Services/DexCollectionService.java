@@ -84,7 +84,6 @@ public class DexCollectionService extends Service {
         mContext = getApplicationContext();
         listenForChangeInSettings();
         Log.w(TAG, "STARTING SERVICE");
-
     }
 
     @Override

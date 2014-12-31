@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
@@ -33,6 +35,7 @@ public class Notifications {
     public static boolean bg_vibrate;
     public static boolean bg_lights;
     public static boolean bg_sound;
+    public static boolean bg_sound_in_silent;
     public static int bg_snooze;
     public static String bg_notification_sound;
 
@@ -44,6 +47,8 @@ public class Notifications {
     public static String calibration_notification_sound;
 
     public static Context mContext;
+    public static int currentVolume;
+    public static AudioManager manager;
 
     public static int BgNotificationId = 001;
     public static int calibrationNotificationId = 002;
@@ -64,6 +69,7 @@ public class Notifications {
         calibration_vibrate = prefs.getBoolean("calibration_vibrate", false);
         calibration_lights = prefs.getBoolean("calibration_lights", false);
         calibration_sound = prefs.getBoolean("calibration_play_sound", false);
+        bg_sound_in_silent = prefs.getBoolean("bg_sound_in_silent", false);
         calibration_snooze = Integer.parseInt(prefs.getString("calibration_snooze", "20"));
         calibration_notification_sound = prefs.getString("calibration_notification_sound", "content://settings/system/notification_sound");
     }
@@ -76,12 +82,12 @@ public class Notifications {
         Sensor sensor = Sensor.currentSensor();
 
         List<BgReading> bgReadings = BgReading.latest(3);
-        List<Calibration> calibrations = Calibration.allForSensor();
+        List<Calibration> calibrations = Calibration.allForSensorInLastFiveDays();
         BgReading bgReading = bgReadings.get(0);
 
         if (bg_notifications && sensor != null) {
             if (bgReading.calculated_value >= high || bgReading.calculated_value <= low) {
-                bgAlert(bgReading.calculated_value, bgReading.slopeArrow());
+                bgAlert(bgReading.displayValue(), bgReading.slopeArrow());
             } else {
                 clearBgAlert();
             }
@@ -91,7 +97,7 @@ public class Notifications {
 
         if (calibration_notifications) {
             if (bgReadings.size() >= 3) {
-                if (calibrations.size() == 0 && (new Date().getTime() - bgReadings.get(2).timestamp <= (60000 * 24)) && sensor != null) {
+                if (calibrations.size() == 0 && (new Date().getTime() - bgReadings.get(2).timestamp <= (60000 * 30)) && sensor != null) {
                     if ((sensor.started_at + (60000 * 60 * 2)) < new Date().getTime()) {
                         doubleCalibrationRequest();
                     } else { clearDoubleCalibrationRequest(); }
@@ -110,6 +116,24 @@ public class Notifications {
             clearAllCalibrationNotifications();
         }
     }
+
+    public static void soundAlert(String soundUri) {
+        manager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+        int maxVolume = manager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        currentVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        manager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0);
+        Uri notification = Uri.parse(bg_notification_sound);
+        MediaPlayer player = MediaPlayer.create(mContext, notification);
+
+        player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                manager.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume, 0);
+            }
+        });
+        player.start();
+    }
+
     public static void clearAllBgNotifications() {
         notificationDismiss(BgNotificationId);
     }
@@ -124,7 +148,8 @@ public class Notifications {
         NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);
         if (bg_vibrate) { mBuilder.setVibrate(vibratePattern);}
         if (bg_lights) { mBuilder.setLights(0xff00ff00, 300, 1000);}
-        if (bg_sound) { mBuilder.setSound(Uri.parse(bg_notification_sound), AudioAttributes.FLAG_AUDIBILITY_ENFORCED);}
+        if (bg_sound && !bg_sound_in_silent) { mBuilder.setSound(Uri.parse(bg_notification_sound), AudioAttributes.FLAG_AUDIBILITY_ENFORCED);}
+        if (bg_sound && bg_sound_in_silent) { soundAlert(bg_notification_sound);}
         NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(notificationId);
         mNotifyMgr.notify(notificationId, mBuilder.build());
@@ -163,22 +188,20 @@ public class Notifications {
         mNotifyMgr.cancel(notificationId);
     }
 
-    public static void bgAlert(double value, String slopeArrow) {
+    public static void bgAlert(String value, String slopeArrow) {
         UserNotification userNotification = UserNotification.lastBgAlert();
-        DecimalFormat df = new DecimalFormat("#");
-        df.setMaximumFractionDigits(0);
 
         if ((userNotification == null) || (userNotification.timestamp <= ((new Date().getTime()) - (60000 * bg_snooze)))) {
             if (userNotification != null) { userNotification.delete(); }
-            UserNotification newUserNotification = UserNotification.create(df.format(value) + " " + slopeArrow, "bg_alert");
-            String title = df.format(value) + " " + slopeArrow;
-            String content = "BG LEVEL ALERT: " + df.format(value) + " " + slopeArrow;
+            UserNotification newUserNotification = UserNotification.create(value + " " + slopeArrow, "bg_alert");
+            String title = value + " " + slopeArrow;
+            String content = "BG LEVEL ALERT: " + value + " " + slopeArrow;
             Intent intent = new Intent(mContext, Home.class);
             bgNotificationCreate(title, content, intent, BgNotificationId);
 
         } else if ((userNotification != null) && (userNotification.timestamp >= ((new Date().getTime()) - (60000 * bg_snooze))))  {
-            String title = df.format(BgReading.activePrediction()) + " " + slopeArrow;
-            String content = "BG LEVEL ALERT: " + df.format(BgReading.activePrediction()) + " " + slopeArrow;
+            String title = value + " " + slopeArrow;
+            String content = "BG LEVEL ALERT: " + value + " " + slopeArrow;
             Intent intent = new Intent(mContext, Home.class);
             notificationUpdate(title, content, intent, BgNotificationId);
         }

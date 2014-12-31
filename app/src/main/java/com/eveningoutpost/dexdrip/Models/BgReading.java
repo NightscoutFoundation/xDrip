@@ -100,6 +100,18 @@ public class BgReading extends Model {
     @Column(name = "snyced")
     public boolean synced;
 
+    public String displayValue() {
+        DecimalFormat df = new DecimalFormat("#");
+        df.setMaximumFractionDigits(0);
+        if (calculated_value >= 400) {
+            return "HIGH";
+        } else if (calculated_value >= 40) {
+            return df.format(calculated_value);
+        } else {
+            return "LOW";
+        }
+    }
+
     public static double activeSlope() {
         BgReading bgReading = BgReading.lastNoSenssor();
         double slope = (2 * bgReading.a * (new Date().getTime() + BESTOFFSET)) + bgReading.b;
@@ -133,7 +145,6 @@ public class BgReading extends Model {
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
                 bgReading.synced = false;
 
-
                 //TODO: THIS IS A BIG SILLY IDEA, THIS WILL HAVE TO CHANGE ONCE WE GET SOME REAL DATA FROM THE START OF SENSOR LIFE
                 double adjust_for = (86400000 * 1.8) - bgReading.time_since_sensor_started;
                 if (adjust_for > 0) {
@@ -142,9 +153,8 @@ public class BgReading extends Model {
                 } else {
                     bgReading.age_adjusted_raw_value = (raw_data / 1000);
                 }
-
+                
                 bgReading.save();
-
                 bgReading.perform_calculations();
             } else {
 

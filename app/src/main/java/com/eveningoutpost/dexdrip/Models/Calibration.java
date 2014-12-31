@@ -424,18 +424,19 @@ public class Calibration extends Model {
         List<Calibration> calibrations = Calibration.latest(3);
         if (calibrations.size() == 3) {
             Calibration lastUsedCalibration = calibrations.get(1);
+            Calibration latestCalibration = calibrations.get(0);
             if (lastUsedCalibration.slope >= 0.5 && lastUsedCalibration.slope <= 1.4 && lastUsedCalibration.distance_from_estimate < 35) {
                 return lastUsedCalibration.slope;
             } else {
-                if (lastUsedCalibration.sensor_age_at_time_of_estimation < (60000 * 60 * 24 * 5)) { // 432000000
-                    return ((-0.048) * (lastUsedCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.12;
+                if (latestCalibration.sensor_age_at_time_of_estimation < (60000 * 60 * 24 * 5)) { // 432000000
+                    return ((-0.048) * (latestCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.12;
                 } else {
                     return 0.88;
                 }
             }
         } else if (calibrations.size() == 2) {
-            Calibration lastUsedCalibration = calibrations.get(1);
-            if (lastUsedCalibration.slope >= 0.5 && lastUsedCalibration.slope <= 1.4) {
+            Calibration lastUsedCalibration = calibrations.get(0);
+            if (lastUsedCalibration.slope <= 0.88 || lastUsedCalibration.slope >= 1.3) {
                 if (lastUsedCalibration.sensor_age_at_time_of_estimation < (60000 * 60 * 24 * 5)) { // 432000000
                     return ((-0.048) * (lastUsedCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.12;
                 } else {
