@@ -102,7 +102,7 @@ public class NightscoutUploader {
                     baseURIs.add(baseURL + (baseURL.endsWith("/") ? "" : "/"));
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Unable to process API Base URL setting: " + baseURLSettings, e);
+                Log.e(TAG, "Unable to process API Base URL");
                 return false;
             }
 
@@ -110,7 +110,7 @@ public class NightscoutUploader {
                 try {
                     doRESTUploadTo(baseURI, glucoseDataSets, meterRecords, calRecords);
                 } catch (Exception e) {
-                    Log.e(TAG, "Unable to do REST API Upload to: " + baseURI, e);
+                    Log.e(TAG, "Unable to do REST API Upload");
                     return false;
                 }
             }
@@ -134,7 +134,7 @@ public class NightscoutUploader {
                     secret = uriParts[0];
                     baseURL = uriParts[1];
                 } else {
-                    throw new Exception(String.format("Unexpected baseURI: %s, uriParts.length: %s, apiVersion: %s", baseURI, uriParts.length, apiVersion));
+                    throw new Exception("Unexpected baseURI");
                 }
 
                 String postURL = baseURL + "entries";
@@ -180,7 +180,7 @@ public class NightscoutUploader {
                         else
                             populateLegacyAPIEntry(json, record);
                     } catch (Exception e) {
-                        Log.w(TAG, "Unable to populate entry, apiVersion: " + apiVersion, e);
+                        Log.w(TAG, "Unable to populate entry");
                         continue;
                     }
 
@@ -197,7 +197,7 @@ public class NightscoutUploader {
                         ResponseHandler responseHandler = new BasicResponseHandler();
                         httpclient.execute(post, responseHandler);
                     } catch (Exception e) {
-                        Log.w(TAG, "Unable to post data to: '" + post.getURI().toString() + "'", e);
+                        Log.w(TAG, "Unable to populate entry");
                     }
                 }
 
@@ -208,7 +208,7 @@ public class NightscoutUploader {
                         try {
                             populateV1APIMeterReadingEntry(json, record);
                         } catch (Exception e) {
-                            Log.w(TAG, "Unable to populate entry, apiVersion: " + apiVersion, e);
+                            Log.w(TAG, "Unable to populate entry");
                             continue;
                         }
 
@@ -224,7 +224,7 @@ public class NightscoutUploader {
                             ResponseHandler responseHandler = new BasicResponseHandler();
                             httpclient.execute(post, responseHandler);
                         } catch (Exception e) {
-                            Log.w(TAG, "Unable to post data to: '" + post.getURI().toString() + "'", e);
+                            Log.w(TAG, "Unable to post data");
                         }
                     }
                 }
@@ -237,7 +237,7 @@ public class NightscoutUploader {
                         try {
                             populateV1APICalibrationEntry(json, calRecord);
                         } catch (Exception e) {
-                            Log.w(TAG, "Unable to populate entry, apiVersion: " + apiVersion, e);
+                            Log.w(TAG, "Unable to populate entry");
                             continue;
                         }
 
@@ -253,7 +253,7 @@ public class NightscoutUploader {
                             ResponseHandler responseHandler = new BasicResponseHandler();
                             httpclient.execute(post, responseHandler);
                         } catch (Exception e) {
-                            Log.w(TAG, "Unable to post data to: '" + post.getURI().toString() + "'", e);
+                            Log.w(TAG, "Unable to post data");
                         }
                     }
                 }
@@ -262,7 +262,7 @@ public class NightscoutUploader {
                 postDeviceStatus(baseURL, apiSecretHeader, httpclient);
 
             } catch (Exception e) {
-                Log.e(TAG, "Unable to post data", e);
+                Log.w(TAG, "Unable to post data");
             }
         }
 
@@ -411,7 +411,7 @@ public class NightscoutUploader {
                     return true;
 
                 } catch (Exception e) {
-                    Log.e(TAG, "Unable to upload data to mongo", e);
+                    Log.e(TAG, "Unable to upload data to mongo");
                 }
             }
             return false;

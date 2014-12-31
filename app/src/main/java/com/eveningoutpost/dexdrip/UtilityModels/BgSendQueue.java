@@ -55,7 +55,7 @@ public class BgSendQueue extends Model {
                 .where("mongo_success = ?", false)
                 .where("operation_type = ?", "create")
                 .orderBy("_ID asc")
-                .limit(20)
+                .limit(10)
                 .execute();
     }
 

@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.RestCalls;
 import com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class SyncService extends Service {
@@ -37,12 +38,8 @@ public class SyncService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         attemptSend();
-        PendingIntent pending = PendingIntent.getService(this, 0, new Intent(this, SyncService.class), 0);
-        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(pending);
-
-        startSleep();
-        return mStartMode;
+        setRetryTimer();
+        return START_STICKY;
     }
 
     @Override
@@ -72,14 +69,10 @@ public class SyncService extends Service {
         }
     }
 
-    public void startSleep() {
+    public void setRetryTimer() {
+        Calendar calendar = Calendar.getInstance();
         AlarmManager alarm = (AlarmManager)getSystemService(ALARM_SERVICE);
-        alarm.set(
-                alarm.RTC_WAKEUP,
-                System.currentTimeMillis() + (1000 * 30 * 5),
-                PendingIntent.getService(this, 0, new Intent(this, SyncService.class), 0)
-        );
-        stopSelf();
+        alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + (1000 * 60 * 5), PendingIntent.getService(this, 0, new Intent(this, SyncService.class), 0));
     }
 
     public void syncToMogoDb() {
