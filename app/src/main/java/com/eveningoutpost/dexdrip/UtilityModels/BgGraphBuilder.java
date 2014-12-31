@@ -111,12 +111,16 @@ public class BgGraphBuilder {
 
     private void addBgReadingValues() {
         for (BgReading bgReading : bgReadings) {
-            if (bgReading.calculated_value >= highMark) {
+            if (bgReading.calculated_value >= 400) {
+                highValues.add(new PointValue((float) bgReading.timestamp, (float)400));
+            } else if (bgReading.calculated_value >= highMark) {
                 highValues.add(new PointValue((float) bgReading.timestamp, (float) bgReading.calculated_value));
             } else if (bgReading.calculated_value >= lowMark) {
                 inRangeValues.add(new PointValue((float) bgReading.timestamp, (float) bgReading.calculated_value));
             } else if (bgReading.calculated_value >= 40) {
-                lowValues.add(new PointValue((float)bgReading.timestamp, (float)30));
+                lowValues.add(new PointValue((float)bgReading.timestamp, (float) bgReading.calculated_value));
+            } else {
+                lowValues.add(new PointValue((float)bgReading.timestamp, (float)40));
             }
         }
     }
