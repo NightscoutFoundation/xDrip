@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private LineChartView chart;
     private PreviewLineChartView previewChart;
+    SharedPreferences prefs;
     Viewport tempViewport = new Viewport();
     Viewport holdViewport = new Viewport();
     public float left;
@@ -57,13 +59,25 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         PreferenceManager.setDefaultValues(this, R.xml.pref_wifi, false);
 
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        checkEula();
         setContentView(R.layout.activity_home);
 
+    }
+
+    public void checkEula() {
+        boolean IUnderstand = prefs.getBoolean("I_understand", false);
+        if (!IUnderstand) {
+            Intent intent = new Intent(getApplicationContext(), LicenseAgreementActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     @Override
     protected void onResume(){
         super.onResume();
+        checkEula();
 
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter();
         collectionServiceStarter.start(getApplicationContext());

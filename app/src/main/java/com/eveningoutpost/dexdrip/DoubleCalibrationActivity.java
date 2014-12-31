@@ -27,32 +27,16 @@ public class DoubleCalibrationActivity  extends Activity implements NavigationDr
         addListenerOnButton();
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_double_calibration, menu);
-        return true;
-    }
     @Override
     protected void onResume(){
         super.onResume();
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
     }
+
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         mNavigationDrawerFragment.swapContext(position);
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     public void addListenerOnButton() {

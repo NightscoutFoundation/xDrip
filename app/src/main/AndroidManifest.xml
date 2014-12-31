@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.BATTERY_STATS" />
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
     <application
         android:name="com.activeandroid.app.Application"
@@ -33,83 +33,87 @@
         <!-- <provider android:authorities="com.example" android:exported="false" android:name="com.activeandroid.content.ContentProvider" /> -->
 
         <activity
-            android:name="com.eveningoutpost.dexdrip.Home"
+            android:name=".Home"
             android:label="@string/app_name"
             android:launchMode="singleInstance" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.eveningoutpost.dexdrip.BluetoothScan"
+            android:name=".BluetoothScan"
             android:label="@string/title_activity_bluetooth_scan" >
         </activity>
 
         <service
-            android:name="com.eveningoutpost.dexdrip.Services.DexCollectionService"
+            android:name=".Services.DexCollectionService"
             android:enabled="true"
             android:exported="true" >
         </service>
 
-
         <activity
-            android:name="com.eveningoutpost.dexdrip.Tables.BgReadingTable"
+            android:name=".Tables.BgReadingTable"
             android:label="Bg Readings Table" >
         </activity>
         <activity
-            android:name="com.eveningoutpost.dexdrip.Tables.SensorDataTable"
+            android:name=".Tables.SensorDataTable"
             android:label="Sensor Table" >
         </activity>
         <activity
-            android:name="com.eveningoutpost.dexdrip.AddCalibration"
+            android:name=".AddCalibration"
             android:label="@string/title_activity_add_calibration" >
         </activity>
         <activity
-            android:name="com.eveningoutpost.dexdrip.StartNewSensor"
+            android:name=".StartNewSensor"
             android:label="@string/title_activity_start_new_sensor" >
         </activity>
         <activity
-            android:name="com.eveningoutpost.dexdrip.StopSensor"
+            android:name=".StopSensor"
             android:label="@string/title_activity_stop_sensor" >
         </activity>
 
-        <receiver android:name="com.eveningoutpost.dexdrip.AutoStart" >
+        <receiver android:name=".AutoStart" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
         <activity
-            android:name="com.eveningoutpost.dexdrip.Tables.CalibrationDataTable"
+            android:name=".Tables.CalibrationDataTable"
             android:label="@string/title_activity_calibration_data_table" >
         </activity>
 
         <service
-            android:name="com.eveningoutpost.dexdrip.Services.SyncService"
+            android:name=".Services.SyncService"
             android:enabled="true"
             android:exported="true" >
         </service>
 
         <activity
-            android:name="com.eveningoutpost.dexdrip.FakeNumbers"
+            android:name=".FakeNumbers"
             android:label="@string/title_activity_fake_numbers" >
         </activity>
         <activity
-            android:name="com.eveningoutpost.dexdrip.DoubleCalibrationActivity"
+            android:name=".DoubleCalibrationActivity"
             android:label="@string/title_activity_double_calibration" >
         </activity>
         <activity
-            android:name="com.eveningoutpost.dexdrip.CalibrationOverride"
+            android:name=".CalibrationOverride"
             android:label="@string/title_activity_calibration_override" >
         </activity>
         <activity
-            android:name="com.eveningoutpost.dexdrip.CalibrationGraph"
+            android:name=".CalibrationGraph"
             android:label="@string/title_activity_calibration_graph" >
         </activity>
         <activity
-            android:name="com.eveningoutpost.dexdrip.SettingsActivity"
+            android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" >
+        </activity>
+        <activity
+            android:name=".LicenseAgreementActivity"
+            android:label="@string/title_activity_license_agreement" >
         </activity>
     </application>
 
