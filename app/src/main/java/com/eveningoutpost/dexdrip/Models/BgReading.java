@@ -174,6 +174,11 @@ public class BgReading extends Model {
                     }
                 }
                 bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
+                if (bgReading.calculated_value <= 40) {
+                    bgReading.calculated_value = 40;
+                } else if (bgReading.calculated_value >= 400) {
+                    bgReading.calculated_value = 400;
+                }
                 Log.w(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
 
                 bgReading.save();
@@ -216,11 +221,11 @@ public class BgReading extends Model {
         } else if (slope_by_minute <= (-2)) {
             arrow = "SingleDown";
         } else if (slope_by_minute <= (-1)) {
-            arrow = "FourtyFiveDown";
+            arrow = "FortyFiveDown";
         } else if (slope_by_minute <= (1)) {
             arrow = "Flat";
         } else if (slope_by_minute <= (2)) {
-            arrow = "FourtyFiveUp";
+            arrow = "FortyFiveUp";
         } else if (slope_by_minute <= (3.5)) {
             arrow = "SingleUp";
         } else {

@@ -353,24 +353,43 @@ public class Calibration extends Model {
                 calibration.intercept = calibration.bg;
                 calibration.slope = 0;
                 calibration.save();
+            } else if (calibrations.size() == 2) {
+                double y2 = calibrations.get(1).bg;
+                double x2 = calibrations.get(1).estimate_raw_at_time_of_calibration;
+                double y1 = calibrations.get(0).bg;
+                double x1 = calibrations.get(0).estimate_raw_at_time_of_calibration;
+                Calibration calibration = Calibration.last();
+                if(y1 == y2) {
+                    calibration.slope = 0;
+                } else {
+                    calibration.slope = (y2 - y1)/(x2 - x1);
+                }
+                calibration.intercept = -1 * ((calibration.slope * x1) - y1);
+                if (calibration.slope > 1.3 || calibration.slope < 0.88) {
+                    if (calibration.sensor_age_at_time_of_estimation < (60000 * 60 * 24 * 5)) { // 432000000
+                        calibration.slope = ((-0.048) * (calibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.12;
+                    } else {
+                        calibration.slope = 0.88;
+                    }
+                    calibration.intercept = calibration.bg - (calibration.estimate_raw_at_time_of_calibration * calibration.slope);
+                    CalibrationRequest.createOffset(calibration.bg, 35);
+                }
+                Log.d(TAG, "Calculated Calibration Slope: " + calibration.slope);
+                Log.d(TAG, "Calculated Calibration intercept: " + calibration.intercept);
+                calibration.save();
             } else {
-                Log.w(TAG, "CALIBRATIONS USED: " + calibrations.size());
                 for (Calibration calibration : calibrations) {
-                    Log.w(TAG, "Calibration estimate: " + calibration.estimate_raw_at_time_of_calibration);
-
-                    Log.w(TAG, "Calibration bg: " + calibration.bg);
                     w = calibration.calculateWeight();
-                    Log.w(TAG, "=====CALIBRATIONS WEIGHT: " + ""+w);
                     l += (w);
                     m += (w * calibration.estimate_raw_at_time_of_calibration);
                     n += (w * calibration.estimate_raw_at_time_of_calibration * calibration.estimate_raw_at_time_of_calibration);
                     p += (w * calibration.bg);
                     q += (w * calibration.estimate_raw_at_time_of_calibration * calibration.bg);
                 }
+
                 Calibration last_calibration = Calibration.last();
                 w = (last_calibration.calculateWeight() * (calibrations.size() * 0.15));
                 l += (w);
-                Log.w(TAG, "=====CALIBRATIONS WEIGHT: " + ""+w);
                 m += (w * last_calibration.estimate_raw_at_time_of_calibration);
                 n += (w * last_calibration.estimate_raw_at_time_of_calibration * last_calibration.estimate_raw_at_time_of_calibration);
                 p += (w * last_calibration.bg);
@@ -392,8 +411,8 @@ public class Calibration extends Model {
                     calibration.intercept = calibration.bg - (calibration.estimate_raw_at_time_of_calibration * calibration.slope);
                     CalibrationRequest.createOffset(calibration.bg, 35);
                 }
-                Log.w(TAG, "Calculated Calibration Slope: " + calibration.slope);
-                Log.w(TAG, "Calculated Calibration intercept: " + calibration.intercept);
+                Log.d(TAG, "Calculated Calibration Slope: " + calibration.slope);
+                Log.d(TAG, "Calculated Calibration intercept: " + calibration.intercept);
                 calibration.save();
             }
         } else {

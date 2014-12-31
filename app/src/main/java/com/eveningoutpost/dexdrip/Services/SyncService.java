@@ -75,7 +75,7 @@ public class SyncService extends Service {
     public void startSleep() {
         AlarmManager alarm = (AlarmManager)getSystemService(ALARM_SERVICE);
         alarm.set(
-                alarm.ELAPSED_REALTIME_WAKEUP,
+                alarm.RTC_WAKEUP,
                 System.currentTimeMillis() + (1000 * 30 * 5),
                 PendingIntent.getService(this, 0, new Intent(this, SyncService.class), 0)
         );
