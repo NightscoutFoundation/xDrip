@@ -29,9 +29,14 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     private void setupSimplePreferencesScreen() {
-        addPreferencesFromResource(R.xml.pref_general);
-
+        addPreferencesFromResource(R.xml.pref_license);
+        
         PreferenceCategory fakeHeader = new PreferenceCategory(this);
+        getPreferenceScreen().addPreference(fakeHeader);
+        addPreferencesFromResource(R.xml.pref_general);
+        
+
+        fakeHeader = new PreferenceCategory(this);
         getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_bg_notification);
 

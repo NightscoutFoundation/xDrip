@@ -1,0 +1,12 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="I UNDERSTAND"
+        android:key="title_I_understand">
+        <CheckBoxPreference
+            android:key="I_understand"
+            android:title="@string/pref_I_understand_title"
+            android:summary="@string/pref_I_understand_summery"
+            android:defaultValue="false" />
+        
+    </PreferenceCategory>
+</PreferenceScreen>
