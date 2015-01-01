@@ -28,6 +28,12 @@ public class ForegroundServiceStarter {
     private Notification notification() {
         NotificationCompat.Builder b=new NotificationCompat.Builder(mService);
         b.setOngoing(true);
+        // This probably doesn't do much yet, but is the right thing
+        b.setCategory(Notification.CATEGORY_SERVICE);
+        // Hide this notification "below the fold" on L+
+        b.setPriority(Notification.PRIORITY_MIN);
+        // Don't show this notification on the lock screen on L+
+        b.setVisibility(Notification.VISIBILITY_SECRET);
         b.setContentTitle("DexDrip is Running")
                 .setContentText("DexDrip Data collection service is running.")
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on);
