@@ -1,12 +1,16 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
 
 /**
@@ -26,6 +30,16 @@ public class ForegroundServiceStarter {
     }
 
     private Notification notification() {
+        Intent intent = new Intent(mContext, Home.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
+        stackBuilder.addParentStack(Home.class);
+        stackBuilder.addNextIntent(intent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+
         NotificationCompat.Builder b=new NotificationCompat.Builder(mService);
         b.setOngoing(true);
         // This probably doesn't do much yet, but is the right thing
@@ -37,6 +51,7 @@ public class ForegroundServiceStarter {
         b.setContentTitle("DexDrip is Running")
                 .setContentText("DexDrip Data collection service is running.")
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on);
+        b.setContentIntent(resultPendingIntent);
         return(b.build());
     }
 
