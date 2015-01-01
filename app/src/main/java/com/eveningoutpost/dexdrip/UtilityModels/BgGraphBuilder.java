@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 
@@ -38,6 +39,10 @@ public class BgGraphBuilder {
     public double defaultMinY;
     public double defaultMaxY;
     public boolean doMgdl;
+    final int pointSize;
+    final int axisTextSize;
+    final int previewAxisTextSize;
+    final int hoursPreviewStep;
 
     private double endHour;
     private final int numValues =(60/5)*24;
@@ -56,6 +61,10 @@ public class BgGraphBuilder {
         this.doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
         defaultMinY = unitized(40);
         defaultMaxY = unitized(250);
+        pointSize = isXLargeTablet() ? 5 : 3;
+        axisTextSize = isXLargeTablet() ? 20 : Axis.DEFAULT_TEXT_SIZE_SP;
+        previewAxisTextSize = isXLargeTablet() ? 12 : 5;
+        hoursPreviewStep = isXLargeTablet() ? 2 : 1;
     }
 
     public LineChartData lineData() {
@@ -92,7 +101,7 @@ public class BgGraphBuilder {
         Line highValuesLine = new Line(highValues);
         highValuesLine.setColor(Utils.COLOR_ORANGE);
         highValuesLine.setHasLines(false);
-        highValuesLine.setPointRadius(3);
+        highValuesLine.setPointRadius(pointSize);
         highValuesLine.setHasPoints(true);
         return highValuesLine;
     }
@@ -101,7 +110,7 @@ public class BgGraphBuilder {
         Line lowValuesLine = new Line(lowValues);
         lowValuesLine.setColor(Color.parseColor("#C30909"));
         lowValuesLine.setHasLines(false);
-        lowValuesLine.setPointRadius(3);
+        lowValuesLine.setPointRadius(pointSize);
         lowValuesLine.setHasPoints(true);
         return lowValuesLine;
     }
@@ -110,7 +119,7 @@ public class BgGraphBuilder {
         Line inRangeValuesLine = new Line(inRangeValues);
         inRangeValuesLine.setColor(Utils.COLOR_BLUE);
         inRangeValuesLine.setHasLines(false);
-        inRangeValuesLine.setPointRadius(3);
+        inRangeValuesLine.setPointRadius(pointSize);
         inRangeValuesLine.setHasPoints(true);
         return inRangeValuesLine;
     }
@@ -192,6 +201,7 @@ public class BgGraphBuilder {
         yAxis.setHasLines(true);
         yAxis.setMaxLabelChars(5);
         yAxis.setInside(true);
+        yAxis.setTextSize(axisTextSize);
         return yAxis;
     }
 
@@ -219,21 +229,26 @@ public class BgGraphBuilder {
         }
         xAxis.setValues(xAxisValues);
         xAxis.setHasLines(true);
+        xAxis.setTextSize(axisTextSize);
         return xAxis;
     }
 
+    private boolean isXLargeTablet() {
+        return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
+    }
+    
     public Axis previewXAxis(){
         List<AxisValue> previewXaxisValues = new ArrayList<AxisValue>();
         SimpleDateFormat timeFormat = new SimpleDateFormat("h a");
         timeFormat.setTimeZone(TimeZone.getDefault());
-        for(int l=0; l<=24; l++) {
+        for(int l=0; l<=24; l+=hoursPreviewStep) {
             double timestamp = endHour - (60000 * 60 * l);
             previewXaxisValues.add(new AxisValue((long)(timestamp), (timeFormat.format(timestamp)).toCharArray()));
         }
         Axis previewXaxis = new Axis();
         previewXaxis.setValues(previewXaxisValues);
         previewXaxis.setHasLines(true);
-        previewXaxis.setTextSize(5);
+        previewXaxis.setTextSize(previewAxisTextSize);
         return previewXaxis;
     }
 
