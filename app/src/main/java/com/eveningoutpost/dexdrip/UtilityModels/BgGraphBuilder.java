@@ -32,10 +32,11 @@ public class BgGraphBuilder {
     public double  start_time = end_time - (60000 * 60 * 24);
     public Context context;
     public SharedPreferences prefs;
-    public int highMark;
-    public int lowMark;
-    public final int defaultMinY = 40;
-    public final int defaultMaxY = 250;
+    public double highMark;
+    public double lowMark;
+    public double defaultMinY;
+    public double defaultMaxY;
+    public boolean doMgdl;
 
     private double endHour;
     private final int numValues =(60/5)*24;
@@ -49,8 +50,17 @@ public class BgGraphBuilder {
     public BgGraphBuilder(Context context){
         this.context = context;
         this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        this.highMark = Integer.parseInt(prefs.getString("highValue", "170"));
-        this.lowMark = Integer.parseInt(prefs.getString("lowValue", "70"));
+        this.highMark = Double.parseDouble(prefs.getString("highValue", "170"));
+        this.lowMark = Double.parseDouble(prefs.getString("lowValue", "70"));
+        this.doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
+
+        if(doMgdl) {
+            defaultMinY = 40;
+            defaultMaxY = 250;
+        } else {
+            defaultMinY = 40/18;
+            defaultMaxY = 250/18;
+        }
     }
     public LineChartData lineData() {
         LineChartData lineData = new LineChartData(defaultLines());
@@ -112,23 +122,23 @@ public class BgGraphBuilder {
     private void addBgReadingValues() {
         for (BgReading bgReading : bgReadings) {
             if (bgReading.calculated_value >= 400) {
-                highValues.add(new PointValue((float) bgReading.timestamp, (float)400));
-            } else if (bgReading.calculated_value >= highMark) {
-                highValues.add(new PointValue((float) bgReading.timestamp, (float) bgReading.calculated_value));
-            } else if (bgReading.calculated_value >= lowMark) {
-                inRangeValues.add(new PointValue((float) bgReading.timestamp, (float) bgReading.calculated_value));
+                highValues.add(new PointValue((float) bgReading.timestamp, (float)bgReading.unitized_value(doMgdl,400)));
+            } else if (bgReading.unitized_calculated_value(doMgdl) >= highMark) {
+                highValues.add(new PointValue((float) bgReading.timestamp, (float) bgReading.unitized_calculated_value(doMgdl)));
+            } else if (bgReading.unitized_calculated_value(doMgdl) >= lowMark) {
+                inRangeValues.add(new PointValue((float) bgReading.timestamp, (float) bgReading.unitized_calculated_value(doMgdl)));
             } else if (bgReading.calculated_value >= 40) {
-                lowValues.add(new PointValue((float)bgReading.timestamp, (float) bgReading.calculated_value));
+                lowValues.add(new PointValue((float)bgReading.timestamp, (float) bgReading.unitized_calculated_value(doMgdl)));
             } else {
-                lowValues.add(new PointValue((float)bgReading.timestamp, (float)40));
+                lowValues.add(new PointValue((float)bgReading.timestamp, (float)bgReading.unitized_value(doMgdl,40)));
             }
         }
     }
 
     public Line highLine() {
         List<PointValue> highLineValues = new ArrayList<PointValue>();
-        highLineValues.add(new PointValue((float)start_time, highMark));
-        highLineValues.add(new PointValue((float)end_time, highMark));
+        highLineValues.add(new PointValue((float)start_time, (float)highMark));
+        highLineValues.add(new PointValue((float)end_time, (float)highMark));
         Line highLine = new Line(highLineValues);
         highLine.setHasPoints(false);
         highLine.setStrokeWidth(1);
@@ -138,8 +148,8 @@ public class BgGraphBuilder {
 
     public Line lowLine() {
         List<PointValue> lowLineValues = new ArrayList<PointValue>();
-        lowLineValues.add(new PointValue((float)start_time, lowMark));
-        lowLineValues.add(new PointValue((float)end_time, lowMark));
+        lowLineValues.add(new PointValue((float)start_time, (float)lowMark));
+        lowLineValues.add(new PointValue((float)end_time, (float)lowMark));
         Line lowLine = new Line(lowLineValues);
         lowLine.setHasPoints(false);
         lowLine.setAreaTransparency(50);
@@ -151,8 +161,8 @@ public class BgGraphBuilder {
 
     public Line maxShowLine() {
         List<PointValue> maxShowValues = new ArrayList<PointValue>();
-        maxShowValues.add(new PointValue((float)start_time, defaultMaxY));
-        maxShowValues.add(new PointValue((float)end_time, defaultMaxY));
+        maxShowValues.add(new PointValue((float)start_time, (float)defaultMaxY));
+        maxShowValues.add(new PointValue((float)end_time, (float)defaultMaxY));
         Line maxShowLine = new Line(maxShowValues);
         maxShowLine.setHasLines(false);
         maxShowLine.setHasPoints(false);
@@ -161,8 +171,8 @@ public class BgGraphBuilder {
 
     public Line minShowLine() {
         List<PointValue> minShowValues = new ArrayList<PointValue>();
-        minShowValues.add(new PointValue((float)start_time, defaultMinY));
-        minShowValues.add(new PointValue((float)end_time, defaultMinY));
+        minShowValues.add(new PointValue((float)start_time, (float)defaultMinY));
+        minShowValues.add(new PointValue((float)end_time, (float)defaultMinY));
         Line minShowLine = new Line(minShowValues);
         minShowLine.setHasPoints(false);
         minShowLine.setHasLines(false);
@@ -174,8 +184,13 @@ public class BgGraphBuilder {
         Axis yAxis = new Axis();
         yAxis.setAutoGenerated(false);
         List<AxisValue> axisValues = new ArrayList<AxisValue>();
+
         for(int j = 1; j <= 12; j += 1) {
-            axisValues.add(new AxisValue(j * 50));
+            if (doMgdl) {
+                axisValues.add(new AxisValue(j * 50));
+            } else {
+                axisValues.add(new AxisValue(j*2));
+            }
         }
         yAxis.setValues(axisValues);
         yAxis.setHasLines(true);

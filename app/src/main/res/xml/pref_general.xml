@@ -3,16 +3,22 @@
         android:dependency="I_understand"
         android:title="Acceptable BG range"
         android:key="bgRange">
+        <ListPreference
+            android:key="units"
+            android:title="Bg Units"
+            android:entries="@array/bgUnitEntries"
+            android:entryValues="@array/bgUnitValues"
+            android:defaultValue="mgdl"/>
         <EditTextPreference
             android:key="highValue"
             android:title="High Value"
-            android:numeric="integer"
+            android:numeric="decimal"
             android:summary="The maximum value you consider to be in range."
             android:defaultValue="170" />
         <EditTextPreference
             android:key="lowValue"
             android:title="Low Value"
-            android:numeric="integer"
+            android:numeric="decimal"
             android:summary="The minimum value you consider to be in range."
             android:defaultValue="70" />
     </PreferenceCategory>

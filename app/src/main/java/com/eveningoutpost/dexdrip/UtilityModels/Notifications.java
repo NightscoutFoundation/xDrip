@@ -87,7 +87,7 @@ public class Notifications {
 
         if (bg_notifications && sensor != null) {
             if (bgReading.calculated_value >= high || bgReading.calculated_value <= low) {
-                bgAlert(bgReading.displayValue(), bgReading.slopeArrow());
+                bgAlert(bgReading.displayValue(mContext), bgReading.slopeArrow());
             } else {
                 clearBgAlert();
             }
