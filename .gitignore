@@ -27,6 +27,7 @@ proguard/
 
 #local
 /local.properties
+.idea/
 /.idea/*
 .idea/misc.xml
 .idea/vcs.xml
