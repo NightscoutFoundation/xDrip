@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,7 +34,7 @@ public class CalibrationOverride extends Activity implements NavigationDrawerFra
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
             }
-    
+
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         mNavigationDrawerFragment.swapContext(position);
@@ -47,17 +48,16 @@ public class CalibrationOverride extends Activity implements NavigationDrawerFra
                 if (Sensor.isActive()) {
                     EditText value = (EditText) findViewById(R.id.bg_value);
                     String string_value = value.getText().toString();
-                    Log.w("STRING VALUE", "" + string_value);
-                    if (!string_value.matches("")) {
-                        int intValue = Integer.parseInt(string_value);
+                    if (!TextUtils.isEmpty(string_value)){
+                        double calValue = Double.parseDouble(string_value);
 
-                         Calibration.last().overrideCalibration(intValue, getApplicationContext());
+                         Calibration.last().overrideCalibration(calValue, getApplicationContext());
 
                          Intent tableIntent = new Intent(v.getContext(), Home.class);
                          startActivity(tableIntent);
                          finish();
                     } else {
-                        Toast.makeText(getParent(), "You must enter a value to continue", Toast.LENGTH_LONG).show();
+                        value.setError("Calibration Can Not be blank");
                     }
                 } else {
                     Log.w("CANNOT CALIBRATE WITHOUT CURRENT SENSOR", "ERROR");

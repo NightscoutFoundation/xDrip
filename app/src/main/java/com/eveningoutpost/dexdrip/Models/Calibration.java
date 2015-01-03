@@ -215,7 +215,7 @@ public class Calibration extends Model {
         Notifications.notificationSetter(context);
     }
 
-    public static Calibration create(int bg, Context context) {
+    public static Calibration create(double bg, Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String unit = prefs.getString("units", "mgdl");
 
@@ -488,7 +488,13 @@ public class Calibration extends Model {
         bgReadings.get(0).find_new_curve();
     }
 
-    public void overrideCalibration(int value, Context context) {
+    public void overrideCalibration(double value, Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String unit = prefs.getString("units", "mgdl");
+        if(unit.compareTo("mgdl") != 0 ) {
+            value = value * 18;
+        }
+
         bg = value;
         estimate_raw_at_time_of_calibration = raw_value;
         save();
