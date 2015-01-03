@@ -45,6 +45,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 
@@ -55,7 +56,7 @@ public class DexCollectionService extends Service {
     private boolean is_connected = false;
     SharedPreferences prefs;
 
-    public final DexCollectionService dexCollectionService = this;
+    public DexCollectionService dexCollectionService;
 
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
@@ -63,13 +64,15 @@ public class DexCollectionService extends Service {
     private BluetoothGatt mBluetoothGatt;
     private ForegroundServiceStarter foregroundServiceStarter;
     private int mConnectionState = STATE_DISCONNECTED;
+    private BluetoothDevice device;
     int mStartMode;
 
     private Context mContext = null;
 
-    private static final int STATE_DISCONNECTED = 0;
-    private static final int STATE_CONNECTING = 1;
-    private static final int STATE_CONNECTED = 2;
+    private static final int STATE_DISCONNECTED = BluetoothProfile.STATE_DISCONNECTED;
+    private static final int STATE_DISCONNECTING = BluetoothProfile.STATE_DISCONNECTING;
+    private static final int STATE_CONNECTING = BluetoothProfile.STATE_CONNECTING;
+    private static final int STATE_CONNECTED = BluetoothProfile.STATE_CONNECTED;
 
     public final static String ACTION_DATA_AVAILABLE =
             "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
@@ -84,15 +87,15 @@ public class DexCollectionService extends Service {
         foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), this);
         foregroundServiceStarter.start();
         mContext = getApplicationContext();
+        dexCollectionService = this;
         listenForChangeInSettings();
+        this.startService(new Intent(this, SyncService.class));
         Log.w(TAG, "STARTING SERVICE");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         attemptConnection();
-        this.startService(new Intent(this, SyncService.class));
-
         return START_STICKY;
     }
 
@@ -101,6 +104,7 @@ public class DexCollectionService extends Service {
         setRetryTimer();
         close();
         foregroundServiceStarter.stop();
+        Log.w(TAG, "SERVICE STOPPED");
     }
 
     //TODO: Move this somewhere more reusable
@@ -111,8 +115,12 @@ public class DexCollectionService extends Service {
                     if (prefs.getBoolean("run_service_in_foreground", false)) {
                         foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), dexCollectionService);
                         foregroundServiceStarter.start();
+                        Log.w(TAG, "Moving to foreground");
+                        setRetryTimer();
                     } else {
                         dexCollectionService.stopForeground(true);
+                        Log.w(TAG, "Removing from foreground");
+                        setRetryTimer();
                     }
                 }
                 if(key.compareTo("dex_collection_method") == 0) {
@@ -126,7 +134,11 @@ public class DexCollectionService extends Service {
     }
 
     public void attemptConnection() {
-        if (mConnectionState == STATE_DISCONNECTED) {
+        if (device != null) {
+            mConnectionState = mBluetoothManager.getConnectionState(device, BluetoothProfile.GATT);
+        }
+        Log.w(TAG, "Connection state: " + mConnectionState);
+        if (mConnectionState == STATE_DISCONNECTED || mConnectionState == STATE_DISCONNECTING) {
             ActiveBluetoothDevice btDevice = new Select().from(ActiveBluetoothDevice.class)
                     .orderBy("_ID desc")
                     .executeSingle();
@@ -144,12 +156,13 @@ public class DexCollectionService extends Service {
                     mBluetoothAdapter = mBluetoothManager.getAdapter();
                     if (mBluetoothAdapter == null) {
                         Log.w(TAG, "Unable to obtain a BluetoothAdapter.");
+                        setRetryTimer();
                     }
                     is_connected = connect(mDeviceAddress);
                     if (is_connected) {
-                        Log.i(TAG, "connected to device");
+                        Log.w(TAG, "connected to device");
                     } else {
-                        Log.i(TAG, "Unable to connect to device");
+                        Log.w(TAG, "Unable to connect to device");
                         setRetryTimer();
                     }
 
@@ -167,7 +180,8 @@ public class DexCollectionService extends Service {
     public void setRetryTimer() {
         Calendar calendar = Calendar.getInstance();
         AlarmManager alarm = (AlarmManager)getSystemService(ALARM_SERVICE);
-        alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + (1000 * 60), PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0));
+        alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + (1000 * 60 * 2), PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0));
+        Log.w(TAG, "Retry set for" +  (((calendar.getTimeInMillis() + (1000 * 60 * 2)) - (int) (new Date().getTime())) / (60000)) + "mins from now!");
     }
 
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
@@ -175,13 +189,13 @@ public class DexCollectionService extends Service {
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mConnectionState = STATE_CONNECTED;
-                Log.i(TAG, "Connected to GATT server.");
+                Log.w(TAG, "Connected to GATT server.");
                 Log.w(TAG, "Attempting to start service discovery: " +
                         mBluetoothGatt.discoverServices());
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 mConnectionState = STATE_DISCONNECTED;
-                Log.i(TAG, "Disconnected from GATT server.");
+                Log.w(TAG, "Disconnected from GATT server.");
                 setRetryTimer();
             }
         }
@@ -267,15 +281,15 @@ public class DexCollectionService extends Service {
     }
 
     public boolean connect(final String address) {
-        Log.d(TAG, "CONNECTING TO DEVICE");
-        Log.d(TAG, address);
+        Log.w(TAG, "CONNECTING TO DEVICE");
+        Log.w(TAG, address);
         if (mBluetoothAdapter == null || address == null) {
             Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
             return false;
         }
         if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)
                 && mBluetoothGatt != null) {
-            Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
+            Log.w(TAG, "Trying to use an existing mBluetoothGatt for connection.");
             if (mBluetoothGatt.connect()) {
                 mConnectionState = STATE_CONNECTING;
                 return true;
@@ -283,13 +297,13 @@ public class DexCollectionService extends Service {
                 return false;
             }
         }
-        final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+        device = mBluetoothAdapter.getRemoteDevice(address);
         if (device == null) {
             Log.w(TAG, "Device not found.  Unable to connect.");
             return false;
         }
         mBluetoothGatt = device.connectGatt(this, true, mGattCallback);
-        Log.d(TAG, "Trying to create a new connection.");
+        Log.w(TAG, "Trying to create a new connection.");
         mBluetoothDeviceAddress = address;
         mConnectionState = STATE_CONNECTING;
         return true;
@@ -340,6 +354,7 @@ public class DexCollectionService extends Service {
 
     public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
 
+        Log.w(TAG, "received some data!");
         TransmitterData transmitterData = TransmitterData.create(buffer, len);
         if (transmitterData != null) {
             Sensor sensor = Sensor.currentSensor();
