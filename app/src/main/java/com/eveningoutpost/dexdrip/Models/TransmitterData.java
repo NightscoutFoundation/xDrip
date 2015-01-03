@@ -41,11 +41,15 @@ public class TransmitterData extends Model {
             data_string.append((char) buffer[i]);
         }
         String[] data = data_string.toString().split("\\s+");
-        transmitterData.sensor_battery_level = Integer.parseInt(data[1]);
-        transmitterData.raw_data = Integer.parseInt(data[0]);
-        transmitterData.timestamp = new Date().getTime();
-        transmitterData.uuid = UUID.randomUUID().toString();
-        transmitterData.save();
+        if(data.length > 1) {
+            transmitterData.sensor_battery_level = Integer.parseInt(data[1]);
+            transmitterData.raw_data = Integer.parseInt(data[0]);
+            transmitterData.timestamp = new Date().getTime();
+            transmitterData.uuid = UUID.randomUUID().toString();
+            transmitterData.save();
+        } else {
+            return null;
+        }
         return transmitterData;
     }
 
