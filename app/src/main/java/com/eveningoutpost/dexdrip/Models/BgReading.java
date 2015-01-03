@@ -28,7 +28,6 @@ public class BgReading extends Model {
     private final static String TAG = BgReading.class.getSimpleName();
     //TODO: Have these as adjustable settings!!
     public final static double BESTOFFSET = (60000 * 0); // Assume readings are about x minutes off from actual!
-    public final static double SLOPEREADAHEAD = (60000 * 3); // Forcast the rate of change 3 minutes out!
 
     @Column(name = "sensor", index = true)
     public Sensor sensor;
@@ -104,22 +103,6 @@ public class BgReading extends Model {
 
     public double calculated_value_mmol() {
         return mmolConvert(calculated_value);
-    }
-
-    public double unitized_calculated_value(boolean doMgdl) {
-        if(doMgdl) {
-            return calculated_value;
-        } else {
-            return calculated_value_mmol();
-        }
-    }
-
-    public double unitized_value(boolean doMgdl, double value) {
-        if(doMgdl) {
-            return value;
-        } else {
-            return mmolConvert(value);
-        }
     }
 
     public double mmolConvert(double mgdl) {
@@ -511,8 +494,4 @@ public class BgReading extends Model {
                 .create();
         return gson.toJson(this);
     }
-
-
-    //TODO: Add Sync instance method
-
 }

@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,15 +54,10 @@ public class BgGraphBuilder {
         this.highMark = Double.parseDouble(prefs.getString("highValue", "170"));
         this.lowMark = Double.parseDouble(prefs.getString("lowValue", "70"));
         this.doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
-
-        if(doMgdl) {
-            defaultMinY = 40;
-            defaultMaxY = 250;
-        } else {
-            defaultMinY = 40/18;
-            defaultMaxY = 250/18;
-        }
+        defaultMinY = unitized(40);
+        defaultMaxY = unitized(250);
     }
+
     public LineChartData lineData() {
         LineChartData lineData = new LineChartData(defaultLines());
         lineData.setAxisYLeft(yAxis());
@@ -122,15 +118,15 @@ public class BgGraphBuilder {
     private void addBgReadingValues() {
         for (BgReading bgReading : bgReadings) {
             if (bgReading.calculated_value >= 400) {
-                highValues.add(new PointValue((float) bgReading.timestamp, (float)bgReading.unitized_value(doMgdl,400)));
-            } else if (bgReading.unitized_calculated_value(doMgdl) >= highMark) {
-                highValues.add(new PointValue((float) bgReading.timestamp, (float) bgReading.unitized_calculated_value(doMgdl)));
-            } else if (bgReading.unitized_calculated_value(doMgdl) >= lowMark) {
-                inRangeValues.add(new PointValue((float) bgReading.timestamp, (float) bgReading.unitized_calculated_value(doMgdl)));
+                highValues.add(new PointValue((float) bgReading.timestamp, (float) unitized(400)));
+            } else if (unitized(bgReading.calculated_value) >= highMark) {
+                highValues.add(new PointValue((float) bgReading.timestamp, (float) unitized(bgReading.calculated_value)));
+            } else if (unitized(bgReading.calculated_value) >= lowMark) {
+                inRangeValues.add(new PointValue((float) bgReading.timestamp, (float) unitized(bgReading.calculated_value)));
             } else if (bgReading.calculated_value >= 40) {
-                lowValues.add(new PointValue((float)bgReading.timestamp, (float) bgReading.unitized_calculated_value(doMgdl)));
+                lowValues.add(new PointValue((float)bgReading.timestamp, (float) unitized(bgReading.calculated_value)));
             } else {
-                lowValues.add(new PointValue((float)bgReading.timestamp, (float)bgReading.unitized_value(doMgdl,40)));
+                lowValues.add(new PointValue((float)bgReading.timestamp, (float) unitized(40)));
             }
         }
     }
@@ -248,5 +244,35 @@ public class BgGraphBuilder {
         double distance_to_move = (new Date().getTime()) - viewport.left - (((viewport.right - viewport.left) /2));
         viewport.offset((float) distance_to_move, 0);
         return viewport;
+    }
+
+    public double unitized(double value) {
+        if(doMgdl) {
+            return value;
+        } else {
+            return mmolConvert(value);
+        }
+    }
+
+    public String unitized_string(double value) {
+        DecimalFormat df = new DecimalFormat("#");
+        df.setMaximumFractionDigits(0);
+        if (value >= 400) {
+            return "HIGH";
+        } else if (value >= 40) {
+            if(doMgdl) {
+                df.setMaximumFractionDigits(0);
+                return df.format(value);
+            } else {
+                df.setMaximumFractionDigits(1);
+                return df.format(mmolConvert(value));
+            }
+        } else {
+            return "LOW";
+        }
+    }
+
+    public double mmolConvert(double mgdl) {
+        return mgdl / 18;
     }
 }
