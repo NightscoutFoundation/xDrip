@@ -34,3 +34,4 @@ proguard/
 *manifest-merger-release-report.txt
 *.ds_store
 *.DS_Store
+*.swp
