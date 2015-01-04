@@ -9,4 +9,17 @@
         <item>BluetoothWixel</item>
         <item>WifiWixel</item>
     </string-array>
+
+
+
+
+    <string-array name="bgUnitEntries">
+        <item>mgdl</item>
+        <item>mmol</item>
+    </string-array>
+
+    <string-array name="bgUnitValues">
+        <item>mgdl</item>
+        <item>mmol</item>
+    </string-array>
 </resources>

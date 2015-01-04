@@ -35,17 +35,19 @@ public class TransmitterData extends Model {
     public static TransmitterData create(byte[] buffer, int len) {
         TransmitterData transmitterData = new TransmitterData();
                 StringBuilder data_string = new StringBuilder();
-        if (len < 9) { return null; };
+        if (len < 6) { return null; };
 
         for (int i = 0; i < len; ++i) {
             data_string.append((char) buffer[i]);
         }
         String[] data = data_string.toString().split("\\s+");
-        transmitterData.sensor_battery_level = Integer.parseInt(data[1]);
-        transmitterData.raw_data = Integer.parseInt(data[0]);
-        transmitterData.timestamp = new Date().getTime();
-        transmitterData.uuid = UUID.randomUUID().toString();
-        transmitterData.save();
+            if(data.length > 1) {
+                transmitterData.sensor_battery_level = Integer.parseInt(data[1]);
+            }
+            transmitterData.raw_data = Integer.parseInt(data[0]);
+            transmitterData.timestamp = new Date().getTime();
+            transmitterData.uuid = UUID.randomUUID().toString();
+            transmitterData.save();
         return transmitterData;
     }
 

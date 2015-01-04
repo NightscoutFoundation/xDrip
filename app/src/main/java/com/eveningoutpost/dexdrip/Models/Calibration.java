@@ -1,6 +1,8 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.util.Log;
 
@@ -97,7 +99,15 @@ public class Calibration extends Model {
     @Column(name = "sensor_uuid", index = true)
     public String sensor_uuid;
 
-    public static void initialCalibration(int bg1, int bg2, Context context) {
+    public static void initialCalibration(double bg1, double bg2, Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String unit = prefs.getString("units", "mgdl");
+
+        if(unit.compareTo("mgdl") != 0 ) {
+            bg1 = bg1 * 18;
+            bg2 = bg2 * 18;
+        }
+
         CalibrationRequest.clearAll();
         List<Calibration> pastCalibrations = Calibration.allForSensor();
         if (pastCalibrations != null) {
@@ -115,8 +125,8 @@ public class Calibration extends Model {
         BgReading bgReading2 = bgReadings.get(1);
         BgReading highBgReading;
         BgReading lowBgReading;
-        int higher_bg;
-        int lower_bg;
+        double higher_bg;
+        double lower_bg;
         if (bg1 > bg2) {
             higher_bg = bg1;
             lower_bg = bg2;
@@ -205,7 +215,14 @@ public class Calibration extends Model {
         Notifications.notificationSetter(context);
     }
 
-    public static Calibration create(int bg, Context context) {
+    public static Calibration create(double bg, Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String unit = prefs.getString("units", "mgdl");
+
+        if(unit.compareTo("mgdl") != 0 ) {
+            bg = bg * 18;
+        }
+
         CalibrationRequest.clearAll();
         Calibration calibration = new Calibration();
         Sensor sensor = Sensor.currentSensor();
@@ -471,7 +488,13 @@ public class Calibration extends Model {
         bgReadings.get(0).find_new_curve();
     }
 
-    public void overrideCalibration(int value, Context context) {
+    public void overrideCalibration(double value, Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String unit = prefs.getString("units", "mgdl");
+        if(unit.compareTo("mgdl") != 0 ) {
+            value = value * 18;
+        }
+
         bg = value;
         estimate_raw_at_time_of_calibration = raw_value;
         save();

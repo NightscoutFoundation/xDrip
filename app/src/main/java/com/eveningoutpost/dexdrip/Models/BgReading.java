@@ -1,6 +1,8 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.util.Log;
 
@@ -26,7 +28,6 @@ public class BgReading extends Model {
     private final static String TAG = BgReading.class.getSimpleName();
     //TODO: Have these as adjustable settings!!
     public final static double BESTOFFSET = (60000 * 0); // Assume readings are about x minutes off from actual!
-    public final static double SLOPEREADAHEAD = (60000 * 3); // Forcast the rate of change 3 minutes out!
 
     @Column(name = "sensor", index = true)
     public Sensor sensor;
@@ -100,13 +101,30 @@ public class BgReading extends Model {
     @Column(name = "snyced")
     public boolean synced;
 
-    public String displayValue() {
+    public double calculated_value_mmol() {
+        return mmolConvert(calculated_value);
+    }
+
+    public double mmolConvert(double mgdl) {
+        return mgdl / 18;
+    }
+
+    public String displayValue(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String unit = prefs.getString("units", "mgdl");
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(0);
+
         if (calculated_value >= 400) {
             return "HIGH";
         } else if (calculated_value >= 40) {
-            return df.format(calculated_value);
+            if(unit.compareTo("mgdl") == 0) {
+                df.setMaximumFractionDigits(0);
+                return df.format(calculated_value);
+            } else {
+                df.setMaximumFractionDigits(1);
+                return df.format(calculated_value_mmol());
+            }
         } else {
             return "LOW";
         }
@@ -153,7 +171,7 @@ public class BgReading extends Model {
                 } else {
                     bgReading.age_adjusted_raw_value = (raw_data / 1000);
                 }
-                
+
                 bgReading.save();
                 bgReading.perform_calculations();
             } else {
@@ -476,8 +494,4 @@ public class BgReading extends Model {
                 .create();
         return gson.toJson(this);
     }
-
-
-    //TODO: Add Sync instance method
-
 }

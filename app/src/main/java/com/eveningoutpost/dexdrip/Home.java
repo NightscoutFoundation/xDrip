@@ -222,29 +222,22 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         BgReading lastBgreading = BgReading.lastNoSenssor();
 
         if (lastBgreading != null) {
-            double estimate =0;
+            double estimate = 0;
             if ((new Date().getTime()) - (60000 * 11) - lastBgreading.timestamp > 0) {
                 notificationText.setText("Signal Missed");
                 estimate = BgReading.estimated_bg(lastBgreading.timestamp + (6000 * 7));
-                currentBgValueText.setText(df.format(estimate));
+                currentBgValueText.setText(bgGraphBuilder.unitized_string(BgReading.activePrediction()));
                 currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
                 if (lastBgreading != null) {
                     estimate = BgReading.activePrediction();
-                    String stringEstimate;
-                    if (estimate >= 400) {
-                        stringEstimate = "HIGH";
-                    } else if (estimate <= 40) {
-                        stringEstimate = "LOW";
-                    } else {
-                        stringEstimate = df.format(estimate);
-                    }
+                    String stringEstimate = bgGraphBuilder.unitized_string(estimate);
                     currentBgValueText.setText( stringEstimate + " " + BgReading.slopeArrow());
                 }
             }
-            if(estimate <= bgGraphBuilder.lowMark) {
+            if(bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
                 currentBgValueText.setTextColor(Color.parseColor("#C30909"));
-            } else if(estimate >= bgGraphBuilder.highMark) {
+            } else if(bgGraphBuilder.unitized(estimate) >= bgGraphBuilder.highMark) {
                 currentBgValueText.setTextColor(Color.parseColor("#FFBB33"));
             } else {
                 currentBgValueText.setTextColor(Color.WHITE);

@@ -30,11 +30,11 @@ public class SettingsActivity extends PreferenceActivity {
 
     private void setupSimplePreferencesScreen() {
         addPreferencesFromResource(R.xml.pref_license);
-        
+
         PreferenceCategory fakeHeader = new PreferenceCategory(this);
         getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_general);
-        
+
 
         fakeHeader = new PreferenceCategory(this);
         getPreferenceScreen().addPreference(fakeHeader);
@@ -55,7 +55,7 @@ public class SettingsActivity extends PreferenceActivity {
         fakeHeader = new PreferenceCategory(this);
         getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_wifi);
-        
+
         bindPreferenceSummaryToValue(findPreference("highValue"));
         bindPreferenceSummaryToValue(findPreference("lowValue"));
         bindPreferenceSummaryToValue(findPreference("bg_snooze"));
@@ -66,6 +66,7 @@ public class SettingsActivity extends PreferenceActivity {
         bindPreferenceSummaryToValue(findPreference("cloud_storage_api_base"));
         bindPreferenceSummaryToValue(findPreference("dex_collection_method"));
         bindPreferenceSummaryToValue(findPreference("wifi_recievers_addresses"));
+        bindPreferenceSummaryToValue(findPreference("units"));
     }
 
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
