@@ -11,5 +11,9 @@
      limitations under the License.
 -->
 <resources>
+    <!--WIXEL-->
     <usb-device class="2" subclass="0" protocol="0" vendor-id="8187" />
+
+    <!--DEXCOM-->
+    <usb-device class="2" subclass="0" protocol="0"  vendor-id="8867" product-id="71" />
 </resources>

@@ -115,6 +115,15 @@
             android:name=".LicenseAgreementActivity"
             android:label="@string/title_activity_license_agreement" >
         </activity>
+        <activity
+            android:name=".Models.CalibrationCheckInActivity"
+            android:label="@string/title_activity_calibration_check_in" >
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" android:resource="@xml/device_filter" />
+        </activity>
     </application>
 
 </manifest>
