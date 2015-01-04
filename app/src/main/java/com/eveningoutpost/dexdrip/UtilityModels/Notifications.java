@@ -86,7 +86,7 @@ public class Notifications {
         BgReading bgReading = bgReadings.get(0);
 
         if (bg_notifications && sensor != null) {
-            if (bgReading.calculated_value >= high || bgReading.calculated_value <= low) {
+            if (bgGraphBuilder.unitized(bgReading.calculated_value) >= high || bgGraphBuilder.unitized(bgReading.calculated_value) <= low) {
                 bgAlert(bgReading.displayValue(mContext), bgReading.slopeArrow());
             } else {
                 clearBgAlert();
