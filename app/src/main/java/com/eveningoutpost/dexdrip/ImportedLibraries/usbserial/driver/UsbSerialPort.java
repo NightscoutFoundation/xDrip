@@ -19,7 +19,7 @@
  * Project home page: https://github.com/mik3y/usb-serial-for-android
  */
 
-package com.hoho.android.usbserial.driver;
+package com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver;
 
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
@@ -85,12 +85,12 @@ public interface UsbSerialPort {
     public static final int STOPBITS_2 = 2;
 
     public UsbSerialDriver getDriver();
-    
+
     /**
      * Port number within driver.
      */
     public int getPortNumber();
-    
+
     /**
      * The serial number of the underlying UsbDeviceConnection, or {@code null}.
      */

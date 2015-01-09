@@ -19,7 +19,7 @@
  * Project home page: https://github.com/mik3y/usb-serial-for-android
  */
 
-package com.hoho.android.usbserial.driver;
+package com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver;
 
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
@@ -44,7 +44,7 @@ public class UsbSerialProber {
     public static UsbSerialProber getDefaultProber() {
         return new UsbSerialProber(getDefaultProbeTable());
     }
-    
+
     public static ProbeTable getDefaultProbeTable() {
         final ProbeTable probeTable = new ProbeTable();
         probeTable.addDriver(CdcAcmSerialDriver.class);
@@ -74,10 +74,10 @@ public class UsbSerialProber {
         }
         return result;
     }
-    
+
     /**
      * Probes a single device for a compatible driver.
-     * 
+     *
      * @param usbDevice the usb device to probe
      * @return a new {@link UsbSerialDriver} compatible with this device, or
      *         {@code null} if none available.

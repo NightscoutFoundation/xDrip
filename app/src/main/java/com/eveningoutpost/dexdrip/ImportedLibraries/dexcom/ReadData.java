@@ -1,13 +1,13 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom;
 
 import android.util.Log;
-import com.nightscout.android.dexcom.USB.UsbSerialDriver;
-import com.nightscout.android.dexcom.records.CalRecord;
-import com.nightscout.android.dexcom.records.EGVRecord;
-import com.nightscout.android.dexcom.records.GenericXMLRecord;
-import com.nightscout.android.dexcom.records.MeterRecord;
-import com.nightscout.android.dexcom.records.PageHeader;
-import com.nightscout.android.dexcom.records.SensorRecord;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialDriver;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.GenericXMLRecord;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.MeterRecord;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.PageHeader;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 
 import org.w3c.dom.Element;
 
@@ -165,7 +165,7 @@ public class ReadData {
         byte[] packet = new PacketBuilder(command, payload).compose();
         if (mSerialDevice != null) {
             try {
-                mSerialDevice.write(packet, IO_TIMEOUT);
+                mSerialDevice.getPorts().get(0).write(packet, IO_TIMEOUT);
             } catch (IOException e) {
                 Log.e(TAG, "Unable to write to serial device.", e);
             }
@@ -176,7 +176,7 @@ public class ReadData {
         byte[] packet = new PacketBuilder(command).compose();
         if (mSerialDevice != null) {
             try {
-                mSerialDevice.write(packet, IO_TIMEOUT);
+                mSerialDevice.getPorts().get(0).write(packet, IO_TIMEOUT);
             } catch (IOException e) {
                 Log.e(TAG, "Unable to write to serial device.", e);
             }
@@ -187,7 +187,7 @@ public class ReadData {
         byte[] readData = new byte[numOfBytes];
         int len = 0;
         try {
-            len = mSerialDevice.read(readData, IO_TIMEOUT);
+            len = mSerialDevice.getPorts().get(0).read(readData, IO_TIMEOUT);
             Log.d(TAG, "Read " + len + " byte(s) complete.");
 
             // Add a 100ms delay for when multiple write/reads are occurring in series

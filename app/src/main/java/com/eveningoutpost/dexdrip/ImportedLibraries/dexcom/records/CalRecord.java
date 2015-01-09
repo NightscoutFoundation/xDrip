@@ -1,9 +1,6 @@
-package com.nightscout.android.dexcom.records;
+package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records;
 
 import android.util.Log;
-
-import com.nightscout.android.TimeConstants;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -28,7 +25,7 @@ public class CalRecord extends GenericTimestampRecord {
         unk[2] = packet[34];
         decay = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getDouble(35);
         numRecords = packet[43];
-        long displayTimeOffset = (getDisplayTime().getTime() - getSystemTime().getTime()) / TimeConstants.SEC_TO_MS;
+        long displayTimeOffset = (getDisplayTime().getTime() - getSystemTime().getTime()) / (1000);
         int start = 44;
         for (int i = 0; i < numRecords; i++) {
             Log.d("CalDebug","Loop #"+i);

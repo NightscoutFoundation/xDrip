@@ -10,6 +10,8 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
 import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
@@ -213,6 +215,49 @@ public class Calibration extends Model {
             CalibrationRequest.createOffset(calibration.bg, 45);
         }
         Notifications.notificationSetter(context);
+    }
+
+    public static void create(CalRecord calRecord, Context context) {
+        Sensor sensor = Sensor.currentSensor();
+        if (sensor != null && Calibration.is_new(calRecord)) {
+            CalSubrecord calSubrecord = calRecord.getCalSubrecords()[calRecord.getCalSubrecords().length - 1];
+            Calibration calibration = new Calibration();
+            calibration.bg = calSubrecord.getCalBGL();
+            calibration.timestamp = calSubrecord.getDateEntered().getTime();
+            calibration.raw_value = calSubrecord.getCalRaw();
+            calibration.slope = calRecord.getSlope() / calRecord.getScale();
+            calibration.sensor_confidence = 1;
+            calibration.slope_confidence = 1;
+            calibration.estimate_raw_at_time_of_calibration = calSubrecord.getCalRaw();
+            calibration.sensor = sensor;
+            calibration.sensor_age_at_time_of_estimation = calibration.timestamp - sensor.started_at;
+            calibration.uuid = UUID.randomUUID().toString();
+            calibration.sensor_uuid = sensor.uuid;
+            calibration.save();
+
+            adjustRecentBgReadings();
+            CalibrationSendQueue.addToQueue(calibration, context);
+            Notifications.notificationSetter(context);
+            Calibration.requestCalibrationIfRangeTooNarrow();
+        }
+        Notifications.notificationSetter(context);
+    }
+
+    public static boolean is_new(CalRecord calRecord) {
+        Sensor sensor = Sensor.currentSensor();
+        CalSubrecord calSubrecord = calRecord.getCalSubrecords()[calRecord.getCalSubrecords().length - 1];
+        Calibration calibration = new Select()
+                .from(Calibration.class)
+                .where("Sensor = ? ", sensor.getId())
+                .where("slope_confidence != 0")
+                .where("sensor_confidence != 0")
+                .where("timestamp = ?", calSubrecord.getDateEntered().getTime())
+                .executeSingle();
+        if(calibration == null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static Calibration create(double bg, Context context) {

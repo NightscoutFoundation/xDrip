@@ -1,9 +1,9 @@
-package com.nightscout.android.dexcom.records;
+package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records;
 
-import com.nightscout.android.dexcom.CRC16;
-import com.nightscout.android.dexcom.CRCFailRuntimeException;
-import com.nightscout.android.dexcom.Constants;
-import com.nightscout.android.dexcom.Utils;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.CRC16;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.CRCFailRuntimeException;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Utils;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

@@ -1,6 +1,6 @@
-package com.nightscout.android.dexcom.records;
+package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records;
 
-import com.nightscout.android.dexcom.Constants;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
 
 import org.json.JSONException;
 import org.json.JSONObject;

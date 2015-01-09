@@ -19,7 +19,7 @@
  * Project home page: https://github.com/mik3y/usb-serial-for-android
  */
 
-package com.hoho.android.usbserial.driver;
+package com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver;
 
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
@@ -267,7 +267,7 @@ public class Cp21xxSerialDriver implements UsbSerialDriver {
                     configDataBits |= 0x0800;
                     break;
             }
-            
+
             switch (parity) {
                 case PARITY_ODD:
                     configDataBits |= 0x0010;
@@ -276,7 +276,7 @@ public class Cp21xxSerialDriver implements UsbSerialDriver {
                     configDataBits |= 0x0020;
                     break;
             }
-            
+
             switch (stopBits) {
                 case STOPBITS_1:
                     configDataBits |= 0;

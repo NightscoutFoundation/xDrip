@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.hoho.android.usbserial.util;
+package com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util;
 
 /**
  * Clone of Android's HexDump class, for use in debugging. Cosmetic changes

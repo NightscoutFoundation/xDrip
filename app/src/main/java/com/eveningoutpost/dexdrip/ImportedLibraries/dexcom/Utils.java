@@ -1,9 +1,8 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom;
 
-import com.nightscout.android.TimeConstants;
-import com.nightscout.android.dexcom.records.EGVRecord;
-import com.nightscout.android.dexcom.records.GlucoseDataSet;
-import com.nightscout.android.dexcom.records.SensorRecord;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.GlucoseDataSet;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 
 import java.util.Date;
 import java.util.TimeZone;

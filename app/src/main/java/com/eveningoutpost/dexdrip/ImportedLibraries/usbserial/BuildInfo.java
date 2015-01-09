@@ -1,4 +1,4 @@
-package com.hoho.android.usbserial;
+package com.eveningoutpost.dexdrip.ImportedLibraries.usbserial;
 
 /**
  * Static container of information about this library.

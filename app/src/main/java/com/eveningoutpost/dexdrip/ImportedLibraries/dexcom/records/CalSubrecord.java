@@ -1,8 +1,8 @@
-package com.nightscout.android.dexcom.records;
+package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records;
 
 import android.util.Log;
 
-import com.nightscout.android.dexcom.Utils;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Utils;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

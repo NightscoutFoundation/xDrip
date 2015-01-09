@@ -19,12 +19,12 @@
  * Project home page: https://github.com/mik3y/usb-serial-for-android
  */
 
-package com.hoho.android.usbserial.util;
+package com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util;
 
 import android.hardware.usb.UsbRequest;
 import android.util.Log;
 
-import com.hoho.android.usbserial.driver.UsbSerialPort;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialPort;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
