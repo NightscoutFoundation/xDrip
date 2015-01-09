@@ -29,8 +29,8 @@ dependencies {
     //    compile 'com.joanzapata.android:android-iconify:1.0.8'
 //    compile 'com.google.android.gms:play-services:6.1.11'
 //    compile 'com.android.support:appcompat-v7:21.0.0'
-//    compile 'org.mongodb:mongo-java-driver:2.12.4'
     compile 'com.google.code.gson:gson:2.3'
+    compile 'org.mongodb:mongo-java-driver:2.10.1'
     compile 'com.squareup.retrofit:retrofit:1.7.1'
 //    compile 'com.android.support:support-v4:21.0.0'
 }
