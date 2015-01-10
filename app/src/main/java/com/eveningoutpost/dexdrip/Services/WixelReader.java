@@ -196,7 +196,6 @@ public class WixelReader  extends Thread {
     		return null;
     	}
     	
-        //MongoWrapper mt = new MongoWrapper("mongodb://tzachi_dar:tzachi_dar@ds053958.mongolab.com:53958/nightscout", "SnirData", "CaptureDateTime", "MachineNameNotUsed");
     	MongoWrapper mt = new MongoWrapper(dbury, collection, "CaptureDateTime", "MachineNameNotUsed");
     	return mt.ReadFromMongo(numberOfRecords);
     }
