@@ -149,7 +149,7 @@ public class Calibration extends Model {
             lowBgReading = bgReading1;
         }
 
-        int lowerAdjust = 0;
+        double lowerAdjust = 0;
         if (highBgReading.age_adjusted_raw_value == lowBgReading.age_adjusted_raw_value) { lowerAdjust = 2; }
         higherCalibration.bg = higher_bg;
         higherCalibration.slope = 0;
