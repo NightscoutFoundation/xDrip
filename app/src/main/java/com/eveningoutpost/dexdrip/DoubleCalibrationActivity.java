@@ -56,7 +56,7 @@ public class DoubleCalibrationActivity  extends Activity implements NavigationDr
                     if (!TextUtils.isEmpty(string_value_1)){
                         if(!TextUtils.isEmpty(string_value_2)) {
                             double calValue_1 = Double.parseDouble(string_value_1);
-                            double calValue_2 = Integer.parseInt(string_value_2);
+                            double calValue_2 = Double.parseDouble(string_value_2);
                             Calibration.initialCalibration(calValue_1, calValue_2, getApplicationContext());
                             Intent tableIntent = new Intent(v.getContext(), Home.class);
                             startActivity(tableIntent);

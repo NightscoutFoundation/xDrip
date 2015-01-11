@@ -84,12 +84,12 @@
     <orderEntry type="jdk" jdkName="Android API 21 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="android-support-v4" level="project" />
+    <orderEntry type="library" exported="" name="mongo-java-driver-2.10.1" level="project" />
     <orderEntry type="library" exported="" name="ActiveAndroid" level="project" />
     <orderEntry type="library" exported="" name="usb-serial-for-android-v010" level="project" />
     <orderEntry type="library" exported="" name="retrofit-1.7.1" level="project" />
     <orderEntry type="library" exported="" name="hellocharts-library-1.1" level="project" />
     <orderEntry type="library" exported="" name="gson-2.3" level="project" />
-    <orderEntry type="library" exported="" name="mongo-java-driver-2.13.0-rc0" level="project" />
   </component>
 </module>
 
