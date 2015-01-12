@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.CalibrationCheckInActivity;
 import com.eveningoutpost.dexdrip.Tables.BgReadingTable;
 import com.eveningoutpost.dexdrip.Tables.CalibrationDataTable;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -40,6 +41,7 @@ public class NavDrawerBuilder {
         }
         options.add("BG Data Table");
         options.add("Calibration Data Table");
+        options.add("Check In Calibration");
 //        options.add("Sensor Data Table");
 
         if(is_active_sensor) {
@@ -80,6 +82,7 @@ public class NavDrawerBuilder {
         }
         options.add(new Intent(context, BgReadingTable.class));
         options.add(new Intent(context, CalibrationDataTable.class));
+        options.add(new Intent(context, CalibrationCheckInActivity.class));
 //        options.add(new Intent(context, SensorDataTable.class));
 
 

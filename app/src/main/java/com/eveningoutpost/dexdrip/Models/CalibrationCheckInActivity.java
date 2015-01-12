@@ -1,40 +1,45 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
+import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.SyncingService;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.Sensor;
 
 public class CalibrationCheckInActivity extends Activity {
+    Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calibration_check_in);
+        addListenerOnButton();
     }
 
+    public void addListenerOnButton() {
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_calibration_check_in, menu);
-        return true;
-    }
+        button = (Button) findViewById(R.id.check_in_calibrations);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+                if (Sensor.isActive()) {
+                    SyncingService.startActionCalibrationCheckin(getApplicationContext());
+                } else {
+                    Log.w("CANNOT CALIBRATE WITHOUT CURRENT SENSOR", "ERROR");
+                }
+            }
+        });
 
-        return super.onOptionsItemSelected(item);
     }
 }

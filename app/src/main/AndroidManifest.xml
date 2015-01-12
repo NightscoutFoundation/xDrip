@@ -91,6 +91,12 @@
             android:exported="true" >
         </service>
 
+        <service
+            android:name=".ImportedLibraries.dexcom.SyncingService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+
         <activity
             android:name=".FakeNumbers"
             android:label="@string/title_activity_fake_numbers" >

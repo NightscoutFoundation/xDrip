@@ -345,7 +345,7 @@ public class Calibration extends Model {
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
                 .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 5)))
-                .orderBy("bg asc")
+                .orderBy("bg desc")
                 .executeSingle();
         return calibration.bg;
     }

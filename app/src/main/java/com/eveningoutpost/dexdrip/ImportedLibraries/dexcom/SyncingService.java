@@ -36,6 +36,7 @@ public class SyncingService extends IntentService {
 
     // Action for intent
     private static final String ACTION_SYNC = "com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.action.SYNC";
+    private static final String ACTION_CALIBRATION_CHECKIN = "com.eveningoutpost.dexdrip.Models.CalibrationCheckInActivity";
 
     // Parameters for intent
     private static final String SYNC_PERIOD = "com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.extra.SYNC_PERIOD";
@@ -74,7 +75,11 @@ public class SyncingService extends IntentService {
         intent.putExtra(SYNC_PERIOD, numOfPages);
         context.startService(intent);
     }
-
+    public static void startActionCalibrationCheckin(Context context) {
+        Intent intent = new Intent(context, SyncingService.class);
+        intent.setAction(ACTION_CALIBRATION_CHECKIN);
+        context.startService(intent);
+    }
     public SyncingService() {
         super("SyncingService");
     }
@@ -87,6 +92,8 @@ public class SyncingService extends IntentService {
             if (ACTION_SYNC.equals(action)) {
                 final int param1 = intent.getIntExtra(SYNC_PERIOD, 1);
                 handleActionSync(param1);
+            } else if (ACTION_CALIBRATION_CHECKIN.equals(action)) {
+                performCalibrationCheckin();
             }
         }
     }
@@ -197,8 +204,9 @@ public class SyncingService extends IntentService {
 
     private void save_most_recent_cal_record(CalRecord[] calRecords) {
         int size = calRecords.length;
-        CalRecord last_record = calRecords[size - 1];
-        Calibration.create(last_record, getApplicationContext());
+        for(int i = 0; i < size; i++) {
+            Calibration.create(calRecords[i], getApplicationContext());
+        }
     }
 
     private boolean acquireSerialDevice() {
@@ -234,8 +242,12 @@ public class SyncingService extends IntentService {
 
     public void findDexcom() {
         mUsbManager = (UsbManager) getApplicationContext().getSystemService(Context.USB_SERVICE);
+        Log.d("USB MANAGER = ", mUsbManager.toString());
         HashMap<String, UsbDevice> deviceList = mUsbManager.getDeviceList();
+        Log.d("USB DEVICES = ", deviceList.toString());
         Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
+        Log.d("USB DEVICES = ", String.valueOf(deviceList.size()));
+
         while(deviceIterator.hasNext()){
             UsbDevice device = deviceIterator.next();
             if (device.getVendorId() == 8867 && device.getProductId() == 71
