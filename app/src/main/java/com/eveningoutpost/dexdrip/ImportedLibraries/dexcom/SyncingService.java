@@ -93,6 +93,7 @@ public class SyncingService extends IntentService {
                 final int param1 = intent.getIntExtra(SYNC_PERIOD, 1);
                 handleActionSync(param1);
             } else if (ACTION_CALIBRATION_CHECKIN.equals(action)) {
+                Log.w("CALIBRATION-CHECK-IN: ", "Beginning check in process");
                 performCalibrationCheckin();
             }
         }
@@ -106,11 +107,12 @@ public class SyncingService extends IntentService {
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "NSDownload");
         wl.acquire();
-
+        Log.w("CALIBRATION-CHECK-IN: ", "Wake Lock Acquired");
         if (acquireSerialDevice()) {
             try {
                 ReadData readData = new ReadData(mSerialDevice);
                 CalRecord[] calRecords = readData.getRecentCalRecords();
+                Log.w("CALIBRATION-CHECK-IN: ", "Found "+ calRecords.length + " Records!");
                 save_most_recent_cal_record(calRecords);
 
             } catch (Exception e) {
@@ -120,11 +122,12 @@ public class SyncingService extends IntentService {
                 try {
                     mSerialDevice.getPorts().get(0).close();
                 } catch (IOException e) {
-
                     Log.e(TAG, "Unable to close", e);
                 }
 
             }
+        } else {
+            Log.w("CALIBRATION-CHECK-IN: ", "Failed to acquire serial device");
         }
     }
 
@@ -213,10 +216,12 @@ public class SyncingService extends IntentService {
         findDexcom();
         mSerialDevice = UsbSerialProber.getDefaultProber().probeDevice(dexcom);
         if (mSerialDevice != null) {
+            Log.w("CALIBRATION-CHECK-IN: ", "Probed Dexcom");
             mUsbManager.openDevice(dexcom);
+            Log.w("CALIBRATION-CHECK-IN: ", "Was able to open dexcom");
             return true;
         } else {
-            Log.d(TAG, "Unable to acquire USB device from manager.");
+            Log.w(TAG, "Unable to acquire USB device from manager.");
         }
         return false;
     }
@@ -241,12 +246,13 @@ public class SyncingService extends IntentService {
     }
 
     public void findDexcom() {
+        Log.w("CALIBRATION-CHECK-IN: ", "Searching for dexcom");
         mUsbManager = (UsbManager) getApplicationContext().getSystemService(Context.USB_SERVICE);
-        Log.d("USB MANAGER = ", mUsbManager.toString());
+        Log.w("USB MANAGER = ", mUsbManager.toString());
         HashMap<String, UsbDevice> deviceList = mUsbManager.getDeviceList();
-        Log.d("USB DEVICES = ", deviceList.toString());
+        Log.w("USB DEVICES = ", deviceList.toString());
         Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
-        Log.d("USB DEVICES = ", String.valueOf(deviceList.size()));
+        Log.w("USB DEVICES = ", String.valueOf(deviceList.size()));
 
         while(deviceIterator.hasNext()){
             UsbDevice device = deviceIterator.next();
@@ -254,6 +260,9 @@ public class SyncingService extends IntentService {
                     && device.getDeviceClass() == 2 && device.getDeviceSubclass() ==0
                     && device.getDeviceProtocol() == 0){
                 dexcom = device;
+                Log.w("CALIBRATION-CHECK-IN: ", "Dexcom Found!");
+            } else {
+                Log.w("CALIBRATION-CHECK-IN: ", "that was not a dexcom (I dont think)");
             }
         }
     }

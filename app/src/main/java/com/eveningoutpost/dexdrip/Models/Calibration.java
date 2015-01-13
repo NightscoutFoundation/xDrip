@@ -101,6 +101,10 @@ public class Calibration extends Model {
     @Column(name = "sensor_uuid", index = true)
     public String sensor_uuid;
 
+    @Expose
+    @Column(name = "check_in")
+    public boolean check_in;
+
     public static void initialCalibration(double bg1, double bg2, Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String unit = prefs.getString("units", "mgdl");
@@ -218,6 +222,8 @@ public class Calibration extends Model {
     }
 
     public static void create(CalRecord calRecord, Context context) {
+        //TODO: Change calibration.last and other queries to order calibrations by timestamp rather than ID
+        Log.w("CALIBRATION-CHECK-IN: ", "Creating Calibration Record");
         Sensor sensor = Sensor.currentSensor();
         if (sensor != null && Calibration.is_new(calRecord)) {
             CalSubrecord calSubrecord = calRecord.getCalSubrecords()[calRecord.getCalSubrecords().length - 1];
@@ -226,13 +232,16 @@ public class Calibration extends Model {
             calibration.timestamp = calSubrecord.getDateEntered().getTime();
             calibration.raw_value = calSubrecord.getCalRaw();
             calibration.slope = calRecord.getSlope() / calRecord.getScale();
-            calibration.sensor_confidence = 1;
-            calibration.slope_confidence = 1;
+
+            calibration.sensor_confidence = ((-0.0018 * calibration.bg * calibration.bg) + (0.6657 * calibration.bg) + 36.7505) / 100;
+            if (calibration.sensor_confidence <= 0) { calibration.sensor_confidence = 0; }
+            calibration.slope_confidence = 0.8; //TODO: query backwards to find this value near the timestamp
             calibration.estimate_raw_at_time_of_calibration = calSubrecord.getCalRaw();
             calibration.sensor = sensor;
             calibration.sensor_age_at_time_of_estimation = calibration.timestamp - sensor.started_at;
             calibration.uuid = UUID.randomUUID().toString();
             calibration.sensor_uuid = sensor.uuid;
+            calibration.check_in = true;
             calibration.save();
 
             adjustRecentBgReadings();
