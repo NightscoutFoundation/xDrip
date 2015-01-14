@@ -53,6 +53,7 @@ public class TransmitterData extends Model {
         if(data.length > 1) {
             transmitterData.sensor_battery_level = Integer.parseInt(data[1]);
         }
+        if (Integer.parseInt(data[0]) < 1000) { return null; } // Sometimes the HM10 sends the battery level and readings in separate transmissions, filter out these incomplete packets!
         transmitterData.raw_data = Integer.parseInt(data[0]);
         transmitterData.timestamp = new Date().getTime();
         transmitterData.uuid = UUID.randomUUID().toString();

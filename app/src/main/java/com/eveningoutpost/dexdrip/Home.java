@@ -116,7 +116,6 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         previewChart.setViewportChangeListener(new ViewportListener());
         chart.setViewportChangeListener(new ChartViewPortListener());
         setViewport();
-
     }
 
     private class ChartViewPortListener implements ViewportChangeListener {
@@ -179,8 +178,8 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 if (BgReading.latest(2).size() > 1) {
                     List<Calibration> calibrations = Calibration.latest(2);
                     if (calibrations.size() > 1) {
-                        if (calibrations.get(0).slope <= 0.5 || calibrations.get(0).slope >= 1.4) {
-                            notificationText.setText("Possible bad calibration slope, recommend double calibration");
+                        if ((calibrations.get(0).slope <= 0.8 || calibrations.get(0).slope >= 1.35) && (calibrations.get(1).slope > 0.8 && calibrations.get(1).slope < 1.35)) {
+                            notificationText.setText("Possible bad calibration slope, please have a glass of water, wash hands, then recalibrate in a few!");
                         }
                         displayCurrentInfo();
                     } else {

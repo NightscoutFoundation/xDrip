@@ -46,8 +46,11 @@ public class NavDrawerBuilder {
             if(last_two_bgReadings.size() > 1) {
                 if(last_two_calibrations.size() > 1) {
                     if(bGreadings_in_last_30_mins.size() >= 2) {
-                        if (time_now - last_two_calibrations.get(0).timestamp < 5*60000) { options.add("Override Calibration"); }
-                        options.add("Add Calibration");
+                        if (time_now - last_two_calibrations.get(0).timestamp < (1000 * 60 * 60)) { //Put steps in place to discourage over calibration
+                            options.add("Override Calibration");
+                        } else {
+                            options.add("Add Calibration");
+                        }
                     } else { options.add("Cannot Calibrate right now"); }
                     if (last_two_calibrations.get(0).slope >= 1.4 || last_two_calibrations.get(0).slope <= 0.5) { options.add("Add Double Calibration"); }
                 } else { options.add("Add Double Calibration"); }
@@ -86,9 +89,12 @@ public class NavDrawerBuilder {
         if(is_active_sensor) {
             if(last_two_bgReadings.size() > 1) {
                 if (last_two_calibrations.size() > 1) {
-                    if(bGreadings_in_last_30_mins.size() >= 3) {
-                         if (time_now - last_two_calibrations.get(0).timestamp < 5*60000) { options.add(new Intent(context, CalibrationOverride.class)); }
-                        options.add(new Intent(context, AddCalibration.class));
+                    if(bGreadings_in_last_30_mins.size() >= 2) {
+                         if (time_now - last_two_calibrations.get(0).timestamp < (1000 * 60 * 60)) { //Put steps in place to discourage over calibration
+                             options.add(new Intent(context, CalibrationOverride.class));
+                         } else {
+                             options.add(new Intent(context, AddCalibration.class));
+                         }
                     } else { options.add(new Intent(context, Home.class)); }
                     if (last_two_calibrations.get(0).slope >= 1.4 || last_two_calibrations.get(0).slope <= 0.5) { options.add(new Intent(context, DoubleCalibrationActivity.class)); }
                 } else { options.add(new Intent(context, DoubleCalibrationActivity.class)); }

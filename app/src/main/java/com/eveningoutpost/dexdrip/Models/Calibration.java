@@ -292,27 +292,27 @@ public class Calibration extends Model {
                 .orderBy("_ID asc")
                 .executeSingle();
     }
-    public static double max() {
+    public static double max_recent() {
         Sensor sensor = Sensor.currentSensor();
         Calibration calibration = new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
-                .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 5)))
+                .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 4)))
                 .orderBy("bg asc")
                 .executeSingle();
         return calibration.bg;
     }
 
-    public static double min() {
+    public static double min_recent() {
         Sensor sensor = Sensor.currentSensor();
         Calibration calibration = new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
-                .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 5)))
+                .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 4)))
                 .orderBy("bg asc")
                 .executeSingle();
         return calibration.bg;
@@ -392,17 +392,17 @@ public class Calibration extends Model {
                 Calibration calibration = Calibration.last();
                 calibration.intercept = ((n * p) - (m * q)) / d;
                 calibration.slope = ((l * q) - (m * p)) / d;
-                if ((calibrations.size() == 2 && calibration.slope < 0.88) || (calibration.slope < 0.5)) {
+                if ((calibrations.size() == 2 && calibration.slope < 0.88) || (calibration.slope < 0.75)) { // I have not seen a case where a value below 7.5 proved to be accurate but we should keep an eye on this
                     calibration.slope = calibration.slopeOOBHandler();
-                    if (calibration.slope == 0) { calibration.slope = 0.5; }
+                    if (calibration.slope == 0) { calibration.slope = 0.88; }
                     calibration.intercept = calibration.bg - (calibration.estimate_raw_at_time_of_calibration * calibration.slope);
-                    CalibrationRequest.createOffset(calibration.bg, 35);
+                    CalibrationRequest.createOffset(calibration.bg, 25);
                 }
-                if ((calibrations.size() == 2 && calibration.slope > 1.3) || (calibration.slope > 1.4)) {
+                if ((calibrations.size() == 2 && calibration.slope > 1.3) || (calibration.slope > 1.35)) {
                     calibration.slope = calibration.slopeOOBHandler();
-                    if (calibration.slope == 0) { calibration.slope = 1.4; }
+                    if (calibration.slope == 0) { calibration.slope = 1.35; }
                     calibration.intercept = calibration.bg - (calibration.estimate_raw_at_time_of_calibration * calibration.slope);
-                    CalibrationRequest.createOffset(calibration.bg, 35);
+                    CalibrationRequest.createOffset(calibration.bg, 25);
                 }
                 Log.d(TAG, "Calculated Calibration Slope: " + calibration.slope);
                 Log.d(TAG, "Calculated Calibration intercept: " + calibration.intercept);
@@ -415,25 +415,11 @@ public class Calibration extends Model {
     private double slopeOOBHandler() {
         double adjustedSlope = 0;
         List<Calibration> calibrations = Calibration.latest(3);
+        Calibration lastUsedCalibration = calibrations.get(0);
         if (calibrations.size() == 3) {
-            Calibration lastUsedCalibration = calibrations.get(1);
-            Calibration latestCalibration = calibrations.get(0);
-            if (lastUsedCalibration.slope >= 0.5 && lastUsedCalibration.slope <= 1.4 && lastUsedCalibration.distance_from_estimate < 35) {
-                return lastUsedCalibration.slope;
-            } else {
-                if (latestCalibration.sensor_age_at_time_of_estimation < (60000 * 60 * 24 * 5)) { // 432000000
-                    return ((-0.048) * (latestCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.12;
-                } else {
-                    return 0.88;
-                }
-            }
+           return Math.max(((-0.048) * (lastUsedCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.12, 0.8);
         } else if (calibrations.size() == 2) {
-            Calibration lastUsedCalibration = calibrations.get(0);
-            if (lastUsedCalibration.sensor_age_at_time_of_estimation < (60000 * 60 * 24 * 5)) { // 432000000
-                return ((-0.048) * (lastUsedCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.12;
-            } else {
-                return 0.88;
-            }
+           return Math.max(((-0.048) * (lastUsedCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.12, 1.02);
         }
         return adjustedSlope;
     }
@@ -451,11 +437,9 @@ public class Calibration extends Model {
     private double calculateWeight() {
         double firstTimeStarted =   Calibration.first().sensor_age_at_time_of_estimation;
         double lastTimeStarted =   Calibration.last().sensor_age_at_time_of_estimation;
-        double time_percentage = (sensor_age_at_time_of_estimation - firstTimeStarted) / (lastTimeStarted - firstTimeStarted);
+        double time_percentage = Math.min(((sensor_age_at_time_of_estimation - firstTimeStarted) / (lastTimeStarted - firstTimeStarted)) / (.85), 1);
         Log.w(TAG, "CALIBRATIONS TIME PERCENTAGE WEIGHT: " + ""+(time_percentage + 0.1));
         time_percentage = (time_percentage + .01);
-        if(sensor_confidence == 0 && slope_confidence == 0){ return 0; }
-        if (time_percentage > 1) { time_percentage = 1; }
         double calculated_confidence = (((((slope_confidence + sensor_confidence) * (time_percentage))) / 2) * 100);
         if (calculated_confidence <= 1) { return 1; }
         return calculated_confidence;
@@ -488,21 +472,6 @@ public class Calibration extends Model {
         bgReadings.get(0).find_new_curve();
     }
 
-    public void overrideCalibration(double value, Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String unit = prefs.getString("units", "mgdl");
-        if(unit.compareTo("mgdl") != 0 ) {
-            value = value * 18;
-        }
-
-        bg = value;
-        estimate_raw_at_time_of_calibration = raw_value;
-        save();
-        calculate_w_l_s();
-        adjustRecentBgReadings();
-        CalibrationSendQueue.addToQueue(this, context);
-    }
-
     public String toS() {
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
@@ -521,8 +490,8 @@ public class Calibration extends Model {
     }
 
     public static void requestCalibrationIfRangeTooNarrow() {
-        double max = Calibration.max();
-        double min = Calibration.min();
+        double max = Calibration.max_recent();
+        double min = Calibration.min_recent();
         if ((max - min) < 50) {
             double avg = ((min + max) / 2);
             double dist = max - avg;
