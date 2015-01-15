@@ -77,7 +77,6 @@
     <string name="pref_default_api_url">yourpassphrase@https://{YOUR-SITE}.azurewebsites.net/api/v1</string>
 
     <!-- wifi Settings -->
-    <string name="wifi_recievers_dialog_title">Enter ip addresses and ports of receivers</string>
-    <string name="wifi_recievers_dialog_message">Comma separated list of ip:port (for example 37.142.132.220:50005,37.142.132.220:50006)</string>
-
+    <string name="wifi_recievers_dialog_message">Comma separated list of ip:port (for example 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
+    <string name="wifi_recievers_dialog_title">Enter ip addresses and ports of receivers (including mongodb addresses if needed)</string>
 </resources>

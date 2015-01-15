@@ -171,6 +171,35 @@ public class WixelReader  extends Thread {
         return ret;
     }
     
+    public static List<TransmitterRawData> ReadFromMongo(String dbury, int numberOfRecords)
+    {
+        Log.i(TAG,"Reading From " + dbury);
+    	List<TransmitterRawData> tmpList;
+    	// format is dburi/db/collection. We need to find the collection and strip it from the dburi.
+    	int indexOfSlash = dbury.lastIndexOf('/');
+    	if(indexOfSlash == -1) {
+    		// We can not find a collection name
+    		Log.e(TAG, "Error bad dburi. Did not find a collection name starting with / " + dbury);
+    		// in order for the user to understand that there is a problem, we return null
+    		return null;
+    		
+    	}
+    	String collection = dbury.substring(indexOfSlash + 1);
+    	dbury = dbury.substring(0, indexOfSlash);
+    	
+    	// Make sure that we have another /, since this is used in the constructor.
+    	indexOfSlash = dbury.lastIndexOf('/');
+    	if(indexOfSlash == -1) {
+    		// We can not find a collection name
+    		Log.e(TAG, "Error bad dburi. Did not find a collection name starting with / " + dbury);
+    		// in order for the user to understand that there is a problem, we return null
+    		return null;
+    	}
+    	
+    	MongoWrapper mt = new MongoWrapper(dbury, collection, "CaptureDateTime", "MachineNameNotUsed");
+    	return mt.ReadFromMongo(numberOfRecords);
+    }
+    
     // format of string is ip1:port1,ip2:port2;
     public static TransmitterRawData[] Read(String hostsNames, int numberOfRecords)
     {
@@ -183,7 +212,13 @@ public class WixelReader  extends Thread {
         
         // go over all hosts and read data from them
         for(String host : hosts) {
-            List<TransmitterRawData> tmpList= ReadHost(host, numberOfRecords);
+        	
+            List<TransmitterRawData> tmpList;
+            if (host.startsWith("mongodb://")) {
+            	tmpList = ReadFromMongo(host ,numberOfRecords);
+            } else {
+            	tmpList = ReadHost(host, numberOfRecords);            	
+            }
             if(tmpList != null && tmpList.size() > 0) {
                 allTransmitterRawData.add(tmpList);
             }
