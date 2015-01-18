@@ -46,7 +46,7 @@ public class CalibrationDataTable extends ListActivity implements NavigationDraw
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
                 R.layout.raw_data_list_item,
                 cursor,
-                new String[] { "bg", "raw_value", "slope", "intercept" },
+                new String[] { "bg", "estimate_raw_at_time_of_calibration", "slope", "intercept" },
                 new int[] { R.id.raw_data_id, R.id.raw_data_value , R.id.raw_data_slope, R.id.raw_data_timestamp });
 
         this.setListAdapter(adapter);

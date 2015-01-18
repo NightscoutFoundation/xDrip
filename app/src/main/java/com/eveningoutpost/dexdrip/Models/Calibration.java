@@ -99,6 +99,10 @@ public class Calibration extends Model {
     @Column(name = "sensor_uuid", index = true)
     public String sensor_uuid;
 
+    @Expose
+    @Column(name = "possible_bad")
+    public Boolean possible_bad;
+
     public static void initialCalibration(double bg1, double bg2, Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String unit = prefs.getString("units", "mgdl");
@@ -233,10 +237,6 @@ public class Calibration extends Model {
                 calibration.sensor = sensor;
                 calibration.bg = bg;
 
-                bgReading.calibration_flag = true;
-                bgReading.save();
-                BgSendQueue.addToQueue(bgReading, "update", context);
-
                 calibration.timestamp = new Date().getTime();
                 calibration.raw_value = bgReading.raw_data;
                 calibration.adjusted_raw_value = bgReading.age_adjusted_raw_value;
@@ -251,17 +251,22 @@ public class Calibration extends Model {
                 calibration.raw_timestamp = bgReading.timestamp;
                 if (Math.abs(estimated_raw_bg - bgReading.age_adjusted_raw_value) > 20) {
                     calibration.estimate_raw_at_time_of_calibration = bgReading.age_adjusted_raw_value;
-                    Log.w("Using previous RAW: ", "" + estimated_raw_bg);
+                    Log.w("Using previous RAW: ", "" + bgReading.age_adjusted_raw_value);
                 } else {
                     calibration.estimate_raw_at_time_of_calibration = estimated_raw_bg;
                     Log.w("Using estimated RAW: ", "" + estimated_raw_bg);
                 }
-                calibration.distance_from_estimate = Math.abs(calibration.bg - estimated_raw_bg);
+                calibration.distance_from_estimate = Math.abs(calibration.bg - bgReading.calculated_value);
                 calibration.sensor_confidence = ((-0.0018 * bg * bg) + (0.6657 * bg) + 36.7505) / 100;
                 if (calibration.sensor_confidence <= 0) { calibration.sensor_confidence = 0; }
                 calibration.sensor_age_at_time_of_estimation = calibration.timestamp - sensor.started_at;
                 calibration.uuid = UUID.randomUUID().toString();
                 calibration.save();
+                
+                bgReading.calibration = calibration;
+                bgReading.calibration_flag = true;
+                bgReading.save();
+                BgSendQueue.addToQueue(bgReading, "update", context);
 
                 calculate_w_l_s();
                 adjustRecentBgReadings();
@@ -392,15 +397,15 @@ public class Calibration extends Model {
                 Calibration calibration = Calibration.last();
                 calibration.intercept = ((n * p) - (m * q)) / d;
                 calibration.slope = ((l * q) - (m * p)) / d;
-                if ((calibrations.size() == 2 && calibration.slope < 0.88) || (calibration.slope < 0.75)) { // I have not seen a case where a value below 7.5 proved to be accurate but we should keep an eye on this
+                if ((calibrations.size() == 2 && calibration.slope < 0.9) || (calibration.slope < 0.85)) { // I have not seen a case where a value below 7.5 proved to be accurate but we should keep an eye on this
                     calibration.slope = calibration.slopeOOBHandler();
-                    if (calibration.slope == 0) { calibration.slope = 0.88; }
+                    if(calibrations.size() > 3) { calibration.possible_bad = true; }
                     calibration.intercept = calibration.bg - (calibration.estimate_raw_at_time_of_calibration * calibration.slope);
                     CalibrationRequest.createOffset(calibration.bg, 25);
                 }
                 if ((calibrations.size() == 2 && calibration.slope > 1.3) || (calibration.slope > 1.35)) {
                     calibration.slope = calibration.slopeOOBHandler();
-                    if (calibration.slope == 0) { calibration.slope = 1.35; }
+                    if(calibrations.size() > 3) { calibration.possible_bad = true; }
                     calibration.intercept = calibration.bg - (calibration.estimate_raw_at_time_of_calibration * calibration.slope);
                     CalibrationRequest.createOffset(calibration.bg, 25);
                 }
@@ -415,11 +420,15 @@ public class Calibration extends Model {
     private double slopeOOBHandler() {
         double adjustedSlope = 0;
         List<Calibration> calibrations = Calibration.latest(3);
-        Calibration lastUsedCalibration = calibrations.get(0);
+        Calibration thisCalibration = calibrations.get(0);
         if (calibrations.size() == 3) {
-           return Math.max(((-0.048) * (lastUsedCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.12, 0.8);
+            if((Math.abs(thisCalibration.bg - thisCalibration.estimate_bg_at_time_of_calibration) < 30) && (calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad == true)) {
+               return calibrations.get(1).slope;
+            } else {
+               return Math.max(((-0.048) * (thisCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.12, 1);
+            }
         } else if (calibrations.size() == 2) {
-           return Math.max(((-0.048) * (lastUsedCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.12, 1.02);
+            return Math.max(((-0.048) * (thisCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.12, 1.1);
         }
         return adjustedSlope;
     }
@@ -482,7 +491,7 @@ public class Calibration extends Model {
     }
 
     public void rawValueOverride(double rawValue, Context context) {
-        estimate_bg_at_time_of_calibration = rawValue;
+        estimate_raw_at_time_of_calibration = rawValue;
         save();
         calculate_w_l_s();
         adjustRecentBgReadings();

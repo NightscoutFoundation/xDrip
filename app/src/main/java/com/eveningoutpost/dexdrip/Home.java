@@ -178,7 +178,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 if (BgReading.latest(2).size() > 1) {
                     List<Calibration> calibrations = Calibration.latest(2);
                     if (calibrations.size() > 1) {
-                        if ((calibrations.get(0).slope <= 0.8 || calibrations.get(0).slope >= 1.35) && (calibrations.get(1).slope > 0.8 && calibrations.get(1).slope < 1.35)) {
+                        if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad == false) {
                             notificationText.setText("Possible bad calibration slope, please have a glass of water, wash hands, then recalibrate in a few!");
                         }
                         displayCurrentInfo();
