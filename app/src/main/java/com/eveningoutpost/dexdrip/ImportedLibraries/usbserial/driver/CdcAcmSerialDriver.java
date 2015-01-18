@@ -100,7 +100,7 @@ public class CdcAcmSerialDriver implements UsbSerialDriver {
 
         @Override
         public void open(UsbDeviceConnection connection) throws IOException {
-            if (mConnection != null) {
+            if (mConnection != null && false) {
                 throw new IOException("Already open");
             }
 
@@ -156,6 +156,9 @@ public class CdcAcmSerialDriver implements UsbSerialDriver {
             mConnection.close();
             mConnection = null;
         }
+
+        @Override
+        public int read(byte[] dest, int timeoutMillis, UsbDeviceConnection connection) throws IOException {return 0;}
 
         @Override
         public int read(byte[] dest, int timeoutMillis) throws IOException {

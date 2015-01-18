@@ -26,9 +26,11 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
+import android.hardware.usb.UsbRequest;
 import android.util.Log;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -229,7 +231,54 @@ public class Cp21xxSerialDriver implements UsbSerialDriver {
             }
             return offset;
         }
+        @Override
+        public int read(byte[] dest, int timeoutMillis, UsbDeviceConnection connection) throws IOException {
+            if (false) {
+                final UsbRequest request = new UsbRequest();
+                try {
+                    request.initialize(connection, mReadEndpoint);
+                    final ByteBuffer buf = ByteBuffer.wrap(dest);
+                    if (!request.queue(buf, dest.length)) {
+                        throw new IOException("Error queueing request.");
+                    }
 
+                    final UsbRequest response = connection.requestWait();
+                    if (response == null) {
+                        throw new IOException("Null response");
+                    }
+
+                    final int nread = buf.position();
+                    if (nread > 0) {
+                        //Log.d(TAG, HexDump.dumpHexString(dest, 0, Math.min(32, dest.length)));
+                        return nread;
+                    } else {
+                        return 0;
+                    }
+                } finally {
+                    request.close();
+                }
+            }
+
+            final int numBytesRead;
+            synchronized (mReadBufferLock) {
+                int readAmt = Math.min(dest.length, mReadBuffer.length);
+                numBytesRead = connection.bulkTransfer(mReadEndpoint, mReadBuffer, readAmt,
+                        timeoutMillis);
+                if (numBytesRead < 0) {
+                    // This sucks: we get -1 on timeout, not 0 as preferred.
+                    // We *should* use UsbRequest, except it has a bug/api oversight
+                    // where there is no way to determine the number of bytes read
+                    // in response :\ -- http://b.android.com/28023
+                    if (timeoutMillis == Integer.MAX_VALUE) {
+                        // Hack: Special case "~infinite timeout" as an error.
+                        return -1;
+                    }
+                    return 0;
+                }
+                System.arraycopy(mReadBuffer, 0, dest, 0, numBytesRead);
+            }
+            return numBytesRead;
+        }
         private void setBaudRate(int baudRate) throws IOException {
             byte[] data = new byte[] {
                     (byte) ( baudRate & 0xff),

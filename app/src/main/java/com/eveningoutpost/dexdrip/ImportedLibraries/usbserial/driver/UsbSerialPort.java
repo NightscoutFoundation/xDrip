@@ -122,6 +122,7 @@ public interface UsbSerialPort {
      * @throws IOException if an error occurred during reading
      */
     public int read(final byte[] dest, final int timeoutMillis) throws IOException;
+    public int read(final byte[] dest, final int timeoutMillis, final UsbDeviceConnection connection) throws IOException;
 
     /**
      * Writes as many bytes as possible from the source buffer.

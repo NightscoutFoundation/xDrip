@@ -1,6 +1,12 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom;
 
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbDeviceConnection;
+import android.hardware.usb.UsbEndpoint;
+import android.hardware.usb.UsbInterface;
 import android.util.Log;
+
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.CdcAcmSerialDriver;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialDriver;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
@@ -8,6 +14,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.GenericXMLRec
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.MeterRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.PageHeader;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialPort;
 
 import org.w3c.dom.Element;
 
@@ -17,16 +24,31 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class ReadData {
 
     private static final String TAG = ReadData.class.getSimpleName();
-    private static final int IO_TIMEOUT = 1000;
+    private static final int IO_TIMEOUT = 3000;
     private static final int MIN_LEN = 256;
     private UsbSerialDriver mSerialDevice;
+    protected final Object mReadBufferLock = new Object();
+    private UsbDeviceConnection mConnection;
+    private UsbDevice mDevice;
 
     public ReadData(UsbSerialDriver device) {
         mSerialDevice = device;
+    }
+    public ReadData(UsbSerialDriver device, UsbDeviceConnection connection, UsbDevice usbDevice) {
+        mSerialDevice = device;
+        mConnection = connection;
+        mDevice = usbDevice;
+        try {
+      mSerialDevice.getPorts().get(0).open(connection);
+        } catch(IOException e) {
+            Log.w("FAILED WHILE", "trying to open");
+        }
+//        }
     }
 
     public EGVRecord[] getRecentEGVs() {
@@ -137,9 +159,13 @@ public class ReadData {
 
     private int readDataBasePageRange(int recordType) {
         ArrayList<Byte> payload = new ArrayList<Byte>();
+        Log.d(TAG, "adding Payload");
         payload.add((byte) recordType);
+        Log.d(TAG, "Sending write command");
         writeCommand(Constants.READ_DATABASE_PAGE_RANGE, payload);
+        Log.d(TAG, "About to call getdata");
         byte[] readData = read(MIN_LEN).getData();
+        Log.d(TAG, "Going to return");
         return ByteBuffer.wrap(readData).order(ByteOrder.LITTLE_ENDIAN).getInt(4);
     }
 
@@ -165,8 +191,11 @@ public class ReadData {
         byte[] packet = new PacketBuilder(command, payload).compose();
         if (mSerialDevice != null) {
             try {
-                mSerialDevice.getPorts().get(0).write(packet, IO_TIMEOUT);
-            } catch (IOException e) {
+//                UsbInterface mDataInterface = mDevice.getInterface(1);
+//                UsbEndpoint mWriteEndpoint = mDataInterface.getEndpoint(0);
+//                mConnection.bulkTransfer(mWriteEndpoint, packet, packet.length, IO_TIMEOUT);
+                  mSerialDevice.getPorts().get(0).write(packet, IO_TIMEOUT);
+            } catch (Exception e) {
                 Log.e(TAG, "Unable to write to serial device.", e);
             }
         }
@@ -176,8 +205,11 @@ public class ReadData {
         byte[] packet = new PacketBuilder(command).compose();
         if (mSerialDevice != null) {
             try {
+//                UsbInterface mDataInterface = mDevice.getInterface(1);
+//                UsbEndpoint mWriteEndpoint = mDataInterface.getEndpoint(0);
+//                mConnection.bulkTransfer(mWriteEndpoint, packet, packet.length, IO_TIMEOUT);
                 mSerialDevice.getPorts().get(0).write(packet, IO_TIMEOUT);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Log.e(TAG, "Unable to write to serial device.", e);
             }
         }
@@ -187,7 +219,34 @@ public class ReadData {
         byte[] readData = new byte[numOfBytes];
         int len = 0;
         try {
+//            UsbInterface mDataInterface = mDevice.getInterface(1);
+//            UsbEndpoint mReadEndpoint = mDataInterface.getEndpoint(1);
+//            byte[] mReadBuffer;
+//            mReadBuffer = new byte[16 * 1024];
+//
+//            int readAmt = Math.min(readData.length, mReadBuffer.length);
+//            synchronized (mReadBufferLock) {
+//
+//
+//                Log.d(TAG, "Read about to call bulk transfer.");
+//                if (len < 0) {
+//                    // This sucks: we get -1 on timeout, not 0 as preferred.
+//                    // We *should* use UsbRequest, except it has a bug/api oversight
+//                    // where there is no way to determine the number of bytes read
+//                    // in response :\ -- http://b.android.com/28023
+//                    if (IO_TIMEOUT == Integer.MAX_VALUE) {
+//                        // Hack: Special case "~infinite timeout" as an error.
+//                        len = -1;
+//                    }
+//                    len = 0;
+//                }
+//
+////              System.arraycopy(mReadBuffer, 0, readData, 0, readAmt);
+//            }
+//            len = mConnection.bulkTransfer(mReadEndpoint, readData, readAmt, IO_TIMEOUT);
+
             len = mSerialDevice.getPorts().get(0).read(readData, IO_TIMEOUT);
+
             Log.d(TAG, "Read " + len + " byte(s) complete.");
 
             // Add a 100ms delay for when multiple write/reads are occurring in series
@@ -201,10 +260,8 @@ public class ReadData {
             Log.d(TAG, "Read data: " + bytes);
             ////////////////////////////////////////////////////////////////////////////////////////
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.e(TAG, "Unable to read from serial device.", e);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
         byte[] data = Arrays.copyOfRange(readData, 0, len);
         return new ReadPacket(data);

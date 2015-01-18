@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom;
 
 import android.app.IntentService;
+import android.bluetooth.BluetoothClass;
 import android.content.Intent;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,6 +13,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.CdcAcmSerialDriver;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.ProbeTable;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialDriver;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialProber;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
@@ -27,6 +30,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous CGM Receiver downloads and cloud uploads
@@ -56,6 +60,7 @@ public class SyncingService extends IntentService {
     private UsbManager mUsbManager;
     private UsbSerialDriver mSerialDevice;
     private UsbDevice dexcom;
+    private UsbDeviceConnection mConnection;
 
     // Constants
     private final int TIME_SYNC_OFFSET = 10000;
@@ -110,7 +115,9 @@ public class SyncingService extends IntentService {
         Log.w("CALIBRATION-CHECK-IN: ", "Wake Lock Acquired");
         if (acquireSerialDevice()) {
             try {
-                ReadData readData = new ReadData(mSerialDevice);
+                ReadData readData = new ReadData(mSerialDevice, mConnection, dexcom);
+
+//                ReadData readData = new ReadData(mSerialDevice);
                 CalRecord[] calRecords = readData.getRecentCalRecords();
                 Log.w("CALIBRATION-CHECK-IN: ", "Found "+ calRecords.length + " Records!");
                 save_most_recent_cal_record(calRecords);
@@ -208,20 +215,44 @@ public class SyncingService extends IntentService {
     private void save_most_recent_cal_record(CalRecord[] calRecords) {
         int size = calRecords.length;
         for(int i = 0; i < size; i++) {
-            Calibration.create(calRecords[i], getApplicationContext());
+            Calibration.create(calRecords[i], getApplicationContext(), false);
         }
     }
 
     private boolean acquireSerialDevice() {
-        findDexcom();
-        mSerialDevice = UsbSerialProber.getDefaultProber().probeDevice(dexcom);
-        if (mSerialDevice != null) {
-            Log.w("CALIBRATION-CHECK-IN: ", "Probed Dexcom");
-            mUsbManager.openDevice(dexcom);
-            Log.w("CALIBRATION-CHECK-IN: ", "Was able to open dexcom");
-            return true;
+        UsbDevice found_device = findDexcom();
+
+        if(mUsbManager == null) {
+            Log.w("CALIBRATION-CHECK-IN: ", "USB manager is null");
+        }
+
+
+        if( mUsbManager.hasPermission(dexcom)) {                                           // the system is allowing us to poke around this device
+
+            ProbeTable customTable = new ProbeTable();                                           // From the USB library...
+            customTable.addProduct(0x22A3, 0x0047, CdcAcmSerialDriver.class);       // ...Specify the Vendor ID and Product ID
+
+            UsbSerialProber prober = new UsbSerialProber(customTable);                      // Probe the device with the custom values
+            List<UsbSerialDriver> drivers = prober.findAllDrivers(mUsbManager);            // let's go through the list
+            Iterator<UsbSerialDriver> foo = drivers.iterator();                                                                                                  // Invalid Return code
+            while (foo.hasNext()) {                                                         // let's loop through
+                UsbSerialDriver driver = foo.next();                                        // set fooDriver to the next available driver
+                if (driver != null) {
+                    UsbDeviceConnection connection = mUsbManager.openDevice(driver.getDevice());
+                    if (connection != null) {
+                        mSerialDevice = driver;
+
+                        mConnection = connection;
+                        Log.w("CALIBRATION-CHECK-IN: ", "CONNECTEDDDD!!");
+                        return true;
+                    }
+                } else {
+                    Log.w("CALIBRATION-CHECK-IN: ", "Driver was no good");
+                }
+            }
+            Log.w("CALIBRATION-CHECK-IN: ", "No usable drivers found");
         } else {
-            Log.w(TAG, "Unable to acquire USB device from manager.");
+            Log.w("CALIBRATION-CHECK-IN: ", "You dont have permissions for that dexcom!!");
         }
         return false;
     }
@@ -245,7 +276,7 @@ public class SyncingService extends IntentService {
         return g4Connected;
     }
 
-    public void findDexcom() {
+    public UsbDevice findDexcom() {
         Log.w("CALIBRATION-CHECK-IN: ", "Searching for dexcom");
         mUsbManager = (UsbManager) getApplicationContext().getSystemService(Context.USB_SERVICE);
         Log.w("USB MANAGER = ", mUsbManager.toString());
@@ -261,10 +292,12 @@ public class SyncingService extends IntentService {
                     && device.getDeviceProtocol() == 0){
                 dexcom = device;
                 Log.w("CALIBRATION-CHECK-IN: ", "Dexcom Found!");
+                return device;
             } else {
                 Log.w("CALIBRATION-CHECK-IN: ", "that was not a dexcom (I dont think)");
             }
         }
+        return null;
     }
 
     private void broadcastSGVToUI(EGVRecord egvRecord, boolean uploadStatus,
