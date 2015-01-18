@@ -12,6 +12,7 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -106,7 +107,7 @@ public class BgReading extends Model {
     }
 
     public double mmolConvert(double mgdl) {
-        return mgdl / 18;
+        return mgdl * Constants.MGDL_TO_MMOLL;
     }
 
     public String displayValue(Context context) {

@@ -13,6 +13,7 @@ import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -104,8 +105,8 @@ public class Calibration extends Model {
         String unit = prefs.getString("units", "mgdl");
 
         if(unit.compareTo("mgdl") != 0 ) {
-            bg1 = bg1 * 18;
-            bg2 = bg2 * 18;
+            bg1 = bg1 * Constants.MMOLL_TO_MGDL;
+            bg2 = bg2 * Constants.MMOLL_TO_MGDL;
         }
 
         CalibrationRequest.clearAll();
@@ -220,7 +221,7 @@ public class Calibration extends Model {
         String unit = prefs.getString("units", "mgdl");
 
         if(unit.compareTo("mgdl") != 0 ) {
-            bg = bg * 18;
+            bg = bg * Constants.MMOLL_TO_MGDL;
         }
 
         CalibrationRequest.clearAll();
