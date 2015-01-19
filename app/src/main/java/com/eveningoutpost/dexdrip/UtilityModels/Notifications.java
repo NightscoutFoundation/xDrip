@@ -225,7 +225,7 @@ public class Notifications {
             UserNotification newUserNotification = UserNotification.create("Double Calibration", "double_calibration_alert");
             String title = "Sensor is ready";
             String content = "Sensor is ready, please enter a double calibration";
-            Intent intent = new Intent(mContext, AddCalibration.class);
+            Intent intent = new Intent(mContext, DoubleCalibrationActivity.class);
             calibrationNotificationCreate(title, content, intent, calibrationNotificationId);
         }
     }
@@ -237,7 +237,7 @@ public class Notifications {
             UserNotification newUserNotification = UserNotification.create("Extra Calibration Requested", "extra_calibration_alert");
             String title = "Calibration Needed";
             String content = "A calibration entered now will GREATLY increase performance";
-            Intent intent = new Intent(mContext, Home.class);
+            Intent intent = new Intent(mContext, AddCalibration.class);
             calibrationNotificationCreate(title, content, intent, extraCalibrationNotificationId);
         }
     }
