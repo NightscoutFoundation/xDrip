@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.eveningoutpost.dexdrip" >
 
+    <permission android:name="com.eveningoutpost.dexdrip.permissions.RECEIVE_BG_ESTIMATE"/>
+
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="true" />

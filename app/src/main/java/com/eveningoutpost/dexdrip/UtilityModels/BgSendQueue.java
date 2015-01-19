@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
@@ -77,6 +78,11 @@ public class BgSendQueue extends Model {
                 task.execute();
             }
         }
+
+        Intent intent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE);
+        intent.putExtra(Intents.EXTRA_BG_ESTIMATE, (double)bgReading.calculated_value);
+        intent.putExtra(Intents.EXTRA_BG_SLOPE, (double)bgReading.calculated_value_slope);
+        context.sendBroadcast(intent, Intents.RECEIVER_PERMISSION);
     }
 
     public void markMongoSuccess() {
