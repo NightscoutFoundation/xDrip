@@ -172,8 +172,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         final TextView notificationText = (TextView)findViewById(R.id.notices);
         notificationText.setText("");
         boolean isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
-        if((isBTWixel &&ActiveBluetoothDevice.first() != null) ||
-            (!isBTWixel && WixelReader.IsConfigured(getApplicationContext()))) {
+        if((isBTWixel && ActiveBluetoothDevice.first() != null) || (!isBTWixel && WixelReader.IsConfigured(getApplicationContext()))) {
             if (Sensor.isActive() && (Sensor.currentSensor().started_at + (60000 * 60 * 2)) < new Date().getTime()) {
                 if (BgReading.latest(2).size() > 1) {
                     List<Calibration> calibrations = Calibration.latest(2);
