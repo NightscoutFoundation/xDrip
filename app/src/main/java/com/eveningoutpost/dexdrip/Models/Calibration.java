@@ -225,6 +225,12 @@ public class Calibration extends Model {
         //TODO: Change calibration.last and other queries to order calibrations by timestamp rather than ID
         Log.w("CALIBRATION-CHECK-IN: ", "Creating Calibration Record");
         Sensor sensor = Sensor.currentSensor();
+        Log.w("CALIBRATION-CHECK-IN: ", "Slope: " + calRecord.getSlope());
+        Log.w("CALIBRATION-CHECK-IN: ", "Scale: " + calRecord.getScale());
+        Log.w("CALIBRATION-CHECK-IN: ", "Real Slope: " + (calRecord.getSlope() / calRecord.getScale())/1000);
+        Log.w("CALIBRATION-CHECK-IN: ", "Intercept: " + calRecord.getIntercept());
+        Log.w("CALIBRATION-CHECK-IN: ", "Real Intercept: " + (-1) * calRecord.getIntercept() / 1000);
+        Log.w("CALIBRATION-CHECK-IN: ", "Decay: " + calRecord.getDecay());
         if (sensor != null) {
             for(int i = 0; i < calRecord.getCalSubrecords().length - 1; i++) {
                 if (((calRecord.getCalSubrecords()[i] != null && Calibration.is_new(calRecord.getCalSubrecords()[i]))) || (i == 0 && override)) {
@@ -235,7 +241,7 @@ public class Calibration extends Model {
                     calibration.timestamp = calSubrecord.getDateEntered().getTime();
                     calibration.raw_value = calSubrecord.getCalRaw() / 1000;
                     calibration.slope = (calRecord.getSlope() / calRecord.getScale()) / 1000;
-                    calibration.intercept = calRecord.getIntercept() / 1000;
+                    calibration.intercept = ((-1) * calRecord.getIntercept() / 1000) - 5;
 
                     calibration.sensor_confidence = ((-0.0018 * calibration.bg * calibration.bg) + (0.6657 * calibration.bg) + 36.7505) / 100;
                     if (calibration.sensor_confidence <= 0) {
