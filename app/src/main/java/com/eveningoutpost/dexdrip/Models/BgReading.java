@@ -288,6 +288,7 @@ public class BgReading extends Model {
                 .orderBy("_ID desc")
                 .executeSingle();
     }
+    
     public static List<BgReading> latest(int number) {
         Sensor sensor = Sensor.currentSensor();
         if (sensor == null) { return null; }
