@@ -163,6 +163,7 @@ public class BgReading extends Model {
                 bgReading.uuid = UUID.randomUUID().toString();
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
                 bgReading.synced = false;
+                bgReading.calibration_flag = false;
 
                 //TODO: THIS IS A BIG SILLY IDEA, THIS WILL HAVE TO CHANGE ONCE WE GET SOME REAL DATA FROM THE START OF SENSOR LIFE
                 double adjust_for = (86400000 * 1.8) - bgReading.time_since_sensor_started;
@@ -198,7 +199,7 @@ public class BgReading extends Model {
 
                 BgReading lastBgReading = BgReading.last();
                 if (lastBgReading != null && lastBgReading.calibration != null) {
-                    if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp)) {
+                    if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp) && ((lastBgReading.calibration.timestamp + (60000 * 20)) > bgReading.timestamp)) {
                         lastBgReading.calibration.rawValueOverride(BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value), context);
                     }
                 }
