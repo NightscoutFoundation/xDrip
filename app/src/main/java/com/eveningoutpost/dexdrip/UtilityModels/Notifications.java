@@ -82,7 +82,7 @@ public class Notifications {
         Sensor sensor = Sensor.currentSensor();
 
         List<BgReading> bgReadings = BgReading.latest(3);
-        List<Calibration> calibrations = Calibration.allForSensorInLastFiveDays();
+        List<Calibration> calibrations = Calibration.allForSensorInLastFourDays();
         BgReading bgReading = bgReadings.get(0);
 
         if (bg_notifications && sensor != null) {
