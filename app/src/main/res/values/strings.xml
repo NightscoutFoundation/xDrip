@@ -79,4 +79,8 @@
     <!-- wifi Settings -->
     <string name="wifi_recievers_dialog_message">Comma separated list of ip:port (for example 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">Enter ip addresses and ports of receivers (including mongodb addresses if needed)</string>
+
+    <!-- broadcast settings -->
+    <string name="pref_title_broadcast_enabled">Broadcast locally</string>
+    <string name="pref_summary_broadcast_enabled">Enable local broadcast of data so other apps (eg. NightWatch) can listen on new values</string>
 </resources>
