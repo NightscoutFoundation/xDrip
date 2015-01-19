@@ -277,9 +277,11 @@ public class BgGraphBuilder {
         } else if (value >= 40) {
             if(doMgdl) {
                 df.setMaximumFractionDigits(0);
+                df.setMinimumFractionDigits(0);
                 return df.format(value);
             } else {
                 df.setMaximumFractionDigits(1);
+                df.setMinimumFractionDigits(1);
                 return df.format(mmolConvert(value));
             }
         } else {
@@ -288,6 +290,6 @@ public class BgGraphBuilder {
     }
 
     public double mmolConvert(double mgdl) {
-        return mgdl / 18;
+        return mgdl * Constants.MGDL_TO_MMOLL;
     }
 }
