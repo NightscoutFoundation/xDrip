@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
+import android.text.format.DateFormat;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 
@@ -211,7 +212,7 @@ public class BgGraphBuilder {
         List<AxisValue> xAxisValues = new ArrayList<AxisValue>();
         GregorianCalendar now = new GregorianCalendar();
         GregorianCalendar today = new GregorianCalendar(now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH));
-        SimpleDateFormat timeFormat = new SimpleDateFormat("h a");
+        final java.text.DateFormat timeFormat = hourFormat();
         timeFormat.setTimeZone(TimeZone.getDefault());
         double start_hour = today.getTime().getTime();
         double timeNow = new Date().getTime();
@@ -233,13 +234,17 @@ public class BgGraphBuilder {
         return xAxis;
     }
 
+    private SimpleDateFormat hourFormat() {
+        return new SimpleDateFormat(DateFormat.is24HourFormat(context) ? "HH" : "h a");
+    }
+
     private boolean isXLargeTablet() {
         return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
     }
     
     public Axis previewXAxis(){
         List<AxisValue> previewXaxisValues = new ArrayList<AxisValue>();
-        SimpleDateFormat timeFormat = new SimpleDateFormat("h a");
+        final java.text.DateFormat timeFormat = hourFormat();
         timeFormat.setTimeZone(TimeZone.getDefault());
         for(int l=0; l<=24; l+=hoursPreviewStep) {
             double timestamp = endHour - (60000 * 60 * l);
