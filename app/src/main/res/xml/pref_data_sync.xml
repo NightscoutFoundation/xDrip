@@ -65,6 +65,13 @@
             </EditTextPreference>
 
         </PreferenceScreen>
+
+        <SwitchPreference
+            android:title="@string/pref_title_broadcast_enabled"
+            android:key="broadcast_data_through_intents"
+            android:summary="@string/pref_summary_broadcast_enabled"
+            android:defaultValue="false" >
+        </SwitchPreference>
     </PreferenceCategory>
 
 </PreferenceScreen>

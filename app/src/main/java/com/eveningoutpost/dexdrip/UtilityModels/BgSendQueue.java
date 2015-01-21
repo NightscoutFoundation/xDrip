@@ -1,7 +1,9 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.util.Log;
@@ -76,6 +78,20 @@ public class BgSendQueue extends Model {
                 MongoSendTask task = new MongoSendTask(context, bgSendQueue);
                 task.execute();
             }
+        }
+
+        if(prefs.getBoolean("broadcast_data_through_intents", false)) {
+            Log.i("SENSOR QUEUE:", "Broadcast data");
+            final Bundle bundle = new Bundle();
+            bundle.putDouble(Intents.EXTRA_BG_ESTIMATE, bgReading.calculated_value);
+            bundle.putDouble(Intents.EXTRA_BG_SLOPE, bgReading.calculated_value_slope);
+            bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, bgReading.slopeName());
+            bundle.putInt(Intents.EXTRA_SENSOR_BATTERY, bgReading.sensor.latest_battery_level);
+            bundle.putLong(Intents.EXTRA_TIMESTAMP, bgReading.timestamp);
+
+            Intent intent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE);
+            intent.putExtras(bundle);
+            context.sendBroadcast(intent, Intents.RECEIVER_PERMISSION);
         }
     }
 
