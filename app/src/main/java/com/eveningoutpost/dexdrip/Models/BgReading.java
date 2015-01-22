@@ -323,7 +323,7 @@ public class BgReading extends Model {
 
                 bgReading.save();
                 bgReading.perform_calculations();
-                Notifications.notificationSetter(context);
+                Notifications.getInstance().notificationSetter(context);
                 BgSendQueue.addToQueue(bgReading, "create", context);
             }
         }
