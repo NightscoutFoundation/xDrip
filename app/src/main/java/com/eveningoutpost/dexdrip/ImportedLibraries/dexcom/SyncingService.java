@@ -256,22 +256,22 @@ public class SyncingService extends IntentService {
     }
 
     static public boolean isG4Connected(Context c){
-        // Iterate through devices and see if the dexcom is connected
-        // Allowing us to start to start syncing if the G4 is already connected
-        // vendor-id="8867" product-id="71" class="2" subclass="0" protocol="0"
         UsbManager manager = (UsbManager) c.getSystemService(Context.USB_SERVICE);
         HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
+        Log.w("USB DEVICES = ", deviceList.toString());
         Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
-        boolean g4Connected=false;
+        Log.w("USB DEVICES = ", String.valueOf(deviceList.size()));
+
         while(deviceIterator.hasNext()){
             UsbDevice device = deviceIterator.next();
             if (device.getVendorId() == 8867 && device.getProductId() == 71
                     && device.getDeviceClass() == 2 && device.getDeviceSubclass() ==0
                     && device.getDeviceProtocol() == 0){
-                g4Connected=true;
+                Log.w("CALIBRATION-CHECK-IN: ", "Dexcom Found!");
+                return true;
             }
         }
-        return g4Connected;
+        return false;
     }
 
     public UsbDevice findDexcom() {

@@ -5,7 +5,6 @@
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
-
     <uses-feature android:name="android.hardware.usb.host" />
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -93,7 +92,6 @@
             android:enabled="true"
             android:exported="true" >
         </service>
-
         <service
             android:name=".ImportedLibraries.dexcom.SyncingService"
             android:enabled="true"
@@ -127,11 +125,18 @@
         <activity
             android:name=".Models.CalibrationCheckInActivity"
             android:label="@string/title_activity_calibration_check_in" >
+
+        </activity>
+        <activity
+            android:name=".UsbConnectedActivity"
+            android:label="@string/title_activity_usb_connected" >
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
+
             <meta-data
-                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" android:resource="@xml/device_filter" />
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
         </activity>
     </application>
 
