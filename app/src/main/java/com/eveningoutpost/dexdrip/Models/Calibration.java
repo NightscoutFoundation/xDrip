@@ -375,72 +375,6 @@ public class Calibration extends Model {
         return Calibration.last();
     }
 
-    public static Calibration last() {
-        Sensor sensor = Sensor.currentSensor();
-        return new Select()
-                .from(Calibration.class)
-                .where("Sensor = ? ", sensor.getId())
-                .orderBy("timestamp desc")
-                .executeSingle();
-    }
-
-    public static Calibration first() {
-        Sensor sensor = Sensor.currentSensor();
-        return new Select()
-                .from(Calibration.class)
-                .where("Sensor = ? ", sensor.getId())
-                .orderBy("timestamp asc")
-                .executeSingle();
-    }
-    public static double max() {
-        Sensor sensor = Sensor.currentSensor();
-        Calibration calibration = new Select()
-                .from(Calibration.class)
-                .where("Sensor = ? ", sensor.getId())
-                .where("slope_confidence != 0")
-                .where("sensor_confidence != 0")
-                .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 5)))
-                .orderBy("bg desc")
-                .executeSingle();
-        return calibration.bg;
-    }
-
-    public static double min() {
-        Sensor sensor = Sensor.currentSensor();
-        Calibration calibration = new Select()
-                .from(Calibration.class)
-                .where("Sensor = ? ", sensor.getId())
-                .where("slope_confidence != 0")
-                .where("sensor_confidence != 0")
-                .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 5)))
-                .orderBy("bg asc")
-                .executeSingle();
-        return calibration.bg;
-    }
-
-    public static List<Calibration> latest(int number) {
-        Sensor sensor = Sensor.currentSensor();
-        if (sensor == null) { return null; }
-        return new Select()
-                .from(Calibration.class)
-                .where("Sensor = ? ", sensor.getId())
-                .orderBy("timestamp desc")
-                .limit(number)
-                .execute();
-    }
-
-    public static List<Calibration> allForSensor() {
-        Sensor sensor = Sensor.currentSensor();
-        if (sensor == null) { return null; }
-        return new Select()
-                .from(Calibration.class)
-                .where("Sensor = ? ", sensor.getId())
-                .where("slope_confidence != 0")
-                .where("sensor_confidence != 0")
-                .orderBy("timestamp desc")
-                .execute();
-    }
-
     public static List<Calibration> allForSensorInLastFiveDays() {
         Sensor sensor = Sensor.currentSensor();
         if (sensor == null) { return null; }
@@ -620,7 +554,7 @@ public class Calibration extends Model {
         return new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())
-                .orderBy("_ID desc")
+                .orderBy("timestamp desc")
                 .executeSingle();
     }
 
@@ -631,7 +565,7 @@ public class Calibration extends Model {
                 .where("Sensor = ? ", sensor.getId())
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
-                .orderBy("_ID asc")
+                .orderBy("timestamp asc")
                 .executeSingle();
     }
     public static double max_recent() {
@@ -642,7 +576,7 @@ public class Calibration extends Model {
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
                 .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 4)))
-                .orderBy("bg asc")
+                .orderBy("bg desc")
                 .executeSingle();
         return calibration.bg;
     }
@@ -666,7 +600,7 @@ public class Calibration extends Model {
         return new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())
-                .orderBy("_ID desc")
+                .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
     }
@@ -679,7 +613,7 @@ public class Calibration extends Model {
                 .where("Sensor = ? ", sensor.getId())
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
-                .orderBy("_ID desc")
+                .orderBy("timestamp desc")
                 .execute();
     }
 

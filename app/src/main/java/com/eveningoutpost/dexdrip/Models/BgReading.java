@@ -210,14 +210,14 @@ public class BgReading extends Model {
                 }
 
                 if(calibration.check_in) {
-                    double firstAdjSlope = calibration.first_slope + (calibration.first_decay * ((new Date().getTime() - calibration.timestamp)/(1000 * 60 * 10)));
+                    double firstAdjSlope = calibration.first_slope + (calibration.first_decay * (Math.ceil(new Date().getTime() - calibration.timestamp)/(1000 * 60 * 10)));
 //                    double secondAdjSlope = calibration.first_slope + (calibration.first_decay * ((new Date().getTime() - calibration.timestamp)/(1000 * 60 * 10)));
                     double calSlope = (calibration.first_scale / firstAdjSlope)*1000;
                     double calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope)*-1;
 //                    double calSlope = ((calibration.second_scale / secondAdjSlope) + (3 * calibration.first_scale / firstAdjSlope)) * 250;
 //                    double calIntercept = (((calibration.second_scale * calibration.second_intercept) / secondAdjSlope) + ((3 * calibration.first_scale * calibration.first_intercept) / firstAdjSlope)) / -4;
 
-                    bgReading.calculated_value = (((calSlope * bgReading.raw_data) + calIntercept) - 4.4);
+                    bgReading.calculated_value = (((calSlope * bgReading.raw_data) + calIntercept) - 5);
                 } else {
                     bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
                 }
@@ -309,7 +309,7 @@ public class BgReading extends Model {
                 .orderBy("_ID desc")
                 .executeSingle();
     }
-    
+
     public static List<BgReading> latest(int number) {
         Sensor sensor = Sensor.currentSensor();
         if (sensor == null) { return null; }

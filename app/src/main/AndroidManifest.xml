@@ -125,7 +125,7 @@
             android:label="@string/title_activity_license_agreement" >
         </activity>
         <activity
-            android:name=".Models.CalibrationCheckInActivity"
+            android:name=".CalibrationCheckInActivity"
             android:label="@string/title_activity_calibration_check_in" >
 
         </activity>

@@ -40,7 +40,7 @@ public class SyncingService extends IntentService {
 
     // Action for intent
     private static final String ACTION_SYNC = "com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.action.SYNC";
-    private static final String ACTION_CALIBRATION_CHECKIN = "com.eveningoutpost.dexdrip.Models.CalibrationCheckInActivity";
+    private static final String ACTION_CALIBRATION_CHECKIN = "com.eveningoutpost.dexdrip.CalibrationCheckInActivity";
 
     // Parameters for intent
     private static final String SYNC_PERIOD = "com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.extra.SYNC_PERIOD";

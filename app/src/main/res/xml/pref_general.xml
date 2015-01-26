@@ -22,7 +22,7 @@
             android:summary="The minimum value you consider to be in range."
             android:defaultValue="70" />
         <CheckBoxPreference
-            android:key="predictive"
+            android:key="predictive_bg"
             android:title="Display Predictive Values"
             android:summary="DexDrip will attempt to predict readings each minute based on the past few values, this is not always accurate."
             android:defaultValue="false" />
