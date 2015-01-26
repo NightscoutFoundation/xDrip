@@ -136,6 +136,11 @@ public class BgReading extends Model {
         Log.w(TAG, "ESTIMATE SLOPE" + slope);
         return slope;
     }
+    public double staticSlope() {
+        double slope = (2 * this.a * this.timestamp) + this.b;
+        Log.w(TAG, "ESTIMATE SLOPE" + slope);
+        return slope;
+    }
 
     public static double activePrediction() {
         BgReading bgReading = BgReading.lastNoSenssor();
@@ -201,7 +206,19 @@ public class BgReading extends Model {
                         lastBgReading.calibration.rawValueOverride(BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value), context);
                     }
                 }
-                bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
+
+                if(calibration.check_in) {
+                    double firstAdjSlope = calibration.first_slope + (calibration.first_decay * ((new Date().getTime() - calibration.timestamp)/(1000 * 60 * 10)));
+//                    double secondAdjSlope = calibration.first_slope + (calibration.first_decay * ((new Date().getTime() - calibration.timestamp)/(1000 * 60 * 10)));
+                    double calSlope = (calibration.first_scale / firstAdjSlope)*1000;
+                    double calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope)*-1;
+//                    double calSlope = ((calibration.second_scale / secondAdjSlope) + (3 * calibration.first_scale / firstAdjSlope)) * 250;
+//                    double calIntercept = (((calibration.second_scale * calibration.second_intercept) / secondAdjSlope) + ((3 * calibration.first_scale * calibration.first_intercept) / firstAdjSlope)) / -4;
+
+                    bgReading.calculated_value = (((calSlope * bgReading.raw_data) + calIntercept) - 4.4);
+                } else {
+                    bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
+                }
                 if (bgReading.calculated_value <= 40) {
                     bgReading.calculated_value = 40;
                 } else if (bgReading.calculated_value >= 400) {
@@ -222,6 +239,10 @@ public class BgReading extends Model {
 
     public static String slopeArrow() {
         double slope = (float) (BgReading.activeSlope() * 60000);
+        return slopeArrow(slope);
+    }
+
+    public static String slopeArrow(double slope) {
         String arrow;
         if (slope <= (-3.5)) {
             arrow = "\u21ca";
@@ -344,14 +365,6 @@ public class BgReading extends Model {
 
     //*******INSTANCE METHODS***********//
     public void perform_calculations() {
-        Calibration calibration = Calibration.last();
-        if (calibration == null) {
-            Log.w(TAG, "NO CALIBRATION DATA, CANNOT CALCULATE CURRENT VALUES.");
-        } else {
-            calculated_value = ((calibration.slope * age_adjusted_raw_value) + calibration.intercept);
-            Log.w(TAG, "NEW VALUE CALCULATED AT: " + calculated_value);
-        }
-        save();
         find_new_curve();
         find_new_raw_curve();
         find_slope();

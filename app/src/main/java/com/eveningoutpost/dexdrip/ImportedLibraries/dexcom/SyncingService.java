@@ -214,7 +214,8 @@ public class SyncingService extends IntentService {
 
     private void save_most_recent_cal_record(CalRecord[] calRecords) {
         int size = calRecords.length;
-        Calibration.create(calRecords[0], getApplicationContext(), false);
+
+        Calibration.create(calRecords, getApplicationContext(), false);
     }
 
     private boolean acquireSerialDevice() {

@@ -220,16 +220,24 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
             currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         }
         BgReading lastBgreading = BgReading.lastNoSenssor();
-
-        if (lastBgreading != null) {
+        boolean predictive = prefs.getBoolean("predictive", false);
+            if (lastBgreading != null) {
             double estimate = 0;
             if ((new Date().getTime()) - (60000 * 11) - lastBgreading.timestamp > 0) {
                 notificationText.setText("Signal Missed");
-                estimate = BgReading.estimated_bg(lastBgreading.timestamp + (6000 * 7));
+                if(predictive){
+                    estimate=lastBgreading.calculated_value;
+                } else {
+                    estimate = BgReading.estimated_bg(lastBgreading.timestamp + (6000 * 7));
+                }
                 currentBgValueText.setText(bgGraphBuilder.unitized_string(BgReading.activePrediction()));
                 currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
-                if (lastBgreading != null) {
+                if(predictive){
+                    estimate=lastBgreading.calculated_value;
+                    String stringEstimate = bgGraphBuilder.unitized_string(estimate);
+                    currentBgValueText.setText( stringEstimate + " " + BgReading.slopeArrow(lastBgreading.staticSlope()));
+                } else {
                     estimate = BgReading.activePrediction();
                     String stringEstimate = bgGraphBuilder.unitized_string(estimate);
                     currentBgValueText.setText( stringEstimate + " " + BgReading.slopeArrow());

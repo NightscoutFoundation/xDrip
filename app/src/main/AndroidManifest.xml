@@ -30,7 +30,7 @@
             android:value="DexDrip.db" />
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="17" />
+            android:value="19" />
 
         <!-- <provider android:authorities="com.example" android:exported="false" android:name="com.activeandroid.content.ContentProvider" /> -->
 

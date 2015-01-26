@@ -38,8 +38,13 @@ public class SyncService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         attemptSend();
-        setRetryTimer();
         return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        setRetryTimer();
+        Log.w("SYNC SERVICE", "SERVICE STOPPED");
     }
 
     @Override
@@ -53,9 +58,8 @@ public class SyncService extends Service {
         enableRESTUpload = prefs.getBoolean("cloud_storage_api_enable", false);
         enableMongoUpload = prefs.getBoolean("cloud_storage_mongodb_enable", false);
 
-        if (enableRESTUpload || enableMongoUpload) {
-            syncToMogoDb();
-        }
+        if (enableRESTUpload || enableMongoUpload) { syncToMogoDb(); }
+
         if (false) {
             for (SensorSendQueue job : SensorSendQueue.queue()) {
                 RestCalls.sendSensor(job);
@@ -67,12 +71,13 @@ public class SyncService extends Service {
                 RestCalls.sendBgReading(job);
             }
         }
+        setRetryTimer();
     }
 
     public void setRetryTimer() {
         Calendar calendar = Calendar.getInstance();
         AlarmManager alarm = (AlarmManager)getSystemService(ALARM_SERVICE);
-        alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + (1000 * 60 * 5), PendingIntent.getService(this, 0, new Intent(this, SyncService.class), 0));
+        alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + (1000 * 30 * 5), PendingIntent.getService(this, 0, new Intent(this, SyncService.class), 0));
     }
 
     public void syncToMogoDb() {

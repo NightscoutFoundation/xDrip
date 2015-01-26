@@ -105,6 +105,39 @@ public class Calibration extends Model {
     @Column(name = "check_in")
     public boolean check_in;
 
+    @Expose
+    @Column(name = "first_decay")
+    public double first_decay;
+
+    @Expose
+    @Column(name = "second_decay")
+    public double second_decay;
+
+    @Expose
+    @Column(name = "first_slope")
+    public double first_slope;
+
+    @Expose
+    @Column(name = "second_slope")
+    public double second_slope;
+
+    @Expose
+    @Column(name = "first_intercept")
+    public double first_intercept;
+
+    @Expose
+    @Column(name = "second_intercept")
+    public double second_intercept;
+
+    @Expose
+    @Column(name = "first_scale")
+    public double first_scale;
+
+    @Expose
+    @Column(name = "second_scale")
+    public double second_scale;
+
+
     public static void initialCalibration(double bg1, double bg2, Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String unit = prefs.getString("units", "mgdl");
@@ -221,27 +254,40 @@ public class Calibration extends Model {
         Notifications.notificationSetter(context);
     }
 
-    public static void create(CalRecord calRecord, Context context, boolean override) {
+    public static void create(CalRecord[] calRecords, Context context, boolean override) {
         //TODO: Change calibration.last and other queries to order calibrations by timestamp rather than ID
         Log.w("CALIBRATION-CHECK-IN: ", "Creating Calibration Record");
         Sensor sensor = Sensor.currentSensor();
-        Log.w("CALIBRATION-CHECK-IN: ", "Slope: " + calRecord.getSlope());
-        Log.w("CALIBRATION-CHECK-IN: ", "Scale: " + calRecord.getScale());
-        Log.w("CALIBRATION-CHECK-IN: ", "Real Slope: " + (calRecord.getSlope() / calRecord.getScale())/1000);
-        Log.w("CALIBRATION-CHECK-IN: ", "Intercept: " + calRecord.getIntercept());
-        Log.w("CALIBRATION-CHECK-IN: ", "Real Intercept: " + (-1) * calRecord.getIntercept() / 1000);
-        Log.w("CALIBRATION-CHECK-IN: ", "Decay: " + calRecord.getDecay());
+        CalRecord firstCalRecord = calRecords[0];
+        CalRecord secondCalRecord = calRecords[0];
+//        CalRecord secondCalRecord = calRecords[calRecords.length - 1];
+//TODO: Figgure out how the ratio between the two is determined
+        double calSlope = ((secondCalRecord.getScale() / secondCalRecord.getSlope()) + (3 * firstCalRecord.getScale() / firstCalRecord.getSlope())) * 250;
+        double calIntercept = (((secondCalRecord.getScale() * secondCalRecord.getIntercept()) / secondCalRecord.getSlope()) + ((3 * firstCalRecord.getScale() * firstCalRecord.getIntercept()) / firstCalRecord.getSlope())) / -4;
+
+        Log.d("CAL CHECK IN ", "fDecay "+firstCalRecord.getDecay());
+        Log.d("CAL CHECK IN ", "sDecay "+secondCalRecord.getDecay());
+        Log.d("CAL CHECK IN ", "fSLope "+firstCalRecord.getSlope());
+        Log.d("CAL CHECK IN ", "sSlope "+secondCalRecord.getSlope());
+        Log.d("CAL CHECK IN ", "fScale "+firstCalRecord.getScale());
+        Log.d("CAL CHECK IN ", "sScale "+secondCalRecord.getScale());
+        Log.d("CAL CHECK IN ", "fIntercept "+firstCalRecord.getIntercept());
+        Log.d("CAL CHECK IN ", "sIntercept "+secondCalRecord.getIntercept());
+
+        Log.d("CAL CHECK IN ", "calSlope "+calSlope);
+        Log.d("CAL CHECK IN ", "calIntercept "+calIntercept);
+
         if (sensor != null) {
-            for(int i = 0; i < calRecord.getCalSubrecords().length - 1; i++) {
-                if (((calRecord.getCalSubrecords()[i] != null && Calibration.is_new(calRecord.getCalSubrecords()[i]))) || (i == 0 && override)) {
-                    CalSubrecord calSubrecord = calRecord.getCalSubrecords()[i];
+            for(int i = 0; i < firstCalRecord.getCalSubrecords().length - 1; i++) {
+                if (((firstCalRecord.getCalSubrecords()[i] != null && Calibration.is_new(firstCalRecord.getCalSubrecords()[i]))) || (i == 0 && override)) {
+                    CalSubrecord calSubrecord = firstCalRecord.getCalSubrecords()[i];
 
                     Calibration calibration = new Calibration();
                     calibration.bg = calSubrecord.getCalBGL();
                     calibration.timestamp = calSubrecord.getDateEntered().getTime();
                     calibration.raw_value = calSubrecord.getCalRaw() / 1000;
-                    calibration.slope = (calRecord.getSlope() / calRecord.getScale()) / 1000;
-                    calibration.intercept = ((-1) * calRecord.getIntercept() / 1000) - 5;
+                    calibration.slope = calSlope;
+                    calibration.intercept = calIntercept;
 
                     calibration.sensor_confidence = ((-0.0018 * calibration.bg * calibration.bg) + (0.6657 * calibration.bg) + 36.7505) / 100;
                     if (calibration.sensor_confidence <= 0) {
@@ -254,6 +300,16 @@ public class Calibration extends Model {
                     calibration.uuid = UUID.randomUUID().toString();
                     calibration.sensor_uuid = sensor.uuid;
                     calibration.check_in = true;
+
+                    calibration.first_decay = firstCalRecord.getDecay();
+                    calibration.second_decay = secondCalRecord.getDecay();
+                    calibration.first_slope = firstCalRecord.getSlope();
+                    calibration.second_slope = secondCalRecord.getSlope();
+                    calibration.first_scale = firstCalRecord.getScale();
+                    calibration.second_scale = secondCalRecord.getScale();
+                    calibration.first_intercept = firstCalRecord.getIntercept();
+                    calibration.second_intercept = secondCalRecord.getIntercept();
+
                     calibration.save();
 
                     adjustRecentBgReadings();
@@ -262,9 +318,9 @@ public class Calibration extends Model {
                     Calibration.requestCalibrationIfRangeTooNarrow();
                 }
             }
-            if(calRecord.getCalSubrecords()[0] != null && calRecord.getCalSubrecords()[2] == null) {
+            if(firstCalRecord.getCalSubrecords()[0] != null && firstCalRecord.getCalSubrecords()[2] == null) {
                 if(Calibration.latest(2).size() == 1) {
-                    Calibration.create(calRecord, context, true);
+                    Calibration.create(calRecords, context, true);
                 }
             }
             Notifications.notificationSetter(context);
@@ -273,13 +329,6 @@ public class Calibration extends Model {
 
     public static boolean is_new(CalSubrecord calSubrecord) {
         Sensor sensor = Sensor.currentSensor();
-        Log.d("CAL CHECK IN ", calSubrecord.toString());
-        Log.d("CAL CHECK IN ", ""+calSubrecord.getDateApplied());
-        Log.d("CAL CHECK IN ", ""+calSubrecord.getDateApplied().getTime());
-        Log.d("CAL CHECK IN ", ""+calSubrecord.getDateEntered());
-        Log.d("CAL CHECK IN ", ""+calSubrecord.getDateEntered().getTime());
-        Log.d("CAL CHECK IN ", ""+calSubrecord.getCalBGL());
-        Log.d("CAL CHECK IN ", ""+calSubrecord.getCalRaw());
         Calibration calibration = new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())

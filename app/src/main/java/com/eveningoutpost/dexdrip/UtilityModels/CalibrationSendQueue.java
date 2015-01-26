@@ -50,7 +50,7 @@ public class CalibrationSendQueue extends Model {
                 .from(CalibrationSendQueue.class)
                 .where("mongo_success = ?", false)
                 .orderBy("_ID asc")
-                .limit(10)
+                .limit(30)
                 .execute();
     }
     public static void addToQueue(Calibration calibration, Context context) {
