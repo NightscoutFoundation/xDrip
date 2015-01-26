@@ -48,7 +48,7 @@ public class DoubleCalibrationActivity  extends Activity implements NavigationDr
             public void onClick(View v) {
 
                 if (Sensor.isActive()) {
-                    EditText value_1 = (EditText) findViewById(R.id.bg_value_2);
+                    EditText value_1 = (EditText) findViewById(R.id.bg_value_1);
                     EditText value_2 = (EditText) findViewById(R.id.bg_value_2);
                     String string_value_1 = value_1.getText().toString();
                     String string_value_2 = value_2.getText().toString();

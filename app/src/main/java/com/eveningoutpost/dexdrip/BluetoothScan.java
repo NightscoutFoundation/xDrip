@@ -57,7 +57,7 @@ public class BluetoothScan extends ListActivity implements NavigationDrawerFragm
 
         if (bluetooth_adapter == null) {
             Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_LONG).show();
-            has_bluetooth = true;
+            has_bluetooth = false;
             finish();
             return;
         } else {

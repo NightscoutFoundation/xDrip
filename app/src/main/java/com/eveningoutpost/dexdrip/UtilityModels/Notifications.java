@@ -64,12 +64,12 @@ public class Notifications {
         bg_sound = prefs.getBoolean("bg_play_sound", true);
         bg_snooze = Integer.parseInt(prefs.getString("bg_snooze", "20"));
         bg_notification_sound = prefs.getString("bg_notification_sound", "content://settings/system/notification_sound");
-
-        calibration_notifications = prefs.getBoolean("calibration_notifications", false);
-        calibration_vibrate = prefs.getBoolean("calibration_vibrate", false);
-        calibration_lights = prefs.getBoolean("calibration_lights", false);
-        calibration_sound = prefs.getBoolean("calibration_play_sound", false);
         bg_sound_in_silent = prefs.getBoolean("bg_sound_in_silent", false);
+
+        calibration_notifications = prefs.getBoolean("calibration_notifications", true);
+        calibration_vibrate = prefs.getBoolean("calibration_vibrate", true);
+        calibration_lights = prefs.getBoolean("calibration_lights", true);
+        calibration_sound = prefs.getBoolean("calibration_play_sound", true);
         calibration_snooze = Integer.parseInt(prefs.getString("calibration_snooze", "20"));
         calibration_notification_sound = prefs.getString("calibration_notification_sound", "content://settings/system/notification_sound");
     }
@@ -82,7 +82,7 @@ public class Notifications {
         Sensor sensor = Sensor.currentSensor();
 
         List<BgReading> bgReadings = BgReading.latest(3);
-        List<Calibration> calibrations = Calibration.allForSensorInLastFiveDays();
+        List<Calibration> calibrations = Calibration.allForSensorInLastFourDays();
         BgReading bgReading = bgReadings.get(0);
 
         if (bg_notifications && sensor != null) {
@@ -237,7 +237,7 @@ public class Notifications {
             UserNotification newUserNotification = UserNotification.create("Extra Calibration Requested", "extra_calibration_alert");
             String title = "Calibration Needed";
             String content = "A calibration entered now will GREATLY increase performance";
-            Intent intent = new Intent(mContext, Home.class);
+            Intent intent = new Intent(mContext, AddCalibration.class);
             calibrationNotificationCreate(title, content, intent, extraCalibrationNotificationId);
         }
     }

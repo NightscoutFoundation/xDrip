@@ -12,6 +12,7 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -106,7 +107,7 @@ public class BgReading extends Model {
     }
 
     public double mmolConvert(double mgdl) {
-        return mgdl / 18;
+        return mgdl * Constants.MGDL_TO_MMOLL;
     }
 
     public String displayValue(Context context) {
@@ -167,6 +168,7 @@ public class BgReading extends Model {
                 bgReading.uuid = UUID.randomUUID().toString();
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
                 bgReading.synced = false;
+                bgReading.calibration_flag = false;
 
                 //TODO: THIS IS A BIG SILLY IDEA, THIS WILL HAVE TO CHANGE ONCE WE GET SOME REAL DATA FROM THE START OF SENSOR LIFE
                 double adjust_for = (86400000 * 1.8) - bgReading.time_since_sensor_started;
@@ -202,7 +204,7 @@ public class BgReading extends Model {
 
                 BgReading lastBgReading = BgReading.last();
                 if (lastBgReading != null && lastBgReading.calibration != null) {
-                    if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp)) {
+                    if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp) && ((lastBgReading.calibration.timestamp + (60000 * 20)) > bgReading.timestamp)) {
                         lastBgReading.calibration.rawValueOverride(BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value), context);
                     }
                 }
@@ -307,6 +309,7 @@ public class BgReading extends Model {
                 .orderBy("_ID desc")
                 .executeSingle();
     }
+    
     public static List<BgReading> latest(int number) {
         Sensor sensor = Sensor.currentSensor();
         if (sensor == null) { return null; }

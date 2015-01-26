@@ -51,7 +51,11 @@ public class CalibrationOverride extends Activity implements NavigationDrawerFra
                     if (!TextUtils.isEmpty(string_value)){
                         double calValue = Double.parseDouble(string_value);
 
-                         Calibration.last().overrideCalibration(calValue, getApplicationContext());
+                        Calibration last_calibration = Calibration.last();
+                        last_calibration.sensor_confidence = 0;
+                        last_calibration.slope_confidence = 0;
+                        last_calibration.save();
+                        Calibration.create(calValue, getApplicationContext());
 
                          Intent tableIntent = new Intent(v.getContext(), Home.class);
                          startActivity(tableIntent);
