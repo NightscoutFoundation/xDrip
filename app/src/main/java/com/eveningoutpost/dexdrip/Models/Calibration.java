@@ -223,7 +223,6 @@ public class Calibration extends Model {
             calibration.save();
 
             calculate_w_l_s();
-            adjustRecentBgReadings();
             CalibrationSendQueue.addToQueue(calibration, context);
         }
         CalibrationRequest.createOffset(lowerCalibration.bg, 35);
@@ -288,7 +287,6 @@ public class Calibration extends Model {
 
                     calibration.save();
 
-                    adjustRecentBgReadings();
                     CalibrationSendQueue.addToQueue(calibration, context);
                     Notifications.notificationSetter(context);
                     Calibration.requestCalibrationIfRangeTooNarrow();
@@ -512,7 +510,6 @@ public class Calibration extends Model {
         estimate_raw_at_time_of_calibration = rawValue;
         save();
         calculate_w_l_s();
-        adjustRecentBgReadings();
         CalibrationSendQueue.addToQueue(this, context);
     }
 
