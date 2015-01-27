@@ -31,6 +31,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_license_agreement">End User License Agreement</string>
     <string name="action_example">Example action</string>
+    <string name="title_activity_calibration_check_in">CalibrationCheckInActivity</string>
+    <string name="title_activity_usb_connected">UsbConnectedActivity</string>
 
     <string-array name="menu_options">
         <item>Dex Drip</item>
@@ -77,8 +79,6 @@
     <string name="pref_default_api_url">yourpassphrase@https://{YOUR-SITE}.azurewebsites.net/api/v1</string>
 
     <!-- wifi Settings -->
-    <string name="title_activity_calibration_check_in">CalibrationCheckInActivity</string>
-    <string name="title_activity_usb_connected">UsbConnectedActivity</string>
     <string name="wifi_recievers_dialog_message">Comma separated list of ip:port (for example 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">Enter ip addresses and ports of receivers (including mongodb addresses if needed)</string>
 
