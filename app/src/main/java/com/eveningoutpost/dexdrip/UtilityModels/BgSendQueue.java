@@ -57,7 +57,7 @@ public class BgSendQueue extends Model {
                 .where("mongo_success = ?", false)
                 .where("operation_type = ?", "create")
                 .orderBy("_ID asc")
-                .limit(10)
+                .limit(30)
                 .execute();
     }
 
@@ -67,14 +67,13 @@ public class BgSendQueue extends Model {
         bgSendQueue.bgReading = bgReading;
         bgSendQueue.success = false;
         bgSendQueue.mongo_success = false;
-
         bgSendQueue.save();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         if (prefs.getBoolean("cloud_storage_mongodb_enable", false) || prefs.getBoolean("cloud_storage_api_enable", false)) {
             Log.w("SENSOR QUEUE:", String.valueOf(bgSendQueue.mongo_success));
-            if (operation_type == "create") {
+            if (operation_type.compareTo("create") == 0) {
                 MongoSendTask task = new MongoSendTask(context, bgSendQueue);
                 task.execute();
             }

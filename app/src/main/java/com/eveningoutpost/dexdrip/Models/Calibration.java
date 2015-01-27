@@ -10,6 +10,8 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
 import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
@@ -104,6 +106,43 @@ public class Calibration extends Model {
     @Column(name = "possible_bad")
     public Boolean possible_bad;
 
+    @Expose
+    @Column(name = "check_in")
+    public boolean check_in;
+
+    @Expose
+    @Column(name = "first_decay")
+    public double first_decay;
+
+    @Expose
+    @Column(name = "second_decay")
+    public double second_decay;
+
+    @Expose
+    @Column(name = "first_slope")
+    public double first_slope;
+
+    @Expose
+    @Column(name = "second_slope")
+    public double second_slope;
+
+    @Expose
+    @Column(name = "first_intercept")
+    public double first_intercept;
+
+    @Expose
+    @Column(name = "second_intercept")
+    public double second_intercept;
+
+    @Expose
+    @Column(name = "first_scale")
+    public double first_scale;
+
+    @Expose
+    @Column(name = "second_scale")
+    public double second_scale;
+
+
     public static void initialCalibration(double bg1, double bg2, Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String unit = prefs.getString("units", "mgdl");
@@ -184,11 +223,99 @@ public class Calibration extends Model {
             calibration.save();
 
             calculate_w_l_s();
-            adjustRecentBgReadings();
             CalibrationSendQueue.addToQueue(calibration, context);
         }
         CalibrationRequest.createOffset(lowerCalibration.bg, 35);
         Notifications.notificationSetter(context);
+    }
+
+    public static void create(CalRecord[] calRecords, Context context, boolean override) {
+        //TODO: Change calibration.last and other queries to order calibrations by timestamp rather than ID
+        Log.w("CALIBRATION-CHECK-IN: ", "Creating Calibration Record");
+        Sensor sensor = Sensor.currentSensor();
+        CalRecord firstCalRecord = calRecords[0];
+        CalRecord secondCalRecord = calRecords[0];
+//        CalRecord secondCalRecord = calRecords[calRecords.length - 1];
+        //TODO: Figgure out how the ratio between the two is determined
+        double calSlope = ((secondCalRecord.getScale() / secondCalRecord.getSlope()) + (3 * firstCalRecord.getScale() / firstCalRecord.getSlope())) * 250;
+        double calIntercept = (((secondCalRecord.getScale() * secondCalRecord.getIntercept()) / secondCalRecord.getSlope()) + ((3 * firstCalRecord.getScale() * firstCalRecord.getIntercept()) / firstCalRecord.getSlope())) / -4;
+
+        Log.d("CAL CHECK IN ", "fDecay "+firstCalRecord.getDecay());
+        Log.d("CAL CHECK IN ", "sDecay "+secondCalRecord.getDecay());
+        Log.d("CAL CHECK IN ", "fSLope "+firstCalRecord.getSlope());
+        Log.d("CAL CHECK IN ", "sSlope "+secondCalRecord.getSlope());
+        Log.d("CAL CHECK IN ", "fScale "+firstCalRecord.getScale());
+        Log.d("CAL CHECK IN ", "sScale "+secondCalRecord.getScale());
+        Log.d("CAL CHECK IN ", "fIntercept "+firstCalRecord.getIntercept());
+        Log.d("CAL CHECK IN ", "sIntercept "+secondCalRecord.getIntercept());
+
+        Log.d("CAL CHECK IN ", "calSlope "+calSlope);
+        Log.d("CAL CHECK IN ", "calIntercept "+calIntercept);
+
+        if (sensor != null) {
+            for(int i = 0; i < firstCalRecord.getCalSubrecords().length - 1; i++) {
+                if (((firstCalRecord.getCalSubrecords()[i] != null && Calibration.is_new(firstCalRecord.getCalSubrecords()[i]))) || (i == 0 && override)) {
+                    CalSubrecord calSubrecord = firstCalRecord.getCalSubrecords()[i];
+
+                    Calibration calibration = new Calibration();
+                    calibration.bg = calSubrecord.getCalBGL();
+                    calibration.timestamp = calSubrecord.getDateEntered().getTime();
+                    calibration.raw_value = calSubrecord.getCalRaw() / 1000;
+                    calibration.slope = calSlope;
+                    calibration.intercept = calIntercept;
+
+                    calibration.sensor_confidence = ((-0.0018 * calibration.bg * calibration.bg) + (0.6657 * calibration.bg) + 36.7505) / 100;
+                    if (calibration.sensor_confidence <= 0) {
+                        calibration.sensor_confidence = 0;
+                    }
+                    calibration.slope_confidence = 0.8; //TODO: query backwards to find this value near the timestamp
+                    calibration.estimate_raw_at_time_of_calibration = calSubrecord.getCalRaw() / 1000;
+                    calibration.sensor = sensor;
+                    calibration.sensor_age_at_time_of_estimation = calibration.timestamp - sensor.started_at;
+                    calibration.uuid = UUID.randomUUID().toString();
+                    calibration.sensor_uuid = sensor.uuid;
+                    calibration.check_in = true;
+
+                    calibration.first_decay = firstCalRecord.getDecay();
+                    calibration.second_decay = secondCalRecord.getDecay();
+                    calibration.first_slope = firstCalRecord.getSlope();
+                    calibration.second_slope = secondCalRecord.getSlope();
+                    calibration.first_scale = firstCalRecord.getScale();
+                    calibration.second_scale = secondCalRecord.getScale();
+                    calibration.first_intercept = firstCalRecord.getIntercept();
+                    calibration.second_intercept = secondCalRecord.getIntercept();
+
+                    calibration.save();
+
+                    CalibrationSendQueue.addToQueue(calibration, context);
+                    Calibration.requestCalibrationIfRangeTooNarrow();
+                }
+            }
+            if(firstCalRecord.getCalSubrecords()[0] != null && firstCalRecord.getCalSubrecords()[2] == null) {
+                if(Calibration.latest(2).size() == 1) {
+                    Calibration.create(calRecords, context, true);
+                }
+            }
+            Notifications.notificationSetter(context);
+        }
+    }
+
+    public static boolean is_new(CalSubrecord calSubrecord) {
+        Sensor sensor = Sensor.currentSensor();
+        Calibration calibration = new Select()
+                .from(Calibration.class)
+                .where("Sensor = ? ", sensor.getId())
+                .where("slope_confidence != 0")
+                .where("sensor_confidence != 0")
+                .where("timestamp = ?", calSubrecord.getDateEntered().getTime())
+                .executeSingle();
+        if(calibration == null) {
+            Log.d("CAL CHECK IN ", "Looks like a new calibration!");
+            return true;
+        } else {
+            Log.d("CAL CHECK IN ", "Already have that calibration!");
+            return false;
+        }
     }
 
     public static Calibration create(double bg, Context context) {
@@ -243,6 +370,19 @@ public class Calibration extends Model {
             Log.w("CALIBRATION", "No sensor, cant save!");
         }
         return Calibration.last();
+    }
+
+    public static List<Calibration> allForSensorInLastFiveDays() {
+        Sensor sensor = Sensor.currentSensor();
+        if (sensor == null) { return null; }
+        return new Select()
+                .from(Calibration.class)
+                .where("Sensor = ? ", sensor.getId())
+                .where("slope_confidence != 0")
+                .where("sensor_confidence != 0")
+                .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 5)))
+                .orderBy("timestamp desc")
+                .execute();
     }
 
     public static void calculate_w_l_s() {
@@ -324,7 +464,7 @@ public class Calibration extends Model {
                 .where("Sensor = ?", sensor.getId())
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
-                .orderBy("_ID desc")
+                .orderBy("timestamp desc")
                 .execute();
     }
 
@@ -369,7 +509,6 @@ public class Calibration extends Model {
         estimate_raw_at_time_of_calibration = rawValue;
         save();
         calculate_w_l_s();
-        adjustRecentBgReadings();
         CalibrationSendQueue.addToQueue(this, context);
     }
 
@@ -411,7 +550,7 @@ public class Calibration extends Model {
         return new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())
-                .orderBy("_ID desc")
+                .orderBy("timestamp desc")
                 .executeSingle();
     }
 
@@ -422,7 +561,7 @@ public class Calibration extends Model {
                 .where("Sensor = ? ", sensor.getId())
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
-                .orderBy("_ID asc")
+                .orderBy("timestamp asc")
                 .executeSingle();
     }
     public static double max_recent() {
@@ -433,7 +572,7 @@ public class Calibration extends Model {
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
                 .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 4)))
-                .orderBy("bg asc")
+                .orderBy("bg desc")
                 .executeSingle();
         return calibration.bg;
     }
@@ -457,7 +596,7 @@ public class Calibration extends Model {
         return new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())
-                .orderBy("_ID desc")
+                .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
     }
@@ -470,7 +609,7 @@ public class Calibration extends Model {
                 .where("Sensor = ? ", sensor.getId())
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
-                .orderBy("_ID desc")
+                .orderBy("timestamp desc")
                 .execute();
     }
 

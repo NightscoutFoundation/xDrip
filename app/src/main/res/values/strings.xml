@@ -31,6 +31,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_license_agreement">End User License Agreement</string>
     <string name="action_example">Example action</string>
+    <string name="title_activity_calibration_check_in">CalibrationCheckInActivity</string>
+    <string name="title_activity_usb_connected">UsbConnectedActivity</string>
 
     <string-array name="menu_options">
         <item>Dex Drip</item>

@@ -35,7 +35,7 @@ public class MongoSendTask extends AsyncTask<String, Void, SyncService> {
             context = pContext;
         }
 
-        protected SyncService doInBackground(String... urls) {
+        public SyncService doInBackground(String... urls) {
             try {
                 List<BgReading> bgReadings = new ArrayList<BgReading>();
                 List<Calibration> calibrations = new ArrayList<Calibration>();

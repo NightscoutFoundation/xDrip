@@ -34,7 +34,7 @@ public class BgReadingTable extends ListActivity implements NavigationDrawerFrag
     }
 
     private void getData() {
-        Cursor cursor = Cache.openDatabase().rawQuery("Select * from BgReadings order by _ID desc", null);
+        Cursor cursor = Cache.openDatabase().rawQuery("Select * from BgReadings order by _ID desc limit 50", null);
 
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
                 R.layout.raw_data_list_item,

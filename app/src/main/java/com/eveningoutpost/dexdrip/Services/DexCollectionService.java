@@ -74,13 +74,9 @@ public class DexCollectionService extends Service {
     private static final int STATE_CONNECTING = BluetoothProfile.STATE_CONNECTING;
     private static final int STATE_CONNECTED = BluetoothProfile.STATE_CONNECTED;
 
-    public final static String ACTION_DATA_AVAILABLE =
-            "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
-
-    public final static UUID DexDripDataService =
-            UUID.fromString(HM10Attributes.HM_10_SERVICE);
-    public final static UUID DexDripDataCharacteristic =
-            UUID.fromString(HM10Attributes.HM_RX_TX);
+    public final static String ACTION_DATA_AVAILABLE = "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
+    public final static UUID DexDripDataService = UUID.fromString(HM10Attributes.HM_10_SERVICE);
+    public final static UUID DexDripDataCharacteristic = UUID.fromString(HM10Attributes.HM_RX_TX);
 
     @Override
     public void onCreate() {

@@ -7,6 +7,7 @@
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
+    <uses-feature android:name="android.hardware.usb.host" />
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -17,6 +18,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.BATTERY_STATS" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission." />
 
     <application
         android:name="com.activeandroid.app.Application"
@@ -30,7 +32,7 @@
             android:value="DexDrip.db" />
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="17" />
+            android:value="20" />
 
         <!-- <provider android:authorities="com.example" android:exported="false" android:name="com.activeandroid.content.ContentProvider" /> -->
 
@@ -92,6 +94,11 @@
             android:enabled="true"
             android:exported="true" >
         </service>
+        <service
+            android:name=".ImportedLibraries.dexcom.SyncingService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
 
         <activity
             android:name=".FakeNumbers"
@@ -116,6 +123,22 @@
         <activity
             android:name=".LicenseAgreementActivity"
             android:label="@string/title_activity_license_agreement" >
+        </activity>
+        <activity
+            android:name=".CalibrationCheckInActivity"
+            android:label="@string/title_activity_calibration_check_in" >
+
+        </activity>
+        <activity
+            android:name=".UsbConnectedActivity"
+            android:label="@string/title_activity_usb_connected" >
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
         </activity>
     </application>
 

@@ -41,7 +41,7 @@ public class CalibrationDataTable extends ListActivity implements NavigationDraw
     }
 
     private void getData() {
-        Cursor cursor = Cache.openDatabase().rawQuery("Select * from Calibration order by _ID desc", null);
+        Cursor cursor = Cache.openDatabase().rawQuery("Select * from Calibration order by timestamp desc", null);
 
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
                 R.layout.raw_data_list_item,

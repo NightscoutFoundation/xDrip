@@ -241,7 +241,7 @@ public class BgGraphBuilder {
     private boolean isXLargeTablet() {
         return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
     }
-    
+
     public Axis previewXAxis(){
         List<AxisValue> previewXaxisValues = new ArrayList<AxisValue>();
         final java.text.DateFormat timeFormat = hourFormat();
@@ -275,6 +275,7 @@ public class BgGraphBuilder {
     }
 
     public String unitized_string(double value) {
+        value = Math.round(value);
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(0);
         if (value >= 400) {
