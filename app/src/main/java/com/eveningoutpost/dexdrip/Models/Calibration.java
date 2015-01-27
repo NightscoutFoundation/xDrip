@@ -236,7 +236,7 @@ public class Calibration extends Model {
         CalRecord firstCalRecord = calRecords[0];
         CalRecord secondCalRecord = calRecords[0];
 //        CalRecord secondCalRecord = calRecords[calRecords.length - 1];
-//TODO: Figgure out how the ratio between the two is determined
+        //TODO: Figgure out how the ratio between the two is determined
         double calSlope = ((secondCalRecord.getScale() / secondCalRecord.getSlope()) + (3 * firstCalRecord.getScale() / firstCalRecord.getSlope())) * 250;
         double calIntercept = (((secondCalRecord.getScale() * secondCalRecord.getIntercept()) / secondCalRecord.getSlope()) + ((3 * firstCalRecord.getScale() * firstCalRecord.getIntercept()) / firstCalRecord.getSlope())) / -4;
 
@@ -288,7 +288,6 @@ public class Calibration extends Model {
                     calibration.save();
 
                     CalibrationSendQueue.addToQueue(calibration, context);
-                    Notifications.notificationSetter(context);
                     Calibration.requestCalibrationIfRangeTooNarrow();
                 }
             }
