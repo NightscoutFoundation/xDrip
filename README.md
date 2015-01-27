@@ -3,6 +3,14 @@ DexDrip
 
 Android Application that collects dexcom signals, allows calibrations, and (soon) uploads to a secure server
 
+## How to install
+* Not sure how to complie an android app? [Follow this awesome video](https://www.youtube.com/watch?v=Xv0PuM7dnYo&feature=youtu.be) made by comunity member Ly
+
+## New Updates
+* Calibration Check ins, [read about them here](http://bit.ly/1LdmZiN)
+* Ability to turn on or off predictive values on the graph
+* Local Broadcasting so apps like [NightWatch](http://bit.ly/1HcSTsB) can update to the most recent BG data with no internet connection required
+
 ## Features that are complete
 * Nightscout Uploading
 * Basic Notifications (above or below threshold)
@@ -14,28 +22,6 @@ Android Application that collects dexcom signals, allows calibrations, and (soon
 * Predictive Bg Levels and Predicive slope
 * BLE listening and reconnecting on phone restart/app crash
 * Initial sensor sensitivity offsets
-
-
-## Features that proggress has started on
-* Server Uploading
-* Decay Modled Calibrations (a long ways off unfortunately)
-* In app encryption/decryption(double seeded)
-* Server Registration
-* Server Sign in
-* Re-authentication on Token expiration
-* Cleaning up layouts for tablets landscape mode
-* Sensor information screen (Running MARD, Battery levels, statisticy stuff!)
-
-## Features on the table but not yet started
-* Robust Notifications (rise rates/drop rate)
-* Specify transmitter id in response to wixel
-* GCM for pushing readings to multiple devices
-* Determine inteligent intercept bounding
-* Reports and Statistics
-* expire older data once confirmed it has been uploaded
-
-## Possible Issues
-* The way encryption will work there will be no recovering your data if you forget your password
 
 
 ### Thoughts or Questions?
