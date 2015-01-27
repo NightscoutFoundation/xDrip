@@ -16,7 +16,10 @@ public class UsbConnectedActivity extends Activity {
             startActivity(checkInIntent);
             finish();
         } else {
-
+            //TODO: Put check for usb wixel in here as an elseif
+            Intent homeIntent = new Intent(getApplicationContext(), Home.class);
+            startActivity(homeIntent);
+            finish();
         }
         setContentView(R.layout.activity_usb_connected);
     }
