@@ -71,6 +71,9 @@ public class BgSendQueue extends Model {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
+        Intent updateIntent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA);
+        context.sendBroadcast(updateIntent);
+
         if (prefs.getBoolean("cloud_storage_mongodb_enable", false) || prefs.getBoolean("cloud_storage_api_enable", false)) {
             Log.w("SENSOR QUEUE:", String.valueOf(bgSendQueue.mongo_success));
             if (operation_type.compareTo("create") == 0) {
@@ -91,6 +94,11 @@ public class BgSendQueue extends Model {
             Intent intent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE);
             intent.putExtras(bundle);
             context.sendBroadcast(intent, Intents.RECEIVER_PERMISSION);
+        }
+
+        if(prefs.getBoolean("broadcast_to_pebble", false)) {
+            PebbleSync pebbleSync = new PebbleSync();
+            pebbleSync.sendData(context, bgReading);
         }
     }
 

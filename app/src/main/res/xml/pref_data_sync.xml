@@ -72,6 +72,12 @@
             android:summary="@string/pref_summary_broadcast_enabled"
             android:defaultValue="false" >
         </SwitchPreference>
+        <SwitchPreference
+            android:title="Send to Pebble"
+            android:key="broadcast_to_pebble"
+            android:summary="If you have a pebble watch you can send bg data straight to it"
+            android:defaultValue="false" >
+        </SwitchPreference>
     </PreferenceCategory>
 
 </PreferenceScreen>

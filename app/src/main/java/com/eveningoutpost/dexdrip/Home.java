@@ -19,6 +19,7 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 
 import java.text.DecimalFormat;
 import java.util.Date;
@@ -49,6 +50,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
 
     public BgGraphBuilder bgGraphBuilder;
     BroadcastReceiver _broadcastReceiver;
+    BroadcastReceiver newDataReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +92,14 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 }
             }
         };
+        newDataReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context ctx, Intent intent) {
+                updateCurrentBgInfo();
+            }
+        };
         registerReceiver(_broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
+        registerReceiver(newDataReceiver, new IntentFilter(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA));
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
         holdViewport.set(0, 0, 0, 0);
@@ -163,8 +172,12 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     @Override
     public void onPause() {
         super.onPause();
-        if (_broadcastReceiver != null)
+        if (_broadcastReceiver != null) {
             unregisterReceiver(_broadcastReceiver);
+        }
+        if(newDataReceiver != null) {
+            unregisterReceiver(newDataReceiver);
+        }
     }
 
     public void updateCurrentBgInfo() {
@@ -177,7 +190,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 if (BgReading.latest(2).size() > 1) {
                     List<Calibration> calibrations = Calibration.latest(2);
                     if (calibrations.size() > 1) {
-                        if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad == false) {
+                        if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
                             notificationText.setText("Possible bad calibration slope, please have a glass of water, wash hands, then recalibrate in a few!");
                         }
                         displayCurrentInfo();
@@ -234,7 +247,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 if(!predictive){
                     estimate=lastBgreading.calculated_value;
                     String stringEstimate = bgGraphBuilder.unitized_string(estimate);
-                    currentBgValueText.setText( stringEstimate + " " + BgReading.slopeArrow(lastBgreading.staticSlope()));
+                    currentBgValueText.setText( stringEstimate + " " + BgReading.slopeArrow((lastBgreading.staticSlope() * 60000)));
                 } else {
                     estimate = BgReading.activePrediction();
                     String stringEstimate = bgGraphBuilder.unitized_string(estimate);
