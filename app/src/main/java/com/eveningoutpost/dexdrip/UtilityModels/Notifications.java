@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -9,8 +10,10 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.DoubleCalibrationActivity;
@@ -45,31 +48,27 @@ public class Notifications {
     public static boolean calibration_sound;
     public static int calibration_snooze;
     public static String calibration_notification_sound;
+    private final static String TAG = Notifications.class.getSimpleName();
 
     Context mContext;
-int currentVolume;
-     AudioManager manager;
+    int currentVolume;
+    AudioManager manager;
 
     final int BgNotificationId = 001;
     final int calibrationNotificationId = 002;
     final int doubleCalibrationNotificationId = 003;
     final int extraCalibrationNotificationId = 004;
     public static final int exportCompleteNotificationId = 005;
-
-    
-
-//    final int BgNotificationId = 001;
-//    final int calibrationNotificationId = 002;
-//    final int doubleCalibrationNotificationId = 003;
-//    final int extraCalibrationNotificationId = 004;
+    final static int callbackPeriod = 60000;
 
     private static Notifications instance = null;
     protected Notifications() {
        // Exists only to defeat instantiation.
     }
-    public static Notifications getInstance() {
+    public static Notifications getInstance(Context context) {
        if(instance == null) {
           instance = new Notifications();
+          instance.ArmTimer(context, callbackPeriod);
        }
        return instance;
     }
@@ -145,6 +144,36 @@ int currentVolume;
             clearAllCalibrationNotifications();
         }
     }
+    
+    public void periodicTimer(Context context) {
+        // This is the timer function that will be called every minute (or 5 minutes to save battery). 
+        // It is used in order to replay alerts, execute snoozes and alert if we are not recieving
+        //  data for a long time.
+        Log.e(TAG, "PeriodicTimer called");
+        ArmTimer(context, callbackPeriod);
+    }
+    
+    private void  ArmTimer(Context context, int time) {
+        Log.e(TAG, "ArmTimer called");
+        Intent intent = new Intent();
+        intent.setAction("com.eveningoutpost.dexdrip.UtilityModels.Notifications");
+
+        AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+
+        alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() +
+                        time , alarmIntent);
+    }
+    
+    // TODO: Need to understand when we are calling this...
+    private void ClearTimer(Context context) {
+        Intent intent = new Intent();
+        intent.setAction("com.eveningoutpost.dexdrip.UtilityModels.Notifications");
+        PendingIntent.getBroadcast(context, 0, intent, 
+                PendingIntent.FLAG_UPDATE_CURRENT).cancel();
+    }
+
 
     private void soundAlert(String soundUri) {
         manager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
