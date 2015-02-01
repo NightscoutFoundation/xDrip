@@ -8,9 +8,13 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
@@ -20,6 +24,8 @@ import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
+import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
+
 
 import java.text.DecimalFormat;
 import java.util.Date;
@@ -263,5 +269,28 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
             }
         }
     setupCharts();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_home, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_export_database) {
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... params) {
+                    DatabaseUtil.saveSql(getBaseContext());
+
+                    return null;
+                }
+            }.execute();
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
