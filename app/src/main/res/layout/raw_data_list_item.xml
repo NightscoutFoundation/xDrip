@@ -7,24 +7,24 @@
     android:id="@+id/raw_data_list_item">
 
     <TextView android:id="@+id/raw_data_id"
-    android:layout_width="132dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textSize="24dp" />
+    android:textSize="24sp" />
 
     <TextView android:id="@+id/raw_data_value"
-    android:layout_width="87dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textSize="12dp"/>
+    android:textSize="12sp"/>
 
     <TextView android:id="@+id/raw_data_slope"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textSize="12dp"/>
+    android:textSize="12sp"/>
 
     <TextView android:id="@+id/raw_data_timestamp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textSize="12dp"/>
+    android:textSize="12sp"/>
 
 
 </LinearLayout>
