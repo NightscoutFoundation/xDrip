@@ -20,4 +20,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.3'
     compile 'org.mongodb:mongo-java-driver:2.10.1'
     compile 'com.squareup.retrofit:retrofit:1.7.1'
+    compile 'com.getpebble:pebblekit:2.6.0@aar'
 }
