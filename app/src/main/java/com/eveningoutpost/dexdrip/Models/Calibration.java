@@ -225,6 +225,7 @@ public class Calibration extends Model {
             calculate_w_l_s();
             CalibrationSendQueue.addToQueue(calibration, context);
         }
+        adjustRecentBgReadings(5);
         CalibrationRequest.createOffset(lowerCalibration.bg, 35);
         Notifications.notificationSetter(context);
     }
@@ -287,6 +288,7 @@ public class Calibration extends Model {
 
                     calibration.save();
 
+                    adjustRecentBgReadings(5);
                     CalibrationSendQueue.addToQueue(calibration, context);
                     Calibration.requestCalibrationIfRangeTooNarrow();
                 }
@@ -476,11 +478,13 @@ public class Calibration extends Model {
         Log.w(TAG, "CALIBRATIONS TIME PERCENTAGE WEIGHT: " + time_percentage);
         return Math.max((((((slope_confidence + sensor_confidence) * (time_percentage))) / 2) * 100), 1);
     }
-
-    public static void adjustRecentBgReadings() { // This just adjust the last 30 bg readings transition from one calibration point to the next
+    public static void adjustRecentBgReadings() {// This just adjust the last 30 bg readings transition from one calibration point to the next
+        adjustRecentBgReadings(30);
+    }
+    public static void adjustRecentBgReadings(int adjustCount) {
         //TODO: add some handling around calibration overrides as they come out looking a bit funky
         List<Calibration> calibrations = Calibration.latest(3);
-        List<BgReading> bgReadings = BgReading.latest(30);
+        List<BgReading> bgReadings = BgReading.latest(adjustCount);
         if (calibrations.size() == 3) {
             int denom = bgReadings.size();
             Calibration latestCalibration = calibrations.get(0);
@@ -622,7 +626,7 @@ public class Calibration extends Model {
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
                 .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 4)))
-                .orderBy("_ID desc")
+                .orderBy("timestamp desc")
                 .execute();
     }
 
