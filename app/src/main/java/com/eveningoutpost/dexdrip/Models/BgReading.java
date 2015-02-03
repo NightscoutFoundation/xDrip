@@ -437,7 +437,6 @@ public class BgReading extends Model {
         } else {
             age_adjusted_raw_value = raw_data;
         }
-
     }
 
     public void find_new_raw_curve() {
