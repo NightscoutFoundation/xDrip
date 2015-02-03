@@ -19,7 +19,7 @@ import static com.eveningoutpost.dexdrip.utils.FileUtils.*;
  */
 public class DatabaseUtil {
 
-    public static void saveSql(Context context) {
+    public static String saveSql(Context context) {
         try {
 
             final String databaseName = new Configuration.Builder(context).create().getDatabaseName();
@@ -50,6 +50,8 @@ public class DatabaseUtil {
                     destStream.close();
                 }
             }
+
+            return filename;
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
