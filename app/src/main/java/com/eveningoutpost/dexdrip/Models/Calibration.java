@@ -45,7 +45,6 @@ public class Calibration extends Model {
     @Column(name = "sensor", index = true)
     public Sensor sensor;
 
-
     @Expose
     @Column(name = "bg")
     public double bg;
@@ -177,6 +176,7 @@ public class Calibration extends Model {
         higherCalibration.intercept = higher_bg;
         higherCalibration.sensor = sensor;
         higherCalibration.estimate_raw_at_time_of_calibration = highBgReading.age_adjusted_raw_value;
+        higherCalibration.adjusted_raw_value = highBgReading.age_adjusted_raw_value;
         higherCalibration.raw_value = highBgReading.raw_data;
         higherCalibration.raw_timestamp = highBgReading.timestamp;
         higherCalibration.save();
@@ -192,6 +192,7 @@ public class Calibration extends Model {
         lowerCalibration.intercept = lower_bg;
         lowerCalibration.sensor = sensor;
         lowerCalibration.estimate_raw_at_time_of_calibration = lowBgReading.age_adjusted_raw_value;
+        lowerCalibration.adjusted_raw_value = lowBgReading.age_adjusted_raw_value;
         lowerCalibration.raw_value = lowBgReading.raw_data;
         lowerCalibration.raw_timestamp = lowBgReading.timestamp;
         lowerCalibration.save();
@@ -216,6 +217,7 @@ public class Calibration extends Model {
             calibration.sensor_uuid = sensor.uuid;
             calibration.slope_confidence = .5;
             calibration.distance_from_estimate = 0;
+            calibration.check_in = false;
             calibration.sensor_confidence = ((-0.0018 * calibration.bg * calibration.bg) + (0.6657 * calibration.bg) + 36.7505) / 100;
 
             calibration.sensor_age_at_time_of_estimation = calibration.timestamp - sensor.started_at;
@@ -230,6 +232,7 @@ public class Calibration extends Model {
         Notifications.notificationSetter(context);
     }
 
+    //Create Calibration Checkin
     public static void create(CalRecord[] calRecords, Context context, boolean override) {
         //TODO: Change calibration.last and other queries to order calibrations by timestamp rather than ID
         Log.w("CALIBRATION-CHECK-IN: ", "Creating Calibration Record");
@@ -337,7 +340,7 @@ public class Calibration extends Model {
             if (bgReading != null) {
                 calibration.sensor = sensor;
                 calibration.bg = bg;
-
+                calibration.check_in = false;
                 calibration.timestamp = new Date().getTime();
                 calibration.raw_value = bgReading.raw_data;
                 calibration.adjusted_raw_value = bgReading.age_adjusted_raw_value;

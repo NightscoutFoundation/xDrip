@@ -170,14 +170,7 @@ public class BgReading extends Model {
                 bgReading.synced = false;
                 bgReading.calibration_flag = false;
 
-                //TODO: THIS IS A BIG SILLY IDEA, THIS WILL HAVE TO CHANGE ONCE WE GET SOME REAL DATA FROM THE START OF SENSOR LIFE
-                double adjust_for = (86400000 * 1.8) - bgReading.time_since_sensor_started;
-                if (adjust_for > 0) {
-                    bgReading.age_adjusted_raw_value = ((50 / 20) * (adjust_for / (86400000 * 1.8))) * (raw_data / 1000);
-                    Log.w("RAW VALUE ADJUSTMENT: ", "FROM:" + raw_data + " TO: " + bgReading.age_adjusted_raw_value);
-                } else {
-                    bgReading.age_adjusted_raw_value = (raw_data / 1000);
-                }
+                bgReading.calculateAgeAdjustedRawValue();
 
                 bgReading.save();
                 bgReading.perform_calculations();
@@ -193,39 +186,28 @@ public class BgReading extends Model {
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
                 bgReading.synced = false;
 
-                //TODO: THIS IS A BIG SILLY IDEA, THIS WILL HAVE TO CHANGE ONCE WE GET SOME REAL DATA FROM THE START OF SENSOR LIFE
-                double adjust_for = (86400000 * 1.9) - bgReading.time_since_sensor_started;
-                if (adjust_for > 0) {
-                    bgReading.age_adjusted_raw_value = (((.45) * (adjust_for / (86400000 * 1.9))) * (raw_data/1000)) + (raw_data/1000);
-                    Log.w("RAW VALUE ADJUSTMENT: ", "FROM:" + (raw_data/1000) + " TO: " + bgReading.age_adjusted_raw_value);
-                } else {
-                    bgReading.age_adjusted_raw_value = (raw_data/1000);
-                }
+                bgReading.calculateAgeAdjustedRawValue();
 
-                BgReading lastBgReading = BgReading.last();
-                if (lastBgReading != null && lastBgReading.calibration != null) {
-                    if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp) && ((lastBgReading.calibration.timestamp + (60000 * 20)) > bgReading.timestamp)) {
-                        lastBgReading.calibration.rawValueOverride(BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value), context);
-                    }
-                }
-
-                if(calibration.check_in) {
+                if(calibration.check_in == true) {
                     double firstAdjSlope = calibration.first_slope + (calibration.first_decay * (Math.ceil(new Date().getTime() - calibration.timestamp)/(1000 * 60 * 10)));
 //                    double secondAdjSlope = calibration.first_slope + (calibration.first_decay * ((new Date().getTime() - calibration.timestamp)/(1000 * 60 * 10)));
                     double calSlope = (calibration.first_scale / firstAdjSlope)*1000;
                     double calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope)*-1;
 //                    double calSlope = ((calibration.second_scale / secondAdjSlope) + (3 * calibration.first_scale / firstAdjSlope)) * 250;
 //                    double calIntercept = (((calibration.second_scale * calibration.second_intercept) / secondAdjSlope) + ((3 * calibration.first_scale * calibration.first_intercept) / firstAdjSlope)) / -4;
-
                     bgReading.calculated_value = (((calSlope * bgReading.raw_data) + calIntercept) - 5);
+
                 } else {
+                    BgReading lastBgReading = BgReading.last();
+                    if (lastBgReading != null && lastBgReading.calibration != null) {
+                        if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp) && ((lastBgReading.calibration.timestamp + (60000 * 20)) > bgReading.timestamp)) {
+                            lastBgReading.calibration.rawValueOverride(BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value), context);
+                        }
+                    }
                     bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
                 }
-                if (bgReading.calculated_value <= 40) {
-                    bgReading.calculated_value = 40;
-                } else if (bgReading.calculated_value >= 400) {
-                    bgReading.calculated_value = 400;
-                }
+
+                bgReading.calculated_value = Math.min(400, Math.max(40, bgReading.calculated_value));
                 Log.w(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
 
                 bgReading.save();
@@ -445,6 +427,17 @@ public class BgReading extends Model {
             Log.w(TAG, ""+a+"x^2 + "+b+"x + "+c);
             save();
         }
+    }
+
+    public void calculateAgeAdjustedRawValue(){
+        double adjust_for = (86400000 * 1.9) - time_since_sensor_started;
+        if (adjust_for > 0) {
+            age_adjusted_raw_value = (((.45) * (adjust_for / (86400000 * 1.9))) * (raw_data/1000)) + (raw_data/1000);
+            Log.w("RAW VALUE ADJUSTMENT: ", "FROM:" + (raw_data/1000) + " TO: " + age_adjusted_raw_value);
+        } else {
+            age_adjusted_raw_value = (raw_data/1000);
+        }
+
     }
 
     public void find_new_raw_curve() {
