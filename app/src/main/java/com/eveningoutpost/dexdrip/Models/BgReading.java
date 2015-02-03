@@ -188,7 +188,7 @@ public class BgReading extends Model {
 
                 bgReading.calculateAgeAdjustedRawValue();
 
-                if(calibration.check_in == true) {
+                if(calibration.check_in) {
                     double firstAdjSlope = calibration.first_slope + (calibration.first_decay * (Math.ceil(new Date().getTime() - calibration.timestamp)/(1000 * 60 * 10)));
 //                    double secondAdjSlope = calibration.first_slope + (calibration.first_decay * ((new Date().getTime() - calibration.timestamp)/(1000 * 60 * 10)));
                     double calSlope = (calibration.first_scale / firstAdjSlope)*1000;
@@ -432,10 +432,10 @@ public class BgReading extends Model {
     public void calculateAgeAdjustedRawValue(){
         double adjust_for = (86400000 * 1.9) - time_since_sensor_started;
         if (adjust_for > 0) {
-            age_adjusted_raw_value = (((.45) * (adjust_for / (86400000 * 1.9))) * (raw_data/1000)) + (raw_data/1000);
-            Log.w("RAW VALUE ADJUSTMENT: ", "FROM:" + (raw_data/1000) + " TO: " + age_adjusted_raw_value);
+            age_adjusted_raw_value = (((.45) * (adjust_for / (86400000 * 1.9))) * raw_data) + raw_data;
+            Log.w("RAW VALUE ADJUSTMENT: ", "FROM:" + raw_data + " TO: " + age_adjusted_raw_value);
         } else {
-            age_adjusted_raw_value = (raw_data/1000);
+            age_adjusted_raw_value = raw_data;
         }
 
     }
