@@ -146,9 +146,8 @@ public class Notifications {
     }
     
     public void periodicTimer(Context context) {
-        // This is the timer function that will be called every minute (or 5 minutes to save battery). 
-        // It is used in order to replay alerts, execute snoozes and alert if we are not recieving
-        //  data for a long time.
+        // This is the timer function that will be called every minute. It is used in order to replay alerts,
+        // execute snoozes and alert if we are not recieving data for a long time.
         Log.e(TAG, "PeriodicTimer called");
         ArmTimer(context, callbackPeriod);
     }

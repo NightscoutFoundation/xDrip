@@ -82,7 +82,7 @@ public class NavDrawerBuilder {
         }
         options.add("System Status");
         options.add("Settings");
-//        options.add("Fake Numbers");
+        options.add("Fake Numbers");
 //        options.add("Add Double Calibration");
 //        options.add("Share Test");
         return options;
@@ -136,7 +136,7 @@ public class NavDrawerBuilder {
         }
         options.add(new Intent(context, SystemStatus.class));
         options.add(new Intent(context, SettingsActivity.class));
-//        options.add(new Intent(context, FakeNumbers.class));
+        options.add(new Intent(context, FakeNumbers.class));
 //        options.add(new Intent(context, DoubleCalibrationActivity.class));
 //        options.add(new Intent(context, ShareTest.class));
         return options;

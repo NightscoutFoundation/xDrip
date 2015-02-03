@@ -13,6 +13,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
+import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 
 
@@ -46,5 +47,19 @@ public class FakeNumbers extends Activity {
             }
 
         });
+        
+        button = (Button)findViewById(R.id.StartTest);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                ActiveBgAlert aba = ActiveBgAlert.getOnly();
+                ActiveBgAlert.ClearData();
+                ActiveBgAlert.Create("some string", true, new Date().getTime());
+                
+                
+            }
+        });
+        
+        
+        
     }
 }
