@@ -88,6 +88,7 @@
     <orderEntry type="library" exported="" name="ActiveAndroid" level="project" />
     <orderEntry type="library" exported="" name="usb-serial-for-android-v010" level="project" />
     <orderEntry type="library" exported="" name="retrofit-1.7.1" level="project" />
+    <orderEntry type="library" exported="" name="pebblekit-2.6.0" level="project" />
     <orderEntry type="library" exported="" name="hellocharts-library-1.1" level="project" />
     <orderEntry type="library" exported="" name="gson-2.3" level="project" />
   </component>

@@ -298,4 +298,13 @@ public class BgGraphBuilder {
     public double mmolConvert(double mgdl) {
         return mgdl * Constants.MGDL_TO_MMOLL;
     }
+
+    public String unit() {
+        if(doMgdl){
+            return "mg/dl";
+        } else {
+            return "mmol";
+        }
+
+    }
 }
