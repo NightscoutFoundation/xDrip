@@ -72,8 +72,8 @@ public class Notifications {
        }
        return instance;
     }
-    
-    
+
+
     private void ReadPerfs(Context context) {
         mContext = context;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -144,14 +144,14 @@ public class Notifications {
             clearAllCalibrationNotifications();
         }
     }
-    
+
     public void periodicTimer(Context context) {
         // This is the timer function that will be called every minute. It is used in order to replay alerts,
         // execute snoozes and alert if we are not recieving data for a long time.
         Log.e(TAG, "PeriodicTimer called");
         ArmTimer(context, callbackPeriod);
     }
-    
+
     private void  ArmTimer(Context context, int time) {
         Log.e(TAG, "ArmTimer called");
         Intent intent = new Intent();
@@ -164,12 +164,12 @@ public class Notifications {
                 SystemClock.elapsedRealtime() +
                         time , alarmIntent);
     }
-    
+
     // TODO: Need to understand when we are calling this...
     private void ClearTimer(Context context) {
         Intent intent = new Intent();
         intent.setAction("com.eveningoutpost.dexdrip.UtilityModels.Notifications");
-        PendingIntent.getBroadcast(context, 0, intent, 
+        PendingIntent.getBroadcast(context, 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT).cancel();
     }
 
@@ -207,7 +207,7 @@ public class Notifications {
         if (bg_lights) { mBuilder.setLights(0xff00ff00, 300, 1000);}
         if (bg_sound && !bg_sound_in_silent) { mBuilder.setSound(Uri.parse(bg_notification_sound), AudioAttributes.FLAG_AUDIBILITY_ENFORCED);}
         if (bg_sound && bg_sound_in_silent) { soundAlert(bg_notification_sound);}
-        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
+        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(notificationId);
         mNotifyMgr.notify(notificationId, mBuilder.build());
     }
@@ -217,14 +217,14 @@ public class Notifications {
         if (calibration_vibrate) { mBuilder.setVibrate(vibratePattern);}
         if (calibration_lights) { mBuilder.setLights(0xff00ff00, 300, 1000);}
         if (calibration_sound) { mBuilder.setSound(Uri.parse(calibration_notification_sound), AudioAttributes.FLAG_AUDIBILITY_ENFORCED);}
-        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
+        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(notificationId);
         mNotifyMgr.notify(notificationId, mBuilder.build());
     }
 
     private void notificationUpdate(String title, String content, Intent intent, int notificationId) {
         NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);
-        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
+        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.notify(notificationId, mBuilder.build());
     }
 
@@ -235,18 +235,18 @@ public class Notifications {
                 .setContentText(content)
                 .setContentIntent(notificationIntent(intent));
     }
-    
+
     private PendingIntent notificationIntent(Intent intent){
         return PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
     }
 
     private void notificationDismiss(int notificationId) {
-        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
+        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(notificationId);
     }
 
-    
+
     private void bgAlert(String value, String slopeArrow) {
         UserNotification userNotification = UserNotification.lastBgAlert();
 
@@ -277,7 +277,7 @@ public class Notifications {
             calibrationNotificationCreate(title, content, intent, calibrationNotificationId);
         }
     }
-    
+
     private void doubleCalibrationRequest() {
         UserNotification userNotification = UserNotification.lastDoubleCalibrationAlert();
         if ((userNotification == null) || (userNotification.timestamp <= ((new Date().getTime()) - (60000 * calibration_snooze)))) {
