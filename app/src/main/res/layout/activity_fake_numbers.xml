@@ -50,5 +50,12 @@
         android:text="StartTest"
         android:id="@+id/StartTest"
          android:layout_below="@+id/timePicker"/>
+        
+         <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="StartTestAlerts"
+        android:id="@+id/StartTestAlerts"
+         android:layout_below="@+id/StartTest"/>
 
 </RelativeLayout>

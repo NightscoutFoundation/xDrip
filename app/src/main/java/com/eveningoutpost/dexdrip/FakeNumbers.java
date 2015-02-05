@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
+import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 
 
@@ -59,7 +60,12 @@ public class FakeNumbers extends Activity {
             }
         });
         
-        
-        
+        button = (Button)findViewById(R.id.StartTestAlerts);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                AlertType.TestAll();
+                
+            }
+        });
     }
 }
