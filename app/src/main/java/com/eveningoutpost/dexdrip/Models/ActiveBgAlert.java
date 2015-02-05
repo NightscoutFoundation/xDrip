@@ -79,7 +79,7 @@ public class ActiveBgAlert extends Model {
     }
     
     public static void Create(String alert_uuid, boolean is_snoozed, Long next_alert_at) {
-        Log.e(TAG, "saveData called");
+        Log.e(TAG, "Create called");
         ActiveBgAlert aba = getOnly();
         if (aba == null) {
             aba = new ActiveBgAlert();
