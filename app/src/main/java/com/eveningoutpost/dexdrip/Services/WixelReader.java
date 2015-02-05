@@ -80,6 +80,9 @@ public class WixelReader  extends Thread {
 
     public static boolean almostEquals( TransmitterRawData e1, TransmitterRawData e2) 
     {
+        if (e1 == null || e2==null) {
+            return false;
+        }
         // relative time is in ms
         if ((Math.abs(e1.RelativeTime - e2.RelativeTime) < 120 * 1000 ) &&
                 (e1.TransmissionId == e2.TransmissionId)) {
@@ -313,7 +316,8 @@ public class WixelReader  extends Thread {
     
     public void run()
     {
-    	Long LastReportedReading = new Date().getTime();
+    	//Long LastReportedReading = new Date().getTime();
+    	TransmitterRawData LastReportedReading = null; 
     	Log.e(TAG, "Starting... LastReportedReading " + LastReportedReading);
     	try {
 	        while (!mStop && !interrupted()) {
@@ -328,11 +332,15 @@ public class WixelReader  extends Thread {
 	        		// Last in the array is the most updated reading we have.
 	        		TransmitterRawData LastReading = LastReadingArr[LastReadingArr.length -1];
 	        		
-	        		if (LastReading.CaptureDateTime > LastReportedReading + 5000) {
+	        		//if (LastReading.CaptureDateTime > LastReportedReading + 5000) {
+	        		// Make sure we do not report packets from the far future...
+	        		if (!almostEquals(LastReading, LastReportedReading) &&
+	        		        LastReading.CaptureDateTime < new Date().getTime() + 12000) {
 	        			// We have a real new reading...
-	        			Log.e(TAG, "calling setSerialDataToTransmitterRawData " + LastReading.RawValue);
+	        			Log.e(TAG, "calling setSerialDataToTransmitterRawData " + LastReading.RawValue +
+	        			        " LastReading.CaptureDateTime " + LastReading.CaptureDateTime);
 	        			setSerialDataToTransmitterRawData(LastReading.RawValue , LastReading.BatteryLife, LastReading.CaptureDateTime);
-	        			LastReportedReading = LastReading.CaptureDateTime;
+	        			LastReportedReading = LastReading;
 	        		}
 	        	}
 	        	// let's sleep (right now for 30 seconds)
