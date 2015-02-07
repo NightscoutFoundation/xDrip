@@ -23,10 +23,10 @@ public class ActiveBgAlert extends Model {
     @Column(name = "alert_uuid")
     public String alert_uuid;
 
-    @Column(name = "is_snoozed")
+    @Column(name = "is_snoozed") //??? Do we need this
     public boolean is_snoozed;
 
-    @Column(name = "last_alerted_at")
+    @Column(name = "last_alerted_at") // Do we need this
     public Long last_alerted_at;
 
     @Column(name = "next_alert_at")
@@ -40,8 +40,8 @@ public class ActiveBgAlert extends Model {
     }
 
     public void snooze(int minutes) {
-        
-        
+        next_alert_at = new Date().getTime() + minutes * 60000;
+        save();
     }
     
     public String toString() {

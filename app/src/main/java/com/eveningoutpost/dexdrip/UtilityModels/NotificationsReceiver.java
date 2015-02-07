@@ -19,6 +19,7 @@ public class NotificationsReceiver extends BroadcastReceiver {
 
         Notifications notifications = Notifications.getInstance(context);
         notifications.periodicTimer(context);
+        AlertPlayer.getPlayer().ClockTick(context);
 
     }
 }

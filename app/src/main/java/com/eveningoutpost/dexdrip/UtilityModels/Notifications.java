@@ -18,6 +18,8 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.DoubleCalibrationActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
+import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.CalibrationRequest;
@@ -32,6 +34,8 @@ import java.util.List;
 /**
  * Created by stephenblack on 11/28/14.
  */
+
+
 public class Notifications {
     public static final long[] vibratePattern = {0,1000,300,1000,300,1000};
     public static boolean bg_notifications;
@@ -93,6 +97,77 @@ public class Notifications {
         calibration_notification_sound = prefs.getString("calibration_notification_sound", "content://settings/system/notification_sound");
     }
 
+/*
+ * *************************************************************************************************************
+ * Function for new notifications    
+ */
+    
+    public void FileBasedNotifications(Context context) {
+        BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
+        double high = bgGraphBuilder.highMark;
+        double low = bgGraphBuilder.lowMark;
+        Sensor sensor = Sensor.currentSensor();
+        
+        List<BgReading> bgReadings = BgReading.latest(3);
+        BgReading bgReading = bgReadings.get(0);
+        
+        // TODO: tzachi what is the time of this last bgReading 
+        
+        if (bg_notifications && sensor != null) {
+            AlertType newAllert = AlertType.get_highest_active_alert(bgGraphBuilder.unitized(bgReading.calculated_value), 0);
+            if (newAllert == null) {
+                // No alert should work, Stop all allerts.
+                AlertPlayer.getPlayer().stopAlert(true);
+                return;
+            }
+            
+            ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
+            if(activeBgAlert == null) {
+                // We need to create a new allert  and start playing
+                AlertPlayer.getPlayer().startAlert(context, newAllert);
+                return;
+            }
+            
+            
+            if (activeBgAlert.alert_uuid == newAllert.uuid) {
+                // This is the same alert. Might need to play again...
+                AlertPlayer.getPlayer().ClockTick(context);
+                return;
+            }
+            
+            // we have a new alert. It is more important than the previous one. we need to stop
+            // the older one and start a new one.
+            // TODO: Tzachi if this now a lower importance allert, we should not do anything.
+            // Example, if we have two alerts one for 90 and the other for 80. and we were already alerting for the 80
+            // and we were snoozed. Now bg is 85, the alert for 80 is cleared, but we are alerting for 90.
+            // We should not do anything if we are snoozed for the 80...
+            //  AlertType  newHigherAlert = AlertType.HigherAlert(activeBgAlert,  newAllert);
+            // if (newHigherAlert == activeBgAlert) {
+                // the existing all
+            // }
+            
+            // For now, we are stopping the old alert and starting a new one.
+            AlertPlayer.getPlayer().stopAlert(true);
+            AlertPlayer.getPlayer().startAlert(context, newAllert);
+            return;
+            
+            
+/*
+            if (bgGraphBuilder.unitized(bgReading.calculated_value) >= high || bgGraphBuilder.unitized(bgReading.calculated_value) <= low) {
+                bgAlert(bgReading.displayValue(mContext), BgReading.slopeArrow());
+            } else {
+                clearBgAlert();
+            }
+*/            
+        } else {
+            AlertPlayer.getPlayer().stopAlert(true);
+        }
+        
+    }
+/*
+ * *****************************************************************************************************************
+ */
+    
     // only function that is realy called from outside...
     public void notificationSetter(Context context) {
         ReadPerfs(context);

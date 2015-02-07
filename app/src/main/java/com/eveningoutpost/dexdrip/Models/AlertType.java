@@ -1,5 +1,8 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.util.Log;
 
@@ -125,7 +128,7 @@ public class AlertType extends Model {
         return null;
     }
     
-    // Checks if a1 is more important than a2. 
+    // Checks if a1 is more important than a2. returns the higher one
     public static AlertType HigherAlert(AlertType a1, AlertType a2) {
         if (a1.above && !a2.above) {
             return a2;
@@ -188,13 +191,33 @@ public class AlertType extends Model {
  
     public static void print_all() {
         List<AlertType> Allerts  = new Select()
-        .from(AlertType.class)
-        .execute();
+            .from(AlertType.class)
+            .execute();
 
         Log.e(TAG,"List of all allerts");
         for (AlertType alert : Allerts) {
             Log.e(TAG, alert.toString());
         }
+    }
+    
+    // This function is a replacment for the UI. It will make sure that there are exactly two alerts
+    // based on what the user has set as high and low. Will be replaced by a UI.
+    public static void CreateStaticAlerts(Context context) {
+        // If there are two alerts already, we are done...
+        List<AlertType> Allerts  = new Select()
+            .from(AlertType.class)
+            .execute();
+        if (Allerts.size() == 2) {
+            return;
+            
+            //???????????? Need to make sure that the values are also true.....
+            
+        }
+        remove_all();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        add_alert("high alert", true, Double.parseDouble(prefs.getString("highValue", "170")), true, 1);
+        add_alert("low alert", false, Double.parseDouble(prefs.getString("lowValue", "170")), true, 1);
+        print_all();
     }
     
    
