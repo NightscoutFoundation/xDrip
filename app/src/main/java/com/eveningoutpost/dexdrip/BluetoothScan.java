@@ -140,8 +140,6 @@ public class BluetoothScan extends ListActivity implements NavigationDrawerFragm
         final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
         if (device == null) return;
         Toast.makeText(this, R.string.connecting_to_device, Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, Home.class);
-        Intent serviceIntent = new Intent(this, DexCollectionService.class);
 
         ActiveBluetoothDevice btDevice = new Select().from(ActiveBluetoothDevice.class)
                 .orderBy("_ID desc")
@@ -161,7 +159,13 @@ public class BluetoothScan extends ListActivity implements NavigationDrawerFragm
             bluetooth_adapter.stopLeScan(mLeScanCallback);
             is_scanning = false;
         }
-        startService(serviceIntent);
+//        Intent intent = new Intent(this, Home.class);
+//        Intent serviceIntent = new Intent(this, DexCollectionService.class);
+//        startService(serviceIntent);
+//        startActivity(intent);
+//        finish();
+
+        Intent intent = new Intent(this, ShareTest.class);
         startActivity(intent);
         finish();
     }

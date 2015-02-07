@@ -23,7 +23,14 @@ public class CollectionServiceStarter {
         }
         return false;
     }
-    
+    public static boolean isBTShare(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
+        if(collection_method.compareTo("DexcomShare") == 0) {
+            return true;
+        }
+        return false;
+    }
     public void start(Context context) {
         mContext = context;
 

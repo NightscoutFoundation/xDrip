@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.eveningoutpost.dexdrip" >
 
-    <permission android:name="com.eveningoutpost.dexdrip.permissions.RECEIVE_BG_ESTIMATE"/>
+    <permission android:name="com.eveningoutpost.dexdrip.permissions.RECEIVE_BG_ESTIMATE" />
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -19,7 +19,6 @@
     <uses-permission android:name="android.permission.BATTERY_STATS" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission." />
-
 
     <application
         android:name="com.activeandroid.app.Application"
@@ -128,7 +127,6 @@
         <activity
             android:name=".CalibrationCheckInActivity"
             android:label="@string/title_activity_calibration_check_in" >
-
         </activity>
         <activity
             android:name=".UsbConnectedActivity"
@@ -140,6 +138,17 @@
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
+        </activity>
+
+        <service
+            android:name=".Services.DexShareCollectionService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+
+        <activity
+            android:name=".ShareTest"
+            android:label="@string/title_activity_share_test" >
         </activity>
     </application>
 
