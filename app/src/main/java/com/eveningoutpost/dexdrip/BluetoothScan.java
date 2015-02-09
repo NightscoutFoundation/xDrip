@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+import android.annotation.TargetApi;
 import android.app.ListActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -26,7 +27,7 @@ import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 
 import java.util.ArrayList;
 
-
+@TargetApi(android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothScan extends ListActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     private String menu_name = "Scan for BT";
     private NavigationDrawerFragment mNavigationDrawerFragment;

@@ -50,10 +50,11 @@ public class Notifications {
     public static int currentVolume;
     public static AudioManager manager;
 
-    public static int BgNotificationId = 001;
-    public static int calibrationNotificationId = 002;
-    public static int doubleCalibrationNotificationId = 003;
-    public static int extraCalibrationNotificationId = 004;
+    public static final int BgNotificationId = 001;
+    public static final int calibrationNotificationId = 002;
+    public static final int doubleCalibrationNotificationId = 003;
+    public static final int extraCalibrationNotificationId = 004;
+    public static final int exportCompleteNotificationId = 005;
 
     public static void setNotificationSettings(Context context) {
         mContext = context;
