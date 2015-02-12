@@ -207,16 +207,26 @@ public class AlertType extends Model {
         List<AlertType> Allerts  = new Select()
             .from(AlertType.class)
             .execute();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        Double highValue = Double.parseDouble(prefs.getString("highValue", "170"));
+        Double lowValue = Double.parseDouble(prefs.getString("lowValue", "70"));
         if (Allerts.size() == 2) {
-            return;
-            
-            //???????????? Need to make sure that the values are also true.....
+            if(Allerts.get(0).threshold == highValue && Allerts.get(0).above == true &&
+                    Allerts.get(1).threshold == lowValue && Allerts.get(1).above == false) {
+                Log.e(TAG, "CreateStaticAlerts we have our allerts ok...");
+                return;
+            }
+            if(Allerts.get(1).threshold == highValue && Allerts.get(1).above == true &&
+                    Allerts.get(0).threshold == lowValue && Allerts.get(0).above == false) {
+                Log.e(TAG, "CreateStaticAlerts we have our allerts ok...");
+                return;
+            }
             
         }
+        Log.e(TAG, "CreateStaticAlerts re-creating all our allerts again");
         remove_all();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        add_alert("high alert", true, Double.parseDouble(prefs.getString("highValue", "170")), true, 1);
-        add_alert("low alert", false, Double.parseDouble(prefs.getString("lowValue", "170")), true, 1);
+        add_alert("high alert", true, highValue, true, 1);
+        add_alert("low alert", false, lowValue, true, 1);
         print_all();
     }
     

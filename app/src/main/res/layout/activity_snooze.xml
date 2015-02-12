@@ -17,16 +17,17 @@
         android:singleLine="true"
         android:textAlignment="center"
         android:textSize="24dp"
-        android:hint="Snooz for x minutes"
+        android:hint="@string/snooz_hint"
         android:layout_alignParentStart="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Done"
+        android:text="@string/snooz"
         android:id="@+id/button_snooze"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/snooze" />
+        android:layout_alignParentBottom="false"
+        android:layout_below="@+id/snooze" 
+        android:layout_centerHorizontal="true" />
 
     
 

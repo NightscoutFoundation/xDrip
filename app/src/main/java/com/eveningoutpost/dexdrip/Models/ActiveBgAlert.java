@@ -7,6 +7,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 
 import java.text.DateFormat;
@@ -18,7 +19,7 @@ import java.util.Date;
 @Table(name = "ActiveBgAlert", id = BaseColumns._ID)
 public class ActiveBgAlert extends Model {
     
-    private final static String TAG = Notifications.class.getSimpleName();
+    private final static String TAG = AlertPlayer.class.getSimpleName();
     
     @Column(name = "alert_uuid")
     public String alert_uuid;
@@ -70,16 +71,16 @@ public class ActiveBgAlert extends Model {
                 .executeSingle();
         
         if (aba != null) {
-            Log.e(TAG, "getOnly appd.fileName = " + aba.toString());
+            Log.v(TAG, "ActiveBgAlert getOnly aba = " + aba.toString());
         } else {
-            Log.e(TAG, "getOnly returning null");
+            Log.v(TAG, "ActiveBgAlert getOnly returning null");
         }
         
         return aba;
     }
     
     public static void Create(String alert_uuid, boolean is_snoozed, Long next_alert_at) {
-        Log.e(TAG, "Create called");
+        Log.e(TAG, "ActiveBgAlert Create called");
         ActiveBgAlert aba = getOnly();
         if (aba == null) {
             aba = new ActiveBgAlert();
@@ -92,7 +93,7 @@ public class ActiveBgAlert extends Model {
     }
     
     public static void ClearData() {
-        Log.e(TAG, "ClearData called");
+        Log.e(TAG, "ActiveBgAlert ClearData called");
         ActiveBgAlert aba = getOnly();
         if (aba != null) {
             aba.delete();

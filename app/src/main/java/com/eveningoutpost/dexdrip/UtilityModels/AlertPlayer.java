@@ -21,10 +21,10 @@ public class AlertPlayer {
     
     public static AlertPlayer getPlayer() {
         if(singletone == null) {
-            Log.e(TAG,"Creating a new PlayFile");
+            Log.e(TAG,"Creating a new AlertPlayer");
             singletone = new AlertPlayer();
         } else {
-            Log.e("tag","Using existing PlayFile");
+            Log.e("tag","Using existing AlertPlayer");
         }
         return singletone;
     }
@@ -39,7 +39,7 @@ public class AlertPlayer {
     }
 
     public synchronized void stopAlert(boolean ClearData) {
-        Log.e(TAG, "stop called ThreadID" + Thread.currentThread().getId());
+        Log.e(TAG, "stop called ThreadID " + Thread.currentThread().getId());
         if (ClearData) {
             ActiveBgAlert.ClearData();
         }
@@ -51,7 +51,7 @@ public class AlertPlayer {
     }
     
     public synchronized  void Snooze(Context ctx, int repeatTime) {
-        Log.e(TAG, "Snooze called");
+        Log.e(TAG, "Snooze called repeatTime = "+ repeatTime);
         stopAlert(false);
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
         if (activeBgAlert  == null) {
@@ -76,13 +76,19 @@ public class AlertPlayer {
                 ActiveBgAlert.ClearData();
                 return;
             }
+            Log.e(TAG,"Playing the allert again"); 
             PlayFile(ctx, alert.mp3_file);
         }
         
     }
 
     private void PlayFile(Context ctx, String FileName) {
-        mediaPlayer = MediaPlayer.create(ctx, Uri.parse(FileName), null);
+        if(mediaPlayer != null) {
+            Log.e(TAG, "ERROR, going to leak a mediaplayer !!!");
+        }
+        if(FileName != null) {
+            mediaPlayer = MediaPlayer.create(ctx, Uri.parse(FileName), null);
+        }
         if(mediaPlayer == null) {
             Log.w(TAG, "Creating mediaplayer with file " + FileName + " failed. using default alarm");
             mediaPlayer = MediaPlayer.create(ctx, R.raw.default_alert);

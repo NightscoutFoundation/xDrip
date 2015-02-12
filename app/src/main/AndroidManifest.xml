@@ -102,6 +102,11 @@
         </service>
 
         <activity
+            android:name=".SnoozActivity"
+            android:label="@string/title_snooz" >
+        </activity>
+        
+        <activity
             android:name=".FakeNumbers"
             android:label="@string/title_activity_fake_numbers" >
         </activity>
