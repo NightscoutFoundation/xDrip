@@ -97,31 +97,31 @@ public class AlertType extends Model {
     public static AlertType get_highest_active_alert(double bg, double bg_minute) {
         // Chcek the low alerts
         
-        List<AlertType> lowAllerts  = new Select()
+        List<AlertType> lowAlerts  = new Select()
             .from(AlertType.class)
             .where("threshold >= ?", bg)
             .where("above = ?", false)
             .orderBy("threshold asc")
             .execute();
 
-        for (AlertType lowAllert : lowAllerts) {
-            if(lowAllert.should_alarm(bg)) {
-                return lowAllert;
+        for (AlertType lowAlert : lowAlerts) {
+            if(lowAlert.should_alarm(bg)) {
+                return lowAlert;
             }
         }
             
         // If no low alert found, check higher alert.
-        List<AlertType> HighAllerts  = new Select()
+        List<AlertType> HighAlerts  = new Select()
             .from(AlertType.class)
             .where("threshold <= ?", bg)
             .where("above = ?", true)
             .orderBy("threshold asc")
             .execute();
 
-        for (AlertType HighAllert : HighAllerts) {
-            //Log.e(TAG, "Testing high allert " + HighAllert.toString());
-            if(HighAllert.should_alarm(bg)) {
-                return HighAllert;
+        for (AlertType HighAlert : HighAlerts) {
+            //Log.e(TAG, "Testing high alert " + HighAlert.toString());
+            if(HighAlert.should_alarm(bg)) {
+                return HighAlert;
             }
         }
         // no alert found 
@@ -156,11 +156,11 @@ public class AlertType extends Model {
     }
     
     public static void remove_all() {
-        List<AlertType> Allerts  = new Select()
+        List<AlertType> Alerts  = new Select()
         .from(AlertType.class)
         .execute();
 
-        for (AlertType alert : Allerts) {
+        for (AlertType alert : Alerts) {
             alert.delete();
         }
     }
@@ -190,12 +190,12 @@ public class AlertType extends Model {
     }
  
     public static void print_all() {
-        List<AlertType> Allerts  = new Select()
+        List<AlertType> Alerts  = new Select()
             .from(AlertType.class)
             .execute();
 
-        Log.e(TAG,"List of all allerts");
-        for (AlertType alert : Allerts) {
+        Log.e(TAG,"List of all alerts");
+        for (AlertType alert : Alerts) {
             Log.e(TAG, alert.toString());
         }
     }
@@ -204,26 +204,26 @@ public class AlertType extends Model {
     // based on what the user has set as high and low. Will be replaced by a UI.
     public static void CreateStaticAlerts(Context context) {
         // If there are two alerts already, we are done...
-        List<AlertType> Allerts  = new Select()
+        List<AlertType> Alerts  = new Select()
             .from(AlertType.class)
             .execute();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         Double highValue = Double.parseDouble(prefs.getString("highValue", "170"));
         Double lowValue = Double.parseDouble(prefs.getString("lowValue", "70"));
-        if (Allerts.size() == 2) {
-            if(Allerts.get(0).threshold == highValue && Allerts.get(0).above == true &&
-                    Allerts.get(1).threshold == lowValue && Allerts.get(1).above == false) {
-                Log.e(TAG, "CreateStaticAlerts we have our allerts ok...");
+        if (Alerts.size() == 2) {
+            if(Alerts.get(0).threshold == highValue && Alerts.get(0).above == true &&
+                    Alerts.get(1).threshold == lowValue && Alerts.get(1).above == false) {
+                Log.e(TAG, "CreateStaticAlerts we have our alerts ok...");
                 return;
             }
-            if(Allerts.get(1).threshold == highValue && Allerts.get(1).above == true &&
-                    Allerts.get(0).threshold == lowValue && Allerts.get(0).above == false) {
-                Log.e(TAG, "CreateStaticAlerts we have our allerts ok...");
+            if(Alerts.get(1).threshold == highValue && Alerts.get(1).above == true &&
+                    Alerts.get(0).threshold == lowValue && Alerts.get(0).above == false) {
+                Log.e(TAG, "CreateStaticAlerts we have our alerts ok...");
                 return;
             }
             
         }
-        Log.e(TAG, "CreateStaticAlerts re-creating all our allerts again");
+        Log.e(TAG, "CreateStaticAlerts re-creating all our alerts again");
         remove_all();
         add_alert("high alert", true, highValue, true, 1);
         add_alert("low alert", false, lowValue, true, 1);

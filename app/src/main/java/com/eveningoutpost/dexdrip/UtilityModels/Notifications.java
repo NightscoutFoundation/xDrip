@@ -117,44 +117,44 @@ public class Notifications {
         // TODO: tzachi what is the time of this last bgReading 
         
         if (bg_notifications && sensor != null) {
-            AlertType newAllert = AlertType.get_highest_active_alert(bgGraphBuilder.unitized(bgReading.calculated_value), 0);
-            if (newAllert == null) {
-                Log.e(TAG, "FileBasedNotifications - No active notifcation exists, stopping all allerts");
-                // No alert should work, Stop all allerts.
+            AlertType newAlert = AlertType.get_highest_active_alert(bgGraphBuilder.unitized(bgReading.calculated_value), 0);
+            if (newAlert == null) {
+                Log.e(TAG, "FileBasedNotifications - No active notifcation exists, stopping all alerts");
+                // No alert should work, Stop all alerts.
                 AlertPlayer.getPlayer().stopAlert(true);
                 return;
             }
             
             ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
             if(activeBgAlert == null) {
-                Log.e(TAG, "FileBasedNotifications we have a new allert, starting to play it...");
-                // We need to create a new allert  and start playing
-                AlertPlayer.getPlayer().startAlert(context, newAllert);
+                Log.e(TAG, "FileBasedNotifications we have a new alert, starting to play it...");
+                // We need to create a new alert  and start playing
+                AlertPlayer.getPlayer().startAlert(context, newAlert);
                 return;
             }
             
             
-            if (activeBgAlert.alert_uuid == newAllert.uuid) {
+            if (activeBgAlert.alert_uuid == newAlert.uuid) {
                 // This is the same alert. Might need to play again...
-                Log.e(TAG, "FileBasedNotifications we have found an active allert, checking if we need to play it...");
+                Log.e(TAG, "FileBasedNotifications we have found an active alert, checking if we need to play it...");
                 AlertPlayer.getPlayer().ClockTick(context);
                 return;
             }
             
             // we have a new alert. It is more important than the previous one. we need to stop
             // the older one and start a new one.
-            // TODO: Tzachi if this now a lower importance allert, we should not do anything.
+            // TODO: Tzachi if this now a lower importance alert, we should not do anything.
             // Example, if we have two alerts one for 90 and the other for 80. and we were already alerting for the 80
             // and we were snoozed. Now bg is 85, the alert for 80 is cleared, but we are alerting for 90.
             // We should not do anything if we are snoozed for the 80...
-            //  AlertType  newHigherAlert = AlertType.HigherAlert(activeBgAlert,  newAllert);
+            //  AlertType  newHigherAlert = AlertType.HigherAlert(activeBgAlert,  newAlert);
             // if (newHigherAlert == activeBgAlert) {
                 // the existing all
             // }
             
             // For now, we are stopping the old alert and starting a new one.
             AlertPlayer.getPlayer().stopAlert(true);
-            AlertPlayer.getPlayer().startAlert(context, newAllert);
+            AlertPlayer.getPlayer().startAlert(context, newAlert);
             return;
             
         } else {

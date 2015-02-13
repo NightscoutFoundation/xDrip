@@ -29,12 +29,12 @@ public class AlertPlayer {
         return singletone;
     }
 
-    public synchronized  void startAlert(Context ctx, AlertType newAllert )  {
+    public synchronized  void startAlert(Context ctx, AlertType newAlert )  {
       Log.e(TAG, "start called, Threadid " + Thread.currentThread().getId());
       stopAlert(true);
-      ActiveBgAlert.Create(newAllert.uuid, false, new Date().getTime() + newAllert.minutes_between * 60000 );
+      ActiveBgAlert.Create(newAlert.uuid, false, new Date().getTime() + newAlert.minutes_between * 60000 );
       
-      PlayFile(ctx, newAllert.mp3_file);
+      PlayFile(ctx, newAlert.mp3_file);
 
     }
 
@@ -72,11 +72,11 @@ public class AlertPlayer {
             stopAlert(false);
             AlertType alert = AlertType.get_alert(activeBgAlert.alert_uuid);
             if (alert == null) {
-                Log.w(TAG, "The allert was already deleted... will not play");
+                Log.w(TAG, "The alert was already deleted... will not play");
                 ActiveBgAlert.ClearData();
                 return;
             }
-            Log.e(TAG,"Playing the allert again"); 
+            Log.e(TAG,"Playing the alert again"); 
             PlayFile(ctx, alert.mp3_file);
         }
         
@@ -97,7 +97,7 @@ public class AlertPlayer {
             mediaPlayer.start();
         } else {
             // TODO, what should we do here???
-            Log.wtf(TAG,"Starting an allert failed, what should we do !!!");
+            Log.wtf(TAG,"Starting an alert failed, what should we do !!!");
         }
     }
 
