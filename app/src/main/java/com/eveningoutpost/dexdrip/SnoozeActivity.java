@@ -19,7 +19,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 
 
-public class SnoozActivity extends Activity {
+public class SnoozeActivity extends Activity {
     public Button button;
     public DatePicker dp;
     public TimePicker tp;

@@ -102,8 +102,8 @@
         </service>
 
         <activity
-            android:name=".SnoozActivity"
-            android:label="@string/title_snooz" >
+            android:name=".SnoozeActivity"
+            android:label="@string/title_snooze" >
         </activity>
         
         <activity

@@ -17,13 +17,13 @@
         android:singleLine="true"
         android:textAlignment="center"
         android:textSize="24dp"
-        android:hint="@string/snooz_hint"
+        android:hint="@string/snooze_hint"
         android:layout_alignParentStart="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/snooz"
+        android:text="@string/snooze"
         android:id="@+id/button_snooze"
         android:layout_alignParentBottom="false"
         android:layout_below="@+id/snooze" 
