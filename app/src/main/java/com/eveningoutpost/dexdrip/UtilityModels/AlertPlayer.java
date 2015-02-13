@@ -3,11 +3,12 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import java.util.Date;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.Log;
-import com.eveningoutpost.dexdrip.R;
 
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 
@@ -17,6 +18,8 @@ public class AlertPlayer {
     
     private final static String TAG = AlertPlayer.class.getSimpleName();
     private MediaPlayer mediaPlayer;
+    int volumeBeforeAlert;
+    Context context;
     
     
     public static AlertPlayer getPlayer() {
@@ -94,6 +97,26 @@ public class AlertPlayer {
             mediaPlayer = MediaPlayer.create(ctx, R.raw.default_alert);
         }
         if(mediaPlayer != null) {
+            
+            AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
+            int maxVolume = manager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            volumeBeforeAlert = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            manager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0);
+            context = ctx;
+
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    AudioManager manager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+                    int currentVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                    int maxVolume = manager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+                    if(maxVolume == currentVolume) {
+                        // If the user has changed the volume, don't change it again.
+                        manager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeBeforeAlert, 0);
+                    }
+                }
+            });
+            
             mediaPlayer.start();
         } else {
             // TODO, what should we do here???
