@@ -134,7 +134,7 @@ public class Notifications {
             }
             
             
-            if (activeBgAlert.alert_uuid == newAlert.uuid) {
+            if (activeBgAlert.alert_uuid.equals(newAlert.uuid)) {
                 // This is the same alert. Might need to play again...
                 Log.e(TAG, "FileBasedNotifications we have found an active alert, checking if we need to play it...");
                 AlertPlayer.getPlayer().ClockTick(context);
@@ -153,6 +153,7 @@ public class Notifications {
             // }
             
             // For now, we are stopping the old alert and starting a new one.
+            Log.e(TAG, "Found a new allert, will play it.");
             AlertPlayer.getPlayer().stopAlert(true);
             AlertPlayer.getPlayer().startAlert(context, newAlert);
             return;
