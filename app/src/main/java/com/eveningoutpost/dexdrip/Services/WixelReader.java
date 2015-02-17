@@ -61,7 +61,7 @@ public class WixelReader  extends Thread {
         try {
             theWixelReader.join();
         } catch (InterruptedException e) {
-            Log.e(TAG, "cought InterruptedException, could not wait for the wixel thread to exit");
+            Log.e(TAG, "cought InterruptedException, could not wait for the wixel thread to exit", e);
         }
         sStarted = false;
         // A stopped thread can not start again, so we need to kill it and will start a new one
@@ -81,18 +81,13 @@ public class WixelReader  extends Thread {
     public static boolean almostEquals( TransmitterRawData e1, TransmitterRawData e2) 
     {
         if (e1 == null || e2==null) {
-            Log.e(TAG, "almost e1 or e2 == null returning false");
             return false;
         }
-        Log.e(TAG, "almost e1.RelativeTime =  " + e1.RelativeTime + " e1.TransmissionId = " + e1.TransmissionId);
-        Log.e(TAG, "almoste2.RelativeTime =  " + e2.RelativeTime  + " e2.TransmissionId = " + e2.TransmissionId);
         // relative time is in ms
         if ((Math.abs(e1.CaptureDateTime - e2.CaptureDateTime) < 120 * 1000 ) &&
                 (e1.TransmissionId == e2.TransmissionId)) {
-            Log.e(TAG, "almost returning true");
             return true;
         }
-        Log.e(TAG, "almost returning false");
         return false;
     }
     
@@ -154,7 +149,7 @@ public class WixelReader  extends Thread {
             port = Integer.parseInt(hosts[1]);
         } catch (NumberFormatException nfe) {
             System.out.println("Invalid port " +hosts[1]);
-            Log.e(TAG, "Invalid hostAndIp " + hostAndIp);
+            Log.e(TAG, "Invalid hostAndIp " + hostAndIp, nfe);
             return null;
             
         }
@@ -171,7 +166,7 @@ public class WixelReader  extends Thread {
         } catch(Exception e) {
             // We had some error, need to move on...
             System.out.println("read from host failed cought expation" + hostAndIp);
-            Log.e(TAG, "read from host failed " + hostAndIp);
+            Log.e(TAG, "read from host failed " + hostAndIp, e);
 
             return null;
             
@@ -309,11 +304,10 @@ public class WixelReader  extends Thread {
             MySocket.close();
             return trd_list;
         }catch(SocketTimeoutException s) {
-            System.out.println("Socket timed out!...");
+            Log.e(TAG, "Socket timed out! ", s);
         }
         catch(IOException e) {
-            e.printStackTrace();
-            System.out.println("cought exception " + e.getMessage());
+            Log.e(TAG, "cought IOException! ", e);
         }
         return trd_list;
     }
@@ -354,6 +348,7 @@ public class WixelReader  extends Thread {
 	        	Thread.sleep(30000);
 	        }
     	} catch (InterruptedException e) {
+    	    Log.e(TAG, "cought InterruptedException! ", e);
             // time to get out...            
         }
     }
@@ -388,6 +383,7 @@ public class WixelReader  extends Thread {
 
                } catch (InterruptedException e) {
                    // time to get out...
+                   Log.e(TAG, "cought InterruptedException! ", e);
                    break;
                }
         }
