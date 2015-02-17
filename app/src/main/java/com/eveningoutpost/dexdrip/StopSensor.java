@@ -10,9 +10,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
 import java.util.Date;
-
+import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 
 public class StopSensor extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     private String menu_name = "Stop Sensor";
@@ -54,6 +53,7 @@ public class StopSensor extends Activity implements NavigationDrawerFragment.Nav
                 sensor.stopped_at = new Date().getTime();
                 Log.w("NEW SENSOR", "Sensor stopped at " + sensor.stopped_at);
                 sensor.save();
+                AlertPlayer.getPlayer().stopAlert(true);
 
                 Toast.makeText(getApplicationContext(), "Sensor stopped", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getApplicationContext(), Home.class);

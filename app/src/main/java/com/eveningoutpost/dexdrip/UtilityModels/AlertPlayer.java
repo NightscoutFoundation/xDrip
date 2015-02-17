@@ -24,10 +24,10 @@ public class AlertPlayer {
     
     public static AlertPlayer getPlayer() {
         if(singletone == null) {
-            Log.e(TAG,"Creating a new AlertPlayer");
+            Log.e(TAG,"getPlayer: Creating a new AlertPlayer");
             singletone = new AlertPlayer();
         } else {
-            Log.e("tag","Using existing AlertPlayer");
+            Log.e("tag","getPlayer: Using existing AlertPlayer");
         }
         return singletone;
     }
@@ -42,7 +42,7 @@ public class AlertPlayer {
     }
 
     public synchronized void stopAlert(boolean ClearData) {
-        Log.e(TAG, "stop called ThreadID " + Thread.currentThread().getId());
+        Log.e(TAG, "stopAlert: stop called ClearData" + ClearData + "  ThreadID " + Thread.currentThread().getId());
         if (ClearData) {
             ActiveBgAlert.ClearData();
         }
@@ -75,11 +75,11 @@ public class AlertPlayer {
             stopAlert(false);
             AlertType alert = AlertType.get_alert(activeBgAlert.alert_uuid);
             if (alert == null) {
-                Log.w(TAG, "The alert was already deleted... will not play");
+                Log.w(TAG, "ClockTick: The alert was already deleted... will not play");
                 ActiveBgAlert.ClearData();
                 return;
             }
-            Log.e(TAG,"Playing the alert again"); 
+            Log.e(TAG,"ClockTick: Playing the alert again"); 
             PlayFile(ctx, alert.mp3_file);
         }
         
@@ -87,13 +87,13 @@ public class AlertPlayer {
 
     private void PlayFile(Context ctx, String FileName) {
         if(mediaPlayer != null) {
-            Log.e(TAG, "ERROR, going to leak a mediaplayer !!!");
+            Log.e(TAG, "ERROR, PlayFile:going to leak a mediaplayer !!!");
         }
         if(FileName != null) {
             mediaPlayer = MediaPlayer.create(ctx, Uri.parse(FileName), null);
         }
         if(mediaPlayer == null) {
-            Log.w(TAG, "Creating mediaplayer with file " + FileName + " failed. using default alarm");
+            Log.w(TAG, "PlayFile: Creating mediaplayer with file " + FileName + " failed. using default alarm");
             mediaPlayer = MediaPlayer.create(ctx, R.raw.default_alert);
         }
         if(mediaPlayer != null) {
@@ -120,7 +120,7 @@ public class AlertPlayer {
             mediaPlayer.start();
         } else {
             // TODO, what should we do here???
-            Log.wtf(TAG,"Starting an alert failed, what should we do !!!");
+            Log.wtf(TAG,"PlayFile: Starting an alert failed, what should we do !!!");
         }
     }
 
