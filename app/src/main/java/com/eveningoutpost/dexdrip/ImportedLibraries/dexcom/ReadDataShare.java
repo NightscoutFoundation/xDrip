@@ -1,20 +1,20 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom;
 
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
-import android.hardware.usb.UsbEndpoint;
-import android.hardware.usb.UsbInterface;
 import android.util.Log;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.CdcAcmSerialDriver;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialDriver;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.GenericXMLRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.MeterRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.PageHeader;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialPort;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialDriver;
+import com.eveningoutpost.dexdrip.UtilityModels.DexShareAttributes;
 
 import org.w3c.dom.Element;
 
@@ -26,30 +26,64 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-public class ReadData {
+public class ReadDataShare {
 
-    private static final String TAG = ReadData.class.getSimpleName();
+    private static final String TAG = ReadDataShare.class.getSimpleName();
     private static final int IO_TIMEOUT = 3000;
     private static final int MIN_LEN = 256;
-    private UsbSerialDriver mSerialDevice;
+//    private UsbSerialDriver mSerialDevice;
+    private BluetoothGatt mBluetoothGatt;
+    private BluetoothGattService mShareService;
+    private BluetoothGattCharacteristic mAuthenticationCharacteristic;
+    private BluetoothGattCharacteristic mSendDataCharacteristic;
+    private BluetoothGattCharacteristic mReceiveDataCharacteristic;
+    private BluetoothGattCharacteristic mHeartBeatCharacteristic;
+    private BluetoothGattCharacteristic mCommandCharacteristic;
+    private BluetoothGattCharacteristic mResponseCharacteristic;
     protected final Object mReadBufferLock = new Object();
-    private UsbDeviceConnection mConnection;
-    private UsbDevice mDevice;
 
-    public ReadData(){}
-    public ReadData(UsbSerialDriver device) {
-        mSerialDevice = device;
+    public ReadDataShare(BluetoothGatt bluetoothGatt, BluetoothGattService gattService,
+                         BluetoothGattCharacteristic receiveDataCharacteristic,
+                         BluetoothGattCharacteristic heartBeatCharacteristic,
+                         BluetoothGattCharacteristic commandCharacteristic,
+                         BluetoothGattCharacteristic responseCharacteristic){
+        mBluetoothGatt = bluetoothGatt;
+        mShareService = gattService;
+        mSendDataCharacteristic = gattService.getCharacteristic(DexShareAttributes.ShareMessageReceiver);
+        mReceiveDataCharacteristic = receiveDataCharacteristic;
+        mHeartBeatCharacteristic = heartBeatCharacteristic;
+        mCommandCharacteristic = commandCharacteristic;
+//        mResponseCharacteristic = commandCharacteristic;
+        mResponseCharacteristic = responseCharacteristic;
+//        mCommandCharacteristic = responseCharacteristic;
     }
-    public ReadData(UsbSerialDriver device, UsbDeviceConnection connection, UsbDevice usbDevice) {
-        mSerialDevice = device;
-        mConnection = connection;
-        mDevice = usbDevice;
-        try {
-      mSerialDevice.getPorts().get(0).open(connection);
-        } catch(IOException e) {
-            Log.w("FAILED WHILE", "trying to open");
+
+    public boolean getResponse(){
+        delay();
+        mCommandCharacteristic.setValue("1");
+        Log.w("ShareTest", "success AcK");
+        mBluetoothGatt.writeCharacteristic(mCommandCharacteristic);
+        delay();
+        delay();
+        mBluetoothGatt.readCharacteristic(mResponseCharacteristic);
+        if(mResponseCharacteristic != null) {
+            Log.w("ShareTest", "Response characteristic is not null");
+            Log.w("ShareTest", "Response:" + mResponseCharacteristic.getValue());
+            mBluetoothGatt.readCharacteristic(mCommandCharacteristic);
+            Log.w("ShareTest", "Command:" + mCommandCharacteristic.getValue());
+
         }
-//        }
+        if(mResponseCharacteristic.getStringValue(0).compareTo("1") == 0){
+            mCommandCharacteristic.setValue("1");
+            Log.w("ShareTest", "success AcK");
+            mBluetoothGatt.writeCharacteristic(mCommandCharacteristic);
+            delay();
+            return true;
+        } else {
+            Log.w("ShareTest", "failure NaK");
+            return false;
+        }
+
     }
 
     public EGVRecord[] getRecentEGVs() {
@@ -120,13 +154,6 @@ public class ReadData {
         Log.d(TAG, "Reading Cal Records page...");
         return readDataBasePage(recordType, endPage);
     }
-    public byte[] getRecentCalRecordsTest() {
-        Log.d(TAG, "Reading Cal Records page range...");
-        int recordType = Constants.RECORD_TYPES.CAL_SET.ordinal();
-        int endPage = readDataBasePageRange(recordType);
-        Log.d(TAG, "Reading Cal Records page...");
-        return readDataBasePageTest(recordType, endPage);
-    }
 
     public boolean ping() {
         writeCommand(Constants.PING);
@@ -166,18 +193,45 @@ public class ReadData {
     }
 
     private int readDataBasePageRange(int recordType) {
+
         ArrayList<Byte> payload = new ArrayList<Byte>();
-        Log.d(TAG, "adding Payload");
+        Log.d("ShareTest", "adding Payload");
         payload.add((byte) recordType);
-        Log.d(TAG, "Sending write command");
+        Log.d("ShareTest", "Sending write command");
         writeCommand(Constants.READ_DATABASE_PAGE_RANGE, payload);
+        boolean good = getResponse();
+
         Log.d(TAG, "About to call getdata");
         byte[] readData = read(MIN_LEN).getData();
         Log.d(TAG, "Going to return");
         return ByteBuffer.wrap(readData).order(ByteOrder.LITTLE_ENDIAN).getInt(4);
+
+
+//        byte[] payload = new byte[1];
+//        payload[0] = (byte) recordType;
+//        mCommandCharacteristic.setValue(payload);
+//        mBluetoothGatt.writeCharacteristic(mCommandCharacteristic);
+//        delay();
+//        mBluetoothGatt.readCharacteristic(mResponseCharacteristic);
+//        delay();
+//        Log.w("ShareTest", "PageRange: " + mResponseCharacteristic.getStringValue(0));
+//        Log.w("ShareTest", mResponseCharacteristic.getValue().toString());
+
+//        return Integer.valueOf(mResponseCharacteristic.getStringValue(0));
+//        ArrayList<Byte> payload = new ArrayList<Byte>();
+//        Log.d(TAG, "adding Payload");
+//        payload.add((byte) recordType);
+//        Log.d(TAG, "Sending write command");
+//        writeCommand(Constants.READ_DATABASE_PAGE_RANGE, payload);
+//        Log.d(TAG, "About to call getdata");
+//        byte[] readData = read(MIN_LEN).getData();
+//        Log.d(TAG, "Going to return");
+//        return ByteBuffer.wrap(readData).order(ByteOrder.LITTLE_ENDIAN).getInt(4);
     }
 
     private <T> T readDataBasePage(int recordType, int page) {
+        Log.w("ShareTest", "Record Type: "+recordType);
+        Log.w("ShareTest", "Page: "+page);
         byte numOfPages = 1;
         if (page < 0){
             throw new IllegalArgumentException("Invalid page requested:" + page);
@@ -190,107 +244,89 @@ public class ReadData {
         payload.add(pageInt[1]);
         payload.add(pageInt[0]);
         payload.add(numOfPages);
+
+        Log.w("ShareTest", "payload: "+payload.toString());
         writeCommand(Constants.READ_DATABASE_PAGES, payload);
         byte[] readData = read(2122).getData();
         return ParsePage(readData, recordType);
     }
-    private byte[] readDataBasePageTest(int recordType, int page) {
-        byte numOfPages = 1;
-        if (page < 0){
-            throw new IllegalArgumentException("Invalid page requested:" + page);
-        }
-        ArrayList<Byte> payload = new ArrayList<Byte>();
-        payload.add((byte) recordType);
-        byte[] pageInt = ByteBuffer.allocate(4).putInt(page).array();
-        payload.add(pageInt[3]);
-        payload.add(pageInt[2]);
-        payload.add(pageInt[1]);
-        payload.add(pageInt[0]);
-        payload.add(numOfPages);
-        return writeCommandTest(Constants.READ_DATABASE_PAGES, payload);
-    }
 
     private void writeCommand(int command, ArrayList<Byte> payload) {
-        byte[] packet = new PacketBuilder(command, payload).compose();
-        if (mSerialDevice != null) {
-            try {
-//                UsbInterface mDataInterface = mDevice.getInterface(1);
-//                UsbEndpoint mWriteEndpoint = mDataInterface.getEndpoint(0);
-//                mConnection.bulkTransfer(mWriteEndpoint, packet, packet.length, IO_TIMEOUT);
-                  mSerialDevice.getPorts().get(0).write(packet, IO_TIMEOUT);
-            } catch (Exception e) {
-                Log.e(TAG, "Unable to write to serial device.", e);
-            }
+        List<byte[]> packets = new PacketBuilder(command, payload).composeList();
+        Log.d("ShareTest", "In Write Command");
+        for(byte[] packet : packets) {
+            Log.d("ShareTest", "Write Command 1");
+            mSendDataCharacteristic.setValue(packet);
+            mBluetoothGatt.writeCharacteristic(mSendDataCharacteristic);
+            Log.d("ShareTest", "Wrote a byte message to the characteristic");
+            delay();
+            getResponse();
         }
     }
-    private byte[] writeCommandTest(int command, ArrayList<Byte> payload) {
-        byte[] packet = new PacketBuilder(command, payload).compose();
-        return packet;
-    }
+
     private void writeCommand(int command) {
-        byte[] packet = new PacketBuilder(command).compose();
-        if (mSerialDevice != null) {
-            try {
-//                UsbInterface mDataInterface = mDevice.getInterface(1);
-//                UsbEndpoint mWriteEndpoint = mDataInterface.getEndpoint(0);
-//                mConnection.bulkTransfer(mWriteEndpoint, packet, packet.length, IO_TIMEOUT);
-                mSerialDevice.getPorts().get(0).write(packet, IO_TIMEOUT);
-            } catch (Exception e) {
-                Log.e(TAG, "Unable to write to serial device.", e);
-            }
+        List<byte[]> packets = new PacketBuilder(command).composeList();
+        for(byte[] packet : packets) {
+            mSendDataCharacteristic.setValue(packet);
+            mBluetoothGatt.writeCharacteristic(mSendDataCharacteristic);
+            Log.d("ShareTest", "Wrote a byte message to the characteristic");
+            delay();
+            getResponse();
         }
     }
-
-    private ReadPacket read(int numOfBytes) {
-        byte[] readData = new byte[numOfBytes];
-        int len = 0;
+    public static void delay(){
+        int sleep = 10000;
         try {
-//            UsbInterface mDataInterface = mDevice.getInterface(1);
-//            UsbEndpoint mReadEndpoint = mDataInterface.getEndpoint(1);
-//            byte[] mReadBuffer;
-//            mReadBuffer = new byte[16 * 1024];
-//
-//            int readAmt = Math.min(readData.length, mReadBuffer.length);
-//            synchronized (mReadBufferLock) {
-//
-//
-//                Log.d(TAG, "Read about to call bulk transfer.");
-//                if (len < 0) {
-//                    // This sucks: we get -1 on timeout, not 0 as preferred.
-//                    // We *should* use UsbRequest, except it has a bug/api oversight
-//                    // where there is no way to determine the number of bytes read
-//                    // in response :\ -- http://b.android.com/28023
-//                    if (IO_TIMEOUT == Integer.MAX_VALUE) {
-//                        // Hack: Special case "~infinite timeout" as an error.
-//                        len = -1;
-//                    }
-//                    len = 0;
-//                }
-//
-////              System.arraycopy(mReadBuffer, 0, readData, 0, readAmt);
-//            }
-//            len = mConnection.bulkTransfer(mReadEndpoint, readData, readAmt, IO_TIMEOUT);
-
-            len = mSerialDevice.getPorts().get(0).read(readData, IO_TIMEOUT);
-
-            Log.d(TAG, "Read " + len + " byte(s) complete.");
-
-            // Add a 100ms delay for when multiple write/reads are occurring in series
-            Thread.sleep(100);
-
-            // TODO: this debug code to print data of the read, should be removed after
-            // finding the source of the reading issue
-            String bytes = "";
-            int readAmount = len;
-            for (int i = 0; i < readAmount; i++) bytes += String.format("%02x", readData[i]) + " ";
-            Log.d(TAG, "Read data: " + bytes);
-            ////////////////////////////////////////////////////////////////////////////////////////
-
-        } catch (Exception e) {
-            Log.e(TAG, "Unable to read from serial device.", e);
+            Log.d("ShareTest", "Sleeping for " + sleep + "ms");
+            Thread.sleep(sleep);
+        } catch (InterruptedException e) {
+            Log.e("ShareTest", "INTERUPTED");
         }
-        byte[] data = Arrays.copyOfRange(readData, 0, len);
-        return new ReadPacket(data);
+    }
+    private ReadPacket read(int numOfBytes) {
+        mBluetoothGatt.readCharacteristic(mResponseCharacteristic);
+        Log.w("ShareTest", "Response Characteristic: "+ mResponseCharacteristic.getStringValue(0));
+        delay();
+        mBluetoothGatt.readCharacteristic(mHeartBeatCharacteristic);
+        Log.w("ShareTest", "Response Characteristic: "+ mHeartBeatCharacteristic.getStringValue(0));
+        delay();
+        mCommandCharacteristic.setValue("1");
+        mBluetoothGatt.writeCharacteristic(mCommandCharacteristic);
+        delay();
+        Log.w("ShareTest", "Response Characteristic: "+ mCommandCharacteristic.getStringValue(0));
+        delay();
+
+        mBluetoothGatt.readCharacteristic(mReceiveDataCharacteristic);
+        delay();
+        byte[] one = mReceiveDataCharacteristic.getValue();
+
+        Log.w("ShareTest", "One: "+ one.toString());
+        Log.w("ShareTest", "One String: "+ mReceiveDataCharacteristic.getStringValue(0));
+        byte[] temp;
+        byte[] combined;
+        mBluetoothGatt.readCharacteristic(mReceiveDataCharacteristic);
+        delay();
+        temp = mReceiveDataCharacteristic.getValue();
+
+        Log.w("ShareTest", "Temp: "+ temp.toString());
+        Log.w("ShareTest", "Temp String: "+ mReceiveDataCharacteristic.getStringValue(0));
+
+        while(one.length <= numOfBytes && temp.length > 0) {
+            combined = new byte[one.length + temp.length];
+            System.arraycopy(one, 0, combined, 0, one.length);
+            System.arraycopy(temp,0,combined,one.length,temp.length);
+            one = combined;
+
+            Log.w("ShareTest", "Partial packet: "+ one.toString());
+            Log.w("ShareTest", "Partial packet: "+ one.length);
+            mBluetoothGatt.readCharacteristic(mReceiveDataCharacteristic);
+            delay();
+            numOfBytes -= one.length;
+            temp = mReceiveDataCharacteristic.getValue();
+        }
+        Log.w("ShareTest", "FULL PACKET: "+ one.toString());
+        Log.w("ShareTest", "FULL PACKET: "+ one.length);
+        return new ReadPacket(one);
     }
 
     private <T> T ParsePage(byte[] data, int recordType) {
