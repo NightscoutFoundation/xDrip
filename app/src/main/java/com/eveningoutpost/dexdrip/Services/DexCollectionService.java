@@ -352,14 +352,15 @@ public class DexCollectionService extends Service {
     public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
 
         Log.w(TAG, "received some data!");
-        TransmitterData transmitterData = TransmitterData.create(buffer, len);
+        Long timestamp = new Date().getTime();
+        TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
         if (transmitterData != null) {
             Sensor sensor = Sensor.currentSensor();
             if (sensor != null) {
                 sensor.latest_battery_level = transmitterData.sensor_battery_level;
                 sensor.save();
 
-                BgReading bgReading = BgReading.create(transmitterData.raw_data, this);
+                BgReading bgReading = BgReading.create(transmitterData.raw_data, this, timestamp);
             } else {
                 Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
             }
