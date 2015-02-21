@@ -89,6 +89,8 @@ public class ShareTest extends Activity {
     public final int GATT_WRITING_COMMANDS = 2;
     public final int GATT_READING_RESPONSE = 3;
 
+    public ReadDataShare mReadDataShare;
+
     public int currentGattTask;
     public int step;
 
@@ -191,7 +193,8 @@ public class ShareTest extends Activity {
                                                     mReceiveDataCharacteristic,
                                                     mHeartBeatCharacteristic,
                                                     mCommandCharacteristic,
-                                                    mResponseCharacteristic);
+                                                    mResponseCharacteristic,
+                                                    this);
         readData.getRecentEGVs();
     }
 

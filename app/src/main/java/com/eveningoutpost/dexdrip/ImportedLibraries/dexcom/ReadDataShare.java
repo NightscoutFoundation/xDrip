@@ -14,6 +14,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.MeterRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.PageHeader;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialDriver;
+import com.eveningoutpost.dexdrip.ShareTest;
 import com.eveningoutpost.dexdrip.UtilityModels.DexShareAttributes;
 
 import org.w3c.dom.Element;
@@ -40,50 +41,24 @@ public class ReadDataShare {
     private BluetoothGattCharacteristic mHeartBeatCharacteristic;
     private BluetoothGattCharacteristic mCommandCharacteristic;
     private BluetoothGattCharacteristic mResponseCharacteristic;
+
+    private ShareTest mShareTest;
     protected final Object mReadBufferLock = new Object();
 
     public ReadDataShare(BluetoothGatt bluetoothGatt, BluetoothGattService gattService,
                          BluetoothGattCharacteristic receiveDataCharacteristic,
                          BluetoothGattCharacteristic heartBeatCharacteristic,
                          BluetoothGattCharacteristic commandCharacteristic,
-                         BluetoothGattCharacteristic responseCharacteristic){
+                         BluetoothGattCharacteristic responseCharacteristic,
+                         ShareTest aShareTest){
         mBluetoothGatt = bluetoothGatt;
         mShareService = gattService;
         mSendDataCharacteristic = gattService.getCharacteristic(DexShareAttributes.ShareMessageReceiver);
         mReceiveDataCharacteristic = receiveDataCharacteristic;
         mHeartBeatCharacteristic = heartBeatCharacteristic;
         mCommandCharacteristic = commandCharacteristic;
-//        mResponseCharacteristic = commandCharacteristic;
         mResponseCharacteristic = responseCharacteristic;
-//        mCommandCharacteristic = responseCharacteristic;
-    }
-
-    public boolean getResponse(){
-        delay();
-        mCommandCharacteristic.setValue("1");
-        Log.w("ShareTest", "success AcK");
-        mBluetoothGatt.writeCharacteristic(mCommandCharacteristic);
-        delay();
-        delay();
-        mBluetoothGatt.readCharacteristic(mResponseCharacteristic);
-        if(mResponseCharacteristic != null) {
-            Log.w("ShareTest", "Response characteristic is not null");
-            Log.w("ShareTest", "Response:" + mResponseCharacteristic.getValue());
-            mBluetoothGatt.readCharacteristic(mCommandCharacteristic);
-            Log.w("ShareTest", "Command:" + mCommandCharacteristic.getValue());
-
-        }
-        if(mResponseCharacteristic.getStringValue(0).compareTo("1") == 0){
-            mCommandCharacteristic.setValue("1");
-            Log.w("ShareTest", "success AcK");
-            mBluetoothGatt.writeCharacteristic(mCommandCharacteristic);
-            delay();
-            return true;
-        } else {
-            Log.w("ShareTest", "failure NaK");
-            return false;
-        }
-
+        mShareTest = aShareTest;
     }
 
     public EGVRecord[] getRecentEGVs() {
@@ -193,40 +168,18 @@ public class ReadDataShare {
     }
 
     private int readDataBasePageRange(int recordType) {
-
-        ArrayList<Byte> payload = new ArrayList<Byte>();
-        Log.d("ShareTest", "adding Payload");
-        payload.add((byte) recordType);
-        Log.d("ShareTest", "Sending write command");
-        writeCommand(Constants.READ_DATABASE_PAGE_RANGE, payload);
-        boolean good = getResponse();
-
-        Log.d(TAG, "About to call getdata");
-        byte[] readData = read(MIN_LEN).getData();
-        Log.d(TAG, "Going to return");
-        return ByteBuffer.wrap(readData).order(ByteOrder.LITTLE_ENDIAN).getInt(4);
-
-
-//        byte[] payload = new byte[1];
-//        payload[0] = (byte) recordType;
-//        mCommandCharacteristic.setValue(payload);
-//        mBluetoothGatt.writeCharacteristic(mCommandCharacteristic);
-//        delay();
-//        mBluetoothGatt.readCharacteristic(mResponseCharacteristic);
-//        delay();
-//        Log.w("ShareTest", "PageRange: " + mResponseCharacteristic.getStringValue(0));
-//        Log.w("ShareTest", mResponseCharacteristic.getValue().toString());
-
-//        return Integer.valueOf(mResponseCharacteristic.getStringValue(0));
-//        ArrayList<Byte> payload = new ArrayList<Byte>();
-//        Log.d(TAG, "adding Payload");
-//        payload.add((byte) recordType);
-//        Log.d(TAG, "Sending write command");
-//        writeCommand(Constants.READ_DATABASE_PAGE_RANGE, payload);
-//        Log.d(TAG, "About to call getdata");
-//        byte[] readData = read(MIN_LEN).getData();
-//        Log.d(TAG, "Going to return");
-//        return ByteBuffer.wrap(readData).order(ByteOrder.LITTLE_ENDIAN).getInt(4);
+        if(step == 0) {
+            ArrayList<Byte> payload = new ArrayList<Byte>();
+            Log.d("ShareTest", "adding Payload");
+            payload.add((byte) recordType);
+            Log.d("ShareTest", "Sending write command");
+            writeCommand(Constants.READ_DATABASE_PAGE_RANGE, payload);
+        } else if (step == 1) {
+            Log.d(TAG, "About to call getdata");
+            byte[] readData = read(MIN_LEN).getData();
+            Log.d(TAG, "Going to return");
+            return ByteBuffer.wrap(readData).order(ByteOrder.LITTLE_ENDIAN).getInt(4);
+        }
     }
 
     private <T> T readDataBasePage(int recordType, int page) {
@@ -253,27 +206,16 @@ public class ReadDataShare {
 
     private void writeCommand(int command, ArrayList<Byte> payload) {
         List<byte[]> packets = new PacketBuilder(command, payload).composeList();
+
         Log.d("ShareTest", "In Write Command");
-        for(byte[] packet : packets) {
-            Log.d("ShareTest", "Write Command 1");
-            mSendDataCharacteristic.setValue(packet);
-            mBluetoothGatt.writeCharacteristic(mSendDataCharacteristic);
-            Log.d("ShareTest", "Wrote a byte message to the characteristic");
-            delay();
-            getResponse();
-        }
+        mShareTest.writeCommand(packets, 0);
     }
 
     private void writeCommand(int command) {
         List<byte[]> packets = new PacketBuilder(command).composeList();
-        for(byte[] packet : packets) {
-            mSendDataCharacteristic.setValue(packet);
-            mBluetoothGatt.writeCharacteristic(mSendDataCharacteristic);
-            Log.d("ShareTest", "Wrote a byte message to the characteristic");
-            delay();
-            getResponse();
-        }
+        mShareTest.writeCommand(packets, 0);
     }
+
     public static void delay(){
         int sleep = 10000;
         try {
@@ -381,5 +323,10 @@ public class ReadDataShare {
         }
 
         return (T) null;
+    }
+
+    public void messageBus(int aStep, int aTaskType, int aMethod) {
+
+
     }
 }
