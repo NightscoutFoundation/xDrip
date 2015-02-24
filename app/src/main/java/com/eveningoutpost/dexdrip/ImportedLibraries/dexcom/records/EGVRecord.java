@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records;
 
+import android.util.Log;
+
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
 
 import org.json.JSONException;
@@ -23,6 +25,7 @@ public class EGVRecord extends GenericTimestampRecord {
         bGValue = eGValue & Constants.EGV_VALUE_MASK;
         int trendValue = ByteBuffer.wrap(packet).get(10) & Constants.EGV_TREND_ARROW_MASK;
         trend = Constants.TREND_ARROW_VALUES.values()[trendValue];
+        Log.d("ShareTest", "BG: " + bGValue + " TREND: " + trend);
     }
 
     public EGVRecord(int bGValue,Constants.TREND_ARROW_VALUES trend,Date displayTime, Date systemTime){

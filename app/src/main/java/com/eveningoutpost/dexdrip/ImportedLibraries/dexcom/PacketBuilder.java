@@ -92,15 +92,21 @@ public class PacketBuilder {
         for(int m = 0; m < messages; m++) {
             int thisPacketSize;
             if (m == messages - 1) {
-                thisPacketSize = (this.packet.size() % 18);
+                thisPacketSize = ((this.packet.size()+2) % 18);
             } else {
                 thisPacketSize = (20);
             }
+            int offset = m * 18;
+            Log.d("ShareTest", "This packet size: " + thisPacketSize);
             byte[] b = new byte[thisPacketSize];
             b[0] = (byte) (m + 1);
+
+            Log.d("ShareTest", "Adding byte: " + b[0]);
             b[1] = (byte) (messages);
+            Log.d("ShareTest", "Adding byte: " + b[1]);
             for (int i = 2; i < thisPacketSize; i++) {
-                b[i] = packet.get(i).byteValue();
+                b[i] = packet.get(offset + i - 2).byteValue();
+                Log.d("ShareTest", "Adding byte: " + packet.get(offset + i - 2));
             }
             Log.d("ShareTest", "Adding to Bytelist: " + b.toString());
             byteMessages.add(b);

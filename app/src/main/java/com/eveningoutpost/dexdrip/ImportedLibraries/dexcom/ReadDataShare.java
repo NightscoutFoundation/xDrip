@@ -19,7 +19,9 @@ import com.eveningoutpost.dexdrip.UtilityModels.DexShareAttributes;
 
 import org.w3c.dom.Element;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -27,168 +29,233 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import rx.Observable;
+import rx.functions.Action1;
+
 public class ReadDataShare {
 
     private static final String TAG = ReadDataShare.class.getSimpleName();
     private static final int IO_TIMEOUT = 3000;
     private static final int MIN_LEN = 256;
-//    private UsbSerialDriver mSerialDevice;
-    private BluetoothGatt mBluetoothGatt;
-    private BluetoothGattService mShareService;
-    private BluetoothGattCharacteristic mAuthenticationCharacteristic;
-    private BluetoothGattCharacteristic mSendDataCharacteristic;
-    private BluetoothGattCharacteristic mReceiveDataCharacteristic;
-    private BluetoothGattCharacteristic mHeartBeatCharacteristic;
-    private BluetoothGattCharacteristic mCommandCharacteristic;
-    private BluetoothGattCharacteristic mResponseCharacteristic;
+
+    //RXJAVA STUFF
+    boolean blockingRxJava = false;
+    byte[] accumulatedResponse;
+    EGVRecord[] accumulatedEgvRecords;
 
     private ShareTest mShareTest;
-    protected final Object mReadBufferLock = new Object();
 
-    public ReadDataShare(BluetoothGatt bluetoothGatt, BluetoothGattService gattService,
-                         BluetoothGattCharacteristic receiveDataCharacteristic,
-                         BluetoothGattCharacteristic heartBeatCharacteristic,
-                         BluetoothGattCharacteristic commandCharacteristic,
-                         BluetoothGattCharacteristic responseCharacteristic,
-                         ShareTest aShareTest){
-        mBluetoothGatt = bluetoothGatt;
-        mShareService = gattService;
-        mSendDataCharacteristic = gattService.getCharacteristic(DexShareAttributes.ShareMessageReceiver);
-        mReceiveDataCharacteristic = receiveDataCharacteristic;
-        mHeartBeatCharacteristic = heartBeatCharacteristic;
-        mCommandCharacteristic = commandCharacteristic;
-        mResponseCharacteristic = responseCharacteristic;
+    public ReadDataShare(ShareTest aShareTest){
         mShareTest = aShareTest;
     }
 
-    public EGVRecord[] getRecentEGVs() {
+    public void getRecentEGVs(final Action1<EGVRecord[]> recordListener) {
+        Log.d(TAG, "Reading Evg page...");
         int recordType = Constants.RECORD_TYPES.EGV_DATA.ordinal();
-        int endPage = readDataBasePageRange(recordType);
-        return readDataBasePage(recordType, endPage);
+        standardPageReader(recordType, recordListener);
     }
 
-    public EGVRecord[] getRecentEGVsPages(int numOfRecentPages) {
-        if (numOfRecentPages < 1) {
-            throw new IllegalArgumentException("Number of pages must be greater than 1.");
-        }
-        Log.d(TAG, "Reading EGV page range...");
-        int recordType = Constants.RECORD_TYPES.EGV_DATA.ordinal();
-        int endPage = readDataBasePageRange(recordType);
-        Log.d(TAG, "Reading " + numOfRecentPages + " EGV page(s)...");
-        numOfRecentPages = numOfRecentPages - 1;
-        EGVRecord[] allPages = new EGVRecord[0];
-        for (int i = Math.min(numOfRecentPages,endPage); i >= 0; i--) {
-            int nextPage = endPage - i;
-            Log.d(TAG, "Reading #" + i + " EGV pages (page number " + nextPage + ")");
-            EGVRecord[] ithEGVRecordPage = readDataBasePage(recordType, nextPage);
-            EGVRecord[] result = Arrays.copyOf(allPages, allPages.length + ithEGVRecordPage.length);
-            System.arraycopy(ithEGVRecordPage, 0, result, allPages.length, ithEGVRecordPage.length);
-            allPages = result;
-        }
-        Log.d(TAG, "Read complete of EGV pages.");
-        return allPages;
-    }
-
-    public long getTimeSinceEGVRecord(EGVRecord egvRecord) {
-        return readSystemTime() - egvRecord.getSystemTimeSeconds();
-    }
-
-    public MeterRecord[] getRecentMeterRecords() {
+    public void getRecentMeterRecords(final Action1<MeterRecord[]> recordListener) {
         Log.d(TAG, "Reading Meter page...");
         int recordType = Constants.RECORD_TYPES.METER_DATA.ordinal();
-        int endPage = readDataBasePageRange(recordType);
-        return readDataBasePage(recordType, endPage);
+        standardPageReader(recordType, recordListener);
     }
 
-    public SensorRecord[] getRecentSensorRecords(int numOfRecentPages) {
-        if (numOfRecentPages < 1) {
-            throw new IllegalArgumentException("Number of pages must be greater than 1.");
-        }
-        Log.d(TAG, "Reading Sensor page range...");
-        int recordType = Constants.RECORD_TYPES.SENSOR_DATA.ordinal();
-        int endPage = readDataBasePageRange(recordType);
-        Log.d(TAG, "Reading " + numOfRecentPages + " Sensor page(s)...");
-        numOfRecentPages = numOfRecentPages - 1;
-        SensorRecord[] allPages = new SensorRecord[0];
-        for (int i = Math.min(numOfRecentPages,endPage); i >= 0; i--) {
-            int nextPage = endPage - i;
-            Log.d(TAG, "Reading #" + i + " Sensor pages (page number " + nextPage + ")");
-            SensorRecord[] ithSensorRecordPage = readDataBasePage(recordType, nextPage);
-            SensorRecord[] result = Arrays.copyOf(allPages, allPages.length + ithSensorRecordPage.length);
-            System.arraycopy(ithSensorRecordPage, 0, result, allPages.length, ithSensorRecordPage.length);
-            allPages = result;
-        }
-        Log.d(TAG, "Read complete of Sensor pages.");
-        return allPages;
-    }
-
-    public CalRecord[] getRecentCalRecords() {
+    public void getRecentCalRecords(final Action1<CalRecord[]> recordListener) {
         Log.d(TAG, "Reading Cal Records page range...");
         int recordType = Constants.RECORD_TYPES.CAL_SET.ordinal();
-        int endPage = readDataBasePageRange(recordType);
-        Log.d(TAG, "Reading Cal Records page...");
-        return readDataBasePage(recordType, endPage);
+        standardPageReader(recordType, recordListener);
     }
 
-    public boolean ping() {
-        writeCommand(Constants.PING);
-        return read(MIN_LEN).getCommand() == Constants.ACK;
+    private <T> T standardPageReader(final int recordType, final Action1<T> recordListener){
+        final Action1<byte[]> fullPageListener = new Action1<byte[]>() {
+            @Override
+            public void call(byte[] s) { ParsePage(s, recordType, recordListener); }
+        };
+        Action1<Integer> databasePageRangeCaller = new Action1<Integer>() {
+            @Override
+            public void call(Integer s) { readDataBasePage(recordType, s, fullPageListener); }
+        };
+        readDataBasePageRange(recordType, databasePageRangeCaller);
+        return (T) null;
     }
 
-    public int readBatteryLevel() {
+    public void getTimeSinceEGVRecord(final EGVRecord egvRecord,final Action1<Integer> timeSinceEgvRecord) {
+        Action1<Integer> tempSystemTimeListener = new Action1<Integer>() {
+            @Override
+            public void call(Integer s) {
+                Observable.just((int) ((long) s - egvRecord.getSystemTimeSeconds())).subscribe(timeSinceEgvRecord);
+            }
+        };
+        readSystemTime(tempSystemTimeListener);
+    }
+
+    public void getRecentEGVsPages(final int numOfRecentPages) {
+        if (numOfRecentPages < 1) { throw new IllegalArgumentException("Number of pages must be greater than 1."); }
+        final int recordType = Constants.RECORD_TYPES.EGV_DATA.ordinal();
+        accumulatedEgvRecords = null;
+//        accumulatedEgvRecordsPageCounter = 0;
+//        accumulatedEgvRecordsNumOfPages = 0;
+
+        final Action1<EGVRecord[]> egvRecordAccumulator = new Action1<EGVRecord[]>() {
+            @Override
+            public void call(EGVRecord[] records) {
+                EGVRecord[] result = Arrays.copyOf(accumulatedEgvRecords, accumulatedEgvRecords.length + records.length);
+                System.arraycopy(records, 0, result, accumulatedEgvRecords.length, records.length);
+                accumulatedEgvRecords = result;
+//                if(accumulatedEgvRecordsPageCounter == accumulatedEgvRecordsNumOfPages){
+
+//                } else {
+//                    readDataBasePage(recordType, nextPage, );
+//                }
+
+
+            }
+        };
+        Action1<Integer> databasePageRangeCaller = new Action1<Integer>() {
+            @Override
+            public void call(Integer endPage) {
+                Log.d(TAG, "Reading " + numOfRecentPages + " EGV page(s)...");
+                int recentPages = numOfRecentPages - 1;
+                EGVRecord[] allPages = new EGVRecord[0];
+                for (int i = Math.min(recentPages,endPage); i >= 0; i--) {
+                    int nextPage = endPage - i;
+                    Log.d(TAG, "Reading #" + i + " EGV pages (page number " + nextPage + ")");
+                    EGVRecord[] ithEGVRecordPage = readDataBasePage(recordType, nextPage, null);
+                    EGVRecord[] result = Arrays.copyOf(allPages, allPages.length + ithEGVRecordPage.length);
+                    System.arraycopy(ithEGVRecordPage, 0, result, allPages.length, ithEGVRecordPage.length);
+                    allPages = result;
+                }
+                Log.d(TAG, "Read complete of EGV pages.");
+            }
+        };
+        readDataBasePageRange(recordType, databasePageRangeCaller);
+//        int endPage = readDataBasePageRange(recordType);
+
+
+        }
+
+
+
+
+//    public SensorRecord[] getRecentSensorRecords(int numOfRecentPages) {
+//        if (numOfRecentPages < 1) {
+//            throw new IllegalArgumentException("Number of pages must be greater than 1.");
+//        }
+//        Log.d(TAG, "Reading Sensor page range...");
+//        int recordType = Constants.RECORD_TYPES.SENSOR_DATA.ordinal();
+//        int endPage = readDataBasePageRange(recordType);
+//        Log.d(TAG, "Reading " + numOfRecentPages + " Sensor page(s)...");
+//        numOfRecentPages = numOfRecentPages - 1;
+//        SensorRecord[] allPages = new SensorRecord[0];
+//        for (int i = Math.min(numOfRecentPages,endPage); i >= 0; i--) {
+//            int nextPage = endPage - i;
+//            Log.d(TAG, "Reading #" + i + " Sensor pages (page number " + nextPage + ")");
+//            SensorRecord[] ithSensorRecordPage = readDataBasePage(recordType, nextPage);
+//            SensorRecord[] result = Arrays.copyOf(allPages, allPages.length + ithSensorRecordPage.length);
+//            System.arraycopy(ithSensorRecordPage, 0, result, allPages.length, ithSensorRecordPage.length);
+//            allPages = result;
+//        }
+//        Log.d(TAG, "Read complete of Sensor pages.");
+//        return allPages;
+//    }
+
+
+    public void ping(final Action1<Boolean> pingListener) {
         Log.d(TAG, "Reading battery level...");
-        writeCommand(Constants.READ_BATTERY_LEVEL);
-        byte[] readData = read(MIN_LEN).getData();
-        return ByteBuffer.wrap(readData).order(ByteOrder.LITTLE_ENDIAN).getInt();
+        Action1<byte[]> pingReader = new Action1<byte[]>() {
+            @Override
+            public void call(byte[] s) {
+                Observable.just(read(MIN_LEN, s).getCommand() == Constants.ACK).subscribe(pingListener);
+            }
+        };
+        writeCommand(Constants.PING, pingReader);
     }
 
-    public String readSerialNumber() {
+    public void readBatteryLevel(final Action1<Integer> batteryLevelListener) {
+        Log.d(TAG, "Reading battery level...");
+        Action1<byte[]> batteryLevelReader = new Action1<byte[]>() {
+            @Override //TODO: find out if this should be wrapped in read(s).getData();
+            public void call(byte[] s) {
+                Observable.just(ByteBuffer.wrap(s).order(ByteOrder.LITTLE_ENDIAN).getInt()).subscribe(batteryLevelListener);
+            }
+        };
+        writeCommand(Constants.READ_BATTERY_LEVEL, batteryLevelReader);
+    }
+
+    public void readSerialNumber(final Action1<String> serialNumberListener) {
         int PAGE_OFFSET = 0;
-        byte[] readData = readDataBasePage(Constants.RECORD_TYPES.MANUFACTURING_DATA.ordinal(), PAGE_OFFSET);
-        Element md = ParsePage(readData, Constants.RECORD_TYPES.MANUFACTURING_DATA.ordinal());
-        return md.getAttribute("SerialNumber");
+        final Action1<Element> manufacturingXmlListener = new Action1<Element>() {
+            @Override
+            public void call(Element s) {
+                Observable.just(s.getAttribute("SerialNumber")).subscribe(serialNumberListener);
+            }
+        };
+        final Action1<byte[]> manufacturingDataListener = new Action1<byte[]>() {
+            @Override
+            public void call(byte[] s) {
+                ParsePage(s, Constants.RECORD_TYPES.MANUFACTURING_DATA.ordinal(), manufacturingXmlListener);
+            }
+        };
+        readDataBasePage(Constants.RECORD_TYPES.MANUFACTURING_DATA.ordinal(), PAGE_OFFSET, manufacturingDataListener);
     }
 
-    public Date readDisplayTime() {
-        return Utils.receiverTimeToDate(readSystemTime() + readDisplayTimeOffset());
+    public void readDisplayTime(final Action1<Date> displayTimeListener) {
+        Action1<Integer> tempSystemTimeListener = new Action1<Integer>() {
+            @Override //TODO: find out if this should be wrapped in read(s).getData();
+            public void call(Integer s) {
+                final long systemTime = (long) s;
+
+                Action1<Integer> tempSystemTimeListener = new Action1<Integer>() {
+                    @Override //TODO: find out if this should be wrapped in read(s).getData();
+                    public void call(Integer s) {
+                        final long displayTime = (long) s;
+                        Date dateDisplayTime = Utils.receiverTimeToDate(systemTime + displayTime);
+                        Observable.just(dateDisplayTime).subscribe(displayTimeListener); }
+                };
+                readDisplayTimeOffset(tempSystemTimeListener);
+            }
+        };
+        readSystemTime(tempSystemTimeListener);
     }
 
-    public long readSystemTime() {
+    public void readSystemTime(final Action1<Integer> systemTimeListener) {
         Log.d(TAG, "Reading system time...");
-        writeCommand(Constants.READ_SYSTEM_TIME);
-        byte[] readData = read(MIN_LEN).getData();
-        return ByteBuffer.wrap(readData).order(ByteOrder.LITTLE_ENDIAN).getInt() & 0xffffffff;
+        Action1<byte[]> systemTimeReader = new Action1<byte[]>() {
+            @Override //TODO: find out if this should be wrapped in read(s).getData();
+            public void call(byte[] s) { Observable.just(ByteBuffer.wrap(s).order(ByteOrder.LITTLE_ENDIAN).getInt() & 0xffffffff).subscribe(systemTimeListener); }
+        };
+        writeCommand(Constants.READ_SYSTEM_TIME, systemTimeReader);
     }
 
-    public int readDisplayTimeOffset() {
+    public void readDisplayTimeOffset(final Action1<Integer> displayTimeOffsetListener) {
         Log.d(TAG, "Reading display time offset...");
-        writeCommand(Constants.READ_DISPLAY_TIME_OFFSET);
-        byte[] readData = read(MIN_LEN).getData();
-        return ByteBuffer.wrap(readData).order(ByteOrder.LITTLE_ENDIAN).getInt() & 0xffffffff;
+        Action1<byte[]> displayTimeOffsetReader = new Action1<byte[]>() {
+            @Override //TODO: find out if this should be wrapped in read(s).getData();
+            public void call(byte[] s) { Observable.just(ByteBuffer.wrap(s).order(ByteOrder.LITTLE_ENDIAN).getInt() & 0xffffffff).subscribe(displayTimeOffsetListener); }
+        };
+        writeCommand(Constants.READ_DISPLAY_TIME_OFFSET, displayTimeOffsetReader);
     }
 
-    private int readDataBasePageRange(int recordType) {
-        if(step == 0) {
-            ArrayList<Byte> payload = new ArrayList<Byte>();
-            Log.d("ShareTest", "adding Payload");
-            payload.add((byte) recordType);
-            Log.d("ShareTest", "Sending write command");
-            writeCommand(Constants.READ_DATABASE_PAGE_RANGE, payload);
-        } else if (step == 1) {
-            Log.d(TAG, "About to call getdata");
-            byte[] readData = read(MIN_LEN).getData();
-            Log.d(TAG, "Going to return");
-            return ByteBuffer.wrap(readData).order(ByteOrder.LITTLE_ENDIAN).getInt(4);
-        }
+    private void readDataBasePageRange(int recordType, final Action1<Integer> databasePageRangeCaller) {
+        ArrayList<Byte> payload = new ArrayList<Byte>();
+        payload.add((byte) recordType);
+        final Action1<byte[]> databasePageRangeListener = new Action1<byte[]>() {
+            @Override
+            public void call(byte[] s) {
+                Log.d("ShareTest", "Database Page Range received: " + s);
+                byte[] readResponse = s;
+                int endPage = ByteBuffer.wrap(new ReadPacket(readResponse).getData()).order(ByteOrder.LITTLE_ENDIAN).getInt(4);
+                Log.d("ShareTest", "Database Page Range ENDPAGE: " + endPage);
+                Observable.just(endPage).subscribe(databasePageRangeCaller);
+            }
+        };
+        writeCommand(Constants.READ_DATABASE_PAGE_RANGE, payload, databasePageRangeListener);
     }
 
-    private <T> T readDataBasePage(int recordType, int page) {
-        Log.w("ShareTest", "Record Type: "+recordType);
-        Log.w("ShareTest", "Page: "+page);
+    private <T> T readDataBasePage(final int recordType, int page, final Action1<byte[]> fullPageListener) {
         byte numOfPages = 1;
-        if (page < 0){
-            throw new IllegalArgumentException("Invalid page requested:" + page);
-        }
+        if (page < 0){ throw new IllegalArgumentException("Invalid page requested:" + page); }
         ArrayList<Byte> payload = new ArrayList<Byte>();
         payload.add((byte) recordType);
         byte[] pageInt = ByteBuffer.allocate(4).putInt(page).array();
@@ -197,81 +264,67 @@ public class ReadDataShare {
         payload.add(pageInt[1]);
         payload.add(pageInt[0]);
         payload.add(numOfPages);
-
-        Log.w("ShareTest", "payload: "+payload.toString());
-        writeCommand(Constants.READ_DATABASE_PAGES, payload);
-        byte[] readData = read(2122).getData();
-        return ParsePage(readData, recordType);
+        accumulatedResponse = null;
+        final Action1<byte[]> databasePageReader = new Action1<byte[]>() {
+            @Override
+            public void call(byte[] s) {
+                Log.d("ShareTest", "Database Page Reader received SIZE: " + s.length);
+                byte[] temp = s;
+                if (accumulatedResponse == null) {
+                    Log.d("ShareTest", "Database Response accumulator is null, setting new value to: " + s);
+                    accumulatedResponse = s;
+                } else {
+                    try {
+                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                        outputStream.write(accumulatedResponse);
+                        outputStream.write(temp);
+                        accumulatedResponse = outputStream.toByteArray();
+                        Log.d("ShareTest", "Combined Response: " + accumulatedResponse);
+                        Log.d("ShareTest", "Combined Response length: " + accumulatedResponse.length);
+                        String bytes = "";
+                        int readAmount = accumulatedResponse.length;
+                        for (int i = 0; i < readAmount; i++)
+                            bytes += String.format("%02x", accumulatedResponse[i]) + " ";
+                        Log.w("ShareTest", "Response hex: " + bytes);
+                        if (temp.length < 20) {
+                            Observable.just(accumulatedResponse).subscribe(fullPageListener);
+                        }
+                    } catch (Exception e) {
+                        Log.e("ShareTest", e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        writeCommand(Constants.READ_DATABASE_PAGES, payload, databasePageReader);
+        return null;
     }
 
-    private void writeCommand(int command, ArrayList<Byte> payload) {
+    private void writeCommand(int command, ArrayList<Byte> payload, Action1<byte[]> responseListener) {
         List<byte[]> packets = new PacketBuilder(command, payload).composeList();
-
-        Log.d("ShareTest", "In Write Command");
-        mShareTest.writeCommand(packets, 0);
+        mShareTest.writeCommand(packets, 0, responseListener);
     }
 
-    private void writeCommand(int command) {
+    private void writeCommand(int command, Action1<byte[]> responseListener) {
         List<byte[]> packets = new PacketBuilder(command).composeList();
-        mShareTest.writeCommand(packets, 0);
+        mShareTest.writeCommand(packets, 0, responseListener);
     }
 
-    public static void delay(){
-        int sleep = 10000;
-        try {
-            Log.d("ShareTest", "Sleeping for " + sleep + "ms");
-            Thread.sleep(sleep);
-        } catch (InterruptedException e) {
-            Log.e("ShareTest", "INTERUPTED");
-        }
-    }
-    private ReadPacket read(int numOfBytes) {
-        mBluetoothGatt.readCharacteristic(mResponseCharacteristic);
-        Log.w("ShareTest", "Response Characteristic: "+ mResponseCharacteristic.getStringValue(0));
-        delay();
-        mBluetoothGatt.readCharacteristic(mHeartBeatCharacteristic);
-        Log.w("ShareTest", "Response Characteristic: "+ mHeartBeatCharacteristic.getStringValue(0));
-        delay();
-        mCommandCharacteristic.setValue("1");
-        mBluetoothGatt.writeCharacteristic(mCommandCharacteristic);
-        delay();
-        Log.w("ShareTest", "Response Characteristic: "+ mCommandCharacteristic.getStringValue(0));
-        delay();
-
-        mBluetoothGatt.readCharacteristic(mReceiveDataCharacteristic);
-        delay();
-        byte[] one = mReceiveDataCharacteristic.getValue();
-
-        Log.w("ShareTest", "One: "+ one.toString());
-        Log.w("ShareTest", "One String: "+ mReceiveDataCharacteristic.getStringValue(0));
-        byte[] temp;
-        byte[] combined;
-        mBluetoothGatt.readCharacteristic(mReceiveDataCharacteristic);
-        delay();
-        temp = mReceiveDataCharacteristic.getValue();
-
-        Log.w("ShareTest", "Temp: "+ temp.toString());
-        Log.w("ShareTest", "Temp String: "+ mReceiveDataCharacteristic.getStringValue(0));
-
-        while(one.length <= numOfBytes && temp.length > 0) {
-            combined = new byte[one.length + temp.length];
-            System.arraycopy(one, 0, combined, 0, one.length);
-            System.arraycopy(temp,0,combined,one.length,temp.length);
-            one = combined;
-
-            Log.w("ShareTest", "Partial packet: "+ one.toString());
-            Log.w("ShareTest", "Partial packet: "+ one.length);
-            mBluetoothGatt.readCharacteristic(mReceiveDataCharacteristic);
-            delay();
-            numOfBytes -= one.length;
-            temp = mReceiveDataCharacteristic.getValue();
-        }
-        Log.w("ShareTest", "FULL PACKET: "+ one.toString());
-        Log.w("ShareTest", "FULL PACKET: "+ one.length);
-        return new ReadPacket(one);
+    private ReadPacket read(int numOfBytes, byte[] readPacket) {
+        byte[] response = readPacket;
+        int len = response.length;
+        Log.d(TAG, "Read " + len + " byte(s) complete.");
+        String bytes = "";
+        int readAmount = len;
+        for (int i = 0; i < readAmount; i++) bytes += String.format("%02x", response[i]) + " ";
+        Log.d(TAG, "Read data: " + bytes);
+        byte[] data = Arrays.copyOfRange(response, 0, len);
+        return new ReadPacket(data);
     }
 
-    private <T> T ParsePage(byte[] data, int recordType) {
+    private <T> T ParsePage(byte[] data, int recordType, Action1<T> parsedPageReceiver) {
+        Log.d("ShareTest", "Parse Data Length: " + data.length);
+        Log.d("ShareTest", "Parse Record Type: " + recordType);
         int HEADER_LEN = 28;
         PageHeader pageHeader=new PageHeader(data);
         int NUM_REC_OFFSET = 4;
@@ -281,7 +334,8 @@ public class ReadDataShare {
         switch (Constants.RECORD_TYPES.values()[recordType]) {
             case MANUFACTURING_DATA:
                 GenericXMLRecord xmlRecord = new GenericXMLRecord(Arrays.copyOfRange(data, HEADER_LEN, data.length - 1));
-                return (T) xmlRecord;
+                blockingRxJava = false;
+                Observable.just((T) xmlRecord).subscribe(parsedPageReceiver);
             case SENSOR_DATA:
                 rec_len = 20;
                 SensorRecord[] sensorRecords = new SensorRecord[numRec];
@@ -289,7 +343,7 @@ public class ReadDataShare {
                     int startIdx = HEADER_LEN + rec_len * i;
                     sensorRecords[i] = new SensorRecord(Arrays.copyOfRange(data, startIdx, startIdx + rec_len - 1));
                 }
-                return (T) sensorRecords;
+                Observable.just((T) sensorRecords).subscribe(parsedPageReceiver);
             case EGV_DATA:
                 rec_len = 13;
                 EGVRecord[] egvRecords = new EGVRecord[numRec];
@@ -297,7 +351,7 @@ public class ReadDataShare {
                     int startIdx = HEADER_LEN + rec_len * i;
                     egvRecords[i] = new EGVRecord(Arrays.copyOfRange(data, startIdx, startIdx + rec_len - 1));
                 }
-                return (T) egvRecords;
+                Observable.just((T) egvRecords).subscribe(parsedPageReceiver);
             case METER_DATA:
                 rec_len = 16;
                 MeterRecord[] meterRecords = new MeterRecord[numRec];
@@ -305,7 +359,7 @@ public class ReadDataShare {
                     int startIdx = HEADER_LEN + rec_len * i;
                     meterRecords[i] = new MeterRecord(Arrays.copyOfRange(data, startIdx, startIdx + rec_len - 1));
                 }
-                return (T) meterRecords;
+                Observable.just((T) meterRecords).subscribe(parsedPageReceiver);
             case CAL_SET:
                 rec_len = 249;
                 if (pageHeader.getRevision()<=2) {
@@ -316,17 +370,14 @@ public class ReadDataShare {
                     int startIdx = HEADER_LEN + rec_len * i;
                     calRecords[i] = new CalRecord(Arrays.copyOfRange(data, startIdx, startIdx + rec_len - 1));
                 }
-                return (T) calRecords;
+                Observable.just((T) calRecords).subscribe(parsedPageReceiver);
             default:
                 // Throw error "Database record not supported"
                 break;
         }
-
+        blockingRxJava = false;
+        Observable.just((T) null).subscribe(parsedPageReceiver);
         return (T) null;
     }
 
-    public void messageBus(int aStep, int aTaskType, int aMethod) {
-
-
-    }
 }

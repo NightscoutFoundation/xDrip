@@ -32,6 +32,7 @@ import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.PacketBuilder;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.ReadData;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.ReadDataShare;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.UtilityModels.DexShareAttributes;
@@ -39,12 +40,16 @@ import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
 
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+import rx.Observable;
+import rx.functions.Action1;
 
 
 public class ShareTest extends Activity {
@@ -58,6 +63,7 @@ public class ShareTest extends Activity {
     private String mDeviceName;
     private String mDeviceAddress;
     private boolean is_connected = false;
+    private boolean reconnecting = false;
     SharedPreferences prefs;
 
     private BluetoothManager mBluetoothManager;
@@ -88,6 +94,10 @@ public class ShareTest extends Activity {
     public final int GATT_SETUP = 1;
     public final int GATT_WRITING_COMMANDS = 2;
     public final int GATT_READING_RESPONSE = 3;
+    public int successfulWrites;
+
+    //RXJAVA FUN
+    Action1<byte[]> mDataResponseListener;
 
     public ReadDataShare mReadDataShare;
 
@@ -112,6 +122,12 @@ public class ShareTest extends Activity {
         addListenerOnCloseButton();
         IntentFilter intent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(mPairReceiver, intent);
+    }
+
+    @Override
+    public void onStop() {
+        close();
+        Log.w(TAG, "CLOSING CONNECTION");
     }
 
     public void addListenerOnButton() {
@@ -141,6 +157,108 @@ public class ShareTest extends Activity {
         });
     }
 
+    private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
+        @Override
+        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+            if (newState == BluetoothProfile.STATE_CONNECTED) {
+                mBluetoothGatt = gatt;
+                mConnectionState = STATE_CONNECTED;
+                Log.w(TAG, "Connected to GATT server.");
+                Log.w(TAG, "Connection state: Bonded - " + device.getBondState());
+
+                if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
+                    currentGattTask = GATT_SETUP;
+                    mBluetoothGatt.discoverServices();
+
+                } else {
+                    device.setPin("000000".getBytes());
+                    device.createBond();
+                }
+            } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                mConnectionState = STATE_DISCONNECTED;
+                Log.w(TAG, "Disconnected from GATT server.");
+            }
+        }
+
+        @Override
+        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                Log.w(TAG, "Services Discovered: " + status);
+                authenticateConnection(gatt);
+
+            }
+        }
+
+        @Override
+        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                Log.w(TAG, "Characteristic Read");
+                byte[] value = characteristic.getValue();
+                if(value != null) {
+                    Log.w(TAG, "VALUE" + value);
+                } else {
+                    Log.w(TAG, "Characteristic was null");
+                }
+                nextGattStep();
+            } else {
+                Log.w(TAG, "Characteristic failed to read");
+            }
+        }
+        //
+        @Override
+        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+            Log.w(TAG, "Characteristic changed");
+            UUID charUuid = characteristic.getUuid();
+            Log.w(TAG, "Characteristic Update Received: " + charUuid);
+            if(charUuid.compareTo(mResponseCharacteristic.getUuid()) == 0) {
+                Log.w(TAG, "mResponseCharacteristic Update");
+            }
+            if(charUuid.compareTo(mCommandCharacteristic.getUuid()) == 0) {
+                Log.w(TAG, "mCommandCharacteristic Update");
+            }
+            if(charUuid.compareTo(mHeartBeatCharacteristic.getUuid()) == 0) {
+                Log.w(TAG, "mHeartBeatCharacteristic Update");
+            }
+            if(charUuid.compareTo(mReceiveDataCharacteristic.getUuid()) == 0) {
+                Log.w(TAG, "mReceiveDataCharacteristic Update");
+                byte[] value = characteristic.getValue();
+                if(value != null) {
+
+                    Log.w(TAG, "Characteristic: " + value);
+                    Log.w(TAG, "Characteristic: " + value.toString());
+                    Log.w(TAG, "Characteristic getstring: " + characteristic.getStringValue(0));
+                    Log.w(TAG, "SUBSCRIBED TO RESPONSE LISTENER");
+
+                    Observable.just(characteristic.getValue()).subscribe(mDataResponseListener);
+                } else {
+                    Log.w(TAG, "Characteristic was null");
+                }
+            }
+            Log.w(TAG, "NEW VALUE: " + characteristic.getValue().toString());
+//            nextGattStep();
+        }
+
+        @Override
+        public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+            Log.w(TAG, "Wrote a discriptor, status: " + status);
+            if(step == 2 && currentGattTask == GATT_SETUP) {
+                setListeners(2);
+            } else if(step == 3) {
+                setListeners(3);
+            } else if(step == 4) {
+                setListeners(4);
+            } else if(step == 5) {
+                Log.w(TAG, "Done setting Listeners");
+            }
+        }
+
+        @Override
+        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            Log.w(TAG, "Wrote a characteristic: " + status);
+            nextGattStep();
+        }
+    };
+
     public void attemptConnection() {
 
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -157,8 +275,6 @@ public class ShareTest extends Activity {
                     .orderBy("_ID desc")
                     .executeSingle();
 
-
-
             if (btDevice != null) {
                 details.append("\nBT Device: " + btDevice.name);
                 mDeviceName = btDevice.name;
@@ -166,140 +282,45 @@ public class ShareTest extends Activity {
 
                 mBluetoothAdapter = mBluetoothManager.getAdapter();
                 boolean newConnection = true;
-                for(BluetoothDevice device1 : mBluetoothAdapter.getBondedDevices()) {
-                    if(device1.getAddress().compareTo(btDevice.address)==0) {
-                        details.append("\nUsing Bonded Device");
-                        device1.setPin("000000".getBytes());
-                        mBluetoothGatt = device1.connectGatt(this, true, mGattCallback);
-                        newConnection = false;
-                    }
-                }
+//                for(BluetoothDevice device1 : mBluetoothAdapter.getBondedDevices()) {
+//                    if(device1.getAddress().compareTo(btDevice.address)==0) {
+//                        details.append("\nUsing Bonded Device");
+//                        reconnecting = true;
+//                        device = device1;
+//                        device.setPin("000000".getBytes());
+//                        mBluetoothGatt = device.connectGatt(getApplicationContext(), true, mGattCallback);
+//                        newConnection = false;
+//                    }
+//                }
                 if(newConnection) {
                     is_connected = connect(mDeviceAddress);
                     details.append("\nConnecting...: ");
-//                if(is_connected){
-//                    authenticateConnection(mBluetoothGatt);
-//                    bond(mBluetoothGatt);
-//                    mBluetoothGatt.discoverServices();
-//                }
                 }
             }
         }
     }
 
     public void attemptRead() {
-        ReadDataShare readData = new ReadDataShare(mBluetoothGatt,
-                                                    mShareService,
-                                                    mReceiveDataCharacteristic,
-                                                    mHeartBeatCharacteristic,
-                                                    mCommandCharacteristic,
-                                                    mResponseCharacteristic,
-                                                    this);
-        readData.getRecentEGVs();
+        ReadDataShare readData = new ReadDataShare(this);
+        Action1<EGVRecord[]> evgRecordListener = new Action1<EGVRecord[]>() {
+            @Override
+            public void call(EGVRecord[] s) {
+                Log.d(TAG, "Made the full round trip, got " + s.length + " EVG Records");
+            }
+        };
+        readData.getRecentEGVs(evgRecordListener);
     }
 
-        private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
-        @Override
-        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            if (newState == BluetoothProfile.STATE_CONNECTED) {
-                mBluetoothGatt = gatt;
-                mConnectionState = STATE_CONNECTED;
-                Log.w(TAG, "Connected to GATT server.");
-                Log.w(TAG, "Connection state: Bonded - " + device.getBondState());
-
-//                if(device.getBondState() != 12) {
-                    device.setPin("000000".getBytes());
-                    device.createBond();
-//                } else {
-//                    Log.w(TAG, "Already bonded, authenticating.");
-//                    mBluetoothGatt.discoverServices();
-//                    authenticateConnection(mBluetoothGatt);
-//                }
-//                bond(gatt);
-            } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                mConnectionState = STATE_DISCONNECTED;
-                Log.w(TAG, "Disconnected from GATT server.");
-            }
-        }
-
-        @Override
-        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                Log.w(TAG, "Services Discovered: " + status);
-                    authenticateConnection(gatt);
-
-            }
-        }
-
-        @Override
-        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                Log.w(TAG, "Characteristic Read");
-            } else {
-                Log.w(TAG, "Characteristic failed to read");
-            }
-        }
-//
-        @Override
-        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            Log.w(TAG, "Characteristic changed");
-
-            //Do Something here!
-            UUID charUuid = characteristic.getUuid();
-            Log.w(TAG, "Characteristic Update Received: " + charUuid);
-            if(charUuid.compareTo(mResponseCharacteristic.getUuid()) == 0) {
-                Log.w(TAG, "mResponseCharacteristic Update");
-            }
-            if(charUuid.compareTo(mCommandCharacteristic.getUuid()) == 0) {
-                Log.w(TAG, "mCommandCharacteristic Update");
-            }
-            if(charUuid.compareTo(mHeartBeatCharacteristic.getUuid()) == 0) {
-                Log.w(TAG, "mHeartBeatCharacteristic Update");
-            }
-            if(charUuid.compareTo(mReceiveDataCharacteristic.getUuid()) == 0) {
-                Log.w(TAG, "mReceiveDataCharacteristic Update");
-            }
-            Log.w(TAG, "NEW VALUE: " + characteristic.getValue().toString());
-        }
-
-        @Override
-        public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
-                                                       int status) {
-
-            Log.w(TAG, "Wrote a discriptor, status: " + status);
-            if(step == 2) {
-                setListeners(2);
-            } else if(step == 3) {
-                setListeners(3);
-            } else if(step == 4) {
-                setListeners(4);
-            } else if(step == 5) {
-                Log.w(TAG, "Done setting Listeners");
-
-            }
-        }
-
-        @Override
-        public void onCharacteristicWrite(BluetoothGatt gatt,
-                                          BluetoothGattCharacteristic characteristic, int status) {
-            Log.w(TAG, "Wrote a characteristic: " + status);
-
-            if(step == 1) {
-                assignCharacteristics();
-                delay(5000);
-                setListeners(1);
-            }
-        }
-    };
 
 
     public void bond(BluetoothGatt gatt) {
-
-        if(device != null) {
-            Log.w(TAG, "Device is not null");
-            device.setPin("000000".getBytes());
-            mBluetoothGatt = device.connectGatt(getApplicationContext(), false, mGattCallback);
-        }
+        reconnecting = true;
+        attemptConnection();
+//        if(device != null) {
+//            Log.w(TAG, "Device is not null");
+//            device.setPin("000000".getBytes());
+//            mBluetoothGatt = device.connectGatt(getApplicationContext(), false, mGattCallback);
+//        }
 
     }
 
@@ -351,6 +372,7 @@ public class ShareTest extends Activity {
                 if(mAuthenticationCharacteristic != null) {
                     Log.w(TAG, "Auth Characteristic found: " + mAuthenticationCharacteristic.toString());
                     mAuthenticationCharacteristic.setValue((mSerialNumber + "000000").getBytes(StandardCharsets.US_ASCII));
+                    currentGattTask = GATT_SETUP;
                     step = 1;
                     bluetoothGatt.writeCharacteristic(mAuthenticationCharacteristic);
                 } else {
@@ -376,16 +398,17 @@ public class ShareTest extends Activity {
 
         Log.w(TAG, "Setting Listener: #" + listener_number);
         if(listener_number == 1) {
-            step = 2;
-            setCharacteristicNotification(mHeartBeatCharacteristic);
-        } else if(listener_number == 2) {
+//            step = 2;
+//            setCharacteristicNotification(mHeartBeatCharacteristic);
+//        } else if(listener_number == 2) {
             step = 3;
-            setCharacteristicNotification(mReceiveDataCharacteristic);
+            setCharacteristicIndication(mReceiveDataCharacteristic);
         } else if(listener_number == 3) {
-            step = 4;
-            setCharacteristicNotification(mResponseCharacteristic);
-        } else if(listener_number == 4) {
+//            step = 4;
+            setCharacteristicIndication(mResponseCharacteristic);
+//        } else if(listener_number == 4) {
             step = 5;
+//            setCharacteristicIndication(mCommandCharacteristic);
         }
      }
 
@@ -417,20 +440,26 @@ public class ShareTest extends Activity {
 
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic){ setCharacteristicNotification(characteristic, true);}
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic, boolean enabled) {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
-        }
-
         Log.w(TAG, "Characteristic setting notification");
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
         Log.w(TAG, "UUID FOUND: " + characteristic.getUuid());
-        for( BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
-            Log.w(TAG, "Descriptor found: " + descriptor.getUuid());
-            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            mBluetoothGatt.writeDescriptor(descriptor);
-        }
+        BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
+        Log.w(TAG, "Descriptor found: " + descriptor.getUuid());
+        descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+        mBluetoothGatt.writeDescriptor(descriptor);
     }
+
+    public void setCharacteristicIndication(BluetoothGattCharacteristic characteristic){ setCharacteristicIndication(characteristic, true);}
+    public void setCharacteristicIndication(BluetoothGattCharacteristic characteristic, boolean enabled) {
+        Log.w(TAG, "Characteristic setting notification");
+        mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+        Log.w(TAG, "UUID FOUND: " + characteristic.getUuid());
+        BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
+        Log.w(TAG, "Descriptor found: " + descriptor.getUuid());
+        descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+        mBluetoothGatt.writeDescriptor(descriptor);
+    }
+
     private final BroadcastReceiver mPairReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -444,6 +473,7 @@ public class ShareTest extends Activity {
                     Toast.makeText(getApplicationContext(), "Bonded", Toast.LENGTH_LONG).show();
 
 //                    authenticateConnection(mBluetoothGatt);
+                    currentGattTask = GATT_SETUP;
                     mBluetoothGatt.discoverServices();
 //                    authenticateConnection(mBluetoothGatt);
                 } else if (state == BluetoothDevice.BOND_NONE){
@@ -458,21 +488,11 @@ public class ShareTest extends Activity {
         }
     };
 
-    public static void delay(int sleep){
-//        int sleep = 5000;
-        try {
-            Log.d("ShareTest", "Sleeping for " + sleep + "ms");
-            Thread.sleep(sleep);
-        } catch (InterruptedException e) {
-            Log.e("ShareTest", "INTERUPTED");
-        }
-    }
-
-
-
     ///READ AND WRITE JOBS
 
-    public void writeCommand(List<byte[]> packets, int aRecordType) {
+    public void writeCommand(List<byte[]> packets, int aRecordType, Action1<byte[]> dataResponseListener) {
+        mDataResponseListener = dataResponseListener;
+        successfulWrites = 0;
         writePackets = packets;
         recordType = aRecordType;
         step = 0;
@@ -480,9 +500,12 @@ public class ShareTest extends Activity {
         gattWritingStep();
     }
 
-    public void clearGattTask() {
-        currentGattTask = GATT_NOTHING;
-        step = 0;
+    public void writeSuccessAck(Action1<byte[]> dataResponseListener) {
+        mDataResponseListener = dataResponseListener;
+        byte[] byteA = new byte[1];
+        byteA[0] = (byte) 1;
+        mCommandCharacteristic.setValue(byteA);
+        mBluetoothGatt.writeCharacteristic(mCommandCharacteristic);
     }
 
     //CALLBACKS
@@ -492,43 +515,49 @@ public class ShareTest extends Activity {
         switch (currentGattTask) {
             case GATT_NOTHING:
                 Log.d(TAG, "Next NOTHING: " + step);
+                break;
             case GATT_SETUP:
                 Log.d(TAG, "Next GATT SETUP: " + step);
                 gattSetupStep();
+                break;
             case GATT_WRITING_COMMANDS:
                 Log.d(TAG, "Next GATT WRITING: " + step);
                 gattWritingStep();
+                break;
             case GATT_READING_RESPONSE:
                 Log.d(TAG, "Next GATT READING: " + step);
                 gattReadingStep();
+                break;
         }
     }
 
+    public void clearGattTask() {
+        currentGattTask = GATT_NOTHING;
+        step = 0;
+    }
+
     private void gattSetupStep() {
-
-
+        step = 1;
+        assignCharacteristics();
+        setListeners(1);
     }
 
     private void gattWritingStep() {
-        if((step % 2) == 1) {
-            Log.d(TAG, "Did a write, waiting on response, step: " + step);
-
+        Log.d(TAG, "Writing command to the Gatt, step: " + step);
+        int index = step;
+        if (index <= (writePackets.size() - 1)) {
+            Log.d(TAG, "Writing: " + writePackets.get(index) + " index: " + index);
+            mSendDataCharacteristic.setValue(writePackets.get(index));
+            mBluetoothGatt.writeCharacteristic(mSendDataCharacteristic);
         } else {
-            Log.d(TAG, "Writing command to the Gatt, step: " + step);
-            int index = (int) Math.floor(step / 2);
-            if ((writePackets.size() - 1) <= index) {
-                Log.d(TAG, "Writing: " + writePackets.get(index));
-                mSendDataCharacteristic.setValue(writePackets.get(index));
-                mBluetoothGatt.writeCharacteristic(mSendDataCharacteristic);
-            } else {
-                clearGattTask();
-                gattReadingStep();
-            }
+            clearGattTask();
+//            gattReadingStep();
         }
     }
 
     private void gattReadingStep() {
-
+        currentGattTask = GATT_READING_RESPONSE;
 
     }
+
 }

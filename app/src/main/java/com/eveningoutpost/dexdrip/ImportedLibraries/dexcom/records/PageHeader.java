@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records;
 
+import android.util.Log;
+
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.CRC16;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.CRCFailRuntimeException;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
@@ -32,6 +34,8 @@ public class PageHeader {
 
 
     public PageHeader(byte[] packet) {
+        Log.d("ShareTest", "Header Packet Data Length: " + packet.length);
+
         firstRecordIndex = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getInt(FIRSTRECORDINDEX_OFFSET);
         numOfRecords = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getInt(NUMRECS_OFFSET);
         recordType = Constants.RECORD_TYPES.values()[packet[RECTYPE_OFFSET]];
@@ -45,7 +49,6 @@ public class PageHeader {
         if (!Arrays.equals(this.crc, crc_calc)) {
             throw new CRCFailRuntimeException("CRC check failed: " + Utils.bytesToHex(this.crc) + " vs " + Utils.bytesToHex(crc_calc));
         }
-
     }
 
     public byte getRevision() {
