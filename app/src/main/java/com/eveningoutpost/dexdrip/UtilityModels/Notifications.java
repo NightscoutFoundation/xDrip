@@ -102,30 +102,37 @@ public class Notifications {
  * Function for new notifications    
  */
     
+     
     public void FileBasedNotifications(Context context) {
-        
+        ReadPerfs(context);
         // Make sure we have our alerts set...
         AlertType.CreateStaticAlerts(context);
         
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
         Sensor sensor = Sensor.currentSensor();
         
-        List<BgReading> bgReadings = BgReading.latest(3);
+        List<BgReading> bgReadings = BgReading.latest(1);
+        if(bgReadings == null || bgReadings.size() == 0) {
+            // Sensor is stopped, or there is not enough data
+            AlertPlayer.getPlayer().stopAlert(true, false);
+            return;
+        }
+           
         BgReading bgReading = bgReadings.get(0);
         
         Log.e(TAG, "FileBasedNotifications called bgReading.calculated_value = " + bgReading.calculated_value);
         // TODO: tzachi what is the time of this last bgReading 
         
-        if (bg_notifications && sensor != null) {
+        if (bg_notifications && sensor != null && bgReading != null) {
             AlertType newAlert = AlertType.get_highest_active_alert(bgGraphBuilder.unitized(bgReading.calculated_value), 0);
             if (newAlert == null) {
                 Log.e(TAG, "FileBasedNotifications - No active notifcation exists, stopping all alerts");
-                // No alert should work, Stop all alerts.
-                AlertPlayer.getPlayer().stopAlert(true);
+                // No alert should work, Stop all alerts, but keep the snoozing...
+                AlertPlayer.getPlayer().stopAlert(false, true);
                 return;
             }
             
-            ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
+            AlertType activeBgAlert = ActiveBgAlert.alertTypegetOnly();
             if(activeBgAlert == null) {
                 Log.e(TAG, "FileBasedNotifications we have a new alert, starting to play it...");
                 // We need to create a new alert  and start playing
@@ -134,32 +141,40 @@ public class Notifications {
             }
             
             
-            if (activeBgAlert.alert_uuid.equals(newAlert.uuid)) {
+            if (activeBgAlert.uuid.equals(newAlert.uuid)) {
                 // This is the same alert. Might need to play again...
                 Log.e(TAG, "FileBasedNotifications we have found an active alert, checking if we need to play it");
                 AlertPlayer.getPlayer().ClockTick(context);
                 return;
             }
+            // Tzachi: todo, if this alerts have the same importance we should only do a ClockTick ???????????????????????
             
-            // we have a new alert. It is more important than the previous one. we need to stop
-            // the older one and start a new one.
-            // TODO: Tzachi if this now a lower importance alert, we should not do anything.
+            // we have a new alert. If it is more important than the previous one. we need to stop
+            // the older one and start a new one (We need to play even if we were snoozed).
+            // If it is a lower level alert, we should keep being snoozed.
+            
+            
             // Example, if we have two alerts one for 90 and the other for 80. and we were already alerting for the 80
             // and we were snoozed. Now bg is 85, the alert for 80 is cleared, but we are alerting for 90.
             // We should not do anything if we are snoozed for the 80...
-            //  AlertType  newHigherAlert = AlertType.HigherAlert(activeBgAlert,  newAlert);
-            // if (newHigherAlert == activeBgAlert) {
-                // the existing all
-            // }
+            // If one allert was high and the second one is low however, we alarm in any case (snoozing ignored).
+            boolean opositeDirection = AlertType.OpositeDirection(activeBgAlert, newAlert);
+            AlertType  newHigherAlert = AlertType.HigherAlert(activeBgAlert, newAlert);
+            if ((newHigherAlert == activeBgAlert) && (!opositeDirection)) {
+                // the existing alert is the higher, we should not do anything
+                Log.e(TAG, "FileBasedNotifications The existing alert has the same importance, doing nothing");
+                AlertPlayer.getPlayer().ClockTick(context);
+                return;
+            }
             
             // For now, we are stopping the old alert and starting a new one.
-            Log.e(TAG, "Found a new allert, will play it.");
-            AlertPlayer.getPlayer().stopAlert(true);
+            Log.e(TAG, "Found a new allert, that is higher than the previous one will play it.");
+            AlertPlayer.getPlayer().stopAlert(true, false);
             AlertPlayer.getPlayer().startAlert(context, newAlert);
             return;
             
         } else {
-            AlertPlayer.getPlayer().stopAlert(true);
+            AlertPlayer.getPlayer().stopAlert(true, false);
         }
         
     }

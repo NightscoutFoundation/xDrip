@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import android.R.bool;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -68,7 +69,7 @@ public class AlertType extends Model {
     @Column(name = "end_time_minutes")
     public int end_time_minutes;
 
-    @Column(name = "minutes_between")
+    @Column(name = "minutes_between") //??? what is the differance between minutes_between and default_snooze ???
     public int minutes_between;
 
     @Column(name = "default_snooze")
@@ -126,6 +127,14 @@ public class AlertType extends Model {
         }
         // no alert found 
         return null;
+    }
+    
+    // returns true, if one allert is up and the second is down
+    public static boolean OpositeDirection(AlertType a1, AlertType a2) {
+        if (a1.above != a2.above) {
+            return true;
+        }
+        return false;
     }
     
     // Checks if a1 is more important than a2. returns the higher one

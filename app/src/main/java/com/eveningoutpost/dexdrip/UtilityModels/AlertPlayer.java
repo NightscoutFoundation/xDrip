@@ -34,17 +34,20 @@ public class AlertPlayer {
 
     public synchronized  void startAlert(Context ctx, AlertType newAlert )  {
       Log.e(TAG, "start called, Threadid " + Thread.currentThread().getId());
-      stopAlert(true);
+      stopAlert(true, false);
       ActiveBgAlert.Create(newAlert.uuid, false, new Date().getTime() + newAlert.minutes_between * 60000 );
       
       PlayFile(ctx, newAlert.mp3_file);
 
     }
 
-    public synchronized void stopAlert(boolean ClearData) {
+    public synchronized void stopAlert(boolean ClearData, boolean clearIfSnoozeFinished) {
         Log.e(TAG, "stopAlert: stop called ClearData" + ClearData + "  ThreadID " + Thread.currentThread().getId());
         if (ClearData) {
             ActiveBgAlert.ClearData();
+        }
+        if(clearIfSnoozeFinished) {
+            ActiveBgAlert.ClearIfSnoozeFinished();
         }
         if (mediaPlayer != null) {
             mediaPlayer.stop();
@@ -55,7 +58,7 @@ public class AlertPlayer {
     
     public synchronized  void Snooze(Context ctx, int repeatTime) {
         Log.e(TAG, "Snooze called repeatTime = "+ repeatTime);
-        stopAlert(false);
+        stopAlert(false, false);
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
         if (activeBgAlert  == null) {
             Log.e(TAG, "Error, snooze was called but no alert is active. how can that be ??? !!! ");
@@ -72,7 +75,7 @@ public class AlertPlayer {
             return;
         }
         if(activeBgAlert.ready_to_alarm()) {
-            stopAlert(false);
+            stopAlert(false, false);
             AlertType alert = AlertType.get_alert(activeBgAlert.alert_uuid);
             if (alert == null) {
                 Log.w(TAG, "ClockTick: The alert was already deleted... will not play");

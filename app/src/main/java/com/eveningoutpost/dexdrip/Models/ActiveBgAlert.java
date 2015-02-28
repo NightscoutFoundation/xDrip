@@ -62,8 +62,7 @@ public class ActiveBgAlert extends Model {
     // We should only have at most one active alert at any given time.
     // This means that we will only have one of this objects at the database at any given time.
     // so we have the following static functions: getOnly, saveData, ClearData
-    
-    
+
     public static ActiveBgAlert getOnly() {
         ActiveBgAlert aba = new Select()
                 .from(ActiveBgAlert.class)
@@ -77,6 +76,25 @@ public class ActiveBgAlert extends Model {
         }
         
         return aba;
+    }
+    
+    public static AlertType alertTypegetOnly() {
+        ActiveBgAlert aba = getOnly();
+        
+        if (aba == null) {
+            Log.v(TAG, "ActiveBgAlert: alertTypegetOnly returning null");
+            return null;
+        }
+        
+        AlertType alert = AlertType.get_alert(aba.alert_uuid);
+        if(alert == null) {
+            Log.e(TAG, "alertTypegetOnly did not find the active alert as part of existing alerts. returning null");
+            return null;
+        }
+        if(alert.uuid != aba.alert_uuid) {
+            Log.wtf(TAG, "AlertType.get_alert did not return the correct alert");
+        }
+        return alert;
     }
     
     public static void Create(String alert_uuid, boolean is_snoozed, Long next_alert_at) {
@@ -99,6 +117,19 @@ public class ActiveBgAlert extends Model {
             aba.delete();
         }
     }
+    
+    public static void ClearIfSnoozeFinished() {
+        Log.e(TAG, "ActiveBgAlert ClearIfSnoozeFinished called");
+        ActiveBgAlert aba = getOnly();
+        if (aba != null) {
+            if(new Date().getTime() > aba.next_alert_at) {
+                Log.e(TAG, "ActiveBgAlert ClearIfSnoozeFinished deleting allert");
+                aba.delete();
+            }
+        }
+    }
+    
+    
         
 }
 

@@ -53,7 +53,7 @@ public class StopSensor extends Activity implements NavigationDrawerFragment.Nav
                 sensor.stopped_at = new Date().getTime();
                 Log.w("NEW SENSOR", "Sensor stopped at " + sensor.stopped_at);
                 sensor.save();
-                AlertPlayer.getPlayer().stopAlert(true);
+                AlertPlayer.getPlayer().stopAlert(true, false);
 
                 Toast.makeText(getApplicationContext(), "Sensor stopped", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getApplicationContext(), Home.class);
