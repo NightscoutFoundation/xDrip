@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 
 
 public class CalibrationOverride extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -23,10 +24,15 @@ public class CalibrationOverride extends Activity implements NavigationDrawerFra
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_calibration_override);
-            addListenerOnButton();
-            }
+        super.onCreate(savedInstanceState);
+        if(CollectionServiceStarter.isBTShare(getApplicationContext())) {
+            Intent intent = new Intent(this, Home.class);
+            startActivity(intent);
+            finish();
+        }
+        setContentView(R.layout.activity_calibration_override);
+        addListenerOnButton();
+    }
 
     @Override
     protected void onResume(){

@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
@@ -10,7 +11,11 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
@@ -102,6 +107,9 @@ public class BgReading extends Model {
     @Column(name = "snyced")
     public boolean synced;
 
+    @Column(name = "raw_calculated")
+    public double raw_calculated;
+
     public double calculated_value_mmol() {
         return mmolConvert(calculated_value);
     }
@@ -155,6 +163,98 @@ public class BgReading extends Model {
     }
 
     //*******CLASS METHODS***********//
+    public static void create(EGVRecord[] egvRecords, long addativeOffset, Context context) {
+        for(EGVRecord egvRecord : egvRecords) { BgReading.create(egvRecord, addativeOffset, context); }
+    }
+
+    public static void create(SensorRecord[] sensorRecords, long addativeOffset, Context context) {
+        for(SensorRecord sensorRecord : sensorRecords) { BgReading.create(sensorRecord, addativeOffset, context); }
+    }
+
+    public static void create(SensorRecord sensorRecord, long addativeOffset, Context context) {
+        Log.w(TAG, "gonna make some sensor records: " + sensorRecord.getUnfiltered());
+        if(BgReading.is_new(sensorRecord, addativeOffset)) {
+            BgReading bgReading = new BgReading();
+            Sensor sensor = Sensor.currentSensor();
+            Calibration calibration = Calibration.getForTimestamp(sensorRecord.getSystemTime().getTime() + addativeOffset);
+            if(sensor != null && calibration != null) {
+                bgReading.sensor = sensor;
+                bgReading.sensor_uuid = sensor.uuid;
+                bgReading.calibration = calibration;
+                bgReading.calibration_uuid = calibration.uuid;
+                bgReading.raw_data = (sensorRecord.getUnfiltered() / 1000);
+                bgReading.timestamp = sensorRecord.getSystemTime().getTime() + addativeOffset;
+                bgReading.uuid = UUID.randomUUID().toString();
+                bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
+                bgReading.synced = false;
+                bgReading.calculateAgeAdjustedRawValue();
+                bgReading.save();
+            }
+        }
+    }
+
+    public static void create(EGVRecord egvRecord, long addativeOffset, Context context) {
+        BgReading bgReading = BgReading.getForTimestamp(egvRecord.getSystemTime().getTime() + addativeOffset);
+        Log.w(TAG, "Looking for BG reading to tag this thing to: " + egvRecord.getBGValue());
+        if(bgReading != null) {
+            bgReading.calculated_value = egvRecord.getBGValue();
+            if (egvRecord.getBGValue() < 13) {
+                Calibration calibration = bgReading.calibration;
+                double firstAdjSlope = calibration.first_slope + (calibration.first_decay * (Math.ceil(new Date().getTime() - calibration.timestamp)/(1000 * 60 * 10)));
+                double calSlope = (calibration.first_scale / firstAdjSlope)*1000;
+                double calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope)*-1;
+                bgReading.raw_calculated = (((calSlope * bgReading.raw_data) + calIntercept) - 5);
+            }
+            Log.w(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
+            bgReading.calculated_value_slope = bgReading.slopefromName(egvRecord.getTrend().friendlyTrendName());
+            bgReading.save();
+            bgReading.find_new_curve();
+            bgReading.find_new_raw_curve();
+            bgReading.perform_calculations();
+            Notifications.notificationSetter(context);
+            BgSendQueue.addToQueue(bgReading, "create", context);
+        }
+    }
+
+    public static BgReading getForTimestamp(double timestamp) {
+        Sensor sensor = Sensor.currentSensor();
+        if(sensor != null) {
+            BgReading bgReading = new Select()
+                    .from(BgReading.class)
+                    .where("Sensor = ? ", sensor.getId())
+                    .where("timestamp <= ?",  (timestamp + (60*1000))) // 1 minute padding (should never be that far off, but why not)
+                    .where("calculated_value = 0")
+                    .where("raw_calculated = 0")
+                    .orderBy("timestamp desc")
+                    .executeSingle();
+            if(bgReading != null && Math.abs(bgReading.timestamp - timestamp) < (3*60*1000)) { //cool, so was it actually within 4 minutes of that bg reading?
+                Log.w(TAG, "Found a BG timestamp match");
+                return bgReading;
+            }
+        }
+        Log.w(TAG, "No luck finding a BG timestamp match");
+        return null;
+    }
+
+    public static boolean is_new(SensorRecord sensorRecord, long addativeOffset) {
+        double timestamp = sensorRecord.getSystemTime().getTime() + addativeOffset;
+        Sensor sensor = Sensor.currentSensor();
+        if(sensor != null) {
+            BgReading bgReading = new Select()
+                    .from(BgReading.class)
+                    .where("Sensor = ? ", sensor.getId())
+                    .where("timestamp <= ?",  (timestamp + (60*1000))) // 1 minute padding (should never be that far off, but why not)
+                    .orderBy("timestamp desc")
+                    .executeSingle();
+            if(bgReading != null && Math.abs(bgReading.timestamp - timestamp) < (3*60*1000)) { //cool, so was it actually within 4 minutes of that bg reading?
+                Log.w(TAG, "Old Reading");
+                return false;
+            }
+        }
+        Log.w(TAG, "New Reading");
+        return true;
+    }
+
     public static BgReading create(double raw_data, Context context) {
         BgReading bgReading = new BgReading();
         Sensor sensor = Sensor.currentSensor();
@@ -190,11 +290,8 @@ public class BgReading extends Model {
 
                 if(calibration.check_in) {
                     double firstAdjSlope = calibration.first_slope + (calibration.first_decay * (Math.ceil(new Date().getTime() - calibration.timestamp)/(1000 * 60 * 10)));
-//                    double secondAdjSlope = calibration.first_slope + (calibration.first_decay * ((new Date().getTime() - calibration.timestamp)/(1000 * 60 * 10)));
                     double calSlope = (calibration.first_scale / firstAdjSlope)*1000;
                     double calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope)*-1;
-//                    double calSlope = ((calibration.second_scale / secondAdjSlope) + (3 * calibration.first_scale / firstAdjSlope)) * 250;
-//                    double calIntercept = (((calibration.second_scale * calibration.second_intercept) / secondAdjSlope) + ((3 * calibration.first_scale * calibration.first_intercept) / firstAdjSlope)) / -4;
                     bgReading.calculated_value = (((calSlope * bgReading.raw_data) + calIntercept) - 5);
 
                 } else {
@@ -243,6 +340,11 @@ public class BgReading extends Model {
         } else {
             arrow = "\u21c8";
         }
+        if (slope == 100/60000) {
+            arrow = "";
+        } else if (slope == 200/60000) {
+            arrow = "";
+        }
         return arrow;
     }
 
@@ -261,26 +363,71 @@ public class BgReading extends Model {
             arrow = "FortyFiveUp";
         } else if (slope_by_minute <= (3.5)) {
             arrow = "SingleUp";
-        } else {
+        } else if (slope_by_minute <= (40)) {
             arrow = "DoubleUp";
+        } else if (slope_by_minute == 100) {
+            arrow = "8";
+        } else if (slope_by_minute == 200) {
+            arrow = "9";
         }
         return arrow;
     }
 
+    public double slopefromName(String slope_name) {
+        double slope_by_minute = 0;
+        if (slope_name.compareTo("DoubleDown") == 0) {
+            slope_by_minute = -3.5;
+        } else if (slope_name.compareTo("SingleDown") == 0) {
+            slope_by_minute = -2;
+        } else if (slope_name.compareTo("FortyFiveDown") == 0) {
+            slope_by_minute = -1;
+        } else if (slope_name.compareTo("Flat") == 0) {
+            slope_by_minute = 0;
+        } else if (slope_name.compareTo("FortyFiveUp") == 0) {
+            slope_by_minute = 2;
+        } else if (slope_name.compareTo("SingleUp") == 0) {
+            slope_by_minute = 2;
+        } else if (slope_name.compareTo("DoubleUp") == 0) {
+            slope_by_minute = 4;
+        } else if (slope_name.compareTo("NOT_COMPUTABLE") == 0) {
+            slope_by_minute = 100;
+        } else if (slope_name.compareTo("OUT_OF_RANGE") == 0) {
+            slope_by_minute = 200;
+        }
+        return slope_by_minute /60000;
+    }
+//        DOUBLE_UP(1,"\u21C8", "DoubleUp"),
+//                SINGLE_UP(2,"\u2191", "SingleUp"),
+//                UP_45(3,"\u2197", "FortyFiveUp"),
+//                FLAT(4,"\u2192", "Flat"),
+//                DOWN_45(5,"\u2198", "FortyFiveDown"),
+//                SINGLE_DOWN(6,"\u2193", "SingleDown"),
+//                DOUBLE_DOWN(7,"\u21CA", "DoubleDown"),
+//                NOT_COMPUTABLE(8),
+//                OUT_OF_RANGE(9);
+//    }
+
     public static BgReading last() {
         Sensor sensor = Sensor.currentSensor();
-        return new Select()
-                .from(BgReading.class)
-                .where("Sensor = ? ", sensor.getId())
-                .orderBy("_ID desc")
-                .executeSingle();
+        if (sensor != null) {
+            return new Select()
+                    .from(BgReading.class)
+                    .where("Sensor = ? ", sensor.getId())
+                    .where("calculated_value != 0")
+                    .where("raw_data != 0")
+                    .orderBy("timestamp desc")
+                    .executeSingle();
+        }
+        return null;
     }
     public static List<BgReading> latest_by_size(int number) {
         Sensor sensor = Sensor.currentSensor();
         return new Select()
                 .from(BgReading.class)
                 .where("Sensor = ? ", sensor.getId())
-                .orderBy("_ID desc")
+                .where("calculated_value != 0")
+                .where("raw_data != 0")
+                .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
     }
@@ -288,7 +435,9 @@ public class BgReading extends Model {
     public static BgReading lastNoSenssor() {
         return new Select()
                 .from(BgReading.class)
-                .orderBy("_ID desc")
+                .where("calculated_value != 0")
+                .where("raw_data != 0")
+                .orderBy("timestamp desc")
                 .executeSingle();
     }
 
@@ -298,7 +447,9 @@ public class BgReading extends Model {
         return new Select()
                 .from(BgReading.class)
                 .where("Sensor = ? ", sensor.getId())
-                .orderBy("_ID desc")
+                .where("calculated_value != 0")
+                .where("raw_data != 0")
+                .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
     }
@@ -310,6 +461,8 @@ public class BgReading extends Model {
         return new Select()
                 .from(BgReading.class)
                 .where("timestamp >= " + df.format(startTime))
+                .where("calculated_value != 0")
+                .where("raw_data != 0")
                 .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
@@ -320,7 +473,9 @@ public class BgReading extends Model {
         return new Select()
                 .from(BgReading.class)
                 .where("timestamp >= " + timestamp)
-                .orderBy("_ID desc")
+                .where("calculated_value != 0")
+                .where("raw_data != 0")
+                .orderBy("timestamp desc")
                 .execute();
     }
 

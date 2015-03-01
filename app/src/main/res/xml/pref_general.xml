@@ -24,7 +24,12 @@
         <CheckBoxPreference
             android:key="predictive_bg"
             android:title="Display Predictive Values"
-            android:summary="DexDrip will attempt to predict readings each minute based on the past few values, this is not always accurate."
+            android:summary="Not Recommended. DexDrip will attempt to predict readings each minute based on the past few values."
+            android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="interpret_raw"
+            android:title="Interpret Raw Values"
+            android:summary="If using Share, DexDrip will show values when they are normally hidden on the reciever."
             android:defaultValue="false" />
     </PreferenceCategory>
 </PreferenceScreen>

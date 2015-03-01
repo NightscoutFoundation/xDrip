@@ -51,6 +51,7 @@ public class BgGraphBuilder {
     private List<PointValue> inRangeValues = new ArrayList<PointValue>();
     private List<PointValue> highValues = new ArrayList<PointValue>();
     private List<PointValue> lowValues = new ArrayList<PointValue>();
+    private List<PointValue> rawInterpretedValues = new ArrayList<PointValue>();
     public Viewport viewport;
 
 
@@ -95,6 +96,7 @@ public class BgGraphBuilder {
         lines.add(inRangeValuesLine());
         lines.add(lowValuesLine());
         lines.add(highValuesLine());
+        lines.add(rawInterpretedLine());
         return lines;
     }
 
@@ -125,9 +127,19 @@ public class BgGraphBuilder {
         return inRangeValuesLine;
     }
 
+    public Line rawInterpretedLine() {
+        Line line = new Line(rawInterpretedValues);
+        line.setHasLines(false);
+        line.setPointRadius(1);
+        line.setHasPoints(true);
+        return line;
+    }
+
     private void addBgReadingValues() {
         for (BgReading bgReading : bgReadings) {
-            if (bgReading.calculated_value >= 400) {
+            if (bgReading.raw_calculated != 0 && prefs.getBoolean("interpret_raw", false)) {
+                rawInterpretedValues.add(new PointValue((float) bgReading.timestamp, (float) unitized(bgReading.raw_calculated)));
+            } else if (bgReading.calculated_value >= 400) {
                 highValues.add(new PointValue((float) bgReading.timestamp, (float) unitized(400)));
             } else if (unitized(bgReading.calculated_value) >= highMark) {
                 highValues.add(new PointValue((float) bgReading.timestamp, (float) unitized(bgReading.calculated_value)));
@@ -135,7 +147,7 @@ public class BgGraphBuilder {
                 inRangeValues.add(new PointValue((float) bgReading.timestamp, (float) unitized(bgReading.calculated_value)));
             } else if (bgReading.calculated_value >= 40) {
                 lowValues.add(new PointValue((float)bgReading.timestamp, (float) unitized(bgReading.calculated_value)));
-            } else {
+            } else if (bgReading.calculated_value > 13) {
                 lowValues.add(new PointValue((float)bgReading.timestamp, (float) unitized(40)));
             }
         }
@@ -290,8 +302,10 @@ public class BgGraphBuilder {
                 df.setMinimumFractionDigits(1);
                 return df.format(mmolConvert(value));
             }
-        } else {
+        } else if (value > 13) {
             return "LOW";
+        } else {
+            return "???";
         }
     }
 

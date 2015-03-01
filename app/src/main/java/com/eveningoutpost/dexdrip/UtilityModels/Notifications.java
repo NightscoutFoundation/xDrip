@@ -83,6 +83,8 @@ public class Notifications {
 
         List<BgReading> bgReadings = BgReading.latest(3);
         List<Calibration> calibrations = Calibration.allForSensorInLastFourDays();
+        if(bgReadings.size() < 3) { return; }
+        if(calibrations.size() < 2) { return; }
         BgReading bgReading = bgReadings.get(0);
 
         if (bg_notifications && sensor != null) {

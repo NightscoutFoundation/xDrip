@@ -67,6 +67,7 @@ public class SettingsActivity extends PreferenceActivity {
         bindPreferenceSummaryToValue(findPreference("dex_collection_method"));
         bindPreferenceSummaryToValue(findPreference("wifi_recievers_addresses"));
         bindPreferenceSummaryToValue(findPreference("units"));
+        bindPreferenceSummaryToValue(findPreference("share_key"));
     }
 
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {

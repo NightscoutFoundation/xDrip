@@ -1,7 +1,5 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom;
 
-import android.util.Log;
-
 import java.util.Arrays;
 
 public class ReadPacket {
@@ -19,8 +17,7 @@ public class ReadPacket {
         this.crc = Arrays.copyOfRange(readPacket, readPacket.length - CRC_LEN, readPacket.length);
         this.crc_calc=CRC16.calculate(readPacket, 0, readPacket.length - 2);
         if (!Arrays.equals(this.crc, this.crc_calc)) {
-//            throw new CRCFailRuntimeException("CRC check failed: " + Utils.bytesToHex(this.crc) + " vs " + Utils.bytesToHex(this.crc_calc));
-            Log.w("ShareTest", "THIS DID NOT PASS THE CRC CHECK");
+            throw new CRCFailRuntimeException("CRC check failed: " + Utils.bytesToHex(this.crc) + " vs " + Utils.bytesToHex(this.crc_calc));
         }
     }
 

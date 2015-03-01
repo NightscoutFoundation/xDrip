@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -32,8 +33,11 @@ import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.PacketBuilder;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.ReadData;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.ReadDataShare;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.UtilityModels.DexShareAttributes;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
@@ -107,8 +111,6 @@ public class ShareTest extends Activity {
     public List<byte[]> writePackets;
     public int recordType;
 
-    private String mSerialNumber = "SM41878769"; //TODO: Get this out of shared Preferences
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,7 +127,8 @@ public class ShareTest extends Activity {
     }
 
     @Override
-    public void onStop() {
+    public void onDestroy() {
+        super.onDestroy();
         close();
         Log.w(TAG, "CLOSING CONNECTION");
     }
@@ -163,6 +166,7 @@ public class ShareTest extends Activity {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mBluetoothGatt = gatt;
                 mConnectionState = STATE_CONNECTED;
+                ActiveBluetoothDevice.connected();
                 Log.w(TAG, "Connected to GATT server.");
                 Log.w(TAG, "Connection state: Bonded - " + device.getBondState());
 
@@ -176,6 +180,7 @@ public class ShareTest extends Activity {
                 }
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 mConnectionState = STATE_DISCONNECTED;
+                ActiveBluetoothDevice.disconnected();
                 Log.w(TAG, "Disconnected from GATT server.");
             }
         }
@@ -204,7 +209,7 @@ public class ShareTest extends Activity {
                 Log.w(TAG, "Characteristic failed to read");
             }
         }
-        //
+
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             Log.w(TAG, "Characteristic changed");
@@ -223,19 +228,16 @@ public class ShareTest extends Activity {
                 Log.w(TAG, "mReceiveDataCharacteristic Update");
                 byte[] value = characteristic.getValue();
                 if(value != null) {
-
                     Log.w(TAG, "Characteristic: " + value);
                     Log.w(TAG, "Characteristic: " + value.toString());
                     Log.w(TAG, "Characteristic getstring: " + characteristic.getStringValue(0));
                     Log.w(TAG, "SUBSCRIBED TO RESPONSE LISTENER");
-
                     Observable.just(characteristic.getValue()).subscribe(mDataResponseListener);
                 } else {
                     Log.w(TAG, "Characteristic was null");
                 }
             }
             Log.w(TAG, "NEW VALUE: " + characteristic.getValue().toString());
-//            nextGattStep();
         }
 
         @Override
@@ -260,11 +262,9 @@ public class ShareTest extends Activity {
     };
 
     public void attemptConnection() {
-
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         if (device != null) {
             details.append("\nConnection state: " + " Device is not null");
-
             mConnectionState = mBluetoothManager.getConnectionState(device, BluetoothProfile.GATT);
         }
 
@@ -274,24 +274,12 @@ public class ShareTest extends Activity {
             ActiveBluetoothDevice btDevice = new Select().from(ActiveBluetoothDevice.class)
                     .orderBy("_ID desc")
                     .executeSingle();
-
             if (btDevice != null) {
                 details.append("\nBT Device: " + btDevice.name);
                 mDeviceName = btDevice.name;
                 mDeviceAddress = btDevice.address;
-
                 mBluetoothAdapter = mBluetoothManager.getAdapter();
                 boolean newConnection = true;
-//                for(BluetoothDevice device1 : mBluetoothAdapter.getBondedDevices()) {
-//                    if(device1.getAddress().compareTo(btDevice.address)==0) {
-//                        details.append("\nUsing Bonded Device");
-//                        reconnecting = true;
-//                        device = device1;
-//                        device.setPin("000000".getBytes());
-//                        mBluetoothGatt = device.connectGatt(getApplicationContext(), true, mGattCallback);
-//                        newConnection = false;
-//                    }
-//                }
                 if(newConnection) {
                     is_connected = connect(mDeviceAddress);
                     details.append("\nConnecting...: ");
@@ -301,27 +289,51 @@ public class ShareTest extends Activity {
     }
 
     public void attemptRead() {
-        ReadDataShare readData = new ReadDataShare(this);
-        Action1<EGVRecord[]> evgRecordListener = new Action1<EGVRecord[]>() {
+        final ReadDataShare readData = new ReadDataShare(this);
+        final Action1<Long> systemTimeListener = new Action1<Long>() {
             @Override
-            public void call(EGVRecord[] s) {
-                Log.d(TAG, "Made the full round trip, got " + s.length + " EVG Records");
+            public void call(Long s) {
+
+                Log.d(TAG, "Made the full round trip, got " + s + " as the system time");
+                Log.d("SYSTTIME", "Made the full round trip, got " + s + " as the system time");
+                final long addativeSystemTimeOffset = new Date().getTime() - s;
+                Log.d(TAG, "Made the full round trip, got " + addativeSystemTimeOffset + " offset");
+                Log.d("SYSTTIME", "Made the full round trip, got " + addativeSystemTimeOffset + " offset");
+
+                final Action1<CalRecord[]> calRecordListener = new Action1<CalRecord[]>() {
+                    @Override
+                    public void call(CalRecord[] calRecords) {
+                        Log.d(TAG, "Made the full round trip, got " + calRecords.length + " Cal Records");
+                        Calibration.create(calRecords, addativeSystemTimeOffset, getApplicationContext());
+
+                        final Action1<SensorRecord[]> sensorRecordListener = new Action1<SensorRecord[]>() {
+                            @Override
+                            public void call(SensorRecord[] sensorRecords) {
+                                Log.d(TAG, "Made the full round trip, got " + sensorRecords.length + " Sensor Records");
+                                BgReading.create(sensorRecords, addativeSystemTimeOffset, getApplicationContext());
+
+                                final Action1<EGVRecord[]> evgRecordListener = new Action1<EGVRecord[]>() {
+                                    @Override
+                                    public void call(EGVRecord[] egvRecords) {
+                                        Log.d(TAG, "Made the full round trip, got " + egvRecords.length + " EVG Records");
+                                        BgReading.create(egvRecords, addativeSystemTimeOffset, getApplicationContext());
+                                    }
+                                };
+                                readData.getRecentEGVs(evgRecordListener);
+                            }
+                        };
+                        readData.getRecentSensorRecords(sensorRecordListener);
+                    }
+                };
+                readData.getRecentCalRecords(calRecordListener);
             }
         };
-        readData.getRecentEGVs(evgRecordListener);
+        readData.readSystemTime(systemTimeListener);
     }
-
-
 
     public void bond(BluetoothGatt gatt) {
         reconnecting = true;
         attemptConnection();
-//        if(device != null) {
-//            Log.w(TAG, "Device is not null");
-//            device.setPin("000000".getBytes());
-//            mBluetoothGatt = device.connectGatt(getApplicationContext(), false, mGattCallback);
-//        }
-
     }
 
     public boolean connect(final String address) {
@@ -352,26 +364,23 @@ public class ShareTest extends Activity {
             mBluetoothGatt = device.connectGatt(getApplicationContext(), true, mGattCallback);
             Log.w(TAG, "Trying to create a new connection.");
             details.append("\nTrying to create a new connection to device");
-//            if(mBluetoothGatt != null) {
-//                authenticateConnection(mBluetoothGatt);
-//                bond(mBluetoothGatt);
-//                mBluetoothGatt.discoverServices();
-//            }
             mConnectionState = STATE_CONNECTING;
             return true;
         }
     }
 
     public void authenticateConnection(BluetoothGatt bluetoothGatt) {
+        Log.w(TAG, "Trying to auth");
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
         if(bluetoothGatt != null) {
             mBluetoothGatt = bluetoothGatt;
-//            mBluetoothGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
             mShareService = mBluetoothGatt.getService(DexShareAttributes.CradleService);
             if (mShareService != null) {
                 mAuthenticationCharacteristic = mShareService.getCharacteristic(DexShareAttributes.AuthenticationCode);
                 if(mAuthenticationCharacteristic != null) {
                     Log.w(TAG, "Auth Characteristic found: " + mAuthenticationCharacteristic.toString());
-                    mAuthenticationCharacteristic.setValue((mSerialNumber + "000000").getBytes(StandardCharsets.US_ASCII));
+                    mAuthenticationCharacteristic.setValue((receiverSn + "000000").getBytes(StandardCharsets.US_ASCII));
                     currentGattTask = GATT_SETUP;
                     step = 1;
                     bluetoothGatt.writeCharacteristic(mAuthenticationCharacteristic);
@@ -381,8 +390,6 @@ public class ShareTest extends Activity {
             } else {
                 Log.w(TAG, "CRADLE SERVICE IS NULL");
             }
-        } else {
-            Log.w(TAG, "GATT IS NULL");
         }
     }
 
@@ -398,17 +405,11 @@ public class ShareTest extends Activity {
 
         Log.w(TAG, "Setting Listener: #" + listener_number);
         if(listener_number == 1) {
-//            step = 2;
-//            setCharacteristicNotification(mHeartBeatCharacteristic);
-//        } else if(listener_number == 2) {
             step = 3;
             setCharacteristicIndication(mReceiveDataCharacteristic);
         } else if(listener_number == 3) {
-//            step = 4;
             setCharacteristicIndication(mResponseCharacteristic);
-//        } else if(listener_number == 4) {
             step = 5;
-//            setCharacteristicIndication(mCommandCharacteristic);
         }
      }
 
@@ -428,6 +429,7 @@ public class ShareTest extends Activity {
         mBluetoothGatt.close();
         mBluetoothGatt = null;
         mConnectionState = STATE_DISCONNECTED;
+        Log.w(TAG, "bt Disconnected");
     }
 
     public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
@@ -467,15 +469,10 @@ public class ShareTest extends Activity {
             if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
                 final int state        = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
                 final int prevState    = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
-
                 if (state == BluetoothDevice.BOND_BONDED) {
                     Log.d(TAG, "CALLBACK RECIEVED Bonded");
-                    Toast.makeText(getApplicationContext(), "Bonded", Toast.LENGTH_LONG).show();
-
-//                    authenticateConnection(mBluetoothGatt);
                     currentGattTask = GATT_SETUP;
                     mBluetoothGatt.discoverServices();
-//                    authenticateConnection(mBluetoothGatt);
                 } else if (state == BluetoothDevice.BOND_NONE){
                     Log.d(TAG, "CALLBACK RECIEVED: Not Bonded");
                     Toast.makeText(getApplicationContext(), "unBonded", Toast.LENGTH_LONG).show();
@@ -483,12 +480,9 @@ public class ShareTest extends Activity {
                     Log.d(TAG, "CALLBACK RECIEVED: Trying to bond");
                     Toast.makeText(getApplicationContext(), "trying to bond", Toast.LENGTH_LONG).show();
                 }
-
             }
         }
     };
-
-    ///READ AND WRITE JOBS
 
     public void writeCommand(List<byte[]> packets, int aRecordType, Action1<byte[]> dataResponseListener) {
         mDataResponseListener = dataResponseListener;
@@ -500,34 +494,21 @@ public class ShareTest extends Activity {
         gattWritingStep();
     }
 
-    public void writeSuccessAck(Action1<byte[]> dataResponseListener) {
-        mDataResponseListener = dataResponseListener;
-        byte[] byteA = new byte[1];
-        byteA[0] = (byte) 1;
-        mCommandCharacteristic.setValue(byteA);
-        mBluetoothGatt.writeCharacteristic(mCommandCharacteristic);
-    }
-
-    //CALLBACKS
     private void nextGattStep() {
         Log.d(TAG, "Next Gatt Step");
         step++;
         switch (currentGattTask) {
-            case GATT_NOTHING:
-                Log.d(TAG, "Next NOTHING: " + step);
-                break;
-            case GATT_SETUP:
-                Log.d(TAG, "Next GATT SETUP: " + step);
-                gattSetupStep();
-                break;
-            case GATT_WRITING_COMMANDS:
-                Log.d(TAG, "Next GATT WRITING: " + step);
-                gattWritingStep();
-                break;
-            case GATT_READING_RESPONSE:
-                Log.d(TAG, "Next GATT READING: " + step);
-                gattReadingStep();
-                break;
+        case GATT_NOTHING:
+            Log.d(TAG, "Next NOTHING: " + step);
+            break;
+        case GATT_SETUP:
+            Log.d(TAG, "Next GATT SETUP: " + step);
+            gattSetupStep();
+            break;
+        case GATT_WRITING_COMMANDS:
+            Log.d(TAG, "Next GATT WRITING: " + step);
+            gattWritingStep();
+            break;
         }
     }
 
@@ -551,13 +532,6 @@ public class ShareTest extends Activity {
             mBluetoothGatt.writeCharacteristic(mSendDataCharacteristic);
         } else {
             clearGattTask();
-//            gattReadingStep();
         }
     }
-
-    private void gattReadingStep() {
-        currentGattTask = GATT_READING_RESPONSE;
-
-    }
-
 }

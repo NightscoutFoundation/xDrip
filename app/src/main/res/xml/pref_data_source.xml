@@ -19,9 +19,9 @@
             android:summary="Running in foreground prevents android from killing the service to free up memory but it creates an annoying notification, Not recommended."
             android:defaultValue="false" />
         <EditTextPreference
-            android:title="Dexcom Share Serial Number"
+            android:title="10 Character Dexcom Receiver Serial Number"
             android:key="share_key"
-            android:defaultValue="">
+            android:defaultValue="SM00000000">
         </EditTextPreference>
     </PreferenceCategory>
 

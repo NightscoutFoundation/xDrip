@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records;
 
+import android.util.Log;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -17,6 +19,7 @@ public class SensorRecord extends GenericTimestampRecord {
         unfiltered = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getInt(OFFSET_UNFILTERED);
         filtered = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getInt(OFFSET_FILTERED);
         rssi = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getShort(OFFSET_RSSI);
+        Log.d("ShareTest", "filtered: " + filtered + " unfiltered: " + unfiltered);
     }
 
     public long getUnfiltered() {

@@ -85,7 +85,6 @@ public class DexCollectionService extends Service {
         mContext = getApplicationContext();
         dexCollectionService = this;
         listenForChangeInSettings();
-        this.startService(new Intent(this, SyncService.class));
         Log.w(TAG, "STARTING SERVICE");
     }
 
@@ -97,8 +96,10 @@ public class DexCollectionService extends Service {
 
     @Override
     public void onDestroy() {
-        setRetryTimer();
         close();
+        if(CollectionServiceStarter.isBTWixel(getApplicationContext())) {
+            setRetryTimer();
+        };
         foregroundServiceStarter.stop();
         Log.w(TAG, "SERVICE STOPPED");
     }
@@ -185,12 +186,12 @@ public class DexCollectionService extends Service {
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mConnectionState = STATE_CONNECTED;
+                ActiveBluetoothDevice.connected();
                 Log.w(TAG, "Connected to GATT server.");
-                Log.w(TAG, "Attempting to start service discovery: " +
-                        mBluetoothGatt.discoverServices());
-
+                mBluetoothGatt.discoverServices();
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 mConnectionState = STATE_DISCONNECTED;
+                ActiveBluetoothDevice.disconnected();
                 Log.w(TAG, "Disconnected from GATT server.");
                 setRetryTimer();
             }
@@ -213,32 +214,19 @@ public class DexCollectionService extends Service {
         }
 
         @Override
-        public void onCharacteristicRead(BluetoothGatt gatt,
-                                         BluetoothGattCharacteristic characteristic,
-                                         int status) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
-            }
+        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            if (status == BluetoothGatt.GATT_SUCCESS) { broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic); }
         }
 
         @Override
-        public void onCharacteristicChanged(BluetoothGatt gatt,
-                                            BluetoothGattCharacteristic characteristic) {
+        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
         }
-};
+    };
 
-    private void broadcastUpdate(final String action) {
-    }
-
-    private void broadcastUpdate(final String action,
-                                 final BluetoothGattCharacteristic characteristic) {
-
+    private void broadcastUpdate(final String action, final BluetoothGattCharacteristic characteristic) {
         final byte[] data = characteristic.getValue();
-
-        if (data != null && data.length > 0) {
-            setSerialDataToTransmitterRawData(data, data.length);
-        }
+        if (data != null && data.length > 0) { setSerialDataToTransmitterRawData(data, data.length); }
     }
 
     public class LocalBinder extends Binder {
@@ -306,37 +294,22 @@ public class DexCollectionService extends Service {
     }
 
     public void disconnect() {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
-        }
+        if ( mBluetoothGatt == null) { return; }
         mBluetoothGatt.disconnect();
+        Log.d(TAG, "Gatt Disconnect");
     }
 
     public void close() {
         disconnect();
-        if (mBluetoothGatt == null) {
-            return;
-        }
+        if (mBluetoothGatt == null) { return; }
         mBluetoothGatt.close();
         mBluetoothGatt = null;
         mConnectionState = STATE_DISCONNECTED;
+        ActiveBluetoothDevice.disconnected();
     }
 
-    public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
-        }
-        mBluetoothGatt.readCharacteristic(characteristic);
-    }
-
-    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
-                                              boolean enabled) {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
-        }
+    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic, boolean enabled) {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) { return; }
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
         Log.w(TAG, "UUID FOUND: " + characteristic.getUuid());
         if (DexDripDataCharacteristic.equals(characteristic.getUuid())) {
@@ -349,7 +322,6 @@ public class DexCollectionService extends Service {
     }
 
     public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
-
         Log.w(TAG, "received some data!");
         TransmitterData transmitterData = TransmitterData.create(buffer, len);
         if (transmitterData != null) {
@@ -357,7 +329,6 @@ public class DexCollectionService extends Service {
             if (sensor != null) {
                 sensor.latest_battery_level = transmitterData.sensor_battery_level;
                 sensor.save();
-
                 BgReading bgReading = BgReading.create(transmitterData.raw_data, this);
             } else {
                 Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
