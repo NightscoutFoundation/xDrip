@@ -100,12 +100,11 @@ public class DexShareCollectionService extends Service {
             setFailoverTimer();
         }
         if (Sensor.currentSensor() == null) {
-            stopSelf();
+            setRetryTimer();
             return START_NOT_STICKY;
         }
         final IntentFilter bondintent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(mPairReceiver, bondintent);
-        if(mBluetoothGatt != null) mBluetoothGatt.close();
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         listenForChangeInSettings();
         Log.w(TAG, "STARTING SERVICE");
@@ -169,7 +168,11 @@ public class DexShareCollectionService extends Service {
     public void attemptConnection() {
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         if (device != null) {
-            mConnectionState = mBluetoothManager.getConnectionState(device, BluetoothProfile.GATT);
+            for(BluetoothDevice bluetoothDevice : mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
+                if(bluetoothDevice.getAddress().compareTo(device.getAddress()) == 0) {
+                    mConnectionState = STATE_CONNECTED;
+                }
+            }
         }
         Log.w(TAG, "Connection state: " + mConnectionState);
         if (mConnectionState == STATE_DISCONNECTED || mConnectionState == STATE_DISCONNECTING) {
@@ -180,18 +183,23 @@ public class DexShareCollectionService extends Service {
                 mBluetoothAdapter = mBluetoothManager.getAdapter();
                 if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(mDeviceAddress) != null) {
                     connect(mDeviceAddress);
+                    return;
                 } else {
-                    stopSelf();
+                    Log.w(TAG, "Bluetooth is disabled or BT device cant be found");
+                    setRetryTimer();
+                    return;
                 }
             } else {
-                stopSelf();
+                Log.w(TAG, "No bluetooth device to try and connect to");
+                setRetryTimer();
+                return;
             }
-        }
-        if (mConnectionState == STATE_CONNECTED) {
-            currentGattTask = GATT_SETUP;
-            authenticateConnection();
+        } else if (mConnectionState == STATE_CONNECTED && mBluetoothGatt != null) {
+            attemptRead();
+            return;
         } else {
-            stopSelf();
+            setRetryTimer();
+            return;
         }
     }
 
@@ -247,13 +255,13 @@ public class DexShareCollectionService extends Service {
         Log.w(TAG, "going to connect to device at address" + address);
         if (mBluetoothAdapter == null || address == null) {
             Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
-            stopSelf();
+            setRetryTimer();
             return false;
         }
         if (mBluetoothGatt != null) {
-            Log.w(TAG, "BGatt isnt null, trying to connect.");
-            mBluetoothGatt.connect();
-            return true;
+            Log.w(TAG, "BGatt isnt null, Closing.");
+            mBluetoothGatt.close();
+            mBluetoothGatt = null;
         }
 //        for (BluetoothDevice bluetoothDevice : mBluetoothAdapter.getBondedDevices()) {
 //            if (bluetoothDevice.getAddress().compareTo(address) == 0) {
@@ -269,13 +277,13 @@ public class DexShareCollectionService extends Service {
         device = mBluetoothAdapter.getRemoteDevice(address);
         if (device == null) {
             Log.w(TAG, "Device not found.  Unable to connect.");
-            stopSelf();
+            setRetryTimer();
             return false;
         }
         device.setPin("000000".getBytes());
-        mBluetoothGatt = device.connectGatt(getApplicationContext(), false, mGattCallback);
-//        refreshDeviceCache(mBluetoothGatt);
         Log.w(TAG, "Trying to create a new connection.");
+        mBluetoothGatt = device.connectGatt(getApplicationContext(), true, mGattCallback);
+//        refreshDeviceCache(mBluetoothGatt);
         mConnectionState = STATE_CONNECTING;
         return true;
     }
@@ -294,18 +302,18 @@ public class DexShareCollectionService extends Service {
                         step = 1;
                         mBluetoothGatt.writeCharacteristic(mAuthenticationCharacteristic);
                     } else {
-                        stopSelf();
+                        setRetryTimer();
                     }
                 } else {
                     Log.w(TAG, "Authentication Characteristic IS NULL");
-                    stopSelf();
+                    setRetryTimer();
                 }
             } else {
                 Log.w(TAG, "CRADLE SERVICE IS NULL");
-                stopSelf();
+                setRetryTimer();
             }
         } else {
-            stopSelf();
+            setRetryTimer();
         }
     }
 
@@ -332,7 +340,6 @@ public class DexShareCollectionService extends Service {
         if (mBluetoothGatt == null) {
             return;
         }
-        mBluetoothGatt.disconnect();
         mBluetoothGatt.close();
         setRetryTimer();
         mBluetoothGatt = null;
@@ -437,7 +444,7 @@ public class DexShareCollectionService extends Service {
                     Log.d(TAG, "Discovering Services");
                     if (!mBluetoothGatt.discoverServices()) {
                         Log.d(TAG, "Discover Services Failed");
-                        stopSelf();
+                        setRetryTimer();
                     }
                 } else if (state == BluetoothDevice.BOND_NONE) {
                     Log.d(TAG, "CALLBACK RECIEVED: Not Bonded");
@@ -451,6 +458,12 @@ public class DexShareCollectionService extends Service {
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+            Log.w(TAG, "Gatt state change status: " + status + " new state: " + newState);
+            if (status == 133) {
+                Log.e(TAG, "Got the status 133 bug, closing gatt");
+                gatt.close();
+                return;
+            }
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mBluetoothGatt = gatt;
                 device = mBluetoothGatt.getDevice();
@@ -463,17 +476,16 @@ public class DexShareCollectionService extends Service {
                     currentGattTask = GATT_SETUP;
                     if (!mBluetoothGatt.discoverServices()) {
                         Log.w(TAG, "discovering failed");
-                        stopSelf();
+                        setRetryTimer();
                     }
                 } else {
                     Log.w(TAG, "Device is not bonded, going to bond!");
                     bondDevice();
                 }
-
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 mConnectionState = STATE_DISCONNECTED;
                 ActiveBluetoothDevice.disconnected();
-                stopSelf();
+                setRetryTimer();
                 Log.w(TAG, "Disconnected from GATT server.");
             } else {
                 Log.w(TAG, "Gatt callback... strange state.");
