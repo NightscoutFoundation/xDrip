@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
 import com.eveningoutpost.dexdrip.R;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -71,6 +72,8 @@ public class BgReadingTable extends ListActivity implements NavigationDrawerFrag
 
         public BgReadingAdapter(Context context, List<BgReading> readings) {
             this.context = context;
+            if(readings == null)
+                readings = new ArrayList<>();
 
             this.readings = readings;
         }

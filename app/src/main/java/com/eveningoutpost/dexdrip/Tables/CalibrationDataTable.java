@@ -72,6 +72,9 @@ public class CalibrationDataTable extends ListActivity implements NavigationDraw
 
         public CalibrationDataCursorAdapter(Context context, List<Calibration> calibrations) {
             this.context = context;
+            if(calibrations == null)
+                calibrations = new ArrayList<>();
+            
             this.calibrations = calibrations;
         }
 
