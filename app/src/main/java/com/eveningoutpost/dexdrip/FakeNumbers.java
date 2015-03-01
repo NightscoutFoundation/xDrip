@@ -17,6 +17,7 @@ import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 
+import java.util.Date;
 
 public class FakeNumbers extends Activity {
     public Button button;
