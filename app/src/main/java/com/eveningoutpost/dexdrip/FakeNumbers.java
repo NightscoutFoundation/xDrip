@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
+import java.util.Date;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,7 +39,7 @@ public class FakeNumbers extends Activity {
                 EditText value = (EditText) findViewById(R.id.bg_value);
                 int intValue = Integer.parseInt(value.getText().toString());
 
-                BgReading bgReading = BgReading.create(intValue * 1000, getApplicationContext());
+                BgReading bgReading = BgReading.create(intValue * 1000, getApplicationContext(), new Date().getTime());
                 Intent intent = new Intent(getApplicationContext(), Home.class);
                 startActivity(intent);
                 finish();

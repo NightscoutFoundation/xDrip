@@ -15,6 +15,7 @@
  */
 package com.eveningoutpost.dexdrip.Services;
 
+import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -48,7 +49,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
-
+@TargetApi(android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class DexCollectionService extends Service {
     private final static String TAG = DexCollectionService.class.getSimpleName();
     private String mDeviceName;
@@ -323,13 +324,15 @@ public class DexCollectionService extends Service {
 
     public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
         Log.w(TAG, "received some data!");
-        TransmitterData transmitterData = TransmitterData.create(buffer, len);
+        Long timestamp = new Date().getTime();
+        TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
         if (transmitterData != null) {
             Sensor sensor = Sensor.currentSensor();
             if (sensor != null) {
                 sensor.latest_battery_level = transmitterData.sensor_battery_level;
                 sensor.save();
-                BgReading bgReading = BgReading.create(transmitterData.raw_data, this);
+
+                BgReading bgReading = BgReading.create(transmitterData.raw_data, this, timestamp);
             } else {
                 Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
             }

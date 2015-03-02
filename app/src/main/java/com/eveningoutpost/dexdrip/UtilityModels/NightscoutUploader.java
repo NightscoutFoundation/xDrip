@@ -365,7 +365,7 @@ public class NightscoutUploader {
                         testData.put("device", "dexcom");
                         testData.put("date", record.timestamp);
                         testData.put("dateString", format.format(record.timestamp));
-                        testData.put("sgv", (int)record.calculated_value);
+                        testData.put("sgv", Math.round(record.calculated_value));
                         testData.put("direction", record.slopeName());
                         testData.put("type", "sgv");
                         testData.put("filtered", record.age_adjusted_raw_value); //TODO: change to actual filtered when I start storing it

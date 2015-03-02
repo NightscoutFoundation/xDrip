@@ -34,7 +34,7 @@ public class TransmitterData extends Model {
     @Column(name = "uuid", index = true)
     public String uuid;
 
-    public static TransmitterData create(byte[] buffer, int len) {
+    public static TransmitterData create(byte[] buffer, int len, Long timestamp) {
                 StringBuilder data_string = new StringBuilder();
         if (len < 6) { return null; };
 
@@ -45,7 +45,7 @@ public class TransmitterData extends Model {
 
         randomDelay(100, 2000);
         TransmitterData lastTransmitterData = TransmitterData.last();
-        if (lastTransmitterData != null && lastTransmitterData.raw_data == Integer.parseInt(data[0]) && Math.abs(lastTransmitterData.timestamp - new Date().getTime()) < (10000)) { //Stop allowing duplicate data, its bad!
+        if (lastTransmitterData != null && lastTransmitterData.raw_data == Integer.parseInt(data[0]) && Math.abs(lastTransmitterData.timestamp - timestamp) < (10000)) { //Stop allowing duplicate data, its bad!
             return null;
         }
 
@@ -55,7 +55,7 @@ public class TransmitterData extends Model {
         }
         if (Integer.parseInt(data[0]) < 1000) { return null; } // Sometimes the HM10 sends the battery level and readings in separate transmissions, filter out these incomplete packets!
         transmitterData.raw_data = Integer.parseInt(data[0]);
-        transmitterData.timestamp = new Date().getTime();
+        transmitterData.timestamp = timestamp;
         transmitterData.uuid = UUID.randomUUID().toString();
 
         transmitterData.save();

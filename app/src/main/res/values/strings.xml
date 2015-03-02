@@ -11,6 +11,8 @@
     <string name="disconnected">Disconnected</string>
     <string name="menu_scan">Scan</string>
     <string name="menu_stop">Stop</string>
+    <string name="menu_refresh">Refresh</string>
+    <string name="menu_export_database">Export database</string>
     <string name="error_bluetooth_not_supported">Error: Bluetooth not supported by this device</string>
     <string name="unknown_device">Unrecognized Device</string>
     <string name="connecting_to_device">Connecting to device</string>

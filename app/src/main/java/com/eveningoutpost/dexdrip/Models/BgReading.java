@@ -255,7 +255,7 @@ public class BgReading extends Model {
         return true;
     }
 
-    public static BgReading create(double raw_data, Context context) {
+    public static BgReading create(double raw_data, Context context, Long timestamp) {
         BgReading bgReading = new BgReading();
         Sensor sensor = Sensor.currentSensor();
         if (sensor != null) {
@@ -264,7 +264,7 @@ public class BgReading extends Model {
                 bgReading.sensor = sensor;
                 bgReading.sensor_uuid = sensor.uuid;
                 bgReading.raw_data = (raw_data / 1000);
-                bgReading.timestamp = new Date().getTime();
+                bgReading.timestamp = timestamp;
                 bgReading.uuid = UUID.randomUUID().toString();
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
                 bgReading.synced = false;
@@ -281,7 +281,7 @@ public class BgReading extends Model {
                 bgReading.calibration = calibration;
                 bgReading.calibration_uuid = calibration.uuid;
                 bgReading.raw_data = (raw_data/1000);
-                bgReading.timestamp = new Date().getTime();
+                bgReading.timestamp = timestamp;
                 bgReading.uuid = UUID.randomUUID().toString();
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
                 bgReading.synced = false;
