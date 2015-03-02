@@ -141,7 +141,7 @@ public class DexShareCollectionService extends Service {
             BgReading bgReading = BgReading.last();
             long retry_in;
             if (bgReading != null) {
-                retry_in = Math.min(Math.max((1000 * 60), (1000 * 60 * 5) - (new Date().getTime() - bgReading.timestamp) + 30), (1000 * 60 * 6));
+                retry_in = Math.min(Math.max((1000 * 60 * 2), (1000 * 60 * 5) - (new Date().getTime() - bgReading.timestamp) + 30), (1000 * 60 * 6));
             } else {
                 retry_in = (1000 * 60 * 2);
             }
@@ -154,7 +154,7 @@ public class DexShareCollectionService extends Service {
 
     public void setFailoverTimer() { //Sometimes it gets stuck in limbo on 4.4, this should make it try again
         if (CollectionServiceStarter.isBTShare(getApplicationContext())) {
-            long retry_in = (1000 * 60 * 8);
+            long retry_in = (1000 * 60 * 4);
             Log.d(TAG, "Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -267,17 +267,18 @@ public class DexShareCollectionService extends Service {
             mBluetoothGatt.close();
             mBluetoothGatt = null;
         }
-//        for (BluetoothDevice bluetoothDevice : mBluetoothAdapter.getBondedDevices()) {
-//            if (bluetoothDevice.getAddress().compareTo(address) == 0) {
-//                Log.w(TAG, "Device found, already bonded, going to try to connect");
-////                device = mBluetoothAdapter.getRemoteDevice(bluetoothDevice.getAddress());
-//                device = bluetoothDevice;
-//                device.setPin("000000".getBytes());
-//                mBluetoothGatt = device.connectGatt(getApplicationContext(), false, mGattCallback);
-//                refreshDeviceCache(mBluetoothGatt);
-//                return true;
-//            }
-//        }
+        for (BluetoothDevice bluetoothDevice : mBluetoothAdapter.getBondedDevices()) {
+            if (bluetoothDevice.getAddress().compareTo(address) == 0) {
+                Log.w(TAG, "Device found, already bonded, going to connect");
+               if(mBluetoothAdapter.getRemoteDevice(bluetoothDevice.getAddress()) != null) {
+                   device = bluetoothDevice;
+                   device.setPin("000000".getBytes());
+                   mBluetoothGatt = device.connectGatt(getApplicationContext(), true, mGattCallback);
+                   refreshDeviceCache(mBluetoothGatt);
+                   return true;
+               }
+            }
+        }
         device = mBluetoothAdapter.getRemoteDevice(address);
         if (device == null) {
             Log.w(TAG, "Device not found.  Unable to connect.");
@@ -358,7 +359,6 @@ public class DexShareCollectionService extends Service {
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic, boolean enabled) {
         Log.w(TAG, "Characteristic setting notification");
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-        Log.w(TAG, "UUID FOUND: " + characteristic.getUuid());
         BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
         Log.w(TAG, "Descriptor found: " + descriptor.getUuid());
         descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
@@ -370,9 +370,8 @@ public class DexShareCollectionService extends Service {
     }
 
     public void setCharacteristicIndication(BluetoothGattCharacteristic characteristic, boolean enabled) {
-        Log.w(TAG, "Characteristic setting notification");
+        Log.w(TAG, "Characteristic setting indication");
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-        Log.w(TAG, "UUID FOUND: " + characteristic.getUuid());
         BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
         Log.w(TAG, "Descriptor found: " + descriptor.getUuid());
         descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
@@ -524,7 +523,6 @@ public class DexShareCollectionService extends Service {
                 Log.w(TAG, "mReceiveDataCharacteristic Update");
                 byte[] value = characteristic.getValue();
                 if (value != null) {
-                    Log.w(TAG, "Characteristic SUBSCRIBED TO RESPONSE LISTENER");
                     Observable.just(characteristic.getValue()).subscribe(mDataResponseListener);
                 }
             }
@@ -544,8 +542,6 @@ public class DexShareCollectionService extends Service {
                     device = gatt.getDevice();
                     bondDevice();
                 } else {
-                    // this situation happens when you try to connect for the second time to already bonded device
-                    // it should never happen!!
                     Log.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug?");
                 }
             }
@@ -554,7 +550,6 @@ public class DexShareCollectionService extends Service {
 
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            Log.w(TAG, "Wrote a characteristic: " + status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.w(TAG, "Wrote a characteristic successfully");
                 nextGattStep();
@@ -563,8 +558,6 @@ public class DexShareCollectionService extends Service {
                     device = gatt.getDevice();
                     bondDevice();
                 } else {
-                    // this situation happens when you try to connect for the second time to already bonded device
-                    // it should never happen!!
                     Log.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug?");
                 }
             } else {

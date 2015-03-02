@@ -45,7 +45,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
+
         <activity
             android:name=".BluetoothScan"
             android:label="@string/title_activity_bluetooth_scan" >
@@ -94,7 +94,7 @@
             android:enabled="true"
             android:exported="true" >
         </service>
-        
+
         <service
             android:name=".ImportedLibraries.dexcom.SyncingService"
             android:enabled="true"
@@ -135,7 +135,6 @@
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
-
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
@@ -151,7 +150,7 @@
             android:name=".ShareTest"
             android:label="@string/title_activity_share_test" >
         </activity>
-        
+
         <activity
             android:name=".SystemStatus"
             android:label="@string/title_activity_system_status" >

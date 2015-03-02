@@ -41,8 +41,8 @@ public class PebbleSync {
         PebbleDictionary dictionary = new PebbleDictionary();
         dictionary.addString(ICON_KEY, slopeOrdinal());
         dictionary.addString(BG_KEY, bgReading());
-        dictionary.addUint32(RECORD_TIME_KEY, (int) mBgReading.timestamp);
-        dictionary.addUint32(PHONE_TIME_KEY, (int) new Date().getTime());
+        dictionary.addUint32(RECORD_TIME_KEY, (int) (mBgReading.timestamp / 1000));
+        dictionary.addUint32(PHONE_TIME_KEY, (int) (new Date().getTime() / 1000));
         dictionary.addString(BG_DELTA_KEY, bgDelta());
         dictionary.addString(UPLOADER_BATTERY_KEY, phoneBattery());
         dictionary.addString(NAME_KEY, "DexDrip");

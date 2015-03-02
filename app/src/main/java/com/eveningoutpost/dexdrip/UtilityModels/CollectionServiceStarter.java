@@ -52,14 +52,17 @@ public class CollectionServiceStarter {
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
 
         if(isBTWixel(context)) {
+            Log.d("DexDrip", "Starting bt wixel collector");
             stopWifWixelThread();
             startBtWixelService();
             stopBtShareService();
         } else if(isWifiWixel(context)){
+            Log.d("DexDrip", "Starting wifi wixel collector");
             stopBtWixelService();
             startWifWixelThread();
             stopBtShareService();
         } else if(isBTShare(context)) {
+            Log.d("DexDrip", "Starting bt share collector");
             stopBtWixelService();
             stopWifWixelThread();
             startBtShareService();
