@@ -88,10 +88,16 @@ public class DexShareCollectionService extends Service {
     public List<byte[]> writePackets;
     public int recordType;
     SharedPreferences prefs;
+    ReadDataShare readData;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        readData = new ReadDataShare(this);
+        final IntentFilter bondintent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+        registerReceiver(mPairReceiver, bondintent);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        listenForChangeInSettings();
     }
 
     @Override
@@ -103,10 +109,6 @@ public class DexShareCollectionService extends Service {
             setRetryTimer();
             return START_NOT_STICKY;
         }
-        final IntentFilter bondintent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-        registerReceiver(mPairReceiver, bondintent);
-        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        listenForChangeInSettings();
         Log.w(TAG, "STARTING SERVICE");
         attemptConnection();
         return START_STICKY;
@@ -168,6 +170,7 @@ public class DexShareCollectionService extends Service {
     public void attemptConnection() {
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         if (device != null) {
+            mConnectionState = STATE_DISCONNECTED;
             for(BluetoothDevice bluetoothDevice : mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
                 if(bluetoothDevice.getAddress().compareTo(device.getAddress()) == 0) {
                     mConnectionState = STATE_CONNECTED;
@@ -194,7 +197,8 @@ public class DexShareCollectionService extends Service {
                 setRetryTimer();
                 return;
             }
-        } else if (mConnectionState == STATE_CONNECTED && mBluetoothGatt != null) {
+        } else if (mConnectionState == STATE_CONNECTED) {
+            Log.w(TAG, "Looks like we are already connected, going to read!");
             attemptRead();
             return;
         } else {
@@ -204,7 +208,7 @@ public class DexShareCollectionService extends Service {
     }
 
     public void attemptRead() {
-        final ReadDataShare readData = new ReadDataShare(this);
+        Log.d(TAG, "Attempting to read data");
         final Action1<Long> systemTimeListener = new Action1<Long>() {
             @Override
             public void call(Long s) {
@@ -460,9 +464,9 @@ public class DexShareCollectionService extends Service {
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             Log.w(TAG, "Gatt state change status: " + status + " new state: " + newState);
             if (status == 133) {
-                Log.e(TAG, "Got the status 133 bug, closing gatt");
-                gatt.close();
-                return;
+                Log.e(TAG, "Got the status 133 bug, Out of gatts??");
+//                gatt.close();
+//                return;
             }
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mBluetoothGatt = gatt;
