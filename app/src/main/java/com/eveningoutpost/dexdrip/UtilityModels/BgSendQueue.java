@@ -2,7 +2,9 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
@@ -87,8 +89,12 @@ public class BgSendQueue extends Model {
             final Bundle bundle = new Bundle();
             bundle.putDouble(Intents.EXTRA_BG_ESTIMATE, bgReading.calculated_value);
             bundle.putDouble(Intents.EXTRA_BG_SLOPE, bgReading.calculated_value_slope);
-            bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, bgReading.slopeName());
-            bundle.putInt(Intents.EXTRA_SENSOR_BATTERY, bgReading.sensor.latest_battery_level);
+            if(bgReading.hide_slope) {
+                bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, "9");
+            } else {
+                bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, bgReading.slopeName());
+            }
+            bundle.putInt(Intents.EXTRA_SENSOR_BATTERY, getBatteryLevel(context));
             bundle.putLong(Intents.EXTRA_TIMESTAMP, bgReading.timestamp);
 
             Intent intent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE);
@@ -105,5 +111,15 @@ public class BgSendQueue extends Model {
     public void markMongoSuccess() {
         mongo_success = true;
         save();
+    }
+
+    public static int getBatteryLevel(Context context) {
+        Intent batteryIntent = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        if(level == -1 || scale == -1) {
+            return 50;
+        }
+        return (int)(((float)level / (float)scale) * 100.0f);
     }
 }

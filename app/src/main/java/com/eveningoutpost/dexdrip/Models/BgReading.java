@@ -110,6 +110,9 @@ public class BgReading extends Model {
     @Column(name = "raw_calculated")
     public double raw_calculated;
 
+    @Column(name = "hide_slope")
+    public boolean hide_slope;
+
     public double calculated_value_mmol() {
         return mmolConvert(calculated_value);
     }
@@ -142,11 +145,6 @@ public class BgReading extends Model {
     public static double activeSlope() {
         BgReading bgReading = BgReading.lastNoSenssor();
         double slope = (2 * bgReading.a * (new Date().getTime() + BESTOFFSET)) + bgReading.b;
-        Log.w(TAG, "ESTIMATE SLOPE" + slope);
-        return slope;
-    }
-    public double staticSlope() {
-        double slope = (2 * this.a * this.timestamp) + this.b;
         Log.w(TAG, "ESTIMATE SLOPE" + slope);
         return slope;
     }
@@ -198,7 +196,7 @@ public class BgReading extends Model {
         Log.w(TAG, "Looking for BG reading to tag this thing to: " + egvRecord.getBGValue());
         if(bgReading != null) {
             bgReading.calculated_value = egvRecord.getBGValue();
-            if (egvRecord.getBGValue() < 13) {
+            if (egvRecord.getBGValue() <= 13) {
                 Calibration calibration = bgReading.calibration;
                 double firstAdjSlope = calibration.first_slope + (calibration.first_decay * (Math.ceil(new Date().getTime() - calibration.timestamp)/(1000 * 60 * 10)));
                 double calSlope = (calibration.first_scale / firstAdjSlope)*1000;
@@ -207,6 +205,10 @@ public class BgReading extends Model {
             }
             Log.w(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
             bgReading.calculated_value_slope = bgReading.slopefromName(egvRecord.getTrend().friendlyTrendName());
+            if(egvRecord.getTrend().friendlyTrendName().compareTo("NOT_COMPUTABLE") == 0 || egvRecord.getTrend().friendlyTrendName().compareTo("OUT_OF_RANGE") == 0) {
+                bgReading.hide_slope = true;
+            }
+
             bgReading.save();
             bgReading.find_new_curve();
             bgReading.find_new_raw_curve();
@@ -340,11 +342,6 @@ public class BgReading extends Model {
         } else {
             arrow = "\u21c8";
         }
-        if (slope == 100/60000) {
-            arrow = "";
-        } else if (slope == 200/60000) {
-            arrow = "";
-        }
         return arrow;
     }
 
@@ -365,9 +362,8 @@ public class BgReading extends Model {
             arrow = "SingleUp";
         } else if (slope_by_minute <= (40)) {
             arrow = "DoubleUp";
-        } else if (slope_by_minute == 100) {
-            arrow = "8";
-        } else if (slope_by_minute == 200) {
+        }
+        if(hide_slope) {
             arrow = "9";
         }
         return arrow;
@@ -389,23 +385,11 @@ public class BgReading extends Model {
             slope_by_minute = 2;
         } else if (slope_name.compareTo("DoubleUp") == 0) {
             slope_by_minute = 4;
-        } else if (slope_name.compareTo("NOT_COMPUTABLE") == 0) {
-            slope_by_minute = 100;
-        } else if (slope_name.compareTo("OUT_OF_RANGE") == 0) {
-            slope_by_minute = 200;
+        } else if (slope_name.compareTo("NOT_COMPUTABLE") == 0 || slope_name.compareTo("OUT_OF_RANGE") == 0) {
+            slope_by_minute = 0;
         }
         return slope_by_minute /60000;
     }
-//        DOUBLE_UP(1,"\u21C8", "DoubleUp"),
-//                SINGLE_UP(2,"\u2191", "SingleUp"),
-//                UP_45(3,"\u2197", "FortyFiveUp"),
-//                FLAT(4,"\u2192", "Flat"),
-//                DOWN_45(5,"\u2198", "FortyFiveDown"),
-//                SINGLE_DOWN(6,"\u2193", "SingleDown"),
-//                DOUBLE_DOWN(7,"\u21CA", "DoubleDown"),
-//                NOT_COMPUTABLE(8),
-//                OUT_OF_RANGE(9);
-//    }
 
     public static BgReading last() {
         Sensor sensor = Sensor.currentSensor();

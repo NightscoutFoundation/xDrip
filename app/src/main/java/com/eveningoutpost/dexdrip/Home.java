@@ -72,8 +72,8 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter();
-//        collectionServiceStarter.start(getApplicationContext());
+        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter();
+        collectionServiceStarter.start(getApplicationContext());
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_bg_notification, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
@@ -81,7 +81,6 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         checkEula();
         setContentView(R.layout.activity_home);
-
     }
 
     public void checkEula() {
@@ -311,7 +310,11 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 if(!predictive){
                     estimate=lastBgreading.calculated_value;
                     String stringEstimate = bgGraphBuilder.unitized_string(estimate);
-                    currentBgValueText.setText( stringEstimate + " " + BgReading.slopeArrow((lastBgreading.calculated_value_slope * 60000)));
+                    String slope_arrow = BgReading.slopeArrow((lastBgreading.calculated_value_slope * 60000));
+                    if(lastBgreading.hide_slope) {
+                        slope_arrow = "";
+                    }
+                    currentBgValueText.setText( stringEstimate + " " + slope_arrow);
                 } else {
                     estimate = BgReading.activePrediction();
                     String stringEstimate = bgGraphBuilder.unitized_string(estimate);

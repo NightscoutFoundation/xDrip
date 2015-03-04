@@ -90,7 +90,13 @@ public class Notifications {
 
         if (bg_notifications && sensor != null) {
             if (bgGraphBuilder.unitized(bgReading.calculated_value) >= high || bgGraphBuilder.unitized(bgReading.calculated_value) <= low) {
-                bgAlert(bgReading.displayValue(mContext), bgReading.slopeArrow());
+                if(bgReading.calculated_value > 14) {
+                    if (bgReading.hide_slope) {
+                        bgAlert(bgReading.displayValue(mContext), "");
+                    } else {
+                        bgAlert(bgReading.displayValue(mContext), bgReading.slopeArrow());
+                    }
+                }
             } else {
                 clearBgAlert();
             }

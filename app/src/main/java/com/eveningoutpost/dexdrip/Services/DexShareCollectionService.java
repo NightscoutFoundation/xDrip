@@ -39,6 +39,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
 
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -90,6 +92,8 @@ public class DexShareCollectionService extends Service {
     SharedPreferences prefs;
     ReadDataShare readData;
 
+    public boolean shouldDisconnect = true;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -102,6 +106,10 @@ public class DexShareCollectionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+        if (currentapiVersion < android.os.Build.VERSION_CODES.LOLLIPOP){
+            shouldDisconnect = false;
+        }
         if (CollectionServiceStarter.isBTShare(getApplicationContext())) {
             setFailoverTimer();
         }
@@ -141,9 +149,9 @@ public class DexShareCollectionService extends Service {
             BgReading bgReading = BgReading.last();
             long retry_in;
             if (bgReading != null) {
-                retry_in = Math.min(Math.max((1000 * 60 * 2), (1000 * 60 * 5) - (new Date().getTime() - bgReading.timestamp) + 30), (1000 * 60 * 6));
+                retry_in = Math.min(Math.max((1000 * 60), (1000 * 60 * 5) - (new Date().getTime() - bgReading.timestamp) + 30), (1000 * 60 * 6));
             } else {
-                retry_in = (1000 * 60 * 2);
+                retry_in = (1000 * 60);
             }
             Log.d(TAG, "Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
@@ -154,7 +162,7 @@ public class DexShareCollectionService extends Service {
 
     public void setFailoverTimer() { //Sometimes it gets stuck in limbo on 4.4, this should make it try again
         if (CollectionServiceStarter.isBTShare(getApplicationContext())) {
-            long retry_in = (1000 * 60 * 4);
+            long retry_in = (1000 * 60 * 3);
             Log.d(TAG, "Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -169,38 +177,43 @@ public class DexShareCollectionService extends Service {
 
     public void attemptConnection() {
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        if (device != null) {
-            mConnectionState = STATE_DISCONNECTED;
-            for(BluetoothDevice bluetoothDevice : mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
-                if(bluetoothDevice.getAddress().compareTo(device.getAddress()) == 0) {
-                    mConnectionState = STATE_CONNECTED;
+        if (mBluetoothManager != null) {
+            if (device != null) {
+                mConnectionState = STATE_DISCONNECTED;
+                for (BluetoothDevice bluetoothDevice : mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
+                    if (bluetoothDevice.getAddress().compareTo(device.getAddress()) == 0) {
+                        mConnectionState = STATE_CONNECTED;
+                    }
                 }
             }
-        }
-        Log.w(TAG, "Connection state: " + mConnectionState);
-        if (mConnectionState == STATE_DISCONNECTED || mConnectionState == STATE_DISCONNECTING) {
-            ActiveBluetoothDevice btDevice = ActiveBluetoothDevice.first();
-            if (btDevice != null) {
-                mDeviceName = btDevice.name;
-                mDeviceAddress = btDevice.address;
-                mBluetoothAdapter = mBluetoothManager.getAdapter();
-                if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(mDeviceAddress) != null) {
-                    connect(mDeviceAddress);
-                    return;
+            Log.w(TAG, "Connection state: " + mConnectionState);
+            if (mConnectionState == STATE_DISCONNECTED || mConnectionState == STATE_DISCONNECTING) {
+                ActiveBluetoothDevice btDevice = ActiveBluetoothDevice.first();
+                if (btDevice != null) {
+                    mDeviceName = btDevice.name;
+                    mDeviceAddress = btDevice.address;
+                    mBluetoothAdapter = mBluetoothManager.getAdapter();
+                    if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(mDeviceAddress) != null) {
+                        connect(mDeviceAddress);
+                        return;
+                    } else {
+                        Log.w(TAG, "Bluetooth is disabled or BT device cant be found");
+                        setRetryTimer();
+                        return;
+                    }
                 } else {
-                    Log.w(TAG, "Bluetooth is disabled or BT device cant be found");
+                    Log.w(TAG, "No bluetooth device to try and connect to");
                     setRetryTimer();
                     return;
                 }
+            } else if (mConnectionState == STATE_CONNECTED) {
+                Log.w(TAG, "Looks like we are already connected, going to read!");
+                attemptRead();
+                return;
             } else {
-                Log.w(TAG, "No bluetooth device to try and connect to");
                 setRetryTimer();
                 return;
             }
-        } else if (mConnectionState == STATE_CONNECTED) {
-            Log.w(TAG, "Looks like we are already connected, going to read!");
-            attemptRead();
-            return;
         } else {
             setRetryTimer();
             return;
@@ -222,7 +235,11 @@ public class DexShareCollectionService extends Service {
                             if (egvRecords != null) {
                                 Log.d(TAG, "Made the full round trip, got " + egvRecords.length + " EVG Records");
                                 BgReading.create(egvRecords, addativeSystemTimeOffset, getApplicationContext());
-                                setRetryTimer();
+                                if(shouldDisconnect) {
+                                    stopSelf();
+                                } else {
+                                    setRetryTimer();
+                                }
                             }
                         }
                     };
@@ -274,7 +291,7 @@ public class DexShareCollectionService extends Service {
                    device = bluetoothDevice;
                    device.setPin("000000".getBytes());
                    mBluetoothGatt = device.connectGatt(getApplicationContext(), true, mGattCallback);
-                   refreshDeviceCache(mBluetoothGatt);
+//                   refreshDeviceCache(mBluetoothGatt);
                    return true;
                }
             }
@@ -288,7 +305,6 @@ public class DexShareCollectionService extends Service {
         device.setPin("000000".getBytes());
         Log.w(TAG, "Trying to create a new connection.");
         mBluetoothGatt = device.connectGatt(getApplicationContext(), true, mGattCallback);
-//        refreshDeviceCache(mBluetoothGatt);
         mConnectionState = STATE_CONNECTING;
         return true;
     }
@@ -296,13 +312,20 @@ public class DexShareCollectionService extends Service {
     public void authenticateConnection() {
         Log.w(TAG, "Trying to auth");
         String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
+        byte[] bondkey;
+        if(prefs.getBoolean("share_auth_mode_two", false)) {
+            bondkey = md5Bytes(receiverSn);
+        } else {
+            bondkey = (receiverSn + "000000").getBytes(StandardCharsets.US_ASCII);
+        }
+
         if (mBluetoothGatt != null) {
             mShareService = mBluetoothGatt.getService(DexShareAttributes.CradleService);
             if (mShareService != null) {
                 mAuthenticationCharacteristic = mShareService.getCharacteristic(DexShareAttributes.AuthenticationCode);
                 if (mAuthenticationCharacteristic != null) {
                     Log.w(TAG, "Auth Characteristic found: " + mAuthenticationCharacteristic.toString());
-                    if (mAuthenticationCharacteristic.setValue((receiverSn + "000000").getBytes(StandardCharsets.US_ASCII))) {
+                    if (mAuthenticationCharacteristic.setValue(bondkey)) {
                         currentGattTask = GATT_SETUP;
                         step = 1;
                         mBluetoothGatt.writeCharacteristic(mAuthenticationCharacteristic);
@@ -425,6 +448,7 @@ public class DexShareCollectionService extends Service {
             mSendDataCharacteristic.setValue(writePackets.get(index));
             mBluetoothGatt.writeCharacteristic(mSendDataCharacteristic);
         } else {
+            Log.d(TAG, "Done Writing commands");
             clearGattTask();
         }
     }
@@ -462,10 +486,9 @@ public class DexShareCollectionService extends Service {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             Log.w(TAG, "Gatt state change status: " + status + " new state: " + newState);
+            writeStatusFailures(status);
             if (status == 133) {
-                Log.e(TAG, "Got the status 133 bug, Out of gatts??");
-//                gatt.close();
-//                return;
+                Log.e(TAG, "Got the status 133 bug, GROSS!!");
             }
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mBluetoothGatt = gatt;
@@ -479,7 +502,11 @@ public class DexShareCollectionService extends Service {
                     currentGattTask = GATT_SETUP;
                     if (!mBluetoothGatt.discoverServices()) {
                         Log.w(TAG, "discovering failed");
-                        setRetryTimer();
+                        if(shouldDisconnect) {
+                            stopSelf();
+                        } else {
+                            setRetryTimer();
+                        }
                     }
                 } else {
                     Log.w(TAG, "Device is not bonded, going to bond!");
@@ -488,11 +515,16 @@ public class DexShareCollectionService extends Service {
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 mConnectionState = STATE_DISCONNECTED;
                 ActiveBluetoothDevice.disconnected();
-                setRetryTimer();
+                if(shouldDisconnect) {
+                    stopSelf();
+                } else {
+                    setRetryTimer();
+                }
                 Log.w(TAG, "Disconnected from GATT server.");
             } else {
                 Log.w(TAG, "Gatt callback... strange state.");
             }
+            writeStatusFailures(status);
         }
 
         @Override
@@ -502,6 +534,7 @@ public class DexShareCollectionService extends Service {
                 authenticateConnection();
             } else {
                 Log.w(TAG, "No Services Discovered!");
+                writeStatusFailures(status);
             }
         }
 
@@ -511,7 +544,8 @@ public class DexShareCollectionService extends Service {
                 Log.w(TAG, "Characteristic Read");
                 nextGattStep();
             } else {
-                Log.w(TAG, "Characteristic failed to read");
+                Log.e(TAG, "Characteristic failed to read");
+                writeStatusFailures(status);
             }
         }
 
@@ -544,8 +578,10 @@ public class DexShareCollectionService extends Service {
                 } else {
                     Log.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug?");
                 }
+            } else {
+                Log.e(TAG, "Unknown error writing descriptor");
+                writeStatusFailures(status);
             }
-            Log.e(TAG, "Unknown error writing descriptor");
         }
 
         @Override
@@ -562,6 +598,7 @@ public class DexShareCollectionService extends Service {
                 }
             } else {
                 Log.e(TAG, "Unknown error writing Characteristic");
+                writeStatusFailures(status);
             }
 
         }
@@ -590,4 +627,72 @@ public class DexShareCollectionService extends Service {
         return false;
     }
 
+    private String md5String(final String s) {
+        try {
+            // Create MD5 Hash
+            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+            digest.update(s.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            // Create Hex String
+            StringBuilder hexString = new StringBuilder();
+            for (byte aMessageDigest : messageDigest) {
+                String h = Integer.toHexString(0xFF & aMessageDigest);
+                while (h.length() < 2)
+                    h = "0" + h;
+                hexString.append(h);
+            }
+            return hexString.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+    private byte[] md5Bytes(final String s) {
+        try {
+            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+            digest.update(s.getBytes());
+            return digest.digest();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private void writeStatusFailures(int status) {
+        switch (status) {
+            case BluetoothGatt.GATT_WRITE_NOT_PERMITTED:
+                Log.e(TAG, "error GATT_WRITE_NOT_PERMITTED");
+                break;
+            case BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION:
+                Log.e(TAG, "error GATT_INSUFFICIENT_AUTHENTICATION");
+                break;
+            case BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED:
+                Log.e(TAG, "error GATT_REQUEST_NOT_SUPPORTED");
+                break;
+            case BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION:
+                Log.e(TAG, "error GATT_INSUFFICIENT_ENCRYPTION");
+                break;
+            case BluetoothGatt.GATT_INVALID_OFFSET:
+                Log.e(TAG, "error GATT_INVALID_OFFSET");
+                break;
+            case BluetoothGatt.GATT_FAILURE:
+                Log.e(TAG, "error GATT_FAILURE");
+                break;
+            case BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH:
+                Log.e(TAG, "error GATT_INVALID_ATTRIBUTE_LENGTH");
+                break;
+            case BluetoothGatt.GATT_READ_NOT_PERMITTED:
+                Log.e(TAG, "error GATT_READ_NOT_PERMITTED");
+                break;
+            case BluetoothGatt.GATT_SUCCESS:
+                Log.d(TAG, "success GATT_SUCCESS");
+                break;
+            default:
+                Log.e(TAG, "error no idea!");
+                break;
+        }
+    }
 }

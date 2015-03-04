@@ -64,7 +64,7 @@ public class AddCalibration extends Activity implements NavigationDrawerFragment
                         value.setError("Calibration Can Not be blank");
                     }
                 } else {
-                    Log.w("CANNOT CALIBRATE WITHOUT CURRENT SENSOR", "ERROR");
+                    Log.w("CALERROR", "ERROR");
                 }
             }
         });

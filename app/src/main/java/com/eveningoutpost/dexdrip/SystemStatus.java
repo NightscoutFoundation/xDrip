@@ -1,18 +1,29 @@
 package com.eveningoutpost.dexdrip;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothProfile;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 
 
 public class SystemStatus extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -24,12 +35,18 @@ public class SystemStatus extends Activity implements NavigationDrawerFragment.N
     public TextView notes;
     public Button restart_collection_service;
     public Button forget_device;
+    public ImageButton refresh;
     public SharedPreferences prefs;
+    public BluetoothManager mBluetoothManager;
+    public ActiveBluetoothDevice activeBluetoothDevice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_system_status);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
+        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
 
         collection_method = (TextView)findViewById(R.id.collection_method);
         connection_status = (TextView)findViewById(R.id.connection_status);
@@ -39,11 +56,12 @@ public class SystemStatus extends Activity implements NavigationDrawerFragment.N
 
         restart_collection_service = (Button)findViewById(R.id.restart_collection_service);
         forget_device = (Button)findViewById(R.id.forget_device);
+        refresh = (ImageButton)findViewById(R.id.refresh_current_values);
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
         set_current_values();
+        restartButtonListener();
+        forgetDeviceListener();
+        refreshButtonListener();
     }
 
     @Override
@@ -52,20 +70,43 @@ public class SystemStatus extends Activity implements NavigationDrawerFragment.N
     }
 
     private void set_current_values() {
+        activeBluetoothDevice = ActiveBluetoothDevice.first();
+        mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        setCollectionMethod();
+        setCurrentDevice();
+        setConnectionStatus();
+        setNotes();
+    }
+
+    public void setCollectionMethod() {
         collection_method.setText(prefs.getString("collection_method", "BluetoothWixel"));
-        ActiveBluetoothDevice activeBluetoothDevice = ActiveBluetoothDevice.first();
+    }
+
+    public void setCurrentDevice() {
         if(activeBluetoothDevice != null) {
             current_device.setText(activeBluetoothDevice.name);
-            if(activeBluetoothDevice.connected) {
-                connection_status.setText("Connected");
-            } else {
-                connection_status.setText("Not Connected");
-            }
         } else {
             current_device.setText("None Set");
+        }
+    }
+
+    public void setConnectionStatus() {
+        boolean connected = false;
+        if (mBluetoothManager != null && activeBluetoothDevice != null) {
+            for (BluetoothDevice bluetoothDevice : mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
+                if (bluetoothDevice.getAddress().compareTo(activeBluetoothDevice.address) == 0) {
+                    connected = true;
+                }
+            }
+        }
+        if(connected) {
+            connection_status.setText("Connected");
+        } else {
             connection_status.setText("Not Connected");
         }
-        BluetoothManager mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+    }
+
+    public void setNotes() {
         if(mBluetoothManager == null) {
             notes.append("\n- This device does not seem to support bluetooth");
         } else {
@@ -79,4 +120,37 @@ public class SystemStatus extends Activity implements NavigationDrawerFragment.N
         }
     }
 
+    public void restartButtonListener() {
+        restart_collection_service.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                CollectionServiceStarter.restartCollectionService(getApplicationContext());
+                set_current_values();
+            }
+        });
+    }
+
+    public void forgetDeviceListener() {
+        forget_device.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if(mBluetoothManager != null) {
+                    BluetoothAdapter bluetoothAdapter = mBluetoothManager.getAdapter();
+                    if(bluetoothAdapter != null) {
+                        bluetoothAdapter.disable();
+                        bluetoothAdapter.enable();
+                    }
+                }
+                ActiveBluetoothDevice.forget();
+                CollectionServiceStarter.restartCollectionService(getApplicationContext());
+                set_current_values();
+            }
+        });
+    }
+
+    public void refreshButtonListener() {
+        refresh.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                set_current_values();
+            }
+        });
+    }
 }

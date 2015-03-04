@@ -61,9 +61,11 @@ public class PebbleSync {
     }
 
     public String bgDelta() {
-        String deltaString = bgGraphBuilder.unitized_string((mBgReading.calculated_value_slope * (5 * 60 * 1000)));
+        String deltaString = bgGraphBuilder.unitized_string((int)(mBgReading.calculated_value_slope * (5 * 60 * 1000)));
         if(mBgReading.calculated_value_slope > 0) {
             return ("+"+deltaString);
+        } else if(mBgReading.calculated_value_slope == 0) {
+            return "0";
         } else {
             return deltaString;
         }
@@ -113,6 +115,9 @@ public class PebbleSync {
             arrow = "2";
         } else {
             arrow = "1";
+        }
+        if(mBgReading.hide_slope) {
+            arrow = "9";
         }
         return arrow;
     }

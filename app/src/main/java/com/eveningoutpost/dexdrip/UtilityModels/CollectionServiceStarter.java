@@ -70,11 +70,12 @@ public class CollectionServiceStarter {
         Log.d("ColServiceStarter", collection_method);
     }
 
-    public void restartCollectionService(Context context) {
-        stopBtShareService();
-        stopBtWixelService();
-        stopWifWixelThread();
-        start(context);
+    public static void restartCollectionService(Context context) {
+        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter();
+        collectionServiceStarter.stopBtShareService();
+        collectionServiceStarter.stopBtWixelService();
+        collectionServiceStarter.stopWifWixelThread();
+        collectionServiceStarter.start(context);
     }
 
     private void startBtWixelService() {

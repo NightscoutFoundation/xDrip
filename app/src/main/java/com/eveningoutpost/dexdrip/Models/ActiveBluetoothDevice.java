@@ -27,6 +27,14 @@ public class ActiveBluetoothDevice extends Model {
                 .orderBy("_ID asc")
                 .executeSingle();
     }
+
+    public static void forget() {
+        ActiveBluetoothDevice activeBluetoothDevice = ActiveBluetoothDevice.first();
+        if (activeBluetoothDevice != null) {
+            activeBluetoothDevice.delete();
+        }
+    }
+
     public static void connected() {
         ActiveBluetoothDevice activeBluetoothDevice = ActiveBluetoothDevice.first();
         if(activeBluetoothDevice != null) {

@@ -48,7 +48,6 @@ public class ReadDataShare {
 
     public void getRecentEGVs(final Action1<EGVRecord[]> recordListener) {
         final int recordType = Constants.RECORD_TYPES.EGV_DATA.ordinal();
-//        standardPageReader(recordType, recordListener);
         final Action1<byte[]> fullPageListener = new Action1<byte[]>() {
             @Override
             public void call(byte[] s) { ParsePage(read(0,s).getData(), recordType, recordListener); }
@@ -62,7 +61,6 @@ public class ReadDataShare {
 
     public void getRecentMeterRecords(final Action1<MeterRecord[]> recordListener) {
         final int recordType = Constants.RECORD_TYPES.METER_DATA.ordinal();
-//        standardPageReader(recordType, recordListener);
         final Action1<byte[]> fullPageListener = new Action1<byte[]>() {
             @Override
             public void call(byte[] s) { ParsePage(read(0,s).getData(), recordType, recordListener); }
@@ -76,7 +74,6 @@ public class ReadDataShare {
 
     public void getRecentCalRecords(final Action1<CalRecord[]> recordListener) {
         final int recordType = Constants.RECORD_TYPES.CAL_SET.ordinal();
-//        standardPageReader(recordType, recordListener);
         final Action1<byte[]> fullPageListener = new Action1<byte[]>() {
             @Override
             public void call(byte[] s) { ParsePage(read(0,s).getData(), recordType, recordListener); }
@@ -91,7 +88,6 @@ public class ReadDataShare {
 
     public void getRecentSensorRecords(final Action1<SensorRecord[]> recordListener) {
         final int recordType = Constants.RECORD_TYPES.SENSOR_DATA.ordinal();
-//        standardPageReader(recordType, recordListener);
         final Action1<byte[]> fullPageListener = new Action1<byte[]>() {
             @Override
             public void call(byte[] s) { ParsePage(read(0,s).getData(), recordType, recordListener); }
