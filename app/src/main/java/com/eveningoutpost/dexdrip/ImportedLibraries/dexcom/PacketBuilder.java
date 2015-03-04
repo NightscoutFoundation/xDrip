@@ -41,9 +41,7 @@ public class PacketBuilder {
         byte[] crc16 = CRC16.calculate(toBytes(), 0, this.packet.size());
         this.packet.add(crc16[0]);
         this.packet.add(crc16[1]);
-
         Log.d("ShareTest", "About to start adding to Byte, size: " + this.packet.size());
-        Log.d("ShareTest", "About to start adding to Byte: " + this.packet.toString());
         return this.toBytes();
     }
 
@@ -57,9 +55,7 @@ public class PacketBuilder {
         byte[] crc16 = CRC16.calculate(toBytes(), 0, this.packet.size());
         this.packet.add(crc16[0]);
         this.packet.add(crc16[1]);
-
         Log.d("ShareTest", "About to start adding to ByteList, size: " + this.packet.size());
-        Log.d("ShareTest", "About to start adding to ByteList, size: " + this.packet.toString());
         return this.toBytesList();
     }
 
@@ -86,9 +82,6 @@ public class PacketBuilder {
         List<byte[]> byteMessages = new ArrayList<byte[]>();
         double totalPacketSize = packet.size();
         int messages =(int) Math.ceil(totalPacketSize/18);
-
-        Log.d("ShareTest", "Adding to ByteList, size: " + messages);
-        Log.d("ShareTest", "Adding to ByteList, size: " + packet.size());
         for(int m = 0; m < messages; m++) {
             int thisPacketSize;
             if (m == messages - 1) {
@@ -100,15 +93,10 @@ public class PacketBuilder {
             Log.d("ShareTest", "This packet size: " + thisPacketSize);
             byte[] b = new byte[thisPacketSize];
             b[0] = (byte) (m + 1);
-
-            Log.d("ShareTest", "Adding byte: " + b[0]);
             b[1] = (byte) (messages);
-            Log.d("ShareTest", "Adding byte: " + b[1]);
             for (int i = 2; i < thisPacketSize; i++) {
                 b[i] = packet.get(offset + i - 2).byteValue();
-                Log.d("ShareTest", "Adding byte: " + packet.get(offset + i - 2));
             }
-            Log.d("ShareTest", "Adding to Bytelist: " + b.toString());
             byteMessages.add(b);
         }
         return byteMessages;
