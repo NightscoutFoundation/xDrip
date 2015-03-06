@@ -85,6 +85,7 @@ public class NavDrawerBuilder {
         if(ActiveBgAlert.getOnly() != null) {
             options.add("Snooze alarm");
         }
+        options.add("Snooze and alarm");
         options.add("Settings");
         options.add("Fake Numbers");
 //        options.add("Add Double Calibration");
@@ -142,6 +143,7 @@ public class NavDrawerBuilder {
         if(ActiveBgAlert.getOnly() != null) {
             options.add(new Intent(context, SnoozeActivity.class));
         }
+        options.add(new Intent(context, SnoozeActivity.class));
         options.add(new Intent(context, SettingsActivity.class));
         options.add(new Intent(context, FakeNumbers.class));
 //        options.add(new Intent(context, DoubleCalibrationActivity.class));

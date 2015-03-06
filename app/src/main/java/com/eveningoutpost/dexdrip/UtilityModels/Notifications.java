@@ -122,7 +122,8 @@ public class Notifications {
         
         Log.e(TAG, "FileBasedNotifications called bgReading.calculated_value = " + bgReading.calculated_value);
         // TODO: tzachi what is the time of this last bgReading 
-        
+        // TODO: tzachi, what happens if the last reading does not have a sensor, or that sensor was stopped.
+        // What if the sensor was started, but the 2 hours did not still pass? or there is no calibrations.
         if (bg_notifications && sensor != null && bgReading != null) {
             AlertType newAlert = AlertType.get_highest_active_alert(bgGraphBuilder.unitized(bgReading.calculated_value), 0);
             if (newAlert == null) {
