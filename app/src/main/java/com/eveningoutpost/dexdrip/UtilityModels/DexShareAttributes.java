@@ -7,16 +7,6 @@ import java.util.UUID;
  * Created by stephenblack on 2/4/15.
  */
 public class DexShareAttributes {
-
-    // These are stupid looking because without updated java it fails to properly parse newer UUIDS
-//    public static UUID CradleService() { return uuid_for(CradleServiceString); }
-//    public static UUID AuthenticationCode() { return uuid_for(AuthenticationCodeString); }
-//    public static UUID ShareMessageReceiver() { return uuid_for(ShareMessageReceiverString); }
-//    public static UUID ShareMessageResponse() { return uuid_for(ShareMessageResponseString); }
-//    public static UUID Command() { return uuid_for(CommandString); }
-//    public static UUID Response() { return uuid_for(ResponseString); }
-//    public static UUID HeartBeat() { return uuid_for(HeartBeatString); }
-
     //Share Service String
     public static final UUID CradleService= UUID.fromString("F0ABA0B1-EBFA-F96F-28DA-076C35A521DB");
 
@@ -28,24 +18,17 @@ public class DexShareAttributes {
     public static final UUID Response= UUID.fromString("F0ABB0CD-EBFA-F96F-28DA-076C35A521DB"); // Writable?
     public static final UUID HeartBeat= UUID.fromString("F0AB2B18-EBFA-F96F-28DA-076C35A521DB");
 
+    //Possible new uuids????  60bfxxxx-60b0-4d4f-0000-000160c48d70
+    public static final UUID CradleService2= UUID.fromString("60bfA0B1-60b0-4d4f-0000-000160c48d70");
+    public static final UUID AuthenticationCode2 = UUID.fromString("60bfACAC-60b0-4d4f-0000-000160c48d70");
+    public static final UUID ShareMessageReceiver2= UUID.fromString("60bfB20A-60b0-4d4f-0000-000160c48d70"); // Max 20 Bytes - Writable
+    public static final UUID ShareMessageResponse2= UUID.fromString("60bfB20B-60b0-4d4f-0000-000160c48d70"); // Max 20 Bytes
+    public static final UUID Command2= UUID.fromString("60bfB0CC-60b0-4d4f-0000-000160c48d70");
+    public static final UUID Response2= UUID.fromString("60bfB0CD-60b0-4d4f-0000-000160c48d70"); // Writable?
+    public static final UUID HeartBeat2= UUID.fromString("60bf2B18-60b0-4d4f-0000-000160c48d70");
 
     //Device Info
     public static final UUID DeviceService= UUID.fromString("00001804-0000-1000-8000-00805f9b34fb");
     public static final UUID PowerLevel= UUID.fromString("00002a07-0000-1000-8000-00805f9b34fb");
 
-
-//
-
-    // Message Structure - 20 Bytes Total
-//    Uchar messageNumber
-//    Uchar totalMessages
-//    Uchar messagegBytes[18]
-
-//    Write a message to the ShareMessageReceiver using the message structure defined above
-
-//    public static UUID uuid_for(String string) {
-//        String s2 = string.replace("-", "");
-//        UUID uuid = new UUID(new BigInteger(s2.substring(0, 16), 16).longValue(), new BigInteger(s2.substring(16), 16).longValue());
-//        return uuid;
-//    }
 }

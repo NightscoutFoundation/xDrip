@@ -93,6 +93,7 @@ public class DexShareCollectionService extends Service {
     ReadDataShare readData;
 
     public boolean shouldDisconnect = true;
+    public boolean testUuids = true;
 
     @Override
     public void onCreate() {
@@ -337,8 +338,28 @@ public class DexShareCollectionService extends Service {
                     setRetryTimer();
                 }
             } else {
-                Log.w(TAG, "CRADLE SERVICE IS NULL");
-                setRetryTimer();
+                Log.w(TAG, "STANDARD CRADLE SERVICE IS NULL");
+                mShareService = mBluetoothGatt.getService(DexShareAttributes.CradleService2);
+                if (mShareService != null) {
+                    mAuthenticationCharacteristic = mShareService.getCharacteristic(DexShareAttributes.AuthenticationCode2);
+                    if (mAuthenticationCharacteristic != null) {
+                        Log.w(TAG, "Auth Characteristic found: " + mAuthenticationCharacteristic.toString());
+                        if (mAuthenticationCharacteristic.setValue(bondkey)) {
+                            currentGattTask = GATT_SETUP;
+                            testUuids =true;
+                            step = 1;
+                            mBluetoothGatt.writeCharacteristic(mAuthenticationCharacteristic);
+                        } else {
+                            setRetryTimer();
+                        }
+                    } else {
+                        Log.w(TAG, "Authentication Characteristic IS NULL");
+                        setRetryTimer();
+                    }
+                } else {
+                    Log.w(TAG, "CRADLE SERVICE IS STILL NULL");
+                    setRetryTimer();
+                }
             }
         } else {
             setRetryTimer();
@@ -346,10 +367,17 @@ public class DexShareCollectionService extends Service {
     }
 
     public void assignCharacteristics() {
-        mSendDataCharacteristic = mShareService.getCharacteristic(DexShareAttributes.ShareMessageReceiver);
-        mReceiveDataCharacteristic = mShareService.getCharacteristic(DexShareAttributes.ShareMessageResponse);
-        mCommandCharacteristic = mShareService.getCharacteristic(DexShareAttributes.Command);
-        mResponseCharacteristic = mShareService.getCharacteristic(DexShareAttributes.Response);
+        if(!testUuids) {
+            mSendDataCharacteristic = mShareService.getCharacteristic(DexShareAttributes.ShareMessageReceiver);
+            mReceiveDataCharacteristic = mShareService.getCharacteristic(DexShareAttributes.ShareMessageResponse);
+            mCommandCharacteristic = mShareService.getCharacteristic(DexShareAttributes.Command);
+            mResponseCharacteristic = mShareService.getCharacteristic(DexShareAttributes.Response);
+        } else {
+            mSendDataCharacteristic = mShareService.getCharacteristic(DexShareAttributes.ShareMessageReceiver2);
+            mReceiveDataCharacteristic = mShareService.getCharacteristic(DexShareAttributes.ShareMessageResponse2);
+            mCommandCharacteristic = mShareService.getCharacteristic(DexShareAttributes.Command2);
+            mResponseCharacteristic = mShareService.getCharacteristic(DexShareAttributes.Response2);
+        }
     }
 
     public void setListeners(int listener_number) {
