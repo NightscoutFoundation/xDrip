@@ -79,7 +79,7 @@ public class SystemStatus extends Activity implements NavigationDrawerFragment.N
     }
 
     public void setCollectionMethod() {
-        collection_method.setText(prefs.getString("collection_method", "BluetoothWixel"));
+        collection_method.setText(prefs.getString("dex_collection_method", "BluetoothWixel"));
     }
 
     public void setCurrentDevice() {

@@ -23,6 +23,11 @@
             android:key="share_key"
             android:defaultValue="SM00000000">
         </EditTextPreference>
+        <CheckBoxPreference
+            android:key="share_auth_mode_two"
+            android:title="Try share Auth Mode 2"
+            android:summary="Only use this if you are instructed to do so."
+            android:defaultValue="false" />
     </PreferenceCategory>
 
 </PreferenceScreen>
