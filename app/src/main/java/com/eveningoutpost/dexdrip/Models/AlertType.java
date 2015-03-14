@@ -75,7 +75,7 @@ public class AlertType extends Model {
     @Column(name = "default_snooze")
     public int default_snooze;
 
-    @Column(name = "text")
+    @Column(name = "text") // ??? what's that? is it different from name?
     public String text;
     
     @Column(name = "mp3_file")
@@ -186,6 +186,22 @@ public class AlertType extends Model {
         at.save();
     }
     
+    public static void update_alert(String uuid, String name, boolean above, double threshold, boolean all_day, int minutes_between) {
+        AlertType at = get_alert(uuid);
+        at.name = name;
+        at.above = above;
+        at.threshold = threshold;
+        at.all_day = all_day;
+        at.minutes_between = minutes_between;
+        at.uuid = uuid;
+        at.active = true;
+        at.save();
+    }
+    public static void remove_alert(String uuid) {
+        AlertType alert = get_alert(uuid);
+        alert.delete();
+    }
+    
     public String toString() {
         
         String name = "name: " + this.name;
@@ -208,6 +224,16 @@ public class AlertType extends Model {
             Log.e(TAG, alert.toString());
         }
     }
+    
+    public static List<AlertType> getAll(boolean above) {
+        List<AlertType> alerts  = new Select()
+            .from(AlertType.class)
+            .where("above = ?", above)
+            .execute();
+
+        return alerts;
+    }
+    
     
     // This function is a replacment for the UI. It will make sure that there are exactly two alerts
     // based on what the user has set as high and low. Will be replaced by a UI.
@@ -240,7 +266,7 @@ public class AlertType extends Model {
     }
     
    
-    public static void TestAll() {
+    public static void testAll() {
         
         remove_all();
         add_alert("high alert 1", true, 180, true, 10);

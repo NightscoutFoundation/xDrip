@@ -52,6 +52,7 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_calibration_data_table">CalibrationDataTable</string>
     <string name="title_activity_fake_numbers">FakeNumbers</string>
+    <string name="title_activity_edit_alert">EditAlert</string>
     <string name="title_snooze">Snooze</string>
     <string name="title_activity_double_calibration">DoubleCalibrationActivity</string>
     <string name="title_activity_calibration_override">CalibrationOverride</string>

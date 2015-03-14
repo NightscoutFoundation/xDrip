@@ -111,6 +111,10 @@
             android:label="@string/title_activity_fake_numbers" >
         </activity>
         <activity
+            android:name=".EditAlertActivity"
+            android:label="@string/title_activity_edit_alert" >
+        </activity>
+        <activity
             android:name=".DoubleCalibrationActivity"
             android:label="@string/title_activity_double_calibration" >
         </activity>

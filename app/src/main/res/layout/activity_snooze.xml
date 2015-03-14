@@ -10,7 +10,6 @@
         android:gravity="left"
         android:text="replace dyanmicly (alert status)"
         android:textSize="24dp"
-
         />
     
     <EditText
@@ -37,9 +36,18 @@
         android:layout_below="@+id/snooze" 
         android:layout_centerHorizontal="true" />
     
+    <Button
+        android:id="@+id/button_create_low"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create low alert"
+        android:layout_alignParentBottom="false"
+        android:layout_below="@+id/button_snooze" 
+        android:layout_centerHorizontal="true" />
+    
      <TextView  
         android:id="@+id/low_alerts"
-        android:layout_below="@+id/button_snooze" 
+        android:layout_below="@+id/button_create_low" 
         android:layout_width="fill_parent" 
         android:layout_height="wrap_content" 
         android:gravity="left"
@@ -47,15 +55,24 @@
         android:textSize="24dp"
         />
     <ListView
-        android:id="@+id/listView1"
+        android:id="@+id/listView_low"
         android:layout_below="@+id/low_alerts" 
         android:layout_width="wrap_content"
         android:layout_height="100dp" >
     </ListView>
 
+    <Button
+        android:id="@+id/button_create_high"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create high alert"
+        android:layout_alignParentBottom="false"
+        android:layout_below="@+id/listView_low" 
+        android:layout_centerHorizontal="true" />
+    
     <TextView
         android:id="@+id/high_alerts"
-        android:layout_below="@+id/listView1"   
+        android:layout_below="@+id/button_create_high"   
         android:layout_width="fill_parent" 
         android:layout_height="wrap_content" 
         android:gravity="left"
@@ -72,113 +89,3 @@
     
     
 </RelativeLayout>
-
-<!-- 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.eveningoutpost.dexdrip.snooze">
-
-    
-    <TextView  
-	    android:layout_width="fill_parent" 
-	    android:layout_height="wrap_content" 
-	    android:gravity="left"
-	    android:text="replace dyanmicly (alert status)"
-	    android:textSize="24dp"
-	    android:id="@+id/alert_status"
-	    />
-    
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:ems="10"
-        android:id="@+id/snooze"
-        android:autoText="false"
-        android:text="sztext????"
-        android:singleLine="true"
-        android:textAlignment="center"
-        android:textSize="24dp"
-        android:layout_below="@+id/alert_status" 
-        android:hint="@string/snooze_hint"
-        android:layout_alignParentStart="true" />
-    
-    
- 
-    <ListView
-              android:id="@+id/list"
-              android:layout_height="wrap_content"
-              android:layout_width="match_parent">
-         </ListView>
-     
-     
-     
-            <LinearLayout
-            android:id="@+id/list_high"
-			android:layout_width="100sp"
-			android:layout_height="100sp"
-			android:orientation="vertical"
-			android:paddingTop="20px"
-			android:layout_below="@+id/snooze" 
-			 >
-
-                <ImageView
-			        android:id="@+id/icon"
-			        android:layout_width="22px"
-			        android:layout_height="22px"
-			        android:layout_marginLeft="4px"
-			        android:layout_marginRight="10px"
-			        android:layout_marginTop="4px"
-			        android:src="@drawable/ic_launcher" >
-			    </ImageView>
-
-			    <TextView
-			        android:id="@+id/label"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:text="@+id/label"
-			        android:textSize="20px" >
-			    </TextView>
-                			
-	           <TextView
-	               android:layout_width="wrap_content"
-	               android:layout_height="wrap_content"
-	               android:text="Password"
-	               android:paddingTop="20px"
-	               android:paddingLeft="10px"/>
-	           
-	           <EditText
-	               android:layout_width="wrap_content"
-	               android:layout_height="wrap_content"
-	               android:layout_gravity="center_horizontal"
-	               android:layout_marginLeft="40px"
-	               android:layout_weight="0.50"
-	               android:paddingTop="20px" />
-                                  -a-> 
-         </LinearLayout>
-     
-        <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/snooze"
-        android:id="@+id/button_snooze"
-        android:layout_alignParentBottom="false"
-        android:layout_below="@+id/list_high" 
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="add high"
-        android:id="@+id/add_high_alert"
-        android:layout_alignParentBottom="false"
-        android:layout_below="@+id/button_snooze" 
-        android:layout_centerHorizontal="true" />
-            
-
-</RelativeLayout>
--->
