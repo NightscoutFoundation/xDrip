@@ -76,8 +76,8 @@ public class DexCollectionService extends Service {
     private static final int STATE_CONNECTED = BluetoothProfile.STATE_CONNECTED;
 
     public final static String ACTION_DATA_AVAILABLE = "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
-    public final static UUID DexDripDataService = UUID.fromString(HM10Attributes.HM_10_SERVICE);
-    public final static UUID DexDripDataCharacteristic = UUID.fromString(HM10Attributes.HM_RX_TX);
+    public final static UUID xDripDataService = UUID.fromString(HM10Attributes.HM_10_SERVICE);
+    public final static UUID xDripDataCharacteristic = UUID.fromString(HM10Attributes.HM_RX_TX);
 
     @Override
     public void onCreate() {
@@ -340,7 +340,7 @@ public class DexCollectionService extends Service {
         }
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
         Log.w(TAG, "UUID FOUND: " + characteristic.getUuid());
-        if (DexDripDataCharacteristic.equals(characteristic.getUuid())) {
+        if (xDripDataCharacteristic.equals(characteristic.getUuid())) {
             Log.w(TAG, "UUID MATCH FOUND!!! " + characteristic.getUuid());
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                     UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));

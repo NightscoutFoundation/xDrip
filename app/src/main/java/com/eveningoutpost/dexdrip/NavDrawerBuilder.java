@@ -34,7 +34,7 @@ public class NavDrawerBuilder {
             return options;
         }
 
-        options.add("DexDrip");
+        options.add("xDrip");
         if(is_active_sensor) {
             options.add("Calibration Graph");
         }
