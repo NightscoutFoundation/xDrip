@@ -13,7 +13,7 @@ Android Application that collects dexcom signals, allows calibrations, and (soon
 
 ## Features that are complete
 * Nightscout Uploading
-* Basic Notifications (above or below threshold)d
+* Basic Notifications (above or below threshold)
 * Calibration Notifications
 * Graph of BG levels (with scroll, zoom, and day preview)
 * Graph of Calibration points
