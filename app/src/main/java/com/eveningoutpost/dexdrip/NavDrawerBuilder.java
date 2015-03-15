@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class NavDrawerBuilder {
     public final List<Calibration> last_two_calibrations = Calibration.latest(2);
-    public final List<BgReading> last_two_bgReadings = BgReading.latest(2);
+    public final List<BgReading> last_two_bgReadings = BgReading.latestUnCalculated(2);
     public final List<BgReading> bGreadings_in_last_30_mins = BgReading.last30Minutes();
     public final boolean is_active_sensor = Sensor.isActive();
     public final double time_now = new Date().getTime();

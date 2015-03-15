@@ -242,7 +242,14 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                                 notificationText.setText("Please enter two calibrations to get started!");
                             }
                         } else {
-                            notificationText.setText("Please wait, need 2 readings from transmitter first.");
+                            if(BgReading.latestUnCalculated(2).size() < 2) {
+                                notificationText.setText("Please wait, need 2 readings from transmitter first.");
+                            } else {
+                                List<Calibration> calibrations = Calibration.latest(2);
+                                if (calibrations.size() < 2) {
+                                    notificationText.setText("Please enter two calibrations to get started!");
+                                }
+                            }
                         }
                     } else if (Sensor.isActive() && ((Sensor.currentSensor().started_at + (60000 * 60 * 2))) >= new Date().getTime()) {
                         double waitTime = ((Sensor.currentSensor().started_at + (60000 * 60 * 2)) - (new Date().getTime())) / (60000);

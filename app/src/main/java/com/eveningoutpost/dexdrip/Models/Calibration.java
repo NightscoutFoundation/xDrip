@@ -513,7 +513,7 @@ public class Calibration extends Model {
     public static void adjustRecentBgReadings(int adjustCount) {
         //TODO: add some handling around calibration overrides as they come out looking a bit funky
         List<Calibration> calibrations = Calibration.latest(3);
-        List<BgReading> bgReadings = BgReading.latest(adjustCount);
+        List<BgReading> bgReadings = BgReading.latestUnCalculated(adjustCount);
         if (calibrations.size() == 3) {
             int denom = bgReadings.size();
             Calibration latestCalibration = calibrations.get(0);

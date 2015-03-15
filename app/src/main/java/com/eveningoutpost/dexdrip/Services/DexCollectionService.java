@@ -95,7 +95,11 @@ public class DexCollectionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        setFailoverTimer();
+        if (CollectionServiceStarter.isBTWixel(getApplicationContext())) {
+            setFailoverTimer();
+        } else {
+            return START_NOT_STICKY;
+        }
         attemptConnection();
         return START_STICKY;
     }
@@ -111,7 +115,6 @@ public class DexCollectionService extends Service {
 
     public void setRetryTimer() {
         if (CollectionServiceStarter.isBTWixel(getApplicationContext())) {
-            BgReading bgReading = BgReading.last();
             long retry_in = (1000 * 60 * 2);
             Log.d(TAG, "Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();

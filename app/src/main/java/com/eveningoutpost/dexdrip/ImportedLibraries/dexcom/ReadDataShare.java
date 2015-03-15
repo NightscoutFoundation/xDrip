@@ -17,7 +17,6 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialDr
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.ShareTest;
-import com.eveningoutpost.dexdrip.UtilityModels.DexShareAttributes;
 
 import org.w3c.dom.Element;
 

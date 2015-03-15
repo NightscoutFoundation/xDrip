@@ -93,7 +93,7 @@ public class DexShareCollectionService extends Service {
     ReadDataShare readData;
 
     public boolean shouldDisconnect = true;
-    public boolean testUuids = true;
+    public boolean share2 = false;
 
     @Override
     public void onCreate() {
@@ -113,6 +113,8 @@ public class DexShareCollectionService extends Service {
         }
         if (CollectionServiceStarter.isBTShare(getApplicationContext())) {
             setFailoverTimer();
+        } else {
+            return START_NOT_STICKY;
         }
         if (Sensor.currentSensor() == null) {
             setRetryTimer();
@@ -291,6 +293,7 @@ public class DexShareCollectionService extends Service {
                if(mBluetoothAdapter.getRemoteDevice(bluetoothDevice.getAddress()) != null) {
                    device = bluetoothDevice;
                    device.setPin("000000".getBytes());
+                   device.setPairingConfirmation(true);
                    mBluetoothGatt = device.connectGatt(getApplicationContext(), true, mGattCallback);
 //                   refreshDeviceCache(mBluetoothGatt);
                    return true;
@@ -304,6 +307,8 @@ public class DexShareCollectionService extends Service {
             return false;
         }
         device.setPin("000000".getBytes());
+        device.setPairingConfirmation(true);
+
         Log.w(TAG, "Trying to create a new connection.");
         mBluetoothGatt = device.connectGatt(getApplicationContext(), true, mGattCallback);
         mConnectionState = STATE_CONNECTING;
@@ -312,41 +317,20 @@ public class DexShareCollectionService extends Service {
 
     public void authenticateConnection() {
         Log.w(TAG, "Trying to auth");
-        String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
-        byte[] bondkey;
-        if(prefs.getBoolean("share_auth_mode_two", false)) {
-            bondkey = md5Bytes(receiverSn);
-        } else {
-            bondkey = (receiverSn + "000000").getBytes(StandardCharsets.US_ASCII);
-        }
+        String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase() + "000000";
+        share2 = prefs.getBoolean("share_auth_mode_two", false);
+        byte[] bondkey = (receiverSn).getBytes(StandardCharsets.US_ASCII);
+
 
         if (mBluetoothGatt != null) {
-            mShareService = mBluetoothGatt.getService(DexShareAttributes.CradleService);
-            if (mShareService != null) {
-                mAuthenticationCharacteristic = mShareService.getCharacteristic(DexShareAttributes.AuthenticationCode);
-                if (mAuthenticationCharacteristic != null) {
-                    Log.w(TAG, "Auth Characteristic found: " + mAuthenticationCharacteristic.toString());
-                    if (mAuthenticationCharacteristic.setValue(bondkey)) {
-                        currentGattTask = GATT_SETUP;
-                        step = 1;
-                        mBluetoothGatt.writeCharacteristic(mAuthenticationCharacteristic);
-                    } else {
-                        setRetryTimer();
-                    }
-                } else {
-                    Log.w(TAG, "Authentication Characteristic IS NULL");
-                    setRetryTimer();
-                }
-            } else {
-                Log.w(TAG, "STANDARD CRADLE SERVICE IS NULL");
-                mShareService = mBluetoothGatt.getService(DexShareAttributes.CradleService2);
+            if(!share2) {
+                mShareService = mBluetoothGatt.getService(DexShareAttributes.CradleService);
                 if (mShareService != null) {
-                    mAuthenticationCharacteristic = mShareService.getCharacteristic(DexShareAttributes.AuthenticationCode2);
+                    mAuthenticationCharacteristic = mShareService.getCharacteristic(DexShareAttributes.AuthenticationCode);
                     if (mAuthenticationCharacteristic != null) {
                         Log.w(TAG, "Auth Characteristic found: " + mAuthenticationCharacteristic.toString());
                         if (mAuthenticationCharacteristic.setValue(bondkey)) {
                             currentGattTask = GATT_SETUP;
-                            testUuids =true;
                             step = 1;
                             mBluetoothGatt.writeCharacteristic(mAuthenticationCharacteristic);
                         } else {
@@ -357,7 +341,46 @@ public class DexShareCollectionService extends Service {
                         setRetryTimer();
                     }
                 } else {
-                    Log.w(TAG, "CRADLE SERVICE IS STILL NULL");
+                    Log.w(TAG, "STANDARD CRADLE SERVICE IS NULL");
+                }
+            } else {
+                mShareService = mBluetoothGatt.getService(DexShareAttributes.CradleService2);
+                if (mShareService != null) {
+                    BluetoothGattService service = mShareService;
+                    Log.e(TAG, "=================================================================================");
+                    Log.e(TAG, "AFTERAUTHUUIDS Service: " + service.getUuid());
+                    for(BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
+                        Log.e(TAG, "Characteristic: " + characteristic.getUuid());
+                        Log.e(TAG, "CHARACTERISTIC PROPERTY_INDICATE: " + (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_INDICATE));
+                        Log.e(TAG, "CHARACTERISTIC PROPERTY_NOTIFY: " + (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY));
+                        Log.e(TAG, "CHARACTERISTIC PROPERTY_READ: " + (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_READ));
+                        Log.e(TAG, "CHARACTERISTIC PROPERTY_SIGNED_WRITE: " + (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_SIGNED_WRITE));
+                        Log.e(TAG, "CHARACTERISTIC PROPERTY_WRITE: " + (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE));
+                        Log.e(TAG, "CHARACTERISTIC PROPERTY_WRITE_NO_RESPONSE: " + (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE));
+                        Log.e(TAG, "CHARACTERISTIC PERMISSION_WRITE: " + (characteristic.getPermissions() & BluetoothGattCharacteristic.PERMISSION_WRITE));
+                        Log.e(TAG, "CHARACTERISTIC PERMISSION_WRITE_ENCRYPTED: " + (characteristic.getPermissions() & BluetoothGattCharacteristic.PERMISSION_WRITE_ENCRYPTED));
+                        Log.e(TAG, "CHARACTERISTIC PERMISSION_WRITE_ENCRYPTED_MITM: " + (characteristic.getPermissions() & BluetoothGattCharacteristic.PERMISSION_WRITE_ENCRYPTED_MITM));
+                        Log.e(TAG, "CHARACTERISTIC PERMISSION_WRITE_SIGNED: " + (characteristic.getPermissions() & BluetoothGattCharacteristic.PERMISSION_WRITE_SIGNED));
+                        Log.e(TAG, "CHARACTERISTIC PERMISSION_WRITE_SIGNED_MITM: " + (characteristic.getPermissions() & BluetoothGattCharacteristic.PERMISSION_WRITE_SIGNED_MITM));
+
+
+                    }
+                    mAuthenticationCharacteristic = mShareService.getCharacteristic(DexShareAttributes.AuthenticationCode2);
+                    if (mAuthenticationCharacteristic != null) {
+                        Log.w(TAG, "Auth Characteristic found: " + mAuthenticationCharacteristic.toString());
+                        if (mAuthenticationCharacteristic.setValue(bondkey)) {
+                            currentGattTask = GATT_SETUP;
+                            step = 1;
+                            mBluetoothGatt.writeCharacteristic(mAuthenticationCharacteristic);
+                        } else {
+                            setRetryTimer();
+                        }
+                    } else {
+                        Log.w(TAG, "Authentication Characteristic IS NULL");
+                        setRetryTimer();
+                    }
+                } else {
+                    Log.w(TAG, "SHARE2 SERVICE IS NULL");
                     setRetryTimer();
                 }
             }
@@ -367,25 +390,50 @@ public class DexShareCollectionService extends Service {
     }
 
     public void assignCharacteristics() {
-        if(!testUuids) {
+        if(!share2) {
+            Log.e(TAG, "Setting #1 characteristics");
             mSendDataCharacteristic = mShareService.getCharacteristic(DexShareAttributes.ShareMessageReceiver);
             mReceiveDataCharacteristic = mShareService.getCharacteristic(DexShareAttributes.ShareMessageResponse);
             mCommandCharacteristic = mShareService.getCharacteristic(DexShareAttributes.Command);
             mResponseCharacteristic = mShareService.getCharacteristic(DexShareAttributes.Response);
         } else {
+            Log.e(TAG, "Setting #2 characteristics");
             mSendDataCharacteristic = mShareService.getCharacteristic(DexShareAttributes.ShareMessageReceiver2);
             mReceiveDataCharacteristic = mShareService.getCharacteristic(DexShareAttributes.ShareMessageResponse2);
             mCommandCharacteristic = mShareService.getCharacteristic(DexShareAttributes.Command2);
             mResponseCharacteristic = mShareService.getCharacteristic(DexShareAttributes.Response2);
+//            mHeartbeatCharacteristic = mShareService.getCharacteristic(DexShareAttributes.HeartBeat2);
+//            mBluetoothGatt.readCharacteristic(mAuthenticationCharacteristic);
+            Log.w(TAG, "AUTH IS: " + mAuthenticationCharacteristic.getStringValue(0));
+            BluetoothGattService service = mShareService;
+                Log.e(TAG, "=================================================================================");
+                Log.e(TAG, "AFTERAUTHUUIDS Service: " + service.getUuid());
+                for(BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
+                    Log.e(TAG, "Characteristic: " + characteristic.getUuid());
+                    Log.e(TAG, "CHARACTERISTIC PROPERTY_INDICATE: " + (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_INDICATE));
+                    Log.e(TAG, "CHARACTERISTIC PROPERTY_NOTIFY: " + (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY));
+                    Log.e(TAG, "CHARACTERISTIC PROPERTY_READ: " + (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_READ));
+                    Log.e(TAG, "CHARACTERISTIC PROPERTY_SIGNED_WRITE: " + (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_SIGNED_WRITE));
+                    Log.e(TAG, "CHARACTERISTIC PROPERTY_WRITE: " + (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE));
+                    Log.e(TAG, "CHARACTERISTIC PROPERTY_WRITE_NO_RESPONSE: " + (characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE));
+                    Log.e(TAG, "CHARACTERISTIC PERMISSION_WRITE: " + (characteristic.getPermissions() & BluetoothGattCharacteristic.PERMISSION_WRITE));
+                    Log.e(TAG, "CHARACTERISTIC PERMISSION_WRITE_ENCRYPTED: " + (characteristic.getPermissions() & BluetoothGattCharacteristic.PERMISSION_WRITE_ENCRYPTED));
+                    Log.e(TAG, "CHARACTERISTIC PERMISSION_WRITE_ENCRYPTED_MITM: " + (characteristic.getPermissions() & BluetoothGattCharacteristic.PERMISSION_WRITE_ENCRYPTED_MITM));
+                    Log.e(TAG, "CHARACTERISTIC PERMISSION_WRITE_SIGNED: " + (characteristic.getPermissions() & BluetoothGattCharacteristic.PERMISSION_WRITE_SIGNED));
+                    Log.e(TAG, "CHARACTERISTIC PERMISSION_WRITE_SIGNED_MITM: " + (characteristic.getPermissions() & BluetoothGattCharacteristic.PERMISSION_WRITE_SIGNED_MITM));
+
+
+            }
         }
     }
 
     public void setListeners(int listener_number) {
         Log.w(TAG, "Setting Listener: #" + listener_number);
+
         if (listener_number == 1) {
             step = 2;
             setCharacteristicIndication(mReceiveDataCharacteristic);
-        } else {
+        } else if(listener_number == 2) {
             step = 3;
             setCharacteristicIndication(mResponseCharacteristic);
         }
@@ -474,7 +522,9 @@ public class DexShareCollectionService extends Service {
         if (index <= (writePackets.size() - 1)) {
             Log.d(TAG, "Writing: " + writePackets.get(index) + " index: " + index);
             mSendDataCharacteristic.setValue(writePackets.get(index));
-            mBluetoothGatt.writeCharacteristic(mSendDataCharacteristic);
+            if(mBluetoothGatt.writeCharacteristic(mSendDataCharacteristic)) {
+                Log.d(TAG, "Wrote Successfully");
+            }
         } else {
             Log.d(TAG, "Done Writing commands");
             clearGattTask();
@@ -514,6 +564,7 @@ public class DexShareCollectionService extends Service {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             Log.w(TAG, "Gatt state change status: " + status + " new state: " + newState);
+            writeStatusConnectionFailures(status);
             writeStatusFailures(status);
             if (status == 133) {
                 Log.e(TAG, "Got the status 133 bug, GROSS!!");
@@ -557,6 +608,7 @@ public class DexShareCollectionService extends Service {
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            Log.d(TAG, "services discovered " + status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.w(TAG, "Services Discovered!");
                 authenticateConnection();
@@ -568,6 +620,7 @@ public class DexShareCollectionService extends Service {
 
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            Log.d(TAG, "characteristic read " + status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.w(TAG, "Characteristic Read");
                 nextGattStep();
@@ -592,6 +645,7 @@ public class DexShareCollectionService extends Service {
 
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+            Log.d(TAG, "descriptor wrote " + status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if (step == 2 && currentGattTask == GATT_SETUP) {
                     setListeners(2);
@@ -599,7 +653,8 @@ public class DexShareCollectionService extends Service {
                     Log.w(TAG, "Done setting Listeners");
                     attemptRead();
                 }
-            } else if (status == BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION) {
+            } else if(BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION == status ||
+                    BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION == status) {
                 if (gatt.getDevice().getBondState() == BluetoothDevice.BOND_NONE) {
                     device = gatt.getDevice();
                     bondDevice();
@@ -614,10 +669,12 @@ public class DexShareCollectionService extends Service {
 
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            Log.d(TAG, "characteristic wrote " + status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.w(TAG, "Wrote a characteristic successfully");
                 nextGattStep();
-            } else if (status == BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION) {
+            } else if(BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION == status ||
+                    BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION == status) {
                 if (gatt.getDevice().getBondState() == BluetoothDevice.BOND_NONE) {
                     device = gatt.getDevice();
                     bondDevice();
@@ -628,8 +685,14 @@ public class DexShareCollectionService extends Service {
                 Log.e(TAG, "Unknown error writing Characteristic");
                 writeStatusFailures(status);
             }
-
         }
+
+        @Override
+        public void onReliableWriteCompleted(BluetoothGatt gat, int status) {
+            Log.e(TAG, "Reliable write complete, status: " + status);
+        }
+
+
     };
 
     public void bondDevice() {
@@ -637,6 +700,7 @@ public class DexShareCollectionService extends Service {
         final IntentFilter bondintent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(mPairReceiver, bondintent);
         device.setPin("000000".getBytes());
+        device.setPairingConfirmation(true);
         device.createBond();
     }
 
@@ -653,40 +717,6 @@ public class DexShareCollectionService extends Service {
             Log.e(TAG, "An exception occured while refreshing device");
         }
         return false;
-    }
-
-    private String md5String(final String s) {
-        try {
-            // Create MD5 Hash
-            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
-            digest.update(s.getBytes());
-            byte messageDigest[] = digest.digest();
-
-            // Create Hex String
-            StringBuilder hexString = new StringBuilder();
-            for (byte aMessageDigest : messageDigest) {
-                String h = Integer.toHexString(0xFF & aMessageDigest);
-                while (h.length() < 2)
-                    h = "0" + h;
-                hexString.append(h);
-            }
-            return hexString.toString();
-
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-    private byte[] md5Bytes(final String s) {
-        try {
-            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
-            digest.update(s.getBytes());
-            return digest.digest();
-
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     private void writeStatusFailures(int status) {
@@ -722,5 +752,15 @@ public class DexShareCollectionService extends Service {
                 Log.e(TAG, "error no idea!");
                 break;
         }
+    }private void writeStatusConnectionFailures(int status) {
+        Log.e(TAG, "ERRR: GATT_WRITE_NOT_PERMITTED " + (status & BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
+        Log.e(TAG, "ERRR: GATT_INSUFFICIENT_AUTHENTICATION " + (status & BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION));
+        Log.e(TAG, "ERRR: GATT_REQUEST_NOT_SUPPORTED " + (status & BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED));
+        Log.e(TAG, "ERRR: GATT_INSUFFICIENT_ENCRYPTION " + (status & BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION));
+        Log.e(TAG, "ERRR: GATT_INVALID_OFFSET " + (status & BluetoothGatt.GATT_INVALID_OFFSET));
+        Log.e(TAG, "ERRR: GATT_FAILURE " + (status & BluetoothGatt.GATT_FAILURE));
+        Log.e(TAG, "ERRR: GATT_INVALID_ATTRIBUTE_LENGTH " + (status & BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH));
+        Log.e(TAG, "ERRR: GATT_READ_NOT_PERMITTED" + (status & BluetoothGatt.GATT_READ_NOT_PERMITTED));
+
     }
 }

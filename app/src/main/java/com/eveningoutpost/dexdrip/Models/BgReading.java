@@ -409,7 +409,6 @@ public class BgReading extends Model {
         return new Select()
                 .from(BgReading.class)
                 .where("Sensor = ? ", sensor.getId())
-                .where("calculated_value != 0")
                 .where("raw_data != 0")
                 .orderBy("timestamp desc")
                 .limit(number)
@@ -438,10 +437,21 @@ public class BgReading extends Model {
                 .execute();
     }
 
+    public static List<BgReading> latestUnCalculated(int number) {
+        Sensor sensor = Sensor.currentSensor();
+        if (sensor == null) { return null; }
+        return new Select()
+                .from(BgReading.class)
+                .where("Sensor = ? ", sensor.getId())
+                .where("raw_data != 0")
+                .orderBy("timestamp desc")
+                .limit(number)
+                .execute();
+    }
+
     public static List<BgReading> latestForGraph(int number, double startTime) {
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(1);
-
         return new Select()
                 .from(BgReading.class)
                 .where("timestamp >= " + df.format(startTime))
