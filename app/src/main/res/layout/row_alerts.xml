@@ -22,7 +22,8 @@
         android:layout_weight="1"
         android:gravity="center" 
         android:textAppearance="?android:attr/textAppearanceMedium" />
-      <TextView
+
+     <TextView
         android:id="@+id/alertTime"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -30,7 +31,8 @@
         android:layout_weight="1"
         android:gravity="center" 
         android:textAppearance="?android:attr/textAppearanceMedium"   />
-       <TextView
+
+      <TextView
         android:id="@+id/alertMp3File"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
