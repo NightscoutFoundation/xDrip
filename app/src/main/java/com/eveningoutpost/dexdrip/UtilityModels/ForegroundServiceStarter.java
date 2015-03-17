@@ -48,8 +48,8 @@ public class ForegroundServiceStarter {
         b.setPriority(Notification.PRIORITY_MIN);
         // Don't show this notification on the lock screen on L+
         b.setVisibility(Notification.VISIBILITY_SECRET);
-        b.setContentTitle("DexDrip is Running")
-                .setContentText("DexDrip Data collection service is running.")
+        b.setContentTitle("xDrip is Running")
+                .setContentText("xDrip Data collection service is running.")
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on);
         b.setContentIntent(resultPendingIntent);
         return(b.build());

@@ -14,7 +14,7 @@ public class FileUtils {
 	public static String getExternalDir() {
 		final StringBuilder sb = new StringBuilder();
 		sb.append( Environment.getExternalStorageDirectory().getAbsolutePath() );
-		sb.append( "/dexdrip" );
+		sb.append( "/xdrip" );
 
 		final String dir = sb.toString();
 		return dir;

@@ -23,7 +23,7 @@ public class PebbleSync {
     //    CGM_TAPP_KEY = 0x3,		// TUPLE_INT, 4 BYTES (APP / PHONE TIME)
     //    CGM_DLTA_KEY = 0x4,		// TUPLE_CSTRING, MAX 5 BYTES (BG DELTA, -100 or -10.0)
     //    CGM_UBAT_KEY = 0x5,		// TUPLE_CSTRING, MAX 3 BYTES (UPLOADER BATTERY, 100)
-    //    CGM_NAME_KEY = 0x6		// TUPLE_CSTRING, MAX 9 BYTES (DexDrip)
+    //    CGM_NAME_KEY = 0x6		// TUPLE_CSTRING, MAX 9 BYTES (xDrip)
     public static final UUID PEBBLEAPP_UUID = UUID.fromString("2c3f5ab3-7506-44e7-b8d0-2c63de32e1ec");
     public static final int ICON_KEY = 0;
     public static final int BG_KEY = 1;
@@ -45,7 +45,7 @@ public class PebbleSync {
         dictionary.addUint32(PHONE_TIME_KEY, (int) (new Date().getTime() / 1000));
         dictionary.addString(BG_DELTA_KEY, bgDelta());
         dictionary.addString(UPLOADER_BATTERY_KEY, phoneBattery());
-        dictionary.addString(NAME_KEY, "DexDrip");
+        dictionary.addString(NAME_KEY, "xDrip");
         return dictionary;
     }
 
@@ -62,9 +62,9 @@ public class PebbleSync {
 
     public String bgDelta() {
         String deltaString = bgGraphBuilder.unitized_string((int)(mBgReading.calculated_value_slope * (5 * 60 * 1000)));
-        if(mBgReading.calculated_value_slope > 0) {
+        if(mBgReading.calculated_value_slope > 0.1) {
             return ("+"+deltaString);
-        } else if(mBgReading.calculated_value_slope == 0) {
+        } else if(mBgReading.calculated_value_slope > -0.1 && mBgReading.calculated_value_slope < 0.1) {
             return "0";
         } else {
             return deltaString;
