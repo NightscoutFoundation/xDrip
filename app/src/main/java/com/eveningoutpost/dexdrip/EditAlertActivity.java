@@ -1,8 +1,8 @@
 package com.eveningoutpost.dexdrip;
 
 import java.util.Date;
-import android.database.Cursor;
 
+import android.database.Cursor;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,7 +11,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -36,6 +40,13 @@ public class EditAlertActivity extends Activity {
     
     Button buttonSave;
     Button buttonRemove;
+    CheckBox checkboxAllDay;
+    
+    TextView viewTimeStart;
+    TextView viewTimeEnd;
+    TimePicker tpTimeStart;
+    TimePicker tpTimeEnd;
+    
     
     String uuid;
     boolean above;
@@ -69,16 +80,37 @@ public class EditAlertActivity extends Activity {
         buttonRemove = (Button)findViewById(R.id.edit_alert_remove);
         buttonalertMp3 = (Button)findViewById(R.id.Button_alert_mp3_file);
         
+        
         alertText = (EditText) findViewById(R.id.edit_alert_text);
         alertThreshold = (EditText) findViewById(R.id.edit_alert_threshold);
         alertMp3File = (EditText) findViewById(R.id.edit_alert_mp3_file);
+
+        checkboxAllDay = (CheckBox) findViewById(R.id.check_alert_time);
+        viewTimeStart = (TextView) findViewById(R.id.view_alert_time_start);
+        viewTimeEnd = (TextView) findViewById(R.id.view_alert_time_end);
+        tpTimeStart = (TimePicker) findViewById(R.id.timePicker_alert_start);
+        tpTimeEnd = (TimePicker) findViewById(R.id.timePicker_alert_end);
         
         addListenerOnButtons();
         
         uuid = getExtra(savedInstanceState, "uuid");
+        String status;
         if (uuid == null) {
+            // This is a new alert
             above = Boolean.parseBoolean(getExtra(savedInstanceState, "above"));
+            checkboxAllDay.setChecked(true);
+            
+            buttonRemove.setVisibility(View.GONE);
+            status = "adding " + (above ? "high" : "low") + " alert";
+            tpTimeStart.setIs24HourView(true);
+            tpTimeStart.setCurrentHour(24);
+            tpTimeStart.setCurrentMinute(0);
+            tpTimeEnd.setIs24HourView(true);
+            tpTimeEnd.setCurrentHour(24);
+            tpTimeEnd.setCurrentMinute(0);
+            
         } else {
+            // We are editing an alert
             AlertType at = AlertType.get_alert(uuid);
             if(at==null) {
                 Log.wtf(TAG, "Error editing alert, when that alert does not exist...");
@@ -87,23 +119,44 @@ public class EditAlertActivity extends Activity {
                 finish();
                 return;
             }
+         
             above =at.above;
             alertText.setText(at.name);
             alertThreshold.setText(String.valueOf((int)at.threshold));
             alertMp3File.setText(at.mp3_file);
+            checkboxAllDay.setChecked(at.all_day);
+            
+            status = "editing " + (above ? "high" : "low") + " alert";
+            tpTimeStart.setIs24HourView(true);
+            tpTimeStart.setCurrentHour(AlertType.time2Hours(at.start_time_minutes));
+            tpTimeStart.setCurrentMinute(AlertType.time2Minutes(at.start_time_minutes));
+            tpTimeEnd.setIs24HourView(true);
+            tpTimeEnd.setCurrentHour(AlertType.time2Hours(at.end_time_minutes));
+            tpTimeEnd.setCurrentMinute(AlertType.time2Minutes(at.end_time_minutes));
         }
 
-        String status;
-        if (uuid != null) {
-            // We are editing an alert
-            status = "editing " + (above ? "high" : "low") + " alert";
-        } else {
-            // This is a new alert
-            buttonRemove.setVisibility(View.GONE);
-            status = "adding " + (above ? "high" : "low") + " alert";
-        }
+        
+
         
         viewHeader.setText(status);
+        enableAllDayControls();
+        
+        
+    }
+    
+    void enableAllDayControls() {
+        boolean allDay = checkboxAllDay.isChecked();
+        if(allDay) {
+            viewTimeStart.setVisibility(View.GONE);
+            viewTimeEnd.setVisibility(View.GONE);
+            tpTimeStart.setVisibility(View.GONE);
+            tpTimeEnd.setVisibility(View.GONE);
+        } else {
+            viewTimeStart.setVisibility(View.VISIBLE);
+            viewTimeEnd.setVisibility(View.VISIBLE);
+            tpTimeStart.setVisibility(View.VISIBLE);
+            tpTimeEnd.setVisibility(View.VISIBLE);
+        }
     }
 
     public void addListenerOnButtons() {
@@ -123,12 +176,32 @@ public class EditAlertActivity extends Activity {
                     Toast.makeText(getApplicationContext(), "threshhold has to be between 40 and 400",Toast.LENGTH_LONG).show();
                     return;
                 }
+                
+                int timeStart = AlertType.toTime(tpTimeStart.getCurrentHour(), tpTimeStart.getCurrentMinute());
+                int timeEnd = AlertType.toTime(tpTimeEnd.getCurrentHour(), tpTimeEnd.getCurrentMinute());
+                
+                boolean allDay = checkboxAllDay.isChecked();
+                // if 23:59 was set, we increase it to 24:00
+                if(timeStart == AlertType.toTime(23, 59)) {
+                    timeStart++;
+                }
+                if(timeEnd == AlertType.toTime(23, 59)) {
+                    timeEnd++;
+                }
+                if(timeStart == AlertType.toTime(0, 0) && 
+                   timeEnd == AlertType.toTime(24, 0)) {
+                    allDay = true;
+                }
+                if (timeStart == timeEnd) {
+                    Toast.makeText(getApplicationContext(), "start time and end time of alert can not be equal",Toast.LENGTH_LONG).show();
+                    return;                    
+                }
+                
                 String mp3_file = alertMp3File.getText().toString();
-
                 if (uuid != null) {
-                    AlertType.update_alert(uuid, alertText.getText().toString(), above, threshold, true, 1, mp3_file);
+                    AlertType.update_alert(uuid, alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd);
                 }  else {
-                    AlertType.add_alert(alertText.getText().toString(), above, threshold, true, 1, mp3_file);
+                    AlertType.add_alert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd);
                 }
                 Intent returnIntent = new Intent();
                 setResult(RESULT_OK,returnIntent);
@@ -165,6 +238,13 @@ public class EditAlertActivity extends Activity {
                 startActivityForResult(Intent.createChooser(intent,"Select Picture"), CHOOSE_FILE);
             }
        }); //- See more at: http://blog.kerul.net/2011/12/pick-file-using-intentactiongetcontent.html#sthash.c8xtIr1Y.dpuf
+        
+        checkboxAllDay.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//          @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                enableAllDayControls();
+            }
+        });   
     }
     
     

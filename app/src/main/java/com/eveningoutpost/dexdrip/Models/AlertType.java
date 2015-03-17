@@ -174,7 +174,15 @@ public class AlertType extends Model {
         }
     }
     
-    public static void add_alert(String name, boolean above, double threshold, boolean all_day, int minutes_between, String mp3_file) {
+    public static void add_alert(
+            String name, 
+            boolean above,
+            double threshold, 
+            boolean all_day, 
+            int minutes_between, 
+            String mp3_file,
+            int start_time_minutes,
+            int end_time_minutes) {
         AlertType at = new AlertType();
         at.name = name;
         at.above = above;
@@ -184,10 +192,21 @@ public class AlertType extends Model {
         at.uuid = UUID.randomUUID().toString();
         at.active = true;
         at.mp3_file = mp3_file;
+        at.start_time_minutes = start_time_minutes;
+        at.end_time_minutes = end_time_minutes;
         at.save();
     }
     
-    public static void update_alert(String uuid, String name, boolean above, double threshold, boolean all_day, int minutes_between, String mp3_file) {
+    public static void update_alert(
+            String uuid, 
+            String name, 
+            boolean above, 
+            double threshold, 
+            boolean all_day, 
+            int minutes_between, 
+            String mp3_file,
+            int start_time_minutes,
+            int end_time_minutes) {
         AlertType at = get_alert(uuid);
         at.name = name;
         at.above = above;
@@ -197,6 +216,8 @@ public class AlertType extends Model {
         at.uuid = uuid;
         at.active = true;
         at.mp3_file = mp3_file;
+        at.start_time_minutes = start_time_minutes;
+        at.end_time_minutes = end_time_minutes;
         at.save();
     }
     public static void remove_alert(String uuid) {
@@ -260,20 +281,20 @@ public class AlertType extends Model {
             }
             
         }
-        Log.e(TAG, "CreateStaticAlerts re-creating all our alerts again");
-        remove_all();
-        add_alert("high alert", true, highValue, true, 1, null);
-        add_alert("low alert", false, lowValue, true, 1, null);
-        print_all();
+        //Log.e(TAG, "CreateStaticAlerts re-creating all our alerts again");
+        //remove_all();
+        //add_alert("high alert", true, highValue, true, 1, null, 0, 0);
+        //add_alert("low alert", false, lowValue, true, 1, null, 0, 0);
+        //print_all();
     }
     
    
     public static void testAll() {
         
         remove_all();
-        add_alert("high alert 1", true, 180, true, 10, null);
-        add_alert("high alert 2", true, 200, true, 10, null);
-        add_alert("high alert 3", true, 220, true, 10, null);
+        add_alert("high alert 1", true, 180, true, 10, null, 0, 0);
+        add_alert("high alert 2", true, 200, true, 10, null, 0, 0);
+        add_alert("high alert 3", true, 220, true, 10, null, 0, 0);
         print_all();
         AlertType a1 = get_highest_active_alert(190, 0);
         Log.e(TAG, "a1 = " + a1.toString());
@@ -284,8 +305,8 @@ public class AlertType extends Model {
         AlertType a3 = get_alert(a1.uuid);
         Log.e(TAG, "a1 == a3 ? need to see true " + (a1==a3) + a1 + " " + a3);
         
-        add_alert("low alert 1", false, 80, true, 10, null);
-        add_alert("low alert 2", false, 60, true, 10, null);
+        add_alert("low alert 1", false, 80, true, 10, null, 0, 0);
+        add_alert("low alert 2", false, 60, true, 10, null, 0, 0);
         
         AlertType al1 = get_highest_active_alert(90, 0);
         Log.e(TAG, "al1 should be null  " + al1);
@@ -351,5 +372,28 @@ public class AlertType extends Model {
         } else {
             return false;
         }
+    }
+    
+    // Time is calculated in minutes. that is 01:20 means 80 minutes.
+    
+    // This functions are a bit tricky. We can only set time from 00:00 to 23:59 which leaves one minute out. this is because we ignore the
+    // seconds. so if the user has set 23:59 we will consider this as 24:00
+    // This will be done at the code that reads the time from the ui.
+    
+    
+    
+    // return the minutes part of the time
+    public static int time2Minutes(int minutes) {
+        return (minutes - 60*time2Hours(minutes)) ;
+    }
+    
+ // return the hours part of the time
+    public static int time2Hours(int minutes) {
+        return minutes / 60;
+    }
+    
+    // create the time from hours and minutes. 
+    public static int toTime(int hours, int minutes) {
+        return hours * 60 + minutes;
     }
 }

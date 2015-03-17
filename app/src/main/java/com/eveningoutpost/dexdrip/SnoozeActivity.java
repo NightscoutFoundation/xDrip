@@ -36,15 +36,24 @@ public class SnoozeActivity extends Activity {
     EditText snoozeValue;
     final int MAX_SNOOZE = 600;
     final int ADD_ALERT = 1;
-    final int EDIT_ALERT = 1;
+    final int EDIT_ALERT = 2;
     
     private final static String TAG = AlertPlayer.class.getSimpleName();
+    
+    String stringTimeFromAlert(AlertType alert) {
+        if(alert.all_day) {
+            return "all day";
+        }
+        String result = "" + AlertType.time2Hours(alert.start_time_minutes)+":"+ String.format("%02d", AlertType.time2Minutes(alert.start_time_minutes));
+        result += " - " + AlertType.time2Hours(alert.end_time_minutes)+":"+ String.format("%02d",AlertType.time2Minutes(alert.end_time_minutes))+ " ";
+        return result;
+    }
     
     HashMap<String, String> createAlertMap(AlertType alert) {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("alertName", alert.name);
         map.put("alertThreshold", String.valueOf((int)alert.threshold));
-        map.put("alertTime", "all day"); //??????????????????????????????????????
+        map.put("alertTime", stringTimeFromAlert(alert));
         map.put("alertMp3File", alert.mp3_file);
         map.put("uuid", alert.uuid);
         
@@ -71,7 +80,7 @@ public class SnoozeActivity extends Activity {
            ListView lv = (ListView)parent;
            @SuppressWarnings("unchecked")
            HashMap<String, String> item = (HashMap<String, String>)lv.getItemAtPosition(position);
-           Log.e(TAG, "Item clicked " + listViewLow.getItemAtPosition(position) + item.get("uuid"));
+           Log.e(TAG, "Item clicked " + lv.getItemAtPosition(position) + item.get("uuid"));
            
            //The XML for each item in the list (should you use a custom XML) must have android:longClickable="true" 
            // as well (or you can use the convenience method lv.setLongClickable(true);). This way you can have a list 
@@ -167,16 +176,21 @@ public class SnoozeActivity extends Activity {
             Log.wtf(TAG, "ERRRO displayStatus: aba != null, but activeBgAlert == null exiting...");
             return;
         }
-
+        String status;
         if(activeBgAlert == null ) {
-            String status = "No active alert exists";
+            status = "No active alert exists";
             alertStatus.setText(status);
             buttonSnooze.setVisibility(View.GONE);
             snoozeValue.setVisibility(View.GONE);
         } else {
-            String status = "Active alert exists named \"" + activeBgAlert.name + "\" Alert snoozed until " + 
+            
+            if (aba.next_alert_at > new Date().getTime()) {
+                status = "Active alert exists named \"" + activeBgAlert.name + "\" Alert snoozed until " + 
                     DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date(aba.next_alert_at)) + 
                     " (" + (aba.next_alert_at - new Date().getTime()) / 60000 + " minutes left)";
+            } else {
+                status = "Active alert exists named \"" + activeBgAlert.name + "\" (not snoozed)";
+            }
             alertStatus.setText(status);
         }
         

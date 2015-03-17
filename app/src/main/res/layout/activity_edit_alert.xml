@@ -17,13 +17,13 @@
 
     <LinearLayout
     android:id="@+id/linear_layout_alert"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_below="@+id/view_alert_header">
     >
         <LinearLayout
-	    android:orientation="vertical"
+	    android:orientation="horizontal"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    >
@@ -32,7 +32,7 @@
 		        android:layout_width="wrap_content" 
 		        android:layout_height="wrap_content" 
 		        android:gravity="left"
-		        android:text="Enter name for alert"
+		        android:text="Enter name for alert:"
 		        android:textSize="24dp"
 		        />
 	        
@@ -47,12 +47,11 @@
 		        android:singleLine="true"
 		        android:textAlignment="center"
 		        android:textSize="24dp"
-		        android:hint="Enter name for alert"
 		        android:layout_alignParentStart="true" />
 	    </LinearLayout>
 		    
 		<LinearLayout
-        android:orientation="vertical"
+        android:orientation="horizontal"
          android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         >    
@@ -61,7 +60,7 @@
                 android:layout_width="wrap_content" 
                 android:layout_height="wrap_content" 
                 android:gravity="left"
-                android:text="Enter threshold for alert"
+                android:text="Enter threshold for alert:"
                 android:textSize="24dp"
                 />
 		     
@@ -76,12 +75,11 @@
 		        android:singleLine="true"
 		        android:textAlignment="center"
 		        android:textSize="24dp"
-		        android:hint="Enter threshold for alert"
 		        android:layout_alignParentStart="true" />
 		</LinearLayout>
 	    
 		<LinearLayout
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         >    
@@ -91,7 +89,7 @@
                 android:layout_width="wrap_content" 
                 android:layout_height="wrap_content" 
                 android:gravity="left"
-                android:text="Enter file to play"
+                android:text="Enter file to play:"
                 android:textSize="24dp"
                 />		 
 	    <EditText
@@ -105,9 +103,77 @@
 	        android:singleLine="true"
 	        android:textAlignment="center"
 	        android:textSize="24dp"
-	        android:hint="Enter file to play"
 	        android:layout_alignParentStart="true" />
+	    
+	    <Button
+			android:id="@+id/Button_alert_mp3_file"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Choose file" />
+	    
 	    </LinearLayout>
+	    
+		<LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+		    <TextView  
+                android:id="@+id/view_alert_time"
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content" 
+                android:gravity="left"
+                android:text="Select time for alert:"
+                android:textSize="24dp"
+                />
+            
+            <CheckBox
+                android:id="@+id/check_alert_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" 
+                android:text="all day"
+                android:textSize="24dp"/>
+        </LinearLayout>
+
+		<LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+		
+            <TextView  
+                android:id="@+id/view_alert_time_start"
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content" 
+                android:gravity="left"
+                android:text="start time:" 
+                android:textSize="24dp"
+                />
+            
+            <TimePicker
+                android:id="@+id/timePicker_alert_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:timePickerMode="spinner"/>
+
+            <TextView  
+                android:id="@+id/view_alert_time_end"
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content" 
+                android:gravity="left"
+                android:text="end time:"
+                android:textSize="24dp"
+                />
+            
+            <TimePicker
+            android:id="@+id/timePicker_alert_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:timePickerMode="spinner"/>
+            
+            
+        </LinearLayout>
+		
+	    
     </LinearLayout>
 
     <LinearLayout
@@ -132,6 +198,7 @@
             android:text="remove alert"
             />
     </LinearLayout>
+    
    
 
 </RelativeLayout>
