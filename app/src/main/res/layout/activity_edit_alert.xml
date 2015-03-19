@@ -173,6 +173,28 @@
             
         </LinearLayout>
 		
+		<LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+            <TextView  
+                android:id="@+id/view_alert_override_silent"
+                android:layout_width="wrap_content" 
+                android:layout_height="wrap_content" 
+                android:gravity="left"
+                android:text="alert will override silent/vibrate mode"
+                android:textSize="24dp"
+                />
+            
+            <CheckBox
+                android:id="@+id/check_override_silent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" 
+                android:text=""
+                android:textSize="24dp"/>
+            
+        </LinearLayout>
 	    
     </LinearLayout>
 

@@ -48,7 +48,9 @@ public class EditAlertActivity extends Activity {
     TimePicker tpTimeStart;
     TimePicker tpTimeEnd;
     
-    
+    TextView viewAlertOverrideText;
+    CheckBox checkboxAlertOverride;
+       
     String uuid;
     boolean above;
     final int CHOOSE_FILE = 1;
@@ -94,6 +96,8 @@ public class EditAlertActivity extends Activity {
         tpTimeStart = (TimePicker) findViewById(R.id.timePicker_alert_start);
         tpTimeEnd = (TimePicker) findViewById(R.id.timePicker_alert_end);
         
+        viewAlertOverrideText = (TextView) findViewById(R.id.view_alert_override_silent);
+        checkboxAlertOverride = (CheckBox) findViewById(R.id.check_override_silent);
         addListenerOnButtons();
         
         uuid = getExtra(savedInstanceState, "uuid");
@@ -102,6 +106,7 @@ public class EditAlertActivity extends Activity {
             // This is a new alert
             above = Boolean.parseBoolean(getExtra(savedInstanceState, "above"));
             checkboxAllDay.setChecked(true);
+            checkboxAlertOverride.setChecked(true);
             
             buttonRemove.setVisibility(View.GONE);
             status = "adding " + (above ? "high" : "low") + " alert";
@@ -128,6 +133,7 @@ public class EditAlertActivity extends Activity {
             alertThreshold.setText(String.valueOf((int)at.threshold));
             alertMp3File.setText(at.mp3_file);
             checkboxAllDay.setChecked(at.all_day);
+            checkboxAlertOverride.setChecked(at.override_silent_mode);
             
             status = "editing " + (above ? "high" : "low") + " alert";
             tpTimeStart.setIs24HourView(true);
@@ -140,6 +146,7 @@ public class EditAlertActivity extends Activity {
 
         viewHeader.setText(status);
         enableAllDayControls();
+        enableVibrateControls();
         
         
     }
@@ -159,7 +166,16 @@ public class EditAlertActivity extends Activity {
         }
     }
     
-    private boolean verifyThreshold(boolean above, int threshold) {
+    void enableVibrateControls() {
+        boolean overrideSilence = checkboxAlertOverride.isChecked();
+        if(overrideSilence) {
+            checkboxAlertOverride.setText("");
+        } else {
+            checkboxAlertOverride.setText("Warning, no alert will be played at silent/vibrate mode!!!");
+        }
+    }
+    
+    private boolean verifyThreshold(int threshold) {
         List<AlertType> lowAlerts = AlertType.getAll(false);
         List<AlertType> highAlerts = AlertType.getAll(true);
         
@@ -243,12 +259,13 @@ public class EditAlertActivity extends Activity {
                     Toast.makeText(getApplicationContext(), "start time and end time of alert can not be equal",Toast.LENGTH_LONG).show();
                     return;                    
                 }
+                boolean overrideSilentMode = checkboxAlertOverride.isChecked();
                 
                 String mp3_file = alertMp3File.getText().toString();
                 if (uuid != null) {
-                    AlertType.update_alert(uuid, alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd);
+                    AlertType.update_alert(uuid, alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode);
                 }  else {
-                    AlertType.add_alert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd);
+                    AlertType.add_alert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode);
                 }
                 Intent returnIntent = new Intent();
                 setResult(RESULT_OK,returnIntent);
@@ -291,7 +308,14 @@ public class EditAlertActivity extends Activity {
             public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
                 enableAllDayControls();
             }
-        });   
+        });
+        
+        checkboxAlertOverride.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//          @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                enableVibrateControls();
+            }
+        });
     }
     
     

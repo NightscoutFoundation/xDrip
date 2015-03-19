@@ -59,11 +59,16 @@ public class SnoozeActivity extends Activity {
                 fileName = fileName.substring(pos+1);
             }
         }
+        String overrideSilentMode = "Will play even on silent/vibrate mode"; 
+        if(alert.override_silent_mode == false) {
+            overrideSilentMode = "Warning - no alert on silent/vibrate mode!!!";
+        }
         
         map.put("alertName", alert.name);
         map.put("alertThreshold", String.valueOf((int)alert.threshold));
         map.put("alertTime", stringTimeFromAlert(alert));
         map.put("alertMp3File", fileName);
+        map.put("alertOverrideSilenceMode", overrideSilentMode);
         map.put("uuid", alert.uuid);
         
         return map;
@@ -223,11 +228,11 @@ public class SnoozeActivity extends Activity {
     void FillLists() {
         ArrayList<HashMap<String, String>> feedList;
         feedList = createAlertsMap(false);
-        SimpleAdapter simpleAdapter = new SimpleAdapter(this, feedList, R.layout.row_alerts, new String[]{"alertName", "alertThreshold", "alertTime", "alertMp3File"}, new int[]{R.id.alertName, R.id.alertThreshold, R.id.alertTime, R.id.alertMp3File});
+        SimpleAdapter simpleAdapter = new SimpleAdapter(this, feedList, R.layout.row_alerts, new String[]{"alertName", "alertThreshold", "alertTime", "alertMp3File", "alertOverrideSilenceMode"}, new int[]{R.id.alertName, R.id.alertThreshold, R.id.alertTime, R.id.alertMp3File, R.id.alertOverrideSilent});
         listViewLow.setAdapter(simpleAdapter);
         
         feedList = createAlertsMap(true);
-        SimpleAdapter simpleAdapterHigh = new SimpleAdapter(this, feedList, R.layout.row_alerts, new String[]{"alertName", "alertThreshold", "alertTime", "alertMp3File"}, new int[]{R.id.alertName, R.id.alertThreshold, R.id.alertTime, R.id.alertMp3File});
+        SimpleAdapter simpleAdapterHigh = new SimpleAdapter(this, feedList, R.layout.row_alerts, new String[]{"alertName", "alertThreshold", "alertTime", "alertMp3File", "alertOverrideSilenceMode"}, new int[]{R.id.alertName, R.id.alertThreshold, R.id.alertTime, R.id.alertMp3File, R.id.alertOverrideSilent});
         listViewHigh.setAdapter(simpleAdapterHigh);
         
         

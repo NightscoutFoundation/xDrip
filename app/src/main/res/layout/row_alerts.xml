@@ -37,7 +37,16 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="TextView"
-          android:gravity="center" 
+        android:gravity="center" 
+        android:layout_weight="1"
+        android:textAppearance="?android:attr/textAppearanceMedium"  />
+      
+      <TextView
+        android:id="@+id/alertOverrideSilent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:gravity="center" 
         android:layout_weight="1"
         android:textAppearance="?android:attr/textAppearanceMedium"  />
  

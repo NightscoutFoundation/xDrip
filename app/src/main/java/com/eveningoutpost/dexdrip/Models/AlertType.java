@@ -69,7 +69,7 @@ public class AlertType extends Model {
     @Column(name = "end_time_minutes")
     public int end_time_minutes;
 
-    @Column(name = "minutes_between") //??? what is the differance between minutes_between and default_snooze ???
+    @Column(name = "minutes_between") //??? what is the difference between minutes_between and default_snooze ???
     public int minutes_between;
 
     @Column(name = "default_snooze")
@@ -182,7 +182,8 @@ public class AlertType extends Model {
             int minutes_between, 
             String mp3_file,
             int start_time_minutes,
-            int end_time_minutes) {
+            int end_time_minutes,
+            boolean override_silent_mode) {
         AlertType at = new AlertType();
         at.name = name;
         at.above = above;
@@ -194,6 +195,7 @@ public class AlertType extends Model {
         at.mp3_file = mp3_file;
         at.start_time_minutes = start_time_minutes;
         at.end_time_minutes = end_time_minutes;
+        at.override_silent_mode = override_silent_mode;
         at.save();
     }
     
@@ -206,7 +208,8 @@ public class AlertType extends Model {
             int minutes_between, 
             String mp3_file,
             int start_time_minutes,
-            int end_time_minutes) {
+            int end_time_minutes,
+            boolean override_silent_mode) {
         AlertType at = get_alert(uuid);
         at.name = name;
         at.above = above;
@@ -218,6 +221,7 @@ public class AlertType extends Model {
         at.mp3_file = mp3_file;
         at.start_time_minutes = start_time_minutes;
         at.end_time_minutes = end_time_minutes;
+        at.override_silent_mode = override_silent_mode;
         at.save();
     }
     public static void remove_alert(String uuid) {
@@ -292,9 +296,9 @@ public class AlertType extends Model {
     public static void testAll() {
         
         remove_all();
-        add_alert("high alert 1", true, 180, true, 10, null, 0, 0);
-        add_alert("high alert 2", true, 200, true, 10, null, 0, 0);
-        add_alert("high alert 3", true, 220, true, 10, null, 0, 0);
+        add_alert("high alert 1", true, 180, true, 10, null, 0, 0, true);
+        add_alert("high alert 2", true, 200, true, 10, null, 0, 0, true);
+        add_alert("high alert 3", true, 220, true, 10, null, 0, 0, true);
         print_all();
         AlertType a1 = get_highest_active_alert(190, 0);
         Log.e(TAG, "a1 = " + a1.toString());
@@ -305,8 +309,8 @@ public class AlertType extends Model {
         AlertType a3 = get_alert(a1.uuid);
         Log.e(TAG, "a1 == a3 ? need to see true " + (a1==a3) + a1 + " " + a3);
         
-        add_alert("low alert 1", false, 80, true, 10, null, 0, 0);
-        add_alert("low alert 2", false, 60, true, 10, null, 0, 0);
+        add_alert("low alert 1", false, 80, true, 10, null, 0, 0, true);
+        add_alert("low alert 2", false, 60, true, 10, null, 0, 0, true);
         
         AlertType al1 = get_highest_active_alert(90, 0);
         Log.e(TAG, "al1 should be null  " + al1);
