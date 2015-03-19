@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
 import java.util.Date;
+import java.util.List;
 
 import android.database.Cursor;
 import android.app.Activity;
@@ -51,6 +52,8 @@ public class EditAlertActivity extends Activity {
     String uuid;
     boolean above;
     final int CHOOSE_FILE = 1;
+    final int MIN_ALERT = 40;
+    final int MAX_ALERT = 400;
     
     private final static String TAG = AlertPlayer.class.getSimpleName();
     
@@ -135,9 +138,6 @@ public class EditAlertActivity extends Activity {
             tpTimeEnd.setCurrentMinute(AlertType.time2Minutes(at.end_time_minutes));
         }
 
-        
-
-        
         viewHeader.setText(status);
         enableAllDayControls();
         
@@ -158,6 +158,54 @@ public class EditAlertActivity extends Activity {
             tpTimeEnd.setVisibility(View.VISIBLE);
         }
     }
+    
+    private boolean verifyThreshold(boolean above, int threshold) {
+        List<AlertType> lowAlerts = AlertType.getAll(false);
+        List<AlertType> highAlerts = AlertType.getAll(true);
+        
+        if(threshold < MIN_ALERT || threshold > MAX_ALERT) { 
+            Toast.makeText(getApplicationContext(), "threshhold has to be between " + MIN_ALERT + " and " + MAX_ALERT,Toast.LENGTH_LONG).show();
+            return false;
+        }
+        if (uuid == null) {
+            // We want to make sure that for each threashold there is only one alert. Otherwise, which file should we play.
+            for (AlertType lowAlert : lowAlerts) {
+                if(lowAlert.threshold == threshold) {
+                    Toast.makeText(getApplicationContext(), 
+                            "Each alert should have it's own threshold. Please choose another threshold.",Toast.LENGTH_LONG).show();
+                    return false;
+                }
+            }
+            for (AlertType highAlert : highAlerts) {
+                if(highAlert.threshold == threshold) {
+                    Toast.makeText(getApplicationContext(), 
+                            "Each alert should have it's own threshold. Please choose another threshold.",Toast.LENGTH_LONG).show();
+                    return false;
+                }
+            }
+        }
+        // high alerts have to be higher than all low alerts...
+        if(above) {
+            for (AlertType lowAlert : lowAlerts) {
+                if(threshold < lowAlert.threshold  ) {
+                    Toast.makeText(getApplicationContext(), 
+                            "High alert threshold has to be higher than all low alerts. Please choose another threshold.",Toast.LENGTH_LONG).show();
+                    return false;
+                }
+            }
+        } else {
+            // low alert has to be lower than all high alerts
+            for (AlertType highAlert : highAlerts) {
+                if(threshold > highAlert.threshold  ) {
+                    Toast.makeText(getApplicationContext(), 
+                            "Low alert threshold has to be higher than all low alerts. Please choose another threshold.",Toast.LENGTH_LONG).show();
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
 
     public void addListenerOnButtons() {
         
@@ -169,11 +217,10 @@ public class EditAlertActivity extends Activity {
                 try {
                     threshold = Integer.parseInt(alertThreshold.getText().toString());
                 }
-                    catch (NumberFormatException nfe) {
-                        Log.e(TAG, "Invalid number", nfe);
-                    }
-                if(threshold < 40 || threshold > 400) {
-                    Toast.makeText(getApplicationContext(), "threshhold has to be between 40 and 400",Toast.LENGTH_LONG).show();
+                catch (NumberFormatException nfe) {
+                    Log.e(TAG, "Invalid number", nfe);
+                }
+                if(!verifyThreshold(threshold)) {
                     return;
                 }
                 
@@ -192,7 +239,7 @@ public class EditAlertActivity extends Activity {
                    timeEnd == AlertType.toTime(24, 0)) {
                     allDay = true;
                 }
-                if (timeStart == timeEnd) {
+                if (timeStart == timeEnd && (allDay==false)) {
                     Toast.makeText(getApplicationContext(), "start time and end time of alert can not be equal",Toast.LENGTH_LONG).show();
                     return;                    
                 }
