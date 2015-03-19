@@ -51,10 +51,19 @@ public class SnoozeActivity extends Activity {
     
     HashMap<String, String> createAlertMap(AlertType alert) {
         HashMap<String, String> map = new HashMap<String, String>();
+        // We only have place to display the file and not it's location
+        String fileName = alert.mp3_file;
+        if (fileName != null) {
+            int pos = fileName.lastIndexOf("/");
+            if (pos != -1) {
+                fileName = fileName.substring(pos+1);
+            }
+        }
+        
         map.put("alertName", alert.name);
         map.put("alertThreshold", String.valueOf((int)alert.threshold));
         map.put("alertTime", stringTimeFromAlert(alert));
-        map.put("alertMp3File", alert.mp3_file);
+        map.put("alertMp3File", fileName);
         map.put("uuid", alert.uuid);
         
         return map;
