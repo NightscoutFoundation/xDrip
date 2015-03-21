@@ -50,6 +50,10 @@ public class SettingsActivity extends PreferenceActivity {
 
         fakeHeader = new PreferenceCategory(this);
         getPreferenceScreen().addPreference(fakeHeader);
+        addPreferencesFromResource(R.xml.pref_share);
+
+        fakeHeader = new PreferenceCategory(this);
+        getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_data_sync);
 
         fakeHeader = new PreferenceCategory(this);

@@ -13,7 +13,7 @@
             android:title="@string/pref_title_mongodb"
             android:summary="@string/pref_summary_mongodb_enabled">
 
-            <CheckBoxPreference
+            <SwitchPreference
                 android:key="cloud_storage_mongodb_enable"
                 android:title="Enable Nightscout Mongo DB sync"
                 android:defaultValue="false" />

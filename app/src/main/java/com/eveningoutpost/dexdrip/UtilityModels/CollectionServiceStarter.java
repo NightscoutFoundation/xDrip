@@ -41,7 +41,7 @@ public class CollectionServiceStarter {
         return false;
     }
     public static void newStart(Context context) {
-        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter();
+        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
         collectionServiceStarter.start(context);
     }
 
@@ -70,8 +70,12 @@ public class CollectionServiceStarter {
         Log.d("ColServiceStarter", collection_method);
     }
 
+    public CollectionServiceStarter(Context context) {
+        mContext = context;
+    }
+
     public static void restartCollectionService(Context context) {
-        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter();
+        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
         collectionServiceStarter.stopBtShareService();
         collectionServiceStarter.stopBtWixelService();
         collectionServiceStarter.stopWifWixelThread();

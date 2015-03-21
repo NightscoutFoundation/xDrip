@@ -25,6 +25,8 @@ import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 
+import java.lang.reflect.Method;
+
 
 public class SystemStatus extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     private String menu_name = "System Status";
@@ -132,14 +134,30 @@ public class SystemStatus extends Activity implements NavigationDrawerFragment.N
     public void forgetDeviceListener() {
         forget_device.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if(mBluetoothManager != null) {
+                if(mBluetoothManager != null && ActiveBluetoothDevice.first() != null) {
                     BluetoothAdapter bluetoothAdapter = mBluetoothManager.getAdapter();
                     if(bluetoothAdapter != null) {
+                        for( BluetoothDevice bluetoothDevice : bluetoothAdapter.getBondedDevices()) {
+                            if(bluetoothDevice.getAddress().compareTo(ActiveBluetoothDevice.first().address) == 0) {
+                                try {
+                                    Method m = bluetoothDevice.getClass().getMethod("removeBond", (Class[]) null);
+                                    m.invoke(bluetoothDevice, (Object[]) null);
+                                    notes.append("\n- Bluetooth unbonded, if using share tell it to forget your device.");
+                                    notes.append("\n- Scan for devices again to set connection back up!");
+                                } catch (Exception e) { Log.e("SystemStatus", e.getMessage()); }
+                            }
+                        }
+
+                        ActiveBluetoothDevice.forget();
                         bluetoothAdapter.disable();
                         bluetoothAdapter.enable();
+                        try {
+                            wait(1000);
+                        } catch(Exception e) {
+                            Log.e("SystemStatus", "Error stalling");
+                        }
                     }
                 }
-                ActiveBluetoothDevice.forget();
                 CollectionServiceStarter.restartCollectionService(getApplicationContext());
                 set_current_values();
             }

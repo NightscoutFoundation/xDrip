@@ -5,7 +5,6 @@
         android:dependency="I_understand"
         android:title="Data Source"
         android:key="dataSource">
-
         <ListPreference
             android:key="dex_collection_method"
             android:title="Dexcom Data Collection Method"
@@ -17,16 +16,6 @@
             android:key="run_service_in_foreground"
             android:title="Run Collection Service in foreground"
             android:summary="Running in foreground prevents android from killing the service to free up memory but it creates an annoying notification, Not recommended."
-            android:defaultValue="false" />
-        <EditTextPreference
-            android:title="10 Character Dexcom Receiver Serial Number"
-            android:key="share_key"
-            android:defaultValue="SM00000000">
-        </EditTextPreference>
-        <CheckBoxPreference
-            android:key="share_auth_mode_two"
-            android:title="Try share Auth Mode 2"
-            android:summary="Only use this if you are instructed to do so."
             android:defaultValue="false" />
     </PreferenceCategory>
 

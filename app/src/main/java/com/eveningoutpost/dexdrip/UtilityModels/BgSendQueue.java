@@ -15,6 +15,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.ShareModels.ShareRest;
 
 import java.util.List;
 
@@ -70,6 +71,7 @@ public class BgSendQueue extends Model {
         bgSendQueue.success = false;
         bgSendQueue.mongo_success = false;
         bgSendQueue.save();
+        Log.d("BGQueue", "New value added to queue!");
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -105,6 +107,12 @@ public class BgSendQueue extends Model {
         if(prefs.getBoolean("broadcast_to_pebble", false)) {
             PebbleSync pebbleSync = new PebbleSync();
             pebbleSync.sendData(context, bgReading);
+        }
+
+        if(prefs.getBoolean("share_upload", false)) {
+            ShareRest shareRest = new ShareRest(context);
+            Log.w("ShareRest", "About to call ShareRest!!");
+            shareRest.sendBgData(bgReading);
         }
     }
 

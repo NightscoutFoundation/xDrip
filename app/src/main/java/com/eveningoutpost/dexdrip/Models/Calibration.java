@@ -607,7 +607,11 @@ public class Calibration extends Model {
                 .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 4)))
                 .orderBy("bg desc")
                 .executeSingle();
-        return calibration.bg;
+        if(calibration != null) {
+            return calibration.bg;
+        } else {
+            return 120;
+        }
     }
 
     public static double min_recent() {
@@ -620,7 +624,11 @@ public class Calibration extends Model {
                 .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 4)))
                 .orderBy("bg asc")
                 .executeSingle();
-        return calibration.bg;
+        if(calibration != null) {
+            return calibration.bg;
+        } else {
+            return 100;
+        }
     }
 
     public static List<Calibration> latest(int number) {

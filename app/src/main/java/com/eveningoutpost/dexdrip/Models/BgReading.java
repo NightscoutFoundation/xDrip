@@ -182,6 +182,7 @@ public class BgReading extends Model {
                 bgReading.calibration_uuid = calibration.uuid;
                 bgReading.raw_data = (sensorRecord.getUnfiltered() / 1000);
                 bgReading.timestamp = sensorRecord.getSystemTime().getTime() + addativeOffset;
+                if(bgReading.timestamp > new Date().getTime()) { return; }
                 bgReading.uuid = UUID.randomUUID().toString();
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
                 bgReading.synced = false;
