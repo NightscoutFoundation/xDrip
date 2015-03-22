@@ -107,6 +107,8 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         newDataReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context ctx, Intent intent) {
+                holdViewport.set(0, 0, 0, 0);
+                setupCharts();
                 updateCurrentBgInfo();
             }
         };
