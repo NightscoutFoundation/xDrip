@@ -84,11 +84,19 @@ public class Notifications {
 
         List<BgReading> bgReadings = BgReading.latest(3);
         List<Calibration> calibrations = Calibration.allForSensorInLastFourDays();
+        if(bgReadings.size() < 3) { return; }
+        if(calibrations.size() < 2) { return; }
         BgReading bgReading = bgReadings.get(0);
 
         if (bg_notifications && sensor != null) {
             if (bgGraphBuilder.unitized(bgReading.calculated_value) >= high || bgGraphBuilder.unitized(bgReading.calculated_value) <= low) {
-                bgAlert(bgReading.displayValue(mContext), bgReading.slopeArrow());
+                if(bgReading.calculated_value > 14) {
+                    if (bgReading.hide_slope) {
+                        bgAlert(bgReading.displayValue(mContext), "");
+                    } else {
+                        bgAlert(bgReading.displayValue(mContext), bgReading.slopeArrow());
+                    }
+                }
             } else {
                 clearBgAlert();
             }

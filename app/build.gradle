@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.eveningoutpost.dexdrip"
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
@@ -17,8 +17,12 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.squareup.okhttp:okhttp:2.2.0'
+    testCompile 'com.squareup.okhttp:mockwebserver:2.2.0'
     compile 'com.google.code.gson:gson:2.3'
     compile 'org.mongodb:mongo-java-driver:2.10.1'
-    compile 'com.squareup.retrofit:retrofit:1.7.1'
+    compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.getpebble:pebblekit:2.6.0@aar'
+    compile 'io.reactivex:rxjava:1.0.0'
+    compile 'ch.acra:acra:4.5.0'
 }

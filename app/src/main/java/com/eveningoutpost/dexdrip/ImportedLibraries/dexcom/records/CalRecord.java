@@ -34,6 +34,8 @@ public class CalRecord extends GenericTimestampRecord {
             calSubrecords[i] = new CalSubrecord(temp, displayTimeOffset);
             start += SUB_LEN;
         }
+
+        Log.d("ShareTest", "slope: " + slope + " intercept: " + intercept);
     }
 
     public double getSlope() {

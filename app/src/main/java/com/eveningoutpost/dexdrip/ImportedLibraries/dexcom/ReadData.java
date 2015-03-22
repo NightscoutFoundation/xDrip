@@ -36,6 +36,7 @@ public class ReadData {
     private UsbDeviceConnection mConnection;
     private UsbDevice mDevice;
 
+    public ReadData(){}
     public ReadData(UsbSerialDriver device) {
         mSerialDevice = device;
     }
@@ -119,6 +120,13 @@ public class ReadData {
         Log.d(TAG, "Reading Cal Records page...");
         return readDataBasePage(recordType, endPage);
     }
+    public byte[] getRecentCalRecordsTest() {
+        Log.d(TAG, "Reading Cal Records page range...");
+        int recordType = Constants.RECORD_TYPES.CAL_SET.ordinal();
+        int endPage = readDataBasePageRange(recordType);
+        Log.d(TAG, "Reading Cal Records page...");
+        return readDataBasePageTest(recordType, endPage);
+    }
 
     public boolean ping() {
         writeCommand(Constants.PING);
@@ -186,6 +194,21 @@ public class ReadData {
         byte[] readData = read(2122).getData();
         return ParsePage(readData, recordType);
     }
+    private byte[] readDataBasePageTest(int recordType, int page) {
+        byte numOfPages = 1;
+        if (page < 0){
+            throw new IllegalArgumentException("Invalid page requested:" + page);
+        }
+        ArrayList<Byte> payload = new ArrayList<Byte>();
+        payload.add((byte) recordType);
+        byte[] pageInt = ByteBuffer.allocate(4).putInt(page).array();
+        payload.add(pageInt[3]);
+        payload.add(pageInt[2]);
+        payload.add(pageInt[1]);
+        payload.add(pageInt[0]);
+        payload.add(numOfPages);
+        return writeCommandTest(Constants.READ_DATABASE_PAGES, payload);
+    }
 
     private void writeCommand(int command, ArrayList<Byte> payload) {
         byte[] packet = new PacketBuilder(command, payload).compose();
@@ -200,7 +223,10 @@ public class ReadData {
             }
         }
     }
-
+    private byte[] writeCommandTest(int command, ArrayList<Byte> payload) {
+        byte[] packet = new PacketBuilder(command, payload).compose();
+        return packet;
+    }
     private void writeCommand(int command) {
         byte[] packet = new PacketBuilder(command).compose();
         if (mSerialDevice != null) {

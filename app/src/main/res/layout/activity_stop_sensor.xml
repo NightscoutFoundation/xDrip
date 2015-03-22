@@ -7,52 +7,41 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:id="@+id/stop_sensor_container">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Stop Sensor"
+        android:id="@+id/textView3"
+        android:layout_gravity="center_horizontal" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Current Sensor Information"
-            android:id="@+id/textView3" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Only stop your sensor when you actually plan to remove it, otherwise leave it running!"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="40dp"
+        android:id="@+id/stop_sensor_instructions"
+        android:layout_gravity="right"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:gravity="center_vertical|center_horizontal" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/sensor_age_container"
-            android:layout_gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Sensor Age: "
-                android:layout_below="@+id/textView"
-                android:layout_alignParentStart="true"
-                android:layout_marginTop="111dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="47dp"
-                android:id="@+id/sensor_age" />
-        </LinearLayout>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="STOP SENSOR"
-            android:id="@+id/stop_sensor"
-            android:layout_toEndOf="@+id/sensor_age_container"
-            android:layout_alignParentBottom="true"
-            android:layout_alignEnd="@+id/textView3" />
-
-    </RelativeLayout>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="STOP SENSOR"
+        android:id="@+id/stop_sensor"
+        android:layout_toEndOf="@+id/sensor_age_container"
+        android:layout_alignParentBottom="true"
+        android:layout_alignEnd="@+id/textView3"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp" />
 
 
 </LinearLayout>

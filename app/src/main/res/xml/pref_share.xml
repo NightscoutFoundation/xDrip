@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="Dexcom Share"
+        android:key="dexcomDataSource">
+        <EditTextPreference
+            android:title="10 Character Dexcom Receiver Serial Number"
+            android:key="share_key"
+            android:defaultValue="SM00000000">
+        </EditTextPreference>
+        <!--<CheckBoxPreference-->
+            <!--android:key="share_upload"-->
+            <!--android:title="Upload BG values as Dexcom Share"-->
+            <!--android:summary="If you are using Dexcom Share, choose this option."-->
+            <!--android:defaultValue="false" />-->
+        <!--<EditTextPreference-->
+            <!--android:dependency="share_upload"-->
+            <!--android:key="dexcom_account_name"-->
+            <!--android:title="Dexcom Account Login"-->
+            <!--android:summary="Your login for Dexcoms Website"-->
+            <!--android:defaultValue=""/>-->
+        <!--<EditTextPreference-->
+            <!--android:dependency="share_upload"-->
+            <!--android:key="dexcom_account_password"-->
+            <!--android:title="Dexcom Account Password"-->
+            <!--android:inputType="textPassword"-->
+            <!--android:summary="Your password for Dexcoms Website"-->
+            <!--android:defaultValue=""/>-->
+    </PreferenceCategory>
+
+</PreferenceScreen>

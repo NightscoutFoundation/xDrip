@@ -31,8 +31,9 @@ import lecho.lib.hellocharts.view.Chart;
  * Created by stephenblack on 11/15/14.
  */
 public class BgGraphBuilder {
-    public double  end_time = new Date().getTime() + (60000 * 10);
-    public double  start_time = end_time - (60000 * 60 * 24);
+    public int fuzzer = (1000 * 60 * 5);
+    public double  end_time = (new Date().getTime() + (60000 * 10)) / fuzzer;
+    public double  start_time = end_time - ((60000 * 60 * 24)) / fuzzer;
     public Context context;
     public SharedPreferences prefs;
     public double highMark;
@@ -47,10 +48,11 @@ public class BgGraphBuilder {
 
     private double endHour;
     private final int numValues =(60/5)*24;
-    private final List<BgReading> bgReadings = BgReading.latestForGraph( numValues, start_time);
+    private final List<BgReading> bgReadings = BgReading.latestForGraph( numValues, (start_time * fuzzer));
     private List<PointValue> inRangeValues = new ArrayList<PointValue>();
     private List<PointValue> highValues = new ArrayList<PointValue>();
     private List<PointValue> lowValues = new ArrayList<PointValue>();
+    private List<PointValue> rawInterpretedValues = new ArrayList<PointValue>();
     public Viewport viewport;
 
 
@@ -95,6 +97,7 @@ public class BgGraphBuilder {
         lines.add(inRangeValuesLine());
         lines.add(lowValuesLine());
         lines.add(highValuesLine());
+        lines.add(rawInterpretedLine());
         return lines;
     }
 
@@ -125,18 +128,28 @@ public class BgGraphBuilder {
         return inRangeValuesLine;
     }
 
+    public Line rawInterpretedLine() {
+        Line line = new Line(rawInterpretedValues);
+        line.setHasLines(false);
+        line.setPointRadius(1);
+        line.setHasPoints(true);
+        return line;
+    }
+
     private void addBgReadingValues() {
         for (BgReading bgReading : bgReadings) {
-            if (bgReading.calculated_value >= 400) {
-                highValues.add(new PointValue((float) bgReading.timestamp, (float) unitized(400)));
+            if (bgReading.raw_calculated != 0 && prefs.getBoolean("interpret_raw", false)) {
+                rawInterpretedValues.add(new PointValue((float) (bgReading.timestamp/fuzzer), (float) unitized(bgReading.raw_calculated)));
+            } else if (bgReading.calculated_value >= 400) {
+                highValues.add(new PointValue((float) (bgReading.timestamp/fuzzer), (float) unitized(400)));
             } else if (unitized(bgReading.calculated_value) >= highMark) {
-                highValues.add(new PointValue((float) bgReading.timestamp, (float) unitized(bgReading.calculated_value)));
+                highValues.add(new PointValue((float) (bgReading.timestamp/fuzzer), (float) unitized(bgReading.calculated_value)));
             } else if (unitized(bgReading.calculated_value) >= lowMark) {
-                inRangeValues.add(new PointValue((float) bgReading.timestamp, (float) unitized(bgReading.calculated_value)));
+                inRangeValues.add(new PointValue((float) (bgReading.timestamp/fuzzer), (float) unitized(bgReading.calculated_value)));
             } else if (bgReading.calculated_value >= 40) {
-                lowValues.add(new PointValue((float)bgReading.timestamp, (float) unitized(bgReading.calculated_value)));
-            } else {
-                lowValues.add(new PointValue((float)bgReading.timestamp, (float) unitized(40)));
+                lowValues.add(new PointValue((float)(bgReading.timestamp/fuzzer), (float) unitized(bgReading.calculated_value)));
+            } else if (bgReading.calculated_value > 13) {
+                lowValues.add(new PointValue((float)(bgReading.timestamp/fuzzer), (float) unitized(40)));
             }
         }
     }
@@ -214,19 +227,19 @@ public class BgGraphBuilder {
         GregorianCalendar today = new GregorianCalendar(now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH));
         final java.text.DateFormat timeFormat = hourFormat();
         timeFormat.setTimeZone(TimeZone.getDefault());
-        double start_hour = today.getTime().getTime();
+        double start_hour_block = today.getTime().getTime();
         double timeNow = new Date().getTime();
         for(int l=0; l<=24; l++) {
-            if ((start_hour + (60000 * 60 * (l))) <  timeNow) {
-                if((start_hour + (60000 * 60 * (l + 1))) >=  timeNow) {
-                    endHour = start_hour + (60000 * 60 * (l));
+            if ((start_hour_block + (60000 * 60 * (l))) <  timeNow) {
+                if((start_hour_block + (60000 * 60 * (l + 1))) >=  timeNow) {
+                    endHour = start_hour_block + (60000 * 60 * (l));
                     l=25;
                 }
             }
         }
         for(int l=0; l<=24; l++) {
-            double timestamp = endHour - (60000 * 60 * l);
-            xAxisValues.add(new AxisValue((long)(timestamp), (timeFormat.format(timestamp)).toCharArray()));
+            double timestamp = (endHour - (60000 * 60 * l));
+            xAxisValues.add(new AxisValue((long)(timestamp/fuzzer), (timeFormat.format(timestamp)).toCharArray()));
         }
         xAxis.setValues(xAxisValues);
         xAxis.setHasLines(true);
@@ -247,8 +260,8 @@ public class BgGraphBuilder {
         final java.text.DateFormat timeFormat = hourFormat();
         timeFormat.setTimeZone(TimeZone.getDefault());
         for(int l=0; l<=24; l+=hoursPreviewStep) {
-            double timestamp = endHour - (60000 * 60 * l);
-            previewXaxisValues.add(new AxisValue((long)(timestamp), (timeFormat.format(timestamp)).toCharArray()));
+            double timestamp = (endHour - (60000 * 60 * l));
+            previewXaxisValues.add(new AxisValue((long)(timestamp/fuzzer), (timeFormat.format(timestamp)).toCharArray()));
         }
         Axis previewXaxis = new Axis();
         previewXaxis.setValues(previewXaxisValues);
@@ -260,8 +273,8 @@ public class BgGraphBuilder {
     /////////VIEWPORT RELATED//////////////
     public Viewport advanceViewport(Chart chart, Chart previewChart) {
         viewport = new Viewport(previewChart.getMaximumViewport());
-        viewport.inset((float)(86400000 / 2.5), 0);
-        double distance_to_move = (new Date().getTime()) - viewport.left - (((viewport.right - viewport.left) /2));
+        viewport.inset((float)((86400000 / 2.5)/fuzzer), 0);
+        double distance_to_move = ((new Date().getTime())/fuzzer) - viewport.left - (((viewport.right - viewport.left) /2));
         viewport.offset((float) distance_to_move, 0);
         return viewport;
     }
@@ -290,8 +303,10 @@ public class BgGraphBuilder {
                 df.setMinimumFractionDigits(1);
                 return df.format(mmolConvert(value));
             }
-        } else {
+        } else if (value > 13) {
             return "LOW";
+        } else {
+            return "???";
         }
     }
 

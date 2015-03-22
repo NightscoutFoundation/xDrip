@@ -21,10 +21,15 @@
             android:numeric="decimal"
             android:summary="The minimum value you consider to be in range."
             android:defaultValue="70" />
-        <CheckBoxPreference
+        <SwitchPreference
             android:key="predictive_bg"
             android:title="Display Predictive Values"
-            android:summary="xDrip will attempt to predict readings each minute based on the past few values, this is not always accurate."
+            android:summary="Not Recommended. xDrip will attempt to predict readings each minute based on the past few values."
+            android:defaultValue="false" />
+        <SwitchPreference
+            android:key="interpret_raw"
+            android:title="Interpret Raw Values"
+            android:summary="If using Share, DexDrip will show values when they are normally hidden on the reciever."
             android:defaultValue="false" />
     </PreferenceCategory>
 </PreferenceScreen>

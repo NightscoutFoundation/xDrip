@@ -5,7 +5,6 @@
         android:dependency="I_understand"
         android:title="Data Source"
         android:key="dataSource">
-
         <ListPreference
             android:key="dex_collection_method"
             android:title="Dexcom Data Collection Method"

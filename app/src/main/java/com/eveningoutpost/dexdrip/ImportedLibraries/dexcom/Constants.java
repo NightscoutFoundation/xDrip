@@ -86,8 +86,8 @@ public class Constants {
         DOWN_45(5,"\u2198", "FortyFiveDown"),
         SINGLE_DOWN(6,"\u2193", "SingleDown"),
         DOUBLE_DOWN(7,"\u21CA", "DoubleDown"),
-        NOT_COMPUTABLE(8),
-        OUT_OF_RANGE(9);
+        NOT_COMPUTABLE(8, "", "NOT_COMPUTABLE"),
+        OUT_OF_RANGE(9, "", "OUT_OF_RANGE");
 
         private String arrowSymbol;
         private String trendName;

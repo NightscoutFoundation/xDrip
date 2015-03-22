@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 
 
 public class AddCalibration extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -21,6 +22,11 @@ public class AddCalibration extends Activity implements NavigationDrawerFragment
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(CollectionServiceStarter.isBTShare(getApplicationContext())) {
+            Intent intent = new Intent(this, Home.class);
+            startActivity(intent);
+            finish();
+        }
         setContentView(R.layout.activity_add_calibration);
         addListenerOnButton();
     }
@@ -58,7 +64,7 @@ public class AddCalibration extends Activity implements NavigationDrawerFragment
                         value.setError("Calibration Can Not be blank");
                     }
                 } else {
-                    Log.w("CANNOT CALIBRATE WITHOUT CURRENT SENSOR", "ERROR");
+                    Log.w("CALERROR", "ERROR");
                 }
             }
         });

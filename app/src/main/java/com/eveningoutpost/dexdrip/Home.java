@@ -18,6 +18,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,6 +61,9 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     public boolean updateStuff;
     public boolean updatingPreviewViewport = false;
     public boolean updatingChartViewport = false;
+    boolean isBTWixel;
+    boolean isBTShare;
+    boolean isWifiWixel;
 
     public BgGraphBuilder bgGraphBuilder;
     BroadcastReceiver _broadcastReceiver;
@@ -68,16 +72,15 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(getApplicationContext());
+        collectionServiceStarter.start(getApplicationContext());
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_bg_notification, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_wifi, false);
-
-
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         checkEula();
         setContentView(R.layout.activity_home);
-
     }
 
     public void checkEula() {
@@ -93,10 +96,6 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     protected void onResume(){
         super.onResume();
         checkEula();
-
-        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter();
-        collectionServiceStarter.start(getApplicationContext());
-
         _broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context ctx, Intent intent) {
@@ -108,6 +107,8 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         newDataReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context ctx, Intent intent) {
+                holdViewport.set(0, 0, 0, 0);
+                setupCharts();
                 updateCurrentBgInfo();
             }
         };
@@ -197,37 +198,94 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         final TextView currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
         final TextView notificationText = (TextView)findViewById(R.id.notices);
         notificationText.setText("");
-        boolean isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
-        if((isBTWixel && ActiveBluetoothDevice.first() != null) || (!isBTWixel && WixelReader.IsConfigured(getApplicationContext()))) {
-            if (Sensor.isActive() && (Sensor.currentSensor().started_at + (60000 * 60 * 2)) < new Date().getTime()) {
-                if (BgReading.latest(2).size() > 1) {
-                    List<Calibration> calibrations = Calibration.latest(2);
-                    if (calibrations.size() > 1) {
-                        if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
-                            notificationText.setText("Possible bad calibration slope, please have a glass of water, wash hands, then recalibrate in a few!");
-                        }
-                        displayCurrentInfo();
+        isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
+        isBTShare = CollectionServiceStarter.isBTShare(getApplicationContext());
+        isWifiWixel = CollectionServiceStarter.isWifiWixel(getApplicationContext());
+        if(isBTShare) {
+            if((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+                notificationText.setText("Unfortunately your android version does not support Bluetooth Low Energy");
+            } else {
+                String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
+                if (receiverSn.compareTo("SM00000000") == 0 || receiverSn.length() == 0) {
+                    notificationText.setText("Please set your Dex Receiver Serial Number in App Settings");
+                } else {
+                    if (receiverSn.length() < 10) {
+                        notificationText.setText("Double Check Dex Receiver Serial Number, should be 10 characters, don't forget the letters");
                     } else {
-                        notificationText.setText("Please enter two calibrations to get started!");
+                        if (ActiveBluetoothDevice.first() == null) {
+                            notificationText.setText("Now pair with your Dexcom Share");
+                        } else {
+                            if (!Sensor.isActive()) {
+                                notificationText.setText("Now choose start your sensor in your settings");
+                            } else {
+                                displayCurrentInfo();
+                            }
+                        }
                     }
-                } else {
-                    notificationText.setText("Please wait, need 2 readings from transmitter first.");
                 }
-            } else if (Sensor.isActive() && ((Sensor.currentSensor().started_at + (60000 * 60 * 2))) >= new Date().getTime()) {
-                double waitTime = ((Sensor.currentSensor().started_at + (60000 * 60 * 2)) - (new Date().getTime())) / (60000) ;
-                notificationText.setText("Please wait while sensor warms up! ("+ String.format("%.2f", waitTime)+" minutes)");
-            } else {
-                notificationText.setText("Now start your sensor");
             }
-        } else {
-            if(isBTWixel) {
-                if((android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
-                    notificationText.setText("First pair with your BT device");
-                } else {
-                    notificationText.setText("Your device has to be android 4.3 and up to support Bluetooth wixel");
-                }
+        }
+        if(isBTWixel) {
+            if ((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+                notificationText.setText("Unfortunately your android version does not support Bluetooth Low Energy");
             } else {
+                if (ActiveBluetoothDevice.first() == null) {
+                    notificationText.setText("First pair with your BT device!");
+                } else {
+                    if (Sensor.isActive() && (Sensor.currentSensor().started_at + (60000 * 60 * 2)) < new Date().getTime()) {
+                        if (BgReading.latest(2).size() > 1) {
+                            List<Calibration> calibrations = Calibration.latest(2);
+                            if (calibrations.size() > 1) {
+                                if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
+                                    notificationText.setText("Possible bad calibration slope, please have a glass of water, wash hands, then recalibrate in a few!");
+                                }
+                                displayCurrentInfo();
+                            } else {
+                                notificationText.setText("Please enter two calibrations to get started!");
+                            }
+                        } else {
+                            if(BgReading.latestUnCalculated(2).size() < 2) {
+                                notificationText.setText("Please wait, need 2 readings from transmitter first.");
+                            } else {
+                                List<Calibration> calibrations = Calibration.latest(2);
+                                if (calibrations.size() < 2) {
+                                    notificationText.setText("Please enter two calibrations to get started!");
+                                }
+                            }
+                        }
+                    } else if (Sensor.isActive() && ((Sensor.currentSensor().started_at + (60000 * 60 * 2))) >= new Date().getTime()) {
+                        double waitTime = ((Sensor.currentSensor().started_at + (60000 * 60 * 2)) - (new Date().getTime())) / (60000);
+                        notificationText.setText("Please wait while sensor warms up! (" + String.format("%.2f", waitTime) + " minutes)");
+                    } else {
+                        notificationText.setText("Now start your sensor");
+                    }
+                }
+            }
+        }
+        if(isWifiWixel) {
+            if (!WixelReader.IsConfigured(getApplicationContext())) {
                 notificationText.setText("First configure your wifi wixel reader ip addresses");
+            } else {
+                if (Sensor.isActive() && (Sensor.currentSensor().started_at + (60000 * 60 * 2)) < new Date().getTime()) {
+                    if (BgReading.latest(2).size() > 1) {
+                        List<Calibration> calibrations = Calibration.latest(2);
+                        if (calibrations.size() > 1) {
+                            if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
+                                notificationText.setText("Possible bad calibration slope, please have a glass of water, wash hands, then recalibrate in a few!");
+                            }
+                            displayCurrentInfo();
+                        } else {
+                            notificationText.setText("Please enter two calibrations to get started!");
+                        }
+                    } else {
+                        notificationText.setText("Please wait, need 2 readings from transmitter first.");
+                    }
+                } else if (Sensor.isActive() && ((Sensor.currentSensor().started_at + (60000 * 60 * 2))) >= new Date().getTime()) {
+                    double waitTime = ((Sensor.currentSensor().started_at + (60000 * 60 * 2)) - (new Date().getTime())) / (60000);
+                    notificationText.setText("Please wait while sensor warms up! (" + String.format("%.2f", waitTime) + " minutes)");
+                } else {
+                    notificationText.setText("Now start your sensor");
+                }
             }
         }
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -245,7 +303,8 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         }
         BgReading lastBgreading = BgReading.lastNoSenssor();
         boolean predictive = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("predictive_bg", false);
-            if (lastBgreading != null) {
+        if(isBTShare) { predictive = false; }
+        if (lastBgreading != null) {
             double estimate = 0;
             if ((new Date().getTime()) - (60000 * 11) - lastBgreading.timestamp > 0) {
                 notificationText.setText("Signal Missed");
@@ -260,7 +319,11 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 if(!predictive){
                     estimate=lastBgreading.calculated_value;
                     String stringEstimate = bgGraphBuilder.unitized_string(estimate);
-                    currentBgValueText.setText( stringEstimate + " " + BgReading.slopeArrow((lastBgreading.staticSlope() * 60000)));
+                    String slope_arrow = BgReading.slopeArrow((lastBgreading.calculated_value_slope * 60000));
+                    if(lastBgreading.hide_slope) {
+                        slope_arrow = "";
+                    }
+                    currentBgValueText.setText( stringEstimate + " " + slope_arrow);
                 } else {
                     estimate = BgReading.activePrediction();
                     String stringEstimate = bgGraphBuilder.unitized_string(estimate);

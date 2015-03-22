@@ -20,12 +20,22 @@ import java.util.List;
  */
 public class NavDrawerBuilder {
     public final List<Calibration> last_two_calibrations = Calibration.latest(2);
-    public final List<BgReading> last_two_bgReadings = BgReading.latest(2);
+    public final List<BgReading> last_two_bgReadings = BgReading.latestUnCalculated(2);
     public final List<BgReading> bGreadings_in_last_30_mins = BgReading.last30Minutes();
     public final boolean is_active_sensor = Sensor.isActive();
     public final double time_now = new Date().getTime();
+    public List<Intent> nav_drawer_intents;
+    public List<String> nav_drawer_options;
+    public Context context;
 
-    public final List<String> nav_drawer_options(Context context) {
+    public NavDrawerBuilder(Context aContext) {
+        context = aContext;
+        this.nav_drawer_intents = nav_drawer_intents();
+        this.nav_drawer_options = nav_drawer_options();
+
+    }
+
+    private final List<String> nav_drawer_options() {
         List<String> options = new ArrayList<String>();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean IUnderstand = prefs.getBoolean("I_understand", false);
@@ -43,32 +53,42 @@ public class NavDrawerBuilder {
 //        options.add("Sensor Data Table");
 
         if(is_active_sensor) {
-            if(last_two_bgReadings.size() > 1) {
-                if(last_two_calibrations.size() > 1) {
-                    if(bGreadings_in_last_30_mins.size() >= 2) {
-                        if (time_now - last_two_calibrations.get(0).timestamp < (1000 * 60 * 60)) { //Put steps in place to discourage over calibration
-                            options.add("Override Calibration");
+            if(!CollectionServiceStarter.isBTShare(context)) {
+                if (last_two_bgReadings.size() > 1) {
+                    if (last_two_calibrations.size() > 1) {
+                        if (bGreadings_in_last_30_mins.size() >= 2) {
+                            if (time_now - last_two_calibrations.get(0).timestamp < (1000 * 60 * 60)) { //Put steps in place to discourage over calibration
+                                options.add("Override Calibration");
+                            } else {
+                                options.add("Add Calibration");
+                            }
                         } else {
-                            options.add("Add Calibration");
+                            options.add("Cannot Calibrate right now");
                         }
-                    } else { options.add("Cannot Calibrate right now"); }
-                    if (last_two_calibrations.get(0).slope >= 1.4 || last_two_calibrations.get(0).slope <= 0.5) { options.add("Add Double Calibration"); }
-                } else { options.add("Add Double Calibration"); }
+                        if (last_two_calibrations.get(0).slope >= 1.4 || last_two_calibrations.get(0).slope <= 0.5) {
+                            options.add("Add Double Calibration");
+                        }
+                    } else {
+                        options.add("Add Double Calibration");
+                    }
+                }
             }
             options.add("Stop Sensor");
         } else { options.add("Start Sensor"); }
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            if(CollectionServiceStarter.isBTWixel(context)) {
+            if(CollectionServiceStarter.isBTWixel(context) || CollectionServiceStarter.isBTShare(context)) {
                 options.add("Scan for BT");
             }
         }
+        options.add("System Status");
         options.add("Settings");
 //        options.add("Fake Numbers");
 //        options.add("Add Double Calibration");
+//        options.add("Share Test");
         return options;
     }
 
-    public final List<Intent> nav_drawer_intents(Context context) {
+    private List<Intent> nav_drawer_intents() {
         List<Intent> options = new ArrayList<Intent>();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean IUnderstand = prefs.getBoolean("I_understand", false);
@@ -87,28 +107,38 @@ public class NavDrawerBuilder {
 
 
         if(is_active_sensor) {
-            if(last_two_bgReadings.size() > 1) {
-                if (last_two_calibrations.size() > 1) {
-                    if(bGreadings_in_last_30_mins.size() >= 2) {
-                         if (time_now - last_two_calibrations.get(0).timestamp < (1000 * 60 * 60)) { //Put steps in place to discourage over calibration
-                             options.add(new Intent(context, CalibrationOverride.class));
-                         } else {
-                             options.add(new Intent(context, AddCalibration.class));
-                         }
-                    } else { options.add(new Intent(context, Home.class)); }
-                    if (last_two_calibrations.get(0).slope >= 1.4 || last_two_calibrations.get(0).slope <= 0.5) { options.add(new Intent(context, DoubleCalibrationActivity.class)); }
-                } else { options.add(new Intent(context, DoubleCalibrationActivity.class)); }
+            if(!CollectionServiceStarter.isBTShare(context)) {
+                if (last_two_bgReadings.size() > 1) {
+                    if (last_two_calibrations.size() > 1) {
+                        if (bGreadings_in_last_30_mins.size() >= 2) {
+                            if (time_now - last_two_calibrations.get(0).timestamp < (1000 * 60 * 60)) { //Put steps in place to discourage over calibration
+                                options.add(new Intent(context, CalibrationOverride.class));
+                            } else {
+                                options.add(new Intent(context, AddCalibration.class));
+                            }
+                        } else {
+                            options.add(new Intent(context, Home.class));
+                        }
+                        if (last_two_calibrations.get(0).slope >= 1.4 || last_two_calibrations.get(0).slope <= 0.5) {
+                            options.add(new Intent(context, DoubleCalibrationActivity.class));
+                        }
+                    } else {
+                        options.add(new Intent(context, DoubleCalibrationActivity.class));
+                    }
+                }
             }
             options.add(new Intent(context, StopSensor.class));
         } else { options.add(new Intent(context, StartNewSensor.class)); }
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            if(CollectionServiceStarter.isBTWixel(context)) {
+            if(CollectionServiceStarter.isBTWixel(context) || CollectionServiceStarter.isBTShare(context)) {
                 options.add(new Intent(context, BluetoothScan.class));
             }
         }
+        options.add(new Intent(context, SystemStatus.class));
         options.add(new Intent(context, SettingsActivity.class));
 //        options.add(new Intent(context, FakeNumbers.class));
 //        options.add(new Intent(context, DoubleCalibrationActivity.class));
+//        options.add(new Intent(context, ShareTest.class));
         return options;
     }
 

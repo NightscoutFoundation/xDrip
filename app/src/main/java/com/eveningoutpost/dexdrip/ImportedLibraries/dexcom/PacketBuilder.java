@@ -1,6 +1,9 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom;
 
+import android.util.Log;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class PacketBuilder {
     public static final int MAX_PAYLOAD = 1584;
@@ -15,9 +18,9 @@ public class PacketBuilder {
     public static final int OFFSET_PAYLOAD = 4;
     public static final int CRC_LEN = 2;
     public static final int HEADER_LEN = 4;
-    private ArrayList<Byte> packet;
-    private int command;
-    private ArrayList<Byte> payload;
+    public ArrayList<Byte> packet;
+    public int command;
+    public ArrayList<Byte> payload;
 
     public PacketBuilder(int command) {
         this.command = command;
@@ -38,8 +41,24 @@ public class PacketBuilder {
         byte[] crc16 = CRC16.calculate(toBytes(), 0, this.packet.size());
         this.packet.add(crc16[0]);
         this.packet.add(crc16[1]);
+        Log.d("ShareTest", "About to start adding to Byte, size: " + this.packet.size());
         return this.toBytes();
     }
+
+    public List<byte[]> composeList() {
+        packet = new ArrayList<Byte>();
+        packet.add(OFFSET_SOF, SOF);
+        packet.add(OFFSET_LENGTH, getLength());
+        packet.add(OFFSET_NULL, NULL);
+        packet.add(OFFSET_CMD, (byte) command);
+        if (this.payload != null) { this.packet.addAll(OFFSET_PAYLOAD, this.payload); }
+        byte[] crc16 = CRC16.calculate(toBytes(), 0, this.packet.size());
+        this.packet.add(crc16[0]);
+        this.packet.add(crc16[1]);
+        Log.d("ShareTest", "About to start adding to ByteList, size: " + this.packet.size());
+        return this.toBytesList();
+    }
+
     private byte getLength() {
         int packetSize = payload == null ? MIN_LEN : payload.size() + CRC_LEN + HEADER_LEN;
 
@@ -51,11 +70,35 @@ public class PacketBuilder {
         return (byte) packetSize;
     }
 
-    private byte[] toBytes() {
+    public byte[] toBytes() {
         byte[] b = new byte[this.packet.size()];
         for (int i = 0; i < this.packet.size(); i++) {
             b[i] = this.packet.get(i).byteValue();
         }
         return b;
+    }
+
+    public List<byte[]> toBytesList() {
+        List<byte[]> byteMessages = new ArrayList<byte[]>();
+        double totalPacketSize = packet.size();
+        int messages =(int) Math.ceil(totalPacketSize/18);
+        for(int m = 0; m < messages; m++) {
+            int thisPacketSize;
+            if (m == messages - 1) {
+                thisPacketSize = ((this.packet.size()+2) % 18);
+            } else {
+                thisPacketSize = (20);
+            }
+            int offset = m * 18;
+            Log.d("ShareTest", "This packet size: " + thisPacketSize);
+            byte[] b = new byte[thisPacketSize];
+            b[0] = (byte) (m + 1);
+            b[1] = (byte) (messages);
+            for (int i = 2; i < thisPacketSize; i++) {
+                b[i] = packet.get(offset + i - 2).byteValue();
+            }
+            byteMessages.add(b);
+        }
+        return byteMessages;
     }
 }
