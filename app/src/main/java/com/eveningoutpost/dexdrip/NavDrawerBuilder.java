@@ -82,9 +82,6 @@ public class NavDrawerBuilder {
             }
         }
         options.add("System Status");
-        if(ActiveBgAlert.getOnly() != null) {
-            options.add("Snooze alarm");
-        }
         options.add("Snooze and alarm");
         options.add("Settings");
         options.add("Fake Numbers");
@@ -140,9 +137,6 @@ public class NavDrawerBuilder {
             }
         }
         options.add(new Intent(context, SystemStatus.class));
-        if(ActiveBgAlert.getOnly() != null) {
-            options.add(new Intent(context, SnoozeActivity.class));
-        }
         options.add(new Intent(context, SnoozeActivity.class));
         options.add(new Intent(context, SettingsActivity.class));
         options.add(new Intent(context, FakeNumbers.class));
