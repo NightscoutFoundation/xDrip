@@ -19,6 +19,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -331,18 +332,20 @@ public class AlertType extends Model {
  
  
     private boolean in_time_frame() {
-        int time_now = 0; //TODO: Get the actual time of day as a double this WILL NOT WORK without that
         if (all_day) {
             //Log.e(TAG, "in_time_frame returning true " );
             return true; 
         }
-
+        // time_now is the number of minutes that have passed from the start of the day.
+        Calendar rightNow = Calendar.getInstance();
+        int time_now = toTime(rightNow.get(Calendar.HOUR_OF_DAY), rightNow.get(Calendar.MINUTE));
+        Log.e(TAG, "time_now is " + time_now + " minutes");
         if(start_time_minutes < end_time_minutes) {
-            if (time_now > start_time_minutes && time_now < end_time_minutes) {
+            if (time_now >= start_time_minutes && time_now <= end_time_minutes) {
                 return true;
             }
         } else {
-            if (time_now < start_time_minutes || time_now > end_time_minutes) {
+            if (time_now <= start_time_minutes || time_now >= end_time_minutes) {
                 return true;
             }
         }
