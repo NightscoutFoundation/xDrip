@@ -214,7 +214,7 @@ public class EditAlertActivity extends Activity {
             for (AlertType highAlert : highAlerts) {
                 if(threshold > highAlert.threshold  ) {
                     Toast.makeText(getApplicationContext(), 
-                            "Low alert threshold has to be higher than all low alerts. Please choose another threshold.",Toast.LENGTH_LONG).show();
+                            "Low alert threshold has to be lower than all high alerts. Please choose another threshold.",Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
