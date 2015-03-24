@@ -1,13 +1,18 @@
 package com.eveningoutpost.dexdrip;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 
 import android.database.Cursor;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.text.InputType;
+import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +32,7 @@ import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
 import android.net.Uri;
 
@@ -50,6 +56,7 @@ public class EditAlertActivity extends Activity {
     
     TextView viewAlertOverrideText;
     CheckBox checkboxAlertOverride;
+    Boolean doMgdl;
        
     String uuid;
     boolean above;
@@ -100,6 +107,15 @@ public class EditAlertActivity extends Activity {
         checkboxAlertOverride = (CheckBox) findViewById(R.id.check_override_silent);
         addListenerOnButtons();
         
+        SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
+        
+        if(!doMgdl) {
+            alertThreshold.setInputType(InputType.TYPE_CLASS_NUMBER);          
+            alertThreshold.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);           
+            alertThreshold.setKeyListener(DigitsKeyListener.getInstance(false,true));
+        }
+        
         uuid = getExtra(savedInstanceState, "uuid");
         String status;
         if (uuid == null) {
@@ -130,7 +146,7 @@ public class EditAlertActivity extends Activity {
          
             above =at.above;
             alertText.setText(at.name);
-            alertThreshold.setText(String.valueOf((int)at.threshold));
+            alertThreshold.setText(UnitsConvert2Disp(doMgdl, at.threshold));
             alertMp3File.setText(at.mp3_file);
             checkboxAllDay.setChecked(at.all_day);
             checkboxAlertOverride.setChecked(at.override_silent_mode);
@@ -149,6 +165,27 @@ public class EditAlertActivity extends Activity {
         enableVibrateControls();
         
         
+    }
+    
+    public static String UnitsConvert2Disp(boolean doMgdl, double threshold) {
+        DecimalFormat df = new DecimalFormat("#");
+        if(doMgdl ) {
+            df.setMaximumFractionDigits(0);
+            df.setMinimumFractionDigits(0);
+            return df.format(threshold);
+        } else {
+            df.setMaximumFractionDigits(1);
+            df.setMinimumFractionDigits(1);
+            return df.format(threshold / Constants.MMOLL_TO_MGDL);
+        }
+    }
+    
+    double UnitsConvertFromDisp(double threshold ) {
+        if(doMgdl ) {
+            return threshold;
+        } else {
+            return threshold * Constants.MMOLL_TO_MGDL;
+        }
     }
     
     void enableAllDayControls() {
@@ -175,7 +212,7 @@ public class EditAlertActivity extends Activity {
         }
     }
     
-    private boolean verifyThreshold(int threshold) {
+    private boolean verifyThreshold(double threshold) {
         List<AlertType> lowAlerts = AlertType.getAll(false);
         List<AlertType> highAlerts = AlertType.getAll(true);
         
@@ -229,13 +266,14 @@ public class EditAlertActivity extends Activity {
             public void onClick(View v) {
                 
                 // Check that values are ok.
-                int threshold = 0;
+                double threshold = 0;
                 try {
-                    threshold = Integer.parseInt(alertThreshold.getText().toString());
+                    threshold = Double.parseDouble((alertThreshold.getText().toString()));
                 }
                 catch (NumberFormatException nfe) {
                     Log.e(TAG, "Invalid number", nfe);
                 }
+                threshold = UnitsConvertFromDisp(threshold);
                 if(!verifyThreshold(threshold)) {
                     return;
                 }

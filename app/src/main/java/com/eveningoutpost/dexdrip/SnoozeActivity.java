@@ -8,7 +8,9 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -32,6 +34,7 @@ public class SnoozeActivity extends Activity {
     Button buttonSnooze;
     Button createLowAlert;
     Button createHighAlert;
+    boolean doMgdl;
     
     EditText snoozeValue;
     final int MAX_SNOOZE = 600;
@@ -65,7 +68,7 @@ public class SnoozeActivity extends Activity {
         }
         
         map.put("alertName", alert.name);
-        map.put("alertThreshold", String.valueOf((int)alert.threshold));
+        map.put("alertThreshold", EditAlertActivity.UnitsConvert2Disp(doMgdl, alert.threshold));
         map.put("alertTime", stringTimeFromAlert(alert));
         map.put("alertMp3File", fileName);
         map.put("alertOverrideSilenceMode", overrideSilentMode);
@@ -118,6 +121,8 @@ public class SnoozeActivity extends Activity {
         listViewHigh = (ListView) findViewById(R.id.listView_high);
         alertStatus = (TextView) findViewById(R.id.alert_status);
         snoozeValue = (EditText) findViewById(R.id.snooze);
+        SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
         
         addListenerOnButton();
         displayStatus();
