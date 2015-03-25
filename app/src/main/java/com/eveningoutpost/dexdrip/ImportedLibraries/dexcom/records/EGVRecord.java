@@ -13,19 +13,25 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Date;
 
+// This code and this particular library are from the NightScout android uploader
+// Check them out here: https://github.com/nightscout/android-uploader
+// Some of this code may have been modified for use in this project
+
 public class EGVRecord extends GenericTimestampRecord {
 
     private int bGValue;
+    private int noise;
     private Constants.TREND_ARROW_VALUES trend;
 
     public EGVRecord(byte[] packet) {
         // system_time (UInt), display_time (UInt), glucose (UShort), trend_arrow (Byte), crc (UShort))
         super(packet);
-        int eGValue = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getShort(8);
-        bGValue = eGValue & Constants.EGV_VALUE_MASK;
-        int trendValue = ByteBuffer.wrap(packet).get(10) & Constants.EGV_TREND_ARROW_MASK;
+        bGValue = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getShort(8) & Constants.EGV_VALUE_MASK;
+        byte trendAndNoise = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).get(10);
+        int trendValue = trendAndNoise & Constants.EGV_TREND_ARROW_MASK;
+        byte noiseValue = (byte) ((trendAndNoise & Constants.EGV_NOISE_MASK) >> 4);
         trend = Constants.TREND_ARROW_VALUES.values()[trendValue];
-        Log.d("ShareTest", "BG: " + bGValue + " TREND: " + trend);
+        noise = noiseValue;
     }
 
     public EGVRecord(int bGValue,Constants.TREND_ARROW_VALUES trend,Date displayTime, Date systemTime){
@@ -34,6 +40,7 @@ public class EGVRecord extends GenericTimestampRecord {
         this.trend=trend;
     }
 
+    public String noiseValue() { return String.valueOf(noise); }
     public int getBGValue() {
         return bGValue;
     }

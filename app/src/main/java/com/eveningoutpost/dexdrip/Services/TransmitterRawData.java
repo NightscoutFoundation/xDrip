@@ -22,7 +22,7 @@ public class TransmitterRawData {
     public int UploaderBatteryLife;
     // When sending set this value to the relative time...
     // The time between the capture and now...
-    public long RelativeTime; 
+    public long RelativeTime;
 
     public int getTransmissionId() {
         return TransmissionId;
@@ -183,7 +183,7 @@ public class TransmitterRawData {
     			append("DebugInfo", DebugInfo);
     	return doc;
     }
-    
+
     public TransmitterRawData(BasicDBObject src) {
     	TransmissionId = src.getInt("TransmissionId");
     	TransmitterId  = src.getString("TransmitterId");
@@ -194,6 +194,6 @@ public class TransmitterRawData {
     	CaptureDateTime = src.getLong("CaptureDateTime");
     	UploaderBatteryLife = src.getInt("UploaderBatteryLife");
     }
-   
+
 
 }

@@ -1,0 +1,1 @@
+ALTER TABLE BgReadings ADD COLUMN noise TEXT;

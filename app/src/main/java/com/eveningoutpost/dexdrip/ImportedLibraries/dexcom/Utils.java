@@ -7,6 +7,10 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import java.util.Date;
 import java.util.TimeZone;
 
+// This code and this particular library are from the NightScout android uploader
+// Check them out here: https://github.com/nightscout/android-uploader
+// Some of this code may have been modified for use in this project
+
 public class Utils {
 
     public static Date receiverTimeToDate(long delta) {

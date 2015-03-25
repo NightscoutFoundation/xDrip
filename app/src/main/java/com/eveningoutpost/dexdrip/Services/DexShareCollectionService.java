@@ -442,9 +442,11 @@ public class DexShareCollectionService extends Service {
         int index = step;
         if (index <= (writePackets.size() - 1)) {
             Log.d(TAG, "Writing: " + writePackets.get(index) + " index: " + index);
-            mSendDataCharacteristic.setValue(writePackets.get(index));
-            if(mBluetoothGatt.writeCharacteristic(mSendDataCharacteristic)) {
-                Log.d(TAG, "Wrote Successfully");
+            if(mSendDataCharacteristic != null && writePackets != null) {
+                mSendDataCharacteristic.setValue(writePackets.get(index));
+                if (mBluetoothGatt.writeCharacteristic(mSendDataCharacteristic)) {
+                    Log.d(TAG, "Wrote Successfully");
+                }
             }
         } else {
             Log.d(TAG, "Done Writing commands");
@@ -457,9 +459,11 @@ public class DexShareCollectionService extends Service {
             String action = intent.getAction();
             final BluetoothDevice bondDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
-            if (!bondDevice.getAddress().equals(mBluetoothGatt.getDevice().getAddress())) {
-                Log.d(TAG, "Bond state wrong device");
-                return; // That wasnt a device we care about!!
+            if (mBluetoothGatt != null && mBluetoothGatt.getDevice() != null && bondDevice != null) {
+                if (!bondDevice.getAddress().equals(mBluetoothGatt.getDevice().getAddress())) {
+                    Log.d(TAG, "Bond state wrong device");
+                    return; // That wasnt a device we care about!!
+                }
             }
 
             if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {

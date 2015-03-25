@@ -54,6 +54,10 @@ public class BgReading extends Model {
     public double raw_data;
 
     @Expose
+    @Column(name = "filtered_data")
+    public double filtered_data;
+
+    @Expose
     @Column(name = "age_adjusted_raw_value")
     public double age_adjusted_raw_value;
 
@@ -112,6 +116,9 @@ public class BgReading extends Model {
 
     @Column(name = "hide_slope")
     public boolean hide_slope;
+
+    @Column(name = "noise")
+    public String noise;
 
     public double calculated_value_mmol() {
         return mmolConvert(calculated_value);
@@ -181,6 +188,7 @@ public class BgReading extends Model {
                 bgReading.calibration = calibration;
                 bgReading.calibration_uuid = calibration.uuid;
                 bgReading.raw_data = (sensorRecord.getUnfiltered() / 1000);
+                bgReading.filtered_data = (sensorRecord.getFiltered() / 1000);
                 bgReading.timestamp = sensorRecord.getSystemTime().getTime() + addativeOffset;
                 if(bgReading.timestamp > new Date().getTime()) { return; }
                 bgReading.uuid = UUID.randomUUID().toString();
@@ -203,6 +211,7 @@ public class BgReading extends Model {
                 double calSlope = (calibration.first_scale / firstAdjSlope)*1000;
                 double calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope)*-1;
                 bgReading.raw_calculated = (((calSlope * bgReading.raw_data) + calIntercept) - 5);
+                bgReading.noise = egvRecord.noiseValue();
             }
             Log.w(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
             bgReading.calculated_value_slope = bgReading.slopefromName(egvRecord.getTrend().friendlyTrendName());
@@ -267,6 +276,7 @@ public class BgReading extends Model {
                 bgReading.sensor = sensor;
                 bgReading.sensor_uuid = sensor.uuid;
                 bgReading.raw_data = (raw_data / 1000);
+                bgReading.filtered_data = (raw_data / 1000);
                 bgReading.timestamp = timestamp;
                 bgReading.uuid = UUID.randomUUID().toString();
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
@@ -284,6 +294,7 @@ public class BgReading extends Model {
                 bgReading.calibration = calibration;
                 bgReading.calibration_uuid = calibration.uuid;
                 bgReading.raw_data = (raw_data/1000);
+                bgReading.filtered_data = (raw_data/1000);
                 bgReading.timestamp = timestamp;
                 bgReading.uuid = UUID.randomUUID().toString();
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
@@ -651,5 +662,13 @@ public class BgReading extends Model {
                 .serializeSpecialFloatingPointValues()
                 .create();
         return gson.toJson(this);
+    }
+
+    public String noiseValue() {
+        if(noise == null || noise.compareTo("") == 0) {
+            return "1";
+        } else {
+            return String.valueOf(noise);
+        }
     }
 }

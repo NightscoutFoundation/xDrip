@@ -11,7 +11,7 @@ import com.google.gson.annotations.Expose;
 //  3) the server will send numberOfRecords of type ???? that it has.
 public class ComunicationHeader  {
 	/**
-	 * 
+	 *
 	 */
 
 

@@ -28,6 +28,10 @@ import java.util.List;
 
 public class ReadData {
 
+// This code and this particular library are from the NightScout android uploader
+// Check them out here: https://github.com/nightscout/android-uploader
+// Some of this code may have been modified for use in this project
+
     private static final String TAG = ReadData.class.getSimpleName();
     private static final int IO_TIMEOUT = 3000;
     private static final int MIN_LEN = 256;

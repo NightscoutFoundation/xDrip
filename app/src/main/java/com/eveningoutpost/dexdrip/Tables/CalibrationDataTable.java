@@ -74,7 +74,7 @@ public class CalibrationDataTable extends ListActivity implements NavigationDraw
             this.context = context;
             if(calibrations == null)
                 calibrations = new ArrayList<>();
-            
+
             this.calibrations = calibrations;
         }
 

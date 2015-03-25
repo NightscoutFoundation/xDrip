@@ -1,0 +1,1 @@
+ALTER TABLE BgReadings ADD COLUMN filtered_data REAL DEFAULT 0;

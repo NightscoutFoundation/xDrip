@@ -5,6 +5,10 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+// This code and this particular library are from the NightScout android uploader
+// Check them out here: https://github.com/nightscout/android-uploader
+// Some of this code may have been modified for use in this project
+
 public class PacketBuilder {
     public static final int MAX_PAYLOAD = 1584;
     public static final int MIN_LEN = 6;

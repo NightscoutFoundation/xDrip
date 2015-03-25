@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 public class MongoWrapper {
-	
+
 	MongoClient mongoClient_;
 	String dbUriStr_;
 	String dbName_;
@@ -27,7 +27,7 @@ public class MongoWrapper {
 	String index_;
 	String machineName_;
 	private final static String TAG = WixelReader.class.getName();
-	
+
 	public MongoWrapper(String dbUriStr, String collection, String index, String machineName) {
 		dbUriStr_ = dbUriStr;
 		// dbName is the last part of the string starting with /dbname
@@ -36,21 +36,21 @@ public class MongoWrapper {
 		index_ = index;
 		machineName_ = machineName;
 	}
-	
+
 	// Unfortunately, this also throws other exceptions that are not documetned...
     public DBCollection openMongoDb() throws UnknownHostException {
 
     	MongoClientURI dbUri = new MongoClientURI(dbUriStr_); //?? thros
 	    mongoClient_ = new MongoClient(dbUri);
-	    
+
 	    DB db = mongoClient_.getDB( dbName_ );
 	    DBCollection coll = db.getCollection(collection_);
 	    coll.createIndex(new BasicDBObject(index_, 1));  // create index on "i", ascending
-	    
+
 	    return coll;
-	 
+
     }
-     
+
      public void closeMongoDb() {
          if(mongoClient_ != null) {
     	 	mongoClient_.close();
@@ -64,13 +64,13 @@ public class MongoWrapper {
     	 return WriteToMongo(doc);
      }
 
-     
+
      public boolean WriteToMongo(TransmitterRawData trd)
      {
     	 BasicDBObject bdbo = trd.toDbObj(machineName_ + " " + new Date(trd.CaptureDateTime).toLocaleString());
     	 return WriteToMongo(bdbo);
      }
-     
+
      public boolean WriteToMongo(BasicDBObject bdbo)
      {
      	DBCollection coll;
@@ -80,25 +80,25 @@ public class MongoWrapper {
 
  		} catch (UnknownHostException e) {
  		   Log.e(TAG, "WriteToMongo cought UnknownHostException! ",e);
- 			return false; 
+ 			return false;
  		} catch (MongoException e) {
  		   Log.e(TAG, "WriteToMongo cought MongoException! ", e);
- 			return false; 
+ 			return false;
  		} catch (Exception e) {
  		   Log.e(TAG, "WriteToMongo cought Exception! ", e);
  			closeMongoDb();
- 			return false; 
+ 			return false;
  		}
      	finally {
  			closeMongoDb();
  		}
      	return true;
      }
-     
+
      // records will be marked by their timestamp
      public List<TransmitterRawData> ReadFromMongo(int numberOfRecords) {
-    	System.out.println( "Starting to read from mongodb"); 
-    	 
+    	System.out.println( "Starting to read from mongodb");
+
     	List<TransmitterRawData> trd_list = new LinkedList<TransmitterRawData>();
       	DBCollection coll;
       	TransmitterRawData lastTrd = null;
@@ -125,7 +125,7 @@ public class MongoWrapper {
                     	trd_list.add(0,trd);
                     	System.out.println( trd.toTableString());
                     }
-                    
+
                 }
              } finally {
                 cursor.close();
@@ -133,19 +133,19 @@ public class MongoWrapper {
 
         } catch (UnknownHostException e) {
             Log.e(TAG, "ReadFromMongo: cought UnknownHostException! ", e);
-            return null; 
+            return null;
         } catch (MongoException e) {
             Log.e(TAG, "ReadFromMongo: cought MongoException! " , e);
-            return trd_list; 
+            return trd_list;
         } catch (Exception e) {
   		      Log.e(TAG, "ReadFromMongo: cought Exception! " , e);
   		      closeMongoDb();
- 			return null; 
+ 			return null;
  		}finally {
   			closeMongoDb();
   		}
       	return trd_list;
-    	 
+
      }
 
 
