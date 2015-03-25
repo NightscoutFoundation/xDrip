@@ -27,7 +27,7 @@ public class AlertPlayer {
             Log.e(TAG,"getPlayer: Creating a new AlertPlayer");
             singletone = new AlertPlayer();
         } else {
-            Log.e("tag","getPlayer: Using existing AlertPlayer");
+            Log.i(TAG,"getPlayer: Using existing AlertPlayer");
         }
         return singletone;
     }

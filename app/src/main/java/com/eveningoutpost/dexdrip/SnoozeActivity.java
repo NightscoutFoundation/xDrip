@@ -203,7 +203,7 @@ public class SnoozeActivity extends Activity {
             snoozeValue.setVisibility(View.GONE);
         } else {
             
-            if (aba.next_alert_at > new Date().getTime()) {
+            if(!aba.ready_to_alarm()) {
                 status = "Active alert exists named \"" + activeBgAlert.name + "\" Alert snoozed until " + 
                     DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date(aba.next_alert_at)) + 
                     " (" + (aba.next_alert_at - new Date().getTime()) / 60000 + " minutes left)";

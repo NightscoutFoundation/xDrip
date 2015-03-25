@@ -121,11 +121,12 @@ public class Notifications {
         BgReading bgReading = bgReadings.get(0);
 
         Log.e(TAG, "FileBasedNotifications called bgReading.calculated_value = " + bgReading.calculated_value);
-        // TODO: tzachi what is the time of this last bgReading
-        // TODO: tzachi, what happens if the last reading does not have a sensor, or that sensor was stopped.
-        // What if the sensor was started, but the 2 hours did not still pass? or there is no calibrations.
-        if (bg_notifications && sensor != null && bgReading != null) {
-            AlertType newAlert = AlertType.get_highest_active_alert(bgGraphBuilder.unitized(bgReading.calculated_value), 0);
+        // TODO: tzachi what is the time of this last bgReading 
+        // If the last reading does not have a sensor, or that sensor was stopped.
+        // or the sensor was started, but the 2 hours did not still pass? or there is no calibrations.
+        // In all this cases, bgReading.calculated_value should be 0. 
+        if (bg_notifications && sensor != null && bgReading != null && bgReading.calculated_value !=0) {
+            AlertType newAlert = AlertType.get_highest_active_alert(bgGraphBuilder.unitized(bgReading.calculated_value));
             if (newAlert == null) {
                 Log.e(TAG, "FileBasedNotifications - No active notifcation exists, stopping all alerts");
                 // No alert should work, Stop all alerts, but keep the snoozing...
@@ -135,7 +136,7 @@ public class Notifications {
 
             AlertType activeBgAlert = ActiveBgAlert.alertTypegetOnly();
             if(activeBgAlert == null) {
-                Log.e(TAG, "FileBasedNotifications we have a new alert, starting to play it...");
+                Log.e(TAG, "FileBasedNotifications we have a new alert, starting to play it... " + newAlert.name);
                 // We need to create a new alert  and start playing
                 AlertPlayer.getPlayer().startAlert(context, newAlert);
                 return;
@@ -144,12 +145,11 @@ public class Notifications {
 
             if (activeBgAlert.uuid.equals(newAlert.uuid)) {
                 // This is the same alert. Might need to play again...
-                Log.e(TAG, "FileBasedNotifications we have found an active alert, checking if we need to play it");
+                Log.e(TAG, "FileBasedNotifications we have found an active alert, checking if we need to play it " + newAlert.name);
                 AlertPlayer.getPlayer().ClockTick(context);
                 return;
             }
-            // Tzachi: todo, if this alerts have the same importance we should only do a ClockTick ???????????????????????
-
+            // Currently the ui blocks having two alerts with the same alert value.
             // we have a new alert. If it is more important than the previous one. we need to stop
             // the older one and start a new one (We need to play even if we were snoozed).
             // If it is a lower level alert, we should keep being snoozed.
@@ -163,13 +163,14 @@ public class Notifications {
             AlertType  newHigherAlert = AlertType.HigherAlert(activeBgAlert, newAlert);
             if ((newHigherAlert == activeBgAlert) && (!opositeDirection)) {
                 // the existing alert is the higher, we should not do anything
-                Log.e(TAG, "FileBasedNotifications The existing alert has the same importance, doing nothing");
+                Log.e(TAG, "FileBasedNotifications The existing alert has the same importance, doing nothing newHigherAlert = " + newHigherAlert.name + 
+                        "activeBgAlert = " + activeBgAlert.name);
                 AlertPlayer.getPlayer().ClockTick(context);
                 return;
             }
 
             // For now, we are stopping the old alert and starting a new one.
-            Log.e(TAG, "Found a new allert, that is higher than the previous one will play it.");
+            Log.e(TAG, "Found a new allert, that is higher than the previous one will play it. " + newAlert.name);
             AlertPlayer.getPlayer().stopAlert(true, false);
             AlertPlayer.getPlayer().startAlert(context, newAlert);
             return;

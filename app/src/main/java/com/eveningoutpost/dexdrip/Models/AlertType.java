@@ -96,7 +96,7 @@ public class AlertType extends Model {
     }
     
     // bg_minute is the estimatin of the bg change rate
-    public static AlertType get_highest_active_alert(double bg, double bg_minute) {
+    public static AlertType get_highest_active_alert(double bg) {
         // Chcek the low alerts
         
         List<AlertType> lowAlerts  = new Select()
@@ -117,7 +117,7 @@ public class AlertType extends Model {
             .from(AlertType.class)
             .where("threshold <= ?", bg)
             .where("above = ?", true)
-            .orderBy("threshold asc")
+            .orderBy("threshold desc")
             .execute();
 
         for (AlertType HighAlert : HighAlerts) {
@@ -173,6 +173,7 @@ public class AlertType extends Model {
         for (AlertType alert : Alerts) {
             alert.delete();
         }
+        ActiveBgAlert.ClearData();
     }
     
     public static void add_alert(
@@ -301,9 +302,9 @@ public class AlertType extends Model {
         add_alert("high alert 2", true, 200, true, 10, null, 0, 0, true);
         add_alert("high alert 3", true, 220, true, 10, null, 0, 0, true);
         print_all();
-        AlertType a1 = get_highest_active_alert(190, 0);
+        AlertType a1 = get_highest_active_alert(190);
         Log.e(TAG, "a1 = " + a1.toString());
-        AlertType a2 = get_highest_active_alert(210, 0);
+        AlertType a2 = get_highest_active_alert(210);
         Log.e(TAG, "a2 = " + a2.toString());        
 
         
@@ -313,11 +314,11 @@ public class AlertType extends Model {
         add_alert("low alert 1", false, 80, true, 10, null, 0, 0, true);
         add_alert("low alert 2", false, 60, true, 10, null, 0, 0, true);
         
-        AlertType al1 = get_highest_active_alert(90, 0);
+        AlertType al1 = get_highest_active_alert(90);
         Log.e(TAG, "al1 should be null  " + al1);
-        al1 = get_highest_active_alert(80, 0);
+        al1 = get_highest_active_alert(80);
         Log.e(TAG, "al1 = " + al1.toString());
-        AlertType al2 = get_highest_active_alert(50, 0);
+        AlertType al2 = get_highest_active_alert(50);
         Log.e(TAG, "al2 = " + al2.toString());
 
         Log.e(TAG, "HigherAlert(a1, a2) = a1?" +  (HigherAlert(a1,a2) == a2));
