@@ -42,7 +42,7 @@ public class AlertPlayer {
     }
 
     public synchronized void stopAlert(boolean ClearData, boolean clearIfSnoozeFinished) {
-        Log.e(TAG, "stopAlert: stop called ClearData" + ClearData + "  ThreadID " + Thread.currentThread().getId());
+        Log.e(TAG, "stopAlert: stop called ClearData " + ClearData + "  ThreadID " + Thread.currentThread().getId());
         if (ClearData) {
             ActiveBgAlert.ClearData();
         }
@@ -89,10 +89,11 @@ public class AlertPlayer {
     }
 
     private void PlayFile(Context ctx, String FileName) {
+        Log.e(TAG, "PlayFile: called FileName = " + FileName);
         if(mediaPlayer != null) {
             Log.e(TAG, "ERROR, PlayFile:going to leak a mediaplayer !!!");
         }
-        if(FileName != null) {
+        if(FileName != null && FileName.length() > 0) {
             mediaPlayer = MediaPlayer.create(ctx, Uri.parse(FileName), null);
         }
         if(mediaPlayer == null) {
@@ -110,6 +111,7 @@ public class AlertPlayer {
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
+                    Log.e(TAG, "PlayFile: onCompletion called (finished playing) ");
                     AudioManager manager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
                     int currentVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
                     int maxVolume = manager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
@@ -119,7 +121,7 @@ public class AlertPlayer {
                     }
                 }
             });
-            
+            Log.e(TAG, "PlayFile: calling mediaPlayer.start() ");
             mediaPlayer.start();
         } else {
             // TODO, what should we do here???
