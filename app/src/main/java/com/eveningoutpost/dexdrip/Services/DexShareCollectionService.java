@@ -238,43 +238,54 @@ public class DexShareCollectionService extends Service {
                     Log.d(TAG, "Made the full round trip, got " + s + " as the system time");
                     final long addativeSystemTimeOffset = new Date().getTime() - s;
 
-                    final Action1<EGVRecord[]> evgRecordListener = new Action1<EGVRecord[]>() {
+                    final Action1<Date> dislpayTimeListener = new Action1<Date>() {
                         @Override
-                        public void call(EGVRecord[] egvRecords) {
-                            if (egvRecords != null) {
-                                Log.d(TAG, "Made the full round trip, got " + egvRecords.length + " EVG Records");
-                                BgReading.create(egvRecords, addativeSystemTimeOffset, getApplicationContext());
-                                if(shouldDisconnect) {
-                                    stopSelf();
-                                } else {
-                                    setRetryTimer();
-                                }
-                            }
-                        }
-                    };
+                        public void call(Date s) {
+                            if (s != null) {
+                                Log.d(TAG, "Made the full round trip, got " + s + " as the display time");
+                                final long addativeDisplayTimeOffset = new Date().getTime() - s.getTime();
 
-                    final Action1<SensorRecord[]> sensorRecordListener = new Action1<SensorRecord[]>() {
-                        @Override
-                        public void call(SensorRecord[] sensorRecords) {
-                            if (sensorRecords != null) {
-                                Log.d(TAG, "Made the full round trip, got " + sensorRecords.length + " Sensor Records");
-                                BgReading.create(sensorRecords, addativeSystemTimeOffset, getApplicationContext());
-                                readData.getRecentEGVs(evgRecordListener);
-                            }
-                        }
-                    };
+                                final Action1<EGVRecord[]> evgRecordListener = new Action1<EGVRecord[]>() {
+                                    @Override
+                                    public void call(EGVRecord[] egvRecords) {
+                                        if (egvRecords != null) {
+                                            Log.d(TAG, "Made the full round trip, got " + egvRecords.length + " EVG Records");
+                                            BgReading.create(egvRecords, addativeSystemTimeOffset, getApplicationContext());
+                                            if (shouldDisconnect) {
+                                                stopSelf();
+                                            } else {
+                                                setRetryTimer();
+                                            }
+                                        }
+                                    }
+                                };
 
-                    final Action1<CalRecord[]> calRecordListener = new Action1<CalRecord[]>() {
-                        @Override
-                        public void call(CalRecord[] calRecords) {
-                            if (calRecords != null) {
-                                Log.d(TAG, "Made the full round trip, got " + calRecords.length + " Cal Records");
-                                Calibration.create(calRecords, addativeSystemTimeOffset, getApplicationContext());
-                                readData.getRecentSensorRecords(sensorRecordListener);
+                                final Action1<SensorRecord[]> sensorRecordListener = new Action1<SensorRecord[]>() {
+                                    @Override
+                                    public void call(SensorRecord[] sensorRecords) {
+                                        if (sensorRecords != null) {
+                                            Log.d(TAG, "Made the full round trip, got " + sensorRecords.length + " Sensor Records");
+                                            BgReading.create(sensorRecords, addativeSystemTimeOffset, getApplicationContext());
+                                            readData.getRecentEGVs(evgRecordListener);
+                                        }
+                                    }
+                                };
+
+                                final Action1<CalRecord[]> calRecordListener = new Action1<CalRecord[]>() {
+                                    @Override
+                                    public void call(CalRecord[] calRecords) {
+                                        if (calRecords != null) {
+                                            Log.d(TAG, "Made the full round trip, got " + calRecords.length + " Cal Records");
+                                            Calibration.create(calRecords, addativeDisplayTimeOffset, getApplicationContext());
+                                            readData.getRecentSensorRecords(sensorRecordListener);
+                                        }
+                                    }
+                                };
+                                readData.getRecentCalRecords(calRecordListener);
                             }
                         }
                     };
-                    readData.getRecentCalRecords(calRecordListener);
+                    readData.readDisplayTime(dislpayTimeListener);
                 }
             }
         };
