@@ -105,8 +105,6 @@ public class Notifications {
 
     public void FileBasedNotifications(Context context) {
         ReadPerfs(context);
-        // Make sure we have our alerts set...
-        AlertType.CreateStaticAlerts(context);
 
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
         Sensor sensor = Sensor.currentSensor();

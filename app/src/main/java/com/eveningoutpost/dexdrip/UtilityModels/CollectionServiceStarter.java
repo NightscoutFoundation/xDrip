@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
@@ -83,6 +84,8 @@ public class CollectionServiceStarter {
         } catch (IOException e2) {
             Log.e(TAG, "running logcat failed, is the device rooted?", e2);
         }
+        // Make sure that we have the 55 low allert.
+        AlertType.CreateStaticAlerts();
     }
 
     public CollectionServiceStarter(Context context) {

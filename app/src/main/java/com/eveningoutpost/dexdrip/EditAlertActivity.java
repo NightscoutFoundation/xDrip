@@ -158,6 +158,15 @@ public class EditAlertActivity extends Activity {
             tpTimeEnd.setIs24HourView(true);
             tpTimeEnd.setCurrentHour(AlertType.time2Hours(at.end_time_minutes));
             tpTimeEnd.setCurrentMinute(AlertType.time2Minutes(at.end_time_minutes));
+            if(uuid.equals(AlertType.LOW_ALERT_55)) {
+                // This is the 55 alert, can not be edited
+                alertText.setKeyListener(null);
+                alertThreshold.setKeyListener(null);
+                alertMp3File.setKeyListener(null);
+                buttonalertMp3.setEnabled(false);
+                checkboxAllDay.setEnabled(false);
+                checkboxAlertOverride.setEnabled(false);
+            }
         }
 
         viewHeader.setText(status);
@@ -303,7 +312,7 @@ public class EditAlertActivity extends Activity {
                 if (uuid != null) {
                     AlertType.update_alert(uuid, alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode);
                 }  else {
-                    AlertType.add_alert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode);
+                    AlertType.add_alert(null, alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode);
                 }
                 Intent returnIntent = new Intent();
                 setResult(RESULT_OK,returnIntent);

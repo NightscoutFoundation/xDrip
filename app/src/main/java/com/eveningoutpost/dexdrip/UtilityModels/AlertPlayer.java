@@ -61,7 +61,8 @@ public class AlertPlayer {
         stopAlert(false, false);
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
         if (activeBgAlert  == null) {
-            Log.e(TAG, "Error, snooze was called but no alert is active. how can that be ??? !!! ");
+            Log.e(TAG, "Error, snooze was called but no alert is active. alert was probably removed in ui ");
+            return;
         }
         activeBgAlert.snooze(repeatTime);
     }

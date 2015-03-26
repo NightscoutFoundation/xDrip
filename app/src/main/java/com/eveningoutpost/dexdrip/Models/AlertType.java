@@ -85,6 +85,7 @@ public class AlertType extends Model {
     @Column(name = "uuid", index = true)
     public String uuid;
 
+    public final static String LOW_ALERT_55 = "c5f1999c-4ec5-449e-adad-3980b172b920";
     private final static String TAG = Notifications.class.getSimpleName();
     
     public static AlertType get_alert(String uuid) {
@@ -177,6 +178,7 @@ public class AlertType extends Model {
     }
     
     public static void add_alert(
+            String uuid,
             String name, 
             boolean above,
             double threshold, 
@@ -192,7 +194,7 @@ public class AlertType extends Model {
         at.threshold = threshold;
         at.all_day = all_day;
         at.minutes_between = minutes_between;
-        at.uuid = UUID.randomUUID().toString();
+        at.uuid = uuid != null? uuid : UUID.randomUUID().toString();
         at.active = true;
         at.mp3_file = mp3_file;
         at.start_time_minutes = start_time_minutes;
@@ -212,6 +214,12 @@ public class AlertType extends Model {
             int start_time_minutes,
             int end_time_minutes,
             boolean override_silent_mode) {
+        
+        if(uuid.equals(LOW_ALERT_55)) {
+            // This alert can not be removed/updated
+            return;
+        }
+        
         AlertType at = get_alert(uuid);
         at.name = name;
         at.above = above;
@@ -227,8 +235,14 @@ public class AlertType extends Model {
         at.save();
     }
     public static void remove_alert(String uuid) {
+        if(uuid.equals(LOW_ALERT_55)) {
+            // This alert can not be removed/updated
+            return;
+        }
         AlertType alert = get_alert(uuid);
-        alert.delete();
+		if(alert != null) {
+	        alert.delete();
+        }
     }
     
     public String toString() {
@@ -264,43 +278,22 @@ public class AlertType extends Model {
     }
     
     
-    // This function is a replacment for the UI. It will make sure that there are exactly two alerts
-    // based on what the user has set as high and low. Will be replaced by a UI.
-    public static void CreateStaticAlerts(Context context) {
-        // If there are two alerts already, we are done...
-        List<AlertType> Alerts  = new Select()
-            .from(AlertType.class)
-            .execute();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        Double highValue = Double.parseDouble(prefs.getString("highValue", "170"));
-        Double lowValue = Double.parseDouble(prefs.getString("lowValue", "70"));
-        if (Alerts.size() == 2) {
-            if(Alerts.get(0).threshold == highValue && Alerts.get(0).above == true &&
-                    Alerts.get(1).threshold == lowValue && Alerts.get(1).above == false) {
-                Log.e(TAG, "CreateStaticAlerts we have our alerts ok...");
-                return;
-            }
-            if(Alerts.get(1).threshold == highValue && Alerts.get(1).above == true &&
-                    Alerts.get(0).threshold == lowValue && Alerts.get(0).above == false) {
-                Log.e(TAG, "CreateStaticAlerts we have our alerts ok...");
-                return;
-            }
-            
+    
+    // This function is used to make sure that we always have a static alert on 55 low.
+    // This alert will not be editable/removable.
+    public static void CreateStaticAlerts() {
+        if(get_alert(LOW_ALERT_55) == null) {
+            add_alert(LOW_ALERT_55, "low alert (unchangable)", false, 55, true, 1, null, 0, 0, true);
         }
-        //Log.e(TAG, "CreateStaticAlerts re-creating all our alerts again");
-        //remove_all();
-        //add_alert("high alert", true, highValue, true, 1, null, 0, 0);
-        //add_alert("low alert", false, lowValue, true, 1, null, 0, 0);
-        //print_all();
     }
     
    
     public static void testAll() {
         
         remove_all();
-        add_alert("high alert 1", true, 180, true, 10, null, 0, 0, true);
-        add_alert("high alert 2", true, 200, true, 10, null, 0, 0, true);
-        add_alert("high alert 3", true, 220, true, 10, null, 0, 0, true);
+        add_alert(null, "high alert 1", true, 180, true, 10, null, 0, 0, true);
+        add_alert(null, "high alert 2", true, 200, true, 10, null, 0, 0, true);
+        add_alert(null, "high alert 3", true, 220, true, 10, null, 0, 0, true);
         print_all();
         AlertType a1 = get_highest_active_alert(190);
         Log.e(TAG, "a1 = " + a1.toString());
@@ -311,8 +304,8 @@ public class AlertType extends Model {
         AlertType a3 = get_alert(a1.uuid);
         Log.e(TAG, "a1 == a3 ? need to see true " + (a1==a3) + a1 + " " + a3);
         
-        add_alert("low alert 1", false, 80, true, 10, null, 0, 0, true);
-        add_alert("low alert 2", false, 60, true, 10, null, 0, 0, true);
+        add_alert(null, "low alert 1", false, 80, true, 10, null, 0, 0, true);
+        add_alert(null, "low alert 2", false, 60, true, 10, null, 0, 0, true);
         
         AlertType al1 = get_highest_active_alert(90);
         Log.e(TAG, "al1 should be null  " + al1);
