@@ -2,8 +2,26 @@
 
     <!-- These settings headers are only used on tablets. -->
 
-    <header android:fragment="com.eveningoutpost.dexdrip.SettingsActivity$GeneralPreferenceFragment"
-        android:title="@string/pref_header_general" />
+    <header android:fragment="com.eveningoutpost.dexdrip.utils.Preferences$EulaPrefFragment"
+        android:title="EULA" />
+    <header
+        android:fragment="com.eveningoutpost.dexdrip.utils.Preferences$GeneralPrefFragment"
+        android:title="General Settings" />
+    <header
+        android:fragment="com.eveningoutpost.dexdrip.utils.Preferences$BgNotificationPrefFragment"
+        android:title="Bg level Alerts" />
+    <header
+        android:fragment="com.eveningoutpost.dexdrip.utils.Preferences$CalibrationNotificationPrefFragment"
+        android:title="Calibration Alerts" />
+    <header
+        android:fragment="com.eveningoutpost.dexdrip.utils.Preferences$CollectionMethodPrefFragment"
+        android:title="Data Collection Method" />
+    <header
+        android:fragment="com.eveningoutpost.dexdrip.utils.Preferences$DataUploadPrefFragment"
+        android:title="Data Upload and Cloud Sync" />
+    <header
+        android:fragment="com.eveningoutpost.dexdrip.utils.Preferences$wifiPrefFragment"
+        android:title="Wifi Prefs" />
 
 
 </preference-headers>

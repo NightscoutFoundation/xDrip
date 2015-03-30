@@ -60,16 +60,9 @@ public class SettingsActivity extends PreferenceActivity {
         getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_wifi);
 
-        bindPreferenceSummaryToValue(findPreference("highValue"));
-        bindPreferenceSummaryToValue(findPreference("lowValue"));
-        bindPreferenceSummaryToValue(findPreference("bg_snooze"));
-        bindPreferenceSummaryToValue(findPreference("calibration_snooze"));
-        bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_uri"));
-        bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_collection"));
-        bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_device_status_collection"));
-        bindPreferenceSummaryToValue(findPreference("cloud_storage_api_base"));
+
+
         bindPreferenceSummaryToValue(findPreference("dex_collection_method"));
-        bindPreferenceSummaryToValue(findPreference("wifi_recievers_addresses"));
         bindPreferenceSummaryToValue(findPreference("units"));
         bindPreferenceSummaryToValue(findPreference("share_key"));
     }

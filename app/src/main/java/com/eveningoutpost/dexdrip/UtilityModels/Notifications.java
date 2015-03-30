@@ -11,6 +11,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.DoubleCalibrationActivity;
@@ -117,7 +118,9 @@ public class Notifications {
                 extraCalibrationRequest();
             } else { clearExtraCalibrationRequest(); }
 
-            if (calibrations.size() >= 1 && (calibrations.get(0).timestamp + (60000 * 60 * 12) < new Date().getTime())) {
+            if (calibrations.size() >= 1 && Math.abs((new Date().getTime() - calibrations.get(0).timestamp))/(1000*60*60) > 12) {
+                Log.e("NOTIFICATIONS", "Calibration difference in hours: " + ((new Date().getTime() - calibrations.get(0).timestamp))/(1000*60*60));
+
                 calibrationRequest();
             } else { clearCalibrationRequest(); }
 

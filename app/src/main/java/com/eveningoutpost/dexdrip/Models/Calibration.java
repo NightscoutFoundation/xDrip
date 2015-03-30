@@ -305,7 +305,7 @@ public class Calibration extends Model {
                 .where("sensor_confidence != 0")
                 .where("timestamp <= ?", calSubrecord.getDateEntered().getTime() + addativeOffset + (1000 * 60 * 3))
                 .executeSingle();
-        if(calibration != null && calibration.timestamp >= calSubrecord.getDateEntered().getTime() + addativeOffset - (1000 * 60 * 6)) {
+        if(calibration != null && Math.abs(calibration.timestamp - addativeOffset) < (3*60*1000)) {
             Log.d("CAL CHECK IN ", "Already have that calibration!");
             return false;
         } else {

@@ -74,10 +74,9 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         super.onCreate(savedInstanceState);
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(getApplicationContext());
         collectionServiceStarter.start(getApplicationContext());
-        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_bg_notification, false);
-        PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
-        PreferenceManager.setDefaultValues(this, R.xml.pref_wifi, false);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_calibration_notfication, false);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_data_source, false);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         checkEula();
         setContentView(R.layout.activity_home);

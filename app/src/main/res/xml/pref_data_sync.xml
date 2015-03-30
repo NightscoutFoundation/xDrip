@@ -4,7 +4,6 @@
          dismiss it. -->
     <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
     <PreferenceCategory
-        android:dependency="I_understand"
         android:title="Data Sync"
         android:key="dataSync">
 
@@ -65,6 +64,25 @@
             </EditTextPreference>
 
         </PreferenceScreen>
+
+        <!--<CheckBoxPreference-->
+        <!--android:key="share_upload"-->
+        <!--android:title="Upload BG values as Dexcom Share"-->
+        <!--android:summary="If you are using Dexcom Share, choose this option."-->
+        <!--android:defaultValue="false" />-->
+        <!--<EditTextPreference-->
+        <!--android:dependency="share_upload"-->
+        <!--android:key="dexcom_account_name"-->
+        <!--android:title="Dexcom Account Login"-->
+        <!--android:summary="Your login for Dexcoms Website"-->
+        <!--android:defaultValue=""/>-->
+        <!--<EditTextPreference-->
+        <!--android:dependency="share_upload"-->
+        <!--android:key="dexcom_account_password"-->
+        <!--android:title="Dexcom Account Password"-->
+        <!--android:inputType="textPassword"-->
+        <!--android:summary="Your password for Dexcoms Website"-->
+        <!--android:defaultValue=""/>-->
 
         <SwitchPreference
             android:title="@string/pref_title_broadcast_enabled"

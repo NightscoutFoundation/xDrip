@@ -1,35 +1,35 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory
-        android:dependency="I_understand"
-        android:title="Acceptable BG range"
-        android:key="bgRange">
-        <ListPreference
-            android:key="units"
-            android:title="Bg Units"
-            android:entries="@array/bgUnitEntries"
-            android:entryValues="@array/bgUnitValues"
-            android:defaultValue="mgdl"/>
-        <EditTextPreference
-            android:key="highValue"
-            android:title="High Value"
-            android:numeric="decimal"
-            android:summary="The maximum value you consider to be in range."
-            android:defaultValue="170" />
-        <EditTextPreference
-            android:key="lowValue"
-            android:title="Low Value"
-            android:numeric="decimal"
-            android:summary="The minimum value you consider to be in range."
-            android:defaultValue="70" />
-        <SwitchPreference
-            android:key="predictive_bg"
-            android:title="Display Predictive Values"
-            android:summary="Not Recommended. xDrip will attempt to predict readings each minute based on the past few values."
-            android:defaultValue="false" />
-        <SwitchPreference
-            android:key="interpret_raw"
-            android:title="Interpret Raw Values"
-            android:summary="If using Share, DexDrip will show values when they are normally hidden on the reciever."
-            android:defaultValue="false" />
-    </PreferenceCategory>
-</PreferenceScreen>
+<?xml version="1.0" encoding="utf-8"?>
+    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+        <PreferenceCategory
+            android:title="Acceptable BG range"
+            android:key="bgRange">
+            <ListPreference
+                android:key="units"
+                android:title="Bg Units"
+                android:entries="@array/bgUnitEntries"
+                android:entryValues="@array/bgUnitValues"
+                android:defaultValue="mgdl"/>
+            <EditTextPreference
+                android:key="highValue"
+                android:title="High Value"
+                android:numeric="decimal"
+                android:summary="The maximum value you consider to be in range."
+                android:defaultValue="170" />
+            <EditTextPreference
+                android:key="lowValue"
+                android:title="Low Value"
+                android:numeric="decimal"
+                android:summary="The minimum value you consider to be in range."
+                android:defaultValue="70" />
+            <SwitchPreference
+                android:key="predictive_bg"
+                android:title="Display Predictive Values"
+                android:summary="Not Recommended. xDrip will attempt to predict readings each minute based on the past few values."
+                android:defaultValue="false" />
+            <SwitchPreference
+                android:key="interpret_raw"
+                android:title="Interpret Raw Values"
+                android:summary="If using Share, DexDrip will show values when they are normally hidden on the reciever."
+                android:defaultValue="false" />
+        </PreferenceCategory>
+    </PreferenceScreen>

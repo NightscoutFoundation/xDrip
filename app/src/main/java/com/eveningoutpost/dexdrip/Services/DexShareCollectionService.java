@@ -158,7 +158,7 @@ public class DexShareCollectionService extends Service {
             BgReading bgReading = BgReading.last();
             long retry_in;
             if (bgReading != null) {
-                retry_in = Math.min(Math.max((1000 * 30), (1000 * 60 * 5) - (new Date().getTime() - bgReading.timestamp) + 20), (1000 * 60 * 5));
+                retry_in = Math.min(Math.max((1000 * 30), (1000 * 60 * 5) - (new Date().getTime() - bgReading.timestamp) + 5), (1000 * 60 * 5));
             } else {
                 retry_in = (1000 * 60);
             }
@@ -238,12 +238,14 @@ public class DexShareCollectionService extends Service {
                     Log.d(TAG, "Made the full round trip, got " + s + " as the system time");
                     final long addativeSystemTimeOffset = new Date().getTime() - s;
 
-                    final Action1<Date> dislpayTimeListener = new Action1<Date>() {
+                    final Action1<Long> dislpayTimeListener = new Action1<Long>() {
                         @Override
-                        public void call(Date s) {
+                        public void call(Long s) {
                             if (s != null) {
-                                Log.d(TAG, "Made the full round trip, got " + s + " as the display time");
-                                final long addativeDisplayTimeOffset = new Date().getTime() - s.getTime();
+                                Log.d(TAG, "Made the full round trip, got " + s + " as the display time offset");
+                                final long addativeDisplayTimeOffset = addativeSystemTimeOffset - (s*1000);
+
+                                Log.d(TAG, "Making " + addativeDisplayTimeOffset + " the the total time offset");
 
                                 final Action1<EGVRecord[]> evgRecordListener = new Action1<EGVRecord[]>() {
                                     @Override
@@ -285,7 +287,7 @@ public class DexShareCollectionService extends Service {
                             }
                         }
                     };
-                    readData.readDisplayTime(dislpayTimeListener);
+                    readData.readDisplayTimeOffset(dislpayTimeListener);
                 }
             }
         };

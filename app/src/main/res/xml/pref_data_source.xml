@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
     <PreferenceCategory
-        android:dependency="I_understand"
         android:title="Data Source"
         android:key="dataSource">
         <ListPreference
@@ -12,11 +10,15 @@
             android:entries="@array/DexCollectionMethods"
             android:entryValues="@array/DexCollectionMethodValues"
             android:defaultValue="BluetoothWixel"/>
+        <EditTextPreference
+            android:title="10 Character Dexcom Receiver Serial Number"
+            android:key="share_key"
+            android:defaultValue="SM00000000"/>
         <CheckBoxPreference
             android:key="run_service_in_foreground"
             android:title="Run Collection Service in foreground"
             android:summary="Running in foreground prevents android from killing the service to free up memory but it creates an annoying notification, Not recommended."
             android:defaultValue="false" />
-    </PreferenceCategory>
 
+    </PreferenceCategory>
 </PreferenceScreen>
