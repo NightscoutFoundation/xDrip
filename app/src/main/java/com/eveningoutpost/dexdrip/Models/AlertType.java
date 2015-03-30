@@ -251,10 +251,11 @@ public class AlertType extends Model {
         String above = "above: " + this.above;
         String threshold = "threshold: " + this.threshold;
         String all_day = "all_day: " + this.all_day;
+        String time = "Start time: " + this.start_time_minutes + " end time: "+ this.end_time_minutes;
         String minutes_between = "minutes_between: " + this.minutes_between; 
         String uuid = "uuid: " + this.uuid; 
 
-        return name + " " + above + " " + threshold + " "+ all_day + " " + minutes_between + " uuid" + uuid;
+        return name + " " + above + " " + threshold + " "+ all_day + " " +time +" " + minutes_between + " uuid" + uuid;
     }
  
     public static void print_all() {
@@ -333,13 +334,13 @@ public class AlertType extends Model {
         // time_now is the number of minutes that have passed from the start of the day.
         Calendar rightNow = Calendar.getInstance();
         int time_now = toTime(rightNow.get(Calendar.HOUR_OF_DAY), rightNow.get(Calendar.MINUTE));
-        Log.e(TAG, "time_now is " + time_now + " minutes");
+        Log.e(TAG, "time_now is " + time_now + " minutes" + " start_time " + start_time_minutes + " end_time " + end_time_minutes);
         if(start_time_minutes < end_time_minutes) {
             if (time_now >= start_time_minutes && time_now <= end_time_minutes) {
                 return true;
             }
         } else {
-            if (time_now <= start_time_minutes || time_now >= end_time_minutes) {
+            if (time_now >= start_time_minutes || time_now <= end_time_minutes) {
                 return true;
             }
         }
