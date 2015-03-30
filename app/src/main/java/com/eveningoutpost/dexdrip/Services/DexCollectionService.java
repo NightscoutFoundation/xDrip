@@ -211,11 +211,22 @@ public class DexCollectionService extends Service {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                for (BluetoothGattService gattService : mBluetoothGatt.getServices()) {
-                    Log.w(TAG, "Service Found");
-                    for (BluetoothGattCharacteristic gattCharacteristic : gattService.getCharacteristics()) {
-                        setCharacteristicNotification(gattCharacteristic, true);
+                BluetoothGattService gattService = mBluetoothGatt.getService(xDripDataService);
+                if (gattService != null) {
+                    BluetoothGattCharacteristic gattCharacteristic = gattService.getCharacteristic(xDripDataCharacteristic);
+                    if (gattCharacteristic != null ) {
+                        final int charaProp = gattCharacteristic.getProperties();
+
+                        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+                            mBluetoothGatt.setCharacteristicNotification(gattCharacteristic, true);
+                        } else {
+                            Log.e(TAG, "characteristic " + gattCharacteristic.getUuid() + " doesn't have notify properties");
+                        }
+                    } else {
+                        Log.e(TAG, "characteristic " + xDripDataCharacteristic + " not found");
                     }
+                } else {
+                    Log.e(TAG, "service " + xDripDataCharacteristic + " not found");
                 }
             }
         }
@@ -264,19 +275,6 @@ public class DexCollectionService extends Service {
         setRetryTimer();
         mBluetoothGatt = null;
         mConnectionState = STATE_DISCONNECTED;
-        Log.w(TAG, "bt Disconnected");
-    }
-
-    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic, boolean enabled) {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) { return; }
-        mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-        if (xDripDataCharacteristic.equals(characteristic.getUuid())) {
-            Log.w(TAG, "UUID MATCH FOUND!!! " + characteristic.getUuid());
-            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
-                    UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
-            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            mBluetoothGatt.writeDescriptor(descriptor);
-        }
     }
 
     public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
