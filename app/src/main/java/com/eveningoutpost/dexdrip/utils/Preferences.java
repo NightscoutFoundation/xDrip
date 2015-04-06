@@ -1,12 +1,11 @@
 package com.eveningoutpost.dexdrip.utils;
 
-import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -14,7 +13,6 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.util.Log;
@@ -35,15 +33,26 @@ import java.util.List;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class Preferences extends PreferenceActivity {
+    public  static SharedPreferences prefs;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        getFragmentManager().beginTransaction().replace(android.R.id.content,
+                new AllPrefsFragment()).commit();
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+//        addPreferencesFromResource(R.xml.pref_general);
+
+    }
+
     @Override
     protected boolean isValidFragment(String fragmentName) {
-        if (EulaPrefFragment.class.getName().equals(fragmentName)){ return true; }
-        if (GeneralPrefFragment.class.getName().equals(fragmentName)){ return true; }
-        if (BgNotificationPrefFragment.class.getName().equals(fragmentName)){ return true; }
-        if (CalibrationNotificationPrefFragment.class.getName().equals(fragmentName)){ return true; }
-        if (CollectionMethodPrefFragment.class.getName().equals(fragmentName)){ return true; }
-        if (DataUploadPrefFragment.class.getName().equals(fragmentName)){ return true; }
-        if (wifiPrefFragment.class.getName().equals(fragmentName)){ return true; }
+        if (AllPrefsFragment.class.getName().equals(fragmentName)){ return true; }
         return false;
     }
 
@@ -65,23 +74,9 @@ public class Preferences extends PreferenceActivity {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
             String stringValue = value.toString();
-            if (preference.getKey().compareTo("dex_collection_method") == 0) {
-                ListPreference listPreference = (ListPreference) preference;
-//                if (listPreference.getValue().compareTo("DexcomShare") == 0) {
-//                    PreferenceFragment preferenceScreen = new CollectionMethodPrefFragment();
-//                    PreferenceScreen collectionMethodScreen = preferenceScreen.getPreferenceScreen();
-//                    Preference sharePreference = collectionMethodScreen.getPreference(1);
-//                    collectionMethodScreen.removePreference(sharePreference);
-//                }
-
-            }
             if (preference instanceof ListPreference) {
-                // For list preferences, look up the correct display value in
-                // the preference's 'entries' list.
                 ListPreference listPreference = (ListPreference) preference;
                 int index = listPreference.findIndexOfValue(stringValue);
-
-                // Set the summary to reflect the new value.
                 preference.setSummary(
                         index >= 0
                                 ? listPreference.getEntries()[index]
@@ -126,94 +121,110 @@ public class Preferences extends PreferenceActivity {
                         .getString(preference.getKey(), ""));
     }
 
-    public static class EulaPrefFragment extends PreferenceFragment {
+    public static class AllPrefsFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_license);
-        }
-    }
-
-    public static class GeneralPrefFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
             bindPreferenceSummaryToValue(findPreference("highValue"));
             bindPreferenceSummaryToValue(findPreference("lowValue"));
             bindPreferenceSummaryToValue(findPreference("units"));
-        }
-    }
-    public static class BgNotificationPrefFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_bg_notification);
+
+            addPreferencesFromResource(R.xml.pref_notifications);
             bindPreferenceSummaryToValue(findPreference("bg_snooze"));
-        }
-    }
-    public static class CalibrationNotificationPrefFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_calibration_notfication);
-            bindPreferenceSummaryToValue(findPreference("calibration_snooze"));
-        }
-    }
-    public static class CollectionMethodPrefFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
+
             addPreferencesFromResource(R.xml.pref_data_source);
-            Preference collectionMethod = findPreference("dex_collection_method");
-            final Preference shareKey = findPreference("share_key");
-            bindPreferenceSummaryToValue(collectionMethod);
-            bindPreferenceSummaryToValue(shareKey);
 
-            collectionMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if(((String) newValue).compareTo("DexcomShare") == 0) {
-                        getPreferenceScreen().removePreference(shareKey);
-                    } else {
-                        getPreferenceScreen().addPreference(shareKey);
-                    }
-                    return true;
-                }
-            });
-        }
-    }
-    public static class DataUploadPrefFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_data_sync);
             bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_uri"));
             bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_collection"));
             bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_device_status_collection"));
             bindPreferenceSummaryToValue(findPreference("cloud_storage_api_base"));
-        }
-    }
-    public static class wifiPrefFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_wifi);
-            bindPreferenceSummaryToValue(findPreference("wifi_recievers_addresses"));
-        }
-    }
-    /**
-     * This fragment shows data and sync preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    public static class DataSyncPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_data_sync);
 
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+
+            addPreferencesFromResource(R.xml.pref_advanced_settings);
+
+
+            final Preference collectionMethod = findPreference("dex_collection_method");
+            final Preference runInForeground = findPreference("run_service_in_foreground");
+            final Preference wifiRecievers = findPreference("wifi_recievers_addresses");
+            final Preference predictiveBG = findPreference("predictive_bg");
+            final Preference interpretRaw = findPreference("interpret_raw");
+            final Preference shareKey = findPreference("share_key");
+            final PreferenceCategory collectionCategory = (PreferenceCategory) findPreference("collection_category");
+            final PreferenceCategory otherCategory = (PreferenceCategory) findPreference("other_category");
+
+            prefs =  getPreferenceManager().getDefaultSharedPreferences(getActivity());
+            Log.d("PREF", prefs.getString("dex_collection_method", "BluetoothWixel"));
+
+            if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomShare") != 0) {
+                collectionCategory.removePreference(shareKey);
+                otherCategory.removePreference(interpretRaw);
+            } else {
+                otherCategory.removePreference(predictiveBG);
+            }
+            if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("BluetoothWixel") != 0) {
+                collectionCategory.removePreference(runInForeground);
+            }
+            if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("WifiWixel") != 0) {
+                collectionCategory.removePreference(wifiRecievers);
+            }
+            bindPreferenceSummaryToValue(collectionMethod);
+            bindPreferenceSummaryToValue(shareKey);
+            bindPreferenceSummaryToValue(wifiRecievers);
+            collectionMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    if(((String) newValue).compareTo("DexcomShare") != 0) {
+                        collectionCategory.removePreference(shareKey);
+                        otherCategory.removePreference(interpretRaw);
+                        otherCategory.addPreference(predictiveBG);
+                    } else {
+                        collectionCategory.addPreference(shareKey);
+                        otherCategory.addPreference(interpretRaw);
+                        otherCategory.removePreference(predictiveBG);
+                    }
+                    if(((String) newValue).compareTo("BluetoothWixel") != 0) {
+                        collectionCategory.removePreference(runInForeground);
+                    } else {
+                        collectionCategory.addPreference(runInForeground);
+                    }
+                    if(((String) newValue).compareTo("WifiWixel") != 0) {
+                        collectionCategory.removePreference(wifiRecievers);
+                    } else {
+                        collectionCategory.addPreference(wifiRecievers);
+                    }
+                    String stringValue = newValue.toString();
+                    if (preference instanceof ListPreference) {
+                        ListPreference listPreference = (ListPreference) preference;
+                        int index = listPreference.findIndexOfValue(stringValue);
+                        preference.setSummary(
+                                index >= 0
+                                        ? listPreference.getEntries()[index]
+                                        : null);
+
+                    } else if (preference instanceof RingtonePreference) {
+                        if (TextUtils.isEmpty(stringValue)) {
+                            preference.setSummary(R.string.pref_ringtone_silent);
+
+                        } else {
+                            Ringtone ringtone = RingtoneManager.getRingtone(
+                                    preference.getContext(), Uri.parse(stringValue));
+                            if (ringtone == null) {
+                                preference.setSummary(null);
+                            } else {
+                                String name = ringtone.getTitle(preference.getContext());
+                                preference.setSummary(name);
+                            }
+                        }
+                    } else {
+                        preference.setSummary(stringValue);
+                    }
+                    return true;
+                }
+            });
         }
     }
 }
