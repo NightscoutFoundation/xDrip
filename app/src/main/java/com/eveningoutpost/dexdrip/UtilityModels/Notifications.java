@@ -99,29 +99,29 @@ public class Notifications {
 
 /*
  * *************************************************************************************************************
- * Function for new notifications    
+ * Function for new notifications
  */
-    
-     
+
+
     public void FileBasedNotifications(Context context) {
         ReadPerfs(context);
         // Make sure we have our alerts set...
         AlertType.CreateStaticAlerts(context);
-        
+
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
         Sensor sensor = Sensor.currentSensor();
-        
+
         List<BgReading> bgReadings = BgReading.latest(1);
         if(bgReadings == null || bgReadings.size() == 0) {
             // Sensor is stopped, or there is not enough data
             AlertPlayer.getPlayer().stopAlert(true, false);
             return;
         }
-           
+
         BgReading bgReading = bgReadings.get(0);
-        
+
         Log.e(TAG, "FileBasedNotifications called bgReading.calculated_value = " + bgReading.calculated_value);
-        // TODO: tzachi what is the time of this last bgReading 
+        // TODO: tzachi what is the time of this last bgReading
         // TODO: tzachi, what happens if the last reading does not have a sensor, or that sensor was stopped.
         // What if the sensor was started, but the 2 hours did not still pass? or there is no calibrations.
         if (bg_notifications && sensor != null && bgReading != null) {
@@ -132,7 +132,7 @@ public class Notifications {
                 AlertPlayer.getPlayer().stopAlert(false, true);
                 return;
             }
-            
+
             AlertType activeBgAlert = ActiveBgAlert.alertTypegetOnly();
             if(activeBgAlert == null) {
                 Log.e(TAG, "FileBasedNotifications we have a new alert, starting to play it...");
@@ -140,8 +140,8 @@ public class Notifications {
                 AlertPlayer.getPlayer().startAlert(context, newAlert);
                 return;
             }
-            
-            
+
+
             if (activeBgAlert.uuid.equals(newAlert.uuid)) {
                 // This is the same alert. Might need to play again...
                 Log.e(TAG, "FileBasedNotifications we have found an active alert, checking if we need to play it");
@@ -149,12 +149,12 @@ public class Notifications {
                 return;
             }
             // Tzachi: todo, if this alerts have the same importance we should only do a ClockTick ???????????????????????
-            
+
             // we have a new alert. If it is more important than the previous one. we need to stop
             // the older one and start a new one (We need to play even if we were snoozed).
             // If it is a lower level alert, we should keep being snoozed.
-            
-            
+
+
             // Example, if we have two alerts one for 90 and the other for 80. and we were already alerting for the 80
             // and we were snoozed. Now bg is 85, the alert for 80 is cleared, but we are alerting for 90.
             // We should not do anything if we are snoozed for the 80...
@@ -167,28 +167,28 @@ public class Notifications {
                 AlertPlayer.getPlayer().ClockTick(context);
                 return;
             }
-            
+
             // For now, we are stopping the old alert and starting a new one.
             Log.e(TAG, "Found a new allert, that is higher than the previous one will play it.");
             AlertPlayer.getPlayer().stopAlert(true, false);
             AlertPlayer.getPlayer().startAlert(context, newAlert);
             return;
-            
+
         } else {
             AlertPlayer.getPlayer().stopAlert(true, false);
         }
-        
+
     }
 /*
  * *****************************************************************************************************************
  */
-    
-    // only function that is realy called from outside...
+
+    // only function that is really called from outside...
     public void notificationSetter(Context context) {
         ReadPerfs(context);
-        
+
         FileBasedNotifications(context);
-        
+
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
         double high = bgGraphBuilder.highMark;
         double low = bgGraphBuilder.lowMark;

@@ -223,7 +223,7 @@ public class BgReading extends Model {
             bgReading.find_new_curve();
             bgReading.find_new_raw_curve();
             bgReading.perform_calculations();
-            Notifications.notificationSetter(context);
+            Notifications.getInstance(context).notificationSetter(context);
             BgSendQueue.addToQueue(bgReading, "create", context);
         }
     }
