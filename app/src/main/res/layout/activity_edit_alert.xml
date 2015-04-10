@@ -6,221 +6,263 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.eveningoutpost.dexdrip.FakeNumbers">
 
-    <TextView  
+    <TextView
         android:id="@+id/view_alert_header"
-        android:layout_width="fill_parent" 
-        android:layout_height="wrap_content" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:gravity="left"
         android:text="replace dyanmicly (edit_alert_header)"
         android:textSize="24dp"
         />
 
-    <LinearLayout
-    android:id="@+id/linear_layout_alert"
-    android:orientation="vertical"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_below="@+id/view_alert_header">
-    >
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView" >
         <LinearLayout
-	    android:orientation="horizontal"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    >
-	        <TextView  
-		        android:id="@+id/view_alert_text"
-		        android:layout_width="wrap_content" 
-		        android:layout_height="wrap_content" 
-		        android:gravity="left"
-		        android:text="Enter name for alert:"
-		        android:textSize="24dp"
-		        />
-	        
-		    <EditText
-		        android:id="@+id/edit_alert_text"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:inputType="text"
-		        android:ems="10"
-		        android:autoText="false"
-		        android:text=""
-		        android:singleLine="true"
-		        android:textAlignment="center"
-		        android:textSize="24dp"
-		        android:layout_alignParentStart="true" />
-	    </LinearLayout>
-		    
-		<LinearLayout
-        android:orientation="horizontal"
-         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        >    
-            <TextView  
-                android:id="@+id/view_alert_threshold"
-                android:layout_width="wrap_content" 
-                android:layout_height="wrap_content" 
-                android:gravity="left"
-                android:text="Enter threshold for alert:"
-                android:textSize="24dp"
-                />
-		     
-		    <EditText
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:inputType="number"
-		        android:ems="10"
-		        android:id="@+id/edit_alert_threshold"
-		        android:autoText="false"
-		        android:text=""
-		        android:singleLine="true"
-		        android:textAlignment="center"
-		        android:textSize="24dp"
-		        android:layout_alignParentStart="true" />
-		</LinearLayout>
-	    
-		<LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        >    
-
-		<TextView  
-                android:id="@+id/view_alert_mp3_file"
-                android:layout_width="wrap_content" 
-                android:layout_height="wrap_content" 
-                android:gravity="left"
-                android:text="Enter file to play:"
-                android:textSize="24dp"
-                />		 
-	    <EditText
-	        android:id="@+id/edit_alert_mp3_file"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:inputType="text"
-	        android:ems="10"
-	        android:autoText="false"
-	        android:text=""
-	        android:singleLine="true"
-	        android:textAlignment="center"
-	        android:textSize="24dp"
-	        android:layout_alignParentStart="true" />
-	    
-	    <Button
-			android:id="@+id/Button_alert_mp3_file"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="Choose file" />
-	    
-	    </LinearLayout>
-	    
-		<LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-		    <TextView  
-                android:id="@+id/view_alert_time"
-                android:layout_width="wrap_content" 
-                android:layout_height="wrap_content" 
-                android:gravity="left"
-                android:text="Select time for alert:"
-                android:textSize="24dp"
-                />
-            
-            <CheckBox
-                android:id="@+id/check_alert_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" 
-                android:text="all day"
-                android:textSize="24dp"/>
-        </LinearLayout>
-
-		<LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-		
-            <TextView  
-                android:id="@+id/view_alert_time_start"
-                android:layout_width="wrap_content" 
-                android:layout_height="wrap_content" 
-                android:gravity="left"
-                android:text="start time:" 
-                android:textSize="24dp"
-                />
-            
-            <TimePicker
-                android:id="@+id/timePicker_alert_start"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <LinearLayout
+            android:id="@+id/linear_layout_alert"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/view_alert_header">
+            >
+                <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:timePickerMode="spinner"/>
+                >
+                    <TextView
+                        android:id="@+id/view_alert_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left"
+                        android:text="Enter name for alert:"
+                        android:textSize="24dp"
+                        />
 
-            <TextView  
-                android:id="@+id/view_alert_time_end"
-                android:layout_width="wrap_content" 
-                android:layout_height="wrap_content" 
-                android:gravity="left"
-                android:text="end time:"
-                android:textSize="24dp"
-                />
-            
-            <TimePicker
-            android:id="@+id/timePicker_alert_end"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:timePickerMode="spinner"/>
-            
-            
-        </LinearLayout>
-		
-		<LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+                    <EditText
+                        android:id="@+id/edit_alert_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:ems="10"
+                        android:autoText="false"
+                        android:text=""
+                        android:singleLine="true"
+                        android:textAlignment="center"
+                        android:textSize="24dp"
+                        android:layout_alignParentStart="true" />
+                </LinearLayout>
 
-            <TextView  
-                android:id="@+id/view_alert_override_silent"
-                android:layout_width="wrap_content" 
-                android:layout_height="wrap_content" 
-                android:gravity="left"
-                android:text="alert will override silent/vibrate mode"
-                android:textSize="24dp"
-                />
-            
-            <CheckBox
-                android:id="@+id/check_override_silent"
+                <LinearLayout
+                android:orientation="horizontal"
+                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                >
+                    <TextView
+                        android:id="@+id/view_alert_threshold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left"
+                        android:text="Enter threshold for alert:"
+                        android:textSize="24dp"
+                        />
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:ems="10"
+                        android:id="@+id/edit_alert_threshold"
+                        android:autoText="false"
+                        android:text=""
+                        android:singleLine="true"
+                        android:textAlignment="center"
+                        android:textSize="24dp"
+                        android:layout_alignParentStart="true" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+
+                    <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    >
+
+                    <TextView
+                            android:id="@+id/view_alert_mp3_file"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="left"
+                            android:text="Alert Tone:"
+                            android:textSize="15dp"
+                            />
+                    <EditText
+                        android:id="@+id/edit_alert_mp3_file"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:ems="10"
+                        android:autoText="false"
+                        android:text=""
+                        android:singleLine="true"
+                        android:textAlignment="center"
+                        android:textSize="15dp"
+                        android:layout_alignParentStart="true" />
+
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/Button_alert_mp3_file"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Choose file"
+                        android:layout_gravity="center" />
+                </LinearLayout>
+
+                <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/view_alert_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left"
+                        android:text="Select time for alert:"
+                        android:textSize="24dp"
+                        android:layout_gravity="left"
+                        android:paddingRight="10dp" />
+
+                    <CheckBox
+                        android:id="@+id/check_alert_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="all day"
+                        android:textSize="20dp"
+                        android:layout_gravity="center"
+                        android:gravity="right" />
+                </LinearLayout>
+
+                <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" 
-                android:text=""
-                android:textSize="24dp"/>
-            
-        </LinearLayout>
-	    
-    </LinearLayout>
+                android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/time_between">
 
-    <LinearLayout
-	    android:id="@+id/linear_layout_buttons"
-	    android:orientation="horizontal"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_below="@+id/linear_layout_alert">
-	    
-    
-	    <Button
-	        android:id="@+id/edit_alert_save"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="save alert"
-	       />
-	
-        <Button
-            android:id="@+id/edit_alert_remove"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="remove alert"
-            />
-    </LinearLayout>
-    
-   
+                    <TextView
+                        android:id="@+id/view_alert_time_start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left"
+                        android:text="12:00 AM"
+                        android:textSize="24dp"
+                        android:paddingRight="20dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="--"/>
+
+                    <TextView
+                        android:id="@+id/view_alert_time_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left"
+                        android:text="12:00 PM"
+                        android:textSize="24dp"
+                        android:paddingLeft="20dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/time_instructions">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left"
+                        android:text="(tap to change)"
+                        android:textSize="15dp"
+                        android:paddingRight="25dp" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left"
+                        android:text="(tap to change)"
+                        android:textSize="15dp"
+                        android:paddingLeft="25dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/view_alert_override_silent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left"
+                        android:text="alert will override silent/vibrate mode"
+                        android:textSize="24dp"
+                        />
+
+                    <CheckBox
+                        android:id="@+id/check_override_silent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="24dp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/linear_layout_buttons"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/linear_layout_alert">
+
+
+                <Button
+                    android:id="@+id/edit_alert_save"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="save alert"
+                    />
+
+                <Button
+                    android:id="@+id/edit_alert_remove"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="remove alert"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
 
 </RelativeLayout>
