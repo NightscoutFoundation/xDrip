@@ -270,9 +270,16 @@ public class AlertType extends Model {
     }
     
     public static List<AlertType> getAll(boolean above) {
+        String order;
+        if (above) {
+            order = "threshold asc";
+        } else {
+            order = "threshold desc";
+        }
         List<AlertType> alerts  = new Select()
             .from(AlertType.class)
             .where("above = ?", above)
+            .orderBy(order)
             .execute();
 
         return alerts;
