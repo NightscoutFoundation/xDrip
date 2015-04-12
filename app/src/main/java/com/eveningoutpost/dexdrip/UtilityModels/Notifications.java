@@ -124,7 +124,7 @@ public class Notifications {
         // or the sensor was started, but the 2 hours did not still pass? or there is no calibrations.
         // In all this cases, bgReading.calculated_value should be 0. 
         if (bg_notifications && sensor != null && bgReading != null && bgReading.calculated_value !=0) {
-            AlertType newAlert = AlertType.get_highest_active_alert(bgGraphBuilder.unitized(bgReading.calculated_value));
+            AlertType newAlert = AlertType.get_highest_active_alert(bgReading.calculated_value);
             if (newAlert == null) {
                 Log.e(TAG, "FileBasedNotifications - No active notifcation exists, stopping all alerts");
                 // No alert should work, Stop all alerts, but keep the snoozing...
