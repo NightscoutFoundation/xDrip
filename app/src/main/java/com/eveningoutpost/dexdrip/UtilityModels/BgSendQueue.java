@@ -14,7 +14,9 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.getpebble.android.kit.PebbleKit;
 import com.eveningoutpost.dexdrip.ShareModels.ShareRest;
 
 import java.util.List;
@@ -36,6 +38,10 @@ public class BgSendQueue extends Model {
 
     @Column(name = "operation_type")
     public String operation_type;
+
+    private static Context mContext = Home.getContext();
+
+    private static PebbleSync pebbleSync = new PebbleSync(mContext);
 
     public static BgSendQueue nextBgJob() {
         return new Select()
@@ -105,7 +111,6 @@ public class BgSendQueue extends Model {
         }
 
         if(prefs.getBoolean("broadcast_to_pebble", false)) {
-            PebbleSync pebbleSync = new PebbleSync();
             pebbleSync.sendData(context, bgReading);
         }
 

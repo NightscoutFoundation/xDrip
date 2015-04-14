@@ -68,6 +68,8 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     public BgGraphBuilder bgGraphBuilder;
     BroadcastReceiver _broadcastReceiver;
     BroadcastReceiver newDataReceiver;
+    private static Context mContext;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +121,10 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         holdViewport.set(0, 0, 0, 0);
         setupCharts();
         updateCurrentBgInfo();
+    }
+
+    public static Context getContext() {
+        return mContext;
     }
 
     public void setupCharts() {
