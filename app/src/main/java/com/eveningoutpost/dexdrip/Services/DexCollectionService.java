@@ -110,7 +110,7 @@ public class DexCollectionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (CollectionServiceStarter.isBTWixel(getApplicationContext())) {
+        if (CollectionServiceStarter.isBTWixel(getApplicationContext())|| CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
             setFailoverTimer();
         } else {
             return START_NOT_STICKY;
@@ -154,7 +154,7 @@ public class DexCollectionService extends Service {
     }
 
     public void setRetryTimer() {
-        if (CollectionServiceStarter.isBTWixel(getApplicationContext())) {
+        if (CollectionServiceStarter.isBTWixel(getApplicationContext()) || CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
             long retry_in = (1000 * 60 * 2);
             Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
@@ -164,7 +164,7 @@ public class DexCollectionService extends Service {
     }
 
     public void setFailoverTimer() { //Sometimes it gets stuck in limbo on 4.4, this should make it try again
-        if (CollectionServiceStarter.isBTWixel(getApplicationContext())) {
+        if (CollectionServiceStarter.isBTWixel(getApplicationContext())|| CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
             long retry_in = (1000 * 60 * 5);
             Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
@@ -430,7 +430,7 @@ public class DexCollectionService extends Service {
         Log.w(TAG, "setSerialDataToTransmitterRawData: received some data!");
         Long timestamp = new Date().getTime();
         TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
-        if (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("dex_collection_method", "DexbridgeWixel").compareTo("DexbridgeWixel") == 0) {
+        if (CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
             Log.w(TAG, "setSerialDataToTransmitterRawData: Dealing with Dexbridge packet!");
             int DexSrc;
             int TransmitterID;

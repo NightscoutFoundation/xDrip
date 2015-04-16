@@ -17,6 +17,11 @@
             android:title="Run Collection Service in foreground"
             android:summary="Running in foreground prevents android from killing the service to free up memory but it creates an annoying notification, Not recommended."
             android:defaultValue="false" />
+        <EditTextPreference
+            android:key="dex_txid"
+            android:title="Dexcom Transmitter ID"
+            android:summary="ID of your Dexcom Transmitter, eg 12AB3"
+            android:defaultValue="00000" />
     </PreferenceCategory>
 
 </PreferenceScreen>

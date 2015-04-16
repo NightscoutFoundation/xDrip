@@ -62,6 +62,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     public boolean updatingPreviewViewport = false;
     public boolean updatingChartViewport = false;
     boolean isBTWixel;
+    boolean isDexbridgeWixel;
     boolean isBTShare;
     boolean isWifiWixel;
 
@@ -205,6 +206,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         final TextView notificationText = (TextView)findViewById(R.id.notices);
         notificationText.setText("");
         isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
+        isDexbridgeWixel = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
         isBTShare = CollectionServiceStarter.isBTShare(getApplicationContext());
         isWifiWixel = CollectionServiceStarter.isWifiWixel(getApplicationContext());
         if(isBTShare) {
@@ -231,7 +233,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 }
             }
         }
-        if(isBTWixel) {
+        if(isBTWixel || isDexbridgeWixel) {
             if ((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
                 notificationText.setText("Unfortunately your android version does not support Bluetooth Low Energy");
             } else {
