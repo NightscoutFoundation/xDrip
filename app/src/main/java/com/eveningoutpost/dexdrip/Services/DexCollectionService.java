@@ -429,7 +429,6 @@ public class DexCollectionService extends Service {
     public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
         Log.w(TAG, "setSerialDataToTransmitterRawData: received some data!");
         Long timestamp = new Date().getTime();
-        TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
         if (CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
             Log.w(TAG, "setSerialDataToTransmitterRawData: Dealing with Dexbridge packet!");
             int DexSrc;
@@ -488,7 +487,7 @@ public class DexCollectionService extends Service {
                     ackMessage.put(0, (byte) 0x02);
                     ackMessage.put(1, (byte) 0xF0);
                     sendBtMessage(ackMessage);
-                    //TransmitterData transmitterData = TransmitterData.create(buffer, len);
+                    TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
                     if (transmitterData != null) {
                         Sensor sensor = Sensor.currentSensor();
                         if (sensor != null) {
@@ -506,6 +505,7 @@ public class DexCollectionService extends Service {
                 }
             }
         } else {
+            TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
             //TransmitterData transmitterData = TransmitterData.create(buffer, len);
             if (transmitterData != null) {
                 Sensor sensor = Sensor.currentSensor();
