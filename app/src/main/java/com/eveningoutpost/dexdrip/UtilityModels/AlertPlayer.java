@@ -6,12 +6,14 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
@@ -20,13 +22,13 @@ import com.eveningoutpost.dexdrip.R;
 public class AlertPlayer {
 
     static AlertPlayer singletone;
-    
+
     private final static String TAG = AlertPlayer.class.getSimpleName();
     private MediaPlayer mediaPlayer;
     int volumeBeforeAlert;
     Context context;
-    
-    
+
+
     public static AlertPlayer getPlayer() {
         if(singletone == null) {
             Log.e(TAG,"getPlayer: Creating a new AlertPlayer");
@@ -41,15 +43,15 @@ public class AlertPlayer {
       Log.e(TAG, "start called, Threadid " + Thread.currentThread().getId());
       stopAlert(ctx, true, false);
       ActiveBgAlert.Create(newAlert.uuid, false, new Date().getTime() + newAlert.minutes_between * 60000 );
-      if(ShouldPlayFile(ctx, newAlert)) {
-          PlayFile(ctx, newAlert.mp3_file);
-      } else {
-          Vibrate(ctx, newAlert, bgValue);
-      }
+//      if(ShouldPlayFile(ctx, newAlert)) {
+//          PlayFile(ctx, newAlert.mp3_file);
+//      } else {
+          Vibrate(ctx, newAlert, bgValue, newAlert.override_silent_mode, newAlert.mp3_file);
+//      }
     }
 
     public synchronized void stopAlert(Context ctx, boolean ClearData, boolean clearIfSnoozeFinished) {
-        
+
         Log.e(TAG, "stopAlert: stop called ClearData " + ClearData + "  ThreadID " + Thread.currentThread().getId());
         if (ClearData) {
             ActiveBgAlert.ClearData();
@@ -64,7 +66,7 @@ public class AlertPlayer {
             mediaPlayer = null;
         }
     }
-    
+
     // True means play the file false means only vibrate.
     private boolean ShouldPlayFile(Context ctx, AlertType alert) {
         if(alert.override_silent_mode) {
@@ -84,7 +86,7 @@ public class AlertPlayer {
         // unknown mode, not sure let's play just in any case.
         return true;
     }
-    
+
     public synchronized  void Snooze(Context ctx, int repeatTime) {
         Log.e(TAG, "Snooze called repeatTime = "+ repeatTime);
         stopAlert(ctx, false, false);
@@ -95,7 +97,7 @@ public class AlertPlayer {
         }
         activeBgAlert.snooze(repeatTime);
     }
-    
+
  // Check the state and alrarm if needed
     public void ClockTick(Context ctx, String bgValue)
     {
@@ -113,13 +115,13 @@ public class AlertPlayer {
                 return;
             }
             Log.e(TAG,"ClockTick: Playing the alert again");
-            if(ShouldPlayFile(ctx, alert)) {
-                PlayFile(ctx, alert.mp3_file);
-            } else {
-                Vibrate(ctx, alert, bgValue);
-            }
+//            if(ShouldPlayFile(ctx, alert)) {
+//                PlayFile(ctx, alert.mp3_file);
+//            } else {
+                Vibrate(ctx, alert, bgValue, alert.override_silent_mode, alert.mp3_file);
+//            }
         }
-        
+
     }
 
     private void PlayFile(Context ctx, String FileName) {
@@ -135,7 +137,7 @@ public class AlertPlayer {
             mediaPlayer = MediaPlayer.create(ctx, R.raw.default_alert);
         }
         if(mediaPlayer != null) {
-            
+
             AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
             int maxVolume = manager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
             volumeBeforeAlert = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
@@ -162,29 +164,41 @@ public class AlertPlayer {
             Log.wtf(TAG,"PlayFile: Starting an alert failed, what should we do !!!");
         }
     }
-    
+
     private PendingIntent notificationIntent(Context ctx, Intent intent){
         return PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
     }
-    private void Vibrate(Context ctx, AlertType alert, String bgValue) {
-   
+    private PendingIntent snoozeIntent(Context ctx){
+        Intent intent = new Intent(ctx, SnoozeOnNotificationDismissService.class);
+        return PendingIntent.getService(ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+    }
+    private void Vibrate(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, String audioPath) {
+
         String title = bgValue + " " + alert.name;
         String content = "BG LEVEL ALERT: " + bgValue;
         Intent intent = new Intent(ctx, SnoozeActivity.class);
-        
+
         NotificationCompat.Builder  builder = new NotificationCompat.Builder(ctx)
-        .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
-        .setContentTitle(title)
-        .setContentText(content)
-        .setContentIntent(notificationIntent(ctx, intent));
+            .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
+            .setContentTitle(title)
+            .setContentText(content)
+            .setContentIntent(notificationIntent(ctx, intent))
+            .setDeleteIntent(snoozeIntent(ctx));
+        if(overrideSilent) {
+            PlayFile(ctx, alert.mp3_file);
+        } else {
+            builder.setSound(Uri.parse(audioPath), AudioAttributes.USAGE_ALARM);
+        }
         //NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);
         builder.setVibrate(Notifications.vibratePattern);
         NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(Notifications.exportAlertNotificationId);
         mNotifyMgr.notify(Notifications.exportAlertNotificationId, builder.build());
+
     }
-    
+
     private void notificationDismiss(Context ctx) {
         NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(Notifications.exportAlertNotificationId);

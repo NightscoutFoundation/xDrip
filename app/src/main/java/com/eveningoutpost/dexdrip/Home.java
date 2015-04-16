@@ -22,12 +22,15 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
@@ -80,6 +83,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         PreferenceManager.setDefaultValues(this, R.xml.pref_wifi, false);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         checkEula();
+        new IdempotentMigrations(getApplicationContext()).performAll();
         setContentView(R.layout.activity_home);
     }
 

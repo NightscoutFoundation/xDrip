@@ -9,13 +9,17 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -25,12 +29,14 @@ import android.text.Layout;
 import android.text.format.DateFormat;
 import android.text.method.DigitsKeyListener;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -47,6 +53,8 @@ public class EditAlertActivity extends Activity {
     EditText alertText;
     EditText alertThreshold;
     EditText alertMp3File;
+    EditText editSnooze;
+
     Button buttonalertMp3;
 
     Button buttonSave;
@@ -62,6 +70,10 @@ public class EditAlertActivity extends Activity {
     int startMinute = 0;
     int endHour = 23;
     int endMinute = 59;
+
+    int defaultSnooze;
+
+    String audioPath;
 
     TextView viewAlertOverrideText;
     CheckBox checkboxAlertOverride;
@@ -114,6 +126,7 @@ public class EditAlertActivity extends Activity {
         timeInstructions = (LinearLayout) findViewById(R.id.time_instructions);
         viewTimeStart = (TextView) findViewById(R.id.view_alert_time_start);
         viewTimeEnd = (TextView) findViewById(R.id.view_alert_time_end);
+        editSnooze = (EditText) findViewById(R.id.edit_snooze);
 
         viewAlertOverrideText = (TextView) findViewById(R.id.view_alert_override_silent);
         checkboxAlertOverride = (CheckBox) findViewById(R.id.check_override_silent);
@@ -136,8 +149,12 @@ public class EditAlertActivity extends Activity {
             checkboxAllDay.setChecked(true);
             checkboxAlertOverride.setChecked(true);
 
+            audioPath = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION).toString();
+            alertMp3File.setText(shortPath(audioPath));
+            alertMp3File.setKeyListener(null);
+            defaultSnooze = 20;
             buttonRemove.setVisibility(View.GONE);
-            status = "adding " + (above ? "high" : "low") + " alert";
+            status = "Adding " + (above ? "high" : "low") + " alert";
             startHour = 0;
             startMinute = 0;
             endHour = 23;
@@ -157,9 +174,15 @@ public class EditAlertActivity extends Activity {
             above =at.above;
             alertText.setText(at.name);
             alertThreshold.setText(UnitsConvert2Disp(doMgdl, at.threshold));
-            alertMp3File.setText(at.mp3_file);
             checkboxAllDay.setChecked(at.all_day);
             checkboxAlertOverride.setChecked(at.override_silent_mode);
+            defaultSnooze = at.default_snooze;
+            if(defaultSnooze == 0) {
+                defaultSnooze = 20;
+            }
+
+            audioPath = at.mp3_file;
+            alertMp3File.setText(shortPath(audioPath));
 
             status = "editing " + (above ? "high" : "low") + " alert";
             startHour = AlertType.time2Hours(at.start_time_minutes);
@@ -171,13 +194,14 @@ public class EditAlertActivity extends Activity {
                 // This is the 55 alert, can not be edited
                 alertText.setKeyListener(null);
                 alertThreshold.setKeyListener(null);
-                alertMp3File.setKeyListener(null);
                 buttonalertMp3.setEnabled(false);
                 checkboxAllDay.setEnabled(false);
                 checkboxAlertOverride.setEnabled(false);
             }
         }
+        alertMp3File.setKeyListener(null);
         viewHeader.setText(status);
+        setSnoozeSpinner();
         enableAllDayControls();
         enableVibrateControls();
 
@@ -229,7 +253,7 @@ public class EditAlertActivity extends Activity {
         List<AlertType> highAlerts = AlertType.getAll(true);
 
         if(threshold < MIN_ALERT || threshold > MAX_ALERT) {
-            Toast.makeText(getApplicationContext(), "threshhold has to be between " + MIN_ALERT + " and " + MAX_ALERT,Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "threshold has to be between " + MIN_ALERT + " and " + MAX_ALERT,Toast.LENGTH_LONG).show();
             return false;
         }
         if (uuid == null) {
@@ -310,12 +334,12 @@ public class EditAlertActivity extends Activity {
                     return;
                 }
                 boolean overrideSilentMode = checkboxAlertOverride.isChecked();
-
-                String mp3_file = alertMp3File.getText().toString();
+;
+                String mp3_file = audioPath;
                 if (uuid != null) {
-                    AlertType.update_alert(uuid, alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode);
+                    AlertType.update_alert(uuid, alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze);
                 }  else {
-                    AlertType.add_alert(null, alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode);
+                    AlertType.add_alert(null, alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze);
                 }
                 Intent returnIntent = new Intent();
                 setResult(RESULT_OK,returnIntent);
@@ -341,33 +365,46 @@ public class EditAlertActivity extends Activity {
         });
 
         buttonalertMp3.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View arg0) {
-
-                // in onCreate or any event where your want the user to
-                // select a file
-                Intent intent = new Intent();
-                intent.setType("audio/mpeg3");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent,"Select Picture"), CHOOSE_FILE);
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setTitle("What type of Alert?")
+                        .setItems(R.array.alertType, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (which == 0) {
+                                    Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+                                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select tone for Alerts:");
+                                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
+                                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+                                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL);
+                                    startActivityForResult(intent, 999);
+                                } else {
+                                    Intent fileIntent = new Intent();
+                                    fileIntent.setType("audio/mpeg3");
+                                    fileIntent.setAction(Intent.ACTION_GET_CONTENT);
+                                    startActivityForResult(Intent.createChooser(fileIntent, "Select File for Alert"), CHOOSE_FILE);
+                                }
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
        }); //- See more at: http://blog.kerul.net/2011/12/pick-file-using-intentactiongetcontent.html#sthash.c8xtIr1Y.dpuf
 
         checkboxAllDay.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//          @Override
-            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+            //          @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 enableAllDayControls();
             }
         });
 
         checkboxAlertOverride.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//          @Override
-            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+            //          @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 enableVibrateControls();
             }
         });
 
-        viewTimeStart.setOnClickListener(new OnClickListener() {
+        viewTimeStart.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -385,7 +422,7 @@ public class EditAlertActivity extends Activity {
             }
         });
 
-        viewTimeEnd.setOnClickListener(new OnClickListener() {
+        viewTimeEnd.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -407,25 +444,27 @@ public class EditAlertActivity extends Activity {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            if (requestCode == CHOOSE_FILE) {
-                Uri selectedImageUri = data.getData();
+            Uri uri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+            if (uri != null) {
+                audioPath = uri.toString();
+                alertMp3File.setText(shortPath(audioPath));
+            } else {
+                if (requestCode == CHOOSE_FILE) {
+                    Uri selectedImageUri = data.getData();
 
-                // Todo this code is very flacky. Probably need a much better understanding of how the different programs
-                // select the file names. We might also have to
-                // - See more at: http://blog.kerul.net/2011/12/pick-file-using-intentactiongetcontent.html#sthash.c8xtIr1Y.cx7s9nxH.dpuf
+                    // Todo this code is very flacky. Probably need a much better understanding of how the different programs
+                    // select the file names. We might also have to
+                    // - See more at: http://blog.kerul.net/2011/12/pick-file-using-intentactiongetcontent.html#sthash.c8xtIr1Y.cx7s9nxH.dpuf
 
-                //MEDIA GALLERY
-                String selectedImagePath = getPath(selectedImageUri);
-                if (selectedImagePath == null) {
-                    //OI FILE Manager
-                    selectedImagePath = selectedImageUri.getPath();
+                    //MEDIA GALLERY
+                    String selectedAudioPath = getPath(selectedImageUri);
+                    if (selectedAudioPath == null) {
+                        //OI FILE Manager
+                        selectedAudioPath = selectedImageUri.getPath();
+                    }
+                    audioPath = selectedAudioPath;
+                    alertMp3File.setText(shortPath(audioPath));
                 }
-
-                //AlertPlayer.getPlayer().PlayFile(getApplicationContext(), selectedImagePath);
-                alertMp3File.setText(selectedImagePath);
-
-                //just to display the imagepath
-                //Toast.makeText(this.getApplicationContext(), selectedImagePath, Toast.LENGTH_SHORT).show();//
             }
         }
     }
@@ -471,5 +510,66 @@ public class EditAlertActivity extends Activity {
         layoutTimeBetween.setVisibility(View.VISIBLE);
         viewTimeStart.setText(timeFormatString(startHour, startMinute));
         viewTimeEnd.setText(timeFormatString(endHour, endMinute));
+    }
+
+    public String shortPath(String path) {
+        if(path != null) {
+            Ringtone ringtone = RingtoneManager.getRingtone(mContext, Uri.parse(path));
+            if (ringtone != null) {
+                return ringtone.getTitle(mContext);
+            } else {
+                String[] segments = path.split("/");
+                if (segments.length > 1) {
+                    return segments[segments.length - 1];
+                }
+            }
+        }
+        return "";
+    }
+    public void setSnoozeSpinner() {
+        editSnooze.setText(String.valueOf(defaultSnooze));
+        editSnooze.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View mView, MotionEvent mMotionEvent) {
+                if (mMotionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    final Dialog d = new Dialog(mContext);
+                    d.setTitle("Default Snooze (in Minutes)");
+                    d.setContentView(R.layout.snooze_picker);
+                    Button b1 = (Button) d.findViewById(R.id.button1);
+                    Button b2 = (Button) d.findViewById(R.id.button2);
+
+                    final NumberPicker snoozeValue = (NumberPicker) d.findViewById(R.id.numberPicker1);
+                    String[] values = new String[40];
+                    for (int i = 0; i < values.length; i++) {
+                        values[i] = Integer.toString((i + 1) * 5);
+                    }
+                    snoozeValue.setMaxValue(values.length);
+                    snoozeValue.setMinValue(1);
+                    snoozeValue.setDisplayedValues(values);
+                    snoozeValue.setWrapSelectorWheel(false);
+                    snoozeValue.setValue(defaultSnooze / 5);
+//        snoozeValue.setOnValueChangedListener(this);
+                    b1.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            editSnooze.setText(String.valueOf(snoozeValue.getValue() * 5));
+                            defaultSnooze = snoozeValue.getValue() * 5;
+                            d.dismiss();
+                        }
+                    });
+                    b2.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            d.dismiss();
+                        }
+                    });
+                    d.show();
+                }
+                    return false;
+
+            }});
+
+
+
     }
 }

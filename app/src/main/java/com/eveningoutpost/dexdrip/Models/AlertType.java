@@ -33,7 +33,7 @@ public class AlertType extends Model {
     @Column(name = "name")
     public String name;
 
-    @Column(name = "active") 
+    @Column(name = "active")
     public boolean active;
 
     @Column(name = "volume")
@@ -54,7 +54,7 @@ public class AlertType extends Model {
     @Column(name = "time_until_threshold_crossed")
     public double time_until_threshold_crossed;
 
-    // If it is not above, then it must be below. 
+    // If it is not above, then it must be below.
     @Column(name = "above")
     public boolean above;
 
@@ -71,23 +71,24 @@ public class AlertType extends Model {
     public int end_time_minutes;
 
     @Column(name = "minutes_between") //??? what is the difference between minutes_between and default_snooze ???
-    public int minutes_between;
+    public int minutes_between; // The idea here was if ignored it will go off again each x minutes, snooze would be if it was aknowledged and dismissed it will go off again in y minutes
+    // that said, Im okay with doing away with the minutes between and just doing it at a set 5 mins like dex
 
     @Column(name = "default_snooze")
     public int default_snooze;
 
     @Column(name = "text") // ??? what's that? is it different from name?
-    public String text;
-    
+    public String text; // I figured if we wanted some special text, Its
+
     @Column(name = "mp3_file")
     public String mp3_file;
-    
+
     @Column(name = "uuid", index = true)
     public String uuid;
 
     public final static String LOW_ALERT_55 = "c5f1999c-4ec5-449e-adad-3980b172b920";
     private final static String TAG = Notifications.class.getSimpleName();
-    
+
     public static AlertType get_alert(String uuid) {
 
         return new Select()
@@ -95,11 +96,11 @@ public class AlertType extends Model {
         .where("uuid = ? ", uuid)
         .executeSingle();
     }
-    
+
     // bg_minute is the estimatin of the bg change rate
     public static AlertType get_highest_active_alert(double bg) {
         // Chcek the low alerts
-        
+
         List<AlertType> lowAlerts  = new Select()
             .from(AlertType.class)
             .where("threshold >= ?", bg)
@@ -112,7 +113,7 @@ public class AlertType extends Model {
                 return lowAlert;
             }
         }
-            
+
         // If no low alert found, check higher alert.
         List<AlertType> HighAlerts  = new Select()
             .from(AlertType.class)
@@ -127,10 +128,10 @@ public class AlertType extends Model {
                 return HighAlert;
             }
         }
-        // no alert found 
+        // no alert found
         return null;
     }
-    
+
     // returns true, if one allert is up and the second is down
     public static boolean OpositeDirection(AlertType a1, AlertType a2) {
         if (a1.above != a2.above) {
@@ -138,7 +139,7 @@ public class AlertType extends Model {
         }
         return false;
     }
-    
+
     // Checks if a1 is more important than a2. returns the higher one
     public static AlertType HigherAlert(AlertType a1, AlertType a2) {
         if (a1.above && !a2.above) {
@@ -165,7 +166,7 @@ public class AlertType extends Model {
             return a2;
         }
     }
-    
+
     public static void remove_all() {
         List<AlertType> Alerts  = new Select()
         .from(AlertType.class)
@@ -176,18 +177,19 @@ public class AlertType extends Model {
         }
         ActiveBgAlert.ClearData();
     }
-    
+
     public static void add_alert(
             String uuid,
-            String name, 
+            String name,
             boolean above,
-            double threshold, 
-            boolean all_day, 
-            int minutes_between, 
+            double threshold,
+            boolean all_day,
+            int minutes_between,
             String mp3_file,
             int start_time_minutes,
             int end_time_minutes,
-            boolean override_silent_mode) {
+            boolean override_silent_mode,
+            int snooze) {
         AlertType at = new AlertType();
         at.name = name;
         at.above = above;
@@ -200,26 +202,28 @@ public class AlertType extends Model {
         at.start_time_minutes = start_time_minutes;
         at.end_time_minutes = end_time_minutes;
         at.override_silent_mode = override_silent_mode;
+        at.default_snooze = snooze;
         at.save();
     }
-    
+
     public static void update_alert(
-            String uuid, 
-            String name, 
-            boolean above, 
-            double threshold, 
-            boolean all_day, 
-            int minutes_between, 
+            String uuid,
+            String name,
+            boolean above,
+            double threshold,
+            boolean all_day,
+            int minutes_between,
             String mp3_file,
             int start_time_minutes,
             int end_time_minutes,
-            boolean override_silent_mode) {
-        
+            boolean override_silent_mode,
+            int snooze) {
+
         if(uuid.equals(LOW_ALERT_55)) {
             // This alert can not be removed/updated
             return;
         }
-        
+
         AlertType at = get_alert(uuid);
         at.name = name;
         at.above = above;
@@ -232,6 +236,7 @@ public class AlertType extends Model {
         at.start_time_minutes = start_time_minutes;
         at.end_time_minutes = end_time_minutes;
         at.override_silent_mode = override_silent_mode;
+        at.default_snooze = snooze;
         at.save();
     }
     public static void remove_alert(String uuid) {
@@ -244,20 +249,20 @@ public class AlertType extends Model {
 	        alert.delete();
         }
     }
-    
+
     public String toString() {
-        
+
         String name = "name: " + this.name;
         String above = "above: " + this.above;
         String threshold = "threshold: " + this.threshold;
         String all_day = "all_day: " + this.all_day;
         String time = "Start time: " + this.start_time_minutes + " end time: "+ this.end_time_minutes;
-        String minutes_between = "minutes_between: " + this.minutes_between; 
-        String uuid = "uuid: " + this.uuid; 
+        String minutes_between = "minutes_between: " + this.minutes_between;
+        String uuid = "uuid: " + this.uuid;
 
         return name + " " + above + " " + threshold + " "+ all_day + " " +time +" " + minutes_between + " uuid" + uuid;
     }
- 
+
     public static void print_all() {
         List<AlertType> Alerts  = new Select()
             .from(AlertType.class)
@@ -268,7 +273,7 @@ public class AlertType extends Model {
             Log.e(TAG, alert.toString());
         }
     }
-    
+
     public static List<AlertType> getAll(boolean above) {
         String order;
         if (above) {
@@ -284,37 +289,37 @@ public class AlertType extends Model {
 
         return alerts;
     }
-    
-    
-    
+
+
+
     // This function is used to make sure that we always have a static alert on 55 low.
     // This alert will not be editable/removable.
     public static void CreateStaticAlerts() {
         if(get_alert(LOW_ALERT_55) == null) {
-            add_alert(LOW_ALERT_55, "low alert (unchangable)", false, 55, true, 1, null, 0, 0, true);
+            add_alert(LOW_ALERT_55, "low alert (unchangable)", false, 55, true, 1, null, 0, 0, true, 20);
         }
     }
-    
-   
+
+
     public static void testAll() {
-        
+
         remove_all();
-        add_alert(null, "high alert 1", true, 180, true, 10, null, 0, 0, true);
-        add_alert(null, "high alert 2", true, 200, true, 10, null, 0, 0, true);
-        add_alert(null, "high alert 3", true, 220, true, 10, null, 0, 0, true);
+        add_alert(null, "high alert 1", true, 180, true, 10, null, 0, 0, true, 20);
+        add_alert(null, "high alert 2", true, 200, true, 10, null, 0, 0, true, 20);
+        add_alert(null, "high alert 3", true, 220, true, 10, null, 0, 0, true, 20);
         print_all();
         AlertType a1 = get_highest_active_alert(190);
         Log.e(TAG, "a1 = " + a1.toString());
         AlertType a2 = get_highest_active_alert(210);
-        Log.e(TAG, "a2 = " + a2.toString());        
+        Log.e(TAG, "a2 = " + a2.toString());
 
-        
+
         AlertType a3 = get_alert(a1.uuid);
         Log.e(TAG, "a1 == a3 ? need to see true " + (a1==a3) + a1 + " " + a3);
-        
-        add_alert(null, "low alert 1", false, 80, true, 10, null, 0, 0, true);
-        add_alert(null, "low alert 2", false, 60, true, 10, null, 0, 0, true);
-        
+
+        add_alert(null, "low alert 1", false, 80, true, 10, null, 0, 0, true, 20);
+        add_alert(null, "low alert 2", false, 60, true, 10, null, 0, 0, true, 20);
+
         AlertType al1 = get_highest_active_alert(90);
         Log.e(TAG, "al1 should be null  " + al1);
         al1 = get_highest_active_alert(80);
@@ -326,17 +331,17 @@ public class AlertType extends Model {
         Log.e(TAG, "HigherAlert(al1, al2) = al1?" +  (HigherAlert(al1,al2) == al2));
         Log.e(TAG, "HigherAlert(a1, al1) = al1?" +  (HigherAlert(a1,al1) == al1));
         Log.e(TAG, "HigherAlert(al1, a2) = al1?" +  (HigherAlert(al1,a2) == al1));
-        
+
         // Make sure we do not influance on real data...
         remove_all();
-        
+
     }
- 
- 
+
+
     private boolean in_time_frame() {
         if (all_day) {
             //Log.e(TAG, "in_time_frame returning true " );
-            return true; 
+            return true;
         }
         // time_now is the number of minutes that have passed from the start of the day.
         Calendar rightNow = Calendar.getInstance();
@@ -382,26 +387,26 @@ public class AlertType extends Model {
             return false;
         }
     }
-    
+
     // Time is calculated in minutes. that is 01:20 means 80 minutes.
-    
+
     // This functions are a bit tricky. We can only set time from 00:00 to 23:59 which leaves one minute out. this is because we ignore the
     // seconds. so if the user has set 23:59 we will consider this as 24:00
     // This will be done at the code that reads the time from the ui.
-    
-    
-    
+
+
+
     // return the minutes part of the time
     public static int time2Minutes(int minutes) {
         return (minutes - 60*time2Hours(minutes)) ;
     }
-    
+
  // return the hours part of the time
     public static int time2Hours(int minutes) {
         return minutes / 60;
     }
-    
-    // create the time from hours and minutes. 
+
+    // create the time from hours and minutes.
     public static int toTime(int hours, int minutes) {
         return hours * 60 + minutes;
     }
