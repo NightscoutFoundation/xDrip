@@ -753,6 +753,11 @@ public class BgReading extends Model {
         return ((relativeSlope * calibrationTime) + relativeIntercept);
     }
 
+    public double bgDifferenceFromLast(BgReading now){
+        BgReading lastReading = BgReading.last();
+        return (now.calculated_value - lastReading.calculated_value);
+    }
+
     public String toS() {
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
