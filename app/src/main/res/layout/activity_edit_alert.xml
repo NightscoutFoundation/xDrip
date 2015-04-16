@@ -28,7 +28,7 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_height="match_parent"
                 android:gravity="center_horizontal">
                 <LinearLayout
                     android:id="@+id/linear_layout_alert"
@@ -295,6 +295,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="remove alert"
+                        android:layout_gravity="center_horizontal" />
+                    <Button
+                        android:id="@+id/edit_alert_test"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="test alert"
                         android:layout_gravity="center_horizontal" />
                 </LinearLayout>
             </LinearLayout>

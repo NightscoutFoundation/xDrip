@@ -31,17 +31,8 @@ public class SnoozeOnNotificationDismissService extends IntentService {
         ActiveBgAlert aba = ActiveBgAlert.getOnly();
         AlertType activeBgAlert = ActiveBgAlert.alertTypegetOnly();
 
-        // aba and activeBgAlert should both either exist ot not exist. all other cases are a bug in another place
-        if(aba == null && activeBgAlert!= null) {
-            Log.wtf(TAG, "ERRRO displayStatus: aba == null, but activeBgAlert != null exiting...");
-            return;
-        }
-        if(aba != null && activeBgAlert== null) {
-            Log.wtf(TAG, "ERRRO displayStatus: aba != null, but activeBgAlert == null exiting...");
-            return;
-        }
         int snooze = 20;
-        if(activeBgAlert.default_snooze != 0) {
+        if(activeBgAlert != null && activeBgAlert.default_snooze != 0) {
             snooze = activeBgAlert.default_snooze;
         }
         AlertPlayer.getPlayer().Snooze(getApplicationContext(), snooze);

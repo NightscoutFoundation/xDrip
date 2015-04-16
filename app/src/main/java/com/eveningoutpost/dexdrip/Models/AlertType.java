@@ -12,6 +12,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -386,6 +387,34 @@ public class AlertType extends Model {
         } else {
             return false;
         }
+    }
+
+    public static void testAlert(
+        String name,
+        boolean above,
+        double threshold,
+        boolean all_day,
+        int minutes_between,
+        String mp3_file,
+        int start_time_minutes,
+        int end_time_minutes,
+        boolean override_silent_mode,
+        int snooze,
+        Context context) {
+            AlertType at = new AlertType();
+            at.name = name;
+            at.above = above;
+            at.threshold = threshold;
+            at.all_day = all_day;
+            at.minutes_between = minutes_between;
+            at.uuid = UUID.randomUUID().toString();
+            at.active = true;
+            at.mp3_file = mp3_file;
+            at.start_time_minutes = start_time_minutes;
+            at.end_time_minutes = end_time_minutes;
+            at.override_silent_mode = override_silent_mode;
+            at.default_snooze = snooze;
+            new AlertPlayer().getPlayer().startAlert(context, at, "TEST");
     }
 
     // Time is calculated in minutes. that is 01:20 means 80 minutes.

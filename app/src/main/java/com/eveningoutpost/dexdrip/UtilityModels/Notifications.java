@@ -98,7 +98,7 @@ public class Notifications {
         calibration_sound = prefs.getBoolean("calibration_play_sound", true);
         calibration_snooze = Integer.parseInt(prefs.getString("calibration_snooze", "20"));
         calibration_notification_sound = prefs.getString("calibration_notification_sound", "content://settings/system/notification_sound");
-        doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);        
+        doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
     }
 
 /*
@@ -124,11 +124,11 @@ public class Notifications {
 
         Log.e(TAG, "FileBasedNotifications called bgReading.calculated_value = " + bgReading.calculated_value);
 
-        // TODO: tzachi what is the time of this last bgReading 
+        // TODO: tzachi what is the time of this last bgReading
         // If the last reading does not have a sensor, or that sensor was stopped.
         // or the sensor was started, but the 2 hours did not still pass? or there is no calibrations.
-        // In all this cases, bgReading.calculated_value should be 0. 
-        if (bg_notifications && sensor != null && bgReading != null && bgReading.calculated_value !=0) {
+        // In all this cases, bgReading.calculated_value should be 0.
+        if (sensor != null && bgReading != null && bgReading.calculated_value !=0) {
             AlertType newAlert = AlertType.get_highest_active_alert(bgReading.calculated_value);
 
             if (newAlert == null) {
@@ -168,14 +168,14 @@ public class Notifications {
             AlertType  newHigherAlert = AlertType.HigherAlert(activeBgAlert, newAlert);
             if ((newHigherAlert == activeBgAlert) && (!opositeDirection)) {
                 // the existing alert is the higher, we should not do anything
-                Log.e(TAG, "FileBasedNotifications The existing alert has the same importance, doing nothing newHigherAlert = " + newHigherAlert.name + 
+                Log.e(TAG, "FileBasedNotifications The existing alert has the same importance, doing nothing newHigherAlert = " + newHigherAlert.name +
                         "activeBgAlert = " + activeBgAlert.name);
                 AlertPlayer.getPlayer().ClockTick(context, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
                 return;
             }
 
             // For now, we are stopping the old alert and starting a new one.
-            Log.e(TAG, "Found a new allert, that is higher than the previous one will play it. " + newAlert.name);
+            Log.e(TAG, "Found a new alert, that is higher than the previous one will play it. " + newAlert.name);
             AlertPlayer.getPlayer().stopAlert(context, true, false);
             AlertPlayer.getPlayer().startAlert(context, newAlert, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
             return;

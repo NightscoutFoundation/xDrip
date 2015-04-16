@@ -56,15 +56,17 @@ public class SnoozeActivity extends Activity {
         buttonSnooze.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
             int intValue = snoozeValue.getValue()*5;
-            if(intValue > MAX_SNOOZE) {
-                Toast.makeText(getApplicationContext(), "Alert must be smaller than " + MAX_SNOOZE + " minutes",Toast.LENGTH_LONG).show();
-                return;
-            } else {
-                AlertPlayer.getPlayer().Snooze(getApplicationContext(), intValue);
-                Intent intent = new Intent(getApplicationContext(), Home.class);
-                startActivity(intent);
-                finish();
-            }
+                if(intValue > MAX_SNOOZE) {
+                    Toast.makeText(getApplicationContext(), "Alert must be smaller than " + MAX_SNOOZE + " minutes",Toast.LENGTH_LONG).show();
+                    return;
+                } else {
+                    AlertPlayer.getPlayer().Snooze(getApplicationContext(), intValue);
+                    Intent intent = new Intent(getApplicationContext(), Home.class);
+                    if (ActiveBgAlert.getOnly() != null) {
+                        startActivity(intent);
+                    }
+                    finish();
+                }
             }
 
         });

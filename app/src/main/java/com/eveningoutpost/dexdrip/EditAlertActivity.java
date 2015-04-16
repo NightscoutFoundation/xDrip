@@ -59,6 +59,7 @@ public class EditAlertActivity extends Activity {
 
     Button buttonSave;
     Button buttonRemove;
+    Button buttonTest;
     CheckBox checkboxAllDay;
 
     LinearLayout layoutTimeBetween;
@@ -113,6 +114,7 @@ public class EditAlertActivity extends Activity {
 
         buttonSave = (Button)findViewById(R.id.edit_alert_save);
         buttonRemove = (Button)findViewById(R.id.edit_alert_remove);
+        buttonTest = (Button)findViewById(R.id.edit_alert_test);
         buttonalertMp3 = (Button)findViewById(R.id.Button_alert_mp3_file);
 
 
@@ -364,6 +366,13 @@ public class EditAlertActivity extends Activity {
 
         });
 
+        buttonTest.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                testAlert();
+            }
+
+        });
+
         buttonalertMp3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -570,6 +579,45 @@ public class EditAlertActivity extends Activity {
             }});
 
 
+
+    }
+
+    public void testAlert() {
+        // Check that values are ok.
+        double threshold = 0;
+        try {
+            threshold = Double.parseDouble((alertThreshold.getText().toString()));
+        }
+        catch (NumberFormatException nfe) {
+            Log.e(TAG, "Invalid number", nfe);
+        }
+        threshold = UnitsConvertFromDisp(threshold);
+        if(!verifyThreshold(threshold)) {
+            return;
+        }
+
+        int timeStart = AlertType.toTime(startHour, startMinute);
+        int timeEnd = AlertType.toTime(endHour, endMinute);
+
+        boolean allDay = checkboxAllDay.isChecked();
+        // if 23:59 was set, we increase it to 24:00
+        if(timeStart == AlertType.toTime(23, 59)) {
+            timeStart++;
+        }
+        if(timeEnd == AlertType.toTime(23, 59)) {
+            timeEnd++;
+        }
+        if(timeStart == AlertType.toTime(0, 0) &&
+                timeEnd == AlertType.toTime(24, 0)) {
+            allDay = true;
+        }
+        if (timeStart == timeEnd && (allDay==false)) {
+            Toast.makeText(getApplicationContext(), "start time and end time of alert can not be equal",Toast.LENGTH_LONG).show();
+            return;
+        }
+        boolean overrideSilentMode = checkboxAlertOverride.isChecked();
+        String mp3_file = audioPath;
+        AlertType.testAlert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, mContext);
 
     }
 }

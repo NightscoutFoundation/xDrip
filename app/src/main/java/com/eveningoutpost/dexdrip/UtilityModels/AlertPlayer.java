@@ -175,7 +175,7 @@ public class AlertPlayer {
 
     }
     private void Vibrate(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, String audioPath) {
-
+        Log.e("ALARM", "setting vibrate alarm");
         String title = bgValue + " " + alert.name;
         String content = "BG LEVEL ALERT: " + bgValue;
         Intent intent = new Intent(ctx, SnoozeActivity.class);
