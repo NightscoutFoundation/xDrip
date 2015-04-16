@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Services;
 
+import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -17,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -50,8 +52,10 @@ import java.util.logging.Logger;
 import rx.Observable;
 import rx.functions.Action1;
 
+@TargetApi(Build.VERSION_CODES.KITKAT)
 public class DexShareCollectionService extends Service {
     private final static String TAG = DexShareCollectionService.class.getSimpleName();
+    private ForegroundServiceStarter foregroundServiceStarter;
     private String mDeviceAddress;
     private String mDeviceName;
     private boolean is_connected = false;
@@ -99,11 +103,15 @@ public class DexShareCollectionService extends Service {
 
     public boolean shouldDisconnect = true;
     public boolean share2 = false;
+    public Service service;
 
     @Override
     public void onCreate() {
         super.onCreate();
         readData = new ReadDataShare(this);
+        service = this;
+        foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), service);
+        foregroundServiceStarter.start();
         final IntentFilter bondintent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(mPairReceiver, bondintent);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -114,9 +122,9 @@ public class DexShareCollectionService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         share2 = prefs.getBoolean("share_auth_mode_two", false);
         int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-        if (currentapiVersion < android.os.Build.VERSION_CODES.LOLLIPOP){
+//        if (currentapiVersion < android.os.Build.VERSION_CODES.LOLLIPOP){
             shouldDisconnect = false;
-        }
+//        }
         if (CollectionServiceStarter.isBTShare(getApplicationContext())) {
             setFailoverTimer();
         } else {
@@ -136,12 +144,27 @@ public class DexShareCollectionService extends Service {
         super.onDestroy();
         close();
         setRetryTimer();
+        foregroundServiceStarter.stop();
         unregisterReceiver(mPairReceiver);
         Log.w(TAG, "SERVICE STOPPED");
     }
 
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+            if(key.compareTo("run_service_in_foreground") == 0) {
+
+                Log.e("FOREGROUND", "run_service_in_foreground changed!");
+                if (prefs.getBoolean("run_service_in_foreground", false)) {
+                    foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), service);
+                    foregroundServiceStarter.start();
+                    Log.w(TAG, "Moving to foreground");
+                    setRetryTimer();
+                } else {
+                    service.stopForeground(true);
+                    Log.w(TAG, "Removing from foreground");
+                    setRetryTimer();
+                }
+            }
             if (key.compareTo("dex_collection_method") == 0) {
                 CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(getApplicationContext());
                 collectionServiceStarter.start(getApplicationContext());
@@ -158,14 +181,14 @@ public class DexShareCollectionService extends Service {
             BgReading bgReading = BgReading.last();
             long retry_in;
             if (bgReading != null) {
-                retry_in = Math.min(Math.max((1000 * 30), (1000 * 60 * 5) - (new Date().getTime() - bgReading.timestamp) + 5), (1000 * 60 * 5));
+                retry_in = Math.min(Math.max((1000 * 30), (1000 * 60 * 5) - (new Date().getTime() - bgReading.timestamp) + 10000), (1000 * 60 * 5));
             } else {
                 retry_in = (1000 * 60);
             }
             Log.d(TAG, "Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexShareCollectionService.class), 0));
+            alarm.setExact(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexShareCollectionService.class), 0));
         }
     }
 
@@ -593,9 +616,10 @@ public class DexShareCollectionService extends Service {
                 if(mResponseCharacteristic.getUuid().equals(characteristic.getUuid())) {
                     attemptRead();
                 }
-            } else if (status == BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION) {
+            } else if ((status & BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION) != 0 || (status & BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION) != 0) {
                 if (gatt.getDevice().getBondState() == BluetoothDevice.BOND_NONE) {
                     device = gatt.getDevice();
+                    state_authInProgress = true;
                     bondDevice();
                 } else {
                     Log.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug?");
@@ -614,7 +638,7 @@ public class DexShareCollectionService extends Service {
                     state_authSucess = true;
                     mBluetoothGatt.readCharacteristic(mHeartBeatCharacteristic);
                 }
-            } else if (status == BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION) {
+            } else if ((status & BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION) != 0 || (status & BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION) != 0) {
                 if (gatt.getDevice().getBondState() == BluetoothDevice.BOND_NONE) {
                     device = gatt.getDevice();
                     state_authInProgress = true;

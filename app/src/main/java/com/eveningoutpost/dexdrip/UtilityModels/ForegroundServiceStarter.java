@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
@@ -56,10 +57,16 @@ public class ForegroundServiceStarter {
     }
 
     public void start() {
-        if (run_service_in_foreground) { mService.startForeground(FOREGROUND_ID, notification()); }
+        if (run_service_in_foreground) {
+            Log.e("FOREGROUND", "should be moving to foreground");
+            mService.startForeground(FOREGROUND_ID, notification());
+        }
     }
 
     public void stop() {
-        if (run_service_in_foreground) { mService.stopForeground(true); }
+        if (run_service_in_foreground) {
+            Log.e("FOREGROUND", "should be moving out of foreground");
+            mService.stopForeground(true);
+        }
     }
 }

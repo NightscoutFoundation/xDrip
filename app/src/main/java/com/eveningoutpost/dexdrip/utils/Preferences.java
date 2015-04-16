@@ -165,7 +165,7 @@ public class Preferences extends PreferenceActivity {
             } else {
                 otherCategory.removePreference(predictiveBG);
             }
-            if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("BluetoothWixel") != 0) {
+            if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("BluetoothWixel") != 0 && prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomShare") != 0) {
                 collectionCategory.removePreference(runInForeground);
             }
             if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("WifiWixel") != 0) {
@@ -186,7 +186,7 @@ public class Preferences extends PreferenceActivity {
                         otherCategory.addPreference(interpretRaw);
                         otherCategory.removePreference(predictiveBG);
                     }
-                    if(((String) newValue).compareTo("BluetoothWixel") != 0) {
+                    if(((String) newValue).compareTo("BluetoothWixel") != 0 && ((String) newValue).compareTo("DexcomShare") != 0) {
                         collectionCategory.removePreference(runInForeground);
                     } else {
                         collectionCategory.addPreference(runInForeground);
