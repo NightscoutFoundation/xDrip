@@ -34,7 +34,10 @@
             android:name="AA_DB_VERSION"
             android:value="26" />
 
-         <provider android:authorities="com.example" android:exported="false" android:name="com.activeandroid.content.ContentProvider" />
+        <provider
+            android:name="com.activeandroid.content.ContentProvider"
+            android:authorities="com.example"
+            android:exported="false" />
 
         <activity
             android:name=".Home"
@@ -42,10 +45,10 @@
             android:launchMode="singleInstance" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".BluetoothScan"
             android:label="@string/title_activity_bluetooth_scan" >
@@ -94,7 +97,6 @@
             android:enabled="true"
             android:exported="true" >
         </service>
-
         <service
             android:name=".ImportedLibraries.dexcom.SyncingService"
             android:enabled="true"
@@ -135,6 +137,7 @@
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
+
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
@@ -150,11 +153,20 @@
             android:name=".ShareTest"
             android:label="@string/title_activity_share_test" >
         </activity>
-
         <activity
             android:name=".SystemStatus"
             android:label="@string/title_activity_system_status" >
         </activity>
+
+        <receiver android:name=".xDripWidget" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/x_drip_widget_info" />
+        </receiver>
     </application>
 
 </manifest>

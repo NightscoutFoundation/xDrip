@@ -93,9 +93,9 @@
     <orderEntry type="library" exported="" name="usb-serial-for-android-v010" level="project" />
     <orderEntry type="library" exported="" name="okhttp-2.2.0" level="project" />
     <orderEntry type="library" exported="" name="pebblekit-2.6.0" level="project" />
+    <orderEntry type="library" exported="" name="acra-4.5.0" level="project" />
     <orderEntry type="library" exported="" name="retrofit-1.9.0" level="project" />
     <orderEntry type="library" exported="" name="rxjava-1.0.0" level="project" />
-    <orderEntry type="library" exported="" name="acra-4.5.0" level="project" />
     <orderEntry type="library" exported="" name="hellocharts-library-1.1" level="project" />
   </component>
 </module>

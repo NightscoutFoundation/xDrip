@@ -91,5 +91,7 @@
     <string name="title_activity_system_status">SystemStatus</string>
 
     <string name="toast_crash">Something went wrong :( a report has been sent to help fix the issue.</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 
 </resources>
