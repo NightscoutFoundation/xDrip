@@ -28,5 +28,6 @@
     <string-array name="alertType">
         <item>System Sound/Alarm</item>
         <item>Custom Sound/Alarm</item>
+        <item>Defautl xdrip sound</item>
     </string-array>
 </resources>

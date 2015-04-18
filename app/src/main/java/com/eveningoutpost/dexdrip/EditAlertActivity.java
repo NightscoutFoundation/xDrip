@@ -151,7 +151,7 @@ public class EditAlertActivity extends Activity {
             checkboxAllDay.setChecked(true);
             checkboxAlertOverride.setChecked(true);
 
-            audioPath = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION).toString();
+            audioPath = null;
             alertMp3File.setText(shortPath(audioPath));
             alertMp3File.setKeyListener(null);
             defaultSnooze = 20;
@@ -386,11 +386,15 @@ public class EditAlertActivity extends Activity {
                                     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
                                     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL);
                                     startActivityForResult(intent, 999);
-                                } else {
+                                } else if (which == 1) {
                                     Intent fileIntent = new Intent();
                                     fileIntent.setType("audio/mpeg3");
                                     fileIntent.setAction(Intent.ACTION_GET_CONTENT);
                                     startActivityForResult(Intent.createChooser(fileIntent, "Select File for Alert"), CHOOSE_FILE);
+                                } else {
+                                    // Xdrip default was chossen, we live the file name as empty.
+                                    audioPath = null;
+                                    alertMp3File.setText(shortPath(audioPath));
                                 }
                             }
                         });
