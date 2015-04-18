@@ -34,7 +34,51 @@ public class SnoozeActivity extends Activity {
     boolean doMgdl;
 
     NumberPicker snoozeValue;
-    final int MAX_SNOOZE = 600;
+
+    static final int snoozeValues[] = new int []{5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 75, 90, 105, 120, 150, 180, 240, 300, 360, 420, 480, 540, 600}; 
+    
+    static int getSnoozeLocatoin(int time) {
+        for (int i=0; i < snoozeValues.length; i++) {
+            if(time == snoozeValues[i]) {
+                return i;
+            } else if (time < snoozeValues[i]) {
+                // we are in the middle of two, return the smaller
+                if (i == 0) {
+                    return 0;
+                }
+                return i-1;
+            }
+        }
+        return snoozeValues.length-1;
+    }
+    static int getTimeFromSnoozeValue(int pickedNumber) {
+        return snoozeValues[pickedNumber];
+    }
+    
+    static public int getDefaultSnooze(boolean above) {
+        if (above) {
+            return 120;
+        }
+        return 30;
+    }
+    
+    static void SetSnoozePickerValues(NumberPicker picker, boolean above, int default_snooze) {
+        String[] values=new String[snoozeValues.length];
+        for(int i=0;i<values.length;i++){
+            values[i]=Integer.toString(snoozeValues[i]);
+        }
+        
+        picker.setMaxValue(values.length -1);
+        picker.setMinValue(0);
+        picker.setDisplayedValues(values);
+        picker.setWrapSelectorWheel(false);
+        if(default_snooze != 0) {
+            picker.setValue(getSnoozeLocatoin(default_snooze));
+        } else {
+            picker.setValue(getSnoozeLocatoin(getDefaultSnooze(above)));
+        }
+    }
+
 
     private final static String TAG = AlertPlayer.class.getSimpleName();
 
@@ -55,18 +99,13 @@ public class SnoozeActivity extends Activity {
         buttonSnooze = (Button)findViewById(R.id.button_snooze);
         buttonSnooze.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-            int intValue = snoozeValue.getValue()*5;
-                if(intValue > MAX_SNOOZE) {
-                    Toast.makeText(getApplicationContext(), "Alert must be smaller than " + MAX_SNOOZE + " minutes",Toast.LENGTH_LONG).show();
-                    return;
-                } else {
-                    AlertPlayer.getPlayer().Snooze(getApplicationContext(), intValue);
-                    Intent intent = new Intent(getApplicationContext(), Home.class);
-                    if (ActiveBgAlert.getOnly() != null) {
-                        startActivity(intent);
-                    }
-                    finish();
+                int intValue = getTimeFromSnoozeValue(snoozeValue.getValue());
+                AlertPlayer.getPlayer().Snooze(getApplicationContext(), intValue);
+                Intent intent = new Intent(getApplicationContext(), Home.class);
+                if (ActiveBgAlert.getOnly() != null) {
+                    startActivity(intent);
                 }
+                finish();
             }
 
         });
@@ -100,21 +139,10 @@ public class SnoozeActivity extends Activity {
             } else {
                 status = "Active alert exists named \"" + activeBgAlert.name + "\" (not snoozed)";
             }
-            String[] values=new String[40];
-            for(int i=0;i<values.length;i++){
-                values[i]=Integer.toString((i+1)*5);
-            }
-            snoozeValue.setMaxValue(values.length);
-            snoozeValue.setMinValue(1);
-            snoozeValue.setDisplayedValues(values);
-            snoozeValue.setWrapSelectorWheel(false);
-            if(activeBgAlert.default_snooze != 0) {
-                snoozeValue.setValue(activeBgAlert.default_snooze/5);
-            } else {
-                snoozeValue.setValue(4);
-            }
+            SetSnoozePickerValues(snoozeValue, activeBgAlert.above, activeBgAlert.default_snooze);
             alertStatus.setText(status);
         }
 
     }
+    
 }

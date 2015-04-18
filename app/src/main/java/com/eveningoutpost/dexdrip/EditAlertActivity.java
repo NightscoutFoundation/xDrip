@@ -154,7 +154,7 @@ public class EditAlertActivity extends Activity {
             audioPath = null;
             alertMp3File.setText(shortPath(audioPath));
             alertMp3File.setKeyListener(null);
-            defaultSnooze = 20;
+            defaultSnooze = SnoozeActivity.getDefaultSnooze(above);
             buttonRemove.setVisibility(View.GONE);
             status = "Adding " + (above ? "high" : "low") + " alert";
             startHour = 0;
@@ -180,7 +180,7 @@ public class EditAlertActivity extends Activity {
             checkboxAlertOverride.setChecked(at.override_silent_mode);
             defaultSnooze = at.default_snooze;
             if(defaultSnooze == 0) {
-                defaultSnooze = 20;
+                SnoozeActivity.getDefaultSnooze(above);
             }
 
             audioPath = at.mp3_file;
@@ -552,21 +552,15 @@ public class EditAlertActivity extends Activity {
                     Button b2 = (Button) d.findViewById(R.id.button2);
 
                     final NumberPicker snoozeValue = (NumberPicker) d.findViewById(R.id.numberPicker1);
-                    String[] values = new String[40];
-                    for (int i = 0; i < values.length; i++) {
-                        values[i] = Integer.toString((i + 1) * 5);
-                    }
-                    snoozeValue.setMaxValue(values.length);
-                    snoozeValue.setMinValue(1);
-                    snoozeValue.setDisplayedValues(values);
-                    snoozeValue.setWrapSelectorWheel(false);
-                    snoozeValue.setValue(defaultSnooze / 5);
-//        snoozeValue.setOnValueChangedListener(this);
+
+                    
+                    SnoozeActivity.SetSnoozePickerValues(snoozeValue, above, defaultSnooze);
                     b1.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            editSnooze.setText(String.valueOf(snoozeValue.getValue() * 5));
-                            defaultSnooze = snoozeValue.getValue() * 5;
+                            defaultSnooze = SnoozeActivity.getTimeFromSnoozeValue(snoozeValue.getValue());
+                            editSnooze.setText(String.valueOf(defaultSnooze));
+                            
                             d.dismiss();
                         }
                     });
