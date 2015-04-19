@@ -84,9 +84,9 @@ public class CollectionServiceStarter {
 
     public static void restartCollectionService(Context context) {
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
-        collectionServiceStarter.stopBtShareService();
-        collectionServiceStarter.stopBtWixelService();
-        collectionServiceStarter.stopWifWixelThread();
+        if(isBTShare(context)) collectionServiceStarter.stopBtShareService();
+        if(isBTWixel(context) || isDexbridgeWixel(context)) collectionServiceStarter.stopBtWixelService();
+        if(isWifiWixel(context)) collectionServiceStarter.stopWifWixelThread();
         collectionServiceStarter.start(context);
     }
 

@@ -16,7 +16,7 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.getpebble.android.kit.PebbleKit;
+//import com.getpebble.android.kit.PebbleKit;
 import com.eveningoutpost.dexdrip.ShareModels.ShareRest;
 
 import java.util.List;

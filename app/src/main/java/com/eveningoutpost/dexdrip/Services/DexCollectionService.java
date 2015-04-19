@@ -95,7 +95,8 @@ public class DexCollectionService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        //throw new UnsupportedOperationException("Not yet implemented");
+        return null;
     }
 
     @Override
@@ -103,6 +104,7 @@ public class DexCollectionService extends Service {
         foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), this);
         foregroundServiceStarter.start();
         mContext = getApplicationContext();
+
         dexCollectionService = this;
         listenForChangeInSettings();
         Log.w(TAG, "onCreate: STARTING SERVICE");
@@ -155,8 +157,8 @@ public class DexCollectionService extends Service {
 
     public void setRetryTimer() {
         if (CollectionServiceStarter.isBTWixel(getApplicationContext()) || CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
-            long retry_in = (1000 * 20);
-            Log.d(TAG, "setRetryTimer: Restarting in: " + retry_in  + " seconds");
+            long retry_in = (1000 * 22);
+            Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in/1000)  + " seconds");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
             alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0));
@@ -495,8 +497,8 @@ public class DexCollectionService extends Service {
                             sensor.save();
 
                             BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, timestamp);
-                            //Intent intent = new Intent("com.eveningoutpost.dexdrip.DexCollectionService.SAVED_BG");
-                            //sendBroadcast(intent);
+                            Intent intent = new Intent("com.eveningoutpost.dexdrip.DexCollectionService.SAVED_BG");
+                            sendBroadcast(intent);
 
                         } else {
                             Log.w(TAG, "setSerialDataToTransmitterRawData: No Active Sensor, Data only stored in Transmitter Data");
@@ -514,8 +516,8 @@ public class DexCollectionService extends Service {
                     sensor.save();
 
                     BgReading bgReading = BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, timestamp);
-                    //Intent intent = new Intent("com.eveningoutpost.dexdrip.DexCollectionService.SAVED_BG");
-                    //sendBroadcast(intent);
+                    Intent intent = new Intent("com.eveningoutpost.dexdrip.DexCollectionService.SAVED_BG");
+                    sendBroadcast(intent);
                 } else {
                     Log.w(TAG, "setSerialDataToTransmitterRawData: No Active Sensor, Data only stored in Transmitter Data");
                 }

@@ -27,3 +27,5 @@ dependencies {
     compile 'io.reactivex:rxjava:1.0.0'
     compile 'ch.acra:acra:4.5.0'
 }
+
+

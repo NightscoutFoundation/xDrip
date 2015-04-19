@@ -52,6 +52,7 @@ public class PebbleSync {
     }
     private void init() {
         Log.i(TAG,"Initialising...");
+        Log.i(TAG,"configuring PebbleDataReceiver");
 
         PebbleKit.registerReceivedDataHandler(mContext, new PebbleKit.PebbleDataReceiver(PEBBLEAPP_UUID) {
             @Override
@@ -105,9 +106,9 @@ public class PebbleSync {
         //if(mBgReading.calculated_value_slope > 0) {
         if(Float.valueOf(deltaString) > 0) {
             return ("+"+deltaString);
-        } else if(mBgReading.calculated_value_slope > -0.1 && mBgReading.calculated_value_slope < 0.1) {
+        } /*else if(mBgReading.calculated_value_slope > -0.1 && mBgReading.calculated_value_slope < 0.1) {
             return "0";
-        } else {
+        }*/ else {
             return deltaString;
         }
     }

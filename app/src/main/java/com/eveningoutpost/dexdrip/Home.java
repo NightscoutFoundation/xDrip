@@ -212,6 +212,9 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         if(newDataReceiver != null) {
             unregisterReceiver(newDataReceiver);
         }
+        if(newSavedBgReceiver != null) {
+            unregisterReceiver(newSavedBgReceiver);
+        }
     }
 
     public void updateCurrentBgInfo() {
