@@ -31,12 +31,12 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Binder;
+//import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.activeandroid.query.Select;
+//import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Sensor;
@@ -45,7 +45,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 
-import java.lang.reflect.Method;
+//import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
@@ -161,7 +161,7 @@ public class DexCollectionService extends Service {
             Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in/1000)  + " seconds");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0));
+            alarm.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0));
         }
     }
 
@@ -171,7 +171,7 @@ public class DexCollectionService extends Service {
             Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0));
+            alarm.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0));
         }
     }
 
@@ -220,7 +220,8 @@ public class DexCollectionService extends Service {
                     if (btDevice != null) {
                         mDeviceName = btDevice.name;
                         mDeviceAddress = btDevice.address;
-                        if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(mDeviceAddress) != null) {
+                        //if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(mDeviceAddress) != null) {
+                        if (mBluetoothAdapter.isEnabled()) {
                             connect(mDeviceAddress);
                             return;
                         }
@@ -339,9 +340,9 @@ public class DexCollectionService extends Service {
                 Log.v(TAG, "broadcastUpdate: new data.");
                 setSerialDataToTransmitterRawData(data, data.length);
                 lastdata = data;
-            } else if (lastdata.equals(data)) {
+            } else if (Arrays.equals(lastdata,data)) {
                 Log.v(TAG, "broadcastUpdate: duplicate data, ignoring");
-                return;
+                //return;
             }
         } else if (data != null && data.length > 0) {
             setSerialDataToTransmitterRawData(data, data.length);
@@ -360,8 +361,8 @@ public class DexCollectionService extends Service {
         byte[] value = message.array();
         Log.w(TAG, "sendBtMessage: sending message");
         mCharacteristic.setValue(value);
-        boolean status = mBluetoothGatt.writeCharacteristic(mCharacteristic);
-        return status;
+
+        return mBluetoothGatt.writeCharacteristic(mCharacteristic);
     }
 
     private Integer convertSrc(final String Src) {
@@ -396,24 +397,24 @@ public class DexCollectionService extends Service {
             mBluetoothGatt = null;
         }
         device = mBluetoothAdapter.getRemoteDevice(address);
-        if (device == null) {
+/*        if (device == null) {
             Log.w(TAG, "connect: Device not found.  Unable to connect.");
             setRetryTimer();
             return false;
-        }
+        } */
         Log.w(TAG, "connect: Trying to create a new connection.");
         mBluetoothGatt = device.connectGatt(getApplicationContext(), true, mGattCallback);
         mConnectionState = STATE_CONNECTING;
         return true;
     }
 
-    public void disconnect() {
+/*    public void disconnect() {
         if (mBluetoothGatt == null) {
             return;
         }
         Log.d(TAG, "disconnect: Gatt Disconnect");
         mBluetoothGatt.disconnect();
-    }
+    }*/
 
     public void close() {
         Log.w(TAG, "close: Closing Connection");
@@ -450,7 +451,7 @@ public class DexCollectionService extends Service {
                 DexSrc = tmpBuffer.getInt(2);
                 TxId = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("dex_txid", "00000");
                 TransmitterID = convertSrc(TxId);
-                if (TxId.compareTo("0000") != 0 && Integer.compare(DexSrc, TransmitterID) != 0) {
+                if (TxId.compareTo("00000") != 0 && Integer.compare(DexSrc, TransmitterID) != 0) {
                     Log.w(TAG, "setSerialDataToTransmitterRawData: TXID wrong.  Expected " + TransmitterID + " but got " + DexSrc);
                     txidMessage.put(0, (byte) 0x06);
                     txidMessage.put(1, (byte) 0x01);

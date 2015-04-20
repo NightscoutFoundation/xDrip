@@ -53,10 +53,7 @@ public class ActiveBluetoothDevice extends Model {
 
     public static boolean is_connected() {
         ActiveBluetoothDevice activeBluetoothDevice = ActiveBluetoothDevice.first();
-        if(activeBluetoothDevice != null) {
-            return activeBluetoothDevice.connected;
-        }
-        return false;
+        return (activeBluetoothDevice != null && activeBluetoothDevice.connected);
     }
 
 }

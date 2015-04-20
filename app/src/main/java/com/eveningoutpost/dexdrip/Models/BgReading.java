@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.content.Context;
-import android.content.Intent;
+//import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
@@ -11,11 +11,11 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
+//import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.Sensor;
-import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
+//import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
@@ -33,7 +33,8 @@ import java.util.UUID;
 public class BgReading extends Model {
     private final static String TAG = BgReading.class.getSimpleName();
     //TODO: Have these as adjustable settings!!
-    public final static double BESTOFFSET = (60000 * 0); // Assume readings are about x minutes off from actual!
+//    public final static double BESTOFFSET = (60000 * 0); // Assume readings are about x minutes off from actual!
+    public final static double BESTOFFSET =  0; // Assume readings are about x minutes off from actual!
     private static boolean predictBG;
 
     @Column(name = "sensor", index = true)
@@ -293,15 +294,6 @@ public class BgReading extends Model {
                 bgReading.synced = false;
                 bgReading.calibration_flag = false;
 
-/*                //TODO: THIS IS A BIG SILLY IDEA, THIS WILL HAVE TO CHANGE ONCE WE GET SOME REAL DATA FROM THE START OF SENSOR LIFE
-                double adjust_for = (86400000 * 1.8) - bgReading.time_since_sensor_started;
-                if (adjust_for > 0 && predictBG) {
-                    bgReading.age_adjusted_raw_value = ((50 / 20) * (adjust_for / (86400000 * 1.8))) * (raw_data / 1000);
-                    Log.w(TAG,"create RAW VALUE ADJUSTMENT: FROM:" + raw_data + " TO: " + bgReading.age_adjusted_raw_value);
-                } else {
-                    bgReading.age_adjusted_raw_value = (raw_data / 1000);
-                }
-*/
                 bgReading.calculateAgeAdjustedRawValue();
 
                 bgReading.save();
@@ -333,15 +325,6 @@ public class BgReading extends Model {
                     selected_value = raw_data;
                 }
 
-/*                //TODO: THIS IS A BIG SILLY IDEA, THIS WILL HAVE TO CHANGE ONCE WE GET SOME REAL DATA FROM THE START OF SENSOR LIFE
-                double adjust_for = (86400000 * 1.9) - bgReading.time_since_sensor_started;
-                if (adjust_for > 0 && predictBG) {
-                    bgReading.age_adjusted_raw_value = (((.45) * (adjust_for / (86400000 * 1.9))) * (selected_value/1000)) + (selected_value/1000);
-                    Log.w(TAG,"create RAW VALUE ADJUSTMENT: FROM:" + (selected_value/1000) + " TO: " + bgReading.age_adjusted_raw_value);
-                } else {
-                    bgReading.age_adjusted_raw_value = (selected_value/1000);
-                }
-*/
                 bgReading.calculateAgeAdjustedRawValue();
 
                 if ( lastBgReading.calibration != null) {

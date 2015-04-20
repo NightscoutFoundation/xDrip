@@ -18,7 +18,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.util.Log;
+//import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,10 +56,10 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     SharedPreferences prefs;
     Viewport tempViewport = new Viewport();
     Viewport holdViewport = new Viewport();
-    public float left;
+/*    public float left;
     public float right;
     public float top;
-    public float bottom;
+    public float bottom; */
     public boolean updateStuff;
     public boolean updatingPreviewViewport = false;
     public boolean updatingChartViewport = false;
@@ -183,7 +183,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 tempViewport = newViewport;
                 updatingPreviewViewport = false;
             }
-            if (updateStuff == true) {
+            if (updateStuff) {
                 holdViewport.set(newViewport.left, newViewport.top, newViewport.right, newViewport.bottom);
             }
         }

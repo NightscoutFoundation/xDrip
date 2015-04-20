@@ -65,7 +65,6 @@ public class TransmitterData extends Model {
             if (len < 6) {
                 return null;
             }
-            ;
 
             for (int i = 0; i < len; ++i) {
                 data_string.append((char) buffer[i]);

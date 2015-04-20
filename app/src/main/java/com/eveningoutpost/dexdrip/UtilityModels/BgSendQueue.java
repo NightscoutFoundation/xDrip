@@ -43,7 +43,7 @@ public class BgSendQueue extends Model {
 
     private static PebbleSync pebbleSync = new PebbleSync(mContext);
 
-    public static BgSendQueue nextBgJob() {
+ /*   public static BgSendQueue nextBgJob() {
         return new Select()
                 .from(BgSendQueue.class)
                 .where("success = ?", false)
@@ -51,7 +51,7 @@ public class BgSendQueue extends Model {
                 .limit(1)
                 .executeSingle();
     }
-
+*/
     public static List<BgSendQueue> queue() {
         return new Select()
                 .from(BgSendQueue.class)

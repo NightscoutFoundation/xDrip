@@ -7,14 +7,11 @@ import android.os.BatteryManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.activeandroid.Model;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
-//import java.nio.ByteBuffer;
-//import java.nio.ByteOrder;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -112,9 +109,7 @@ public class PebbleSync {
         //if(mBgReading.calculated_value_slope > 0) {
         if(Float.valueOf(deltaString) > 0) {
             return ("+"+deltaString);
-        } /*else if(mBgReading.calculated_value_slope > -0.1 && mBgReading.calculated_value_slope < 0.1) {
-            return "0";
-        }*/ else {
+        } else {
             return deltaString;
         }
     }
@@ -123,9 +118,9 @@ public class PebbleSync {
         return String.valueOf(getBatteryLevel());
     }
 
-    public String bgUnit() {
+ /*   public String bgUnit() {
         return bgGraphBuilder.unit();
-    }
+    }*/
 
     public void sendDownload(PebbleDictionary dictionary) {
         if (PebbleKit.isWatchConnected(mContext)) {
