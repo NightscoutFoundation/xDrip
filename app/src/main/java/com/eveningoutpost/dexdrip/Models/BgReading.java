@@ -286,7 +286,8 @@ public class BgReading extends Model {
                 bgReading.sensor_uuid = sensor.uuid;
                 bgReading.raw_data = (raw_data / 1000);
                 bgReading.filtered_data = (filtered_data / 1000);
-                bgReading.timestamp = new Date().getTime();
+                //bgReading.timestamp = new Date().getTime();
+                bgReading.timestamp = timestamp;
                 bgReading.uuid = UUID.randomUUID().toString();
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
                 bgReading.synced = false;
@@ -313,7 +314,8 @@ public class BgReading extends Model {
                 bgReading.calibration_uuid = calibration.uuid;
                 bgReading.raw_data = (raw_data/1000);
                 bgReading.filtered_data = (filtered_data/1000);
-                bgReading.timestamp = new Date().getTime();
+                //bgReading.timestamp = new Date().getTime();
+                bgReading.timestamp = timestamp;
                 bgReading.uuid = UUID.randomUUID().toString();
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
                 bgReading.synced = false;
@@ -353,7 +355,7 @@ public class BgReading extends Model {
                 } else if (bgReading.calculated_value >= 400) {
                     bgReading.calculated_value = 400;
                 }
-                Log.w(TAG, "create NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
+                Log.w(TAG, "create NEW VALUE CALCULATED: " + bgReading.calculated_value + " at " +bgReading.timestamp);
 
                 bgReading.save();
                 bgReading.perform_calculations();

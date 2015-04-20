@@ -489,6 +489,8 @@ public class DexCollectionService extends Service {
                     ackMessage.put(0, (byte) 0x02);
                     ackMessage.put(1, (byte) 0xF0);
                     sendBtMessage(ackMessage);
+                    timestamp = new Date().getTime();
+                    Log.v(TAG,"setSerialDataToTransmitterRawData: Creating TransmitterData at "+timestamp);
                     TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
                     if (transmitterData != null) {
                         Sensor sensor = Sensor.currentSensor();
