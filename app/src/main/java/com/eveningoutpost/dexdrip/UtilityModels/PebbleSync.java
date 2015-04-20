@@ -13,8 +13,8 @@ import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+//import java.nio.ByteBuffer;
+//import java.nio.ByteOrder;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -51,8 +51,8 @@ public class PebbleSync {
         init();
     }
     private void init() {
-        Log.i(TAG,"Initialising...");
-        Log.i(TAG,"configuring PebbleDataReceiver");
+        Log.i(TAG, "Initialising...");
+        Log.i(TAG, "configuring PebbleDataReceiver");
 
         PebbleKit.registerReceivedDataHandler(mContext, new PebbleKit.PebbleDataReceiver(PEBBLEAPP_UUID) {
             @Override
@@ -69,15 +69,21 @@ public class PebbleSync {
         TimeZone tz = TimeZone.getDefault();
         Date now = new Date();
         int offsetFromUTC = tz.getOffset(now.getTime());
-        Log.v("PebbleSync", "buildDictionary: slopeOrdinal-"+slopeOrdinal()+" bgReading-"+bgReading()+" bgTime-"+ (int)(mBgReading.timestamp/1000)+" phoneTime-"+ (int)(new Date().getTime()/1000)+" bgDelta-"+bgDelta());
+        Log.v("PebbleSync", "buildDictionary: slopeOrdinal-" + slopeOrdinal() + " bgReading-" + bgReading() + " bgTime-" + (int) (mBgReading.timestamp / 1000) + " phoneTime-" + (int) (new Date().getTime() / 1000) + " bgDelta-" + bgDelta());
         dictionary.addString(ICON_KEY, slopeOrdinal());
         dictionary.addString(BG_KEY, bgReading());
 
         dictionary.addUint32(RECORD_TIME_KEY, (int) (((mBgReading.timestamp + offsetFromUTC) / 1000)));
-        dictionary.addUint32(PHONE_TIME_KEY, (int) ((new Date().getTime() +offsetFromUTC) / 1000));
+        dictionary.addUint32(PHONE_TIME_KEY, (int) ((new Date().getTime() + offsetFromUTC) / 1000));
         dictionary.addString(BG_DELTA_KEY, bgDelta());
-        dictionary.addString(UPLOADER_BATTERY_KEY, DexCollectionService.getBridgeBatteryAsString());
-        dictionary.addString(NAME_KEY, "Bridge");
+        if(PreferenceManager.getDefaultSharedPreferences(mContext).getString("dex_collection_method", "DexbridgeWixel").compareTo("DexbridgeWixel")==0) {
+            dictionary.addString(UPLOADER_BATTERY_KEY, DexCollectionService.getBridgeBatteryAsString());
+            dictionary.addString(NAME_KEY, "Bridge");
+        } else {
+            dictionary.addString(UPLOADER_BATTERY_KEY, phoneBattery());
+            dictionary.addString(NAME_KEY, "Phone");
+
+        }
         return dictionary;
     }
 
