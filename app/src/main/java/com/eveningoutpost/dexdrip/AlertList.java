@@ -167,7 +167,11 @@ public class AlertList extends Activity {
     }
 
     public String shortPath(String path) {
+
         if(path != null) {
+            if(path.length() == 0) {
+                return "xDrip Default";
+            }
             Ringtone ringtone = RingtoneManager.getRingtone(mContext, Uri.parse(path));
             if (ringtone != null) {
                 return ringtone.getTitle(mContext);

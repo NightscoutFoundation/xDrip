@@ -29,6 +29,7 @@ import android.text.Layout;
 import android.text.format.DateFormat;
 import android.text.method.DigitsKeyListener;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -43,6 +44,7 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
+import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.R;
 
@@ -134,6 +136,31 @@ public class EditAlertActivity extends Activity {
         checkboxAlertOverride = (CheckBox) findViewById(R.id.check_override_silent);
         addListenerOnButtons();
 
+        if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+            viewHeader.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            buttonSave.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            buttonRemove.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            buttonTest.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            buttonalertMp3.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            alertText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            alertThreshold.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            buttonSave.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            alertMp3File.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            
+            checkboxAllDay.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            
+            viewTimeStart.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            viewTimeEnd.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            editSnooze.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            viewAlertOverrideText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            
+            ((TextView) findViewById(R.id.view_alert_text)).setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            ((TextView) findViewById(R.id.view_alert_threshold)).setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            ((TextView) findViewById(R.id.view_alert_default_snooze)).setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            ((TextView) findViewById(R.id.view_alert_mp3_file)).setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            ((TextView) findViewById(R.id.view_alert_time)).setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            
+        }
         SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
 
@@ -151,7 +178,7 @@ public class EditAlertActivity extends Activity {
             checkboxAllDay.setChecked(true);
             checkboxAlertOverride.setChecked(true);
 
-            audioPath = null;
+            audioPath = "";
             alertMp3File.setText(shortPath(audioPath));
             alertMp3File.setKeyListener(null);
             defaultSnooze = SnoozeActivity.getDefaultSnooze(above);
@@ -393,7 +420,7 @@ public class EditAlertActivity extends Activity {
                                     startActivityForResult(Intent.createChooser(fileIntent, "Select File for Alert"), CHOOSE_FILE);
                                 } else {
                                     // Xdrip default was chossen, we live the file name as empty.
-                                    audioPath = null;
+                                    audioPath = "";
                                     alertMp3File.setText(shortPath(audioPath));
                                 }
                             }
@@ -527,6 +554,9 @@ public class EditAlertActivity extends Activity {
 
     public String shortPath(String path) {
         if(path != null) {
+            if(path.length() == 0) {
+                return "xDrip Default";
+            }
             Ringtone ringtone = RingtoneManager.getRingtone(mContext, Uri.parse(path));
             if (ringtone != null) {
                 return ringtone.getTitle(mContext);

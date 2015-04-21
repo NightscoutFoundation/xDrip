@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
+import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 
 
 public class SnoozeActivity extends Activity {
@@ -51,6 +53,14 @@ public class SnoozeActivity extends Activity {
         }
         return snoozeValues.length-1;
     }
+    
+    static String getNameFromTime(int time) {
+        if (time < 120) {
+            return time + " minutes";
+        }
+        return (time / 60.0) + " hours";
+    }
+    
     static int getTimeFromSnoozeValue(int pickedNumber) {
         return snoozeValues[pickedNumber];
     }
@@ -65,7 +75,7 @@ public class SnoozeActivity extends Activity {
     static void SetSnoozePickerValues(NumberPicker picker, boolean above, int default_snooze) {
         String[] values=new String[snoozeValues.length];
         for(int i=0;i<values.length;i++){
-            values[i]=Integer.toString(snoozeValues[i]);
+            values[i]=getNameFromTime(snoozeValues[i]);
         }
         
         picker.setMaxValue(values.length -1);
@@ -88,10 +98,16 @@ public class SnoozeActivity extends Activity {
         setContentView(R.layout.activity_snooze);
         alertStatus = (TextView) findViewById(R.id.alert_status);
         snoozeValue = (NumberPicker) findViewById(R.id.snooze);
+        
         SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
 
         addListenerOnButton();
+        if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+            alertStatus.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            buttonSnooze.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+        }
+
         displayStatus();
     }
 
