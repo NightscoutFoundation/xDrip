@@ -199,7 +199,6 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     }
 
     public void updateCurrentBgInfo() {
-        final TextView currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
         final TextView notificationText = (TextView)findViewById(R.id.notices);
         notificationText.setText("");
         isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
@@ -316,7 +315,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                     estimate=lastBgreading.calculated_value;
                 } else {
                     estimate = BgReading.estimated_bg(lastBgreading.timestamp + (6000 * 7));
-                }
+                }  
                 currentBgValueText.setText(bgGraphBuilder.unitized_string(estimate));
                 currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
@@ -342,7 +341,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 currentBgValueText.setTextColor(Color.WHITE);
             }
         }
-    setupCharts();
+        setupCharts();
     }
 
     @Override

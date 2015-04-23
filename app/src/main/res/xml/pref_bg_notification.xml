@@ -1,4 +1,22 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:dependency="I_understand"
+        android:title="BG Level Alerts"
+        android:key="bgLevelAlerts">
+        <CheckBoxPreference
+            android:key="bg_alerts"
+            android:title="BG Alerts"
+            android:summary="Alert when BG readings cross the threshold. (alert on 55 can not be turned off)"
+            android:defaultValue="true" />
+        <EditTextPreference
+            android:key="bg_unclear_readings_minutes"
+            android:title="Alert after this time of ??? (non clear values) Minutes "
+            android:inputType="number"
+            android:summary=""
+            android:defaultValue="90" />
+    </PreferenceCategory>
+</PreferenceScreen>
+    
     <!--<PreferenceCategory-->
         <!--android:dependency="I_understand"-->
         <!--android:title="BG Level Alerts"-->
@@ -43,4 +61,4 @@
             <!--android:summary="Minimum number of minutes to pass before raising the same alert."-->
             <!--android:defaultValue="20" />-->
     <!--</PreferenceCategory>-->
-</PreferenceScreen>
+

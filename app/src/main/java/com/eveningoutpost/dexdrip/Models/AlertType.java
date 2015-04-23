@@ -13,6 +13,7 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
+import com.eveningoutpost.dexdrip.UtilityModels.GenericPair;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -98,8 +99,45 @@ public class AlertType extends Model {
         .executeSingle();
     }
 
+    /* 
+     * This function has 3 needs. In the case of "unclear state" return null
+     * In the case of "unclear state" for more than predefined time, return the "55" alert
+     * In case that alerts are turned off, only return the 55.
+     */
+    public static AlertType get_highest_active_alert(Context context, double bg) {
+        
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        Boolean bg_alerts = prefs.getBoolean("bg_alerts", true);
+        Long UnclearTimeSetting = Long.parseLong(prefs.getString("bg_unclear_readings_minutes", "90")) * 60000; 
+        
+        Long UnclearTime = BgReading.getUnclearTime(UnclearTimeSetting);
+        AlertType at;
+        if (UnclearTime >= UnclearTimeSetting ) {
+            // we are in an unclear state for too long, ring our alert
+            at = get_alert(LOW_ALERT_55);
+            if(at == null) {
+                Log.wtf(TAG, "ERROR, the 55 alert is missing");
+            }
+            return at;
+        }
+        if (UnclearTime > 0) {
+            // We are in an clear state, but not for too long.
+            return null;
+        }
+        at = get_highest_active_alert_helper(bg);
+        if (at == null || bg_alerts) {
+            return at;
+        }
+        // alerts are off, return only if this is the 55 alert
+        if(at.uuid.equals(LOW_ALERT_55)) {
+            return at;
+        }
+        return null;
+    }
+    
+    
     // bg_minute is the estimatin of the bg change rate
-    public static AlertType get_highest_active_alert(double bg) {
+    private static AlertType get_highest_active_alert_helper(double bg) {
         // Chcek the low alerts
 
         List<AlertType> lowAlerts  = new Select()
@@ -302,16 +340,16 @@ public class AlertType extends Model {
     }
 
 
-    public static void testAll() {
+    public static void testAll(Context context) {
 
         remove_all();
         add_alert(null, "high alert 1", true, 180, true, 10, null, 0, 0, true, 20);
         add_alert(null, "high alert 2", true, 200, true, 10, null, 0, 0, true, 20);
         add_alert(null, "high alert 3", true, 220, true, 10, null, 0, 0, true, 20);
         print_all();
-        AlertType a1 = get_highest_active_alert(190);
+        AlertType a1 = get_highest_active_alert(context, 190);
         Log.e(TAG, "a1 = " + a1.toString());
-        AlertType a2 = get_highest_active_alert(210);
+        AlertType a2 = get_highest_active_alert(context, 210);
         Log.e(TAG, "a2 = " + a2.toString());
 
 
@@ -321,11 +359,11 @@ public class AlertType extends Model {
         add_alert(null, "low alert 1", false, 80, true, 10, null, 0, 0, true, 20);
         add_alert(null, "low alert 2", false, 60, true, 10, null, 0, 0, true, 20);
 
-        AlertType al1 = get_highest_active_alert(90);
+        AlertType al1 = get_highest_active_alert(context, 90);
         Log.e(TAG, "al1 should be null  " + al1);
-        al1 = get_highest_active_alert(80);
+        al1 = get_highest_active_alert(context, 80);
         Log.e(TAG, "al1 = " + al1.toString());
-        AlertType al2 = get_highest_active_alert(50);
+        AlertType al2 = get_highest_active_alert(context, 50);
         Log.e(TAG, "al2 = " + al2.toString());
 
         Log.e(TAG, "HigherAlert(a1, a2) = a1?" +  (HigherAlert(a1,a2) == a2));

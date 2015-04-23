@@ -36,9 +36,9 @@ public class SettingsActivity extends PreferenceActivity {
         addPreferencesFromResource(R.xml.pref_general);
 
 
-//        fakeHeader = new PreferenceCategory(this);
-//        getPreferenceScreen().addPreference(fakeHeader);
-//        addPreferencesFromResource(R.xml.pref_bg_notification);
+        fakeHeader = new PreferenceCategory(this);
+        getPreferenceScreen().addPreference(fakeHeader);
+        addPreferencesFromResource(R.xml.pref_bg_notification);
 
         fakeHeader = new PreferenceCategory(this);
         getPreferenceScreen().addPreference(fakeHeader);
@@ -62,6 +62,7 @@ public class SettingsActivity extends PreferenceActivity {
 
         bindPreferenceSummaryToValue(findPreference("highValue"));
         bindPreferenceSummaryToValue(findPreference("lowValue"));
+        bindPreferenceSummaryToValue(findPreference("bg_unclear_readings_minutes"));
 //        bindPreferenceSummaryToValue(findPreference("bg_snooze"));
         bindPreferenceSummaryToValue(findPreference("calibration_snooze"));
         bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_uri"));
