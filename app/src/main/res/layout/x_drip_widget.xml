@@ -1,51 +1,54 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="#09C"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:paddingLeft="10dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="10dp"
+    android:paddingRight="10dp"
+    android:background="#55212121" >
     <LinearLayout
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:background="#09C" android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-        <TextView android:id="@+id/widgetBg" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true" android:text="200"
-            android:textColor="#ffffff" android:textSize="65sp" android:textStyle="bold|italic"
-            android:contentDescription="@string/appwidget_text"
-            android:background="#09C" />
+        <TextView android:id="@+id/widgetBg"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent" android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" android:text="333"
+            android:textColor="#ffffff" android:textSize="60sp"
+            android:layout_marginTop="-5dp"/>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/widget_margin"
-            android:background="#09C"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingLeft="5dp">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#ffffff" android:textSize="30sp" android:textStyle="bold|italic"
-                android:text="↘"
+                android:textColor="#ffffff"
+                android:textSize="40sp"
+                android:text="--"
                 android:id="@+id/widgetArrow"
                 android:layout_gravity="center_horizontal"
-                android:background="#09C" />
+                android:layout_marginBottom="-5dp"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#ffffff" android:textSize="15sp" android:textStyle="bold|italic"
-                android:text="-12 mgdl"
+                android:textColor="#ffffff"
+                android:textSize="10sp"
+                android:text="-- mgdl"
                 android:id="@+id/widgetDelta"
-                android:layout_gravity="center_horizontal"
-                android:background="#09C" />
+                android:layout_gravity="center_horizontal"/>
         </LinearLayout>
 
     </LinearLayout>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#ffffff" android:textSize="15sp" android:textStyle="bold|italic"
-        android:text="2 hours ago"
+        android:textColor="#ffffff"
+        android:textSize="10sp"
+        android:text="-- minutes ago"
         android:id="@+id/readingAge"
-        android:layout_gravity="center_horizontal"
-        android:background="#09C" />
+        android:layout_gravity="center_horizontal"/>
 </LinearLayout>

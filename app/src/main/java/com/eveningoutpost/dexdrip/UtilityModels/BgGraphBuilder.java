@@ -310,6 +310,18 @@ public class BgGraphBuilder {
         }
     }
 
+    public String unitizedDeltaString(double value) {
+        DecimalFormat df = new DecimalFormat("#");
+        df.setMaximumFractionDigits(1);
+        String delta_sign = "";
+        if (value > 0.1) { delta_sign = "+"; }
+        if(doMgdl) {
+            return delta_sign + df.format(unitized(value)) + " mg/dl";
+        } else {
+            return delta_sign + df.format(unitized(value)) + " mmol";
+        }
+    }
+
     public double mmolConvert(double mgdl) {
         return mgdl * Constants.MGDL_TO_MMOLL;
     }

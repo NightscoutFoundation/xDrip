@@ -16,6 +16,7 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.ShareModels.ShareRest;
+import com.eveningoutpost.dexdrip.widgetUpdateService;
 
 import java.util.List;
 
@@ -77,6 +78,7 @@ public class BgSendQueue extends Model {
 
         Intent updateIntent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA);
         context.sendBroadcast(updateIntent);
+        context.startService(new Intent(context, widgetUpdateService.class));
 
         if (prefs.getBoolean("cloud_storage_mongodb_enable", false) || prefs.getBoolean("cloud_storage_api_enable", false)) {
             Log.w("SENSOR QUEUE:", String.valueOf(bgSendQueue.mongo_success));
@@ -114,6 +116,8 @@ public class BgSendQueue extends Model {
             Log.w("ShareRest", "About to call ShareRest!!");
             shareRest.sendBgData(bgReading);
         }
+
+
     }
 
     public void markMongoSuccess() {

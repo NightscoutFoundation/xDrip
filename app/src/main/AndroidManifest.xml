@@ -167,6 +167,12 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/x_drip_widget_info" />
         </receiver>
+
+        <service
+            android:name=".widgetUpdateService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>
