@@ -12,7 +12,9 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceGroup;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.util.Log;
@@ -155,15 +157,19 @@ public class Preferences extends PreferenceActivity {
             final Preference shareKey = findPreference("share_key");
             final PreferenceCategory collectionCategory = (PreferenceCategory) findPreference("collection_category");
             final PreferenceCategory otherCategory = (PreferenceCategory) findPreference("other_category");
-
+            final PreferenceScreen calibrationAlertsScreen = (PreferenceScreen) findPreference("calibration_alerts_screen");
+            final PreferenceCategory alertsCategory = (PreferenceCategory) findPreference("alerts_category");
             prefs =  getPreferenceManager().getDefaultSharedPreferences(getActivity());
             Log.d("PREF", prefs.getString("dex_collection_method", "BluetoothWixel"));
 
             if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomShare") != 0) {
                 collectionCategory.removePreference(shareKey);
                 otherCategory.removePreference(interpretRaw);
+                alertsCategory.addPreference(calibrationAlertsScreen);
             } else {
                 otherCategory.removePreference(predictiveBG);
+                alertsCategory.removePreference(calibrationAlertsScreen);
+                prefs.edit().putBoolean("calibration_notifications", false).apply();
             }
             if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("BluetoothWixel") != 0 && prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomShare") != 0) {
                 collectionCategory.removePreference(runInForeground);
@@ -177,14 +183,17 @@ public class Preferences extends PreferenceActivity {
             collectionMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if(((String) newValue).compareTo("DexcomShare") != 0) {
+                    if(((String) newValue).compareTo("DexcomShare") != 0) { // NOT USING SHARE
                         collectionCategory.removePreference(shareKey);
                         otherCategory.removePreference(interpretRaw);
                         otherCategory.addPreference(predictiveBG);
+                        alertsCategory.addPreference(calibrationAlertsScreen);
                     } else {
                         collectionCategory.addPreference(shareKey);
                         otherCategory.addPreference(interpretRaw);
                         otherCategory.removePreference(predictiveBG);
+                        alertsCategory.removePreference(calibrationAlertsScreen);
+                        prefs.edit().putBoolean("calibration_notifications", false).apply();
                     }
                     if(((String) newValue).compareTo("BluetoothWixel") != 0 && ((String) newValue).compareTo("DexcomShare") != 0) {
                         collectionCategory.removePreference(runInForeground);

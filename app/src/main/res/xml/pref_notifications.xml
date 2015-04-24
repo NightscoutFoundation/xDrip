@@ -1,6 +1,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:title="Alerts and Notifications">
+        android:title="Alerts and Notifications"
+        android:key="alerts_category">
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:title="BG Level Alerts">
             <CheckBoxPreference
@@ -46,7 +47,8 @@
 
 
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-            android:title="Calibration Alerts">
+            android:title="Calibration Alerts"
+            android:key="calibration_alerts_screen">
             <CheckBoxPreference
                 android:key="calibration_notifications"
                 android:title="Calibration Alerts"
