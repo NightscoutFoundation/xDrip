@@ -271,7 +271,7 @@ public class BgReading extends Model {
         return true;
     }
 
-    public static BgReading create(double raw_data, Context context, Long timestamp) {
+    public static BgReading create(double raw_data, double filtered_data,Context context, Long timestamp) {
         BgReading bgReading = new BgReading();
         Sensor sensor = Sensor.currentSensor();
         if (sensor != null) {
@@ -280,7 +280,7 @@ public class BgReading extends Model {
                 bgReading.sensor = sensor;
                 bgReading.sensor_uuid = sensor.uuid;
                 bgReading.raw_data = (raw_data / 1000);
-                bgReading.filtered_data = (raw_data / 1000);
+                bgReading.filtered_data = (filtered_data / 1000);
                 bgReading.timestamp = timestamp;
                 bgReading.uuid = UUID.randomUUID().toString();
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
@@ -298,7 +298,7 @@ public class BgReading extends Model {
                 bgReading.calibration = calibration;
                 bgReading.calibration_uuid = calibration.uuid;
                 bgReading.raw_data = (raw_data/1000);
-                bgReading.filtered_data = (raw_data/1000);
+                bgReading.filtered_data = (filtered_data/1000);
                 bgReading.timestamp = timestamp;
                 bgReading.uuid = UUID.randomUUID().toString();
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
@@ -678,6 +678,7 @@ public class BgReading extends Model {
     
     // Should that be combined with noiseValue? 
     private Boolean Unclear() {
+        Log.e(TAG_ALERT, "Unclear filtered_data=" + filtered_data + " raw_data=" + raw_data);
         if (raw_data > filtered_data * 1.1 || raw_data < filtered_data * 0.9) {
             return true;
         }

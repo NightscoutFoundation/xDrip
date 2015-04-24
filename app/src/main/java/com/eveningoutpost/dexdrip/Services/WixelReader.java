@@ -339,7 +339,7 @@ public class WixelReader  extends Thread {
 	        			// We have a real new reading...
 	        			Log.e(TAG, "calling setSerialDataToTransmitterRawData " + LastReading.RawValue +
 	        			        " LastReading.CaptureDateTime " + LastReading.CaptureDateTime + " " + LastReading.TransmissionId);
-	        			setSerialDataToTransmitterRawData(LastReading.RawValue , LastReading.BatteryLife, LastReading.CaptureDateTime);
+	        			setSerialDataToTransmitterRawData(LastReading.RawValue,  LastReading.FilteredValue, LastReading.BatteryLife, LastReading.CaptureDateTime);
 	        			LastReportedReading = LastReading;
 	        			LastReportedTime = LastReading.CaptureDateTime;
 	        		}
@@ -379,7 +379,7 @@ public class WixelReader  extends Thread {
 
                 int fakedRaw = 150000 + i * 1000;
                 Log.e(TAG, "calling setSerialDataToTransmitterRawData " + fakedRaw);
-                setSerialDataToTransmitterRawData(fakedRaw, 100, new Date().getTime());
+                setSerialDataToTransmitterRawData(fakedRaw, fakedRaw,100, new Date().getTime());
 
                } catch (InterruptedException e) {
                    // time to get out...
@@ -394,13 +394,13 @@ public class WixelReader  extends Thread {
         mStop = true;
         interrupt();
     }
-    public void setSerialDataToTransmitterRawData(int raw_data ,int sensor_battery_leve, Long CaptureTime) {
+    public void setSerialDataToTransmitterRawData(int raw_data, int filtered_data ,int sensor_battery_leve, Long CaptureTime) {
 
         TransmitterData transmitterData = TransmitterData.create(raw_data, sensor_battery_leve, CaptureTime);
         if (transmitterData != null) {
             Sensor sensor = Sensor.currentSensor();
             if (sensor != null) {
-                BgReading bgReading = BgReading.create(transmitterData.raw_data, mContext, CaptureTime);
+                BgReading bgReading = BgReading.create(transmitterData.raw_data, filtered_data, mContext, CaptureTime);
                 sensor.latest_battery_level = transmitterData.sensor_battery_level;
                 sensor.save();
             } else {

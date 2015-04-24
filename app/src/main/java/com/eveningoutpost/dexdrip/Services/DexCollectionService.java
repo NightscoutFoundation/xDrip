@@ -287,7 +287,7 @@ public class DexCollectionService extends Service {
                 sensor.latest_battery_level = transmitterData.sensor_battery_level;
                 sensor.save();
 
-                BgReading.create(transmitterData.raw_data, this, timestamp);
+                BgReading.create(transmitterData.raw_data, transmitterData.raw_data, this, timestamp);
             } else {
                 Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
             }

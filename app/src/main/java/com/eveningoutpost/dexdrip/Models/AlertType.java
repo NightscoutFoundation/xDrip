@@ -90,6 +90,7 @@ public class AlertType extends Model {
 
     public final static String LOW_ALERT_55 = "c5f1999c-4ec5-449e-adad-3980b172b920";
     private final static String TAG = Notifications.class.getSimpleName();
+    private final static String TAG_ALERT = "AlertBg";
 
     public static AlertType get_alert(String uuid) {
 
@@ -114,6 +115,7 @@ public class AlertType extends Model {
         AlertType at;
         if (UnclearTime >= UnclearTimeSetting ) {
             // we are in an unclear state for too long, ring our alert
+            Log.e(TAG_ALERT, "We are in an unclear state for too long, ring 55 alert");
             at = get_alert(LOW_ALERT_55);
             if(at == null) {
                 Log.wtf(TAG, "ERROR, the 55 alert is missing");
@@ -122,9 +124,15 @@ public class AlertType extends Model {
         }
         if (UnclearTime > 0) {
             // We are in an clear state, but not for too long.
+            Log.e(TAG_ALERT, "We are in an clear state, but not for too long. returning null");
             return null;
         }
         at = get_highest_active_alert_helper(bg);
+        if (at != null) {
+            Log.e(TAG_ALERT, "get_highest_active_alert_helper returned alert uuid = " + at.uuid + " alert name = " + at.name);
+        } else {
+            Log.e(TAG_ALERT, "get_highest_active_alert_helper returned NULL");
+        }
         if (at == null || bg_alerts) {
             return at;
         }
