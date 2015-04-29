@@ -288,25 +288,52 @@ public class BgGraphBuilder {
     }
 
     public String unitized_string(double value) {
-        value = Math.round(value);
         DecimalFormat df = new DecimalFormat("#");
-        df.setMaximumFractionDigits(0);
         if (value >= 400) {
             return "HIGH";
         } else if (value >= 40) {
             if(doMgdl) {
                 df.setMaximumFractionDigits(0);
-                df.setMinimumFractionDigits(0);
                 return df.format(value);
             } else {
                 df.setMaximumFractionDigits(1);
-                df.setMinimumFractionDigits(1);
                 return df.format(mmolConvert(value));
             }
-        } else if (value > 13) {
+        } else if (value > 12) {
             return "LOW";
         } else {
-            return "???";
+            switch((int)value) {
+                case 0:
+                    return "??0";
+                case 1:
+                    return "?SN";
+                case 2:
+                    return "??2";
+                case 3:
+                    return "?NA";
+                case 5:
+                    return "?NC";
+                case 6:
+                    return "?CD";
+                case 9:
+                    return "?AD";
+                case 12:
+                    return "?RF";
+                default:
+                    return "???";
+            }
+        }
+    }
+
+    public String unitizedDeltaString(double value) {
+        DecimalFormat df = new DecimalFormat("#");
+        df.setMaximumFractionDigits(1);
+        String delta_sign = "";
+        if (value > 0.1) { delta_sign = "+"; }
+        if(doMgdl) {
+            return delta_sign + df.format(unitized(value)) + " mg/dl";
+        } else {
+            return delta_sign + df.format(unitized(value)) + " mmol";
         }
     }
 
