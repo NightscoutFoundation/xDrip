@@ -62,11 +62,13 @@ public class widgetUpdateService extends Service {
     }
 
     public void setFailoverTimer() { //Keep it alive!
-        long retry_in = (1000 * 60 * 5);
-        Log.d(TAG, "Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
-        Calendar calendar = Calendar.getInstance();
-        AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexShareCollectionService.class), 0));
+        if(AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), xDripWidget.class)).length > 0) {
+            long retry_in = (1000 * 60 * 5);
+            Log.d(TAG, "Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
+            Calendar calendar = Calendar.getInstance();
+            AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+            alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, widgetUpdateService.class), 0));
+        }
     }
 
     public void updateCurrentBgInfo() {
