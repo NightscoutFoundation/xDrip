@@ -54,13 +54,13 @@ public class CollectionServiceStarter {
         if(isBTWixel(context)) {
             Log.d("DexDrip", "Starting bt wixel collector");
             stopWifWixelThread();
-            startBtWixelService();
             stopBtShareService();
+            startBtWixelService();
         } else if(isWifiWixel(context)){
             Log.d("DexDrip", "Starting wifi wixel collector");
             stopBtWixelService();
-            startWifWixelThread();
             stopBtShareService();
+            startWifWixelThread();
         } else if(isBTShare(context)) {
             Log.d("DexDrip", "Starting bt share collector");
             stopBtWixelService();

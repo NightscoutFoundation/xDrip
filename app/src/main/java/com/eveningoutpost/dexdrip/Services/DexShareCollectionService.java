@@ -101,7 +101,7 @@ public class DexShareCollectionService extends Service {
     public boolean state_authInProgress = false;
     public boolean state_notifSetupSucess = false;
 
-    public boolean shouldDisconnect = true;
+    public boolean shouldDisconnect = false;
     public boolean share2 = false;
     public Service service;
 
@@ -120,14 +120,14 @@ public class DexShareCollectionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        share2 = prefs.getBoolean("share_auth_mode_two", false);
-        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-//        if (currentapiVersion < android.os.Build.VERSION_CODES.LOLLIPOP){
-            shouldDisconnect = false;
-//        }
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT){
+            stopSelf();
+            return START_NOT_STICKY;
+        }
         if (CollectionServiceStarter.isBTShare(getApplicationContext())) {
             setFailoverTimer();
         } else {
+            stopSelf();
             return START_NOT_STICKY;
         }
         if (Sensor.currentSensor() == null) {
@@ -152,22 +152,15 @@ public class DexShareCollectionService extends Service {
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             if(key.compareTo("run_service_in_foreground") == 0) {
-
                 Log.e("FOREGROUND", "run_service_in_foreground changed!");
                 if (prefs.getBoolean("run_service_in_foreground", false)) {
                     foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), service);
                     foregroundServiceStarter.start();
                     Log.w(TAG, "Moving to foreground");
-                    setRetryTimer();
                 } else {
                     service.stopForeground(true);
                     Log.w(TAG, "Removing from foreground");
-                    setRetryTimer();
                 }
-            }
-            if (key.compareTo("dex_collection_method") == 0) {
-                CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(getApplicationContext());
-                collectionServiceStarter.start(getApplicationContext());
             }
         }
     };
@@ -183,7 +176,7 @@ public class DexShareCollectionService extends Service {
             if (bgReading != null) {
                 retry_in = Math.min(Math.max((1000 * 30), (1000 * 60 * 5) - (new Date().getTime() - bgReading.timestamp) - (1000 * 15)), (1000 * 60 * 5));
             } else {
-                retry_in = (1000 * 60);
+                retry_in = (1000 * 20);
             }
             Log.d(TAG, "Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
@@ -199,6 +192,8 @@ public class DexShareCollectionService extends Service {
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
             alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexShareCollectionService.class), 0));
+        } else {
+            stopSelf();
         }
     }
 

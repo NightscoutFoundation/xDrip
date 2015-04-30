@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 
 /**
  * Created by stephenblack on 12/25/14.
@@ -43,7 +44,6 @@ public class ForegroundServiceStarter {
 
         NotificationCompat.Builder b=new NotificationCompat.Builder(mService);
         b.setOngoing(true);
-        // This probably doesn't do much yet, but is the right thing
         b.setCategory(Notification.CATEGORY_SERVICE);
         // Hide this notification "below the fold" on L+
         b.setPriority(Notification.PRIORITY_MIN);

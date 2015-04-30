@@ -20,6 +20,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 
 import java.util.List;
 
@@ -231,6 +233,7 @@ public class Preferences extends PreferenceActivity {
                     } else {
                         preference.setSummary(stringValue);
                     }
+                    CollectionServiceStarter.restartCollectionService(preference.getContext());
                     return true;
                 }
             });

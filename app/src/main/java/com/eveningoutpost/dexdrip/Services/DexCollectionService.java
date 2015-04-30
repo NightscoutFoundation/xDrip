@@ -91,15 +91,20 @@ public class DexCollectionService extends Service {
         foregroundServiceStarter.start();
         mContext = getApplicationContext();
         dexCollectionService = this;
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         listenForChangeInSettings();
-        Log.w(TAG, "STARTING SERVICE");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT){
+            stopSelf();
+            return START_NOT_STICKY;
+        }
         if (CollectionServiceStarter.isBTWixel(getApplicationContext())) {
             setFailoverTimer();
         } else {
+            stopSelf();
             return START_NOT_STICKY;
         }
         attemptConnection();
@@ -113,6 +118,25 @@ public class DexCollectionService extends Service {
         foregroundServiceStarter.stop();
         setRetryTimer();
         Log.w(TAG, "SERVICE STOPPED");
+    }
+    public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+            if(key.compareTo("run_service_in_foreground") == 0) {
+                Log.e("FOREGROUND", "run_service_in_foreground changed!");
+                if (prefs.getBoolean("run_service_in_foreground", false)) {
+                    foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), dexCollectionService);
+                    foregroundServiceStarter.start();
+                    Log.w(TAG, "Moving to foreground");
+                } else {
+                    dexCollectionService.stopForeground(true);
+                    Log.w(TAG, "Removing from foreground");
+                }
+            }
+        }
+    };
+
+    public void listenForChangeInSettings() {
+        prefs.registerOnSharedPreferenceChangeListener(prefListener);
     }
 
     public void setRetryTimer() {
@@ -132,33 +156,12 @@ public class DexCollectionService extends Service {
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
             alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0));
+        } else {
+            stopSelf();
         }
     }
 
-    public void listenForChangeInSettings() {
-        SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                if(key.compareTo("run_service_in_foreground") == 0) {
-                    if (prefs.getBoolean("run_service_in_foreground", false)) {
-                        foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), dexCollectionService);
-                        foregroundServiceStarter.start();
-                        Log.w(TAG, "Moving to foreground");
-                        setRetryTimer();
-                    } else {
-                        dexCollectionService.stopForeground(true);
-                        Log.w(TAG, "Removing from foreground");
-                        setRetryTimer();
-                    }
-                }
-                if(key.compareTo("dex_collection_method") == 0) {
-                    CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(getApplicationContext());
-                    collectionServiceStarter.start(getApplicationContext());
-                }
-            }
-        };
-        prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        prefs.registerOnSharedPreferenceChangeListener(listener);
-    }
+
 
     public void attemptConnection() {
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
