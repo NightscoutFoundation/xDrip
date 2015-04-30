@@ -6,6 +6,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.BatteryManager;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.util.Log;
@@ -66,6 +67,12 @@ public class BgSendQueue extends Model {
     }
 
     public static void addToQueue(BgReading bgReading, String operation_type, Context context) {
+        PowerManager powerManager = (PowerManager) context.getSystemService(context.POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                "sendQueue");
+        wakeLock.acquire();
+
+
         BgSendQueue bgSendQueue = new BgSendQueue();
         bgSendQueue.operation_type = operation_type;
         bgSendQueue.bgReading = bgReading;
@@ -116,8 +123,7 @@ public class BgSendQueue extends Model {
             Log.w("ShareRest", "About to call ShareRest!!");
             shareRest.sendBgData(bgReading);
         }
-
-
+        wakeLock.release();
     }
 
     public void markMongoSuccess() {

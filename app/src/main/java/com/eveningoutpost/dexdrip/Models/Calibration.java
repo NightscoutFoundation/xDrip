@@ -245,27 +245,18 @@ public class Calibration extends Model {
         double calSlope = ((secondCalRecord.getScale() / secondCalRecord.getSlope()) + (3 * firstCalRecord.getScale() / firstCalRecord.getSlope())) * 250;
 
         double calIntercept = (((secondCalRecord.getScale() * secondCalRecord.getIntercept()) / secondCalRecord.getSlope()) + ((3 * firstCalRecord.getScale() * firstCalRecord.getIntercept()) / firstCalRecord.getSlope())) / -4;
-
-        Log.d("CAL CHECK IN ", "fDecay "+firstCalRecord.getDecay());
-        Log.d("CAL CHECK IN ", "sDecay "+secondCalRecord.getDecay());
-        Log.d("CAL CHECK IN ", "fSLope "+firstCalRecord.getSlope());
-        Log.d("CAL CHECK IN ", "sSlope "+secondCalRecord.getSlope());
-        Log.d("CAL CHECK IN ", "fScale "+firstCalRecord.getScale());
-        Log.d("CAL CHECK IN ", "sScale "+secondCalRecord.getScale());
-        Log.d("CAL CHECK IN ", "fIntercept "+firstCalRecord.getIntercept());
-        Log.d("CAL CHECK IN ", "sIntercept "+secondCalRecord.getIntercept());
-
-        Log.d("CAL CHECK IN ", "calSlope "+calSlope);
-        Log.d("CAL CHECK IN ", "calIntercept "+calIntercept);
-
         if (sensor != null) {
             for(int i = 0; i < firstCalRecord.getCalSubrecords().length - 1; i++) {
-                if (((firstCalRecord.getCalSubrecords()[i] != null && Calibration.is_new(firstCalRecord.getCalSubrecords()[i]))) || (i == 0 && override)) {
+                if (((firstCalRecord.getCalSubrecords()[i] != null && Calibration.is_new(firstCalRecord.getCalSubrecords()[i], addativeOffset))) || (i == 0 && override)) {
                     CalSubrecord calSubrecord = firstCalRecord.getCalSubrecords()[i];
 
                     Calibration calibration = new Calibration();
                     calibration.bg = calSubrecord.getCalBGL();
-                    calibration.timestamp = calSubrecord.getDateEntered().getTime();
+                    calibration.timestamp = calSubrecord.getDateEntered().getTime() + addativeOffset;
+                    if (calibration.timestamp > new Date().getTime()) {
+                        Log.e(TAG, "ERROR - Calibration timestamp is from the future, wont save!");
+                        return;
+                    }
                     calibration.raw_value = calSubrecord.getCalRaw() / 1000;
                     calibration.slope = calSlope;
                     calibration.intercept = calIntercept;
@@ -292,8 +283,6 @@ public class Calibration extends Model {
                     calibration.second_intercept = secondCalRecord.getIntercept();
 
                     calibration.save();
-
-//                    adjustRecentBgReadings(5);
                     CalibrationSendQueue.addToQueue(calibration, context);
                     Calibration.requestCalibrationIfRangeTooNarrow();
                 }
@@ -307,21 +296,21 @@ public class Calibration extends Model {
         }
     }
 
-    public static boolean is_new(CalSubrecord calSubrecord) {
+    public static boolean is_new(CalSubrecord calSubrecord, long addativeOffset) {
         Sensor sensor = Sensor.currentSensor();
         Calibration calibration = new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
-                .where("timestamp = ?", calSubrecord.getDateEntered().getTime())
+                .where("timestamp <= ?", calSubrecord.getDateEntered().getTime() + addativeOffset + (1000 * 60 * 3))
                 .executeSingle();
-        if(calibration == null) {
-            Log.d("CAL CHECK IN ", "Looks like a new calibration!");
-            return true;
-        } else {
+        if(calibration != null && Math.abs(calibration.timestamp - addativeOffset) < (3*60*1000)) {
             Log.d("CAL CHECK IN ", "Already have that calibration!");
             return false;
+        } else {
+            Log.d("CAL CHECK IN ", "Looks like a new calibration!");
+            return true;
         }
     }
     public static Calibration getForTimestamp(double timestamp) {

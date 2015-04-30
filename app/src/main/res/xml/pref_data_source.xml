@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
     <PreferenceCategory
-        android:dependency="I_understand"
-        android:title="Data Source"
-        android:key="dataSource">
+        android:key="collection_category"
+        android:title="Data Source Settings">
         <ListPreference
             android:key="dex_collection_method"
             android:title="Dexcom Data Collection Method"
@@ -12,11 +10,22 @@
             android:entries="@array/DexCollectionMethods"
             android:entryValues="@array/DexCollectionMethodValues"
             android:defaultValue="BluetoothWixel"/>
+        <EditTextPreference
+            android:title="10 Character Dexcom Receiver Serial Number"
+            android:key="share_key"
+            android:shouldDisableView="true"
+            android:defaultValue="SM00000000"/>
         <CheckBoxPreference
             android:key="run_service_in_foreground"
             android:title="Run Collection Service in foreground"
             android:summary="Running in foreground prevents android from killing the service to free up memory but it creates an annoying notification, Not recommended."
             android:defaultValue="false" />
+        <EditTextPreference
+            android:title="List of recievers"
+            android:key="wifi_recievers_addresses"
+            android:dialogTitle="@string/wifi_recievers_dialog_title"
+            android:dialogMessage="@string/wifi_recievers_dialog_message"
+            android:defaultValue="">
+        </EditTextPreference>
     </PreferenceCategory>
-
 </PreferenceScreen>

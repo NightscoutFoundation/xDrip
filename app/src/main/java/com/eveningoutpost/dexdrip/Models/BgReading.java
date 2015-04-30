@@ -218,11 +218,9 @@ public class BgReading extends Model {
             if(egvRecord.getTrend().friendlyTrendName().compareTo("NOT_COMPUTABLE") == 0 || egvRecord.getTrend().friendlyTrendName().compareTo("OUT_OF_RANGE") == 0) {
                 bgReading.hide_slope = true;
             }
-
             bgReading.save();
             bgReading.find_new_curve();
             bgReading.find_new_raw_curve();
-            bgReading.perform_calculations();
             Notifications.notificationSetter(context);
             BgSendQueue.addToQueue(bgReading, "create", context);
         }

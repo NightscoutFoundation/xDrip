@@ -1,0 +1,88 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="Alerts and Notifications"
+        android:key="alerts_category">
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:title="BG Level Alerts">
+            <CheckBoxPreference
+                android:key="bg_notifications"
+                android:title="BG Alerts"
+                android:summary="Alert when BG readings cross the threshold."
+                android:defaultValue="true" />
+            <CheckBoxPreference
+                android:dependency="bg_notifications"
+                android:key="bg_vibrate"
+                android:title="Vibrate on BG alerts"
+                android:defaultValue="true" />
+            <CheckBoxPreference
+                android:dependency="bg_notifications"
+                android:key="bg_lights"
+                android:title="Flash lights on BG alerts"
+                android:defaultValue="true" />
+            <CheckBoxPreference
+                android:dependency="bg_notifications"
+                android:key="bg_play_sound"
+                android:title="Play sound on BG alerts"
+                android:defaultValue="true" />
+            <CheckBoxPreference
+                android:dependency="bg_play_sound"
+                android:key="bg_sound_in_silent"
+                android:title="Play alert sounds even in silent mode"
+                android:defaultValue="false" />
+            <RingtonePreference
+                android:dependency="bg_play_sound"
+                android:key="bg_notification_sound"
+                android:title="Alert Sound"
+                android:ringtoneType="notification"
+                android:summary="Set sound used for BG Alerts."
+                android:defaultValue="content://settings/system/notification_sound" />
+            <EditTextPreference
+                android:dependency="bg_notifications"
+                android:key="bg_snooze"
+                android:title="Alert Snooze"
+                android:numeric="integer"
+                android:summary="Minimum number of minutes to pass before raising the same alert."
+                android:defaultValue="20" />
+        </PreferenceScreen>
+
+
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:title="Calibration Alerts"
+            android:key="calibration_alerts_screen">
+            <CheckBoxPreference
+                android:key="calibration_notifications"
+                android:title="Calibration Alerts"
+                android:summary="Alert when a calibration is requested"
+                android:defaultValue="true" />
+            <CheckBoxPreference
+                android:dependency="calibration_notifications"
+                android:key="calibration_vibrate"
+                android:title="Vibrate on calibration requests"
+                android:defaultValue="true" />
+            <CheckBoxPreference
+                android:dependency="calibration_notifications"
+                android:key="calibration_lights"
+                android:title="Flash lights on calibration requests"
+                android:defaultValue="true" />
+            <CheckBoxPreference
+                android:dependency="calibration_notifications"
+                android:key="calibration_play_sound"
+                android:title="Play sound on calibration requests"
+                android:defaultValue="true" />
+            <RingtonePreference
+                android:dependency="calibration_play_sound"
+                android:key="calibration_notification_sound"
+                android:title="Calibration Request Sound"
+                android:ringtoneType="notification"
+                android:summary="Set sound used for calibration requests."
+                android:defaultValue="content://settings/system/notification_sound" />
+            <EditTextPreference
+                android:dependency="calibration_notifications"
+                android:key="calibration_snooze"
+                android:title="Calibration request Snooze"
+                android:numeric="integer"
+                android:summary="Number of minutes to pass before raising the same calibration request."
+                android:defaultValue="20" />
+        </PreferenceScreen>
+    </PreferenceCategory>
+</PreferenceScreen>

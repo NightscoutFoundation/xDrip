@@ -32,7 +32,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -49,7 +51,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
-@TargetApi(android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
+@TargetApi(Build.VERSION_CODES.KITKAT)
 public class DexCollectionService extends Service {
     private final static String TAG = DexCollectionService.class.getSimpleName();
     private String mDeviceName;
@@ -119,7 +121,7 @@ public class DexCollectionService extends Service {
             Log.d(TAG, "Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0));
+            alarm.setExact(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0));
         }
     }
 
@@ -279,6 +281,12 @@ public class DexCollectionService extends Service {
 
     public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
         Log.w(TAG, "received some data!");
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                "ReceivedReading");
+        wakeLock.acquire();
+
+
         Long timestamp = new Date().getTime();
         TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
         if (transmitterData != null) {
@@ -292,5 +300,6 @@ public class DexCollectionService extends Service {
                 Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
             }
         }
+        wakeLock.release();
     }
 }
