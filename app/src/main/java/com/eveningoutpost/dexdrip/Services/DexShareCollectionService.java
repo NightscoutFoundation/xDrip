@@ -181,7 +181,7 @@ public class DexShareCollectionService extends Service {
             BgReading bgReading = BgReading.last();
             long retry_in;
             if (bgReading != null) {
-                retry_in = Math.min(Math.max((1000 * 30), (1000 * 60 * 5) - (new Date().getTime() - bgReading.timestamp) + 10000), (1000 * 60 * 5));
+                retry_in = Math.min(Math.max((1000 * 30), (1000 * 60 * 5) - (new Date().getTime() - bgReading.timestamp) - (1000 * 15)), (1000 * 60 * 5));
             } else {
                 retry_in = (1000 * 60);
             }

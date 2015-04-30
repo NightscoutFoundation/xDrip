@@ -301,11 +301,10 @@ public class Calibration extends Model {
         Calibration calibration = new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())
-                .where("slope_confidence != 0")
-                .where("sensor_confidence != 0")
-                .where("timestamp <= ?", calSubrecord.getDateEntered().getTime() + addativeOffset + (1000 * 60 * 3))
+                .where("timestamp <= ?", calSubrecord.getDateEntered().getTime() + addativeOffset + (1000 * 60 * 2))
+                .orderBy("timestamp desc")
                 .executeSingle();
-        if(calibration != null && Math.abs(calibration.timestamp - addativeOffset) < (3*60*1000)) {
+        if(calibration != null && Math.abs(calibration.timestamp - (calSubrecord.getDateEntered().getTime() + addativeOffset)) < (4*60*1000)) {
             Log.d("CAL CHECK IN ", "Already have that calibration!");
             return false;
         } else {
