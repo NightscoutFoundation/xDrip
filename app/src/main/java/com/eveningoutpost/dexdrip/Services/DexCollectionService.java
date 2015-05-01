@@ -32,7 +32,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -49,7 +51,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
-@TargetApi(android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
+@TargetApi(Build.VERSION_CODES.KITKAT)
 public class DexCollectionService extends Service {
     private final static String TAG = DexCollectionService.class.getSimpleName();
     private String mDeviceName;
@@ -89,15 +91,20 @@ public class DexCollectionService extends Service {
         foregroundServiceStarter.start();
         mContext = getApplicationContext();
         dexCollectionService = this;
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         listenForChangeInSettings();
-        Log.w(TAG, "STARTING SERVICE");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT){
+            stopSelf();
+            return START_NOT_STICKY;
+        }
         if (CollectionServiceStarter.isBTWixel(getApplicationContext())) {
             setFailoverTimer();
         } else {
+            stopSelf();
             return START_NOT_STICKY;
         }
         attemptConnection();
@@ -112,6 +119,25 @@ public class DexCollectionService extends Service {
         setRetryTimer();
         Log.w(TAG, "SERVICE STOPPED");
     }
+    public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+            if(key.compareTo("run_service_in_foreground") == 0) {
+                Log.e("FOREGROUND", "run_service_in_foreground changed!");
+                if (prefs.getBoolean("run_service_in_foreground", false)) {
+                    foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), dexCollectionService);
+                    foregroundServiceStarter.start();
+                    Log.w(TAG, "Moving to foreground");
+                } else {
+                    dexCollectionService.stopForeground(true);
+                    Log.w(TAG, "Removing from foreground");
+                }
+            }
+        }
+    };
+
+    public void listenForChangeInSettings() {
+        prefs.registerOnSharedPreferenceChangeListener(prefListener);
+    }
 
     public void setRetryTimer() {
         if (CollectionServiceStarter.isBTWixel(getApplicationContext())) {
@@ -119,7 +145,7 @@ public class DexCollectionService extends Service {
             Log.d(TAG, "Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0));
+            alarm.setExact(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0));
         }
     }
 
@@ -130,33 +156,12 @@ public class DexCollectionService extends Service {
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
             alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0));
+        } else {
+            stopSelf();
         }
     }
 
-    public void listenForChangeInSettings() {
-        SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                if(key.compareTo("run_service_in_foreground") == 0) {
-                    if (prefs.getBoolean("run_service_in_foreground", false)) {
-                        foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), dexCollectionService);
-                        foregroundServiceStarter.start();
-                        Log.w(TAG, "Moving to foreground");
-                        setRetryTimer();
-                    } else {
-                        dexCollectionService.stopForeground(true);
-                        Log.w(TAG, "Removing from foreground");
-                        setRetryTimer();
-                    }
-                }
-                if(key.compareTo("dex_collection_method") == 0) {
-                    CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(getApplicationContext());
-                    collectionServiceStarter.start(getApplicationContext());
-                }
-            }
-        };
-        prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        prefs.registerOnSharedPreferenceChangeListener(listener);
-    }
+
 
     public void attemptConnection() {
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -279,6 +284,12 @@ public class DexCollectionService extends Service {
 
     public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
         Log.w(TAG, "received some data!");
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                "ReceivedReading");
+        wakeLock.acquire();
+
+
         Long timestamp = new Date().getTime();
         TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
         if (transmitterData != null) {
@@ -292,5 +303,6 @@ public class DexCollectionService extends Service {
                 Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
             }
         }
+        wakeLock.release();
     }
 }

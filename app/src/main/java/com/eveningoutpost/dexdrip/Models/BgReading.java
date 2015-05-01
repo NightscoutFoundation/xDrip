@@ -31,7 +31,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-
 @Table(name = "BgReadings", id = BaseColumns._ID)
 public class BgReading extends Model {
     private final static String TAG = BgReading.class.getSimpleName();
@@ -226,7 +225,6 @@ public class BgReading extends Model {
             bgReading.save();
             bgReading.find_new_curve();
             bgReading.find_new_raw_curve();
-            bgReading.perform_calculations();
             Notifications.getInstance(context).notificationSetter(context);
             BgSendQueue.addToQueue(bgReading, "create", context);
         }
@@ -271,7 +269,7 @@ public class BgReading extends Model {
         return true;
     }
 
-    public static BgReading create(double raw_data, double filtered_data,Context context, Long timestamp) {
+    public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp) {
         BgReading bgReading = new BgReading();
         Sensor sensor = Sensor.currentSensor();
         if (sensor != null) {
@@ -675,8 +673,8 @@ public class BgReading extends Model {
             return String.valueOf(noise);
         }
     }
-    
-    // Should that be combined with noiseValue? 
+
+    // Should that be combined with noiseValue?
     private Boolean Unclear() {
         Log.e(TAG_ALERT, "Unclear filtered_data=" + filtered_data + " raw_data=" + raw_data);
         if (raw_data > filtered_data * 1.3 || raw_data < filtered_data * 0.7) {
@@ -684,22 +682,22 @@ public class BgReading extends Model {
         }
         return false;
     }
-    
-    /*     
+
+    /*
      * returns the time (in ms) that the state is not clear and no alerts should work
-     * The base of the algorithm is that any period can be bad or not. bgReading.Unclear() tells that. 
+     * The base of the algorithm is that any period can be bad or not. bgReading.Unclear() tells that.
      * a non clear bgReading means MAX_INFLUANCE time after it we are in a bad position
      * Since this code is based on hurstics, and since times are not acurate, boundery issues can be ignored.
-     * 
+     *
      * interstingTime is the period to check. That is if the last period is bad, we want to know how long does it go bad...
      * */
-    
+
     static final int MAX_INFLUANCE = 30 * 60000; // A bad point means data is untrusted for 30 minutes.
     private static Long getUnclearTimeHelper(List<BgReading> latest, Long interstingTime, final Long now) {
-        
+
         // The code ignores missing points (that is they some times are treated as good and some times as bad.
-        // If this bothers someone, I believe that the list should be filled with the missing points as good and continue to run. 
-        
+        // If this bothers someone, I believe that the list should be filled with the missing points as good and continue to run.
+
         Long LastGoodTime = 0l; // 0 represents that we are not in a good part
 
         Long UnclearTime = 0l;
@@ -712,7 +710,7 @@ public class BgReading extends Model {
             if(bgReading.timestamp <= now - MAX_INFLUANCE && UnclearTime == 0) {
                 Log.e(TAG_ALERT, "We did not have a problematic reading for MAX_INFLUANCE time, so now all is well");
                 return 0l;
-                
+
             }
             if (bgReading.Unclear()) {
                 // here we assume that there are no missing points. Missing points might join the good and bad values as well...
@@ -742,10 +740,10 @@ public class BgReading extends Model {
                 " returning " + interstingTime);
         // Note that we might now have all the points, and in this case, since we don't have a good period I return a bad period.
         return interstingTime;
-        
+
     }
-    
-    // This is to enable testing of the function, by passing different values 
+
+    // This is to enable testing of the function, by passing different values
     public static Long getUnclearTime(Long interstingTime) {
         List<BgReading> latest = BgReading.latest((interstingTime.intValue() + MAX_INFLUANCE)/ 60000 /5 );
         if (latest == null) {
@@ -753,9 +751,9 @@ public class BgReading extends Model {
         }
         final Long now = new Date().getTime();
         return getUnclearTimeHelper(latest, interstingTime, now);
-        
+
     }
-    
+
     // the input of this function is a string. each char can be g(=good) or b(=bad) or s(=skip, point unmissed).
     static List<BgReading> createlatestTest(String input, Long now) {
         List<BgReading> out = new LinkedList<BgReading> ();
@@ -774,7 +772,7 @@ public class BgReading extends Model {
             out.add(bg);
         }
         return out;
-        
+
 
     }
     static void TestgetUnclearTime(String input, Long interstingTime, Long expectedResult) {
@@ -786,9 +784,9 @@ public class BgReading extends Model {
         } else {
             Log.e(TAG_ALERT, "Test failed expectedResult = " + expectedResult + " result = "+ result /5 / 60000);
         }
-        
+
     }
-    
+
     public static void TestgetUnclearTimes() {
         TestgetUnclearTime("gggggggggggggggggggggggg", 90l, 0l * 5);
         TestgetUnclearTime("bggggggggggggggggggggggg", 90l, 1l * 5);
@@ -800,14 +798,14 @@ public class BgReading extends Model {
         TestgetUnclearTime("ggssgggggggggggggggggggg", 90l, 0l * 5);
         TestgetUnclearTime("ggssbggssggggggggggggggg", 90l, 5l * 5);
         TestgetUnclearTime("bb",                       90l, 18l * 5);
-        
+
         // intersting time is 2 minutes, we should always get 0 (in 5 minutes units
         TestgetUnclearTime("gggggggggggggggggggggggg", 2l, 0l  * 5);
         TestgetUnclearTime("bggggggggggggggggggggggg", 2l, 2l);
         TestgetUnclearTime("bbgggggggggggggggggggggg", 2l, 2l);
         TestgetUnclearTime("gbgggggggggggggggggggggg", 2l, 2l);
         TestgetUnclearTime("gbgggbggbggbggbggbggbgbg", 2l, 2l);
-        
+
         // intersting time is 10 minutes, we should always get 0 (in 5 minutes units
         TestgetUnclearTime("gggggggggggggggggggggggg", 10l, 0l  * 5);
         TestgetUnclearTime("bggggggggggggggggggggggg", 10l, 1l * 5);
@@ -820,9 +818,9 @@ public class BgReading extends Model {
         TestgetUnclearTime("ggssbggssggggggggggggggg", 10l, 2l * 5);
         TestgetUnclearTime("bb",                       10l, 2l * 5);
 
-        
-        
-        
+
+
+
     }
-    
+
 }

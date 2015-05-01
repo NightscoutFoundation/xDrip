@@ -235,7 +235,9 @@ public class Notifications {
                 extraCalibrationRequest();
             } else { clearExtraCalibrationRequest(); }
 
-            if (calibrations.size() >= 1 && (calibrations.get(0).timestamp + (60000 * 60 * 12) < new Date().getTime())) {
+            if (calibrations.size() >= 1 && Math.abs((new Date().getTime() - calibrations.get(0).timestamp))/(1000*60*60) > 12) {
+                Log.e("NOTIFICATIONS", "Calibration difference in hours: " + ((new Date().getTime() - calibrations.get(0).timestamp))/(1000*60*60));
+
                 calibrationRequest();
             } else { clearCalibrationRequest(); }
 

@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
@@ -11,6 +12,7 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Tables.BgReadingTable;
 import com.eveningoutpost.dexdrip.Tables.CalibrationDataTable;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utils.Preferences;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -140,7 +142,7 @@ public class NavDrawerBuilder {
         options.add(new Intent(context, SystemStatus.class));
         options.add(new Intent(context, AlertList.class));
         options.add(new Intent(context, SnoozeActivity.class));
-        options.add(new Intent(context, SettingsActivity.class));
+        options.add(new Intent(context, Preferences.class));
         options.add(new Intent(context, FakeNumbers.class));
 //        options.add(new Intent(context, DoubleCalibrationActivity.class));
 //        options.add(new Intent(context, ShareTest.class));

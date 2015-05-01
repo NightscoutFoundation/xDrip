@@ -6,6 +6,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.BatteryManager;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.util.Log;
@@ -16,6 +17,7 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.ShareModels.ShareRest;
+import com.eveningoutpost.dexdrip.widgetUpdateService;
 
 import java.util.List;
 
@@ -65,6 +67,12 @@ public class BgSendQueue extends Model {
     }
 
     public static void addToQueue(BgReading bgReading, String operation_type, Context context) {
+        PowerManager powerManager = (PowerManager) context.getSystemService(context.POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                "sendQueue");
+        wakeLock.acquire();
+
+
         BgSendQueue bgSendQueue = new BgSendQueue();
         bgSendQueue.operation_type = operation_type;
         bgSendQueue.bgReading = bgReading;
@@ -77,6 +85,7 @@ public class BgSendQueue extends Model {
 
         Intent updateIntent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA);
         context.sendBroadcast(updateIntent);
+        context.startService(new Intent(context, widgetUpdateService.class));
 
         if (prefs.getBoolean("cloud_storage_mongodb_enable", false) || prefs.getBoolean("cloud_storage_api_enable", false)) {
             Log.w("SENSOR QUEUE:", String.valueOf(bgSendQueue.mongo_success));
@@ -114,6 +123,7 @@ public class BgSendQueue extends Model {
             Log.w("ShareRest", "About to call ShareRest!!");
             shareRest.sendBgData(bgReading);
         }
+        wakeLock.release();
     }
 
     public void markMongoSuccess() {

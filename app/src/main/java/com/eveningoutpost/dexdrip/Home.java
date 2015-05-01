@@ -18,7 +18,6 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,10 +76,8 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         super.onCreate(savedInstanceState);
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(getApplicationContext());
         collectionServiceStarter.start(getApplicationContext());
-        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
-        PreferenceManager.setDefaultValues(this, R.xml.pref_bg_notification, false);
-        PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
-        PreferenceManager.setDefaultValues(this, R.xml.pref_wifi, false);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_notifications, false);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_data_source, false);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         checkEula();
         new IdempotentMigrations(getApplicationContext()).performAll();
