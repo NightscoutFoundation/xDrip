@@ -39,7 +39,7 @@ public class xdrip extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
+        //Fabric.with(this, new Crashlytics());
         // The following line triggers the initialization of ACRA
         // ACRA.init(this);
     }

@@ -13,7 +13,6 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
-import com.eveningoutpost.dexdrip.UtilityModels.GenericPair;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -100,17 +99,17 @@ public class AlertType extends Model {
         .executeSingle();
     }
 
-    /* 
+    /*
      * This function has 3 needs. In the case of "unclear state" return null
      * In the case of "unclear state" for more than predefined time, return the "55" alert
      * In case that alerts are turned off, only return the 55.
      */
     public static AlertType get_highest_active_alert(Context context, double bg) {
-        
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         Boolean bg_alerts = prefs.getBoolean("bg_alerts", true);
-        Long UnclearTimeSetting = Long.parseLong(prefs.getString("bg_unclear_readings_minutes", "90")) * 60000; 
-        
+        Long UnclearTimeSetting = Long.parseLong(prefs.getString("bg_unclear_readings_minutes", "90")) * 60000;
+
         Long UnclearTime = BgReading.getUnclearTime(UnclearTimeSetting);
         AlertType at;
         if (UnclearTime >= UnclearTimeSetting ) {
@@ -142,8 +141,8 @@ public class AlertType extends Model {
         }
         return null;
     }
-    
-    
+
+
     // bg_minute is the estimatin of the bg change rate
     private static AlertType get_highest_active_alert_helper(double bg) {
         // Chcek the low alerts
