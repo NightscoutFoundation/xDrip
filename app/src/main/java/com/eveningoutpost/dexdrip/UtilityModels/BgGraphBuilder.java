@@ -31,7 +31,7 @@ import lecho.lib.hellocharts.view.Chart;
  * Created by stephenblack on 11/15/14.
  */
 public class BgGraphBuilder {
-    public int fuzzer = (1000 * 60 * 5);
+    public int fuzzer = (1000 * 30 * 5);
     public double  end_time = (new Date().getTime() + (60000 * 10)) / fuzzer;
     public double  start_time = end_time - ((60000 * 60 * 24)) / fuzzer;
     public Context context;
@@ -64,10 +64,10 @@ public class BgGraphBuilder {
         this.doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
         defaultMinY = unitized(40);
         defaultMaxY = unitized(250);
-        pointSize = isXLargeTablet() ? 5 : 3;
-        axisTextSize = isXLargeTablet() ? 20 : Axis.DEFAULT_TEXT_SIZE_SP;
-        previewAxisTextSize = isXLargeTablet() ? 12 : 5;
-        hoursPreviewStep = isXLargeTablet() ? 2 : 1;
+        pointSize = isXLargeTablet(context) ? 5 : 3;
+        axisTextSize = isXLargeTablet(context) ? 20 : Axis.DEFAULT_TEXT_SIZE_SP;
+        previewAxisTextSize = isXLargeTablet(context) ? 12 : 5;
+        hoursPreviewStep = isXLargeTablet(context) ? 2 : 1;
     }
 
     public LineChartData lineData() {
@@ -251,7 +251,7 @@ public class BgGraphBuilder {
         return new SimpleDateFormat(DateFormat.is24HourFormat(context) ? "HH" : "h a");
     }
 
-    private boolean isXLargeTablet() {
+    static public boolean isXLargeTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
     }
 
@@ -288,25 +288,52 @@ public class BgGraphBuilder {
     }
 
     public String unitized_string(double value) {
-        value = Math.round(value);
         DecimalFormat df = new DecimalFormat("#");
-        df.setMaximumFractionDigits(0);
         if (value >= 400) {
             return "HIGH";
         } else if (value >= 40) {
             if(doMgdl) {
                 df.setMaximumFractionDigits(0);
-                df.setMinimumFractionDigits(0);
                 return df.format(value);
             } else {
                 df.setMaximumFractionDigits(1);
-                df.setMinimumFractionDigits(1);
                 return df.format(mmolConvert(value));
             }
-        } else if (value > 13) {
+        } else if (value > 12) {
             return "LOW";
         } else {
-            return "???";
+            switch((int)value) {
+                case 0:
+                    return "??0";
+                case 1:
+                    return "?SN";
+                case 2:
+                    return "??2";
+                case 3:
+                    return "?NA";
+                case 5:
+                    return "?NC";
+                case 6:
+                    return "?CD";
+                case 9:
+                    return "?AD";
+                case 12:
+                    return "?RF";
+                default:
+                    return "???";
+            }
+        }
+    }
+
+    public String unitizedDeltaString(double value) {
+        DecimalFormat df = new DecimalFormat("#");
+        df.setMaximumFractionDigits(1);
+        String delta_sign = "";
+        if (value > 0.1) { delta_sign = "+"; }
+        if(doMgdl) {
+            return delta_sign + df.format(unitized(value)) + " mg/dl";
+        } else {
+            return delta_sign + df.format(unitized(value)) + " mmol";
         }
     }
 

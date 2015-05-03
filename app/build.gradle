@@ -1,4 +1,19 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
 
 android {
     compileSdkVersion 21
@@ -17,7 +32,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    //compile 'com.android.support:support-v4:21.0.0'
     compile 'com.squareup.okhttp:okhttp:2.2.0'
     testCompile 'com.squareup.okhttp:mockwebserver:2.2.0'
     compile 'com.google.code.gson:gson:2.3'
@@ -26,6 +40,7 @@ dependencies {
     compile 'com.getpebble:pebblekit:2.6.0@aar'
     compile 'io.reactivex:rxjava:1.0.0'
     compile 'ch.acra:acra:4.5.0'
+    compile('com.crashlytics.sdk.android:crashlytics:2.2.3@aar') {
+        transitive = true;
+    }
 }
-
-

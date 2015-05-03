@@ -17,6 +17,7 @@ import android.util.Log;
 
 import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.DoubleCalibrationActivity;
+import com.eveningoutpost.dexdrip.EditAlertActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
@@ -52,6 +53,7 @@ public class Notifications {
     public static boolean calibration_sound;
     public static int calibration_snooze;
     public static String calibration_notification_sound;
+    public static boolean doMgdl;
     private final static String TAG = AlertPlayer.class.getSimpleName();
 
     Context mContext;
@@ -63,6 +65,7 @@ public class Notifications {
     final int doubleCalibrationNotificationId = 003;
     final int extraCalibrationNotificationId = 004;
     public static final int exportCompleteNotificationId = 005;
+    public static final int exportAlertNotificationId = 006;
     final static int callbackPeriod = 60000;
 
     private static Notifications instance = null;
@@ -95,6 +98,7 @@ public class Notifications {
         calibration_sound = prefs.getBoolean("calibration_play_sound", true);
         calibration_snooze = Integer.parseInt(prefs.getString("calibration_snooze", "20"));
         calibration_notification_sound = prefs.getString("calibration_notification_sound", "content://settings/system/notification_sound");
+        doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
     }
 
 /*
@@ -105,8 +109,6 @@ public class Notifications {
 
     public void FileBasedNotifications(Context context) {
         ReadPerfs(context);
-        // Make sure we have our alerts set...
-        AlertType.CreateStaticAlerts(context);
 
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
         Sensor sensor = Sensor.currentSensor();
@@ -114,41 +116,44 @@ public class Notifications {
         List<BgReading> bgReadings = BgReading.latest(1);
         if(bgReadings == null || bgReadings.size() == 0) {
             // Sensor is stopped, or there is not enough data
-            AlertPlayer.getPlayer().stopAlert(true, false);
+            AlertPlayer.getPlayer().stopAlert(context, true, false);
             return;
         }
 
         BgReading bgReading = bgReadings.get(0);
 
         Log.e(TAG, "FileBasedNotifications called bgReading.calculated_value = " + bgReading.calculated_value);
+
         // TODO: tzachi what is the time of this last bgReading
-        // TODO: tzachi, what happens if the last reading does not have a sensor, or that sensor was stopped.
-        // What if the sensor was started, but the 2 hours did not still pass? or there is no calibrations.
-        if (bg_notifications && sensor != null && bgReading != null) {
-            AlertType newAlert = AlertType.get_highest_active_alert(bgGraphBuilder.unitized(bgReading.calculated_value), 0);
+        // If the last reading does not have a sensor, or that sensor was stopped.
+        // or the sensor was started, but the 2 hours did not still pass? or there is no calibrations.
+        // In all this cases, bgReading.calculated_value should be 0.
+        if (sensor != null && bgReading != null && bgReading.calculated_value !=0) {
+            AlertType newAlert = AlertType.get_highest_active_alert(context, bgReading.calculated_value);
+
             if (newAlert == null) {
                 Log.e(TAG, "FileBasedNotifications - No active notifcation exists, stopping all alerts");
                 // No alert should work, Stop all alerts, but keep the snoozing...
-                AlertPlayer.getPlayer().stopAlert(false, true);
+                AlertPlayer.getPlayer().stopAlert(context, false, true);
                 return;
             }
 
             AlertType activeBgAlert = ActiveBgAlert.alertTypegetOnly();
             if(activeBgAlert == null) {
-                Log.e(TAG, "FileBasedNotifications we have a new alert, starting to play it...");
+                Log.e(TAG, "FileBasedNotifications we have a new alert, starting to play it... " + newAlert.name);
                 // We need to create a new alert  and start playing
-                AlertPlayer.getPlayer().startAlert(context, newAlert);
+                AlertPlayer.getPlayer().startAlert(context, newAlert, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
                 return;
             }
 
 
             if (activeBgAlert.uuid.equals(newAlert.uuid)) {
                 // This is the same alert. Might need to play again...
-                Log.e(TAG, "FileBasedNotifications we have found an active alert, checking if we need to play it");
-                AlertPlayer.getPlayer().ClockTick(context);
+                Log.e(TAG, "FileBasedNotifications we have found an active alert, checking if we need to play it " + newAlert.name);
+                AlertPlayer.getPlayer().ClockTick(context, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
                 return;
             }
-            // Tzachi: todo, if this alerts have the same importance we should only do a ClockTick ???????????????????????
+           // Currently the ui blocks having two alerts with the same alert value.
 
             // we have a new alert. If it is more important than the previous one. we need to stop
             // the older one and start a new one (We need to play even if we were snoozed).
@@ -163,19 +168,20 @@ public class Notifications {
             AlertType  newHigherAlert = AlertType.HigherAlert(activeBgAlert, newAlert);
             if ((newHigherAlert == activeBgAlert) && (!opositeDirection)) {
                 // the existing alert is the higher, we should not do anything
-                Log.e(TAG, "FileBasedNotifications The existing alert has the same importance, doing nothing");
-                AlertPlayer.getPlayer().ClockTick(context);
+                Log.e(TAG, "FileBasedNotifications The existing alert has the same importance, doing nothing newHigherAlert = " + newHigherAlert.name +
+                        "activeBgAlert = " + activeBgAlert.name);
+                AlertPlayer.getPlayer().ClockTick(context, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
                 return;
             }
 
             // For now, we are stopping the old alert and starting a new one.
-            Log.e(TAG, "Found a new allert, that is higher than the previous one will play it.");
-            AlertPlayer.getPlayer().stopAlert(true, false);
-            AlertPlayer.getPlayer().startAlert(context, newAlert);
+            Log.e(TAG, "Found a new alert, that is higher than the previous one will play it. " + newAlert.name);
+            AlertPlayer.getPlayer().stopAlert(context, true, false);
+            AlertPlayer.getPlayer().startAlert(context, newAlert, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
             return;
 
         } else {
-            AlertPlayer.getPlayer().stopAlert(true, false);
+            AlertPlayer.getPlayer().stopAlert(context, true, false);
         }
 
     }
@@ -229,7 +235,9 @@ public class Notifications {
                 extraCalibrationRequest();
             } else { clearExtraCalibrationRequest(); }
 
-            if (calibrations.size() >= 1 && (calibrations.get(0).timestamp + (60000 * 60 * 12) < new Date().getTime())) {
+            if (calibrations.size() >= 1 && Math.abs((new Date().getTime() - calibrations.get(0).timestamp))/(1000*60*60) > 12) {
+                Log.e("NOTIFICATIONS", "Calibration difference in hours: " + ((new Date().getTime() - calibrations.get(0).timestamp))/(1000*60*60));
+
                 calibrationRequest();
             } else { clearCalibrationRequest(); }
 

@@ -304,14 +304,19 @@ public class NightscoutUploader {
         private void populateV1APICalibrationEntry(JSONObject json, Calibration record) throws Exception {
             SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss a");
             format.setTimeZone(TimeZone.getDefault());
-
-            json.put("device", "xDrip-"+prefs.getString("dex_collection_method", "BluetoothWixel"));
+            json.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
             json.put("type", "cal");
             json.put("date", record.timestamp);
             json.put("dateString", format.format(record.timestamp));
-            json.put("slope", (long)(record.slope * 1000));
-            json.put("intercept", (long) ((record.intercept * -1000) / (record.slope * 1000)));
-            json.put("scale", 1);
+            if(record.check_in) {
+                json.put("slope", (long) (record.first_slope));
+                json.put("intercept", (long) ((record.first_intercept)));
+                json.put("scale", record.first_scale);
+            } else {
+                json.put("slope", (long) (record.slope * 1000));
+                json.put("intercept", (long) ((record.intercept * -1000) / (record.slope * 1000)));
+                json.put("scale", 1);
+            }
         }
 
         // TODO: this is a quick port from original code and needs to be refactored before release
@@ -394,9 +399,15 @@ public class NightscoutUploader {
                         testData.put("device", "xDrip-"+prefs.getString("dex_collection_method", "BluetoothWixel"));
                         testData.put("date", calRecord.timestamp);
                         testData.put("dateString", format.format(calRecord.timestamp));
-                        testData.put("slope", (long)(calRecord.slope * 1000));
-                        testData.put("intercept", (long) ((calRecord.intercept * -1000) / (calRecord.slope * 1000)));
-                        testData.put("scale", 1);
+                        if(calRecord.check_in) {
+                            testData.put("slope", (long) (calRecord.first_slope));
+                            testData.put("intercept", (long) ((calRecord.first_intercept)));
+                            testData.put("scale", calRecord.first_scale);
+                        } else {
+                            testData.put("slope", (long) (calRecord.slope * 1000));
+                            testData.put("intercept", (long) ((calRecord.intercept * -1000) / (calRecord.slope * 1000)));
+                            testData.put("scale", 1);
+                        }
                         testData.put("type", "cal");
                         dexcomData.update(testData, testData, true, false, WriteConcern.UNACKNOWLEDGED);
                     }

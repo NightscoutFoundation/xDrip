@@ -32,9 +32,12 @@
             android:value="DexDrip.db" />
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="27" />
+            android:value="28" />
 
-         <provider android:authorities="com.example" android:exported="false" android:name="com.activeandroid.content.ContentProvider" />
+        <provider
+            android:name="com.activeandroid.content.ContentProvider"
+            android:authorities="com.example"
+            android:exported="false" />
 
         <activity
             android:name=".Home"
@@ -45,7 +48,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".BluetoothScan"
             android:label="@string/title_activity_bluetooth_scan" >
@@ -94,7 +96,6 @@
             android:enabled="true"
             android:exported="true" >
         </service>
-
         <service
             android:name=".ImportedLibraries.dexcom.SyncingService"
             android:enabled="true"
@@ -105,7 +106,6 @@
             android:name=".SnoozeActivity"
             android:label="@string/title_snooze" >
         </activity>
-        
         <activity
             android:name=".FakeNumbers"
             android:label="@string/title_activity_fake_numbers" >
@@ -128,7 +128,7 @@
         </activity>
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" >
+            android:label="Settings" >
         </activity>
         <activity
             android:name=".LicenseAgreementActivity"
@@ -144,6 +144,7 @@
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
+
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
@@ -159,17 +160,49 @@
             android:name=".ShareTest"
             android:label="@string/title_activity_share_test" >
         </activity>
-
         <activity
             android:name=".SystemStatus"
             android:label="@string/title_activity_system_status" >
         </activity>
+        <activity
+            android:name=".utils.Preferences"
+            android:label="@string/title_activity_preferences" >
+        </activity>
 
-        <receiver android:name="com.eveningoutpost.dexdrip.UtilityModels.NotificationsReceiver" >
+        <receiver android:name=".xDripWidget" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/x_drip_widget_info" />
+        </receiver>
+
+        <service
+            android:name=".widgetUpdateService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="193dbc121e25e5f3e71bb98164ec074378e339df" />
+
+        <receiver android:name=".UtilityModels.NotificationsReceiver" >
             <intent-filter>
                 <action android:name="com.eveningoutpost.dexdrip.UtilityModels.Notifications" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".AlertList"
+            android:label="@string/title_activity_alert_list" >
+        </activity>
+
+        <service
+            android:name=".Services.SnoozeOnNotificationDismissService"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

@@ -1,0 +1,56 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="10dp"
+    android:paddingTop="2dp"
+    android:paddingBottom="10dp"
+    android:paddingRight="10dp"
+    android:background="#55212121">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView android:id="@+id/widgetBg"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent" android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" android:text="---"
+            android:textColor="#ffffff" android:textSize="55sp"
+            android:layout_marginTop="-5dp"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="5dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#ffffff"
+                android:textSize="37sp"
+                android:text="--"
+                android:id="@+id/widgetArrow"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="-5dp"
+                android:layout_marginTop="-2dp"
+                android:paddingBottom="-2dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#ffffff"
+                android:textSize="10sp"
+                android:text="-- mgdl"
+                android:id="@+id/widgetDelta"
+                android:layout_gravity="center_horizontal"/>
+        </LinearLayout>
+
+    </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#ffffff"
+        android:textSize="10sp"
+        android:text="--- minutes ago"
+        android:id="@+id/readingAge"
+        android:layout_gravity="center_horizontal"/>
+</LinearLayout>
