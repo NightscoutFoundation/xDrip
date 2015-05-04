@@ -55,7 +55,7 @@ public class ForegroundServiceStarter {
 
         NotificationCompat.Builder b=new NotificationCompat.Builder(mService);
         b.setOngoing(true);
-        b.setCategory(Notification.CATEGORY_MESSAGE);
+        b.setCategory(NotificationCompat.CATEGORY_MESSAGE);
         // Hide this notification "below the fold" on L+
         b.setPriority(Notification.PRIORITY_HIGH);
         // Don't show this notification on the lock screen on L+
