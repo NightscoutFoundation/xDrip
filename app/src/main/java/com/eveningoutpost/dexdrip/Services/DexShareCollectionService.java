@@ -276,6 +276,7 @@ public class DexShareCollectionService extends Service {
                                             } else {
                                                 setRetryTimer();
                                             }
+                                            foregroundServiceStarter.update();
                                         }
                                     }
                                 };
