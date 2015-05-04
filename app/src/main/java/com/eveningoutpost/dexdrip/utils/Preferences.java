@@ -157,6 +157,7 @@ public class Preferences extends PreferenceActivity {
             final Preference predictiveBG = findPreference("predictive_bg");
             final Preference interpretRaw = findPreference("interpret_raw");
             final Preference shareKey = findPreference("share_key");
+            final Preference transmitterId = findPreference("dex_txid");
             final PreferenceCategory collectionCategory = (PreferenceCategory) findPreference("collection_category");
             final PreferenceCategory otherCategory = (PreferenceCategory) findPreference("other_category");
             final PreferenceScreen calibrationAlertsScreen = (PreferenceScreen) findPreference("calibration_alerts_screen");
@@ -173,11 +174,17 @@ public class Preferences extends PreferenceActivity {
                 alertsCategory.removePreference(calibrationAlertsScreen);
                 prefs.edit().putBoolean("calibration_notifications", false).apply();
             }
-            if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("BluetoothWixel") != 0 && prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomShare") != 0) {
+
+            if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("BluetoothWixel") != 0 && prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomShare") != 0 && prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexbridgeWixel") != 0) {
                 collectionCategory.removePreference(runInForeground);
             }
+
             if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("WifiWixel") != 0) {
                 collectionCategory.removePreference(wifiRecievers);
+            }
+
+            if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexbridgeWixel") != 0) {
+                collectionCategory.removePreference(transmitterId);
             }
             bindPreferenceSummaryToValue(collectionMethod);
             bindPreferenceSummaryToValue(shareKey);
@@ -197,16 +204,25 @@ public class Preferences extends PreferenceActivity {
                         alertsCategory.removePreference(calibrationAlertsScreen);
                         prefs.edit().putBoolean("calibration_notifications", false).apply();
                     }
-                    if(((String) newValue).compareTo("BluetoothWixel") != 0 && ((String) newValue).compareTo("DexcomShare") != 0) {
+
+                    if(((String) newValue).compareTo("BluetoothWixel") != 0 && ((String) newValue).compareTo("DexcomShare") != 0 && ((String) newValue).compareTo("DexbridgeWixel") != 0) {
                         collectionCategory.removePreference(runInForeground);
                     } else {
                         collectionCategory.addPreference(runInForeground);
                     }
+
                     if(((String) newValue).compareTo("WifiWixel") != 0) {
                         collectionCategory.removePreference(wifiRecievers);
                     } else {
                         collectionCategory.addPreference(wifiRecievers);
                     }
+
+                    if(((String) newValue).compareTo("DexbridgeWixel") != 0) {
+                        collectionCategory.removePreference(transmitterId);
+                    } else {
+                        collectionCategory.addPreference(transmitterId);
+                    }
+
                     String stringValue = newValue.toString();
                     if (preference instanceof ListPreference) {
                         ListPreference listPreference = (ListPreference) preference;
