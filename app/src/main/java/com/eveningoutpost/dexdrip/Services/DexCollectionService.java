@@ -299,6 +299,7 @@ public class DexCollectionService extends Service {
                 sensor.save();
 
                 BgReading.create(transmitterData.raw_data, this, timestamp);
+                foregroundServiceStarter.update();
             } else {
                 Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
             }
