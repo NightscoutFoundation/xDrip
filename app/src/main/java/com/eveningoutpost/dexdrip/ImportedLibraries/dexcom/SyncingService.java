@@ -117,29 +117,33 @@ public class SyncingService extends IntentService {
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "NSDownload");
         wl.acquire();
-        Log.w("CALIBRATION-CHECK-IN: ", "Wake Lock Acquired");
-        if (acquireSerialDevice()) {
-            try {
-                ReadData readData = new ReadData(mSerialDevice, mConnection, dexcom);
+        try {
+            Log.w("CALIBRATION-CHECK-IN: ", "Wake Lock Acquired");
+            if (acquireSerialDevice()) {
+                try {
+                    ReadData readData = new ReadData(mSerialDevice, mConnection, dexcom);
 
 //                ReadData readData = new ReadData(mSerialDevice);
-                CalRecord[] calRecords = readData.getRecentCalRecords();
-                Log.w("CALIBRATION-CHECK-IN: ", "Found "+ calRecords.length + " Records!");
-                save_most_recent_cal_record(calRecords);
+                    CalRecord[] calRecords = readData.getRecentCalRecords();
+                    Log.w("CALIBRATION-CHECK-IN: ", "Found " + calRecords.length + " Records!");
+                    save_most_recent_cal_record(calRecords);
 
-            } catch (Exception e) {
-                Log.wtf("Unhandled exception caught", e);
-            } finally {
-                // Close serial
-                try {
-                    mSerialDevice.getPorts().get(0).close();
-                } catch (IOException e) {
-                    Log.e(TAG, "Unable to close", e);
+                } catch (Exception e) {
+                    Log.wtf("Unhandled exception caught", e);
+                } finally {
+                    // Close serial
+                    try {
+                        mSerialDevice.getPorts().get(0).close();
+                    } catch (IOException e) {
+                        Log.e(TAG, "Unable to close", e);
+                    }
+
                 }
-
+            } else {
+                Log.w("CALIBRATION-CHECK-IN: ", "Failed to acquire serial device");
             }
-        } else {
-            Log.w("CALIBRATION-CHECK-IN: ", "Failed to acquire serial device");
+        } finally {
+            wl.release();
         }
     }
 
@@ -150,6 +154,15 @@ public class SyncingService extends IntentService {
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "NSDownload");
         wl.acquire();
 
+        try {
+            sync(numOfPages);
+        } finally {
+            wl.release();
+        }
+    }
+
+    private void sync(int numOfPages) {
+        boolean broadcastSent;
         if (acquireSerialDevice()) {
             try {
 
@@ -212,9 +225,7 @@ public class SyncingService extends IntentService {
 
             }
         }
-//        if (!broadcastSent) broadcastSGVToUI();
-
-        wl.release();
+        //        if (!broadcastSent) broadcastSGVToUI();
     }
 
     private void save_most_recent_cal_record(CalRecord[] calRecords) {

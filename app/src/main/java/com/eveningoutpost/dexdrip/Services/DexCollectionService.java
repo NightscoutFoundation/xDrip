@@ -288,21 +288,23 @@ public class DexCollectionService extends Service {
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "ReceivedReading");
         wakeLock.acquire();
+        try {
+            Long timestamp = new Date().getTime();
+            TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
+            if (transmitterData != null) {
+                Sensor sensor = Sensor.currentSensor();
+                if (sensor != null) {
+                    sensor.latest_battery_level = transmitterData.sensor_battery_level;
+                    sensor.save();
 
-
-        Long timestamp = new Date().getTime();
-        TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
-        if (transmitterData != null) {
-            Sensor sensor = Sensor.currentSensor();
-            if (sensor != null) {
-                sensor.latest_battery_level = transmitterData.sensor_battery_level;
-                sensor.save();
-
-                BgReading.create(transmitterData.raw_data, this, timestamp);
-            } else {
-                Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
+                    BgReading.create(transmitterData.raw_data, this, timestamp);
+                } else {
+                    Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
+                }
             }
+        } finally {
+            wakeLock.release();
         }
-        wakeLock.release();
+
     }
 }

@@ -72,58 +72,60 @@ public class BgSendQueue extends Model {
                 "sendQueue");
         wakeLock.acquire();
 
+        try {
+            BgSendQueue bgSendQueue = new BgSendQueue();
+            bgSendQueue.operation_type = operation_type;
+            bgSendQueue.bgReading = bgReading;
+            bgSendQueue.success = false;
+            bgSendQueue.mongo_success = false;
+            bgSendQueue.save();
+            Log.d("BGQueue", "New value added to queue!");
 
-        BgSendQueue bgSendQueue = new BgSendQueue();
-        bgSendQueue.operation_type = operation_type;
-        bgSendQueue.bgReading = bgReading;
-        bgSendQueue.success = false;
-        bgSendQueue.mongo_success = false;
-        bgSendQueue.save();
-        Log.d("BGQueue", "New value added to queue!");
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            Intent updateIntent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA);
+            context.sendBroadcast(updateIntent);
+            context.startService(new Intent(context, widgetUpdateService.class));
 
-        Intent updateIntent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA);
-        context.sendBroadcast(updateIntent);
-        context.startService(new Intent(context, widgetUpdateService.class));
-
-        if (prefs.getBoolean("cloud_storage_mongodb_enable", false) || prefs.getBoolean("cloud_storage_api_enable", false)) {
-            Log.w("SENSOR QUEUE:", String.valueOf(bgSendQueue.mongo_success));
-            if (operation_type.compareTo("create") == 0) {
-                MongoSendTask task = new MongoSendTask(context, bgSendQueue);
-                task.execute();
+            if (prefs.getBoolean("cloud_storage_mongodb_enable", false) || prefs.getBoolean("cloud_storage_api_enable", false)) {
+                Log.w("SENSOR QUEUE:", String.valueOf(bgSendQueue.mongo_success));
+                if (operation_type.compareTo("create") == 0) {
+                    MongoSendTask task = new MongoSendTask(context, bgSendQueue);
+                    task.execute();
+                }
             }
-        }
 
-        if(prefs.getBoolean("broadcast_data_through_intents", false)) {
-            Log.i("SENSOR QUEUE:", "Broadcast data");
-            final Bundle bundle = new Bundle();
-            bundle.putDouble(Intents.EXTRA_BG_ESTIMATE, bgReading.calculated_value);
-            bundle.putDouble(Intents.EXTRA_BG_SLOPE, bgReading.calculated_value_slope);
-            if(bgReading.hide_slope) {
-                bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, "9");
-            } else {
-                bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, bgReading.slopeName());
+            if (prefs.getBoolean("broadcast_data_through_intents", false)) {
+                Log.i("SENSOR QUEUE:", "Broadcast data");
+                final Bundle bundle = new Bundle();
+                bundle.putDouble(Intents.EXTRA_BG_ESTIMATE, bgReading.calculated_value);
+                bundle.putDouble(Intents.EXTRA_BG_SLOPE, bgReading.calculated_value_slope);
+                if (bgReading.hide_slope) {
+                    bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, "9");
+                } else {
+                    bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, bgReading.slopeName());
+                }
+                bundle.putInt(Intents.EXTRA_SENSOR_BATTERY, getBatteryLevel(context));
+                bundle.putLong(Intents.EXTRA_TIMESTAMP, bgReading.timestamp);
+
+                Intent intent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE);
+                intent.putExtras(bundle);
+                context.sendBroadcast(intent, Intents.RECEIVER_PERMISSION);
             }
-            bundle.putInt(Intents.EXTRA_SENSOR_BATTERY, getBatteryLevel(context));
-            bundle.putLong(Intents.EXTRA_TIMESTAMP, bgReading.timestamp);
 
-            Intent intent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE);
-            intent.putExtras(bundle);
-            context.sendBroadcast(intent, Intents.RECEIVER_PERMISSION);
-        }
+            if (prefs.getBoolean("broadcast_to_pebble", false)) {
+                PebbleSync pebbleSync = new PebbleSync();
+                pebbleSync.sendData(context, bgReading);
+            }
 
-        if(prefs.getBoolean("broadcast_to_pebble", false)) {
-            PebbleSync pebbleSync = new PebbleSync();
-            pebbleSync.sendData(context, bgReading);
+            if (prefs.getBoolean("share_upload", false)) {
+                ShareRest shareRest = new ShareRest(context);
+                Log.w("ShareRest", "About to call ShareRest!!");
+                shareRest.sendBgData(bgReading);
+            }
+        } finally {
+            wakeLock.release();
         }
-
-        if(prefs.getBoolean("share_upload", false)) {
-            ShareRest shareRest = new ShareRest(context);
-            Log.w("ShareRest", "About to call ShareRest!!");
-            shareRest.sendBgData(bgReading);
-        }
-        wakeLock.release();
     }
 
     public void markMongoSuccess() {
