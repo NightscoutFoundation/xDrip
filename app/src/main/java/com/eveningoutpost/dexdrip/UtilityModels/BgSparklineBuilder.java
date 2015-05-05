@@ -23,7 +23,7 @@ public class BgSparklineBuilder {
     private Context mContext;
 
     private static final String TAG = "BgSparklineBuilder";
-    private static final float NOTIFICATION_WIDTH_DP = 416;
+    private static final float NOTIFICATION_WIDTH_DP = 460; // 476 width minus 8 padding on each side
     private static final float NOTIFICATION_HEIGHT_DP = 256;
 
     private float width = NOTIFICATION_WIDTH_DP;
@@ -131,6 +131,7 @@ public class BgSparklineBuilder {
         chart.setViewportCalculationEnabled(false);
         chart.setInteractive(false);
         chart.setCurrentViewport(viewport, false);
+        chart.setPadding(0,0,0,0);
         chart.setLeft(0);
         chart.setTop(0);
         chart.setRight(convertDpToPixel(width));
