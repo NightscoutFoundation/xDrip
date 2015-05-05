@@ -123,8 +123,8 @@ public class BgSparklineBuilder {
         lines.add(bgGraphBuilder.inRangeValuesLine());
         lines.add(bgGraphBuilder.lowValuesLine());
         lines.add(bgGraphBuilder.highValuesLine());
+        lines.add(bgGraphBuilder.rawInterpretedLine());
         chart.setLineChartData(new LineChartData(lines));
-
         Viewport viewport = chart.getMaximumViewport();
         viewport.left = start;
         viewport.right = end;
