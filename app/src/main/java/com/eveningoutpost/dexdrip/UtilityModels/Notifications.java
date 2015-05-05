@@ -56,6 +56,7 @@ public class Notifications {
     public static final int doubleCalibrationNotificationId = 003;
     public static final int extraCalibrationNotificationId = 004;
     public static final int exportCompleteNotificationId = 005;
+    public static final int foregroundNotificationId = 8811;
 
     public static void setNotificationSettings(Context context) {
         mContext = context;
@@ -85,8 +86,8 @@ public class Notifications {
 
         List<BgReading> bgReadings = BgReading.latest(3);
         List<Calibration> calibrations = Calibration.allForSensorInLastFourDays();
-        if(bgReadings.size() < 3) { return; }
-        if(calibrations.size() < 2) { return; }
+        if(bgReadings == null || bgReadings.size() < 3) { return; }
+        if(calibrations == null || calibrations.size() < 2) { return; }
         BgReading bgReading = bgReadings.get(0);
 
         if (bg_notifications && sensor != null) {
@@ -95,7 +96,7 @@ public class Notifications {
                     if (bgReading.hide_slope) {
                         bgAlert(bgReading.displayValue(mContext), "");
                     } else {
-                        bgAlert(bgReading.displayValue(mContext), bgReading.slopeArrow());
+                        bgAlert(bgReading.displayValue(mContext), BgReading.slopeArrow(bgReading.calculated_value_slope));
                     }
                 }
             } else {
@@ -162,7 +163,7 @@ public class Notifications {
         if (bg_lights) { mBuilder.setLights(0xff00ff00, 300, 1000);}
         if (bg_sound && !bg_sound_in_silent) { mBuilder.setSound(Uri.parse(bg_notification_sound), AudioAttributes.FLAG_AUDIBILITY_ENFORCED);}
         if (bg_sound && bg_sound_in_silent) { soundAlert(bg_notification_sound);}
-        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
+        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(notificationId);
         mNotifyMgr.notify(notificationId, mBuilder.build());
     }
@@ -172,14 +173,14 @@ public class Notifications {
         if (calibration_vibrate) { mBuilder.setVibrate(vibratePattern);}
         if (calibration_lights) { mBuilder.setLights(0xff00ff00, 300, 1000);}
         if (calibration_sound) { mBuilder.setSound(Uri.parse(calibration_notification_sound), AudioAttributes.FLAG_AUDIBILITY_ENFORCED);}
-        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
+        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(notificationId);
         mNotifyMgr.notify(notificationId, mBuilder.build());
     }
 
     public static void notificationUpdate(String title, String content, Intent intent, int notificationId) {
         NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);
-        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
+        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.notify(notificationId, mBuilder.build());
     }
 
@@ -196,7 +197,7 @@ public class Notifications {
     }
 
     public static void notificationDismiss(int notificationId) {
-        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
+        NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(notificationId);
     }
 

@@ -31,9 +31,9 @@ import lecho.lib.hellocharts.view.Chart;
  * Created by stephenblack on 11/15/14.
  */
 public class BgGraphBuilder {
-    public int fuzzer = (1000 * 30 * 5);
-    public double  end_time = (new Date().getTime() + (60000 * 10)) / fuzzer;
-    public double  start_time = end_time - ((60000 * 60 * 24)) / fuzzer;
+    public static final int FUZZER = (1000 * 30 * 5);
+    public double  end_time = (new Date().getTime() + (60000 * 10)) / FUZZER;
+    public double  start_time = end_time - ((60000 * 60 * 24)) / FUZZER;
     public Context context;
     public SharedPreferences prefs;
     public double highMark;
@@ -48,7 +48,7 @@ public class BgGraphBuilder {
 
     private double endHour;
     private final int numValues =(60/5)*24;
-    private final List<BgReading> bgReadings = BgReading.latestForGraph( numValues, (start_time * fuzzer));
+    private final List<BgReading> bgReadings = BgReading.latestForGraph( numValues, (start_time * FUZZER));
     private List<PointValue> inRangeValues = new ArrayList<PointValue>();
     private List<PointValue> highValues = new ArrayList<PointValue>();
     private List<PointValue> lowValues = new ArrayList<PointValue>();
@@ -139,17 +139,17 @@ public class BgGraphBuilder {
     private void addBgReadingValues() {
         for (BgReading bgReading : bgReadings) {
             if (bgReading.raw_calculated != 0 && prefs.getBoolean("interpret_raw", false)) {
-                rawInterpretedValues.add(new PointValue((float) (bgReading.timestamp/fuzzer), (float) unitized(bgReading.raw_calculated)));
+                rawInterpretedValues.add(new PointValue((float) (bgReading.timestamp/ FUZZER), (float) unitized(bgReading.raw_calculated)));
             } else if (bgReading.calculated_value >= 400) {
-                highValues.add(new PointValue((float) (bgReading.timestamp/fuzzer), (float) unitized(400)));
+                highValues.add(new PointValue((float) (bgReading.timestamp/ FUZZER), (float) unitized(400)));
             } else if (unitized(bgReading.calculated_value) >= highMark) {
-                highValues.add(new PointValue((float) (bgReading.timestamp/fuzzer), (float) unitized(bgReading.calculated_value)));
+                highValues.add(new PointValue((float) (bgReading.timestamp/ FUZZER), (float) unitized(bgReading.calculated_value)));
             } else if (unitized(bgReading.calculated_value) >= lowMark) {
-                inRangeValues.add(new PointValue((float) (bgReading.timestamp/fuzzer), (float) unitized(bgReading.calculated_value)));
+                inRangeValues.add(new PointValue((float) (bgReading.timestamp/ FUZZER), (float) unitized(bgReading.calculated_value)));
             } else if (bgReading.calculated_value >= 40) {
-                lowValues.add(new PointValue((float)(bgReading.timestamp/fuzzer), (float) unitized(bgReading.calculated_value)));
+                lowValues.add(new PointValue((float)(bgReading.timestamp/ FUZZER), (float) unitized(bgReading.calculated_value)));
             } else if (bgReading.calculated_value > 13) {
-                lowValues.add(new PointValue((float)(bgReading.timestamp/fuzzer), (float) unitized(40)));
+                lowValues.add(new PointValue((float)(bgReading.timestamp/ FUZZER), (float) unitized(40)));
             }
         }
     }
@@ -239,7 +239,7 @@ public class BgGraphBuilder {
         }
         for(int l=0; l<=24; l++) {
             double timestamp = (endHour - (60000 * 60 * l));
-            xAxisValues.add(new AxisValue((long)(timestamp/fuzzer), (timeFormat.format(timestamp)).toCharArray()));
+            xAxisValues.add(new AxisValue((long)(timestamp/ FUZZER), (timeFormat.format(timestamp)).toCharArray()));
         }
         xAxis.setValues(xAxisValues);
         xAxis.setHasLines(true);
@@ -261,7 +261,7 @@ public class BgGraphBuilder {
         timeFormat.setTimeZone(TimeZone.getDefault());
         for(int l=0; l<=24; l+=hoursPreviewStep) {
             double timestamp = (endHour - (60000 * 60 * l));
-            previewXaxisValues.add(new AxisValue((long)(timestamp/fuzzer), (timeFormat.format(timestamp)).toCharArray()));
+            previewXaxisValues.add(new AxisValue((long)(timestamp/ FUZZER), (timeFormat.format(timestamp)).toCharArray()));
         }
         Axis previewXaxis = new Axis();
         previewXaxis.setValues(previewXaxisValues);
@@ -273,8 +273,8 @@ public class BgGraphBuilder {
     /////////VIEWPORT RELATED//////////////
     public Viewport advanceViewport(Chart chart, Chart previewChart) {
         viewport = new Viewport(previewChart.getMaximumViewport());
-        viewport.inset((float)((86400000 / 2.5)/fuzzer), 0);
-        double distance_to_move = ((new Date().getTime())/fuzzer) - viewport.left - (((viewport.right - viewport.left) /2));
+        viewport.inset((float)((86400000 / 2.5)/ FUZZER), 0);
+        double distance_to_move = ((new Date().getTime())/ FUZZER) - viewport.left - (((viewport.right - viewport.left) /2));
         viewport.offset((float) distance_to_move, 0);
         return viewport;
     }
