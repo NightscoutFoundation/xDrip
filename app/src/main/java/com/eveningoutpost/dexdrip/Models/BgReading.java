@@ -235,7 +235,7 @@ public class BgReading extends Model {
             BgReading bgReading = new Select()
                     .from(BgReading.class)
                     .where("Sensor = ? ", sensor.getId())
-                    .where("timestamp <= ?",  (timestamp + (60*1000))) // 1 minute padding (should never be that far off, but why not)
+                    .where("timestamp <= ?", (timestamp + (60 * 1000))) // 1 minute padding (should never be that far off, but why not)
                     .where("calculated_value = 0")
                     .where("raw_calculated = 0")
                     .orderBy("timestamp desc")
@@ -751,6 +751,14 @@ public class BgReading extends Model {
         final Long now = new Date().getTime();
         return getUnclearTimeHelper(latest, interstingTime, now);
 
+    }
+
+    public static Long getTimeSinceLastReading() {
+        BgReading bgReading = BgReading.last();
+        if (bgReading != null) {
+            return (new Date().getTime() - bgReading.timestamp);
+        }
+        return (long) 0;
     }
 
     // the input of this function is a string. each char can be g(=good) or b(=bad) or s(=skip, point unmissed).

@@ -32,7 +32,7 @@
             android:value="DexDrip.db" />
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="28" />
+            android:value="29" />
 
         <provider
             android:name="com.activeandroid.content.ContentProvider"
@@ -45,6 +45,7 @@
             android:launchMode="singleInstance" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -127,10 +128,6 @@
             android:label="@string/title_activity_calibration_graph" >
         </activity>
         <activity
-            android:name=".SettingsActivity"
-            android:label="Settings" >
-        </activity>
-        <activity
             android:name=".LicenseAgreementActivity"
             android:label="@string/title_activity_license_agreement" >
         </activity>
@@ -184,6 +181,7 @@
             android:enabled="true"
             android:exported="true" >
         </service>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="193dbc121e25e5f3e71bb98164ec074378e339df" />
@@ -201,6 +199,15 @@
 
         <service
             android:name=".Services.SnoozeOnNotificationDismissService"
+            android:exported="false" >
+        </service>
+        <service
+            android:name=".Services.MissedReadingService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+        <service
+            android:name=".Services.MissedReadingIntentService"
             android:exported="false" >
         </service>
     </application>

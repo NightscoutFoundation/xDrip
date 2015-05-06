@@ -98,7 +98,7 @@ public class NavDrawerBuilder {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean IUnderstand = prefs.getBoolean("I_understand", false);
         if(IUnderstand == false) {
-            options.add(new Intent(context, SettingsActivity.class));
+            options.add(new Intent(context, Preferences.class));
             return options;
         }
 

@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.Models;
 
 import android.R.bool;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
@@ -11,7 +12,9 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.google.gson.Gson;
@@ -107,24 +110,21 @@ public class AlertType extends Model {
     public static AlertType get_highest_active_alert(Context context, double bg) {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        Boolean bg_alerts = prefs.getBoolean("bg_alerts", true);
+        checkIfMissedReadingAlert(context);
+
+        Boolean bg_unclear_readings_alerts = prefs.getBoolean("bg_unclear_readings_alerts", true);
         Long UnclearTimeSetting = Long.parseLong(prefs.getString("bg_unclear_readings_minutes", "90")) * 60000;
 
         Long UnclearTime = BgReading.getUnclearTime(UnclearTimeSetting);
         AlertType at;
-        if (UnclearTime >= UnclearTimeSetting ) {
+        if (UnclearTime >= UnclearTimeSetting && bg_unclear_readings_alerts ) {
             // we are in an unclear state for too long, ring our alert
-            Log.e(TAG_ALERT, "We are in an unclear state for too long, ring 55 alert");
-            at = get_alert(LOW_ALERT_55);
-            if(at == null) {
-                Log.wtf(TAG, "ERROR, the 55 alert is missing");
-            }
-            return at;
+            Notifications.getInstance(context).bgUnclearAlert(context);
         }
         if (UnclearTime > 0) {
             // We are in an clear state, but not for too long.
             Log.e(TAG_ALERT, "We are in an clear state, but not for too long. returning null");
-            return null;
+            return null; //TODO: find out if we realy want to return here??? what about other alarms?
         }
         at = get_highest_active_alert_helper(bg);
         if (at != null) {
@@ -132,7 +132,7 @@ public class AlertType extends Model {
         } else {
             Log.e(TAG_ALERT, "get_highest_active_alert_helper returned NULL");
         }
-        if (at == null || bg_alerts) {
+        if (at == null) {
             return at;
         }
         // alerts are off, return only if this is the 55 alert
@@ -141,6 +141,11 @@ public class AlertType extends Model {
         }
         return null;
     }
+
+    public static void checkIfMissedReadingAlert(Context context){
+        context.startService(new Intent(context, MissedReadingService.class));
+    }
+
 
 
     // bg_minute is the estimatin of the bg change rate

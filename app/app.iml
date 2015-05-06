@@ -92,9 +92,9 @@
     <orderEntry type="library" exported="" name="okhttp-2.2.0" level="project" />
     <orderEntry type="library" exported="" name="crashlytics-2.2.3" level="project" />
     <orderEntry type="library" exported="" name="answers-1.1.2" level="project" />
-    <orderEntry type="library" exported="" name="rxjava-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="retrofit-1.9.0" level="project" />
     <orderEntry type="library" exported="" name="acra-4.5.0" level="project" />
+    <orderEntry type="library" exported="" name="rxjava-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="beta-1.1.2" level="project" />
     <orderEntry type="library" exported="" name="gson-2.3.1" level="project" />
     <orderEntry type="library" exported="" name="mongo-java-driver-2.10.1" level="project" />

@@ -48,9 +48,6 @@ public class Notifications {
     public static String bg_notification_sound;
 
     public static boolean calibration_notifications;
-    public static boolean calibration_vibrate;
-    public static boolean calibration_lights;
-    public static boolean calibration_sound;
     public static int calibration_snooze;
     public static String calibration_notification_sound;
     public static boolean doMgdl;
@@ -66,7 +63,11 @@ public class Notifications {
     final int extraCalibrationNotificationId = 004;
     public static final int exportCompleteNotificationId = 005;
     public static final int exportAlertNotificationId = 006;
+    public static final int uncleanAlertNotificationId = 007;
+    public static final int missedAlertNotificationId = 010;
     final static int callbackPeriod = 60000;
+
+    SharedPreferences prefs;
 
     private static Notifications instance = null;
     protected Notifications() {
@@ -83,7 +84,7 @@ public class Notifications {
 
     private void ReadPerfs(Context context) {
         mContext = context;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
         bg_notifications = prefs.getBoolean("bg_notifications", true);
         bg_vibrate = prefs.getBoolean("bg_vibrate", true);
         bg_lights = prefs.getBoolean("bg_lights", true);
@@ -93,9 +94,6 @@ public class Notifications {
         bg_sound_in_silent = prefs.getBoolean("bg_sound_in_silent", false);
 
         calibration_notifications = prefs.getBoolean("calibration_notifications", true);
-        calibration_vibrate = prefs.getBoolean("calibration_vibrate", true);
-        calibration_lights = prefs.getBoolean("calibration_lights", true);
-        calibration_sound = prefs.getBoolean("calibration_play_sound", true);
         calibration_snooze = Integer.parseInt(prefs.getString("calibration_snooze", "20"));
         calibration_notification_sound = prefs.getString("calibration_notification_sound", "content://settings/system/notification_sound");
         doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
@@ -263,7 +261,7 @@ public class Notifications {
 
         alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 SystemClock.elapsedRealtime() +
-                        time , alarmIntent);
+                        time, alarmIntent);
     }
 
     // TODO: Need to understand when we are calling this...
@@ -315,9 +313,9 @@ public class Notifications {
 
     private void calibrationNotificationCreate(String title, String content, Intent intent, int notificationId) {
         NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);
-        if (calibration_vibrate) { mBuilder.setVibrate(vibratePattern);}
-        if (calibration_lights) { mBuilder.setLights(0xff00ff00, 300, 1000);}
-        if (calibration_sound) { mBuilder.setSound(Uri.parse(calibration_notification_sound), AudioAttributes.FLAG_AUDIBILITY_ENFORCED);}
+        mBuilder.setVibrate(vibratePattern);
+        mBuilder.setLights(0xff00ff00, 300, 1000);
+        mBuilder.setSound(Uri.parse(calibration_notification_sound), AudioAttributes.FLAG_AUDIBILITY_ENFORCED);
         NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(notificationId);
         mNotifyMgr.notify(notificationId, mBuilder.build());
@@ -400,6 +398,56 @@ public class Notifications {
             String content = "A calibration entered now will GREATLY increase performance";
             Intent intent = new Intent(mContext, AddCalibration.class);
             calibrationNotificationCreate(title, content, intent, extraCalibrationNotificationId);
+        }
+    }
+
+    public static void bgUnclearAlert(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String otherAlertsSound = prefs.getString("other_alerts_sound", "content://settings/system/notification_sound");
+        int otherAlertSnooze =  Integer.parseInt(prefs.getString("other_alerts_snooze", "20"));
+
+        UserNotification userNotification = UserNotification.lastUnclearReadingsAlert();
+        if ((userNotification == null) || (userNotification.timestamp <= ((new Date().getTime()) - (60000 * otherAlertSnooze)))) {
+            if (userNotification != null) { userNotification.delete(); }
+            UserNotification newUserNotification = UserNotification.create("Unclear Sensor Readings", "bg_unclear_readings_alert");
+            Intent intent = new Intent(context, Home.class);
+            NotificationCompat.Builder mBuilder =
+                    new NotificationCompat.Builder(context)
+                            .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
+                            .setContentTitle("Unclear Sensor Readings")
+                            .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
+            mBuilder.setVibrate(vibratePattern);
+            mBuilder.setLights(0xff00ff00, 300, 1000);
+            mBuilder.setSound(Uri.parse(otherAlertsSound), AudioAttributes.FLAG_AUDIBILITY_ENFORCED);
+            NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotifyMgr.cancel(uncleanAlertNotificationId);
+            mNotifyMgr.notify(uncleanAlertNotificationId, mBuilder.build());
+        }
+    }
+
+    public static void bgMissedAlert(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String otherAlertsSound = prefs.getString("other_alerts_sound", "content://settings/system/notification_sound");
+        int otherAlertSnooze =  Integer.parseInt(prefs.getString("other_alerts_snooze", "20"));
+
+        UserNotification userNotification = UserNotification.LastMissedAlert();
+        if ((userNotification == null) || (userNotification.timestamp <= ((new Date().getTime()) - (60000 * otherAlertSnooze)))) {
+            if (userNotification != null) {
+                userNotification.delete();
+            }
+            UserNotification newUserNotification = UserNotification.create("BG Readings Missed", "missing_readings_alert");
+            Intent intent = new Intent(context, Home.class);
+            NotificationCompat.Builder mBuilder =
+                    new NotificationCompat.Builder(context)
+                            .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
+                            .setContentTitle("BG Readings Missed")
+                            .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
+            mBuilder.setVibrate(vibratePattern);
+            mBuilder.setLights(0xff00ff00, 300, 1000);
+            mBuilder.setSound(Uri.parse(otherAlertsSound), AudioAttributes.FLAG_AUDIBILITY_ENFORCED);
+            NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotifyMgr.cancel(missedAlertNotificationId);
+            mNotifyMgr.notify(missedAlertNotificationId, mBuilder.build());
         }
     }
 
