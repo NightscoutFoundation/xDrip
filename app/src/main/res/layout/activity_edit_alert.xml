@@ -303,6 +303,13 @@
                         android:layout_height="wrap_content"
                         android:text="test alert"
                         android:layout_gravity="center_horizontal" />
+                    
+                    <Button
+                        android:id="@+id/edit_alert_pre_snooze"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="snooze alert before it fires"
+                        android:layout_gravity="center_horizontal" />
                 </LinearLayout>
             </LinearLayout>
 
