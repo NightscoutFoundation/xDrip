@@ -22,7 +22,7 @@
                 android:summary="Alert when a calibration is requested"
                 android:defaultValue="true" />
             <RingtonePreference
-                android:dependency="calibration_play_sound"
+
                 android:key="calibration_notification_sound"
                 android:title="Calibration Request Sound"
                 android:ringtoneType="notification"
