@@ -1,23 +1,12 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.app.TaskStackBuilder;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
-import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.R;
-
-import java.util.List;
 
 /**
  * Created by stephenblack on 12/25/14.
@@ -37,62 +26,14 @@ public class ForegroundServiceStarter {
         run_service_in_foreground = prefs.getBoolean("run_service_in_foreground", false);
     }
 
-    private Notification notification() {
-        Intent intent = new Intent(mContext, Home.class);
-        BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(mContext);
-        List<BgReading> lastReadings = BgReading.latest(2);
-        BgReading lastReading = null;
-        if (lastReadings != null && lastReadings.size() >= 2) {
-            lastReading = lastReadings.get(0);
-        }
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
-        stackBuilder.addParentStack(Home.class);
-        stackBuilder.addNextIntent(intent);
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-
-        NotificationCompat.Builder b = new NotificationCompat.Builder(mService);
-        b.setOngoing(true);
-        b.setCategory(NotificationCompat.CATEGORY_STATUS);
-        b.setContentTitle(lastReading == null ? "BG Reading Unavailable" : (lastReading.displayValue(mContext) + " " + BgReading.slopeArrow(60000 * lastReading.calculated_value_slope)))
-                .setContentText("xDrip Data collection service is running.")
-                .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
-                .setUsesChronometer(true);
-        if (lastReading != null) {
-            b.setWhen(lastReading.timestamp);
-            String deltaText = "Delta: " + bgGraphBuilder.unitizedDeltaString(lastReading.calculated_value - lastReadings.get(1).calculated_value);
-            b.setContentText(deltaText);
-            b.setLargeIcon(new BgSparklineBuilder(mContext)
-                    .setHeight(64)
-                    .setWidth(64)
-                    .setStart(System.currentTimeMillis() - 60000 * 60 * 3)
-                    .setBgGraphBuilder(new BgGraphBuilder(mContext))
-                    .build());
-
-            NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();
-            bigPictureStyle.bigPicture(new BgSparklineBuilder(mContext)
-                        .setBgGraphBuilder(new BgGraphBuilder(mContext))
-                        .showHighLine(true)
-                        .showLowLine(true)
-                        .build())
-                    .setSummaryText(deltaText);
-            b.setStyle(bigPictureStyle);
-        }
-        b.setContentIntent(resultPendingIntent);
-        return(b.build());
-    }
-
     public void start() {
         if (run_service_in_foreground) {
             Log.e("FOREGROUND", "should be moving to foreground");
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mService.startForeground(Notifications.foregroundNotificationId, notification());
+                    Notifications.setNotificationSettings(mContext);
+                    mService.startForeground(Notifications.ongoingNotificationId, Notifications.createOngoingNotification(new BgGraphBuilder(mContext)));
                 }
             });
         }
@@ -102,19 +43,6 @@ public class ForegroundServiceStarter {
         if (run_service_in_foreground) {
             Log.e("FOREGROUND", "should be moving out of foreground");
             mService.stopForeground(true);
-        }
-    }
-
-    public void update() {
-        if (run_service_in_foreground) {
-            Log.d("FOREGROUND", "updating notification");
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(mContext);
-                    notificationManager.notify(Notifications.foregroundNotificationId, notification());
-                }
-            });
         }
     }
 

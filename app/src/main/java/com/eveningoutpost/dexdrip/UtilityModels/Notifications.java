@@ -1,29 +1,31 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.annotation.TargetApi;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
-
-import com.eveningoutpost.dexdrip.AddCalibration;
-import com.eveningoutpost.dexdrip.DoubleCalibrationActivity;
-import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.*;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.CalibrationRequest;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
-import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.Sensor;
 
-import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +35,7 @@ import java.util.List;
 public class Notifications {
     public static final long[] vibratePattern = {0,1000,300,1000,300,1000};
     public static boolean bg_notifications;
+    public static boolean bg_ongoing;
     public static boolean bg_vibrate;
     public static boolean bg_lights;
     public static boolean bg_sound;
@@ -48,6 +51,8 @@ public class Notifications {
     public static String calibration_notification_sound;
 
     public static Context mContext;
+    private static Handler mHandler = new Handler(Looper.getMainLooper());
+
     public static int currentVolume;
     public static AudioManager manager;
 
@@ -56,7 +61,7 @@ public class Notifications {
     public static final int doubleCalibrationNotificationId = 003;
     public static final int extraCalibrationNotificationId = 004;
     public static final int exportCompleteNotificationId = 005;
-    public static final int foregroundNotificationId = 8811;
+    public static final int ongoingNotificationId = 8811;
 
     public static void setNotificationSettings(Context context) {
         mContext = context;
@@ -75,6 +80,7 @@ public class Notifications {
         calibration_sound = prefs.getBoolean("calibration_play_sound", true);
         calibration_snooze = Integer.parseInt(prefs.getString("calibration_snooze", "20"));
         calibration_notification_sound = prefs.getString("calibration_notification_sound", "content://settings/system/notification_sound");
+        bg_ongoing = prefs.getBoolean("run_service_in_foreground", false);
     }
 
     public static void notificationSetter(Context context) {
@@ -89,7 +95,9 @@ public class Notifications {
         if(bgReadings == null || bgReadings.size() < 3) { return; }
         if(calibrations == null || calibrations.size() < 2) { return; }
         BgReading bgReading = bgReadings.get(0);
-
+        if (bg_ongoing && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)) {
+            bgOngoingNotification(bgGraphBuilder);
+        }
         if (bg_notifications && sensor != null) {
             if (bgGraphBuilder.unitized(bgReading.calculated_value) >= high || bgGraphBuilder.unitized(bgReading.calculated_value) <= low) {
                 if(bgReading.calculated_value > 14) {
@@ -128,6 +136,105 @@ public class Notifications {
         } else {
             clearAllCalibrationNotifications();
         }
+    }
+
+    private static Bitmap createWearBitmap(long start, long end) {
+        return new BgSparklineBuilder(mContext)
+                .setBgGraphBuilder(new BgGraphBuilder(mContext))
+                .setStart(start)
+                .setEnd(end)
+                .showHighLine()
+                .showLowLine()
+                .showAxes()
+                .setWidthPx(400)
+                .setHeightPx(400)
+                .setSmallDots()
+                .build();
+    }
+
+    private static Bitmap createWearBitmap(long hours) {
+        return createWearBitmap(System.currentTimeMillis() - 60000 * 60 * hours, System.currentTimeMillis());
+    }
+
+    private static Notification createExtensionPage(long hours) {
+        return new NotificationCompat.Builder(mContext)
+                .extend(new NotificationCompat.WearableExtender()
+                                .setBackground(createWearBitmap(hours))
+                                .setHintShowBackgroundOnly(true)
+                                .setHintAvoidBackgroundClipping(true)
+                )
+                .build();
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    public static Notification createOngoingNotification(BgGraphBuilder bgGraphBuilder) {
+        Intent intent = new Intent(mContext, Home.class);
+        List<BgReading> lastReadings = BgReading.latest(2);
+        BgReading lastReading = null;
+        if (lastReadings != null && lastReadings.size() >= 2) {
+            lastReading = lastReadings.get(0);
+        }
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
+        stackBuilder.addParentStack(Home.class);
+        stackBuilder.addNextIntent(intent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+
+        NotificationCompat.Builder b = new NotificationCompat.Builder(mContext);
+        //b.setOngoing(true);
+        b.setCategory(NotificationCompat.CATEGORY_STATUS);
+        String titleString = lastReading == null ? "BG Reading Unavailable" : (lastReading.displayValue(mContext) + " " + lastReading.slopeArrow());
+        b.setContentTitle(titleString)
+                .setContentText("xDrip Data collection service is running.")
+                .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
+                .setUsesChronometer(false);
+        if (lastReading != null) {
+            Bitmap wearBitmap3h = createWearBitmap(3);
+
+            b.setWhen(lastReading.timestamp);
+            String deltaString = "Delta: " + bgGraphBuilder.unitizedDeltaString(lastReading.calculated_value - lastReadings.get(1).calculated_value);
+            b.setContentText(deltaString);
+            b.setLargeIcon(new BgSparklineBuilder(mContext)
+                    .setHeight(64)
+                    .setWidth(64)
+                    .setStart(System.currentTimeMillis() - 60000 * 60 * 3)
+                    .setBgGraphBuilder(new BgGraphBuilder(mContext))
+                    .build());
+
+            NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();
+            bigPictureStyle.bigPicture(new BgSparklineBuilder(mContext)
+                    .setBgGraphBuilder(new BgGraphBuilder(mContext))
+                    .showHighLine()
+                    .showLowLine()
+                    .build())
+                    .setSummaryText(deltaString)
+                    .setBigContentTitle(titleString);
+            b.setStyle(bigPictureStyle)
+                    .extend(new NotificationCompat.WearableExtender()
+                                    .setBackground(wearBitmap3h)
+                                    .addPage(createExtensionPage(3))
+                                    .addPage(createExtensionPage(6))
+                                    .addPage(createExtensionPage(12))
+                                    .addPage(createExtensionPage(24))
+                    );
+        }
+        b.setContentIntent(resultPendingIntent);
+        return b.build();
+    }
+
+    public static void bgOngoingNotification(final BgGraphBuilder bgGraphBuilder) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                NotificationManagerCompat
+                        .from(mContext)
+                        .notify(ongoingNotificationId, createOngoingNotification(bgGraphBuilder));
+            }
+        });
     }
 
     public static void soundAlert(String soundUri) {

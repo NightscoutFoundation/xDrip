@@ -23,17 +23,19 @@ public class BgSparklineBuilder {
     private Context mContext;
 
     private static final String TAG = "BgSparklineBuilder";
-    private static final float NOTIFICATION_WIDTH_DP = 460; // 476 width minus 8 padding on each side
-    private static final float NOTIFICATION_HEIGHT_DP = 256;
+    private static final int NOTIFICATION_WIDTH_DP = 460; // 476 width minus 8 padding on each side
+    private static final int NOTIFICATION_HEIGHT_DP = 256;
 
-    private float width = NOTIFICATION_WIDTH_DP;
-    private float height = NOTIFICATION_HEIGHT_DP;
+    private int width;
+    private int height;
     private BgGraphBuilder bgGraphBuilder;
     private LineChartView chart;
     private long end = new Date().getTime() / BgGraphBuilder.FUZZER;
     private long start = end - (60000*180 / BgGraphBuilder.FUZZER); // 3h
     private boolean showLowLine = false;
     private boolean showHighLine = false;
+    private boolean showAxes = false;
+    private boolean useSmallDots = false;
 
     public BgSparklineBuilder setStart(long start) {
         this.start = start / BgGraphBuilder.FUZZER;
@@ -50,19 +52,55 @@ public class BgSparklineBuilder {
         return this;
     }
 
+    public BgSparklineBuilder showHighLine() {
+        return showHighLine(true);
+    }
+
     public BgSparklineBuilder showLowLine(boolean show) {
         this.showLowLine = show;
         return this;
     }
 
+    public BgSparklineBuilder showLowLine() {
+        return showLowLine(true);
+    }
+
+    public BgSparklineBuilder showAxes(boolean show) {
+        this.showAxes = show;
+        return this;
+    }
+
+    public BgSparklineBuilder showAxes() {
+        return showAxes(true);
+    }
+
     public BgSparklineBuilder setWidth(float width) {
-        this.width = width;
+        this.width = convertDpToPixel(width);
         return this;
     }
 
     public BgSparklineBuilder setHeight(float height) {
+        this.height = convertDpToPixel(height);
+        return this;
+    }
+
+    public BgSparklineBuilder setWidthPx(int width) {
+        this.width = width;
+        return this;
+    }
+
+    public BgSparklineBuilder setHeightPx(int height) {
         this.height = height;
         return this;
+    }
+
+    public BgSparklineBuilder setSmallDots(boolean useSmallDots) {
+        this.useSmallDots = useSmallDots;
+        return this;
+    }
+
+    public BgSparklineBuilder setSmallDots() {
+        return this.setSmallDots(true);
     }
 
     public BgSparklineBuilder setBgGraphBuilder(BgGraphBuilder bgGraphBuilder) {
@@ -73,6 +111,8 @@ public class BgSparklineBuilder {
     BgSparklineBuilder(Context context) {
         mContext = context;
         chart = new LineChartView(mContext);
+        width = convertDpToPixel(NOTIFICATION_WIDTH_DP);
+        height = convertDpToPixel(NOTIFICATION_HEIGHT_DP);
     }
 
     /**
@@ -123,23 +163,32 @@ public class BgSparklineBuilder {
         lines.add(bgGraphBuilder.inRangeValuesLine());
         lines.add(bgGraphBuilder.lowValuesLine());
         lines.add(bgGraphBuilder.highValuesLine());
-        lines.add(bgGraphBuilder.rawInterpretedLine());
-        chart.setLineChartData(new LineChartData(lines));
+        if (showLowLine)
+            lines.add(bgGraphBuilder.lowLine());
+        if (showHighLine)
+            lines.add(bgGraphBuilder.highLine());
+        if (useSmallDots) {
+            for(Line line: lines)
+                line.setPointRadius(1);
+        }
+        LineChartData lineData = new LineChartData(lines);
+        if (showAxes) {
+            lineData.setAxisYLeft(bgGraphBuilder.yAxis());
+            lineData.setAxisXBottom(bgGraphBuilder.xAxis());
+        }
+        //lines.add(bgGraphBuilder.rawInterpretedLine());
+        chart.setLineChartData(lineData);
         Viewport viewport = chart.getMaximumViewport();
         viewport.left = start;
         viewport.right = end;
         chart.setViewportCalculationEnabled(false);
         chart.setInteractive(false);
         chart.setCurrentViewport(viewport, false);
-        chart.setPadding(0,0,0,0);
+        chart.setPadding(0, 0, 0, 0);
         chart.setLeft(0);
         chart.setTop(0);
-        chart.setRight(convertDpToPixel(width));
-        chart.setBottom(convertDpToPixel(height));
-        if (showLowLine)
-            lines.add(bgGraphBuilder.lowLine());
-        if (showHighLine)
-            lines.add(bgGraphBuilder.highLine());
+        chart.setRight(width);
+        chart.setBottom(height);
         return getViewBitmap(chart);
     }
 }
