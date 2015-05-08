@@ -193,8 +193,6 @@ public class Notifications {
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setUsesChronometer(false);
         if (lastReading != null) {
-            Bitmap wearBitmap3h = createWearBitmap(3);
-
             b.setWhen(lastReading.timestamp);
             String deltaString = "Delta: " + bgGraphBuilder.unitizedDeltaString(lastReading.calculated_value - lastReadings.get(1).calculated_value);
             b.setContentText(deltaString);
@@ -213,14 +211,7 @@ public class Notifications {
                     .build())
                     .setSummaryText(deltaString)
                     .setBigContentTitle(titleString);
-            b.setStyle(bigPictureStyle)
-                    .extend(new NotificationCompat.WearableExtender()
-                                    .setBackground(wearBitmap3h)
-                                    .addPage(createExtensionPage(3))
-                                    .addPage(createExtensionPage(6))
-                                    .addPage(createExtensionPage(12))
-                                    .addPage(createExtensionPage(24))
-                    );
+            b.setStyle(bigPictureStyle);
         }
         b.setContentIntent(resultPendingIntent);
         return b.build();
