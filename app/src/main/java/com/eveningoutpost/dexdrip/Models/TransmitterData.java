@@ -85,6 +85,7 @@ public class TransmitterData extends Model {
                 return null;
             } // Sometimes the HM10 sends the battery level and readings in separate transmissions, filter out these incomplete packets!
             transmitterData.raw_data = Integer.parseInt(data[0]);
+            transmitterData.filtered_data = Integer.parseInt(data[0]);
             transmitterData.timestamp = timestamp;
             transmitterData.uuid = UUID.randomUUID().toString();
 

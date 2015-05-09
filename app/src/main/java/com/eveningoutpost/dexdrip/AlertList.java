@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +45,7 @@ public class AlertList extends Activity {
     Context mContext;
     final int ADD_ALERT = 1;
     final int EDIT_ALERT = 2;
+    SharedPreferences prefs;
 
     private final static String TAG = AlertPlayer.class.getSimpleName();
 
@@ -108,7 +111,7 @@ public class AlertList extends Activity {
         mContext = getApplicationContext();
         listViewLow = (ListView) findViewById(R.id.listView_low);
         listViewHigh = (ListView) findViewById(R.id.listView_high);
-        SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        prefs =  PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
 
         addListenerOnButton();

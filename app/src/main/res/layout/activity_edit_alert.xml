@@ -274,6 +274,23 @@
 
 
                 </LinearLayout>
+            <LinearLayout
+                android:id="@+id/linear_layout_test_buttons"
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/linear_layout_alert"
+                android:gravity="center_horizontal"
+                android:paddingTop="20dp">
+                <Button
+                    android:id="@+id/edit_alert_test"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="test alert"
+                    android:layout_gravity="center_horizontal" />
+
+            </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/linear_layout_buttons"
                     android:orientation="horizontal"
@@ -297,18 +314,16 @@
                         android:layout_height="wrap_content"
                         android:text="remove alert"
                         android:layout_gravity="center_horizontal" />
+
                     <Button
-                        android:id="@+id/edit_alert_test"
+                        android:id="@+id/edit_alert_pre_snooze"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="test alert"
+                        android:text="snooze alert before it fires"
                         android:layout_gravity="center_horizontal" />
                 </LinearLayout>
             </LinearLayout>
 
         </ScrollView>
     </LinearLayout>
-
-
-
 </RelativeLayout>

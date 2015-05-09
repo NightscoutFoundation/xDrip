@@ -32,6 +32,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -62,6 +63,7 @@ public class EditAlertActivity extends Activity {
     Button buttonSave;
     Button buttonRemove;
     Button buttonTest;
+    Button buttonPreSnooze;
     CheckBox checkboxAllDay;
 
     LinearLayout layoutTimeBetween;
@@ -118,6 +120,7 @@ public class EditAlertActivity extends Activity {
         buttonRemove = (Button)findViewById(R.id.edit_alert_remove);
         buttonTest = (Button)findViewById(R.id.edit_alert_test);
         buttonalertMp3 = (Button)findViewById(R.id.Button_alert_mp3_file);
+        buttonPreSnooze = (Button)findViewById(R.id.edit_alert_pre_snooze);
 
 
         alertText = (EditText) findViewById(R.id.edit_alert_text);
@@ -134,6 +137,7 @@ public class EditAlertActivity extends Activity {
 
         viewAlertOverrideText = (TextView) findViewById(R.id.view_alert_override_silent);
         checkboxAlertOverride = (CheckBox) findViewById(R.id.check_override_silent);
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         addListenerOnButtons();
 
         if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
@@ -142,24 +146,25 @@ public class EditAlertActivity extends Activity {
             buttonRemove.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             buttonTest.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             buttonalertMp3.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            buttonSave.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            buttonPreSnooze.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             alertText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             alertThreshold.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
-            buttonSave.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             alertMp3File.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
-            
+
             checkboxAllDay.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
-            
+
             viewTimeStart.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             viewTimeEnd.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             editSnooze.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             viewAlertOverrideText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
-            
+
             ((TextView) findViewById(R.id.view_alert_text)).setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             ((TextView) findViewById(R.id.view_alert_threshold)).setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             ((TextView) findViewById(R.id.view_alert_default_snooze)).setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             ((TextView) findViewById(R.id.view_alert_mp3_file)).setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             ((TextView) findViewById(R.id.view_alert_time)).setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
-            
+
         }
         SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
@@ -183,6 +188,8 @@ public class EditAlertActivity extends Activity {
             alertMp3File.setKeyListener(null);
             defaultSnooze = SnoozeActivity.getDefaultSnooze(above);
             buttonRemove.setVisibility(View.GONE);
+            // One can not snooze an alert that is still not in the database...
+            buttonPreSnooze.setVisibility(View.GONE);
             status = "Adding " + (above ? "high" : "low") + " alert";
             startHour = 0;
             startMinute = 0;
@@ -230,7 +237,8 @@ public class EditAlertActivity extends Activity {
         }
         alertMp3File.setKeyListener(null);
         viewHeader.setText(status);
-        setSnoozeSpinner();
+        setDefaultSnoozeSpinner();
+        setPreSnoozeSpinner();
         enableAllDayControls();
         enableVibrateControls();
 
@@ -409,7 +417,7 @@ public class EditAlertActivity extends Activity {
                                 if (which == 0) {
                                     Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
                                     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select tone for Alerts:");
-                                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
+                                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
                                     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
                                     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL);
                                     startActivityForResult(intent, 999);
@@ -569,28 +577,28 @@ public class EditAlertActivity extends Activity {
         }
         return "";
     }
-    public void setSnoozeSpinner() {
+    public void setDefaultSnoozeSpinner() {
         editSnooze.setText(String.valueOf(defaultSnooze));
         editSnooze.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View mView, MotionEvent mMotionEvent) {
                 if (mMotionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                     final Dialog d = new Dialog(mContext);
-                    d.setTitle("Default Snooze (in Minutes)");
+                    d.setTitle("Default Snooze");
                     d.setContentView(R.layout.snooze_picker);
                     Button b1 = (Button) d.findViewById(R.id.button1);
                     Button b2 = (Button) d.findViewById(R.id.button2);
 
                     final NumberPicker snoozeValue = (NumberPicker) d.findViewById(R.id.numberPicker1);
 
-                    
+
                     SnoozeActivity.SetSnoozePickerValues(snoozeValue, above, defaultSnooze);
                     b1.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             defaultSnooze = SnoozeActivity.getTimeFromSnoozeValue(snoozeValue.getValue());
                             editSnooze.setText(String.valueOf(defaultSnooze));
-                            
+
                             d.dismiss();
                         }
                     });
@@ -606,7 +614,41 @@ public class EditAlertActivity extends Activity {
 
             }});
 
+    }
 
+    public void setPreSnoozeSpinner() {
+
+
+        buttonPreSnooze.setOnClickListener(new View.OnClickListener() {
+            @Override
+            //public boolean onTouch(View mView, MotionEvent mMotionEvent) {
+            public void onClick(View v) {
+                final Dialog d = new Dialog(mContext);
+                d.setTitle("Snooze this alert...");
+                d.setContentView(R.layout.snooze_picker);
+                Button b1 = (Button) d.findViewById(R.id.button1);
+                Button b2 = (Button) d.findViewById(R.id.button2);
+                b1.setText("pre-Snooze");
+
+                final NumberPicker snoozeValue = (NumberPicker) d.findViewById(R.id.numberPicker1);
+
+                SnoozeActivity.SetSnoozePickerValues(snoozeValue, above, defaultSnooze);
+                b1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int intValue = SnoozeActivity.getTimeFromSnoozeValue(snoozeValue.getValue());
+                        AlertPlayer.getPlayer().PreSnooze(getApplicationContext(), uuid, intValue);
+                        d.dismiss();
+                    }
+                });
+                b2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        d.dismiss();
+                    }
+                });
+                d.show();
+            }});
 
     }
 

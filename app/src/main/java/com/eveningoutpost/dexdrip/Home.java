@@ -312,6 +312,9 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 }
             }
         }
+        if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
+            notificationText.append("\n ALERTS CURRENTLY DISABLED");
+        }
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
     }

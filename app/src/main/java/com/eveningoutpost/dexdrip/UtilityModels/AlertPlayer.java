@@ -97,6 +97,18 @@ public class AlertPlayer {
         }
         activeBgAlert.snooze(repeatTime);
     }
+    
+    public synchronized  void PreSnooze(Context ctx, String uuid, int repeatTime) {
+        Log.e(TAG, "PreSnooze called repeatTime = "+ repeatTime);
+        stopAlert(ctx, true, false);
+        ActiveBgAlert.Create(uuid, true, new Date().getTime() + repeatTime * 60000 );
+        ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
+        if (activeBgAlert  == null) {
+            Log.wtf(TAG, "Just created the allert, where did it go...");
+            return;
+        }
+        activeBgAlert.snooze(repeatTime);
+    }
 
  // Check the state and alrarm if needed
     public void ClockTick(Context ctx, String bgValue)

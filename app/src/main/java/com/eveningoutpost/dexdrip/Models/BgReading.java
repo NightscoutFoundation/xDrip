@@ -239,7 +239,7 @@ public class BgReading extends Model {
             BgReading bgReading = new Select()
                     .from(BgReading.class)
                     .where("Sensor = ? ", sensor.getId())
-                    .where("timestamp <= ?",  (timestamp + (60*1000))) // 1 minute padding (should never be that far off, but why not)
+                    .where("timestamp <= ?", (timestamp + (60 * 1000))) // 1 minute padding (should never be that far off, but why not)
                     .where("calculated_value = 0")
                     .where("raw_calculated = 0")
                     .orderBy("timestamp desc")
@@ -762,6 +762,14 @@ public class BgReading extends Model {
 
     }
 
+    public static Long getTimeSinceLastReading() {
+        BgReading bgReading = BgReading.last();
+        if (bgReading != null) {
+            return (new Date().getTime() - bgReading.timestamp);
+        }
+        return (long) 0;
+    }
+
     // the input of this function is a string. each char can be g(=good) or b(=bad) or s(=skip, point unmissed).
     static List<BgReading> createlatestTest(String input, Long now) {
         List<BgReading> out = new LinkedList<BgReading> ();
@@ -825,10 +833,6 @@ public class BgReading extends Model {
         TestgetUnclearTime("ggssgggggggggggggggggggg", 10l, 0l * 5);
         TestgetUnclearTime("ggssbggssggggggggggggggg", 10l, 2l * 5);
         TestgetUnclearTime("bb",                       10l, 2l * 5);
-
-
-
-
     }
 
 }
