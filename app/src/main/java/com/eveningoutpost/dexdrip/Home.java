@@ -288,6 +288,9 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 }
             }
         }
+        if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
+            notificationText.append("\n ALERTS CURRENTLY DISABLED");
+        }
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
     }
@@ -312,7 +315,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                     estimate=lastBgreading.calculated_value;
                 } else {
                     estimate = BgReading.estimated_bg(lastBgreading.timestamp + (6000 * 7));
-                }  
+                }
                 currentBgValueText.setText(bgGraphBuilder.unitized_string(estimate));
                 currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             } else {

@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -33,12 +35,15 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 public class SnoozeActivity extends Activity {
     TextView alertStatus;
     Button buttonSnooze;
+    Button disableAlerts;
+    Button clearDisabled;
+    SharedPreferences prefs;
     boolean doMgdl;
 
     NumberPicker snoozeValue;
 
-    static final int snoozeValues[] = new int []{5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 75, 90, 105, 120, 150, 180, 240, 300, 360, 420, 480, 540, 600}; 
-    
+    static final int snoozeValues[] = new int []{5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 75, 90, 105, 120, 150, 180, 240, 300, 360, 420, 480, 540, 600};
+
     static int getSnoozeLocatoin(int time) {
         for (int i=0; i < snoozeValues.length; i++) {
             if(time == snoozeValues[i]) {
@@ -53,31 +58,31 @@ public class SnoozeActivity extends Activity {
         }
         return snoozeValues.length-1;
     }
-    
+
     static String getNameFromTime(int time) {
         if (time < 120) {
             return time + " minutes";
         }
         return (time / 60.0) + " hours";
     }
-    
+
     static int getTimeFromSnoozeValue(int pickedNumber) {
         return snoozeValues[pickedNumber];
     }
-    
+
     static public int getDefaultSnooze(boolean above) {
         if (above) {
             return 120;
         }
         return 30;
     }
-    
+
     static void SetSnoozePickerValues(NumberPicker picker, boolean above, int default_snooze) {
         String[] values=new String[snoozeValues.length];
         for(int i=0;i<values.length;i++){
             values[i]=getNameFromTime(snoozeValues[i]);
         }
-        
+
         picker.setMaxValue(values.length -1);
         picker.setMinValue(0);
         picker.setDisplayedValues(values);
@@ -98,8 +103,8 @@ public class SnoozeActivity extends Activity {
         setContentView(R.layout.activity_snooze);
         alertStatus = (TextView) findViewById(R.id.alert_status);
         snoozeValue = (NumberPicker) findViewById(R.id.snooze);
-        
-        SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        prefs =  PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
 
         addListenerOnButton();
@@ -113,6 +118,8 @@ public class SnoozeActivity extends Activity {
 
     public void addListenerOnButton() {
         buttonSnooze = (Button)findViewById(R.id.button_snooze);
+        disableAlerts = (Button)findViewById(R.id.button_disable_alerts);
+        clearDisabled = (Button)findViewById(R.id.enable_alerts);
         buttonSnooze.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 int intValue = getTimeFromSnoozeValue(snoozeValue.getValue());
@@ -125,6 +132,55 @@ public class SnoozeActivity extends Activity {
             }
 
         });
+        showDisableEnableButtons();
+
+        disableAlerts.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                final Dialog d = new Dialog(SnoozeActivity.this);
+                d.setTitle("Default Snooze");
+                d.setContentView(R.layout.snooze_picker);
+                Button b1 = (Button) d.findViewById(R.id.button1);
+                Button b2 = (Button) d.findViewById(R.id.button2);
+                final NumberPicker snoozeValue = (NumberPicker) d.findViewById(R.id.numberPicker1);
+
+                SnoozeActivity.SetSnoozePickerValues(snoozeValue, false, 60);
+                b1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Long disableUntil = new Date().getTime() + (SnoozeActivity.getTimeFromSnoozeValue(snoozeValue.getValue()) * 1000 * 60);
+                        prefs.edit().putLong("alerts_disabled_until", disableUntil).apply();
+                        d.dismiss();
+                        showDisableEnableButtons();
+                    }
+                });
+                b2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        d.dismiss();
+                        showDisableEnableButtons();
+                    }
+                });
+                d.show();
+
+            }
+        });
+
+        clearDisabled.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                prefs.edit().putLong("alerts_disabled_until", 0).apply();
+                showDisableEnableButtons();
+            }
+        });
+    }
+
+    public void showDisableEnableButtons() {
+        if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
+            disableAlerts.setVisibility(View.GONE);
+            clearDisabled.setVisibility(View.VISIBLE);
+        } else {
+            clearDisabled.setVisibility(View.GONE);
+            disableAlerts.setVisibility(View.VISIBLE);
+        }
     }
 
 
@@ -160,5 +216,5 @@ public class SnoozeActivity extends Activity {
         }
 
     }
-    
+
 }

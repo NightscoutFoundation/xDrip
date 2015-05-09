@@ -824,10 +824,6 @@ public class BgReading extends Model {
         TestgetUnclearTime("ggssgggggggggggggggggggg", 10l, 0l * 5);
         TestgetUnclearTime("ggssbggssggggggggggggggg", 10l, 2l * 5);
         TestgetUnclearTime("bb",                       10l, 2l * 5);
-
-
-
-
     }
 
 }

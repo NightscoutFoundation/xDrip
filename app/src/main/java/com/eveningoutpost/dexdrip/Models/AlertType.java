@@ -110,6 +110,10 @@ public class AlertType extends Model {
     public static AlertType get_highest_active_alert(Context context, double bg) {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
+            return null;
+        }
+
         checkIfMissedReadingAlert(context);
 
         Boolean bg_unclear_readings_alerts = prefs.getBoolean("bg_unclear_readings_alerts", true);

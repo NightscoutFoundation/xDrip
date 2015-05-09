@@ -32,8 +32,9 @@ public class ForegroundServiceStarter {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    Notifications.setNotificationSettings(mContext);
-                    mService.startForeground(Notifications.ongoingNotificationId, Notifications.createOngoingNotification(new BgGraphBuilder(mContext)));
+                    Notifications notification = Notifications.getInstance(mContext);
+                    notification.ReadPerfs(mContext);
+                    mService.startForeground(notification.ongoingNotificationId, notification.createOngoingNotification(new BgGraphBuilder(mContext)));
                 }
             });
         }

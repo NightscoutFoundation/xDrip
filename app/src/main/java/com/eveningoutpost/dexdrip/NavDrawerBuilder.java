@@ -84,7 +84,6 @@ public class NavDrawerBuilder {
             }
         }
         options.add("System Status");
-        options.add("Manage Alerts");
         options.add("Snooze Alerts");
         options.add("Settings");
         options.add("Fake Numbers");
@@ -140,7 +139,6 @@ public class NavDrawerBuilder {
             }
         }
         options.add(new Intent(context, SystemStatus.class));
-        options.add(new Intent(context, AlertList.class));
         options.add(new Intent(context, SnoozeActivity.class));
         options.add(new Intent(context, Preferences.class));
         options.add(new Intent(context, FakeNumbers.class));
