@@ -320,8 +320,7 @@ public class DexCollectionService extends Service {
     };
 
 
-    private void broadcastUpdate(final String action,
-                                 final BluetoothGattCharacteristic characteristic) {
+    private void broadcastUpdate(final String action, final BluetoothGattCharacteristic characteristic) {
         Log.w(TAG, "broadcastUpdate got action: " + action + ", characteristic: " + characteristic.toString());
         final byte[] data = characteristic.getValue();
         if (lastdata != null) {
@@ -331,7 +330,6 @@ public class DexCollectionService extends Service {
                 lastdata = data;
             } else if (Arrays.equals(lastdata,data)) {
                 Log.v(TAG, "broadcastUpdate: duplicate data, ignoring");
-                //return;
             }
         } else if (data != null && data.length > 0) {
             setSerialDataToTransmitterRawData(data, data.length);
@@ -482,7 +480,7 @@ public class DexCollectionService extends Service {
                     sendBtMessage(ackMessage);
                     timestamp = new Date().getTime();
                     Log.v(TAG,"setSerialDataToTransmitterRawData: Creating TransmitterData at "+timestamp);
-                    TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
+                    TransmitterData transmitterData = TransmitterData.createDexBridge(buffer, len, timestamp);
                     if (transmitterData != null) {
                         Sensor sensor = Sensor.currentSensor();
                         if (sensor != null) {

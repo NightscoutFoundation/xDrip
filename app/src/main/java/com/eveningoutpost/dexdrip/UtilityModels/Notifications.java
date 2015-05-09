@@ -74,7 +74,7 @@ public class Notifications {
     public static final int exportAlertNotificationId = 006;
     public static final int uncleanAlertNotificationId = 007;
     public static final int missedAlertNotificationId = 010;
-    final static int callbackPeriod = 60000;
+    final static int callbackPeriod = 60000 * 5;
 
     SharedPreferences prefs;
 
