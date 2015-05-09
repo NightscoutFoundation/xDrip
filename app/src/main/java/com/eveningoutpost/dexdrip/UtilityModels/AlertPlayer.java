@@ -43,11 +43,7 @@ public class AlertPlayer {
       Log.e(TAG, "start called, Threadid " + Thread.currentThread().getId());
       stopAlert(ctx, true, false);
       ActiveBgAlert.Create(newAlert.uuid, false, new Date().getTime() + newAlert.minutes_between * 60000 );
-//      if(ShouldPlayFile(ctx, newAlert)) {
-//          PlayFile(ctx, newAlert.mp3_file);
-//      } else {
-          Vibrate(ctx, newAlert, bgValue, newAlert.override_silent_mode, newAlert.mp3_file);
-//      }
+      Vibrate(ctx, newAlert, bgValue, newAlert.override_silent_mode, newAlert.mp3_file);
     }
 
     public synchronized void stopAlert(Context ctx, boolean ClearData, boolean clearIfSnoozeFinished) {
@@ -97,7 +93,7 @@ public class AlertPlayer {
         }
         activeBgAlert.snooze(repeatTime);
     }
-    
+
     public synchronized  void PreSnooze(Context ctx, String uuid, int repeatTime) {
         Log.e(TAG, "PreSnooze called repeatTime = "+ repeatTime);
         stopAlert(ctx, true, false);
@@ -127,11 +123,7 @@ public class AlertPlayer {
                 return;
             }
             Log.e(TAG,"ClockTick: Playing the alert again");
-//            if(ShouldPlayFile(ctx, alert)) {
-//                PlayFile(ctx, alert.mp3_file);
-//            } else {
-                Vibrate(ctx, alert, bgValue, alert.override_silent_mode, alert.mp3_file);
-//            }
+            Vibrate(ctx, alert, bgValue, alert.override_silent_mode, alert.mp3_file);
         }
 
     }

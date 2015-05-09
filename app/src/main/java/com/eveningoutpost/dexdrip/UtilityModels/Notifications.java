@@ -121,14 +121,12 @@ public class Notifications {
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
         Sensor sensor = Sensor.currentSensor();
 
-        List<BgReading> bgReadings = BgReading.latest(1);
-        if(bgReadings == null || bgReadings.size() == 0) {
+        BgReading bgReading = BgReading.last();
+        if(bgReading == null) {
             // Sensor is stopped, or there is not enough data
             AlertPlayer.getPlayer().stopAlert(context, true, false);
             return;
         }
-
-        BgReading bgReading = bgReadings.get(0);
 
         Log.e(TAG, "FileBasedNotifications called bgReading.calculated_value = " + bgReading.calculated_value);
 
@@ -136,7 +134,7 @@ public class Notifications {
         // If the last reading does not have a sensor, or that sensor was stopped.
         // or the sensor was started, but the 2 hours did not still pass? or there is no calibrations.
         // In all this cases, bgReading.calculated_value should be 0.
-        if (sensor != null && bgReading != null && bgReading.calculated_value !=0) {
+        if (sensor != null && bgReading != null && bgReading.calculated_value != 0) {
             AlertType newAlert = AlertType.get_highest_active_alert(context, bgReading.calculated_value);
 
             if (newAlert == null) {
@@ -201,6 +199,7 @@ public class Notifications {
     public void notificationSetter(Context context) {
         ReadPerfs(context);
         if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
+            Log.w("NOTIFICATIONS", "Notifications are currently disabled!!");
             return;
         }
         FileBasedNotifications(context);
