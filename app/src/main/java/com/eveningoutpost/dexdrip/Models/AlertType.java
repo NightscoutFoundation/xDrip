@@ -108,27 +108,25 @@ public class AlertType extends Model {
      * In case that alerts are turned off, only return the 55.
      */
     public static AlertType get_highest_active_alert(Context context, double bg) {
-
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
+            Log.w("NOTIFICATIONS", "Notifications are currently disabled!!");
             return null;
         }
 
         checkIfMissedReadingAlert(context);
 
-        Boolean bg_unclear_readings_alerts = prefs.getBoolean("bg_unclear_readings_alerts", true);
+        Boolean bg_unclear_readings_alerts = prefs.getBoolean("bg_unclear_readings_alerts", false);
         Long UnclearTimeSetting = Long.parseLong(prefs.getString("bg_unclear_readings_minutes", "90")) * 60000;
 
         Long UnclearTime = BgReading.getUnclearTime(UnclearTimeSetting);
         AlertType at;
         if (UnclearTime >= UnclearTimeSetting && bg_unclear_readings_alerts ) {
-            // we are in an unclear state for too long, ring our alert
+            Log.w("NOTIFICATIONS", "Readings have been unclear for too long!!");
             Notifications.getInstance(context).bgUnclearAlert(context);
         }
         if (UnclearTime > 0) {
-            // We are in an clear state, but not for too long.
-            Log.e(TAG_ALERT, "We are in an clear state, but not for too long. returning null");
-            return null; //TODO: find out if we realy want to return here??? what about other alarms?
+            Log.e(TAG_ALERT, "We are in an clear state, but not for too long.");
         }
         at = get_highest_active_alert_helper(bg);
         if (at != null) {
@@ -136,14 +134,7 @@ public class AlertType extends Model {
         } else {
             Log.e(TAG_ALERT, "get_highest_active_alert_helper returned NULL");
         }
-        if (at == null) {
-            return at;
-        }
-        // alerts are off, return only if this is the 55 alert
-        if(at.uuid.equals(LOW_ALERT_55)) {
-            return at;
-        }
-        return null;
+        return at;
     }
 
     public static void checkIfMissedReadingAlert(Context context){
