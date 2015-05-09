@@ -35,6 +35,8 @@
     <string name="action_example">Example action</string>
     <string name="title_activity_calibration_check_in">CalibrationCheckInActivity</string>
     <string name="title_activity_usb_connected">UsbConnectedActivity</string>
+    <string name="snooze">Snooze</string>
+    <string name="snooze_hint">Snooze alert for x minutes</string>
 
     <string-array name="menu_options">
         <item>Dex Drip</item>
@@ -50,6 +52,8 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_calibration_data_table">CalibrationDataTable</string>
     <string name="title_activity_fake_numbers">FakeNumbers</string>
+    <string name="title_activity_edit_alert">EditAlert</string>
+    <string name="title_snooze">Snooze</string>
     <string name="title_activity_double_calibration">DoubleCalibrationActivity</string>
     <string name="title_activity_calibration_override">CalibrationOverride</string>
     <string name="title_activity_calibration_graph">CalibrationGraph</string>
@@ -93,5 +97,6 @@
     <string name="toast_crash">Something went wrong :( a report has been sent to help fix the issue.</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+    <string name="title_activity_alert_list">AlertList</string>
 
 </resources>

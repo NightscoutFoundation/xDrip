@@ -21,8 +21,8 @@ android {
 
     defaultConfig {
         applicationId "com.eveningoutpost.dexdrip"
-        minSdkVersion 19
-        targetSdkVersion 22
+        minSdkVersion 17
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
     }

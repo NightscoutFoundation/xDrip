@@ -21,12 +21,15 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
@@ -77,6 +80,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_source, false);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         checkEula();
+        new IdempotentMigrations(getApplicationContext()).performAll();
         setContentView(R.layout.activity_home);
     }
 
@@ -192,7 +196,6 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     }
 
     public void updateCurrentBgInfo() {
-        final TextView currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
         final TextView notificationText = (TextView)findViewById(R.id.notices);
         notificationText.setText("");
         isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
@@ -285,6 +288,9 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 }
             }
         }
+        if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
+            notificationText.append("\n ALERTS CURRENTLY DISABLED");
+        }
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
     }
@@ -335,7 +341,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 currentBgValueText.setTextColor(Color.WHITE);
             }
         }
-    setupCharts();
+        setupCharts();
     }
 
     @Override

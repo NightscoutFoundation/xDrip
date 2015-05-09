@@ -46,7 +46,7 @@ public class BgReadingTable extends ListActivity implements NavigationDrawerFrag
     }
 
     private void getData() {
-        final List<BgReading> latest = BgReading.latest(50);
+        final List<BgReading> latest = BgReading.latest(5000);
         ListAdapter adapter = new BgReadingAdapter(this, latest);
 
         this.setListAdapter(adapter);

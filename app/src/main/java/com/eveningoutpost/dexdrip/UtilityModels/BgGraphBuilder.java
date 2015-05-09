@@ -64,10 +64,10 @@ public class BgGraphBuilder {
         this.doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
         defaultMinY = unitized(40);
         defaultMaxY = unitized(250);
-        pointSize = isXLargeTablet() ? 5 : 3;
-        axisTextSize = isXLargeTablet() ? 20 : Axis.DEFAULT_TEXT_SIZE_SP;
-        previewAxisTextSize = isXLargeTablet() ? 12 : 5;
-        hoursPreviewStep = isXLargeTablet() ? 2 : 1;
+        pointSize = isXLargeTablet(context) ? 5 : 3;
+        axisTextSize = isXLargeTablet(context) ? 20 : Axis.DEFAULT_TEXT_SIZE_SP;
+        previewAxisTextSize = isXLargeTablet(context) ? 12 : 5;
+        hoursPreviewStep = isXLargeTablet(context) ? 2 : 1;
     }
 
     public LineChartData lineData() {
@@ -251,7 +251,7 @@ public class BgGraphBuilder {
         return new SimpleDateFormat(DateFormat.is24HourFormat(context) ? "HH" : "h a");
     }
 
-    private boolean isXLargeTablet() {
+    static public boolean isXLargeTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
     }
 
