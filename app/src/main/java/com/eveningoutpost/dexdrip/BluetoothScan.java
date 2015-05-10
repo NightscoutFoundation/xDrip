@@ -85,6 +85,7 @@ public class BluetoothScan extends ListActivity implements NavigationDrawerFragm
         super.onPause();
         scanLeDevice(false);
         mLeDeviceListAdapter.clear();
+        mLeDeviceListAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -202,6 +203,7 @@ public class BluetoothScan extends ListActivity implements NavigationDrawerFragm
         public void addDevice(BluetoothDevice device) {
             if(!mLeDevices.contains(device)) {
                 mLeDevices.add(device);
+                notifyDataSetChanged();
             }
         }
 
@@ -211,6 +213,7 @@ public class BluetoothScan extends ListActivity implements NavigationDrawerFragm
 
         public void clear() {
             mLeDevices.clear();
+            notifyDataSetChanged();
         }
 
         @Override
@@ -249,7 +252,6 @@ public class BluetoothScan extends ListActivity implements NavigationDrawerFragm
             else
                 viewHolder.deviceName.setText(R.string.unknown_device);
             viewHolder.deviceAddress.setText(device.getAddress());
-
             return view;
         }
     }
@@ -266,6 +268,7 @@ public class BluetoothScan extends ListActivity implements NavigationDrawerFragm
                         public void run() {
                             mLeDeviceListAdapter.addDevice(device);
                             mLeDeviceListAdapter.notifyDataSetChanged();
+
                         }
                     });
                 }

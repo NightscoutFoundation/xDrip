@@ -26,12 +26,14 @@ import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.text.DecimalFormat;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
 @Table(name = "BgReadings", id = BaseColumns._ID)
 public class BgReading extends Model {
     private final static String TAG = BgReading.class.getSimpleName();
+    private final static String TAG_ALERT = "AlertBg";
     //TODO: Have these as adjustable settings!!
     public final static double BESTOFFSET = (60000 * 0); // Assume readings are about x minutes off from actual!
 
@@ -151,9 +153,12 @@ public class BgReading extends Model {
 
     public static double activeSlope() {
         BgReading bgReading = BgReading.lastNoSenssor();
-        double slope = (2 * bgReading.a * (new Date().getTime() + BESTOFFSET)) + bgReading.b;
-        Log.w(TAG, "ESTIMATE SLOPE" + slope);
-        return slope;
+        if (bgReading != null) {
+            double slope = (2 * bgReading.a * (new Date().getTime() + BESTOFFSET)) + bgReading.b;
+            Log.w(TAG, "ESTIMATE SLOPE" + slope);
+            return slope;
+        }
+        return 0;
     }
 
     public static double activePrediction() {
@@ -218,10 +223,11 @@ public class BgReading extends Model {
             if(egvRecord.getTrend().friendlyTrendName().compareTo("NOT_COMPUTABLE") == 0 || egvRecord.getTrend().friendlyTrendName().compareTo("OUT_OF_RANGE") == 0) {
                 bgReading.hide_slope = true;
             }
+
             bgReading.save();
             bgReading.find_new_curve();
             bgReading.find_new_raw_curve();
-            Notifications.notificationSetter(context);
+            Notifications.getInstance(context).notificationSetter(context);
             BgSendQueue.addToQueue(bgReading, "create", context);
         }
     }
@@ -232,7 +238,7 @@ public class BgReading extends Model {
             BgReading bgReading = new Select()
                     .from(BgReading.class)
                     .where("Sensor = ? ", sensor.getId())
-                    .where("timestamp <= ?",  (timestamp + (60*1000))) // 1 minute padding (should never be that far off, but why not)
+                    .where("timestamp <= ?", (timestamp + (60 * 1000))) // 1 minute padding (should never be that far off, but why not)
                     .where("calculated_value = 0")
                     .where("raw_calculated = 0")
                     .orderBy("timestamp desc")
@@ -265,7 +271,7 @@ public class BgReading extends Model {
         return true;
     }
 
-    public static BgReading create(double raw_data, Context context, Long timestamp) {
+    public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp) {
         BgReading bgReading = new BgReading();
         Sensor sensor = Sensor.currentSensor();
         if (sensor != null) {
@@ -274,7 +280,7 @@ public class BgReading extends Model {
                 bgReading.sensor = sensor;
                 bgReading.sensor_uuid = sensor.uuid;
                 bgReading.raw_data = (raw_data / 1000);
-                bgReading.filtered_data = (raw_data / 1000);
+                bgReading.filtered_data = (filtered_data / 1000);
                 bgReading.timestamp = timestamp;
                 bgReading.uuid = UUID.randomUUID().toString();
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
@@ -292,7 +298,7 @@ public class BgReading extends Model {
                 bgReading.calibration = calibration;
                 bgReading.calibration_uuid = calibration.uuid;
                 bgReading.raw_data = (raw_data/1000);
-                bgReading.filtered_data = (raw_data/1000);
+                bgReading.filtered_data = (filtered_data/1000);
                 bgReading.timestamp = timestamp;
                 bgReading.uuid = UUID.randomUUID().toString();
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
@@ -321,7 +327,7 @@ public class BgReading extends Model {
 
                 bgReading.save();
                 bgReading.perform_calculations();
-                Notifications.notificationSetter(context);
+                Notifications.getInstance(context).notificationSetter(context);
                 BgSendQueue.addToQueue(bgReading, "create", context);
             }
         }
@@ -669,4 +675,158 @@ public class BgReading extends Model {
             return String.valueOf(noise);
         }
     }
+
+    // Should that be combined with noiseValue?
+    private Boolean Unclear() {
+        Log.e(TAG_ALERT, "Unclear filtered_data=" + filtered_data + " raw_data=" + raw_data);
+        if (raw_data > filtered_data * 1.3 || raw_data < filtered_data * 0.7) {
+            return true;
+        }
+        return false;
+    }
+
+    /*
+     * returns the time (in ms) that the state is not clear and no alerts should work
+     * The base of the algorithm is that any period can be bad or not. bgReading.Unclear() tells that.
+     * a non clear bgReading means MAX_INFLUANCE time after it we are in a bad position
+     * Since this code is based on hurstics, and since times are not acurate, boundery issues can be ignored.
+     *
+     * interstingTime is the period to check. That is if the last period is bad, we want to know how long does it go bad...
+     * */
+
+    static final int MAX_INFLUANCE = 30 * 60000; // A bad point means data is untrusted for 30 minutes.
+    private static Long getUnclearTimeHelper(List<BgReading> latest, Long interstingTime, final Long now) {
+
+        // The code ignores missing points (that is they some times are treated as good and some times as bad.
+        // If this bothers someone, I believe that the list should be filled with the missing points as good and continue to run.
+
+        Long LastGoodTime = 0l; // 0 represents that we are not in a good part
+
+        Long UnclearTime = 0l;
+        for(BgReading bgReading : latest) {
+            // going over the readings from latest to first
+            if(bgReading.timestamp < now - (interstingTime + MAX_INFLUANCE)) {
+                // Some readings are missing, we can stop checking
+                break;
+            }
+            if(bgReading.timestamp <= now - MAX_INFLUANCE && UnclearTime == 0) {
+                Log.e(TAG_ALERT, "We did not have a problematic reading for MAX_INFLUANCE time, so now all is well");
+                return 0l;
+
+            }
+            if (bgReading.Unclear()) {
+                // here we assume that there are no missing points. Missing points might join the good and bad values as well...
+                // we should have checked if we have a period, but it is hard to say how to react to them.
+                Log.e(TAG_ALERT, "We have a bad reading, so setting UnclearTime to " + bgReading.timestamp);
+                UnclearTime = bgReading.timestamp;
+                LastGoodTime = 0l;
+            } else {
+                if (LastGoodTime == 0l) {
+                    Log.e(TAG_ALERT, "We are starting a good period at "+ bgReading.timestamp);
+                    LastGoodTime = bgReading.timestamp;
+                } else {
+                    // we have some good period, is it good enough?
+                    if(LastGoodTime - bgReading.timestamp >= MAX_INFLUANCE) {
+                        Log.e(TAG_ALERT, "We have a good period from " + bgReading.timestamp + " to " + LastGoodTime + "returning " + (now - UnclearTime +60000));
+                        return now - UnclearTime + 5 *60000;
+                    }
+                }
+            }
+        }
+        // if we are here, we have a problem... or not.
+        if(UnclearTime == 0l) {
+            Log.e(TAG_ALERT, "Since we did not find a good period, but we also did not find a single bad value, we assume things are good");
+            return 0l;
+        }
+        Log.e(TAG_ALERT, "We scanned all over, but could not find a good period. we have a bad value, so assuming that the whole period is bad" +
+                " returning " + interstingTime);
+        // Note that we might now have all the points, and in this case, since we don't have a good period I return a bad period.
+        return interstingTime;
+
+    }
+
+    // This is to enable testing of the function, by passing different values
+    public static Long getUnclearTime(Long interstingTime) {
+        List<BgReading> latest = BgReading.latest((interstingTime.intValue() + MAX_INFLUANCE)/ 60000 /5 );
+        if (latest == null) {
+            return 0L;
+        }
+        final Long now = new Date().getTime();
+        return getUnclearTimeHelper(latest, interstingTime, now);
+
+    }
+
+    public static Long getTimeSinceLastReading() {
+        BgReading bgReading = BgReading.last();
+        if (bgReading != null) {
+            return (new Date().getTime() - bgReading.timestamp);
+        }
+        return (long) 0;
+    }
+
+    // the input of this function is a string. each char can be g(=good) or b(=bad) or s(=skip, point unmissed).
+    static List<BgReading> createlatestTest(String input, Long now) {
+        List<BgReading> out = new LinkedList<BgReading> ();
+        char[] chars=  input.toCharArray();
+        for(int i=0; i < chars.length; i++) {
+            BgReading bg = new BgReading();
+            bg.timestamp = now - i * 5 * 60000;
+            bg.raw_data = 150;
+            if(chars[i] == 'g') {
+                bg.filtered_data = 151;
+            } else if (chars[i] == 'b') {
+                bg.filtered_data = 130;
+            } else {
+                continue;
+            }
+            out.add(bg);
+        }
+        return out;
+
+
+    }
+    static void TestgetUnclearTime(String input, Long interstingTime, Long expectedResult) {
+        final Long now = new Date().getTime();
+        List<BgReading> readings = createlatestTest(input, now);
+        Long result = getUnclearTimeHelper(readings, interstingTime * 60000, now);
+        if (result == expectedResult * 60000) {
+            Log.e(TAG_ALERT, "Test passed");
+        } else {
+            Log.e(TAG_ALERT, "Test failed expectedResult = " + expectedResult + " result = "+ result /5 / 60000);
+        }
+
+    }
+
+    public static void TestgetUnclearTimes() {
+        TestgetUnclearTime("gggggggggggggggggggggggg", 90l, 0l * 5);
+        TestgetUnclearTime("bggggggggggggggggggggggg", 90l, 1l * 5);
+        TestgetUnclearTime("bbgggggggggggggggggggggg", 90l, 2l *5 );
+        TestgetUnclearTime("gbgggggggggggggggggggggg", 90l, 2l * 5);
+        TestgetUnclearTime("gbgggbggbggbggbggbggbgbg", 90l, 18l * 5);
+        TestgetUnclearTime("bbbgggggggbbgggggggggggg", 90l, 3l * 5);
+        TestgetUnclearTime("ggggggbbbbbbgggggggggggg", 90l, 0l * 5);
+        TestgetUnclearTime("ggssgggggggggggggggggggg", 90l, 0l * 5);
+        TestgetUnclearTime("ggssbggssggggggggggggggg", 90l, 5l * 5);
+        TestgetUnclearTime("bb",                       90l, 18l * 5);
+
+        // intersting time is 2 minutes, we should always get 0 (in 5 minutes units
+        TestgetUnclearTime("gggggggggggggggggggggggg", 2l, 0l  * 5);
+        TestgetUnclearTime("bggggggggggggggggggggggg", 2l, 2l);
+        TestgetUnclearTime("bbgggggggggggggggggggggg", 2l, 2l);
+        TestgetUnclearTime("gbgggggggggggggggggggggg", 2l, 2l);
+        TestgetUnclearTime("gbgggbggbggbggbggbggbgbg", 2l, 2l);
+
+        // intersting time is 10 minutes, we should always get 0 (in 5 minutes units
+        TestgetUnclearTime("gggggggggggggggggggggggg", 10l, 0l  * 5);
+        TestgetUnclearTime("bggggggggggggggggggggggg", 10l, 1l * 5);
+        TestgetUnclearTime("bbgggggggggggggggggggggg", 10l, 2l * 5);
+        TestgetUnclearTime("gbgggggggggggggggggggggg", 10l, 2l * 5);
+        TestgetUnclearTime("gbgggbggbggbggbggbggbgbg", 10l, 2l * 5);
+        TestgetUnclearTime("bbbgggggggbbgggggggggggg", 10l, 2l * 5);
+        TestgetUnclearTime("ggggggbbbbbbgggggggggggg", 10l, 0l * 5);
+        TestgetUnclearTime("ggssgggggggggggggggggggg", 10l, 0l * 5);
+        TestgetUnclearTime("ggssbggssggggggggggggggg", 10l, 2l * 5);
+        TestgetUnclearTime("bb",                       10l, 2l * 5);
+    }
+
 }

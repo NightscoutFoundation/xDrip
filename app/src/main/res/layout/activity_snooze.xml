@@ -1,0 +1,71 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:showDividers="middle">
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".3"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+        <Button
+            android:id="@+id/button_snooze"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="@string/snooze"
+            android:layout_margin="20dp"
+            android:textSize="30sp" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".3"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <NumberPicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/snooze"
+            android:layout_gravity="center_horizontal"
+            android:descendantFocusability="blocksDescendants"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".3"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingTop="10dp">
+
+        <TextView
+            android:id="@+id/alert_status"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="replace dyanmicly (alert status)"
+            android:textSize="20sp"/>
+        </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".1"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+        <Button
+            android:id="@+id/button_disable_alerts"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Disable All alerts"/>
+        <Button
+            android:id="@+id/enable_alerts"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Re-Enable Alerts"/>
+    </LinearLayout>
+
+
+
+</LinearLayout>

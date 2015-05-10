@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Tables.BgReadingTable;
@@ -83,6 +84,7 @@ public class NavDrawerBuilder {
             }
         }
         options.add("System Status");
+        options.add("Snooze Alerts");
         options.add("Settings");
 //        options.add("Fake Numbers");
 //        options.add("Add Double Calibration");
@@ -95,7 +97,7 @@ public class NavDrawerBuilder {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean IUnderstand = prefs.getBoolean("I_understand", false);
         if(IUnderstand == false) {
-            options.add(new Intent(context, SettingsActivity.class));
+            options.add(new Intent(context, Preferences.class));
             return options;
         }
 
@@ -137,7 +139,7 @@ public class NavDrawerBuilder {
             }
         }
         options.add(new Intent(context, SystemStatus.class));
-//        options.add(new Intent(context, SettingsActivity.class));
+        options.add(new Intent(context, SnoozeActivity.class));
         options.add(new Intent(context, Preferences.class));
 //        options.add(new Intent(context, FakeNumbers.class));
 //        options.add(new Intent(context, DoubleCalibrationActivity.class));
