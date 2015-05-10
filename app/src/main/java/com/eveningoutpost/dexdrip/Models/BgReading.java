@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.content.Context;
-//import android.content.Intent;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
@@ -11,11 +11,11 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-//import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.Sensor;
-//import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
+import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
@@ -26,16 +26,16 @@ import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.text.DecimalFormat;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
 @Table(name = "BgReadings", id = BaseColumns._ID)
 public class BgReading extends Model {
     private final static String TAG = BgReading.class.getSimpleName();
+    private final static String TAG_ALERT = "AlertBg";
     //TODO: Have these as adjustable settings!!
-//    public final static double BESTOFFSET = (60000 * 0); // Assume readings are about x minutes off from actual!
-    public final static double BESTOFFSET =  0; // Assume readings are about x minutes off from actual!
-    private static boolean predictBG;
+    public final static double BESTOFFSET = (60000 * 0); // Assume readings are about x minutes off from actual!
 
     @Column(name = "sensor", index = true)
     public Sensor sensor;
@@ -183,7 +183,7 @@ public class BgReading extends Model {
     }
 
     public static void create(SensorRecord sensorRecord, long addativeOffset, Context context) {
-        Log.w(TAG, "create: gonna make some sensor records: " + sensorRecord.getUnfiltered());
+        Log.w(TAG, "gonna make some sensor records: " + sensorRecord.getUnfiltered());
         if(BgReading.is_new(sensorRecord, addativeOffset)) {
             BgReading bgReading = new BgReading();
             Sensor sensor = Sensor.currentSensor();
@@ -208,7 +208,7 @@ public class BgReading extends Model {
 
     public static void create(EGVRecord egvRecord, long addativeOffset, Context context) {
         BgReading bgReading = BgReading.getForTimestamp(egvRecord.getSystemTime().getTime() + addativeOffset);
-        Log.w(TAG, "create: Looking for BG reading to tag this thing to: " + egvRecord.getBGValue());
+        Log.w(TAG, "Looking for BG reading to tag this thing to: " + egvRecord.getBGValue());
         if(bgReading != null) {
             bgReading.calculated_value = egvRecord.getBGValue();
             if (egvRecord.getBGValue() <= 13) {
@@ -219,7 +219,7 @@ public class BgReading extends Model {
                 bgReading.raw_calculated = (((calSlope * bgReading.raw_data) + calIntercept) - 5);
                 bgReading.noise = egvRecord.noiseValue();
             }
-            Log.w(TAG, "create: NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
+            Log.w(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
             bgReading.calculated_value_slope = bgReading.slopefromName(egvRecord.getTrend().friendlyTrendName());
             if(egvRecord.getTrend().friendlyTrendName().compareTo("NOT_COMPUTABLE") == 0 || egvRecord.getTrend().friendlyTrendName().compareTo("OUT_OF_RANGE") == 0) {
                 bgReading.hide_slope = true;
@@ -228,7 +228,6 @@ public class BgReading extends Model {
             bgReading.save();
             bgReading.find_new_curve();
             bgReading.find_new_raw_curve();
-            bgReading.perform_calculations();
             Notifications.getInstance(context).notificationSetter(context);
             BgSendQueue.addToQueue(bgReading, "create", context);
         }
@@ -240,17 +239,17 @@ public class BgReading extends Model {
             BgReading bgReading = new Select()
                     .from(BgReading.class)
                     .where("Sensor = ? ", sensor.getId())
-                    .where("timestamp <= ?",  (timestamp + (60*1000))) // 1 minute padding (should never be that far off, but why not)
+                    .where("timestamp <= ?", (timestamp + (60 * 1000))) // 1 minute padding (should never be that far off, but why not)
                     .where("calculated_value = 0")
                     .where("raw_calculated = 0")
                     .orderBy("timestamp desc")
                     .executeSingle();
             if(bgReading != null && Math.abs(bgReading.timestamp - timestamp) < (3*60*1000)) { //cool, so was it actually within 4 minutes of that bg reading?
-                Log.w(TAG, "getForTimestamp: Found a BG timestamp match");
+                Log.w(TAG, "Found a BG timestamp match");
                 return bgReading;
             }
         }
-        Log.w(TAG, "getForTimestamp: No luck finding a BG timestamp match");
+        Log.w(TAG, "No luck finding a BG timestamp match");
         return null;
     }
 
@@ -265,19 +264,15 @@ public class BgReading extends Model {
                     .orderBy("timestamp desc")
                     .executeSingle();
             if(bgReading != null && Math.abs(bgReading.timestamp - timestamp) < (3*60*1000)) { //cool, so was it actually within 4 minutes of that bg reading?
-                Log.w(TAG, "is_new: Old Reading");
+                Log.w(TAG, "Old Reading");
                 return false;
             }
         }
-        Log.w(TAG, "is_new: New Reading");
+        Log.w(TAG, "New Reading");
         return true;
     }
 
-    //This one handles the filtered_data that we get with Dexbridge.
     public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp) {
-        double selected_value;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        predictBG = prefs.getBoolean("predictBG", false);
         BgReading bgReading = new BgReading();
         Sensor sensor = Sensor.currentSensor();
         if (sensor != null) {
@@ -287,7 +282,6 @@ public class BgReading extends Model {
                 bgReading.sensor_uuid = sensor.uuid;
                 bgReading.raw_data = (raw_data / 1000);
                 bgReading.filtered_data = (filtered_data / 1000);
-                //bgReading.timestamp = new Date().getTime();
                 bgReading.timestamp = timestamp;
                 bgReading.uuid = UUID.randomUUID().toString();
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
@@ -306,78 +300,6 @@ public class BgReading extends Model {
                 bgReading.calibration_uuid = calibration.uuid;
                 bgReading.raw_data = (raw_data/1000);
                 bgReading.filtered_data = (filtered_data/1000);
-                //bgReading.timestamp = new Date().getTime();
-                bgReading.timestamp = timestamp;
-                bgReading.uuid = UUID.randomUUID().toString();
-                bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
-                bgReading.synced = false;
-
-                BgReading lastBgReading = BgReading.last();
-
-                bgReading.calculateAgeAdjustedRawValue();
-                if(Math.abs((bgReading.raw_data - calibration.intercept)-(lastBgReading.raw_data - calibration.intercept)) > (lastBgReading.calculated_value * 0.10)){
-                    Log.w(TAG,"create: Using Filtered Data");
-                    bgReading.selected_filtered_data = true;
-                    selected_value = filtered_data;
-                } else {
-                    Log.w(TAG, "create: Using Raw Data");
-                    bgReading.selected_filtered_data = false;
-                    selected_value = raw_data;
-                }
-
-                bgReading.calculateAgeAdjustedRawValue();
-
-                if ( lastBgReading.calibration != null) {
-                    if (lastBgReading.calibration_flag && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp) && ((lastBgReading.calibration.timestamp + (60000 * 20)) > bgReading.timestamp)) {
-                        lastBgReading.calibration.rawValueOverride(BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value), context);
-                    }
-                }
-                bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
-                if (bgReading.calculated_value <= 40) {
-                    bgReading.calculated_value = 40;
-                } else if (bgReading.calculated_value >= 400) {
-                    bgReading.calculated_value = 400;
-                }
-                Log.w(TAG, "create NEW VALUE CALCULATED: " + bgReading.calculated_value + " at " +bgReading.timestamp);
-
-                bgReading.save();
-                bgReading.perform_calculations();
-                Notifications.getInstance(context).notificationSetter(context);
-                BgSendQueue.addToQueue(bgReading, "create", context);
-            }
-        }
-        Log.w(TAG,"create BG GSON: " + bgReading.toS());
-        return bgReading;
-    }
-
-    public static BgReading create(double raw_data, Context context, Long timestamp) {
-        BgReading bgReading = new BgReading();
-        Sensor sensor = Sensor.currentSensor();
-        if (sensor != null) {
-            Calibration calibration = Calibration.last();
-            if (calibration == null) {
-                bgReading.sensor = sensor;
-                bgReading.sensor_uuid = sensor.uuid;
-                bgReading.raw_data = (raw_data / 1000);
-                bgReading.filtered_data = (raw_data / 1000);
-                bgReading.timestamp = timestamp;
-                bgReading.uuid = UUID.randomUUID().toString();
-                bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
-                bgReading.synced = false;
-                bgReading.calibration_flag = false;
-
-                bgReading.calculateAgeAdjustedRawValue();
-
-                bgReading.save();
-                bgReading.perform_calculations();
-            } else {
-
-                bgReading.sensor = sensor;
-                bgReading.sensor_uuid = sensor.uuid;
-                bgReading.calibration = calibration;
-                bgReading.calibration_uuid = calibration.uuid;
-                bgReading.raw_data = (raw_data/1000);
-                bgReading.filtered_data = (raw_data/1000);
                 bgReading.timestamp = timestamp;
                 bgReading.uuid = UUID.randomUUID().toString();
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
@@ -402,7 +324,7 @@ public class BgReading extends Model {
                 }
 
                 bgReading.calculated_value = Math.min(400, Math.max(40, bgReading.calculated_value));
-                Log.w(TAG, "create: NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
+                Log.w(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
 
                 bgReading.save();
                 bgReading.perform_calculations();
@@ -410,7 +332,7 @@ public class BgReading extends Model {
                 BgSendQueue.addToQueue(bgReading, "create", context);
             }
         }
-        Log.w(TAG,"create: BG GSON: " + bgReading.toS());
+        Log.w("BG GSON: ",bgReading.toS());
 
         return bgReading;
     }
@@ -583,12 +505,12 @@ public class BgReading extends Model {
         double estimate;
         BgReading latest = BgReading.last();
         if (latest == null) {
-            Log.w(TAG, "estimated_raw_bg: No data yet, assume perfect!");
+            Log.w(TAG, "No data yet, assume perfect!");
             estimate = 160;
         } else {
             estimate = (latest.ra * timestamp * timestamp) + (latest.rb * timestamp) + latest.rc;
         }
-        Log.w(TAG, "estimated_raw_bg: " + estimate);
+        Log.w(TAG, "ESTIMATE RAW BG" + estimate);
         return estimate;
     }
 
@@ -619,7 +541,7 @@ public class BgReading extends Model {
             Log.v(TAG,"find_slope: slope is " + calculated_value_slope);
             save();
         } else {
-            Log.w(TAG, "find_slope: NO BG? COULDNT FIND SLOPE!");
+            Log.w(TAG, "NO BG? COULDNT FIND SLOPE!");
         }
     }
 
@@ -640,12 +562,12 @@ public class BgReading extends Model {
             b = (-y1*(x2+x3)/((x1-x2)*(x1-x3))-y2*(x1+x3)/((x2-x1)*(x2-x3))-y3*(x1+x2)/((x3-x1)*(x3-x2)));
             c = (y1*x2*x3/((x1-x2)*(x1-x3))+y2*x1*x3/((x2-x1)*(x2-x3))+y3*x1*x2/((x3-x1)*(x3-x2)));
 
-            Log.w(TAG, "find_new_curve: BG PARABOLIC RATES: "+a+"x^2 + "+b+"x + "+c);
+            Log.w(TAG, "BG PARABOLIC RATES: "+a+"x^2 + "+b+"x + "+c);
 
             save();
         } else if (last_3.size() == 2) {
 
-            Log.w(TAG, "find_new_curve: Not enough data to calculate parabolic rates - assume Linear");
+            Log.w(TAG, "Not enough data to calculate parabolic rates - assume Linear");
                 BgReading latest = last_3.get(0);
                 BgReading second_latest = last_3.get(1);
 
@@ -662,15 +584,15 @@ public class BgReading extends Model {
                 a = 0;
                 c = -1 * ((latest.b * x1) - y1);
 
-            Log.w(TAG, "find_new_curve: "+latest.a+"x^2 + "+latest.b+"x + "+latest.c);
+            Log.w(TAG, ""+latest.a+"x^2 + "+latest.b+"x + "+latest.c);
                 save();
             } else {
-            Log.w(TAG, "find_new_curve: Not enough data to calculate parabolic rates - assume static data");
+            Log.w(TAG, "Not enough data to calculate parabolic rates - assume static data");
             a = 0;
             b = 0;
             c = calculated_value;
 
-            Log.w(TAG, "find_new_curve: "+a+"x^2 + "+b+"x + "+c);
+            Log.w(TAG, ""+a+"x^2 + "+b+"x + "+c);
             save();
         }
     }
@@ -679,7 +601,7 @@ public class BgReading extends Model {
         double adjust_for = (86400000 * 1.9) - time_since_sensor_started;
         if (adjust_for > 0) {
             age_adjusted_raw_value = (((.45) * (adjust_for / (86400000 * 1.9))) * raw_data) + raw_data;
-            Log.w(TAG, "calculateAgeAdjustedRawValue: RAW VALUE ADJUSTMENT: FROM:" + raw_data + " TO: " + age_adjusted_raw_value);
+            Log.w("RAW VALUE ADJUSTMENT: ", "FROM:" + raw_data + " TO: " + age_adjusted_raw_value);
         } else {
             age_adjusted_raw_value = raw_data;
         }
@@ -702,7 +624,7 @@ public class BgReading extends Model {
             rb = (-y1*(x2+x3)/((x1-x2)*(x1-x3))-y2*(x1+x3)/((x2-x1)*(x2-x3))-y3*(x1+x2)/((x3-x1)*(x3-x2)));
             rc = (y1*x2*x3/((x1-x2)*(x1-x3))+y2*x1*x3/((x2-x1)*(x2-x3))+y3*x1*x2/((x3-x1)*(x3-x2)));
 
-            Log.w(TAG, "find_new_raw_curve: RAW PARABOLIC RATES: "+ra+"x^2 + "+rb+"x + "+rc);
+            Log.w(TAG, "RAW PARABOLIC RATES: "+ra+"x^2 + "+rb+"x + "+rc);
             save();
         } else if (last_3.size() == 2) {
             BgReading latest = last_3.get(0);
@@ -720,12 +642,12 @@ public class BgReading extends Model {
             ra = 0;
             rc = -1 * ((latest.rb * x1) - y1);
 
-            Log.w(TAG, "find_new_raw_curve: Not enough data to calculate parabolic rates - assume Linear data");
+            Log.w(TAG, "Not enough data to calculate parabolic rates - assume Linear data");
 
-            Log.w(TAG, "find_new_raw_curve: RAW PARABOLIC RATES: "+ra+"x^2 + "+rb+"x + "+rc);
+            Log.w(TAG, "RAW PARABOLIC RATES: "+ra+"x^2 + "+rb+"x + "+rc);
             save();
         } else {
-            Log.w(TAG, "find_new_raw_curve: Not enough data to calculate parabolic rates - assume static data");
+            Log.w(TAG, "Not enough data to calculate parabolic rates - assume static data");
             BgReading latest_entry = BgReading.lastNoSenssor();
             ra = 0;
             rb = 0;
@@ -761,4 +683,158 @@ public class BgReading extends Model {
             return String.valueOf(noise);
         }
     }
+
+    // Should that be combined with noiseValue?
+    private Boolean Unclear() {
+        Log.e(TAG_ALERT, "Unclear filtered_data=" + filtered_data + " raw_data=" + raw_data);
+        if (raw_data > filtered_data * 1.3 || raw_data < filtered_data * 0.7) {
+            return true;
+        }
+        return false;
+    }
+
+    /*
+     * returns the time (in ms) that the state is not clear and no alerts should work
+     * The base of the algorithm is that any period can be bad or not. bgReading.Unclear() tells that.
+     * a non clear bgReading means MAX_INFLUANCE time after it we are in a bad position
+     * Since this code is based on hurstics, and since times are not acurate, boundery issues can be ignored.
+     *
+     * interstingTime is the period to check. That is if the last period is bad, we want to know how long does it go bad...
+     * */
+
+    static final int MAX_INFLUANCE = 30 * 60000; // A bad point means data is untrusted for 30 minutes.
+    private static Long getUnclearTimeHelper(List<BgReading> latest, Long interstingTime, final Long now) {
+
+        // The code ignores missing points (that is they some times are treated as good and some times as bad.
+        // If this bothers someone, I believe that the list should be filled with the missing points as good and continue to run.
+
+        Long LastGoodTime = 0l; // 0 represents that we are not in a good part
+
+        Long UnclearTime = 0l;
+        for(BgReading bgReading : latest) {
+            // going over the readings from latest to first
+            if(bgReading.timestamp < now - (interstingTime + MAX_INFLUANCE)) {
+                // Some readings are missing, we can stop checking
+                break;
+            }
+            if(bgReading.timestamp <= now - MAX_INFLUANCE && UnclearTime == 0) {
+                Log.e(TAG_ALERT, "We did not have a problematic reading for MAX_INFLUANCE time, so now all is well");
+                return 0l;
+
+            }
+            if (bgReading.Unclear()) {
+                // here we assume that there are no missing points. Missing points might join the good and bad values as well...
+                // we should have checked if we have a period, but it is hard to say how to react to them.
+                Log.e(TAG_ALERT, "We have a bad reading, so setting UnclearTime to " + bgReading.timestamp);
+                UnclearTime = bgReading.timestamp;
+                LastGoodTime = 0l;
+            } else {
+                if (LastGoodTime == 0l) {
+                    Log.e(TAG_ALERT, "We are starting a good period at "+ bgReading.timestamp);
+                    LastGoodTime = bgReading.timestamp;
+                } else {
+                    // we have some good period, is it good enough?
+                    if(LastGoodTime - bgReading.timestamp >= MAX_INFLUANCE) {
+                        Log.e(TAG_ALERT, "We have a good period from " + bgReading.timestamp + " to " + LastGoodTime + "returning " + (now - UnclearTime +60000));
+                        return now - UnclearTime + 5 *60000;
+                    }
+                }
+            }
+        }
+        // if we are here, we have a problem... or not.
+        if(UnclearTime == 0l) {
+            Log.e(TAG_ALERT, "Since we did not find a good period, but we also did not find a single bad value, we assume things are good");
+            return 0l;
+        }
+        Log.e(TAG_ALERT, "We scanned all over, but could not find a good period. we have a bad value, so assuming that the whole period is bad" +
+                " returning " + interstingTime);
+        // Note that we might now have all the points, and in this case, since we don't have a good period I return a bad period.
+        return interstingTime;
+
+    }
+
+    // This is to enable testing of the function, by passing different values
+    public static Long getUnclearTime(Long interstingTime) {
+        List<BgReading> latest = BgReading.latest((interstingTime.intValue() + MAX_INFLUANCE)/ 60000 /5 );
+        if (latest == null) {
+            return 0L;
+        }
+        final Long now = new Date().getTime();
+        return getUnclearTimeHelper(latest, interstingTime, now);
+
+    }
+
+    public static Long getTimeSinceLastReading() {
+        BgReading bgReading = BgReading.last();
+        if (bgReading != null) {
+            return (new Date().getTime() - bgReading.timestamp);
+        }
+        return (long) 0;
+    }
+
+    // the input of this function is a string. each char can be g(=good) or b(=bad) or s(=skip, point unmissed).
+    static List<BgReading> createlatestTest(String input, Long now) {
+        List<BgReading> out = new LinkedList<BgReading> ();
+        char[] chars=  input.toCharArray();
+        for(int i=0; i < chars.length; i++) {
+            BgReading bg = new BgReading();
+            bg.timestamp = now - i * 5 * 60000;
+            bg.raw_data = 150;
+            if(chars[i] == 'g') {
+                bg.filtered_data = 151;
+            } else if (chars[i] == 'b') {
+                bg.filtered_data = 130;
+            } else {
+                continue;
+            }
+            out.add(bg);
+        }
+        return out;
+
+
+    }
+    static void TestgetUnclearTime(String input, Long interstingTime, Long expectedResult) {
+        final Long now = new Date().getTime();
+        List<BgReading> readings = createlatestTest(input, now);
+        Long result = getUnclearTimeHelper(readings, interstingTime * 60000, now);
+        if (result == expectedResult * 60000) {
+            Log.e(TAG_ALERT, "Test passed");
+        } else {
+            Log.e(TAG_ALERT, "Test failed expectedResult = " + expectedResult + " result = "+ result /5 / 60000);
+        }
+
+    }
+
+    public static void TestgetUnclearTimes() {
+        TestgetUnclearTime("gggggggggggggggggggggggg", 90l, 0l * 5);
+        TestgetUnclearTime("bggggggggggggggggggggggg", 90l, 1l * 5);
+        TestgetUnclearTime("bbgggggggggggggggggggggg", 90l, 2l *5 );
+        TestgetUnclearTime("gbgggggggggggggggggggggg", 90l, 2l * 5);
+        TestgetUnclearTime("gbgggbggbggbggbggbggbgbg", 90l, 18l * 5);
+        TestgetUnclearTime("bbbgggggggbbgggggggggggg", 90l, 3l * 5);
+        TestgetUnclearTime("ggggggbbbbbbgggggggggggg", 90l, 0l * 5);
+        TestgetUnclearTime("ggssgggggggggggggggggggg", 90l, 0l * 5);
+        TestgetUnclearTime("ggssbggssggggggggggggggg", 90l, 5l * 5);
+        TestgetUnclearTime("bb",                       90l, 18l * 5);
+
+        // intersting time is 2 minutes, we should always get 0 (in 5 minutes units
+        TestgetUnclearTime("gggggggggggggggggggggggg", 2l, 0l  * 5);
+        TestgetUnclearTime("bggggggggggggggggggggggg", 2l, 2l);
+        TestgetUnclearTime("bbgggggggggggggggggggggg", 2l, 2l);
+        TestgetUnclearTime("gbgggggggggggggggggggggg", 2l, 2l);
+        TestgetUnclearTime("gbgggbggbggbggbggbggbgbg", 2l, 2l);
+
+        // intersting time is 10 minutes, we should always get 0 (in 5 minutes units
+        TestgetUnclearTime("gggggggggggggggggggggggg", 10l, 0l  * 5);
+        TestgetUnclearTime("bggggggggggggggggggggggg", 10l, 1l * 5);
+        TestgetUnclearTime("bbgggggggggggggggggggggg", 10l, 2l * 5);
+        TestgetUnclearTime("gbgggggggggggggggggggggg", 10l, 2l * 5);
+        TestgetUnclearTime("gbgggbggbggbggbggbggbgbg", 10l, 2l * 5);
+        TestgetUnclearTime("bbbgggggggbbgggggggggggg", 10l, 2l * 5);
+        TestgetUnclearTime("ggggggbbbbbbgggggggggggg", 10l, 0l * 5);
+        TestgetUnclearTime("ggssgggggggggggggggggggg", 10l, 0l * 5);
+        TestgetUnclearTime("ggssbggssggggggggggggggg", 10l, 2l * 5);
+        TestgetUnclearTime("bb",                       10l, 2l * 5);
+    }
+
 }

@@ -1,91 +1,71 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
- 
-    <TextView  
-        android:id="@+id/alert_status"
-        android:layout_width="fill_parent" 
-        android:layout_height="wrap_content" 
-        android:gravity="left"
-        android:text="replace dyanmicly (alert status)"
-        android:textSize="24dp"
-        />
-    
-    <EditText
-        android:id="@+id/snooze"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:ems="10"
-        android:autoText="false"
-        android:text="120"
-        android:singleLine="true"
-        android:textAlignment="center"
-        android:textSize="24dp"
-        android:layout_below="@+id/alert_status" 
-        android:hint="@string/snooze_hint"
-        android:layout_alignParentStart="true" />
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:showDividers="middle">
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".3"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+        <Button
+            android:id="@+id/button_snooze"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="@string/snooze"
+            android:layout_margin="20dp"
+            android:textSize="30sp" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".3"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
 
-    <Button
-        android:id="@+id/button_snooze"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/snooze"
-        android:layout_alignParentBottom="false"
-        android:layout_below="@+id/snooze" 
-        android:layout_centerHorizontal="true" />
-    
-    <Button
-        android:id="@+id/button_create_low"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Create low alert"
-        android:layout_alignParentBottom="false"
-        android:layout_below="@+id/button_snooze" 
-        android:layout_centerHorizontal="true" />
-    
-     <TextView  
-        android:id="@+id/low_alerts"
-        android:layout_below="@+id/button_create_low" 
-        android:layout_width="fill_parent" 
-        android:layout_height="wrap_content" 
-        android:gravity="left"
-        android:text="Low alerts"
-        android:textSize="24dp"
-        />
-    <ListView
-        android:id="@+id/listView_low"
-        android:layout_below="@+id/low_alerts" 
-        android:layout_width="wrap_content"
-        android:layout_height="100dp" >
-    </ListView>
+        <NumberPicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/snooze"
+            android:layout_gravity="center_horizontal"
+            android:descendantFocusability="blocksDescendants"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".3"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingTop="10dp">
 
-    <Button
-        android:id="@+id/button_create_high"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Create high alert"
-        android:layout_alignParentBottom="false"
-        android:layout_below="@+id/listView_low" 
-        android:layout_centerHorizontal="true" />
-    
-    <TextView
-        android:id="@+id/high_alerts"
-        android:layout_below="@+id/button_create_high"   
-        android:layout_width="fill_parent" 
-        android:layout_height="wrap_content" 
-        android:gravity="left"
-        android:text="high alerts"
-        android:textSize="24dp"
-        
-        />
-    <ListView
-        android:id="@+id/listView_high"
-        android:layout_below="@+id/high_alerts" 
-        android:layout_width="wrap_content"
-        android:layout_height="100dp" >
-    </ListView>
-    
-    
-</RelativeLayout>
+        <TextView
+            android:id="@+id/alert_status"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="replace dyanmicly (alert status)"
+            android:textSize="20sp"/>
+        </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".1"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+        <Button
+            android:id="@+id/button_disable_alerts"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Disable All alerts"/>
+        <Button
+            android:id="@+id/enable_alerts"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Re-Enable Alerts"/>
+    </LinearLayout>
+
+
+
+</LinearLayout>

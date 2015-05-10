@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
@@ -11,6 +12,7 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Tables.BgReadingTable;
 import com.eveningoutpost.dexdrip.Tables.CalibrationDataTable;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utils.Preferences;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -82,10 +84,7 @@ public class NavDrawerBuilder {
             }
         }
         options.add("System Status");
-        if(ActiveBgAlert.getOnly() != null) {
-            options.add("Snooze alarm");
-        }
-        options.add("Snooze and alarm");
+        options.add("Snooze Alerts");
         options.add("Settings");
         options.add("Fake Numbers");
 //        options.add("Add Double Calibration");
@@ -98,7 +97,7 @@ public class NavDrawerBuilder {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean IUnderstand = prefs.getBoolean("I_understand", false);
         if(IUnderstand == false) {
-            options.add(new Intent(context, SettingsActivity.class));
+            options.add(new Intent(context, Preferences.class));
             return options;
         }
 
@@ -140,11 +139,8 @@ public class NavDrawerBuilder {
             }
         }
         options.add(new Intent(context, SystemStatus.class));
-        if(ActiveBgAlert.getOnly() != null) {
-            options.add(new Intent(context, SnoozeActivity.class));
-        }
         options.add(new Intent(context, SnoozeActivity.class));
-        options.add(new Intent(context, SettingsActivity.class));
+        options.add(new Intent(context, Preferences.class));
         options.add(new Intent(context, FakeNumbers.class));
 //        options.add(new Intent(context, DoubleCalibrationActivity.class));
 //        options.add(new Intent(context, ShareTest.class));

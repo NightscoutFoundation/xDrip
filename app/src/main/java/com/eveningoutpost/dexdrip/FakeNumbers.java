@@ -41,8 +41,12 @@ public class FakeNumbers extends Activity {
             public void onClick(View v) {
                 EditText value = (EditText) findViewById(R.id.bg_value);
                 int intValue = Integer.parseInt(value.getText().toString());
+                int filterdValue = intValue;
+                if (intValue > 200) {
+                    filterdValue = (int)(filterdValue * 1.2);
+                }
 
-                BgReading bgReading = BgReading.create(intValue * 1000, getApplicationContext(), new Date().getTime());
+                BgReading bgReading = BgReading.create(intValue * 1000, filterdValue* 1000,  getApplicationContext(), new Date().getTime());
                 Intent intent = new Intent(getApplicationContext(), Home.class);
                 startActivity(intent);
                 finish();
@@ -64,7 +68,8 @@ public class FakeNumbers extends Activity {
         button = (Button)findViewById(R.id.StartTestAlerts);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                AlertType.testAll();
+                AlertType.testAll(getApplicationContext());
+                BgReading.TestgetUnclearTimes();
                 
             }
         });

@@ -4,7 +4,6 @@
          dismiss it. -->
     <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
     <PreferenceCategory
-        android:dependency="I_understand"
         android:title="Data Sync"
         android:key="dataSync">
 
@@ -66,18 +65,26 @@
 
         </PreferenceScreen>
 
-        <SwitchPreference
-            android:title="@string/pref_title_broadcast_enabled"
-            android:key="broadcast_data_through_intents"
-            android:summary="@string/pref_summary_broadcast_enabled"
-            android:defaultValue="false" >
-        </SwitchPreference>
-        <SwitchPreference
-            android:title="Send to Pebble"
-            android:key="broadcast_to_pebble"
-            android:summary="If you have a pebble watch you can send bg data straight to it"
-            android:defaultValue="false" >
-        </SwitchPreference>
+        <!--<CheckBoxPreference-->
+        <!--android:key="share_upload"-->
+        <!--android:title="Upload BG values as Dexcom Share"-->
+        <!--android:summary="If you are using Dexcom Share, choose this option."-->
+        <!--android:defaultValue="false" />-->
+        <!--<EditTextPreference-->
+        <!--android:dependency="share_upload"-->
+        <!--android:key="dexcom_account_name"-->
+        <!--android:title="Dexcom Account Login"-->
+        <!--android:summary="Your login for Dexcoms Website"-->
+        <!--android:defaultValue=""/>-->
+        <!--<EditTextPreference-->
+        <!--android:dependency="share_upload"-->
+        <!--android:key="dexcom_account_password"-->
+        <!--android:title="Dexcom Account Password"-->
+        <!--android:inputType="textPassword"-->
+        <!--android:summary="Your password for Dexcoms Website"-->
+        <!--android:defaultValue=""/>-->
+
+
     </PreferenceCategory>
 
 </PreferenceScreen>

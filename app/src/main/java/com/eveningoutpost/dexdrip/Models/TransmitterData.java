@@ -36,7 +36,7 @@ public class TransmitterData extends Model {
     @Column(name = "uuid", index = true)
     public String uuid;
 
-    public static TransmitterData create(byte[] buffer, int len, Long timestamp) {
+    public static TransmitterData createDexBridge(byte[] buffer, int len, Long timestamp) {
         if (len < 6) {
             return null;
         }
@@ -51,7 +51,7 @@ public class TransmitterData extends Model {
             transmitterData.filtered_data = txData.getInt(6);
             transmitterData.sensor_battery_level = txData.get(10);
             transmitterData.timestamp = timestamp;
-                    //transmitterData.timestamp = new Date().getTime();
+            //transmitterData.timestamp = new Date().getTime();
             transmitterData.uuid = UUID.randomUUID().toString();
 
             transmitterData.save();
@@ -59,38 +59,46 @@ public class TransmitterData extends Model {
             Log.w(TAG, "Created transmitterData record with Raw value of " + transmitterData.raw_data + " and Filtered value of " + transmitterData.filtered_data + " at " + transmitterData.timestamp);
             return transmitterData;
         } else {
-            //this is NOT a dexbridge packet.  Process accordingly.
-            Log.w(TAG, "create Processing a BTWixel or IPWixel packet");
-            StringBuilder data_string = new StringBuilder();
-            if (len < 6) {
-                return null;
-            }
-
-            for (int i = 0; i < len; ++i) {
-                data_string.append((char) buffer[i]);
-            }
-            String[] data = data_string.toString().split("\\s+");
-
-            randomDelay(100, 2000);
-            TransmitterData lastTransmitterData = TransmitterData.last();
-            if (lastTransmitterData != null && lastTransmitterData.raw_data == Integer.parseInt(data[0]) && Math.abs(lastTransmitterData.timestamp - timestamp) < (10000)) { //Stop allowing duplicate data, its bad!
-                return null;
-            }
-
-            TransmitterData transmitterData = new TransmitterData();
-            if (data.length > 1) {
-                transmitterData.sensor_battery_level = Integer.parseInt(data[1]);
-            }
-            if (Integer.parseInt(data[0]) < 1000) {
-                return null;
-            } // Sometimes the HM10 sends the battery level and readings in separate transmissions, filter out these incomplete packets!
-            transmitterData.raw_data = Integer.parseInt(data[0]);
-            transmitterData.timestamp = timestamp;
-            transmitterData.uuid = UUID.randomUUID().toString();
-
-            transmitterData.save();
-            return transmitterData;
+            Log.w(TAG, "Failed to interpret dexbridge packet");
+            return null;
         }
+    }
+
+    public static TransmitterData create(byte[] buffer, int len, Long timestamp) {
+        if (len < 6) {
+            return null;
+        }
+        Log.w(TAG, "create Processing a BTWixel or IPWixel packet");
+        StringBuilder data_string = new StringBuilder();
+        if (len < 6) {
+            return null;
+        }
+
+        for (int i = 0; i < len; ++i) {
+            data_string.append((char) buffer[i]);
+        }
+        String[] data = data_string.toString().split("\\s+");
+
+        randomDelay(100, 2000);
+        TransmitterData lastTransmitterData = TransmitterData.last();
+        if (lastTransmitterData != null && lastTransmitterData.raw_data == Integer.parseInt(data[0]) && Math.abs(lastTransmitterData.timestamp - timestamp) < (10000)) { //Stop allowing duplicate data, its bad!
+            return null;
+        }
+
+        TransmitterData transmitterData = new TransmitterData();
+        if (data.length > 1) {
+            transmitterData.sensor_battery_level = Integer.parseInt(data[1]);
+        }
+        if (Integer.parseInt(data[0]) < 1000) {
+            return null;
+        } // Sometimes the HM10 sends the battery level and readings in separate transmissions, filter out these incomplete packets!
+        transmitterData.raw_data = Integer.parseInt(data[0]);
+        transmitterData.filtered_data = Integer.parseInt(data[0]);
+        transmitterData.timestamp = timestamp;
+        transmitterData.uuid = UUID.randomUUID().toString();
+
+        transmitterData.save();
+        return transmitterData;
     }
 
     public static TransmitterData create(int raw_data ,int sensor_battery_level, long timestamp) {
