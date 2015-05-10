@@ -612,9 +612,11 @@ public class BgReading extends Model {
             } else {
                 calculated_value_slope = (y2 - y1)/(x2 - x1);
             }
+            Log.v(TAG,"find_slope: slope is " + calculated_value_slope);
             save();
         } else if (last_2.size() == 1) {
             calculated_value_slope = 0;
+            Log.v(TAG,"find_slope: slope is " + calculated_value_slope);
             save();
         } else {
             Log.w(TAG, "find_slope: NO BG? COULDNT FIND SLOPE!");
