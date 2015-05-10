@@ -47,9 +47,14 @@ import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 
+import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
+
+import static com.activeandroid.ActiveAndroid.beginTransaction;
+import static com.activeandroid.ActiveAndroid.endTransaction;
+import static com.activeandroid.ActiveAndroid.setTransactionSuccessful;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class DexCollectionService extends Service {
@@ -283,26 +288,39 @@ public class DexCollectionService extends Service {
     }
 
     public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
-        Log.w(TAG, "received some data!");
+        try {
+            Log.w(TAG, "received some data: " + new String(buffer, 0, len, Charset.forName("ISO-8859-1")));
+        } catch (Exception ex) {
+            Log.w(TAG, "received some data!");
+        }
+
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "ReceivedReading");
         wakeLock.acquire();
+        try {
+            beginTransaction();
+            try {
+                long timestamp = new Date().getTime();
+                TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
+                if (transmitterData != null) {
+                    Sensor sensor = Sensor.currentSensor();
+                    if (sensor != null) {
+                        sensor.latest_battery_level = transmitterData.sensor_battery_level;
+                        sensor.save();
 
-
-        Long timestamp = new Date().getTime();
-        TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
-        if (transmitterData != null) {
-            Sensor sensor = Sensor.currentSensor();
-            if (sensor != null) {
-                sensor.latest_battery_level = transmitterData.sensor_battery_level;
-                sensor.save();
-
-                BgReading.create(transmitterData.raw_data, transmitterData.raw_data, this, timestamp);
-            } else {
-                Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
+                        BgReading.create(transmitterData.raw_data, this, timestamp);
+                    } else {
+                        Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
+                    }
+                }
+                setTransactionSuccessful();
+            } finally {
+                endTransaction();
             }
+        } finally {
+            wakeLock.release();
         }
-        wakeLock.release();
+
     }
 }
