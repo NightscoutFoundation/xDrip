@@ -64,6 +64,8 @@ public class Notifications {
 
     int currentVolume;
     AudioManager manager;
+    Bitmap iconBitmap;
+    Bitmap notifiationBitmap;
 
     final int BgNotificationId = 001;
     final int calibrationNotificationId = 002;
@@ -334,7 +336,7 @@ public class Notifications {
         NotificationCompat.Builder b = new NotificationCompat.Builder(mContext);
         //b.setOngoing(true);
         b.setCategory(NotificationCompat.CATEGORY_STATUS);
-        String titleString = lastReading == null ? "BG Reading Unavailable" : (lastReading.displayValue(mContext) + " " + lastReading.slopeArrow());
+        String titleString = lastReading == null ? "BG Reading Unavailable" : (lastReading.displayValue(mContext) + " " + BgReading.slopeArrow(lastReading.calculated_value_slope));
         b.setContentTitle(titleString)
                 .setContentText("xDrip Data collection service is running.")
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
@@ -343,19 +345,20 @@ public class Notifications {
             b.setWhen(lastReading.timestamp);
             String deltaString = "Delta: " + bgGraphBuilder.unitizedDeltaString(lastReading.calculated_value - lastReadings.get(1).calculated_value);
             b.setContentText(deltaString);
-            b.setLargeIcon(new BgSparklineBuilder(mContext)
+            iconBitmap = new BgSparklineBuilder(mContext)
                     .setHeight(64)
                     .setWidth(64)
                     .setStart(System.currentTimeMillis() - 60000 * 60 * 3)
-                    .setBgGraphBuilder(new BgGraphBuilder(mContext))
-                    .build());
-
+                    .setBgGraphBuilder(bgGraphBuilder)
+                    .build();
+            b.setLargeIcon(iconBitmap);
             NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();
-            bigPictureStyle.bigPicture(new BgSparklineBuilder(mContext)
-                    .setBgGraphBuilder(new BgGraphBuilder(mContext))
+            notifiationBitmap = new BgSparklineBuilder(mContext)
+                    .setBgGraphBuilder(bgGraphBuilder)
                     .showHighLine()
                     .showLowLine()
-                    .build())
+                    .build();
+            bigPictureStyle.bigPicture(notifiationBitmap)
                     .setSummaryText(deltaString)
                     .setBigContentTitle(titleString);
             b.setStyle(bigPictureStyle);
@@ -371,6 +374,8 @@ public class Notifications {
                 NotificationManagerCompat
                         .from(mContext)
                         .notify(ongoingNotificationId, createOngoingNotification(bgGraphBuilder));
+                iconBitmap.recycle();
+                notifiationBitmap.recycle();
             }
         });
     }
