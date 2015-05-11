@@ -108,7 +108,7 @@ public class BgSparklineBuilder {
         return this;
     }
 
-    BgSparklineBuilder(Context context) {
+    public BgSparklineBuilder(Context context) {
         mContext = context;
         chart = new LineChartView(mContext);
         width = convertDpToPixel(NOTIFICATION_WIDTH_DP);
@@ -157,7 +157,7 @@ public class BgSparklineBuilder {
         return px;
     }
 
-    Bitmap build() {
+    public Bitmap build() {
         List<Line> lines = new ArrayList<>();
         bgGraphBuilder.defaultLines();
         lines.add(bgGraphBuilder.inRangeValuesLine());
