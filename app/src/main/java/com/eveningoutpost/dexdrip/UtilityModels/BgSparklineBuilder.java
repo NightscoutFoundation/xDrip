@@ -23,8 +23,9 @@ public class BgSparklineBuilder {
     private Context mContext;
 
     private static final String TAG = "BgSparklineBuilder";
-    private static final int NOTIFICATION_WIDTH_DP = 460; // 476 width minus 8 padding on each side
-    private static final int NOTIFICATION_HEIGHT_DP = 256;
+    private static final int NOTIFICATION_WIDTH_DP = 230; // 476 width minus 8 padding on each side is the native
+                                                          // resolution, but use less for lower memory requirements
+    private static final int NOTIFICATION_HEIGHT_DP = 128;
 
     private int width;
     private int height;
@@ -35,7 +36,7 @@ public class BgSparklineBuilder {
     private boolean showLowLine = false;
     private boolean showHighLine = false;
     private boolean showAxes = false;
-    private boolean useSmallDots = false;
+    private boolean useSmallDots = true;
 
     public BgSparklineBuilder setStart(long start) {
         this.start = start / BgGraphBuilder.FUZZER;
@@ -169,7 +170,7 @@ public class BgSparklineBuilder {
             lines.add(bgGraphBuilder.highLine());
         if (useSmallDots) {
             for(Line line: lines)
-                line.setPointRadius(1);
+                line.setPointRadius(2);
         }
         LineChartData lineData = new LineChartData(lines);
         if (showAxes) {
