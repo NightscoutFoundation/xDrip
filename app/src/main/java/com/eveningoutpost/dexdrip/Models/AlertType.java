@@ -126,7 +126,8 @@ public class AlertType extends Model {
             Notifications.getInstance(context).bgUnclearAlert(context);
         }
         if (UnclearTime > 0) {
-            Log.e(TAG_ALERT, "We are in an clear state, but not for too long.");
+            Log.e(TAG_ALERT, "We are in an clear state, but not for too long. Alerts are disabled");
+            return null;
         }
         at = get_highest_active_alert_helper(bg);
         if (at != null) {

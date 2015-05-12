@@ -5,6 +5,7 @@ import java.util.Date;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.LinkedList;
@@ -263,9 +264,10 @@ public class WixelReader  extends Thread {
             ComunicationHeader ch2 = gson.fromJson(flat, ComunicationHeader.class);
             System.out.println("Results code" + flat + ch2.version);
 
-
             // Real client code
-            Socket MySocket = new Socket(hostName, port);
+            InetSocketAddress ServerAdress = new InetSocketAddress(hostName, port);
+            Socket MySocket = new Socket();
+            MySocket.connect(ServerAdress, 10000);
 
             System.out.println("After the new socket \n");
             MySocket.setSoTimeout(2000);
