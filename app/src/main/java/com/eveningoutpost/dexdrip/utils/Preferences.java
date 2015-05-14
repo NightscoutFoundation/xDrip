@@ -157,6 +157,7 @@ public class Preferences extends PreferenceActivity {
 
 
             final Preference collectionMethod = findPreference("dex_collection_method");
+            final Preference dexTxId = findPreference("dex_collection_method");
             final Preference runInForeground = findPreference("run_service_in_foreground");
             final Preference wifiRecievers = findPreference("wifi_recievers_addresses");
             final Preference predictiveBG = findPreference("predictive_bg");
@@ -190,11 +191,12 @@ public class Preferences extends PreferenceActivity {
             collectionMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if(((String) newValue).compareTo("DexcomShare") != 0) { // NOT USING SHARE
+                    if (((String) newValue).compareTo("DexcomShare") != 0) { // NOT USING SHARE
                         collectionCategory.removePreference(shareKey);
                         otherCategory.removePreference(interpretRaw);
                         otherCategory.addPreference(predictiveBG);
                         alertsCategory.addPreference(calibrationAlertsScreen);
+                        if(((String) newValue).compareTo("DexbridgeWixel") == 0) collectionCategory.addPreference(dexTxId);
                     } else {
                         collectionCategory.addPreference(shareKey);
                         otherCategory.addPreference(interpretRaw);
@@ -202,12 +204,12 @@ public class Preferences extends PreferenceActivity {
                         alertsCategory.removePreference(calibrationAlertsScreen);
                         prefs.edit().putBoolean("calibration_notifications", false).apply();
                     }
-                    if(((String) newValue).compareTo("BluetoothWixel") != 0 && ((String) newValue).compareTo("DexcomShare") != 0) {
+                    if (((String) newValue).compareTo("BluetoothWixel") != 0 && ((String) newValue).compareTo("DexcomShare") != 0) {
                         collectionCategory.removePreference(runInForeground);
                     } else {
                         collectionCategory.addPreference(runInForeground);
                     }
-                    if(((String) newValue).compareTo("WifiWixel") != 0) {
+                    if (((String) newValue).compareTo("WifiWixel") != 0) {
                         collectionCategory.removePreference(wifiRecievers);
                     } else {
                         collectionCategory.addPreference(wifiRecievers);

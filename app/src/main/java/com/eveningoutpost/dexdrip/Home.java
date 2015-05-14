@@ -18,6 +18,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +27,7 @@ import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -64,18 +66,24 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     public boolean updatingPreviewViewport = false;
     public boolean updatingChartViewport = false;
     boolean isBTWixel;
+    boolean isDexbridgeWixel;
     boolean isBTShare;
     boolean isWifiWixel;
 
     public BgGraphBuilder bgGraphBuilder;
     BroadcastReceiver _broadcastReceiver;
     BroadcastReceiver newDataReceiver;
+    BroadcastReceiver newSavedBgReceiver;
+    private static Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = getApplicationContext();
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(getApplicationContext());
         collectionServiceStarter.start(getApplicationContext());
+        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_notifications, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_source, false);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -113,13 +121,26 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 updateCurrentBgInfo();
             }
         };
+        newSavedBgReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context ctx, Intent intent) {
+                if (intent.getAction().compareTo("com.eveningoutpost.dexdrip.DexCollectionService.SAVED_BG") == 0) {
+                        updateCurrentBgInfo();
+            }
+        }
+    };
         registerReceiver(_broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         registerReceiver(newDataReceiver, new IntentFilter(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA));
+        registerReceiver(newSavedBgReceiver, new IntentFilter("com.eveningoutpost.dexdrip.DexCollectionService.SAVED_BG"));
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
         holdViewport.set(0, 0, 0, 0);
         setupCharts();
         updateCurrentBgInfo();
+    }
+
+    public static Context getContext() {
+        return mContext;
     }
 
     public void setupCharts() {
@@ -193,12 +214,16 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         if(newDataReceiver != null) {
             unregisterReceiver(newDataReceiver);
         }
+        if(newSavedBgReceiver != null) {
+            unregisterReceiver(newSavedBgReceiver);
+        }
     }
 
     public void updateCurrentBgInfo() {
         final TextView notificationText = (TextView)findViewById(R.id.notices);
         notificationText.setText("");
         isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
+        isDexbridgeWixel = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
         isBTShare = CollectionServiceStarter.isBTShare(getApplicationContext());
         isWifiWixel = CollectionServiceStarter.isWifiWixel(getApplicationContext());
         if(isBTShare) {
@@ -225,7 +250,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 }
             }
         }
-        if(isBTWixel) {
+        if(isBTWixel || isDexbridgeWixel) {
             if ((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
                 notificationText.setText("Unfortunately your android version does not support Bluetooth Low Energy");
             } else {
@@ -299,6 +324,21 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(0);
 
+        boolean isDexbridge = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
+        byte bridgeBattery = DexCollectionService.getBridgeBattery();
+        final TextView dexbridgeBattery = (TextView)findViewById(R.id.textBridgeBattery);
+        if(isDexbridge) {
+            if(bridgeBattery == 0){
+                dexbridgeBattery.setText("Waiting for packet");
+            } else {
+                dexbridgeBattery.setText("Bridge Battery: " + bridgeBattery + "%");
+            }
+            if(bridgeBattery < 50) dexbridgeBattery.setTextColor(Color.YELLOW);
+            if(bridgeBattery < 25) dexbridgeBattery.setTextColor(Color.RED); else dexbridgeBattery.setTextColor(Color.GREEN);
+            dexbridgeBattery.setVisibility(View.VISIBLE);
+        } else {
+            dexbridgeBattery.setVisibility(View.INVISIBLE);
+        }
         final TextView currentBgValueText = (TextView)findViewById(R.id.currentBgValueRealTime);
         final TextView notificationText = (TextView)findViewById(R.id.notices);
         if ((currentBgValueText.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) > 0) {

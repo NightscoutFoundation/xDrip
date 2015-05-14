@@ -4,19 +4,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.UUID;
 
 /**
  * Created by THE NIGHTSCOUT PROJECT CONTRIBUTORS (and adapted to fit the needs of this project)
  */
 public class PebbleSync {
+    private final static String TAG = PebbleSync.class.getSimpleName();
     //    CGM_ICON_KEY = 0x0,		// TUPLE_CSTRING, MAX 2 BYTES (10)
     //    CGM_BG_KEY = 0x1,		// TUPLE_CSTRING, MAX 4 BYTES (253 OR 22.2)
     //    CGM_TCGM_KEY = 0x2,		// TUPLE_INT, 4 BYTES (CGM TIME)
@@ -36,16 +40,45 @@ public class PebbleSync {
     private Context mContext;
     private BgGraphBuilder bgGraphBuilder;
     private BgReading mBgReading;
+    public PebbleSync(Context context){
+        this.mContext = context;
+        mBgReading = null;
+        init();
+    }
+    private void init() {
+        Log.i(TAG, "Initialising...");
+        Log.i(TAG, "configuring PebbleDataReceiver");
+
+        PebbleKit.registerReceivedDataHandler(mContext, new PebbleKit.PebbleDataReceiver(PEBBLEAPP_UUID) {
+            @Override
+            public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
+                Log.d(TAG, "Received Query. data: " + data.size());
+                PebbleKit.sendAckToPebble(context, transactionId);
+                sendData(context, mBgReading);
+            }
+        });
+    }
 
     public PebbleDictionary buildDictionary() {
         PebbleDictionary dictionary = new PebbleDictionary();
+        TimeZone tz = TimeZone.getDefault();
+        Date now = new Date();
+        int offsetFromUTC = tz.getOffset(now.getTime());
+        Log.v("PebbleSync", "buildDictionary: slopeOrdinal-" + slopeOrdinal() + " bgReading-" + bgReading() + " bgTime-" + (int) (mBgReading.timestamp / 1000) + " phoneTime-" + (int) (new Date().getTime() / 1000) + " bgDelta-" + bgDelta());
         dictionary.addString(ICON_KEY, slopeOrdinal());
         dictionary.addString(BG_KEY, bgReading());
+        dictionary.addUint32(RECORD_TIME_KEY, (int) (((mBgReading.timestamp + offsetFromUTC) / 1000)));
+        dictionary.addUint32(PHONE_TIME_KEY, (int) ((new Date().getTime() + offsetFromUTC) / 1000));
         dictionary.addUint32(RECORD_TIME_KEY, (int) (mBgReading.timestamp / 1000));
         dictionary.addUint32(PHONE_TIME_KEY, (int) (new Date().getTime() / 1000));
         dictionary.addString(BG_DELTA_KEY, bgDelta());
-        dictionary.addString(UPLOADER_BATTERY_KEY, phoneBattery());
-        dictionary.addString(NAME_KEY, "xDrip");
+        if(PreferenceManager.getDefaultSharedPreferences(mContext).getString("dex_collection_method", "DexbridgeWixel").compareTo("DexbridgeWixel")==0) {
+            dictionary.addString(UPLOADER_BATTERY_KEY, DexCollectionService.getBridgeBatteryAsString());
+            dictionary.addString(NAME_KEY, "Bridge");
+        } else {
+            dictionary.addString(UPLOADER_BATTERY_KEY, phoneBattery());
+            dictionary.addString(NAME_KEY, "Phone");
+        }
         return dictionary;
     }
 
@@ -61,11 +94,15 @@ public class PebbleSync {
     }
 
     public String bgDelta() {
-        String deltaString = bgGraphBuilder.unitized_string((int)(mBgReading.calculated_value_slope * (5 * 60 * 1000)));
-        if(mBgReading.calculated_value_slope > 0.1) {
+        String deltaString;
+        if((PreferenceManager.getDefaultSharedPreferences(mContext).getString("units","mg/dl").compareTo("mg/dl") == 0)) {
+            deltaString = String.format("%.0f", mBgReading.calculated_value_slope * 360000);
+        } else {
+            deltaString = String.format("%.1f", (mBgReading.calculated_value_slope * 360000));
+        }
+        Log.v("PebbleSync","bgDelta: "+ deltaString);
+        if(Float.valueOf(deltaString) > 0) {
             return ("+"+deltaString);
-        } else if(mBgReading.calculated_value_slope > -0.1 && mBgReading.calculated_value_slope < 0.1) {
-            return "0";
         } else {
             return deltaString;
         }

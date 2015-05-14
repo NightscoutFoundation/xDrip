@@ -24,9 +24,9 @@ public class TransmitterData extends Model {
 
     @Column(name = "raw_data")
     public double raw_data;
-//
-//    @Column(name = "filtered_data")
-//    public double filtered_data;
+
+    @Column(name = "filtered_data")
+    public double filtered_data;
 
     @Column(name = "sensor_battery_level")
     public int sensor_battery_level;
