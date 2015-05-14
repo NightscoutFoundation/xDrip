@@ -83,7 +83,9 @@ public class NavDrawerBuilder {
                 options.add("Scan for BT");
             }
         }
-        options.add("System Status");
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            options.add("System Status");
+        }
         options.add("Snooze Alerts");
         options.add("Settings");
 //        options.add("Fake Numbers");
@@ -138,7 +140,9 @@ public class NavDrawerBuilder {
                 options.add(new Intent(context, BluetoothScan.class));
             }
         }
-        options.add(new Intent(context, SystemStatus.class));
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            options.add(new Intent(context, SystemStatus.class));
+        }
         options.add(new Intent(context, SnoozeActivity.class));
         options.add(new Intent(context, Preferences.class));
 //        options.add(new Intent(context, FakeNumbers.class));
