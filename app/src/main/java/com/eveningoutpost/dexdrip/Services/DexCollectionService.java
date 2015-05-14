@@ -51,11 +51,16 @@ import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
+
+import static com.activeandroid.ActiveAndroid.beginTransaction;
+import static com.activeandroid.ActiveAndroid.endTransaction;
+import static com.activeandroid.ActiveAndroid.setTransactionSuccessful;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class DexCollectionService extends Service {
@@ -97,8 +102,7 @@ public class DexCollectionService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        //throw new UnsupportedOperationException("Not yet implemented");
-        return null;
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override
@@ -412,75 +416,99 @@ public class DexCollectionService extends Service {
     }
 
     public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
-        Log.w(TAG, "received some data!");
+        try {
+            Log.w(TAG, "received some data: " + new String(buffer, 0, len, Charset.forName("ISO-8859-1")));
+        } catch (Exception ex) {
+            Log.w(TAG, "received some data, ERROR!");
+        }
+
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "ReceivedReading");
         wakeLock.acquire();
-
-
-        Long timestamp = new Date().getTime();
-        if (CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
-            Log.w(TAG, "setSerialDataToTransmitterRawData: Dealing with Dexbridge packet!");
-            int DexSrc;
-            int TransmitterID;
-            String TxId;
-            Calendar c = Calendar.getInstance();
-            long secondsNow = c.getTimeInMillis();
-            ByteBuffer tmpBuffer = ByteBuffer.allocate(len);
-            tmpBuffer.order(ByteOrder.LITTLE_ENDIAN);
-            tmpBuffer.put(buffer, 0, len);
-            ByteBuffer txidMessage = ByteBuffer.allocate(6);
-            txidMessage.order(ByteOrder.LITTLE_ENDIAN);
-            if (buffer[0] == 0x07 && buffer[1] == -15) {
-                //We have a Beacon packet.  Get the TXID value and compare with dex_txid
-                Log.w(TAG, "setSerialDataToTransmitterRawData: Received Beacon packet.");
-                //DexSrc starts at Byte 2 of a Beacon packet.
-                DexSrc = tmpBuffer.getInt(2);
-                TxId = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("dex_txid", "00000");
-                TransmitterID = convertSrc(TxId);
-                if (TxId.compareTo("00000") != 0 && Integer.compare(DexSrc, TransmitterID) != 0) {
-                    Log.w(TAG, "setSerialDataToTransmitterRawData: TXID wrong.  Expected " + TransmitterID + " but got " + DexSrc);
-                    txidMessage.put(0, (byte) 0x06);
-                    txidMessage.put(1, (byte) 0x01);
-                    txidMessage.putInt(2, TransmitterID);
-                    sendBtMessage(txidMessage);
-                }
-                return;
-            }
-            if (buffer[0] == 0x11 && buffer[1] == 0x00) {
-                //we have a data packet.  Check to see if the TXID is what we are expecting.
-                Log.w(TAG, "setSerialDataToTransmitterRawData: Received Data packet");
-                //make sure we are not processing a packet we already have
-                if (secondsNow - lastPacketTime < 60000) {
-                    Log.v(TAG, "setSerialDataToTransmitterRawData: Received Duplicate Packet.  Exiting.");
-                    return;
-                } else {
-                    lastPacketTime = secondsNow;
-                }
-                if (len >= 0x11) {
-                    //DexSrc starts at Byte 12 of a data packet.
-                    DexSrc = tmpBuffer.getInt(12);
-                    TxId = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("dex_txid", "00000");
-                    TransmitterID = convertSrc(TxId);
-                    if (Integer.compare(DexSrc, TransmitterID) != 0) {
-                        Log.w(TAG, "TXID wrong.  Expected " + TransmitterID + " but got " + DexSrc);
-                        txidMessage.put(0, (byte) 0x06);
-                        txidMessage.put(1, (byte) 0x01);
-                        txidMessage.putInt(2, TransmitterID);
-                        sendBtMessage(txidMessage);
+        try {
+            beginTransaction();
+            try {
+                Long timestamp = new Date().getTime();
+                if (CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
+                    Log.w(TAG, "setSerialDataToTransmitterRawData: Dealing with Dexbridge packet!");
+                    int DexSrc;
+                    int TransmitterID;
+                    String TxId;
+                    Calendar c = Calendar.getInstance();
+                    long secondsNow = c.getTimeInMillis();
+                    ByteBuffer tmpBuffer = ByteBuffer.allocate(len);
+                    tmpBuffer.order(ByteOrder.LITTLE_ENDIAN);
+                    tmpBuffer.put(buffer, 0, len);
+                    ByteBuffer txidMessage = ByteBuffer.allocate(6);
+                    txidMessage.order(ByteOrder.LITTLE_ENDIAN);
+                    if (buffer[0] == 0x07 && buffer[1] == -15) {
+                        //We have a Beacon packet.  Get the TXID value and compare with dex_txid
+                        Log.w(TAG, "setSerialDataToTransmitterRawData: Received Beacon packet.");
+                        //DexSrc starts at Byte 2 of a Beacon packet.
+                        DexSrc = tmpBuffer.getInt(2);
+                        TxId = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("dex_txid", "00000");
+                        TransmitterID = convertSrc(TxId);
+                        if (TxId.compareTo("00000") != 0 && Integer.compare(DexSrc, TransmitterID) != 0) {
+                            Log.w(TAG, "setSerialDataToTransmitterRawData: TXID wrong.  Expected " + TransmitterID + " but got " + DexSrc);
+                            txidMessage.put(0, (byte) 0x06);
+                            txidMessage.put(1, (byte) 0x01);
+                            txidMessage.putInt(2, TransmitterID);
+                            sendBtMessage(txidMessage);
+                        }
+                        return;
                     }
-                    bridgeBattery = ByteBuffer.wrap(buffer).get(11);
-                    //All is OK, so process it.
-                    //first, tell the wixel it is OK to sleep.
-                    Log.d(TAG, "setSerialDataToTransmitterRawData: Sending Data packet Ack, to put wixel to sleep");
-                    ByteBuffer ackMessage = ByteBuffer.allocate(2);
-                    ackMessage.put(0, (byte) 0x02);
-                    ackMessage.put(1, (byte) 0xF0);
-                    sendBtMessage(ackMessage);
-                    timestamp = new Date().getTime();
-                    Log.v(TAG,"setSerialDataToTransmitterRawData: Creating TransmitterData at "+timestamp);
-                    TransmitterData transmitterData = TransmitterData.createDexBridge(buffer, len, timestamp);
+                    if (buffer[0] == 0x11 && buffer[1] == 0x00) {
+                        //we have a data packet.  Check to see if the TXID is what we are expecting.
+                        Log.w(TAG, "setSerialDataToTransmitterRawData: Received Data packet");
+                        //make sure we are not processing a packet we already have
+                        if (secondsNow - lastPacketTime < 60000) {
+                            Log.v(TAG, "setSerialDataToTransmitterRawData: Received Duplicate Packet.  Exiting.");
+                            return;
+                        } else {
+                            lastPacketTime = secondsNow;
+                        }
+                        if (len >= 0x11) {
+                            //DexSrc starts at Byte 12 of a data packet.
+                            DexSrc = tmpBuffer.getInt(12);
+                            TxId = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("dex_txid", "00000");
+                            TransmitterID = convertSrc(TxId);
+                            if (Integer.compare(DexSrc, TransmitterID) != 0) {
+                                Log.w(TAG, "TXID wrong.  Expected " + TransmitterID + " but got " + DexSrc);
+                                txidMessage.put(0, (byte) 0x06);
+                                txidMessage.put(1, (byte) 0x01);
+                                txidMessage.putInt(2, TransmitterID);
+                                sendBtMessage(txidMessage);
+                            }
+                            bridgeBattery = ByteBuffer.wrap(buffer).get(11);
+                            //All is OK, so process it.
+                            //first, tell the wixel it is OK to sleep.
+                            Log.d(TAG, "setSerialDataToTransmitterRawData: Sending Data packet Ack, to put wixel to sleep");
+                            ByteBuffer ackMessage = ByteBuffer.allocate(2);
+                            ackMessage.put(0, (byte) 0x02);
+                            ackMessage.put(1, (byte) 0xF0);
+                            sendBtMessage(ackMessage);
+                            timestamp = new Date().getTime();
+                            Log.v(TAG,"setSerialDataToTransmitterRawData: Creating TransmitterData at "+timestamp);
+                            TransmitterData transmitterData = TransmitterData.createDexBridge(buffer, len, timestamp);
+                            if (transmitterData != null) {
+                                Sensor sensor = Sensor.currentSensor();
+                                if (sensor != null) {
+                                    sensor.latest_battery_level = transmitterData.sensor_battery_level;
+                                    sensor.save();
+
+                                    BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, timestamp);
+                                    Intent intent = new Intent("com.eveningoutpost.dexdrip.DexCollectionService.SAVED_BG");
+                                    sendBroadcast(intent);
+
+                                } else {
+                                    Log.w(TAG, "setSerialDataToTransmitterRawData: No Active Sensor, Data only stored in Transmitter Data");
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
                     if (transmitterData != null) {
                         Sensor sensor = Sensor.currentSensor();
                         if (sensor != null) {
@@ -488,29 +516,17 @@ public class DexCollectionService extends Service {
                             sensor.save();
 
                             BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, timestamp);
-                            Intent intent = new Intent("com.eveningoutpost.dexdrip.DexCollectionService.SAVED_BG");
-                            sendBroadcast(intent);
-
                         } else {
-                            Log.w(TAG, "setSerialDataToTransmitterRawData: No Active Sensor, Data only stored in Transmitter Data");
+                            Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
                         }
                     }
                 }
+                setTransactionSuccessful();
+            } finally {
+                endTransaction();
             }
-        } else {
-            TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
-            if (transmitterData != null) {
-                Sensor sensor = Sensor.currentSensor();
-                if (sensor != null) {
-                    sensor.latest_battery_level = transmitterData.sensor_battery_level;
-                    sensor.save();
-
-                    BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, timestamp);
-                } else {
-                    Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
-                }
-            }
+        } finally {
+            wakeLock.release();
         }
-        wakeLock.release();
     }
 }

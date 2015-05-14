@@ -31,9 +31,9 @@ import lecho.lib.hellocharts.view.Chart;
  * Created by stephenblack on 11/15/14.
  */
 public class BgGraphBuilder {
-    public int fuzzer = (1000 * 60 /* 5*/);
-    public double  end_time = (new Date().getTime() + (60000 * 10)) / fuzzer;
-    public double  start_time = end_time - ((60000 * 60 * 24)) / fuzzer;
+    public final int FUZZER = (1000 * 30 * 5);
+    public double  end_time = (new Date().getTime() + (60000 * 10)) / FUZZER;
+    public double  start_time = end_time - ((60000 * 60 * 24)) / FUZZER;
     public Context context;
     public SharedPreferences prefs;
     public double highMark;

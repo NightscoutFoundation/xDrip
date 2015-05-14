@@ -157,9 +157,12 @@ public class BgReading extends Model {
 
     public static double activeSlope() {
         BgReading bgReading = BgReading.lastNoSenssor();
-        double slope = (2 * bgReading.a * (new Date().getTime() + BESTOFFSET)) + bgReading.b;
-        Log.w(TAG, "ESTIMATE SLOPE" + slope);
-        return slope;
+        if (bgReading != null) {
+            double slope = (2 * bgReading.a * (new Date().getTime() + BESTOFFSET)) + bgReading.b;
+            Log.w(TAG, "ESTIMATE SLOPE" + slope);
+            return slope;
+        }
+        return 0;
     }
 
     public static double activePrediction() {

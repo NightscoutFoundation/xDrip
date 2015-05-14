@@ -6,17 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -38,7 +34,6 @@ public class xDripWidget extends AppWidgetProvider {
         }
     }
 
-
     @Override
     public void onEnabled(Context context) {
         Log.d(TAG, "Widget enabled");
@@ -55,16 +50,22 @@ public class xDripWidget extends AppWidgetProvider {
         mContext = context;
         views = new RemoteViews(context.getPackageName(), R.layout.x_drip_widget);
         Log.d(TAG, "Update widget signal received");
-        displayCurrentInfo();
+        displayCurrentInfo(appWidgetManager, appWidgetId);
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
 
-    public static void displayCurrentInfo() {
+    public static void displayCurrentInfo(AppWidgetManager appWidgetManager, int appWidgetId) {
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(mContext);
         BgReading lastBgreading = BgReading.lastNoSenssor();
         if (lastBgreading != null) {
             double estimate = 0;
+            int height = appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT);
+            int width = appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
+            views.setImageViewBitmap(R.id.widgetGraph, new BgSparklineBuilder(mContext)
+                    .setBgGraphBuilder(bgGraphBuilder)
+                    .setHeight(height).setWidth(width).build());
+
             if ((new Date().getTime()) - (60000 * 11) - lastBgreading.timestamp > 0) {
                 estimate = lastBgreading.calculated_value;
                 Log.d(TAG, "old value, estimate " + estimate);
