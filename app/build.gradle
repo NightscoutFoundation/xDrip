@@ -33,6 +33,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'com.squareup.okhttp:mockwebserver:2.2.0'
+    compile 'com.nispok:snackbar:2.10.8'
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.squareup.okhttp:okhttp:2.2.0'
     compile 'com.google.code.gson:gson:2.3'
