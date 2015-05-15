@@ -34,7 +34,7 @@ import java.util.UUID;
 public class BgReading extends Model {
     private static boolean predictBG;
     private final static String TAG = BgReading.class.getSimpleName();
-    private final static String TAG_ALERT = "AlertBg";
+    private final static String TAG_ALERT = TAG +" AlertBg";
     //TODO: Have these as adjustable settings!!
     public final static double BESTOFFSET = (60000 * 0); // Assume readings are about x minutes off from actual!
 
@@ -59,10 +59,6 @@ public class BgReading extends Model {
     @Expose
     @Column(name = "filtered_data")
     public double filtered_data;
-
-    @Expose
-    @Column(name = "selected_filtered_data")
-    public boolean selected_filtered_data;
 
     @Expose
     @Column(name = "age_adjusted_raw_value")
@@ -277,80 +273,6 @@ public class BgReading extends Model {
         return true;
     }
 
-/*    public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp) {
-        //double selected_value;
-        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        //predictBG = prefs.getBoolean("predictBG", false);
-        BgReading bgReading = new BgReading();
-        Sensor sensor = Sensor.currentSensor();
-        if (sensor != null) {
-            Calibration calibration = Calibration.last();
-            if (calibration == null) {
-                Log.d(TAG,"No Sensor, only storing basic data")
-                bgReading.sensor = sensor;
-                bgReading.sensor_uuid = sensor.uuid;
-                bgReading.raw_data = (raw_data / 1000);
-                bgReading.filtered_data = (filtered_data / 1000);
-                bgReading.timestamp = timestamp;
-                bgReading.uuid = UUID.randomUUID().toString();
-                bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
-                bgReading.synced = false;
-                bgReading.calibration_flag = false;
-
-                bgReading.calculateAgeAdjustedRawValue();
-
-                bgReading.save();
-                bgReading.perform_calculations();
-            } else {
-                bgReading.sensor = sensor;
-                bgReading.sensor_uuid = sensor.uuid;
-                bgReading.calibration = calibration;
-                bgReading.calibration_uuid = calibration.uuid;
-                bgReading.raw_data = (raw_data/1000);
-                bgReading.filtered_data = (filtered_data/1000);
-                bgReading.timestamp = timestamp;
-                bgReading.uuid = UUID.randomUUID().toString();
-                bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
-                bgReading.synced = false;
-
-                BgReading lastBgReading = BgReading.last();
-
-                bgReading.calculateAgeAdjustedRawValue();
-                if(Math.abs((bgReading.raw_data - calibration.intercept)-(lastBgReading.raw_data - calibration.intercept)) > (lastBgReading.calculated_value * 0.10)){
-                    Log.w(TAG,"create: Using Filtered Data");
-                    bgReading.selected_filtered_data = true;
-                    //selected_value = filtered_data;
-                } else {
-                    Log.w(TAG, "create: Using Raw Data");
-                    bgReading.selected_filtered_data = false;
-                    //selected_value = raw_data;
-                }
-
-                bgReading.calculateAgeAdjustedRawValue();
-
-                if ( lastBgReading.calibration != null) {
-                    if (lastBgReading.calibration_flag && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp) && ((lastBgReading.calibration.timestamp + (60000 * 20)) > bgReading.timestamp)) {
-                        lastBgReading.calibration.rawValueOverride(BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value), context);
-                    }
-                }
-                bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
-                if (bgReading.calculated_value <= 40) {
-                    bgReading.calculated_value = 40;
-                } else if (bgReading.calculated_value >= 400) {
-                    bgReading.calculated_value = 400;
-                }
-                Log.w(TAG, "create NEW VALUE CALCULATED: " + bgReading.calculated_value + " at " +bgReading.timestamp);
-
-                bgReading.save();
-                bgReading.perform_calculations();
-                Notifications.getInstance(context).notificationSetter(context);
-                BgSendQueue.addToQueue(bgReading, "create", context);
-            }
-        }
-        Log.w(TAG,"create BG GSON: " + bgReading.toS());
-        return bgReading;
-    }
-*/
     public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp) {
         BgReading bgReading = new BgReading();
         Sensor sensor = Sensor.currentSensor();
@@ -741,9 +663,6 @@ public class BgReading extends Model {
 
     public void calculateAgeAdjustedRawValue(){
         double adjust_for = (86400000 * 1.9) - time_since_sensor_started;
-        double value;
-        if(selected_filtered_data) value = filtered_data;
-        else value = raw_data;
         if (adjust_for > 0) {
             age_adjusted_raw_value = (((.45) * (adjust_for / (86400000 * 1.9))) * raw_data) + raw_data;
             Log.w(TAG, "calculateAgeAdjustedRawValue: RAW VALUE ADJUSTMENT FROM:" + raw_data + " TO: " + age_adjusted_raw_value);
