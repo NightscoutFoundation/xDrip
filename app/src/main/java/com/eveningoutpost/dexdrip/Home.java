@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip;
 
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -35,14 +36,16 @@ import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
-import com.eveningoutpost.dexdrip.utils.ShareNotification;
-
 
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.SnackbarManager;
+import com.nispok.snackbar.enums.SnackbarType;
+import com.nispok.snackbar.listeners.ActionClickListener;
 import lecho.lib.hellocharts.ViewportChangeListener;
 import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.Viewport;
@@ -390,6 +393,22 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         return super.onCreateOptionsMenu(menu);
     }
 
+    class SnackbarUriListener implements ActionClickListener {
+        Uri uri;
+        SnackbarUriListener(Uri uri) {
+            this.uri = uri;
+        }
+
+        @Override
+        public void onActionClicked(Snackbar snackbar) {
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+            shareIntent.setType("application/octet-stream");
+            startActivity(Intent.createChooser(shareIntent, "Share database..."));
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_export_database) {
@@ -402,20 +421,14 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 @Override
                 protected void onPostExecute(String filename) {
                     super.onPostExecute(filename);
-
-                    final Context ctx = getApplicationContext();
-
-                    Toast.makeText(ctx, "Export stored at " + filename, Toast.LENGTH_SHORT).show();
-
-                    final NotificationCompat.Builder n = new NotificationCompat.Builder(ctx);
-                    n.setContentTitle("Export complete");
-                    n.setContentText("Ready to be sent.");
-                    n.setAutoCancel(true);
-                    n.setSmallIcon(R.drawable.ic_action_communication_invert_colors_on);
-                    ShareNotification.viewOrShare("application/octet-stream", Uri.fromFile(new File(filename)), n, ctx);
-
-                    final NotificationManager manager = (NotificationManager) ctx.getSystemService(Service.NOTIFICATION_SERVICE);
-                    manager.notify(Notifications.exportCompleteNotificationId, n.build());
+                    SnackbarManager.show(
+                            Snackbar.with(Home.this)
+                                    .type(SnackbarType.MULTI_LINE)
+                                    .duration(4000)
+                                    .text("Exported to " + filename) // text to display
+                                    .actionLabel("Share") // action button label
+                                    .actionListener(new SnackbarUriListener(Uri.fromFile(new File(filename)))),
+                            Home.this);
                 }
             }.execute();
 

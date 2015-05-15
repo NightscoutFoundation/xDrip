@@ -38,7 +38,6 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Sensor;
@@ -59,6 +58,7 @@ import java.util.UUID;
 import static com.activeandroid.ActiveAndroid.beginTransaction;
 import static com.activeandroid.ActiveAndroid.endTransaction;
 import static com.activeandroid.ActiveAndroid.setTransactionSuccessful;
+import com.activeandroid.query.Select;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class DexCollectionService extends Service {
