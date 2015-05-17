@@ -125,9 +125,6 @@ public class BgSendQueue extends Model {
         } finally {
             wakeLock.release();
         }
-
-
-        wakeLock.release();
     }
 
     public void markMongoSuccess() {

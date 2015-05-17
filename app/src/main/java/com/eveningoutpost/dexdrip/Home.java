@@ -77,13 +77,10 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     public BgGraphBuilder bgGraphBuilder;
     BroadcastReceiver _broadcastReceiver;
     BroadcastReceiver newDataReceiver;
-    BroadcastReceiver newSavedBgReceiver;
-    private static Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = getApplicationContext();
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(getApplicationContext());
         collectionServiceStarter.start(getApplicationContext());
         PreferenceManager.setDefaultValues(this, R.xml.pref_notifications, false);
@@ -123,26 +120,13 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 updateCurrentBgInfo();
             }
         };
-        newSavedBgReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context ctx, Intent intent) {
-                if (intent.getAction().compareTo("com.eveningoutpost.dexdrip.DexCollectionService.SAVED_BG") == 0) {
-                    updateCurrentBgInfo();
-                }
-            }
-        };
         registerReceiver(_broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         registerReceiver(newDataReceiver, new IntentFilter(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA));
-        registerReceiver(newSavedBgReceiver, new IntentFilter("com.eveningoutpost.dexdrip.DexCollectionService.SAVED_BG"));
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
         holdViewport.set(0, 0, 0, 0);
         setupCharts();
         updateCurrentBgInfo();
-    }
-
-    public static Context getContext() {
-        return mContext;
     }
 
     public void setupCharts() {
@@ -215,9 +199,6 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         }
         if(newDataReceiver != null) {
             unregisterReceiver(newDataReceiver);
-        }
-        if(newSavedBgReceiver != null) {
-            unregisterReceiver(newSavedBgReceiver);
         }
     }
 

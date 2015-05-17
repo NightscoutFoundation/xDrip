@@ -496,11 +496,7 @@ public class DexCollectionService extends Service {
                                 if (sensor != null) {
                                     sensor.latest_battery_level = transmitterData.sensor_battery_level;
                                     sensor.save();
-
                                     BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, timestamp);
-                                    Intent intent = new Intent("com.eveningoutpost.dexdrip.DexCollectionService.SAVED_BG");
-                                    sendBroadcast(intent);
-
                                 } else {
                                     Log.w(TAG, "setSerialDataToTransmitterRawData: No Active Sensor, Data only stored in Transmitter Data");
                                 }
