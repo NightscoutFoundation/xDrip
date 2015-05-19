@@ -651,7 +651,11 @@ public class BgReading extends Model {
             BgReading latest_entry = BgReading.lastNoSenssor();
             ra = 0;
             rb = 0;
-            rc = latest_entry.age_adjusted_raw_value;
+            if (latest_entry != null) {
+                rc = latest_entry.age_adjusted_raw_value;
+            } else {
+                rc = 105;
+            }
 
             save();
         }
@@ -678,7 +682,7 @@ public class BgReading extends Model {
             return String.valueOf(noise);
         }
     }
-
+    
     // Should that be combined with noiseValue?
     private Boolean Unclear() {
         Log.e(TAG_ALERT, "Unclear filtered_data=" + filtered_data + " raw_data=" + raw_data);
