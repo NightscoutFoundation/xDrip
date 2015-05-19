@@ -44,10 +44,7 @@ public class PebbleSync {
     public PebbleSync(Context context){
         this.mContext = context;
         mBgReading = null;
-        if(PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("broadcast_to_pebble", false)) {
-            Log.d(TAG,"broadcast_to_pebble is True");
-            init();
-        }
+        init();
     }
     private void init() {
         Log.i(TAG, "Initialising...");

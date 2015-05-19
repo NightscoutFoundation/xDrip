@@ -118,11 +118,10 @@ public class BgSendQueue extends Model {
                 context.sendBroadcast(intent, Intents.RECEIVER_PERMISSION);
             }
 
-/*            if (prefs.getBoolean("broadcast_to_pebble", false)) {
-                PebbleSync pebbleSync = new PebbleSync(mContext);
+            if (prefs.getBoolean("broadcast_to_pebble", false)) {
                 pebbleSync.sendData(context, bgReading);
             }
-*/
+
             if (prefs.getBoolean("share_upload", false)) {
                 ShareRest shareRest = new ShareRest(context);
                 Log.w("ShareRest", "About to call ShareRest!!");
