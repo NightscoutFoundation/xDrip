@@ -42,7 +42,7 @@ public class BgSendQueue extends Model {
 
     private static Context mContext = Home.getContext();
 
-    private static PebbleSync pebbleSync;
+    private static PebbleSync pebbleSync = new PebbleSync(mContext);
 
     public static BgSendQueue nextBgJob() {
         return new Select()
@@ -118,11 +118,11 @@ public class BgSendQueue extends Model {
                 context.sendBroadcast(intent, Intents.RECEIVER_PERMISSION);
             }
 
-            if (prefs.getBoolean("broadcast_to_pebble", false)) {
+/*            if (prefs.getBoolean("broadcast_to_pebble", false)) {
                 PebbleSync pebbleSync = new PebbleSync(mContext);
                 pebbleSync.sendData(context, bgReading);
             }
-
+*/
             if (prefs.getBoolean("share_upload", false)) {
                 ShareRest shareRest = new ShareRest(context);
                 Log.w("ShareRest", "About to call ShareRest!!");
