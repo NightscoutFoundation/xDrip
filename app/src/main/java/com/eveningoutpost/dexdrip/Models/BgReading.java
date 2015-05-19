@@ -683,6 +683,56 @@ public class BgReading extends Model {
         }
     }
     
+    /*
+     * This function comes to check weather we are in a case that we have an allert but since things are
+     * getting better we should not do anything. (This is only in the case that the alert was snoozed before.)
+     * This means that if this is a low alert, and we have two readings in the last 15 minutes, and
+     * either we have gone in 10 in the last two readings, or we have gone in 3 in the last reading, we
+     * don't play the alert again, but rather wait for the alert to finish.
+     *  I'll start with having the same values for the high alerts.
+    */ 
+    
+    public static boolean trendingToAlertEnd(boolean above) {
+        // TODO: check if we are not in an UnclerTime.
+        List<BgReading> latest = BgReading.latest(3);
+        if (latest == null || latest.size() < 2) {
+            // for less than 3 readings, we can't tell what the situation
+            // 
+            Log.e(TAG_ALERT, "trendingToAlertEnd we don't have 3 readings, returning false");
+            return false;
+        }
+        // So, we have at least three values...
+        for(BgReading bgReading : latest) {
+            Log.e(TAG_ALERT, "trendingToAlertEnd - reading: time = " + bgReading.timestamp + " calculated_value " + bgReading.calculated_value);
+        }
+        
+        // now let's talk that they are relevant. the last reading should be from the last 5 minutes, 
+        // two more readings should be from the last 15 minutes. we will allow 21 minutes for the last
+        // 3 to allow one packet to be missed.
+        if (new Date().getTime() - latest.get(2).timestamp > 21 * 60 * 1000) {
+            Log.e(TAG_ALERT, "trendingToAlertEnd we don't have enough points from the last 15 minutes, returning false");
+            return false;
+        }
+        if(above == false) {
+            // This is a low alert, we should be going up
+            if((latest.get(0).calculated_value - latest.get(1).calculated_value > 4) ||
+               (latest.get(0).calculated_value - latest.get(2).calculated_value > 10)) {
+                Log.e(TAG_ALERT, "trendingToAlertEnd returning true for low alert");
+                return true;
+            }
+        } else {
+            // This is a high alert we should be heading down
+            if((latest.get(1).calculated_value - latest.get(0).calculated_value > 4) ||
+               (latest.get(2).calculated_value - latest.get(0).calculated_value > 10)) {
+                Log.e(TAG_ALERT, "trendingToAlertEnd returning true for high alert");
+                return true;
+            }
+        }
+        Log.e(TAG_ALERT, "trendingToAlertEnd returning false, not in the right direction (or not fast enough)");
+        return false;
+        
+    }
+
     // Should that be combined with noiseValue?
     private Boolean Unclear() {
         Log.e(TAG_ALERT, "Unclear filtered_data=" + filtered_data + " raw_data=" + raw_data);

@@ -160,7 +160,8 @@ public class Notifications extends IntentService {
             if (activeBgAlert.uuid.equals(newAlert.uuid)) {
                 // This is the same alert. Might need to play again...
                 Log.e(TAG, "FileBasedNotifications we have found an active alert, checking if we need to play it " + newAlert.name);
-                AlertPlayer.getPlayer().ClockTick(context, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
+                boolean trendingToAlertEnd = trendingToAlertEnd(newAlert);
+                AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
                 return;
             }
            // Currently the ui blocks having two alerts with the same alert value.
@@ -177,10 +178,11 @@ public class Notifications extends IntentService {
             boolean opositeDirection = AlertType.OpositeDirection(activeBgAlert, newAlert);
             AlertType  newHigherAlert = AlertType.HigherAlert(activeBgAlert, newAlert);
             if ((newHigherAlert == activeBgAlert) && (!opositeDirection)) {
-                // the existing alert is the higher, we should not do anything
-                Log.e(TAG, "FileBasedNotifications The existing alert has the same importance, doing nothing newHigherAlert = " + newHigherAlert.name +
+                // the existing alert is the higher, we should check if to play it
+                Log.e(TAG, "FileBasedNotifications The existing alert has the same importance, checking if to playit newHigherAlert = " + newHigherAlert.name +
                         "activeBgAlert = " + activeBgAlert.name);
-                AlertPlayer.getPlayer().ClockTick(context, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
+                boolean trendingToAlertEnd = trendingToAlertEnd(newHigherAlert);
+                AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
                 return;
             }
 
@@ -193,6 +195,14 @@ public class Notifications extends IntentService {
         } else {
             AlertPlayer.getPlayer().stopAlert(context, true, false);
         }
+    }
+    
+    boolean trendingToAlertEnd(AlertType  Alert) {
+        //if(!Alert.SmartSnooze) {
+            // need to check the preferance here...
+            //return false;
+        //}
+        return BgReading.trendingToAlertEnd(Alert.above);
     }
 /*
  * *****************************************************************************************************************

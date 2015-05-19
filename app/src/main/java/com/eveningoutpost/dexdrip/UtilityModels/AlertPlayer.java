@@ -107,8 +107,12 @@ public class AlertPlayer {
     }
 
  // Check the state and alrarm if needed
-    public void ClockTick(Context ctx, String bgValue)
+    public void ClockTick(Context ctx, boolean trendingToAlertEnd, String bgValue)
     {
+        if (trendingToAlertEnd) {
+            Log.e(TAG,"ClockTick: This alert is trending to it's end will not do anything");
+            return;
+        }
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
         if (activeBgAlert  == null) {
             // Nothing to do ...
