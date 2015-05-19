@@ -422,7 +422,7 @@ public class Notifications {
         NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);
         mBuilder.setVibrate(vibratePattern);
         mBuilder.setLights(0xff00ff00, 300, 1000);
-        mBuilder.setSound(Uri.parse(calibration_notification_sound), AudioAttributes.USAGE_ALARM);
+        mBuilder.setSound(Uri.parse(calibration_notification_sound));
         NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(notificationId);
         mNotifyMgr.notify(notificationId, mBuilder.build());
