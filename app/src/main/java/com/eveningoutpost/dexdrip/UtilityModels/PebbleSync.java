@@ -64,13 +64,11 @@ public class PebbleSync {
         TimeZone tz = TimeZone.getDefault();
         Date now = new Date();
         int offsetFromUTC = tz.getOffset(now.getTime());
-        Log.v("PebbleSync", "buildDictionary: slopeOrdinal-" + slopeOrdinal() + " bgReading-" + bgReading() + " bgTime-" + (int) (mBgReading.timestamp / 1000) + " phoneTime-" + (int) (new Date().getTime() / 1000) + " bgDelta-" + bgDelta());
+        Log.v(TAG, "buildDictionary: slopeOrdinal-" + slopeOrdinal() + " bgReading-" + bgReading() + " now-"+ (int) now.getTime()/1000 + " bgTime-" + (int) (mBgReading.timestamp / 1000) + " phoneTime-" + (int) (new Date().getTime() / 1000) + " bgDelta-" + bgDelta());
         dictionary.addString(ICON_KEY, slopeOrdinal());
         dictionary.addString(BG_KEY, bgReading());
         dictionary.addUint32(RECORD_TIME_KEY, (int) (((mBgReading.timestamp + offsetFromUTC) / 1000)));
         dictionary.addUint32(PHONE_TIME_KEY, (int) ((new Date().getTime() + offsetFromUTC) / 1000));
-        dictionary.addUint32(RECORD_TIME_KEY, (int) (mBgReading.timestamp / 1000));
-        dictionary.addUint32(PHONE_TIME_KEY, (int) (new Date().getTime() / 1000));
         dictionary.addString(BG_DELTA_KEY, bgDelta());
         if(PreferenceManager.getDefaultSharedPreferences(mContext).getString("dex_collection_method", "DexbridgeWixel").compareTo("DexbridgeWixel")==0) {
             dictionary.addString(UPLOADER_BATTERY_KEY, DexCollectionService.getBridgeBatteryAsString());
@@ -119,7 +117,7 @@ public class PebbleSync {
     public void sendDownload(PebbleDictionary dictionary) {
         if (PebbleKit.isWatchConnected(mContext)) {
             if (dictionary != null && mContext != null) {
-                Log.d("PEBBLE PUSHER", "Sending data to pebble");
+                Log.d("TAG", "sendDownload: Sending data to pebble");
                 PebbleKit.sendDataToPebble(mContext, PEBBLEAPP_UUID, dictionary);
             }
         }
