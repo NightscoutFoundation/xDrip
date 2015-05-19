@@ -42,7 +42,7 @@ public class BgSendQueue extends Model {
 
     private static Context mContext = Home.getContext();
 
-    private static PebbleSync pebbleSync = new PebbleSync(mContext);
+    private static PebbleSync pebbleSync;
 
     public static BgSendQueue nextBgJob() {
         return new Select()
