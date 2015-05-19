@@ -40,6 +40,7 @@ public class PebbleSync {
     private Context mContext;
     private BgGraphBuilder bgGraphBuilder;
     private BgReading mBgReading;
+    private static int lastTransactionId;
     public PebbleSync(Context context){
         this.mContext = context;
         mBgReading = null;
@@ -52,9 +53,13 @@ public class PebbleSync {
         PebbleKit.registerReceivedDataHandler(mContext, new PebbleKit.PebbleDataReceiver(PEBBLEAPP_UUID) {
             @Override
             public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
-                Log.d(TAG, "Received Query. data: " + data.size());
-                PebbleKit.sendAckToPebble(context, transactionId);
-                sendData(context, mBgReading);
+                Log.d(TAG,"receiveData: transactionId is "+String.valueOf(transactionId));
+                if(lastTransactionId == 0 || transactionId != lastTransactionId) {
+                    lastTransactionId = transactionId;
+                    Log.d(TAG, "Received Query. data: " + data.size());
+                    PebbleKit.sendAckToPebble(context, transactionId);
+                    sendData(context, mBgReading);
+                }
             }
         });
     }
@@ -98,7 +103,7 @@ public class PebbleSync {
         } else {
             deltaString = String.format("%.1f", (mBgReading.calculated_value_slope * 360000)*Constants.MGDL_TO_MMOLL);
         }
-        Log.v("PebbleSync","bgDelta: "+ deltaString);
+        Log.v(TAG,"bgDelta: "+ deltaString);
         if(Float.valueOf(deltaString) > 0) {
             return ("+"+deltaString);
         } else {
@@ -117,7 +122,7 @@ public class PebbleSync {
     public void sendDownload(PebbleDictionary dictionary) {
         if (PebbleKit.isWatchConnected(mContext)) {
             if (dictionary != null && mContext != null) {
-                Log.d("TAG", "sendDownload: Sending data to pebble");
+                Log.d(TAG, "sendDownload: Sending data to pebble");
                 PebbleKit.sendDataToPebble(mContext, PEBBLEAPP_UUID, dictionary);
             }
         }
