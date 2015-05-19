@@ -96,7 +96,7 @@ public class PebbleSync {
         if((PreferenceManager.getDefaultSharedPreferences(mContext).getString("units","mg/dl").compareTo("mg/dl") == 0)) {
             deltaString = String.format("%.0f", mBgReading.calculated_value_slope * 360000);
         } else {
-            deltaString = String.format("%.1f", (mBgReading.calculated_value_slope * 360000));
+            deltaString = String.format("%.1f", (mBgReading.calculated_value_slope * 360000)*Constants.MGDL_TO_MMOLL);
         }
         Log.v("PebbleSync","bgDelta: "+ deltaString);
         if(Float.valueOf(deltaString) > 0) {
