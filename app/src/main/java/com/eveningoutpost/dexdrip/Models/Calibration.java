@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
@@ -228,7 +229,7 @@ public class Calibration extends Model {
         }
         adjustRecentBgReadings(5);
         CalibrationRequest.createOffset(lowerCalibration.bg, 35);
-        Notifications.getInstance(context).notificationSetter(context);
+        context.startService(new Intent(context, Notifications.class));
     }
 
     //Create Calibration Checkin
@@ -292,7 +293,7 @@ public class Calibration extends Model {
                     Calibration.create(calRecords, context, true, 0);
                 }
             }
-            Notifications.getInstance(context).notificationSetter(context);
+            context.startService(new Intent(context, Notifications.class));
         }
     }
 
@@ -369,7 +370,7 @@ public class Calibration extends Model {
                 calculate_w_l_s();
                 adjustRecentBgReadings();
                 CalibrationSendQueue.addToQueue(calibration, context);
-                Notifications.getInstance(context).notificationSetter(context);
+                context.startService(new Intent(context, Notifications.class));
                 Calibration.requestCalibrationIfRangeTooNarrow();
             }
         } else {

@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
@@ -32,9 +33,7 @@ public class ForegroundServiceStarter {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    Notifications notification = Notifications.getInstance(mContext);
-                    notification.ReadPerfs(mContext);
-                    mService.startForeground(notification.ongoingNotificationId, notification.createOngoingNotification(new BgGraphBuilder(mContext)));
+                    mService.startForeground(new Notifications().ongoingNotificationId, new Notifications().createOngoingNotification(new BgGraphBuilder(mContext), mContext));
                 }
             });
         }

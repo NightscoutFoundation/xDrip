@@ -186,12 +186,6 @@
             android:name="io.fabric.ApiKey"
             android:value="193dbc121e25e5f3e71bb98164ec074378e339df" />
 
-        <receiver android:name=".UtilityModels.NotificationsReceiver" >
-            <intent-filter>
-                <action android:name="com.eveningoutpost.dexdrip.UtilityModels.Notifications" />
-            </intent-filter>
-        </receiver>
-
         <activity
             android:name=".AlertList"
             android:label="@string/title_activity_alert_list" >
@@ -205,6 +199,11 @@
             android:name=".Services.MissedReadingService"
             android:enabled="true"
             android:exported="true" >
+        </service>
+
+        <service
+            android:name=".UtilityModels.Notifications"
+            android:exported="false" >
         </service>
         <service
             android:name=".Services.MissedReadingIntentService"

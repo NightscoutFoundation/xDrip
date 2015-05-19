@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
+import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
@@ -231,7 +232,7 @@ public class BgReading extends Model {
             bgReading.save();
             bgReading.find_new_curve();
             bgReading.find_new_raw_curve();
-            Notifications.getInstance(context).notificationSetter(context);
+            context.startService(new Intent(context, Notifications.class));
             BgSendQueue.addToQueue(bgReading, "create", context);
         }
     }
@@ -331,7 +332,7 @@ public class BgReading extends Model {
 
                 bgReading.save();
                 bgReading.perform_calculations();
-                Notifications.getInstance(context).notificationSetter(context);
+                context.startService(new Intent(context, Notifications.class));
                 BgSendQueue.addToQueue(bgReading, "create", context);
             }
         }

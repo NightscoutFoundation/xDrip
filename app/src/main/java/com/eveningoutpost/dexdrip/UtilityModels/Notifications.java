@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.app.AlarmManager;
 import android.annotation.TargetApi;
+import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -35,6 +36,7 @@ import com.eveningoutpost.dexdrip.Models.CalibrationRequest;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 
 import java.util.Date;
 import java.util.List;
@@ -42,7 +44,7 @@ import java.util.List;
 /**
  * Created by stephenblack on 11/28/14.
  */
-public class Notifications {
+public class Notifications extends IntentService {
     public static final long[] vibratePattern = {0,1000,300,1000,300,1000};
     public static boolean bg_notifications;
     public static boolean bg_ongoing;
@@ -76,20 +78,21 @@ public class Notifications {
     public static final int exportAlertNotificationId = 006;
     public static final int uncleanAlertNotificationId = 007;
     public static final int missedAlertNotificationId = 010;
-    final static int callbackPeriod = 60000 * 5;
+    final static int callbackPeriod = 60000 * 1;
 
     SharedPreferences prefs;
 
-    private static Notifications instance = null;
-    protected Notifications() {
-       // Exists only to defeat instantiation.
+    public Notifications() {
+        super("Notifications");
+        Log.w("Notifications", "Running Notifications Intent Service");
     }
-    public static Notifications getInstance(Context context) {
-       if(instance == null) {
-          instance = new Notifications();
-          instance.ArmTimer(context, callbackPeriod);
-       }
-       return instance;
+
+    @Override
+    protected void onHandleIntent(Intent intent) {
+        Log.d("Notifications", "Running Notifications Intent Service");
+        ReadPerfs(getApplicationContext());
+        notificationSetter(getApplicationContext());
+        periodicTimer(getApplicationContext());
     }
 
 
@@ -119,8 +122,6 @@ public class Notifications {
 
     public void FileBasedNotifications(Context context) {
         ReadPerfs(context);
-
-        BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
         Sensor sensor = Sensor.currentSensor();
 
         BgReading bgReading = BgReading.last();
@@ -207,8 +208,6 @@ public class Notifications {
         FileBasedNotifications(context);
 
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
-        double high = bgGraphBuilder.highMark;
-        double low = bgGraphBuilder.lowMark;
         Sensor sensor = Sensor.currentSensor();
 
         List<BgReading> bgReadings = BgReading.latest(3);
@@ -218,21 +217,6 @@ public class Notifications {
         BgReading bgReading = bgReadings.get(0);
         if (bg_ongoing && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)) {
             bgOngoingNotification(bgGraphBuilder);
-        }
-        if (bg_notifications && sensor != null) {
-            if (bgGraphBuilder.unitized(bgReading.calculated_value) >= high || bgGraphBuilder.unitized(bgReading.calculated_value) <= low) {
-                if(bgReading.calculated_value > 14) {
-                    if (bgReading.hide_slope) {
-                        bgAlert(bgReading.displayValue(mContext), "");
-                    } else {
-                        bgAlert(bgReading.displayValue(mContext), BgReading.slopeArrow(bgReading.calculated_value_slope));
-                    }
-                }
-            } else {
-                clearBgAlert();
-            }
-        } else {
-            clearAllBgNotifications();
         }
 
         if (calibration_notifications) {
@@ -268,23 +252,15 @@ public class Notifications {
 
     private void  ArmTimer(Context context, int time) {
         Log.e(TAG, "ArmTimer called");
-        Intent intent = new Intent();
-        intent.setAction("com.eveningoutpost.dexdrip.UtilityModels.Notifications");
+        if(ActiveBgAlert.getOnly() != null) {
+            Intent intent = new Intent(context, Notifications.class);
+            AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
-        AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-
-        alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() +
-                        time, alarmIntent);
-    }
-
-    // TODO: Need to understand when we are calling this...
-    private void ClearTimer(Context context) {
-        Intent intent = new Intent();
-        intent.setAction("com.eveningoutpost.dexdrip.UtilityModels.Notifications");
-        PendingIntent.getBroadcast(context, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT).cancel();
+            alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    SystemClock.elapsedRealtime() +
+                            time, alarmIntent);
+        }
     }
 
     private Bitmap createWearBitmap(long start, long end) {
@@ -316,7 +292,9 @@ public class Notifications {
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    public Notification createOngoingNotification(BgGraphBuilder bgGraphBuilder) {
+    public Notification createOngoingNotification(BgGraphBuilder bgGraphBuilder, Context context) {
+        mContext = context;
+        ReadPerfs(mContext);
         Intent intent = new Intent(mContext, Home.class);
         List<BgReading> lastReadings = BgReading.latest(2);
         BgReading lastReading = null;
@@ -367,20 +345,20 @@ public class Notifications {
         return b.build();
     }
 
-    public void bgOngoingNotification(final BgGraphBuilder bgGraphBuilder) {
+    private void bgOngoingNotification(final BgGraphBuilder bgGraphBuilder) {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
                 NotificationManagerCompat
                         .from(mContext)
-                        .notify(ongoingNotificationId, createOngoingNotification(bgGraphBuilder));
+                        .notify(ongoingNotificationId, createOngoingNotification(bgGraphBuilder, mContext));
                 iconBitmap.recycle();
                 notifiationBitmap.recycle();
             }
         });
     }
 
-    public void soundAlert(String soundUri) {
+    private void soundAlert(String soundUri) {
         manager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         int maxVolume = manager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         currentVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
@@ -579,14 +557,6 @@ public class Notifications {
         if (userNotification != null) {
             userNotification.delete();
             notificationDismiss(extraCalibrationNotificationId);
-        }
-    }
-
-    private void clearBgAlert() {
-        UserNotification userNotification = UserNotification.lastBgAlert();
-        if (userNotification != null) {
-            userNotification.delete();
-            notificationDismiss(BgNotificationId);
         }
     }
 }

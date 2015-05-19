@@ -81,10 +81,8 @@ public class DexCollectionService extends Service {
     private int mConnectionState = STATE_DISCONNECTED;
     private BluetoothDevice device;
     private BluetoothGattCharacteristic mCharacteristic;
-    private BluetoothGattService mService;
     //queues for GattDescriptor and GattCharacteristic to ensure we get all messages and can clear the the message once it is processed.
     private Queue<BluetoothGattDescriptor> descriptorWriteQueue = new LinkedList<BluetoothGattDescriptor>();
-    private Queue<BluetoothGattCharacteristic> characteristicReadQueue = new LinkedList<BluetoothGattCharacteristic>();
     //int mStartMode;
     long lastPacketTime;
     private static byte[] lastdata = null;
@@ -96,7 +94,6 @@ public class DexCollectionService extends Service {
     private static final int STATE_CONNECTING = BluetoothProfile.STATE_CONNECTING;
     private static final int STATE_CONNECTED = BluetoothProfile.STATE_CONNECTED;
 
-    public final static String ACTION_DATA_AVAILABLE = "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
     public final static UUID xDripDataService = UUID.fromString(HM10Attributes.HM_10_SERVICE);
     public final static UUID xDripDataCharacteristic = UUID.fromString(HM10Attributes.HM_RX_TX);
 
@@ -122,12 +119,11 @@ public class DexCollectionService extends Service {
             stopSelf();
             return START_NOT_STICKY;
         }
-        if (CollectionServiceStarter.isBTWixel(getApplicationContext()) || CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
-            setFailoverTimer();
-        } else {
+        if (!CollectionServiceStarter.isBTWixel(getApplicationContext()) && !CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
             stopSelf();
             return START_NOT_STICKY;
         }
+        setFailoverTimer();
         attemptConnection();
         return START_STICKY;
     }
@@ -140,6 +136,7 @@ public class DexCollectionService extends Service {
         setRetryTimer();
         Log.w(TAG, "SERVICE STOPPED");
     }
+
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             if(key.compareTo("run_service_in_foreground") == 0) {
@@ -155,16 +152,6 @@ public class DexCollectionService extends Service {
             }
         }
     };
-
-    public void writeGattDescriptor(BluetoothGattDescriptor d) {
-        //put the descriptor into the write queue
-        descriptorWriteQueue.add(d);
-        //if there is only 1 item in the queue, then write it.  If more than 1, we handle asynchronously in the callback above
-        if (descriptorWriteQueue.size() == 1) {
-            mBluetoothGatt.writeDescriptor(d);
-        }
-    }
-
 
     public static byte getBridgeBattery() {
         return bridgeBattery;
@@ -256,7 +243,8 @@ public class DexCollectionService extends Service {
                 BluetoothGattService gattService = mBluetoothGatt.getService(xDripDataService);
                 if (gattService != null) {
                     BluetoothGattCharacteristic gattCharacteristic = gattService.getCharacteristic(xDripDataCharacteristic);
-                    if (gattCharacteristic != null ) {
+                    if (gattCharacteristic != null) {
+                        mCharacteristic = gattCharacteristic;
                         final int charaProp = gattCharacteristic.getProperties();
                         if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
                             mBluetoothGatt.setCharacteristicNotification(gattCharacteristic, true);
@@ -273,38 +261,22 @@ public class DexCollectionService extends Service {
         }
 
         @Override
-        public void onCharacteristicRead(BluetoothGatt gatt,
-                                         BluetoothGattCharacteristic characteristic,
-                                         int status) {
-            Log.w(TAG, "onCharacteristicRead entered.");
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
-            } else {
-                Log.w(TAG, "onCharacteristicRead error: " + status);
-            }
-            if (characteristicReadQueue.size() > 0)
-                mBluetoothGatt.readCharacteristic(characteristicReadQueue.element());
-            characteristicReadQueue.remove();
-            Log.w(TAG, "onCharacteristicRead exited.");
-        }
-
-        @Override
-        public void onCharacteristicChanged(BluetoothGatt gatt,
-                                            BluetoothGattCharacteristic characteristic) {
-            //final byte[] data;
+        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             Log.w(TAG, "onCharacteristicChanged entered");
-            mCharacteristic = characteristic;
-            //data = characteristic.getValue();
-            //if(lastdata == null) lastdata = characteristic.getValue();
-            //if(Arrays.equals(lastdata, data) && lastdata != null) {
-            //    Log.w(TAG, "onCharacteristicChanged: duplicate packet.  Ignoring");
-            //    return;
-            //}
-            Log.w(TAG, "onCharacteristicChanged: new packet.");
-            //lastdata = data.clone();;
-            characteristicReadQueue.add(characteristic);
-            broadcastUpdate(ACTION_DATA_AVAILABLE, characteristicReadQueue.poll());
-        }
+            final byte[] data = characteristic.getValue();
+            if (lastdata != null) {
+                if (data != null && data.length > 0 && !Arrays.equals(lastdata, data)) {
+                    Log.v(TAG, "broadcastUpdate: new data.");
+                    setSerialDataToTransmitterRawData(data, data.length);
+                    lastdata = data;
+                } else if (Arrays.equals(lastdata,data)) {
+                    Log.v(TAG, "broadcastUpdate: duplicate data, ignoring");
+                }
+            } else if (data != null && data.length > 0) {
+                setSerialDataToTransmitterRawData(data, data.length);
+                lastdata = data;
+            }
+         }
 
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
@@ -317,29 +289,8 @@ public class DexCollectionService extends Service {
             descriptorWriteQueue.remove();  //pop the item that we just finishing writing
             if (descriptorWriteQueue.size() > 0) // if there is more to write, do it!
                 mBluetoothGatt.writeDescriptor(descriptorWriteQueue.element());
-             /* else if(characteristicReadQueue.size() > 0)
-              mBluetoothGatt.readCharacteristic(characteristicReadQueue.element());
-             */
         }
     };
-
-
-    private void broadcastUpdate(final String action, final BluetoothGattCharacteristic characteristic) {
-        Log.w(TAG, "broadcastUpdate got action: " + action + ", characteristic: " + characteristic.toString());
-        final byte[] data = characteristic.getValue();
-        if (lastdata != null) {
-            if (data != null && data.length > 0 && !Arrays.equals(lastdata, data)) {
-                Log.v(TAG, "broadcastUpdate: new data.");
-                setSerialDataToTransmitterRawData(data, data.length);
-                lastdata = data;
-            } else if (Arrays.equals(lastdata,data)) {
-                Log.v(TAG, "broadcastUpdate: duplicate data, ignoring");
-            }
-        } else if (data != null && data.length > 0) {
-            setSerialDataToTransmitterRawData(data, data.length);
-            lastdata = data;
-        }
-    }
 
     private boolean sendBtMessage(final ByteBuffer message) {
         //check mBluetoothGatt is available
@@ -399,11 +350,6 @@ public class DexCollectionService extends Service {
         return true;
     }
 
-    public void disconnect() {
-        if ( mBluetoothGatt == null) { return; }
-        mBluetoothGatt.disconnect();
-        Log.d(TAG, "Gatt Disconnect");
-    }
     public void close() {
         if (mBluetoothGatt == null) {
             return;
