@@ -525,7 +525,7 @@ public class Notifications {
                             .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
             mBuilder.setVibrate(vibratePattern);
             mBuilder.setLights(0xff00ff00, 300, 1000);
-            mBuilder.setSound(Uri.parse(otherAlertsSound), AudioAttributes.USAGE_ALARM);
+            mBuilder.setSound(Uri.parse(otherAlertsSound));
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyMgr.cancel(uncleanAlertNotificationId);
             mNotifyMgr.notify(uncleanAlertNotificationId, mBuilder.build());
@@ -551,7 +551,7 @@ public class Notifications {
                             .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
             mBuilder.setVibrate(vibratePattern);
             mBuilder.setLights(0xff00ff00, 300, 1000);
-            mBuilder.setSound(Uri.parse(otherAlertsSound), AudioAttributes.USAGE_ALARM);
+            mBuilder.setSound(Uri.parse(otherAlertsSound));
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyMgr.cancel(missedAlertNotificationId);
             mNotifyMgr.notify(missedAlertNotificationId, mBuilder.build());
