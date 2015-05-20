@@ -54,6 +54,7 @@ public class Notifications {
     public static String bg_notification_sound;
 
     public static boolean calibration_notifications;
+    public static boolean calibration_override_silent;
     public static int calibration_snooze;
     public static String calibration_notification_sound;
     public static boolean doMgdl;
@@ -106,6 +107,7 @@ public class Notifications {
 
         calibration_notifications = prefs.getBoolean("calibration_notifications", true);
         calibration_snooze = Integer.parseInt(prefs.getString("calibration_snooze", "20"));
+        calibration_override_silent = prefs.getBoolean("calibration_alerts_override_silent", false);
         calibration_notification_sound = prefs.getString("calibration_notification_sound", "content://settings/system/notification_sound");
         doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
         bg_ongoing = prefs.getBoolean("run_service_in_foreground", false);
@@ -422,7 +424,12 @@ public class Notifications {
         NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);
         mBuilder.setVibrate(vibratePattern);
         mBuilder.setLights(0xff00ff00, 300, 1000);
-        mBuilder.setSound(Uri.parse(calibration_notification_sound), AudioAttributes.USAGE_ALARM);
+        if(calibration_override_silent) {
+            mBuilder.setSound(Uri.parse(calibration_notification_sound), AudioAttributes.USAGE_ALARM);
+        } else {
+            mBuilder.setSound(Uri.parse(calibration_notification_sound));
+        }
+
         NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(notificationId);
         mNotifyMgr.notify(notificationId, mBuilder.build());
@@ -511,6 +518,7 @@ public class Notifications {
     public static void bgUnclearAlert(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String otherAlertsSound = prefs.getString("other_alerts_sound", "content://settings/system/notification_sound");
+        Boolean otherAlertsOverrideSilent = prefs.getBoolean("other_alerts_override_silent", false);
         int otherAlertSnooze =  Integer.parseInt(prefs.getString("other_alerts_snooze", "20"));
 
         UserNotification userNotification = UserNotification.lastUnclearReadingsAlert();
@@ -525,7 +533,11 @@ public class Notifications {
                             .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
             mBuilder.setVibrate(vibratePattern);
             mBuilder.setLights(0xff00ff00, 300, 1000);
-            mBuilder.setSound(Uri.parse(otherAlertsSound), AudioAttributes.USAGE_ALARM);
+            if(otherAlertsOverrideSilent) {
+                mBuilder.setSound(Uri.parse(otherAlertsSound), AudioAttributes.USAGE_ALARM);
+            } else {
+                mBuilder.setSound(Uri.parse(otherAlertsSound));
+            }
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyMgr.cancel(uncleanAlertNotificationId);
             mNotifyMgr.notify(uncleanAlertNotificationId, mBuilder.build());
@@ -535,6 +547,7 @@ public class Notifications {
     public static void bgMissedAlert(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String otherAlertsSound = prefs.getString("other_alerts_sound", "content://settings/system/notification_sound");
+        Boolean otherAlertsOverrideSilent = prefs.getBoolean("other_alerts_override_silent", false);
         int otherAlertSnooze =  Integer.parseInt(prefs.getString("other_alerts_snooze", "20"));
 
         UserNotification userNotification = UserNotification.LastMissedAlert();
@@ -551,7 +564,11 @@ public class Notifications {
                             .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
             mBuilder.setVibrate(vibratePattern);
             mBuilder.setLights(0xff00ff00, 300, 1000);
-            mBuilder.setSound(Uri.parse(otherAlertsSound), AudioAttributes.USAGE_ALARM);
+            if(otherAlertsOverrideSilent) {
+                mBuilder.setSound(Uri.parse(otherAlertsSound), AudioAttributes.USAGE_ALARM);
+            } else {
+                mBuilder.setSound(Uri.parse(otherAlertsSound));
+            }
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyMgr.cancel(missedAlertNotificationId);
             mNotifyMgr.notify(missedAlertNotificationId, mBuilder.build());
