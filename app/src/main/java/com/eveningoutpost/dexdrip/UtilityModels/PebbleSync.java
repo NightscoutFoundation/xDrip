@@ -47,12 +47,22 @@ public class PebbleSync extends Service {
     private BgGraphBuilder bgGraphBuilder;
     private BgReading mBgReading;
     private static int lastTransactionId;
+    BroadcastReceiver newSavedBgReceiver;
 
     @Override
     public void onCreate() {
         super.onCreate();
         mContext = getApplicationContext();
         mBgReading = BgReading.last();
+        newSavedBgReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context ctx, Intent intent) {
+                if (intent.getAction().compareTo("com.eveningoutpost.dexdrip.DexCollectionService.SAVED_BG") == 0) {
+                    sendData();
+                }
+            }
+        };
+        registerReceiver(newSavedBgReceiver, new IntentFilter("com.eveningoutpost.dexdrip.DexCollectionService.SAVED_BG"));
         init();
     }
 
@@ -66,7 +76,13 @@ public class PebbleSync extends Service {
         sendData();
         return START_STICKY;
     }
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(newSavedBgReceiver != null) {
+            unregisterReceiver(newSavedBgReceiver);
+        }
+    }
     @Override
     public IBinder onBind(Intent intent) {
         throw new UnsupportedOperationException("Not yet implemented");
