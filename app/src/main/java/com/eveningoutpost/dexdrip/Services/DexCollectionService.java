@@ -67,7 +67,6 @@ public class DexCollectionService extends Service {
     private String mDeviceAddress;
     private boolean is_connected = false;
     SharedPreferences prefs;
-    private static byte bridgeBattery = 0;
 
     public DexCollectionService dexCollectionService;
 
@@ -88,7 +87,6 @@ public class DexCollectionService extends Service {
     private static byte[] lastdata = null;
 
     private Context mContext = null;
-
 
     private static final int STATE_DISCONNECTED = BluetoothProfile.STATE_DISCONNECTED;
     private static final int STATE_DISCONNECTING = BluetoothProfile.STATE_DISCONNECTING;
@@ -159,19 +157,6 @@ public class DexCollectionService extends Service {
             }
         }
     };
-
-    public static byte getBridgeBattery() {
-        return bridgeBattery;
-    }
-
-
-    public boolean isUnitsMmol() {
-        return (PreferenceManager.getDefaultSharedPreferences(this).getString("units", "mmol").compareTo("mmol") != 0);
-    }
-
-    public static String getBridgeBatteryAsString() {
-        return String.format("%d", bridgeBattery);
-    }
 
     public void listenForChangeInSettings() {
         prefs.registerOnSharedPreferenceChangeListener(prefListener);
@@ -521,7 +506,7 @@ public class DexCollectionService extends Service {
                                 txidMessage.putInt(2, TransmitterID);
                                 sendBtMessage(txidMessage);
                             }
-                            bridgeBattery = ByteBuffer.wrap(buffer).get(11);
+                            PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt("bridge_battery", ByteBuffer.wrap(buffer).get(11)).apply();
                             //All is OK, so process it.
                             //first, tell the wixel it is OK to sleep.
                             Log.d(TAG, "setSerialDataToTransmitterRawData: Sending Data packet Ack, to put wixel to sleep");

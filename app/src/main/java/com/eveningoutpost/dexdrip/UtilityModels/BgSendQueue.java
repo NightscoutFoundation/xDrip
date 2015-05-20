@@ -40,10 +40,6 @@ public class BgSendQueue extends Model {
     @Column(name = "operation_type")
     public String operation_type;
 
-    private static Context mContext = Home.getContext();
-
-    private static PebbleSync pebbleSync = new PebbleSync(mContext);
-
     public static BgSendQueue nextBgJob() {
         return new Select()
                 .from(BgSendQueue.class)
@@ -119,7 +115,7 @@ public class BgSendQueue extends Model {
             }
 
             if (prefs.getBoolean("broadcast_to_pebble", false)) {
-                pebbleSync.sendData(context, bgReading);
+                context.startService(new Intent(context, PebbleSync.class));
             }
 
             if (prefs.getBoolean("share_upload", false)) {

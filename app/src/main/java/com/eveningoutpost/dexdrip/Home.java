@@ -77,12 +77,10 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     BroadcastReceiver _broadcastReceiver;
     BroadcastReceiver newDataReceiver;
     BroadcastReceiver newSavedBgReceiver;
-    private static Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = getApplicationContext();
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(getApplicationContext());
         collectionServiceStarter.start(getApplicationContext());
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
@@ -140,10 +138,6 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         holdViewport.set(0, 0, 0, 0);
         setupCharts();
         updateCurrentBgInfo();
-    }
-
-    public static Context getContext() {
-        return mContext;
     }
 
     public void setupCharts() {
@@ -328,7 +322,8 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         df.setMaximumFractionDigits(0);
 
         boolean isDexbridge = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
-        byte bridgeBattery = DexCollectionService.getBridgeBattery();
+        int bridgeBattery = prefs.getInt("bridge_battery", 0);
+
         final TextView dexbridgeBattery = (TextView)findViewById(R.id.textBridgeBattery);
         if(isDexbridge) {
             if(bridgeBattery == 0){

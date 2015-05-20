@@ -1,13 +1,19 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
+import android.os.Build;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.ReadDataShare;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
@@ -19,7 +25,7 @@ import java.util.UUID;
 /**
  * Created by THE NIGHTSCOUT PROJECT CONTRIBUTORS (and adapted to fit the needs of this project)
  */
-public class PebbleSync {
+public class PebbleSync extends Service {
     private final static String TAG = PebbleSync.class.getSimpleName();
     //    CGM_ICON_KEY = 0x0,		// TUPLE_CSTRING, MAX 2 BYTES (10)
     //    CGM_BG_KEY = 0x1,		// TUPLE_CSTRING, MAX 4 BYTES (253 OR 22.2)
@@ -41,11 +47,31 @@ public class PebbleSync {
     private BgGraphBuilder bgGraphBuilder;
     private BgReading mBgReading;
     private static int lastTransactionId;
-    public PebbleSync(Context context){
-        this.mContext = context;
-        mBgReading = null;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mContext = getApplicationContext();
+        mBgReading = BgReading.last();
         init();
     }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if(!PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("broadcast_to_pebble", false)) {
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+        Log.w(TAG, "STARTING SERVICE");
+        sendData();
+        return START_STICKY;
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
     private void init() {
         Log.i(TAG, "Initialising...");
         Log.i(TAG, "configuring PebbleDataReceiver");
@@ -53,16 +79,17 @@ public class PebbleSync {
         PebbleKit.registerReceivedDataHandler(mContext, new PebbleKit.PebbleDataReceiver(PEBBLEAPP_UUID) {
             @Override
             public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
-                Log.d(TAG,"receiveData: transactionId is "+String.valueOf(transactionId));
-                if(lastTransactionId == 0 || transactionId != lastTransactionId) {
+                Log.d(TAG, "receiveData: transactionId is " + String.valueOf(transactionId));
+                if (lastTransactionId == 0 || transactionId != lastTransactionId) {
                     lastTransactionId = transactionId;
                     Log.d(TAG, "Received Query. data: " + data.size());
                     PebbleKit.sendAckToPebble(context, transactionId);
-                    sendData(context, mBgReading);
+                    sendData();
                 }
             }
         });
     }
+
 
     public PebbleDictionary buildDictionary() {
         PebbleDictionary dictionary = new PebbleDictionary();
@@ -76,7 +103,7 @@ public class PebbleSync {
         dictionary.addUint32(PHONE_TIME_KEY, (int) ((new Date().getTime() + offsetFromUTC) / 1000));
         dictionary.addString(BG_DELTA_KEY, bgDelta());
         if(PreferenceManager.getDefaultSharedPreferences(mContext).getString("dex_collection_method", "DexbridgeWixel").compareTo("DexbridgeWixel")==0) {
-            dictionary.addString(UPLOADER_BATTERY_KEY, DexCollectionService.getBridgeBatteryAsString());
+            dictionary.addString(UPLOADER_BATTERY_KEY, bridgeBatteryString());
             dictionary.addString(NAME_KEY, "Bridge");
         } else {
             dictionary.addString(UPLOADER_BATTERY_KEY, phoneBattery());
@@ -85,11 +112,16 @@ public class PebbleSync {
         return dictionary;
     }
 
-    public void sendData(Context context, BgReading bgReading){
-        mContext = context;
+    public String bridgeBatteryString() {
+        return String.format("%d", PreferenceManager.getDefaultSharedPreferences(mContext).getInt("bridge_battery", 0));
+    }
+
+    public void sendData(){
         bgGraphBuilder = new BgGraphBuilder(mContext);
         mBgReading = BgReading.last();
-        sendDownload(buildDictionary());
+        if(bgReading() != null) {
+            sendDownload(buildDictionary());
+        }
     }
 
     public String bgReading() {

@@ -210,6 +210,11 @@
             android:name=".Services.MissedReadingIntentService"
             android:exported="false" >
         </service>
+        <service
+            android:name=".UtilityModels.PebbleSync"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>
