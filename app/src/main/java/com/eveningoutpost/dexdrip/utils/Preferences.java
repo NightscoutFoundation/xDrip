@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
@@ -22,6 +23,7 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.PebbleSync;
 
 import java.util.List;
 
@@ -152,9 +154,7 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_device_status_collection"));
             bindPreferenceSummaryToValue(findPreference("cloud_storage_api_base"));
 
-
             addPreferencesFromResource(R.xml.pref_advanced_settings);
-
 
             final Preference collectionMethod = findPreference("dex_collection_method");
             final Preference dexTxId = findPreference("dex_collection_method");
@@ -163,6 +163,8 @@ public class Preferences extends PreferenceActivity {
             final Preference predictiveBG = findPreference("predictive_bg");
             final Preference interpretRaw = findPreference("interpret_raw");
             final Preference shareKey = findPreference("share_key");
+            final Preference pebbleSync = findPreference("broadcast_to_pebble");
+
             final PreferenceCategory collectionCategory = (PreferenceCategory) findPreference("collection_category");
             final PreferenceCategory otherCategory = (PreferenceCategory) findPreference("other_category");
             final PreferenceScreen calibrationAlertsScreen = (PreferenceScreen) findPreference("calibration_alerts_screen");
@@ -185,6 +187,18 @@ public class Preferences extends PreferenceActivity {
             if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("WifiWixel") != 0) {
                 collectionCategory.removePreference(wifiRecievers);
             }
+            pebbleSync.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    Context context = preference.getContext();
+                    if ((Boolean) newValue) {
+                        context.startService(new Intent(context, PebbleSync.class));
+                    } else {
+                        context.stopService(new Intent(context, PebbleSync.class));
+                    }
+                    return true;
+                }
+            });
             bindPreferenceSummaryToValue(collectionMethod);
             bindPreferenceSummaryToValue(shareKey);
             bindPreferenceSummaryToValue(wifiRecievers);
@@ -196,7 +210,8 @@ public class Preferences extends PreferenceActivity {
                         otherCategory.removePreference(interpretRaw);
                         otherCategory.addPreference(predictiveBG);
                         alertsCategory.addPreference(calibrationAlertsScreen);
-                        if(((String) newValue).compareTo("DexbridgeWixel") == 0) collectionCategory.addPreference(dexTxId);
+                        if (((String) newValue).compareTo("DexbridgeWixel") == 0)
+                            collectionCategory.addPreference(dexTxId);
                     } else {
                         collectionCategory.addPreference(shareKey);
                         otherCategory.addPreference(interpretRaw);
