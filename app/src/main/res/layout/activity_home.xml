@@ -1,8 +1,7 @@
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:id="@+id/drawer_layout"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    tools:context="com.eveningoutpost.dexdrip.Home"
-    android:visibility="visible">
+    tools:context="com.eveningoutpost.dexdrip.Home">
 
     <!-- As the main content view, the view below consumes the entire
          space available using match_parent in both dimensions. -->
@@ -30,7 +29,7 @@
                     android:layout_width="900dp"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="#ffff0909"
+                    android:textColor="#C30909"
                     android:id="@+id/notices"
                     android:background="#07000000"
                     android:paddingEnd="10dp"
@@ -71,7 +70,6 @@
                     android:inputType="none"
                     android:layout_below="@+id/notices"
                     android:layout_alignParentStart="true" />
-
             </RelativeLayout>
 
             <lecho.lib.hellocharts.view.PreviewLineChartView

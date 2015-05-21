@@ -12,8 +12,8 @@
         <SwitchPreference
             android:title="Send to Pebble"
             android:key="broadcast_to_pebble"
-            android:summary="If you have a pebble watch running a camping mode watchface"
-            android:defaultValue="false" >
+            android:summary="If you have a pebble watch you can send bg data straight to it"
+            android:defaultValue="false">
         </SwitchPreference>
         <CheckBoxPreference
             android:key="predictive_bg"

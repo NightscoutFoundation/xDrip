@@ -38,7 +38,6 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Sensor;
@@ -47,20 +46,19 @@ import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 
-//import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
-import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
-
 import static com.activeandroid.ActiveAndroid.beginTransaction;
 import static com.activeandroid.ActiveAndroid.endTransaction;
 import static com.activeandroid.ActiveAndroid.setTransactionSuccessful;
+import com.activeandroid.query.Select;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class DexCollectionService extends Service {
@@ -69,7 +67,6 @@ public class DexCollectionService extends Service {
     private String mDeviceAddress;
     private boolean is_connected = false;
     SharedPreferences prefs;
-    private static byte bridgeBattery = 0;
 
     public DexCollectionService dexCollectionService;
 
@@ -110,7 +107,7 @@ public class DexCollectionService extends Service {
         dexCollectionService = this;
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         listenForChangeInSettings();
-        Log.w(TAG, "STARTING SERVICE");
+        Log.w(TAG, "onCreate: STARTING SERVICE");
     }
 
     @Override
@@ -119,27 +116,28 @@ public class DexCollectionService extends Service {
             stopSelf();
             return START_NOT_STICKY;
         }
-        if (!CollectionServiceStarter.isBTWixel(getApplicationContext()) && !CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
+        if (CollectionServiceStarter.isBTWixel(getApplicationContext()) || CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
+            setFailoverTimer();
+        } else {
             stopSelf();
             return START_NOT_STICKY;
         }
-        setFailoverTimer();
         attemptConnection();
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
+        Log.w(TAG, "onDestroy entered");
         super.onDestroy();
         close();
         foregroundServiceStarter.stop();
         setRetryTimer();
         Log.w(TAG, "SERVICE STOPPED");
     }
-
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-            if(key.compareTo("run_service_in_foreground") == 0) {
+            if (key.compareTo("run_service_in_foreground") == 0) {
                 Log.e("FOREGROUND", "run_service_in_foreground changed!");
                 if (prefs.getBoolean("run_service_in_foreground", false)) {
                     foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), dexCollectionService);
@@ -153,21 +151,13 @@ public class DexCollectionService extends Service {
         }
     };
 
-    public static byte getBridgeBattery() {
-        return bridgeBattery;
-    }
-
-    public static String getBridgeBatteryAsString() {
-        return String.format("%d", bridgeBattery);
-    }
-
     public void listenForChangeInSettings() {
         prefs.registerOnSharedPreferenceChangeListener(prefListener);
     }
 
     public void setRetryTimer() {
         if (CollectionServiceStarter.isBTWixel(getApplicationContext()) || CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
-            long retry_in = (1000 * 60);
+            long retry_in = (1000 * 65);
             Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in/1000)  + " seconds");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -178,14 +168,16 @@ public class DexCollectionService extends Service {
     public void setFailoverTimer() { //Sometimes it gets stuck in limbo on 4.4, this should make it try again
         if (CollectionServiceStarter.isBTWixel(getApplicationContext())|| CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
             long retry_in = (1000 * 60 * 5);
-            Log.d(TAG, "Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
+            Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0));
+            alarm.setExact(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0));
         } else {
             stopSelf();
         }
     }
+
+
 
     public void attemptConnection() {
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -201,7 +193,7 @@ public class DexCollectionService extends Service {
                     }
                 }
 
-                Log.w(TAG, "Connection state: " + mConnectionState);
+                Log.w(TAG, "attemptConnection: Connection state: " + mConnectionState);
                 if (mConnectionState == STATE_DISCONNECTED || mConnectionState == STATE_DISCONNECTING) {
                     ActiveBluetoothDevice btDevice = ActiveBluetoothDevice.first();
                     if (btDevice != null) {
@@ -213,7 +205,7 @@ public class DexCollectionService extends Service {
                         }
                     }
                 } else if (mConnectionState == STATE_CONNECTED) { //WOOO, we are good to go, nothing to do here!
-                    Log.w(TAG, "Looks like we are already connected, going to read!");
+                    Log.w(TAG, "attemptConnection: Looks like we are already connected, going to read!");
                     return;
                 }
             }
@@ -227,12 +219,12 @@ public class DexCollectionService extends Service {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mConnectionState = STATE_CONNECTED;
                 ActiveBluetoothDevice.connected();
-                Log.w(TAG, "Connected to GATT server.");
+                Log.w(TAG, "onConnectionStateChange: Connected to GATT server.");
                 mBluetoothGatt.discoverServices();
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 mConnectionState = STATE_DISCONNECTED;
                 ActiveBluetoothDevice.disconnected();
-                Log.w(TAG, "Disconnected from GATT server.");
+                Log.w(TAG, "onConnectionStateChange: Disconnected from GATT server.");
                 setRetryTimer();
             }
         }
@@ -249,14 +241,15 @@ public class DexCollectionService extends Service {
                         if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
                             mBluetoothGatt.setCharacteristicNotification(gattCharacteristic, true);
                         } else {
-                            Log.e(TAG, "characteristic " + gattCharacteristic.getUuid() + " doesn't have notify properties");
+                            Log.e(TAG, "onServicesDiscovered: characteristic " + xDripDataCharacteristic + " not found");
                         }
                     } else {
-                        Log.e(TAG, "characteristic " + xDripDataCharacteristic + " not found");
+                        Log.e(TAG, "onServicesDiscovered: service " + xDripDataService + " not found");
                     }
-                } else {
-                    Log.e(TAG, "service " + xDripDataCharacteristic + " not found");
+                    Log.w(TAG, "onServicesDiscovered received success: " + status);
                 }
+            } else {
+                Log.w(TAG, "onServicesDiscovered received: " + status);
             }
         }
 
@@ -327,14 +320,14 @@ public class DexCollectionService extends Service {
     }
 
     public boolean connect(final String address) {
-        Log.w(TAG, "going to connect to device at address" + address);
+        Log.w(TAG, "connect: going to connect to device at address" + address);
         if (mBluetoothAdapter == null || address == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
+            Log.w(TAG, "connect: BluetoothAdapter not initialized or unspecified address.");
             setRetryTimer();
             return false;
         }
         if (mBluetoothGatt != null) {
-            Log.w(TAG, "BGatt isnt null, Closing.");
+            Log.w(TAG, "connect: mBluetoothGatt isnt null, Closing.");
             mBluetoothGatt.close();
             mBluetoothGatt = null;
         }
@@ -344,13 +337,14 @@ public class DexCollectionService extends Service {
             setRetryTimer();
             return false;
         }
-        Log.w(TAG, "Trying to create a new connection.");
+        Log.w(TAG, "connect: Trying to create a new connection.");
         mBluetoothGatt = device.connectGatt(getApplicationContext(), true, mGattCallback);
         mConnectionState = STATE_CONNECTING;
         return true;
     }
 
     public void close() {
+        Log.w(TAG, "close: Closing Connection");
         if (mBluetoothGatt == null) {
             return;
         }
@@ -363,11 +357,10 @@ public class DexCollectionService extends Service {
 
     public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
         try {
-            Log.w(TAG, "received some data: " + new String(buffer, 0, len, Charset.forName("ISO-8859-1")));
+            Log.w(TAG, "setSerialDataToTransmitterRawData: received some data: " + new String(buffer, 0, len, Charset.forName("ISO-8859-1")));
         } catch (Exception ex) {
-            Log.w(TAG, "received some data, ERROR!");
+            Log.w(TAG, "setSerialDataToTransmitterRawData: received some data!");
         }
-
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "ReceivedReading");
@@ -375,7 +368,7 @@ public class DexCollectionService extends Service {
         try {
             beginTransaction();
             try {
-                Long timestamp = new Date().getTime();
+                long timestamp = new Date().getTime();
                 if (CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
                     Log.w(TAG, "setSerialDataToTransmitterRawData: Dealing with Dexbridge packet!");
                     int DexSrc;
@@ -426,7 +419,7 @@ public class DexCollectionService extends Service {
                                 txidMessage.putInt(2, TransmitterID);
                                 sendBtMessage(txidMessage);
                             }
-                            bridgeBattery = ByteBuffer.wrap(buffer).get(11);
+                            PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt("bridge_battery", ByteBuffer.wrap(buffer).get(11)).apply();
                             //All is OK, so process it.
                             //first, tell the wixel it is OK to sleep.
                             Log.d(TAG, "setSerialDataToTransmitterRawData: Sending Data packet Ack, to put wixel to sleep");
@@ -435,31 +428,38 @@ public class DexCollectionService extends Service {
                             ackMessage.put(1, (byte) 0xF0);
                             sendBtMessage(ackMessage);
                             timestamp = new Date().getTime();
-                            Log.v(TAG,"setSerialDataToTransmitterRawData: Creating TransmitterData at "+timestamp);
-                            TransmitterData transmitterData = TransmitterData.createDexBridge(buffer, len, timestamp);
+                            Log.v(TAG, "setSerialDataToTransmitterRawData: Creating TransmitterData at " + timestamp);
+                            TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
                             if (transmitterData != null) {
                                 Sensor sensor = Sensor.currentSensor();
                                 if (sensor != null) {
                                     sensor.latest_battery_level = transmitterData.sensor_battery_level;
                                     sensor.save();
+
                                     BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, timestamp);
+                                    Intent intent = new Intent("com.eveningoutpost.dexdrip.DexCollectionService.SAVED_BG");
+                                    sendBroadcast(intent);
+
                                 } else {
                                     Log.w(TAG, "setSerialDataToTransmitterRawData: No Active Sensor, Data only stored in Transmitter Data");
                                 }
                             }
                         }
-                    }
-                } else {
-                    TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
-                    if (transmitterData != null) {
-                        Sensor sensor = Sensor.currentSensor();
-                        if (sensor != null) {
-                            sensor.latest_battery_level = transmitterData.sensor_battery_level;
-                            sensor.save();
+                    } else {
+                        TransmitterData transmitterData = TransmitterData.create(buffer, len, timestamp);
+                        //TransmitterData transmitterData = TransmitterData.create(buffer, len);
+                        if (transmitterData != null) {
+                            Sensor sensor = Sensor.currentSensor();
+                            if (sensor != null) {
+                                sensor.latest_battery_level = transmitterData.sensor_battery_level;
+                                sensor.save();
 
-                            BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, timestamp);
-                        } else {
-                            Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
+                                BgReading bgReading = BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, timestamp);
+                                Intent intent = new Intent("com.eveningoutpost.dexdrip.DexCollectionService.SAVED_BG");
+                                sendBroadcast(intent);
+                            } else {
+                                Log.w(TAG, "setSerialDataToTransmitterRawData: No Active Sensor, Data only stored in Transmitter Data");
+                            }
                         }
                     }
                 }

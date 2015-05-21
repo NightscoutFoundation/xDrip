@@ -15,9 +15,7 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
-//import com.getpebble.android.kit.PebbleKit;
 import com.eveningoutpost.dexdrip.ShareModels.ShareRest;
 import com.eveningoutpost.dexdrip.widgetUpdateService;
 
@@ -96,6 +94,7 @@ public class BgSendQueue extends Model {
                     task.execute();
                 }
             }
+
             if (prefs.getBoolean("broadcast_data_through_intents", false)) {
                 Log.i("SENSOR QUEUE:", "Broadcast data");
                 final Bundle bundle = new Bundle();
@@ -113,11 +112,12 @@ public class BgSendQueue extends Model {
                 intent.putExtras(bundle);
                 context.sendBroadcast(intent, Intents.RECEIVER_PERMISSION);
             }
+
             if(prefs.getBoolean("broadcast_to_pebble", false)) {
-                PebbleSync pebbleSync = new PebbleSync(context);
-                pebbleSync.sendData(context, bgReading);
+                context.startService(new Intent(context, PebbleSync.class));
             }
-            if(prefs.getBoolean("share_upload", false)) {
+
+            if (prefs.getBoolean("share_upload", false)) {
                 ShareRest shareRest = new ShareRest(context);
                 Log.w("ShareRest", "About to call ShareRest!!");
                 shareRest.sendBgData(bgReading);

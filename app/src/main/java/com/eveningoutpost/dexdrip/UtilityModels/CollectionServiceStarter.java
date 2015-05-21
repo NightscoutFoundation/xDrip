@@ -19,7 +19,7 @@ import com.eveningoutpost.dexdrip.Services.WixelReader;
  */
 public class CollectionServiceStarter {
     private Context mContext;
-    
+
     private final static String TAG = CollectionServiceStarter.class.getSimpleName();
 
     public static boolean isBTWixel(Context context) {
@@ -65,7 +65,7 @@ public class CollectionServiceStarter {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
 
-        if(isBTWixel(context) || isDexbridgeWixel(context)) {
+        if(isBTWixel(context)||isDexbridgeWixel(context)) {
             Log.d("DexDrip", "Starting bt wixel collector");
             stopWifWixelThread();
             stopBtShareService();
@@ -81,12 +81,15 @@ public class CollectionServiceStarter {
             stopWifWixelThread();
             startBtShareService();
         }
+        if(prefs.getBoolean("broadcast_to_pebble",false)){
+            startPebbleSyncService();
+        }
         Log.d(TAG, collection_method);
-        
+
        // Start logging to logcat
         String filePath = Environment.getExternalStorageDirectory() + "/xdriplogcat.txt";
         try {
-            String[] cmd = { "/system/bin/sh", "-c", "ps | grep logcat  || logcat -f " + filePath + 
+            String[] cmd = { "/system/bin/sh", "-c", "ps | grep logcat  || logcat -f " + filePath +
                     " -v threadtime AlertPlayer:V com.eveningoutpost.dexdrip.Services.WixelReader:V *:E " };
             Runtime.getRuntime().exec(cmd);
         } catch (IOException e2) {
@@ -102,9 +105,9 @@ public class CollectionServiceStarter {
 
     public static void restartCollectionService(Context context) {
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
-        if(isBTShare(context)) collectionServiceStarter.stopBtShareService();
-        if(isBTWixel(context) || isDexbridgeWixel(context)) collectionServiceStarter.stopBtWixelService();
-        if(isWifiWixel(context)) collectionServiceStarter.stopWifWixelThread();
+        collectionServiceStarter.stopBtShareService();
+        collectionServiceStarter.stopBtWixelService();
+        collectionServiceStarter.stopWifWixelThread();
         collectionServiceStarter.start(context);
     }
 
@@ -123,6 +126,10 @@ public class CollectionServiceStarter {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
             mContext.startService(new Intent(mContext, DexShareCollectionService.class));
         }
+    }
+    private void startPebbleSyncService() {
+        Log.d(TAG, "starting PebbleSync service");
+        mContext.startService(new Intent(mContext, PebbleSync.class));
     }
     private void stopBtShareService() {
         Log.d(TAG, "stopping bt share service");
