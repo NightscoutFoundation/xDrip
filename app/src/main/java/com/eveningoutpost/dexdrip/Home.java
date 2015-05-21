@@ -342,6 +342,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         final TextView notificationText = (TextView)findViewById(R.id.notices);
         if ((currentBgValueText.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) > 0) {
             currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         }
         BgReading lastBgreading = BgReading.lastNoSenssor();
         boolean predictive = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("predictive_bg", false);
@@ -357,6 +358,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 }
                 currentBgValueText.setText(bgGraphBuilder.unitized_string(estimate));
                 currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
                 if(!predictive){
                     estimate=lastBgreading.calculated_value;
