@@ -9,12 +9,12 @@
             android:summary="@string/pref_summary_broadcast_enabled"
             android:defaultValue="false" >
         </SwitchPreference>
-        <!--<SwitchPreference-->
-            <!--android:title="Send to Pebble"-->
-            <!--android:key="broadcast_to_pebble"-->
-            <!--android:summary="If you have a pebble watch you can send bg data straight to it"-->
-            <!--android:defaultValue="false" >-->
-        <!--</SwitchPreference>-->
+        <SwitchPreference
+            android:title="Send to Pebble"
+            android:key="broadcast_to_pebble"
+            android:summary="If you have a pebble watch you can send bg data straight to it"
+            android:defaultValue="false">
+        </SwitchPreference>
         <CheckBoxPreference
             android:key="predictive_bg"
             android:title="Display Predictive Values"
@@ -24,6 +24,11 @@
             android:key="interpret_raw"
             android:title="Interpret Raw Values"
             android:summary="If using Share, DexDrip will show values when they are normally hidden on the receiver."
+            android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="store_logs"
+            android:title="Store logs for troubleshooting"
+            android:summary="Only enable if you are having trouble with the app."
             android:defaultValue="false" />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -79,7 +79,7 @@ public class NavDrawerBuilder {
             options.add("Stop Sensor");
         } else { options.add("Start Sensor"); }
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            if(CollectionServiceStarter.isBTWixel(context) || CollectionServiceStarter.isBTShare(context)) {
+            if(CollectionServiceStarter.isBTWixel(context) || CollectionServiceStarter.isDexbridgeWixel(context)|| CollectionServiceStarter.isBTShare(context)) {
                 options.add("Scan for BT");
             }
         }
@@ -136,7 +136,7 @@ public class NavDrawerBuilder {
             options.add(new Intent(context, StopSensor.class));
         } else { options.add(new Intent(context, StartNewSensor.class)); }
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            if(CollectionServiceStarter.isBTWixel(context) || CollectionServiceStarter.isBTShare(context)) {
+            if(CollectionServiceStarter.isBTWixel(context) || CollectionServiceStarter.isDexbridgeWixel(context)|| CollectionServiceStarter.isBTShare(context)) {
                 options.add(new Intent(context, BluetoothScan.class));
             }
         }

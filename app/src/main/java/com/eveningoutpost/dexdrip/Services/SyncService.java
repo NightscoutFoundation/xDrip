@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.Services;
 
 import android.app.AlarmManager;
+import android.app.IntentService;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -23,33 +24,22 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class SyncService extends Service {
+public class SyncService extends IntentService {
     int mStartMode;
     private Context mContext;
     private Boolean enableRESTUpload;
     private Boolean enableMongoUpload;
     private SharedPreferences prefs;
 
-    @Override
-    public void onCreate() {
-        Log.w("SYNC SERVICE:", "STARTING SERVICE");
+    public SyncService() {
+        super("SyncService");
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        attemptSend();
-        return START_STICKY;
-    }
-
-    @Override
-    public void onDestroy() {
+    protected void onHandleIntent(Intent intent) {
+        Log.w("SYNC SERVICE:", "STARTING INTENT SERVICE");
         setRetryTimer();
-        Log.w("SYNC SERVICE", "SERVICE STOPPED");
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        attemptSend();
     }
 
     public void attemptSend() {

@@ -19,6 +19,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +28,7 @@ import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -67,6 +69,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
     public boolean updatingPreviewViewport = false;
     public boolean updatingChartViewport = false;
     boolean isBTWixel;
+    boolean isDexbridgeWixel;
     boolean isBTShare;
     boolean isWifiWixel;
 
@@ -79,6 +82,8 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         super.onCreate(savedInstanceState);
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(getApplicationContext());
         collectionServiceStarter.start(getApplicationContext());
+        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_notifications, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_source, false);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -167,7 +172,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 tempViewport = newViewport;
                 updatingPreviewViewport = false;
             }
-            if (updateStuff == true) {
+            if (updateStuff) {
                 holdViewport.set(newViewport.left, newViewport.top, newViewport.right, newViewport.bottom);
             }
         }
@@ -202,6 +207,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         final TextView notificationText = (TextView)findViewById(R.id.notices);
         notificationText.setText("");
         isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
+        isDexbridgeWixel = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
         isBTShare = CollectionServiceStarter.isBTShare(getApplicationContext());
         isWifiWixel = CollectionServiceStarter.isWifiWixel(getApplicationContext());
         if(isBTShare) {
@@ -228,7 +234,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 }
             }
         }
-        if(isBTWixel) {
+        if(isBTWixel || isDexbridgeWixel) {
             if ((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
                 notificationText.setText("Unfortunately your android version does not support Bluetooth Low Energy");
             } else {
@@ -302,10 +308,27 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(0);
 
+        boolean isDexbridge = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
+        int bridgeBattery = prefs.getInt("bridge_battery", 0);
+
+        final TextView dexbridgeBattery = (TextView)findViewById(R.id.textBridgeBattery);
+        if(isDexbridge) {
+            if(bridgeBattery == 0){
+                dexbridgeBattery.setText("Waiting for packet");
+            } else {
+                dexbridgeBattery.setText("Bridge Battery: " + bridgeBattery + "%");
+            }
+            if(bridgeBattery < 50) dexbridgeBattery.setTextColor(Color.YELLOW);
+            if(bridgeBattery < 25) dexbridgeBattery.setTextColor(Color.RED); else dexbridgeBattery.setTextColor(Color.GREEN);
+            dexbridgeBattery.setVisibility(View.VISIBLE);
+        } else {
+            dexbridgeBattery.setVisibility(View.INVISIBLE);
+        }
         final TextView currentBgValueText = (TextView)findViewById(R.id.currentBgValueRealTime);
         final TextView notificationText = (TextView)findViewById(R.id.notices);
         if ((currentBgValueText.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) > 0) {
             currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         }
         BgReading lastBgreading = BgReading.lastNoSenssor();
         boolean predictive = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("predictive_bg", false);
@@ -321,6 +344,7 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
                 }
                 currentBgValueText.setText(bgGraphBuilder.unitized_string(estimate));
                 currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
                 if(!predictive){
                     estimate=lastBgreading.calculated_value;

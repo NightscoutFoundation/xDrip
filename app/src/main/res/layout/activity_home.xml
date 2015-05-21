@@ -58,6 +58,18 @@
                     android:paddingEnd="20dp"
                     android:textSize="50dp"
                     android:paddingTop="0dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="100%"
+                    android:id="@+id/textBridgeBattery"
+                    android:textStyle="normal"
+                    android:textSize="12sp"
+                    android:inputType="none"
+                    android:layout_below="@+id/notices"
+                    android:layout_alignParentStart="true" />
             </RelativeLayout>
 
             <lecho.lib.hellocharts.view.PreviewLineChartView

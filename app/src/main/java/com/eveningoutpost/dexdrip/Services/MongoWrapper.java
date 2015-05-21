@@ -132,13 +132,13 @@ public class MongoWrapper {
              }
 
         } catch (UnknownHostException e) {
-            Log.e(TAG, "ReadFromMongo: cought UnknownHostException! ", e);
+            Log.e(TAG, "ReadFromMongo: caught UnknownHostException! ", e);
             return null;
         } catch (MongoException e) {
-            Log.e(TAG, "ReadFromMongo: cought MongoException! " , e);
+            Log.e(TAG, "ReadFromMongo: caught MongoException! " , e);
             return trd_list;
         } catch (Exception e) {
-  		      Log.e(TAG, "ReadFromMongo: cought Exception! " , e);
+  		      Log.e(TAG, "ReadFromMongo: caught Exception! " , e);
   		      closeMongoDb();
  			return null;
  		}finally {

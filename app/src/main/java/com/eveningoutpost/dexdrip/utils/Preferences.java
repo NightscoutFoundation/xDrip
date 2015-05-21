@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
@@ -22,6 +23,7 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.PebbleSync;
 
 import java.util.List;
 
@@ -152,9 +154,7 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_device_status_collection"));
             bindPreferenceSummaryToValue(findPreference("cloud_storage_api_base"));
 
-
             addPreferencesFromResource(R.xml.pref_advanced_settings);
-
 
             final Preference collectionMethod = findPreference("dex_collection_method");
             final Preference runInForeground = findPreference("run_service_in_foreground");
@@ -162,13 +162,14 @@ public class Preferences extends PreferenceActivity {
             final Preference predictiveBG = findPreference("predictive_bg");
             final Preference interpretRaw = findPreference("interpret_raw");
             final Preference shareKey = findPreference("share_key");
+            final Preference transmitterId = findPreference("dex_txid");
+            final Preference pebbleSync = findPreference("broadcast_to_pebble");
             final PreferenceCategory collectionCategory = (PreferenceCategory) findPreference("collection_category");
             final PreferenceCategory otherCategory = (PreferenceCategory) findPreference("other_category");
             final PreferenceScreen calibrationAlertsScreen = (PreferenceScreen) findPreference("calibration_alerts_screen");
             final PreferenceCategory alertsCategory = (PreferenceCategory) findPreference("alerts_category");
             prefs =  getPreferenceManager().getDefaultSharedPreferences(getActivity());
             Log.d("PREF", prefs.getString("dex_collection_method", "BluetoothWixel"));
-
             if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomShare") != 0) {
                 collectionCategory.removePreference(shareKey);
                 otherCategory.removePreference(interpretRaw);
@@ -178,12 +179,30 @@ public class Preferences extends PreferenceActivity {
                 alertsCategory.removePreference(calibrationAlertsScreen);
                 prefs.edit().putBoolean("calibration_notifications", false).apply();
             }
-            if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("BluetoothWixel") != 0 && prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomShare") != 0) {
+
+            if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("BluetoothWixel") != 0 && prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomShare") != 0 && prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexbridgeWixel") != 0) {
                 collectionCategory.removePreference(runInForeground);
             }
+
             if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("WifiWixel") != 0) {
                 collectionCategory.removePreference(wifiRecievers);
             }
+
+            if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexbridgeWixel") != 0) {
+                collectionCategory.removePreference(transmitterId);
+            }
+            pebbleSync.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    Context context = preference.getContext();
+                    if ((Boolean) newValue) {
+                        context.startService(new Intent(context, PebbleSync.class));
+                    } else {
+                        context.stopService(new Intent(context, PebbleSync.class));
+                    }
+                    return true;
+                }
+            });
             bindPreferenceSummaryToValue(collectionMethod);
             bindPreferenceSummaryToValue(shareKey);
             bindPreferenceSummaryToValue(wifiRecievers);
@@ -202,16 +221,25 @@ public class Preferences extends PreferenceActivity {
                         alertsCategory.removePreference(calibrationAlertsScreen);
                         prefs.edit().putBoolean("calibration_notifications", false).apply();
                     }
-                    if(((String) newValue).compareTo("BluetoothWixel") != 0 && ((String) newValue).compareTo("DexcomShare") != 0) {
+
+                    if(((String) newValue).compareTo("BluetoothWixel") != 0 && ((String) newValue).compareTo("DexcomShare") != 0 && ((String) newValue).compareTo("DexbridgeWixel") != 0) {
                         collectionCategory.removePreference(runInForeground);
                     } else {
                         collectionCategory.addPreference(runInForeground);
                     }
+
                     if(((String) newValue).compareTo("WifiWixel") != 0) {
                         collectionCategory.removePreference(wifiRecievers);
                     } else {
                         collectionCategory.addPreference(wifiRecievers);
                     }
+
+                    if(((String) newValue).compareTo("DexbridgeWixel") != 0) {
+                        collectionCategory.removePreference(transmitterId);
+                    } else {
+                        collectionCategory.addPreference(transmitterId);
+                    }
+
                     String stringValue = newValue.toString();
                     if (preference instanceof ListPreference) {
                         ListPreference listPreference = (ListPreference) preference;

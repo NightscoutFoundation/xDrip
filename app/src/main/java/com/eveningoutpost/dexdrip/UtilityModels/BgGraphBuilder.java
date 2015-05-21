@@ -297,6 +297,8 @@ public class BgGraphBuilder {
                 return df.format(value);
             } else {
                 df.setMaximumFractionDigits(1);
+                //next line ensures mmol/l value is XX.x always.  Required by PebbleSync, and probably not a bad idea.
+                df.setMinimumFractionDigits(1);
                 return df.format(mmolConvert(value));
             }
         } else if (value > 12) {

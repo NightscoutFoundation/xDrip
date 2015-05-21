@@ -24,6 +24,7 @@ public class IdempotentMigrations {
 
     private void migrateBGAlerts() {
         // Migrate away from old style notifications to Tzachis new Alert system
+        AlertType.CreateStaticAlerts();
         if(prefs.getBoolean("bg_notifications", true)){
             double highMark = Double.parseDouble(prefs.getString("highValue", "170"));
             double lowMark = Double.parseDouble(prefs.getString("lowValue", "70"));

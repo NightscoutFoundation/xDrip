@@ -21,6 +21,11 @@
             android:summary="Running in foreground prevents android from killing the service and creates a notification with a trend line."
             android:defaultValue="false" />
         <EditTextPreference
+            android:key="dex_txid"
+            android:title="Dexcom Transmitter ID"
+            android:summary="ID of your Dexcom Transmitter, eg 12AB3"
+            android:defaultValue="00000" />
+        <EditTextPreference
             android:title="List of recievers"
             android:key="wifi_recievers_addresses"
             android:dialogTitle="@string/wifi_recievers_dialog_title"

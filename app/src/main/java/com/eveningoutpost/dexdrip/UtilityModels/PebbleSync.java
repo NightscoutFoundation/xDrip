@@ -1,22 +1,27 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
+import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
-
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.UUID;
 
 /**
  * Created by THE NIGHTSCOUT PROJECT CONTRIBUTORS (and adapted to fit the needs of this project)
  */
-public class PebbleSync {
+public class PebbleSync extends Service {
+    private final static String TAG = PebbleSync.class.getSimpleName();
     //    CGM_ICON_KEY = 0x0,		// TUPLE_CSTRING, MAX 2 BYTES (10)
     //    CGM_BG_KEY = 0x1,		// TUPLE_CSTRING, MAX 4 BYTES (253 OR 22.2)
     //    CGM_TCGM_KEY = 0x2,		// TUPLE_INT, 4 BYTES (CGM TIME)
@@ -36,24 +41,89 @@ public class PebbleSync {
     private Context mContext;
     private BgGraphBuilder bgGraphBuilder;
     private BgReading mBgReading;
+    private static int lastTransactionId;
+    BroadcastReceiver newSavedBgReceiver;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mContext = getApplicationContext();
+        bgGraphBuilder = new BgGraphBuilder(mContext);
+        mBgReading = BgReading.last();
+        init();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if(!PreferenceManager.getDefaultSharedPreferences(mContext).getBoolean("broadcast_to_pebble", false)) {
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+        Log.w(TAG, "STARTING SERVICE");
+        sendData();
+        return START_STICKY;
+    }
+    @Override
+    public void onDestroy() {
+        Log.d(TAG,"onDestroy called");
+        super.onDestroy();
+        if(newSavedBgReceiver != null) {
+            unregisterReceiver(newSavedBgReceiver);
+        }
+    }
+    @Override
+    public IBinder onBind(Intent intent) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    private void init() {
+        Log.i(TAG, "Initialising...");
+        Log.i(TAG, "configuring PebbleDataReceiver");
+
+        PebbleKit.registerReceivedDataHandler(mContext, new PebbleKit.PebbleDataReceiver(PEBBLEAPP_UUID) {
+            @Override
+            public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
+                Log.d(TAG, "receiveData: transactionId is " + String.valueOf(transactionId));
+                if (lastTransactionId == 0 || transactionId != lastTransactionId) {
+                    lastTransactionId = transactionId;
+                    Log.d(TAG, "Received Query. data: " + data.size());
+                    PebbleKit.sendAckToPebble(context, transactionId);
+                    sendData();
+                }
+            }
+        });
+    }
 
     public PebbleDictionary buildDictionary() {
         PebbleDictionary dictionary = new PebbleDictionary();
+        TimeZone tz = TimeZone.getDefault();
+        Date now = new Date();
+        int offsetFromUTC = tz.getOffset(now.getTime());
+        Log.v(TAG, "buildDictionary: slopeOrdinal-" + slopeOrdinal() + " bgReading-" + bgReading() + " now-"+ (int) now.getTime()/1000 + " bgTime-" + (int) (mBgReading.timestamp / 1000) + " phoneTime-" + (int) (new Date().getTime() / 1000) + " bgDelta-" + bgDelta());
         dictionary.addString(ICON_KEY, slopeOrdinal());
         dictionary.addString(BG_KEY, bgReading());
-        dictionary.addUint32(RECORD_TIME_KEY, (int) (mBgReading.timestamp / 1000));
-        dictionary.addUint32(PHONE_TIME_KEY, (int) (new Date().getTime() / 1000));
+        dictionary.addUint32(RECORD_TIME_KEY, (int) (((mBgReading.timestamp + offsetFromUTC) / 1000)));
+        dictionary.addUint32(PHONE_TIME_KEY, (int) ((new Date().getTime() + offsetFromUTC) / 1000));
         dictionary.addString(BG_DELTA_KEY, bgDelta());
-        dictionary.addString(UPLOADER_BATTERY_KEY, phoneBattery());
-        dictionary.addString(NAME_KEY, "xDrip");
+        if(PreferenceManager.getDefaultSharedPreferences(mContext).getString("dex_collection_method", "DexbridgeWixel").compareTo("DexbridgeWixel")==0) {
+            dictionary.addString(UPLOADER_BATTERY_KEY, bridgeBatteryString());
+            dictionary.addString(NAME_KEY, "Bridge");
+        } else {
+            dictionary.addString(UPLOADER_BATTERY_KEY, phoneBattery());
+            dictionary.addString(NAME_KEY, "Phone");
+        }
         return dictionary;
     }
 
-    public void sendData(Context context, BgReading bgReading){
-        mContext = context;
-        bgGraphBuilder = new BgGraphBuilder(mContext);
+    public String bridgeBatteryString() {
+        return String.format("%d", PreferenceManager.getDefaultSharedPreferences(mContext).getInt("bridge_battery", 0));
+    }
+
+    public void sendData(){
         mBgReading = BgReading.last();
-        sendDownload(buildDictionary());
+        if(mBgReading != null) {
+            sendDownload(buildDictionary());
+        }
     }
 
     public String bgReading() {
@@ -61,11 +131,15 @@ public class PebbleSync {
     }
 
     public String bgDelta() {
-        String deltaString = bgGraphBuilder.unitized_string((int)(mBgReading.calculated_value_slope * (5 * 60 * 1000)));
-        if(mBgReading.calculated_value_slope > 0.1) {
+        String deltaString;
+        if((PreferenceManager.getDefaultSharedPreferences(mContext).getString("units","mg/dl").compareTo("mg/dl") == 0)) {
+            deltaString = String.format("%.0f", mBgReading.calculated_value_slope * 360000);
+        } else {
+            deltaString = String.format("%.1f", (mBgReading.calculated_value_slope * 360000)*Constants.MGDL_TO_MMOLL);
+        }
+        Log.v(TAG,"bgDelta: "+ deltaString);
+        if(Float.valueOf(deltaString) > 0) {
             return ("+"+deltaString);
-        } else if(mBgReading.calculated_value_slope > -0.1 && mBgReading.calculated_value_slope < 0.1) {
-            return "0";
         } else {
             return deltaString;
         }
@@ -82,7 +156,7 @@ public class PebbleSync {
     public void sendDownload(PebbleDictionary dictionary) {
         if (PebbleKit.isWatchConnected(mContext)) {
             if (dictionary != null && mContext != null) {
-                Log.d("PEBBLE PUSHER", "Sending data to pebble");
+                Log.d(TAG, "sendDownload: Sending data to pebble");
                 PebbleKit.sendDataToPebble(mContext, PEBBLEAPP_UUID, dictionary);
             }
         }
@@ -92,9 +166,7 @@ public class PebbleSync {
         Intent batteryIntent = mContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-        if(level == -1 || scale == -1) {
-            return 50;
-        }
+        if(level == -1 || scale == -1) { return 50; }
         return (int)(((float)level / (float)scale) * 100.0f);
     }
 

@@ -41,6 +41,6 @@ public class xdrip extends Application {
         super.onCreate();
         //Fabric.with(this, new Crashlytics());
         // The following line triggers the initialization of ACRA
-        // ACRA.init(this);
+        //ACRA.init(this);
     }
 }

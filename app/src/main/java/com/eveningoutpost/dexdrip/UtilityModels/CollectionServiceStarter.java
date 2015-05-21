@@ -19,13 +19,21 @@ import com.eveningoutpost.dexdrip.Services.WixelReader;
  */
 public class CollectionServiceStarter {
     private Context mContext;
-    
+
     private final static String TAG = CollectionServiceStarter.class.getSimpleName();
 
     public static boolean isBTWixel(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
         if(collection_method.compareTo("BluetoothWixel") == 0) {
+            return true;
+        }
+        return false;
+    }
+    public static boolean isDexbridgeWixel(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String collection_method = prefs.getString("dex_collection_method", "DexbridgeWixel");
+        if(collection_method.compareTo("DexbridgeWixel") == 0) {
             return true;
         }
         return false;
@@ -57,7 +65,7 @@ public class CollectionServiceStarter {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
 
-        if(isBTWixel(context)) {
+        if(isBTWixel(context)||isDexbridgeWixel(context)) {
             Log.d("DexDrip", "Starting bt wixel collector");
             stopWifWixelThread();
             stopBtShareService();
@@ -73,19 +81,22 @@ public class CollectionServiceStarter {
             stopWifWixelThread();
             startBtShareService();
         }
-        Log.d(TAG, collection_method);
-        
-       // Start logging to logcat
-        String filePath = Environment.getExternalStorageDirectory() + "/xdriplogcat.txt";
-        try {
-            String[] cmd = { "/system/bin/sh", "-c", "ps | grep logcat  || logcat -f " + filePath + 
-                    " -v threadtime AlertPlayer:V com.eveningoutpost.dexdrip.Services.WixelReader:V *:E " };
-            Runtime.getRuntime().exec(cmd);
-        } catch (IOException e2) {
-            Log.e(TAG, "running logcat failed, is the device rooted?", e2);
+        if(prefs.getBoolean("broadcast_to_pebble", false)){
+            startPebbleSyncService();
         }
-        // Make sure that we have the 55 low allert.
-        AlertType.CreateStaticAlerts();
+        Log.d(TAG, collection_method);
+
+       // Start logging to logcat
+        if(prefs.getBoolean("store_logs",false)) {
+            String filePath = Environment.getExternalStorageDirectory() + "/xdriplogcat.txt";
+            try {
+                String[] cmd = {"/system/bin/sh", "-c", "ps | grep logcat  || logcat -f " + filePath +
+                        " -v threadtime AlertPlayer:V com.eveningoutpost.dexdrip.Services.WixelReader:V *:E "};
+                Runtime.getRuntime().exec(cmd);
+            } catch (IOException e2) {
+                Log.e(TAG, "running logcat failed, is the device rooted?", e2);
+            }
+        }
     }
 
     public CollectionServiceStarter(Context context) {
@@ -110,11 +121,16 @@ public class CollectionServiceStarter {
         Log.d(TAG, "stopping bt wixel service");
         mContext.stopService(new Intent(mContext, DexCollectionService.class));
     }
+
     private void startBtShareService() {
         Log.d(TAG, "starting bt share service");
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
             mContext.startService(new Intent(mContext, DexShareCollectionService.class));
         }
+    }
+    private void startPebbleSyncService() {
+        Log.d(TAG, "starting PebbleSync service");
+        mContext.startService(new Intent(mContext, PebbleSync.class));
     }
     private void stopBtShareService() {
         Log.d(TAG, "stopping bt share service");
