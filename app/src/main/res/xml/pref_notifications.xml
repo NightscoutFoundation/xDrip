@@ -11,7 +11,21 @@
                 />
         </Preference>
 
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:title="Bg alerts settings"
+            android:key="bg_alerts_screen">
+            <CheckBoxPreference
+                android:key="smart_snoozing"
+                android:title="Smart snoozing"
+                android:summary="Keep snoozing if bg is heading in the right direction"
+                android:defaultValue="true" />
 
+            <CheckBoxPreference
+                android:key="bg_alerts_from_main_menu"
+                android:title="Create a shortcut from main navigation to bg leval screen"
+                android:defaultValue="false" />
+        </PreferenceScreen>
+        
 
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:title="Calibration Alerts"

@@ -60,6 +60,7 @@ public class Notifications extends IntentService {
     public static int calibration_snooze;
     public static String calibration_notification_sound;
     public static boolean doMgdl;
+    public static boolean smart_snoozing;
     private final static String TAG = AlertPlayer.class.getSimpleName();
 
     Context mContext;
@@ -112,6 +113,7 @@ public class Notifications extends IntentService {
         calibration_override_silent = prefs.getBoolean("calibration_alerts_override_silent", false);
         calibration_notification_sound = prefs.getString("calibration_notification_sound", "content://settings/system/notification_sound");
         doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
+        smart_snoozing = prefs.getBoolean("smart_snoozing", true);
         bg_ongoing = prefs.getBoolean("run_service_in_foreground", false);
     }
 
@@ -197,11 +199,11 @@ public class Notifications extends IntentService {
         }
     }
     
-    boolean trendingToAlertEnd(AlertType  Alert) {
-        //if(!Alert.SmartSnooze) {
-            // need to check the preferance here...
-            //return false;
-        //}
+    boolean trendingToAlertEnd(AlertType Alert) {
+        if(!smart_snoozing) {
+        //  User does not want smart snoozing at all.
+            return false;
+        }
         return BgReading.trendingToAlertEnd(Alert.above);
     }
 /*
