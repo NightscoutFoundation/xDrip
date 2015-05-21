@@ -81,6 +81,9 @@ public class CollectionServiceStarter {
             stopWifWixelThread();
             startBtShareService();
         }
+        if(prefs.getBoolean("broadcast_to_pebble",false)){
+            startPebbleSyncService();
+        }
         Log.d(TAG, collection_method);
         
        // Start logging to logcat
@@ -123,6 +126,10 @@ public class CollectionServiceStarter {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
             mContext.startService(new Intent(mContext, DexShareCollectionService.class));
         }
+    }
+    private void startPebbleSyncService() {
+        Log.d(TAG, "starting PebbleSync service");
+        mContext.startService(new Intent(mContext, PebbleSync.class));
     }
     private void stopBtShareService() {
         Log.d(TAG, "stopping bt share service");

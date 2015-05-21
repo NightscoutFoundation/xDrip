@@ -114,10 +114,6 @@ public class BgSendQueue extends Model {
                 context.sendBroadcast(intent, Intents.RECEIVER_PERMISSION);
             }
 
-            if (prefs.getBoolean("broadcast_to_pebble", false)) {
-                context.startService(new Intent(context, PebbleSync.class));
-            }
-
             if (prefs.getBoolean("share_upload", false)) {
                 ShareRest shareRest = new ShareRest(context);
                 Log.w("ShareRest", "About to call ShareRest!!");

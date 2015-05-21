@@ -171,7 +171,6 @@ public class Preferences extends PreferenceActivity {
             final PreferenceCategory alertsCategory = (PreferenceCategory) findPreference("alerts_category");
             prefs =  getPreferenceManager().getDefaultSharedPreferences(getActivity());
             Log.d("PREF", prefs.getString("dex_collection_method", "BluetoothWixel"));
-
             if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomShare") != 0) {
                 collectionCategory.removePreference(shareKey);
                 otherCategory.removePreference(interpretRaw);
