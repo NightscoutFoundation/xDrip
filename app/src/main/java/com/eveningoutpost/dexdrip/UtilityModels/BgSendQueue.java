@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -18,6 +20,7 @@ import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.ShareModels.ShareRest;
 import com.eveningoutpost.dexdrip.widgetUpdateService;
+import com.eveningoutpost.dexdrip.xDripWidget;
 
 import java.util.List;
 
@@ -85,7 +88,10 @@ public class BgSendQueue extends Model {
 
             Intent updateIntent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA);
             context.sendBroadcast(updateIntent);
-            context.startService(new Intent(context, widgetUpdateService.class));
+
+            if(AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, xDripWidget.class)).length > 0){
+                context.startService(new Intent(context, widgetUpdateService.class));
+            }
 
             if (prefs.getBoolean("cloud_storage_mongodb_enable", false) || prefs.getBoolean("cloud_storage_api_enable", false)) {
                 Log.w("SENSOR QUEUE:", String.valueOf(bgSendQueue.mongo_success));
@@ -110,6 +116,7 @@ public class BgSendQueue extends Model {
 
                 Intent intent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE);
                 intent.putExtras(bundle);
+                intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
                 context.sendBroadcast(intent, Intents.RECEIVER_PERMISSION);
             }
 
