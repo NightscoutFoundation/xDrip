@@ -6,15 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
-import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
-
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.ReadDataShare;
 import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Sensor;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
@@ -99,7 +94,6 @@ public class PebbleSync extends Service {
         });
     }
 
-
     public PebbleDictionary buildDictionary() {
         PebbleDictionary dictionary = new PebbleDictionary();
         TimeZone tz = TimeZone.getDefault();
@@ -172,9 +166,7 @@ public class PebbleSync extends Service {
         Intent batteryIntent = mContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-        if(level == -1 || scale == -1) {
-            return 50;
-        }
+        if(level == -1 || scale == -1) { return 50; }
         return (int)(((float)level / (float)scale) * 100.0f);
     }
 

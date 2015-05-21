@@ -25,5 +25,10 @@
             android:title="Interpret Raw Values"
             android:summary="If using Share, DexDrip will show values when they are normally hidden on the receiver."
             android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="store_logs"
+            android:title="Store logs for troubleshooting"
+            android:summary="Only enable if you are having trouble with the app."
+            android:defaultValue="false" />
     </PreferenceCategory>
 </PreferenceScreen>

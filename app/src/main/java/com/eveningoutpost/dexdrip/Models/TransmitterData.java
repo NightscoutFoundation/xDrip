@@ -37,36 +37,22 @@ public class TransmitterData extends Model {
     public String uuid;
 
     public static TransmitterData create(byte[] buffer, int len, Long timestamp) {
-        if (len < 6) {
-            return null;
-        }
+        if (len < 6) { return null; }
+        TransmitterData transmitterData = new TransmitterData();
         if (buffer[0] == 0x11 && buffer[1] == 0x00) {
             //this is a dexbridge packet.  Process accordingly.
             Log.w(TAG, "create Processing a Dexbridge packet");
             ByteBuffer txData = ByteBuffer.allocate(len);
             txData.order(ByteOrder.LITTLE_ENDIAN);
             txData.put(buffer, 0, len);
-            TransmitterData transmitterData = new TransmitterData();
             transmitterData.raw_data = txData.getInt(2);
             transmitterData.filtered_data = txData.getInt(6);
             transmitterData.sensor_battery_level = txData.get(10);
-            transmitterData.timestamp = timestamp;
-            transmitterData.uuid = UUID.randomUUID().toString();
-
-            transmitterData.save();
             Log.w(TAG, "Created transmitterData record with Raw value of " + transmitterData.raw_data + " and Filtered value of " + transmitterData.filtered_data + " at " + transmitterData.timestamp);
-            return transmitterData;
-        } else {
-            //this is NOT a dexbridge packet.  Process accordingly.
+        } else { //this is NOT a dexbridge packet.  Process accordingly.
             Log.w(TAG, "create Processing a BTWixel or IPWixel packet");
             StringBuilder data_string = new StringBuilder();
-            if (len < 6) {
-                return null;
-            }
-
-            for (int i = 0; i < len; ++i) {
-                data_string.append((char) buffer[i]);
-            }
+            for (int i = 0; i < len; ++i) { data_string.append((char) buffer[i]); }
             String[] data = data_string.toString().split("\\s+");
 
             randomDelay(100, 2000);
@@ -74,21 +60,15 @@ public class TransmitterData extends Model {
             if (lastTransmitterData != null && lastTransmitterData.raw_data == Integer.parseInt(data[0]) && Math.abs(lastTransmitterData.timestamp - timestamp) < (10000)) { //Stop allowing duplicate data, its bad!
                 return null;
             }
-
-            TransmitterData transmitterData = new TransmitterData();
-            if (data.length > 1) {
-                transmitterData.sensor_battery_level = Integer.parseInt(data[1]);
-            }
-            if (Integer.parseInt(data[0]) < 1000) {
-                return null;
-            } // Sometimes the HM10 sends the battery level and readings in separate transmissions, filter out these incomplete packets!
+            if (data.length > 1) { transmitterData.sensor_battery_level = Integer.parseInt(data[1]); }
+            if (Integer.parseInt(data[0]) < 1000) { return null; }
             transmitterData.raw_data = Integer.parseInt(data[0]);
-            transmitterData.timestamp = timestamp;
-            transmitterData.uuid = UUID.randomUUID().toString();
-
-            transmitterData.save();
-            return transmitterData;
+            transmitterData.filtered_data = Integer.parseInt(data[0]);
         }
+        transmitterData.timestamp = timestamp;
+        transmitterData.uuid = UUID.randomUUID().toString();
+        transmitterData.save();
+        return transmitterData;
     }
 
     public static TransmitterData create(int raw_data ,int sensor_battery_level, long timestamp) {

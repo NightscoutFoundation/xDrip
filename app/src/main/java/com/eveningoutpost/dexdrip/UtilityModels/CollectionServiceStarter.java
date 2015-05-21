@@ -81,22 +81,22 @@ public class CollectionServiceStarter {
             stopWifWixelThread();
             startBtShareService();
         }
-        if(prefs.getBoolean("broadcast_to_pebble",false)){
+        if(prefs.getBoolean("broadcast_to_pebble", false)){
             startPebbleSyncService();
         }
         Log.d(TAG, collection_method);
 
        // Start logging to logcat
-        String filePath = Environment.getExternalStorageDirectory() + "/xdriplogcat.txt";
-        try {
-            String[] cmd = { "/system/bin/sh", "-c", "ps | grep logcat  || logcat -f " + filePath +
-                    " -v threadtime AlertPlayer:V com.eveningoutpost.dexdrip.Services.WixelReader:V *:E " };
-            Runtime.getRuntime().exec(cmd);
-        } catch (IOException e2) {
-            Log.e(TAG, "running logcat failed, is the device rooted?", e2);
+        if(prefs.getBoolean("store_logs",false)) {
+            String filePath = Environment.getExternalStorageDirectory() + "/xdriplogcat.txt";
+            try {
+                String[] cmd = {"/system/bin/sh", "-c", "ps | grep logcat  || logcat -f " + filePath +
+                        " -v threadtime AlertPlayer:V com.eveningoutpost.dexdrip.Services.WixelReader:V *:E "};
+                Runtime.getRuntime().exec(cmd);
+            } catch (IOException e2) {
+                Log.e(TAG, "running logcat failed, is the device rooted?", e2);
+            }
         }
-        // Make sure that we have the 55 low allert.
-        AlertType.CreateStaticAlerts();
     }
 
     public CollectionServiceStarter(Context context) {
@@ -121,6 +121,7 @@ public class CollectionServiceStarter {
         Log.d(TAG, "stopping bt wixel service");
         mContext.stopService(new Intent(mContext, DexCollectionService.class));
     }
+
     private void startBtShareService() {
         Log.d(TAG, "starting bt share service");
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
