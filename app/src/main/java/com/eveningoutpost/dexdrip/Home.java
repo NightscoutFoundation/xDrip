@@ -88,7 +88,6 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         PreferenceManager.setDefaultValues(this, R.xml.pref_notifications, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_source, false);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        prefs.edit().putInt("bridge_battery", 0).apply();
         checkEula();
         new IdempotentMigrations(getApplicationContext()).performAll();
         setContentView(R.layout.activity_home);
