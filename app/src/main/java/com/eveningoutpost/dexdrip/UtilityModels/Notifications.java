@@ -162,7 +162,7 @@ public class Notifications extends IntentService {
             if (activeBgAlert.uuid.equals(newAlert.uuid)) {
                 // This is the same alert. Might need to play again...
                 Log.e(TAG, "FileBasedNotifications we have found an active alert, checking if we need to play it " + newAlert.name);
-                boolean trendingToAlertEnd = trendingToAlertEnd(newAlert);
+                boolean trendingToAlertEnd = trendingToAlertEnd(context, newAlert);
                 AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
                 return;
             }
@@ -183,7 +183,7 @@ public class Notifications extends IntentService {
                 // the existing alert is the higher, we should check if to play it
                 Log.e(TAG, "FileBasedNotifications The existing alert has the same importance, checking if to playit newHigherAlert = " + newHigherAlert.name +
                         "activeBgAlert = " + activeBgAlert.name);
-                boolean trendingToAlertEnd = trendingToAlertEnd(newHigherAlert);
+                boolean trendingToAlertEnd = trendingToAlertEnd(context, newHigherAlert);
                 AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
                 return;
             }
@@ -199,12 +199,12 @@ public class Notifications extends IntentService {
         }
     }
     
-    boolean trendingToAlertEnd(AlertType Alert) {
+    boolean trendingToAlertEnd(Context context, AlertType Alert) {
         if(!smart_snoozing) {
         //  User does not want smart snoozing at all.
             return false;
         }
-        return BgReading.trendingToAlertEnd(Alert.above);
+        return BgReading.trendingToAlertEnd(context, Alert.above);
     }
 /*
  * *****************************************************************************************************************

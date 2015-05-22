@@ -692,8 +692,22 @@ public class BgReading extends Model {
      *  I'll start with having the same values for the high alerts.
     */ 
     
-    public static boolean trendingToAlertEnd(boolean above) {
+    public static boolean trendingToAlertEnd(Context context, boolean above) {
         // TODO: check if we are not in an UnclerTime.
+        Log.e(TAG_ALERT, "trendingToAlertEnd called");
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        Boolean bg_unclear_readings_alerts = prefs.getBoolean("bg_unclear_readings_alerts", false);
+        if(bg_unclear_readings_alerts) {
+            Long UnclearTimeSetting = Long.parseLong(prefs.getString("bg_unclear_readings_minutes", "90")) * 60000;
+            Long unclearTime = getUnclearTime(UnclearTimeSetting);
+            if (unclearTime > 0) {
+                Log.e(TAG_ALERT, "trendingToAlertEnd we are in an clear time, returning false");
+                return false;
+            }
+        }
+        
+        
         List<BgReading> latest = BgReading.latest(3);
         if (latest == null || latest.size() < 2) {
             // for less than 3 readings, we can't tell what the situation
