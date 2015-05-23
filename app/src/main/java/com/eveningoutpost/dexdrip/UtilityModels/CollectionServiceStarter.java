@@ -12,6 +12,7 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
+import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 
 /**
@@ -84,6 +85,7 @@ public class CollectionServiceStarter {
         if(prefs.getBoolean("broadcast_to_pebble", false)){
             startPebbleSyncService();
         }
+        startSyncService();
         Log.d(TAG, collection_method);
 
        // Start logging to logcat
@@ -131,6 +133,10 @@ public class CollectionServiceStarter {
     private void startPebbleSyncService() {
         Log.d(TAG, "starting PebbleSync service");
         mContext.startService(new Intent(mContext, PebbleSync.class));
+    }
+    private void startSyncService() {
+        Log.d(TAG, "starting Sync service");
+        mContext.startService(new Intent(mContext, SyncService.class));
     }
     private void stopBtShareService() {
         Log.d(TAG, "stopping bt share service");
