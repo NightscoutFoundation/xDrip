@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
@@ -31,6 +32,14 @@ public class xDripWidget extends AppWidgetProvider {
         final int N = appWidgetIds.length;
         for (int i = 0; i < N; i++) {
             updateAppWidget(context, appWidgetManager, appWidgetIds[i]);
+
+            //Add behaviour: open xDrip on click
+            Intent intent = new Intent(context, Home.class);
+            int appWidgetId = appWidgetIds[i];
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.x_drip_widget);
+            views.setOnClickPendingIntent(R.id.xDripwidget, pendingIntent);;
+            appWidgetManager.updateAppWidget(appWidgetId, views);
         }
     }
 

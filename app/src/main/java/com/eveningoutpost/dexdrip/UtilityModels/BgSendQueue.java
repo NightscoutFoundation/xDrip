@@ -18,6 +18,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.ShareModels.ShareRest;
 import com.eveningoutpost.dexdrip.widgetUpdateService;
 import com.eveningoutpost.dexdrip.xDripWidget;
@@ -64,7 +65,7 @@ public class BgSendQueue extends Model {
                 .from(BgSendQueue.class)
                 .where("mongo_success = ?", false)
                 .where("operation_type = ?", "create")
-                .orderBy("_ID asc")
+                .orderBy("_ID desc")
                 .limit(30)
                 .execute();
     }
@@ -129,6 +130,7 @@ public class BgSendQueue extends Model {
                 Log.w("ShareRest", "About to call ShareRest!!");
                 shareRest.sendBgData(bgReading);
             }
+            context.startService(new Intent(context, SyncService.class));
         } finally {
             wakeLock.release();
         }
