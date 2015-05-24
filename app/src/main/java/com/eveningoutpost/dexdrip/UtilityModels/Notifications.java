@@ -38,6 +38,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -94,7 +95,7 @@ public class Notifications extends IntentService {
         Log.d("Notifications", "Running Notifications Intent Service");
         ReadPerfs(getApplicationContext());
         notificationSetter(getApplicationContext());
-        periodicTimer(getApplicationContext());
+        ArmTimer(getApplicationContext(), callbackPeriod);
     }
 
     public void ReadPerfs(Context context) {
@@ -252,23 +253,16 @@ public class Notifications extends IntentService {
         }
     }
 
-    public void periodicTimer(Context context) {
-        // This is the timer function that will be called every minute. It is used in order to replay alerts,
-        // execute snoozes and alert if we are not recieving data for a long time.
-        Log.e(TAG, "PeriodicTimer called");
-        ArmTimer(context, callbackPeriod);
-    }
-
     private void  ArmTimer(Context context, int time) {
         Log.e(TAG, "ArmTimer called");
         if(ActiveBgAlert.getOnly() != null) {
-            Intent intent = new Intent(context, Notifications.class);
-            AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-
-            alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    SystemClock.elapsedRealtime() +
-                            time, alarmIntent);
+            Calendar calendar = Calendar.getInstance();
+            AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                alarm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + time, PendingIntent.getService(this, 0, new Intent(this, Notifications.class), 0));
+            } else {
+                alarm.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + time, PendingIntent.getService(this, 0, new Intent(this, Notifications.class), 0));
+            }
         }
     }
 
