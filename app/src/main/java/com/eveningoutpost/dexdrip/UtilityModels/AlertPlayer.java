@@ -6,10 +6,12 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -26,7 +28,10 @@ public class AlertPlayer {
     private final static String TAG = AlertPlayer.class.getSimpleName();
     private MediaPlayer mediaPlayer;
     int volumeBeforeAlert;
+    int volumeForThisAlert;
     Context context;
+    final static int  MAX_VIBRATING = 2;
+    final static int  MAX_ASCENDING = 5; 
 
 
     public static AlertPlayer getPlayer() {
@@ -43,7 +48,7 @@ public class AlertPlayer {
       Log.e(TAG, "start called, Threadid " + Thread.currentThread().getId());
       stopAlert(ctx, true, false);
       ActiveBgAlert.Create(newAlert.uuid, false, new Date().getTime() + newAlert.minutes_between * 60000 );
-      Vibrate(ctx, newAlert, bgValue, newAlert.override_silent_mode, newAlert.mp3_file, false);
+      Vibrate(ctx, newAlert, bgValue, newAlert.override_silent_mode, newAlert.mp3_file, 0);
     }
 
     public synchronized void stopAlert(Context ctx, boolean ClearData, boolean clearIfSnoozeFinished) {
@@ -61,26 +66,6 @@ public class AlertPlayer {
             mediaPlayer.release();
             mediaPlayer = null;
         }
-    }
-
-    // True means play the file false means only vibrate.
-    private boolean ShouldPlayFile(Context ctx, AlertType alert) {
-        if(alert.override_silent_mode) {
-            // no meter what mode it is we override it
-            return true;
-        }
-        AudioManager am = (AudioManager)ctx.getSystemService(Context.AUDIO_SERVICE);
-
-        switch (am.getRingerMode()) {
-            case AudioManager.RINGER_MODE_SILENT:
-                // fall through
-            case AudioManager.RINGER_MODE_VIBRATE:
-                return false;
-            case AudioManager.RINGER_MODE_NORMAL:
-                return true;
-        }
-        // unknown mode, not sure let's play just in any case.
-        return true;
     }
 
     public synchronized  void Snooze(Context ctx, int repeatTime) {
@@ -120,6 +105,8 @@ public class AlertPlayer {
         }
         if(activeBgAlert.ready_to_alarm()) {
             stopAlert(ctx, false, false);
+            
+            int timeFromStartPlaying = activeBgAlert.getUpdatePlayTime();
             AlertType alert = AlertType.get_alert(activeBgAlert.alert_uuid);
             if (alert == null) {
                 Log.w(TAG, "ClockTick: The alert was already deleted... will not play");
@@ -127,12 +114,12 @@ public class AlertPlayer {
                 return;
             }
             Log.e(TAG,"ClockTick: Playing the alert again");
-            Vibrate(ctx, alert, bgValue, alert.override_silent_mode, alert.mp3_file, true);
+            Vibrate(ctx, alert, bgValue, alert.override_silent_mode, alert.mp3_file, timeFromStartPlaying);
         }
 
     }
 
-    private void PlayFile(Context ctx, String FileName, boolean MaxVolume) {
+    private void PlayFile(Context ctx, String FileName, float VolumeFrac) {
         Log.e(TAG, "PlayFile: called FileName = " + FileName);
         if(mediaPlayer != null) {
             Log.e(TAG, "ERROR, PlayFile:going to leak a mediaplayer !!!");
@@ -145,28 +132,25 @@ public class AlertPlayer {
             mediaPlayer = MediaPlayer.create(ctx, R.raw.default_alert);
         }
         if(mediaPlayer != null) {
+            AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
+            int maxVolume = manager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            volumeBeforeAlert = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            volumeForThisAlert = (int)(maxVolume * VolumeFrac);
+            manager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeForThisAlert, 0);
+            context = ctx;
 
-            if(MaxVolume) {
-                AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
-                int maxVolume = manager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-                volumeBeforeAlert = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
-                manager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0);
-                context = ctx;
-    
-                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        Log.e(TAG, "PlayFile: onCompletion called (finished playing) ");
-                        AudioManager manager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-                        int currentVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
-                        int maxVolume = manager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-                        if(maxVolume == currentVolume) {
-                            // If the user has changed the volume, don't change it again.
-                            manager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeBeforeAlert, 0);
-                        }
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    Log.e(TAG, "PlayFile: onCompletion called (finished playing) ");
+                    AudioManager manager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+                    int currentVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                    if(volumeForThisAlert == currentVolume) {
+                        // If the user has changed the volume, don't change it again.
+                        manager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeBeforeAlert, 0);
                     }
-                });
-            }
+                }
+            });
             Log.e(TAG, "PlayFile: calling mediaPlayer.start() ");
             mediaPlayer.start();
         } else {
@@ -184,8 +168,16 @@ public class AlertPlayer {
         return PendingIntent.getService(ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
     }
-    private void Vibrate(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, String audioPath, boolean MaxVolume) {
+    private void Vibrate(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, String audioPath, int timeFromStartPlaying) {
+        Log.e(TAG, "Vibrate called timeFromStartPlaying = " + timeFromStartPlaying);
         Log.e("ALARM", "setting vibrate alarm");
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        boolean ascending_bg_alerts = prefs.getBoolean("ascending_bg_alerts", true);
+        if (!ascending_bg_alerts) {
+            // We start from the non ascending part...
+            timeFromStartPlaying = MAX_ASCENDING;
+        }
+
         String title = bgValue + " " + alert.name;
         String content = "BG LEVEL ALERT: " + bgValue;
         Intent intent = new Intent(ctx, SnoozeActivity.class);
@@ -196,10 +188,16 @@ public class AlertPlayer {
             .setContentText(content)
             .setContentIntent(notificationIntent(ctx, intent))
             .setDeleteIntent(snoozeIntent(ctx));
-        if(overrideSilent) {
-            PlayFile(ctx, alert.mp3_file, MaxVolume);
-        } else {
-            builder.setSound(Uri.parse(audioPath), AudioAttributes.USAGE_ALARM);
+        if (timeFromStartPlaying >= MAX_VIBRATING) {
+            // Before this, we only vibrate...
+            float volumeFrac = (float)(timeFromStartPlaying - MAX_VIBRATING) / (MAX_ASCENDING - MAX_VIBRATING);
+            volumeFrac = Math.max(volumeFrac, 1);
+            Log.e(TAG, "Vibrate volumeFrac = " + volumeFrac);
+            if(overrideSilent) {
+                PlayFile(ctx, alert.mp3_file, volumeFrac);
+            } else {
+                builder.setSound(Uri.parse(audioPath), AudioAttributes.USAGE_ALARM);
+            }
         }
         //NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);
         builder.setVibrate(Notifications.vibratePattern);

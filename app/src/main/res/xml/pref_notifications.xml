@@ -24,6 +24,13 @@
                 android:key="bg_alerts_from_main_menu"
                 android:title="Create a shortcut from main navigation to bg leval screen"
                 android:defaultValue="false" />
+            
+            <CheckBoxPreference
+                android:key="ascending_bg_alerts"
+                android:title="ascending alerts"
+                android:summary="In case of bg alerts, the phone will vibrate twice and start with low volume alerts"
+                android:defaultValue="true" />
+            
         </PreferenceScreen>
         
 
