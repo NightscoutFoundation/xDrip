@@ -125,7 +125,7 @@ public class AlertType extends Model {
             Log.w("NOTIFICATIONS", "Readings have been unclear for too long!!");
             Notifications.bgUnclearAlert(context);
         }
-        if (UnclearTime > 0) {
+        if ((UnclearTime > 0 ) && bg_unclear_readings_alerts) {
             Log.e(TAG_ALERT, "We are in an clear state, but not for too long. Alerts are disabled");
             return null;
         }

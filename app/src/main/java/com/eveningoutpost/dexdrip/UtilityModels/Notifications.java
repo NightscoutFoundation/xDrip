@@ -38,6 +38,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -60,6 +61,7 @@ public class Notifications extends IntentService {
     public static int calibration_snooze;
     public static String calibration_notification_sound;
     public static boolean doMgdl;
+    public static boolean smart_snoozing;
     private final static String TAG = AlertPlayer.class.getSimpleName();
 
     Context mContext;
@@ -93,7 +95,7 @@ public class Notifications extends IntentService {
         Log.d("Notifications", "Running Notifications Intent Service");
         ReadPerfs(getApplicationContext());
         notificationSetter(getApplicationContext());
-        periodicTimer(getApplicationContext());
+        ArmTimer(getApplicationContext(), callbackPeriod);
     }
 
     public void ReadPerfs(Context context) {
@@ -112,6 +114,7 @@ public class Notifications extends IntentService {
         calibration_override_silent = prefs.getBoolean("calibration_alerts_override_silent", false);
         calibration_notification_sound = prefs.getString("calibration_notification_sound", "content://settings/system/notification_sound");
         doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
+        smart_snoozing = prefs.getBoolean("smart_snoozing", true);
         bg_ongoing = prefs.getBoolean("run_service_in_foreground", false);
     }
 
@@ -160,7 +163,8 @@ public class Notifications extends IntentService {
             if (activeBgAlert.uuid.equals(newAlert.uuid)) {
                 // This is the same alert. Might need to play again...
                 Log.e(TAG, "FileBasedNotifications we have found an active alert, checking if we need to play it " + newAlert.name);
-                AlertPlayer.getPlayer().ClockTick(context, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
+                boolean trendingToAlertEnd = trendingToAlertEnd(context, newAlert);
+                AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
                 return;
             }
            // Currently the ui blocks having two alerts with the same alert value.
@@ -177,10 +181,11 @@ public class Notifications extends IntentService {
             boolean opositeDirection = AlertType.OpositeDirection(activeBgAlert, newAlert);
             AlertType  newHigherAlert = AlertType.HigherAlert(activeBgAlert, newAlert);
             if ((newHigherAlert == activeBgAlert) && (!opositeDirection)) {
-                // the existing alert is the higher, we should not do anything
-                Log.e(TAG, "FileBasedNotifications The existing alert has the same importance, doing nothing newHigherAlert = " + newHigherAlert.name +
+                // the existing alert is the higher, we should check if to play it
+                Log.e(TAG, "FileBasedNotifications The existing alert has the same importance, checking if to playit newHigherAlert = " + newHigherAlert.name +
                         "activeBgAlert = " + activeBgAlert.name);
-                AlertPlayer.getPlayer().ClockTick(context, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
+                boolean trendingToAlertEnd = trendingToAlertEnd(context, newHigherAlert);
+                AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
                 return;
             }
 
@@ -193,6 +198,14 @@ public class Notifications extends IntentService {
         } else {
             AlertPlayer.getPlayer().stopAlert(context, true, false);
         }
+    }
+    
+    boolean trendingToAlertEnd(Context context, AlertType Alert) {
+        if(!smart_snoozing) {
+        //  User does not want smart snoozing at all.
+            return false;
+        }
+        return BgReading.trendingToAlertEnd(context, Alert.above);
     }
 /*
  * *****************************************************************************************************************
@@ -240,23 +253,16 @@ public class Notifications extends IntentService {
         }
     }
 
-    public void periodicTimer(Context context) {
-        // This is the timer function that will be called every minute. It is used in order to replay alerts,
-        // execute snoozes and alert if we are not recieving data for a long time.
-        Log.e(TAG, "PeriodicTimer called");
-        ArmTimer(context, callbackPeriod);
-    }
-
     private void  ArmTimer(Context context, int time) {
         Log.e(TAG, "ArmTimer called");
         if(ActiveBgAlert.getOnly() != null) {
-            Intent intent = new Intent(context, Notifications.class);
-            AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-
-            alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    SystemClock.elapsedRealtime() +
-                            time, alarmIntent);
+            Calendar calendar = Calendar.getInstance();
+            AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                alarm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + time, PendingIntent.getService(this, 0, new Intent(this, Notifications.class), 0));
+            } else {
+                alarm.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + time, PendingIntent.getService(this, 0, new Intent(this, Notifications.class), 0));
+            }
         }
     }
 
