@@ -142,6 +142,8 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("calibration_snooze"));
             bindPreferenceSummaryToValue(findPreference("bg_unclear_readings_minutes"));
             bindPreferenceSummaryToValue(findPreference("bg_missed_minutes"));
+            bindPreferenceSummaryToValue(findPreference("falling_bg_val"));
+            bindPreferenceSummaryToValue(findPreference("raising_bg_val"));
             bindPreferenceSummaryToValue(findPreference("other_alerts_sound"));
             bindPreferenceSummaryToValue(findPreference("other_alerts_snooze"));
 

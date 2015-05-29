@@ -27,6 +27,16 @@
         <item>mmol</item>
     </string-array>
 
+    <string-array name="raisingEntries">
+        <item>2 mgdl (0.1 mmol)</item>
+        <item>3 mgdl (0.16 mmol)</item>
+    </string-array>
+
+    <string-array name="raisingValues">
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+    
     <string-array name="alertType">
         <item>System Sound/Alarm</item>
         <item>Custom Sound/Alarm</item>

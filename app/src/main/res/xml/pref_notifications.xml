@@ -99,6 +99,32 @@
             </PreferenceCategory>
 
             <PreferenceCategory
+                android:title="Falling/Raising BG">
+                <CheckBoxPreference
+                    android:key="falling_alert"
+                    android:title="Bg falling fast"
+                    android:defaultValue="false" />
+                <ListPreference
+                    android:dependency="falling_alert"
+                    android:key="falling_bg_val"
+                    android:title="falling threshold"
+                    android:entries="@array/raisingEntries"
+                    android:entryValues="@array/raisingValues"
+                    android:defaultValue="3"/>
+                 <CheckBoxPreference
+                    android:key="raising_alert"
+                    android:title="Bg raising fast"
+                    android:defaultValue="false" />
+                <ListPreference
+                    android:dependency="raising_alert"
+                    android:key="raising_bg_val"
+                    android:title="raising threshold"
+                    android:entries="@array/raisingEntries"
+                    android:entryValues="@array/raisingValues"
+                    android:defaultValue="3"/>
+            </PreferenceCategory>
+            
+            <PreferenceCategory
                 android:title="Alert Preferences (for these alerts)">
                 <RingtonePreference
                     android:key="other_alerts_sound"
