@@ -81,6 +81,9 @@ public class Notifications extends IntentService {
     public static final int exportAlertNotificationId = 006;
     public static final int uncleanAlertNotificationId = 007;
     public static final int missedAlertNotificationId = 010;
+    public static final int riseAlertNotificationId = 011;
+    public static final int failAlertNotificationId = 012;
+
     final static int callbackPeriod = 60000 * 1;
 
     SharedPreferences prefs;
@@ -454,50 +457,50 @@ public class Notifications extends IntentService {
 
     public static void bgUnclearAlert(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String otherAlertsSound = prefs.getString("other_alerts_sound", "content://settings/system/notification_sound");
-        Boolean otherAlertsOverrideSilent = prefs.getBoolean("other_alerts_override_silent", false);
         int otherAlertSnooze =  Integer.parseInt(prefs.getString("other_alerts_snooze", "20"));
-
-        UserNotification userNotification = UserNotification.lastUnclearReadingsAlert();
-        if ((userNotification == null) || (userNotification.timestamp <= ((new Date().getTime()) - (60000 * otherAlertSnooze)))) {
-            if (userNotification != null) { userNotification.delete(); }
-            UserNotification.create("Unclear Sensor Readings", "bg_unclear_readings_alert");
-            Intent intent = new Intent(context, Home.class);
-            NotificationCompat.Builder mBuilder =
-                    new NotificationCompat.Builder(context)
-                            .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
-                            .setContentTitle("Unclear Sensor Readings")
-                            .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
-            mBuilder.setVibrate(vibratePattern);
-            mBuilder.setLights(0xff00ff00, 300, 1000);
-            if(otherAlertsOverrideSilent) {
-                mBuilder.setSound(Uri.parse(otherAlertsSound), AudioAttributes.USAGE_ALARM);
-            } else {
-                mBuilder.setSound(Uri.parse(otherAlertsSound));
-            }
+        OtherAlert(context, "bg_unclear_readings_alert", "Unclear Sensor Readings", uncleanAlertNotificationId,  otherAlertSnooze);
+    }
+    
+    public static void bgMissedAlert(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        int otherAlertSnooze =  Integer.parseInt(prefs.getString("other_alerts_snooze", "20"));
+        OtherAlert(context, "bg_missed_alerts", "BG Readings Missed", missedAlertNotificationId, otherAlertSnooze);
+    }
+    
+    public static void RisingAlert(Context context, boolean on) {
+        RiseDropAlert(context, on, "bg_rise_alert", "bg rising fast", riseAlertNotificationId);
+    }
+    public static void DropAlert(Context context, boolean on) {
+        RiseDropAlert(context, on, "bg_fail_alert", "bg failing fast", failAlertNotificationId);
+    }
+    
+    public static void RiseDropAlert(Context context, boolean on, String type, String message, int notificatioId) {
+        if(on) {
+         // This alerts will only happen once. Want to have maxint, but not create overflow.
+            OtherAlert(context, type, message, notificatioId, Integer.MAX_VALUE / 100000); 
+        } else {
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotifyMgr.cancel(uncleanAlertNotificationId);
-            mNotifyMgr.notify(uncleanAlertNotificationId, mBuilder.build());
+            mNotifyMgr.cancel(notificatioId);
+            UserNotification.DeleteNotificationByType(type);
         }
     }
-
-    public static void bgMissedAlert(Context context) {
+    
+    public static void OtherAlert(Context context, String type, String message, int notificatioId, int snooze) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String otherAlertsSound = prefs.getString("other_alerts_sound", "content://settings/system/notification_sound");
         Boolean otherAlertsOverrideSilent = prefs.getBoolean("other_alerts_override_silent", false);
-        int otherAlertSnooze =  Integer.parseInt(prefs.getString("other_alerts_snooze", "20"));
 
-        UserNotification userNotification = UserNotification.LastMissedAlert();
-        if ((userNotification == null) || (userNotification.timestamp <= ((new Date().getTime()) - (60000 * otherAlertSnooze)))) {
-            if (userNotification != null) {
-                userNotification.delete();
+        UserNotification userNotification = UserNotification.GetNotificationByType(type); //"bg_unclear_readings_alert"
+        if ((userNotification == null) || (userNotification.timestamp <= ((new Date().getTime()) - (60000 * snooze)))) {
+            if (userNotification != null) { 
+                userNotification.delete(); 
             }
-            UserNotification.create("BG Readings Missed", "missing_readings_alert");
+            UserNotification.create(message, type);
             Intent intent = new Intent(context, Home.class);
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(context)
                             .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
-                            .setContentTitle("BG Readings Missed")
+                            .setContentTitle(message)
                             .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
             mBuilder.setVibrate(vibratePattern);
             mBuilder.setLights(0xff00ff00, 300, 1000);
@@ -507,8 +510,8 @@ public class Notifications extends IntentService {
                 mBuilder.setSound(Uri.parse(otherAlertsSound));
             }
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotifyMgr.cancel(missedAlertNotificationId);
-            mNotifyMgr.notify(missedAlertNotificationId, mBuilder.build());
+            mNotifyMgr.cancel(notificatioId);
+            mNotifyMgr.notify(notificatioId, mBuilder.build());
         }
     }
 
