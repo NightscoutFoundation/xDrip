@@ -99,7 +99,7 @@
             </PreferenceCategory>
 
             <PreferenceCategory
-                android:title="Falling/Raising BG">
+                android:title="Falling/Rising BG">
                 <CheckBoxPreference
                     android:key="falling_alert"
                     android:title="Bg falling fast"
@@ -108,19 +108,19 @@
                     android:dependency="falling_alert"
                     android:key="falling_bg_val"
                     android:title="falling threshold"
-                    android:entries="@array/raisingEntries"
-                    android:entryValues="@array/raisingValues"
+                    android:entries="@array/risingEntries"
+                    android:entryValues="@array/risingValues"
                     android:defaultValue="3"/>
                  <CheckBoxPreference
-                    android:key="raising_alert"
-                    android:title="Bg raising fast"
+                    android:key="rising_alert"
+                    android:title="Bg rising fast"
                     android:defaultValue="false" />
                 <ListPreference
-                    android:dependency="raising_alert"
-                    android:key="raising_bg_val"
-                    android:title="raising threshold"
-                    android:entries="@array/raisingEntries"
-                    android:entryValues="@array/raisingValues"
+                    android:dependency="rising_alert"
+                    android:key="rising_bg_val"
+                    android:title="rising threshold"
+                    android:entries="@array/risingEntries"
+                    android:entryValues="@array/risingValues"
                     android:defaultValue="3"/>
             </PreferenceCategory>
             
