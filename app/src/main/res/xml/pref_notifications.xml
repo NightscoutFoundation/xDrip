@@ -14,6 +14,13 @@
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:title="Bg Alerts Settings"
             android:key="bg_alerts_screen">
+            <ListPreference
+                    android:key="bg_alert_profile"
+                    android:title="BG alerts profile"
+                    android:entries="@array/BgAlertProfileEntries"
+                    android:entryValues="@array/BgAlertProfileValues"
+                    android:defaultValue="ascending"/>
+            
             <CheckBoxPreference
                 android:key="smart_snoozing"
                 android:title="Smart snoozing"
@@ -25,13 +32,6 @@
                 android:title="Shortcut to Bg Level Alerts"
                 android:summary="Create a shortcut from main navigation to bg level screen"
                 android:defaultValue="false" />
-
-            <CheckBoxPreference
-                android:key="ascending_bg_alerts"
-                android:title="Ascending Alerts"
-                android:summary="In case of bg alerts, the phone will vibrate twice and start with low volume alerts"
-                android:defaultValue="true" />
-
         </PreferenceScreen>
 
 

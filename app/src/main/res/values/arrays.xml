@@ -26,7 +26,22 @@
         <item>mgdl</item>
         <item>mmol</item>
     </string-array>
+    
+<!--     make sure to keep this values in sync with AlertPlayer.getAlertProfile -->
+    <string-array name="BgAlertProfileEntries">
+        <item>High</item>
+        <item>ascending</item>
+        <item>medium</item>
+        <item>vibrate only</item>
+    </string-array>
 
+    <string-array name="BgAlertProfileValues">
+        <item>High</item>
+        <item>ascending</item>
+        <item>medium</item>
+        <item>vibrate only</item>
+    </string-array>
+    
     <string-array name="risingEntries">
         <item>2 mgdl (0.1 mmol)</item>
         <item>3 mgdl (0.16 mmol)</item>

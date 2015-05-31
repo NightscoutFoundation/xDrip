@@ -138,6 +138,7 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("units"));
 
             addPreferencesFromResource(R.xml.pref_notifications);
+            bindPreferenceSummaryToValue(findPreference("bg_alert_profile"));
             bindPreferenceSummaryToValue(findPreference("calibration_notification_sound"));
             bindPreferenceSummaryToValue(findPreference("calibration_snooze"));
             bindPreferenceSummaryToValue(findPreference("bg_unclear_readings_minutes"));
