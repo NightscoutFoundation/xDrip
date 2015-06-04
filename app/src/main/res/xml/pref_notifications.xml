@@ -25,15 +25,15 @@
                 android:title="Shortcut to Bg Level Alerts"
                 android:summary="Create a shortcut from main navigation to bg level screen"
                 android:defaultValue="false" />
-            
+
             <CheckBoxPreference
                 android:key="ascending_bg_alerts"
                 android:title="Ascending Alerts"
                 android:summary="In case of bg alerts, the phone will vibrate twice and start with low volume alerts"
                 android:defaultValue="true" />
-            
+
         </PreferenceScreen>
-        
+
 
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:title="Calibration Alerts"
@@ -53,7 +53,7 @@
                 android:defaultValue="content://settings/system/notification_sound" />
             <CheckBoxPreference
                 android:key="calibration_alerts_override_silent"
-                android:title="Override Silent mode on calibration alerts"
+                android:title="Override Silent mode on Calibration Alerts"
                 android:defaultValue="false" />
             <EditTextPreference
                 android:dependency="calibration_notifications"
@@ -69,15 +69,15 @@
             android:key="other_alerts_screen">
 
             <PreferenceCategory
-                android:title="Noisey Readings">
+                android:title="Noisy Readings">
                 <CheckBoxPreference
                     android:key="bg_unclear_readings_alerts"
-                    android:title="Bad (noisey) Value Alerts"
+                    android:title="Bad (noisy) Value Alerts"
                     android:defaultValue="false" />
                 <EditTextPreference
                     android:dependency="bg_unclear_readings_alerts"
                     android:key="bg_unclear_readings_minutes"
-                    android:title="Alert after x minutes of noisey values"
+                    android:title="Alert after x minutes of noisy values"
                     android:inputType="number"
                     android:summary=""
                     android:defaultValue="90" />
