@@ -88,7 +88,7 @@ public class NavDrawerBuilder {
         }
         boolean bg_alerts = prefs.getBoolean("bg_alerts_from_main_menu", false);
         if (bg_alerts) {
-            options.add("BG level alerts");
+            options.add("BG Level Alerts");
         }
         options.add("Snooze Alerts");
         options.add("Settings");
