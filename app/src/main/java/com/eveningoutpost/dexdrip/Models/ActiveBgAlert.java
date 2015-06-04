@@ -24,7 +24,7 @@ public class ActiveBgAlert extends Model {
     @Column(name = "alert_uuid")
     public String alert_uuid;
 
-    @Column(name = "is_snoozed") //??? Do we need this
+    @Column(name = "is_snoozed") 
     public boolean is_snoozed;
 
     @Column(name = "last_alerted_at") // Do we need this
@@ -33,6 +33,12 @@ public class ActiveBgAlert extends Model {
     @Column(name = "next_alert_at")
     public Long next_alert_at;
 
+    // This is needed in order to have ascending alerts
+    // we set the real value of it when is_snoozed is being turned to false
+    @Column(name = "alert_started_at")
+    public Long alert_started_at;
+
+    
     public boolean ready_to_alarm() {
         if(new Date().getTime() > next_alert_at) {
             return true;
@@ -42,6 +48,7 @@ public class ActiveBgAlert extends Model {
 
     public void snooze(int minutes) {
         next_alert_at = new Date().getTime() + minutes * 60000;
+        is_snoozed = true;
         save();
     }
     
@@ -54,8 +61,10 @@ public class ActiveBgAlert extends Model {
         String next_alert_at = "next_alert_at: " + DateFormat.getDateTimeInstance(
                 DateFormat.LONG, DateFormat.LONG).format(new Date(this.next_alert_at)); 
 
-        return alert_uuid + " " + is_snoozed + " " + last_alerted_at + " "+ next_alert_at;
-        
+        String alert_started_at = "alert_started_at: " + DateFormat.getDateTimeInstance(
+                DateFormat.LONG, DateFormat.LONG).format(new Date(this.alert_started_at)); 
+
+        return alert_uuid + " " + is_snoozed + " " + last_alerted_at + " "+ next_alert_at + " " + alert_started_at;
         
     }
     
@@ -109,6 +118,7 @@ public class ActiveBgAlert extends Model {
         aba.is_snoozed = is_snoozed;
         aba.last_alerted_at = 0L;
         aba.next_alert_at = next_alert_at;
+        aba.alert_started_at = new Date().getTime();
         aba.save();
     }
     
@@ -131,7 +141,19 @@ public class ActiveBgAlert extends Model {
         }
     }
     
+    // This function is called from ClockTick, when we play
+    // If we were snoozed, we update the snooze to false, and update the start time.
+    // return the time in minutes from the time playing the alert has started
+    public int getUpdatePlayTime() {
+        if(is_snoozed) {
+            is_snoozed = false;
+            alert_started_at = new Date().getTime();
+            save();
+        }
+        Long timeSeconds =  (new Date().getTime() - alert_started_at) / 1000;
+        return (int)Math.round(timeSeconds / 60.0);
+    }
     
-        
+
 }
 

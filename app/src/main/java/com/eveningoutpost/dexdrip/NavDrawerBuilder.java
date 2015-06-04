@@ -86,6 +86,10 @@ public class NavDrawerBuilder {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
             options.add("System Status");
         }
+        boolean bg_alerts = prefs.getBoolean("bg_alerts_from_main_menu", false);
+        if (bg_alerts) {
+            options.add("BG level alerts");
+        }
         options.add("Snooze Alerts");
         options.add("Settings");
 //        options.add("Fake Numbers");
@@ -142,6 +146,10 @@ public class NavDrawerBuilder {
         }
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
             options.add(new Intent(context, SystemStatus.class));
+        }
+        boolean bg_alerts = prefs.getBoolean("bg_alerts_from_main_menu", false);
+        if (bg_alerts) {
+            options.add(new Intent(context, AlertList.class));
         }
         options.add(new Intent(context, SnoozeActivity.class));
         options.add(new Intent(context, Preferences.class));

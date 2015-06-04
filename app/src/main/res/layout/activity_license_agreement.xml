@@ -6,50 +6,56 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.eveningoutpost.dexdrip.LicenseAgreementActivity">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
+    <ScrollView
+        android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:id="@+id/main_v_layout">
-
-        <TextView
-            android:text="End User License Agreement"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:text="@string/pref_I_understand_summery"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:textSize="11sp"
-            android:id="@+id/summary" />
+        android:id="@+id/scrollView2">
 
         <LinearLayout
             android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal">
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/main_v_layout">
 
-            <CheckBox
+            <TextView
+                android:text="End User License Agreement"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/pref_I_understand_title"
-                android:id="@+id/agreeCheckBox"
-                android:checked="false" />
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
-            <Button
+            <TextView
+                android:text="@string/pref_I_understand_summery"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Save"
-                android:id="@+id/saveButton"
-                android:layout_marginTop="20dp" />
+                android:padding="10dp"
+                android:textSize="11sp"
+                android:id="@+id/summary" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal">
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pref_I_understand_title"
+                    android:id="@+id/agreeCheckBox"
+                    android:checked="false" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Save"
+                    android:id="@+id/saveButton"
+                    android:layout_marginTop="20dp" />
+
+            </LinearLayout>
 
         </LinearLayout>
-
-    </LinearLayout>
+    </ScrollView>
 
 </RelativeLayout>

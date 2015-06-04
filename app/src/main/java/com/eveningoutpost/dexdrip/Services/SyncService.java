@@ -25,7 +25,6 @@ import java.util.Calendar;
 import java.util.List;
 
 public class SyncService extends IntentService {
-    int mStartMode;
     private Context mContext;
     private Boolean enableRESTUpload;
     private Boolean enableMongoUpload;
@@ -37,20 +36,19 @@ public class SyncService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.w("SYNC SERVICE:", "STARTING INTENT SERVICE");
+        Log.d("SYNC SERVICE:", "STARTING INTENT SERVICE");
+        mContext = getApplicationContext();
+        prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        enableRESTUpload = prefs.getBoolean("cloud_storage_api_enable", false);
+        enableMongoUpload = prefs.getBoolean("cloud_storage_mongodb_enable", false);
         setRetryTimer();
         attemptSend();
     }
 
     public void attemptSend() {
-        mContext = getApplicationContext();
-        prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        enableRESTUpload = prefs.getBoolean("cloud_storage_api_enable", false);
-        enableMongoUpload = prefs.getBoolean("cloud_storage_mongodb_enable", false);
-
         if (enableRESTUpload || enableMongoUpload) { syncToMogoDb(); }
 
-        if (false) {
+        if (false) { //Disabled for now as central server project has been abandoned for now
             for (SensorSendQueue job : SensorSendQueue.queue()) {
                 RestCalls.sendSensor(job);
             }
@@ -65,9 +63,11 @@ public class SyncService extends IntentService {
     }
 
     public void setRetryTimer() {
-        Calendar calendar = Calendar.getInstance();
-        AlarmManager alarm = (AlarmManager)getSystemService(ALARM_SERVICE);
-        alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + (1000 * 30 * 5), PendingIntent.getService(this, 0, new Intent(this, SyncService.class), 0));
+        if (enableRESTUpload || enableMongoUpload) { //Check for any upload type being enabled
+            Calendar calendar = Calendar.getInstance();
+            AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+            alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + (1000 * 30 * 5), PendingIntent.getService(this, 0, new Intent(this, SyncService.class), 0));
+        }
     }
 
     public void syncToMogoDb() {

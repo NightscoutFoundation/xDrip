@@ -1,1 +1,1 @@
-ALTER TABLE BgReadings ADD COLUMN selected_filtered_data BOOLEAN;
+ALTER TABLE BgReadings ADD COLUMN filtered_data DOUBLE;
