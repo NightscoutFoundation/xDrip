@@ -28,7 +28,7 @@
             
             <CheckBoxPreference
                 android:key="ascending_bg_alerts"
-                android:title="ascending alerts"
+                android:title="Ascending Alerts"
                 android:summary="In case of bg alerts, the phone will vibrate twice and start with low volume alerts"
                 android:defaultValue="true" />
             
