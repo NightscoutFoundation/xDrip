@@ -172,26 +172,33 @@ public class Notifications extends IntentService {
             }
            // Currently the ui blocks having two alerts with the same alert value.
 
-            // we have a new alert. If it is more important than the previous one. we need to stop
-            // the older one and start a new one (We need to play even if we were snoozed).
-            // If it is a lower level alert, we should keep being snoozed.
-
-
-            // Example, if we have two alerts one for 90 and the other for 80. and we were already alerting for the 80
-            // and we were snoozed. Now bg is 85, the alert for 80 is cleared, but we are alerting for 90.
-            // We should not do anything if we are snoozed for the 80...
-            // If one allert was high and the second one is low however, we alarm in any case (snoozing ignored).
-            boolean opositeDirection = AlertType.OpositeDirection(activeBgAlert, newAlert);
-            AlertType  newHigherAlert = AlertType.HigherAlert(activeBgAlert, newAlert);
-            if ((newHigherAlert == activeBgAlert) && (!opositeDirection)) {
-                // the existing alert is the higher, we should check if to play it
-                Log.e(TAG, "FileBasedNotifications The existing alert has the same importance, checking if to playit newHigherAlert = " + newHigherAlert.name +
-                        "activeBgAlert = " + activeBgAlert.name);
-                boolean trendingToAlertEnd = trendingToAlertEnd(context, newHigherAlert);
-                AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
-                return;
+            boolean alertSnoozeOver = ActiveBgAlert.alertSnoozeOver();
+            if (alertSnoozeOver) {
+                Log.e(TAG, "FileBasedNotifications we had two alerts, the snoozed one is over, we fall down to deleting the snoozed and staring the new");
+                // in such case it is not important which is higher.
+                
+            } else {
+                // we have a new alert. If it is more important than the previous one. we need to stop
+                // the older one and start a new one (We need to play even if we were snoozed).
+                // If it is a lower level alert, we should keep being snoozed.
+    
+    
+                // Example, if we have two alerts one for 90 and the other for 80. and we were already alerting for the 80
+                // and we were snoozed. Now bg is 85, the alert for 80 is cleared, but we are alerting for 90.
+                // We should not do anything if we are snoozed for the 80...
+                // If one allert was high and the second one is low however, we alarm in any case (snoozing ignored).
+                boolean opositeDirection = AlertType.OpositeDirection(activeBgAlert, newAlert);
+                AlertType  newHigherAlert = AlertType.HigherAlert(activeBgAlert, newAlert);
+                if ((newHigherAlert == activeBgAlert) && (!opositeDirection)) {
+                    // the existing alert is the higher, we should check if to play it
+                    Log.e(TAG, "FileBasedNotifications The existing alert has the same direcotion, checking if to playit newHigherAlert = " + newHigherAlert.name +
+                            "activeBgAlert = " + activeBgAlert.name);
+                    
+                    boolean trendingToAlertEnd = trendingToAlertEnd(context, newHigherAlert);
+                    AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
+                    return;
+                }
             }
-
             // For now, we are stopping the old alert and starting a new one.
             Log.e(TAG, "Found a new alert, that is higher than the previous one will play it. " + newAlert.name);
             AlertPlayer.getPlayer().stopAlert(context, true, false);
