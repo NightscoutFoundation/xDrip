@@ -12,7 +12,7 @@
         </Preference>
 
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-            android:title="Bg alerts settings"
+            android:title="Bg Alerts Settings"
             android:key="bg_alerts_screen">
             <CheckBoxPreference
                 android:key="smart_snoozing"
@@ -22,7 +22,8 @@
 
             <CheckBoxPreference
                 android:key="bg_alerts_from_main_menu"
-                android:title="Create a shortcut from main navigation to bg leval screen"
+                android:title="Shortcut to Bg Level Alerts"
+                android:summary="Create a shortcut from main navigation to bg level screen"
                 android:defaultValue="false" />
             
             <CheckBoxPreference
