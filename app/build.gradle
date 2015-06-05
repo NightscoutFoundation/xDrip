@@ -14,6 +14,41 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 
+def generateVersionName = { ->
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'describe', '--always'
+            standardOutput = stdout
+        }
+        String commitObject =  stdout.toString().trim()
+        String tags = ""
+        try {
+            stdout = new ByteArrayOutputStream()
+            exec {
+                commandLine 'git', 'describe', '--tags'
+                standardOutput = stdout
+            }
+            tags =  stdout.toString().trim()+ "-"
+        } catch (ignored) {
+            // no tags
+        }
+
+        stdout = new ByteArrayOutputStream()
+        exec {
+           commandLine 'git', 'rev-parse', '--show-toplevel'
+            standardOutput = stdout
+        }
+        if(stdout.toString().trim().contains("xDrip-Experimental")) {
+            return tags + commitObject + "-experimental"
+        }
+        return tags + commitObject
+    } catch (ignored) {
+        return "NoGitSystemAvailable";
+    }
+}
+
+
 
 android {
     compileSdkVersion 22
@@ -24,7 +59,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 21
         versionCode 1
-        versionName "1.0 - experimental"
+        versionName generateVersionName()
     }
     buildTypes {
     }
