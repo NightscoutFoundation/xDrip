@@ -708,6 +708,40 @@ public class BgReading extends Model {
 
     }
     
+    public static void checkForRisingAllert(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        Boolean rising_alert = prefs.getBoolean("rising_alert", false);
+        if(!rising_alert) {
+            return;
+        }
+        if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
+            Log.w("NOTIFICATIONS", "checkForRisingAllert: Notifications are currently disabled!!");
+            return;
+        }
+        
+        if(IsUnclearTime(context)) {
+            Log.e(TAG_ALERT, "checkForRisingAllert we are in an clear time, returning without doing anything");
+            return ;
+        }
+        
+        String riseRate = prefs.getString("rising_bg_val", "2");
+        float friseRate = 2;
+        
+        try
+        {
+            friseRate = Float.parseFloat(riseRate);
+        }
+        catch (NumberFormatException nfe)
+        {
+            Log.e(TAG_ALERT, "checkForRisingAllert reading falling_bg_val failed, continuing with 2", nfe);
+        }
+        Log.w(TAG_ALERT, "checkForRisingAllert will check for rate of " + friseRate);
+        
+        boolean riseAlert = checkForDropRiseAllert(friseRate, false);
+        Notifications.RisingAlert(context, riseAlert);
+    }
+    
+    
     public static void checkForDropAllert(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         Boolean falling_alert = prefs.getBoolean("falling_alert", false);
@@ -737,38 +771,46 @@ public class BgReading extends Model {
         }
         Log.w(TAG_ALERT, "checkForDropAllert will check for rate of " + fdropRate);
         
-        boolean dropAlert = checkForDropAllert(fdropRate);
+        boolean dropAlert = checkForDropRiseAllert(fdropRate, true);
         Notifications.DropAlert(context, dropAlert);
     }
     
     // true say, alert is on.
-    private static boolean checkForDropAllert(float MaxSpeed) {
+    private static boolean checkForDropRiseAllert(float MaxSpeed, boolean drop) {
+        Log.e(TAG_ALERT, "checkForDropRiseAllert called drop=" + drop);
         List<BgReading> latest = getXRecentPoints(4);
         if(latest == null) {
-            Log.e(TAG_ALERT, "checkForDropAllert we don't have enough points from the last 15 minutes, returning false");
+            Log.e(TAG_ALERT, "checkForDropRiseAllert we don't have enough points from the last 15 minutes, returning false");
             return false;
         }
         float time3 = (latest.get(0).timestamp - latest.get(3).timestamp) / 60000;
-        double bg_diff3 = latest.get(3).calculated_value - latest.get(0).calculated_value;
+        double bg_diff3 = latest.get(3).calculated_value - latest.get(0).calculated_value;;
+        if (!drop) {
+            bg_diff3 *= (-1);
+        }
         Log.w(TAG_ALERT, "bg_diff3=" + bg_diff3 + " time3 = " + time3);
         if(bg_diff3 < time3 * MaxSpeed) {
-            Log.e(TAG_ALERT, "checkForDropAllert for latest 4 points not fast enough, returning false");
+            Log.e(TAG_ALERT, "checkForDropRiseAllert for latest 4 points not fast enough, returning false");
             return false;
         }
         // we should alert here, but if the last measurement was less than MaxSpeed / 2, I won't.
         
         
         float time1 = (latest.get(0).timestamp - latest.get(1).timestamp) / 60000;
-        double diff1 = latest.get(1).calculated_value - latest.get(0).calculated_value;
+        double bg_diff1 = latest.get(1).calculated_value - latest.get(0).calculated_value;
+        if (!drop) {
+            bg_diff1 *= (-1);
+        }
+        
         if(time1 > 7.0) {
-            Log.e(TAG_ALERT, "checkForDropAllert the two points are not close enough, returning true");
+            Log.e(TAG_ALERT, "checkForDropRiseAllert the two points are not close enough, returning true");
             return true;
         }
-        if(diff1 < time1 * MaxSpeed /2) {
-            Log.e(TAG_ALERT, "checkForDropAllert for latest 2 points not fast enough, returning false");
+        if(bg_diff1 < time1 * MaxSpeed /2) {
+            Log.e(TAG_ALERT, "checkForDropRiseAllert for latest 2 points not fast enough, returning false");
             return false;
         }
-        Log.e(TAG_ALERT, "returning true speed is " + (bg_diff3 / time3));
+        Log.e(TAG_ALERT, "checkForDropRiseAllert returning true speed is " + (bg_diff3 / time3));
         return true;
     }
     

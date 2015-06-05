@@ -230,6 +230,7 @@ public class Notifications extends IntentService {
         }
         FileBasedNotifications(context);
         BgReading.checkForDropAllert(context);
+        BgReading.checkForRisingAllert(context);
 
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
         Sensor sensor = Sensor.currentSensor();
