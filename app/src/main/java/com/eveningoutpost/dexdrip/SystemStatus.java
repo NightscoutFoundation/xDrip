@@ -159,7 +159,7 @@ public class SystemStatus extends Activity implements NavigationDrawerFragment.N
                                     m.invoke(bluetoothDevice, (Object[]) null);
                                     notes.append("\n- Bluetooth unbonded, if using share tell it to forget your device.");
                                     notes.append("\n- Scan for devices again to set connection back up!");
-                                } catch (Exception e) { Log.e("SystemStatus", e.getMessage()); }
+                                } catch (Exception e) { Log.e("SystemStatus", e.getMessage(), e); }
                             }
                         }
 
