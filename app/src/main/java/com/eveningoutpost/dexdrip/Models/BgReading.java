@@ -710,13 +710,18 @@ public class BgReading extends Model {
     
     public static void checkForDropAllert(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        Boolean falling_alert = prefs.getBoolean("falling_alert", false);
+        if(!falling_alert) {
+            return;
+        }
         if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
             Log.w("NOTIFICATIONS", "checkForDropAllert: Notifications are currently disabled!!");
             return;
         }
-        Boolean falling_alert = prefs.getBoolean("falling_alert", false);
-        if(!falling_alert) {
-            return;
+        
+        if(IsUnclearTime(context)) {
+            Log.e(TAG_ALERT, "checkForDropAllert we are in an clear time, returning without doing anything");
+            return ;
         }
         
         String dropRate = prefs.getString("falling_bg_val", "2");
@@ -767,7 +772,20 @@ public class BgReading extends Model {
         return true;
     }
     
-    
+    private static boolean IsUnclearTime(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        Boolean bg_unclear_readings_alerts = prefs.getBoolean("bg_unclear_readings_alerts", false);
+        if(bg_unclear_readings_alerts) {
+            Long UnclearTimeSetting = Long.parseLong(prefs.getString("bg_unclear_readings_minutes", "90")) * 60000;
+            Long unclearTime = getUnclearTime(UnclearTimeSetting);
+            if (unclearTime > 0) {
+                Log.e(TAG_ALERT, "IsUnclearTime we are in an clear time, returning true");
+                return true;
+            }
+        }
+        return false;
+    }
     /*
      * This function comes to check weather we are in a case that we have an allert but since things are
      * getting better we should not do anything. (This is only in the case that the alert was snoozed before.)
@@ -780,16 +798,10 @@ public class BgReading extends Model {
     public static boolean trendingToAlertEnd(Context context, boolean above) {
         // TODO: check if we are not in an UnclerTime.
         Log.e(TAG_ALERT, "trendingToAlertEnd called");
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        Boolean bg_unclear_readings_alerts = prefs.getBoolean("bg_unclear_readings_alerts", false);
-        if(bg_unclear_readings_alerts) {
-            Long UnclearTimeSetting = Long.parseLong(prefs.getString("bg_unclear_readings_minutes", "90")) * 60000;
-            Long unclearTime = getUnclearTime(UnclearTimeSetting);
-            if (unclearTime > 0) {
-                Log.e(TAG_ALERT, "trendingToAlertEnd we are in an clear time, returning false");
-                return false;
-            }
+        if(IsUnclearTime(context)) {
+            Log.e(TAG_ALERT, "trendingToAlertEnd we are in an clear time, returning false");
+            return false;
         }
         
         List<BgReading> latest = getXRecentPoints(3);
