@@ -229,6 +229,7 @@ public class Notifications extends IntentService {
             return;
         }
         FileBasedNotifications(context);
+        BgReading.checkForDropAllert(context);
 
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
         Sensor sensor = Sensor.currentSensor();
@@ -478,7 +479,7 @@ public class Notifications extends IntentService {
         RiseDropAlert(context, on, "bg_rise_alert", "bg rising fast", riseAlertNotificationId);
     }
     public static void DropAlert(Context context, boolean on) {
-        RiseDropAlert(context, on, "bg_fail_alert", "bg failing fast", failAlertNotificationId);
+        RiseDropAlert(context, on, "bg_fall_alert", "bg failing fast", failAlertNotificationId);
     }
     
     public static void RiseDropAlert(Context context, boolean on, String type, String message, int notificatioId) {
