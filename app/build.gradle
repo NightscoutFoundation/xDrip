@@ -15,6 +15,8 @@ repositories {
 }
 
 def generateVersionName = { ->
+
+    StringBuilder stringBuilder = new StringBuilder();
     try {
         def stdout = new ByteArrayOutputStream()
         exec {
@@ -22,30 +24,46 @@ def generateVersionName = { ->
             standardOutput = stdout
         }
         String commitObject =  stdout.toString().trim()
-        String tags = ""
         try {
             stdout = new ByteArrayOutputStream()
             exec {
                 commandLine 'git', 'describe', '--tags'
                 standardOutput = stdout
             }
-            tags =  stdout.toString().trim()+ "-"
+            stringBuilder.append(stdout.toString().trim())
+            stringBuilder.append("-")
         } catch (ignored) {
             // no tags
         }
 
+        stringBuilder.append(commitObject)
         stdout = new ByteArrayOutputStream()
         exec {
            commandLine 'git', 'rev-parse', '--show-toplevel'
             standardOutput = stdout
         }
         if(stdout.toString().trim().contains("xDrip-Experimental")) {
-            return tags + commitObject + "-experimental"
+            stringBuilder.append("-experimental")
         }
-        return tags + commitObject
+
+        stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git',  'rev-parse', '--abbrev-ref', 'HEAD'
+            standardOutput = stdout
+        }
+        String branch = stdout.toString().trim()
+        if(!branch.equals("master")) {
+            stringBuilder.append('-')
+            stringBuilder.append(branch)
+        }
+
     } catch (ignored) {
         return "NoGitSystemAvailable";
     }
+    stringBuilder.append('-')
+    stringBuilder.append((new Date()).format('yyyy/MM/dd/HH:mm:ss'))
+    return stringBuilder.toString()
+
 }
 
 
