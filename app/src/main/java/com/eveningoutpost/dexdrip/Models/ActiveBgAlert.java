@@ -45,6 +45,16 @@ public class ActiveBgAlert extends Model {
         }
         return false;
     }
+    
+    public static boolean alertSnoozeOver() {
+        ActiveBgAlert activeBgAlert = getOnly();
+        if (activeBgAlert == null) {
+            // no alert exists, so snoozing is over... (this should not happen)
+		Log.wtf(TAG, "ActiveBgAlert getOnly returning null (we have just checked it)");
+            return true;
+        }
+        return activeBgAlert.ready_to_alarm();
+    }
 
     public void snooze(int minutes) {
         next_alert_at = new Date().getTime() + minutes * 60000;

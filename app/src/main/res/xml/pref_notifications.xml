@@ -14,6 +14,13 @@
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:title="Bg Alerts Settings"
             android:key="bg_alerts_screen">
+            <ListPreference
+                    android:key="bg_alert_profile"
+                    android:title="BG alerts profile"
+                    android:entries="@array/BgAlertProfileEntries"
+                    android:entryValues="@array/BgAlertProfileValues"
+                    android:defaultValue="ascending"/>
+            
             <CheckBoxPreference
                 android:key="smart_snoozing"
                 android:title="Smart snoozing"
@@ -25,13 +32,6 @@
                 android:title="Shortcut to Bg Level Alerts"
                 android:summary="Create a shortcut from main navigation to bg level screen"
                 android:defaultValue="false" />
-
-            <CheckBoxPreference
-                android:key="ascending_bg_alerts"
-                android:title="Ascending Alerts"
-                android:summary="In case of bg alerts, the phone will vibrate twice and start with low volume alerts"
-                android:defaultValue="true" />
-
         </PreferenceScreen>
 
 
@@ -98,6 +98,32 @@
                     android:defaultValue="30" />
             </PreferenceCategory>
 
+            <PreferenceCategory
+                android:title="Falling/Rising BG">
+                <CheckBoxPreference
+                    android:key="falling_alert"
+                    android:title="Bg falling fast"
+                    android:defaultValue="false" />
+                <ListPreference
+                    android:dependency="falling_alert"
+                    android:key="falling_bg_val"
+                    android:title="falling threshold"
+                    android:entries="@array/risingEntries"
+                    android:entryValues="@array/risingValues"
+                    android:defaultValue="3"/>
+                 <CheckBoxPreference
+                    android:key="rising_alert"
+                    android:title="Bg rising fast"
+                    android:defaultValue="false" />
+                <ListPreference
+                    android:dependency="rising_alert"
+                    android:key="rising_bg_val"
+                    android:title="rising threshold"
+                    android:entries="@array/risingEntries"
+                    android:entryValues="@array/risingValues"
+                    android:defaultValue="3"/>
+            </PreferenceCategory>
+            
             <PreferenceCategory
                 android:title="Alert Preferences (for these alerts)">
                 <RingtonePreference

@@ -30,6 +30,12 @@ public class AlertPlayer {
     int volumeBeforeAlert;
     int volumeForThisAlert;
     Context context;
+    
+    final static int ALERT_PROFILE_HIGH = 1;
+    final static int ALERT_PROFILE_ASCENDING = 2;
+    final static int ALERT_PROFILE_MEDIUM = 3;
+    final static int ALERT_PROFILE_VIBRATE_ONLY = 4;
+    
     final static int  MAX_VIBRATING = 2;
     final static int  MAX_ASCENDING = 5; 
 
@@ -166,17 +172,48 @@ public class AlertPlayer {
     private PendingIntent snoozeIntent(Context ctx){
         Intent intent = new Intent(ctx, SnoozeOnNotificationDismissService.class);
         return PendingIntent.getService(ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
     }
+    
+    static private int getAlertProfile(Context ctx){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        String profile = prefs.getString("bg_alert_profile", "ascending");
+        if(profile.equals("High")) {
+            Log.w(TAG, "getAlertProfile returning ALERT_PROFILE_HIGH");
+            return ALERT_PROFILE_HIGH;
+        }
+        if(profile.equals("ascending")) {
+            Log.w(TAG, "getAlertProfile returning ALERT_PROFILE_ASCENDING");
+            return ALERT_PROFILE_ASCENDING;
+        }
+        if(profile.equals("medium")) {
+            Log.w(TAG, "getAlertProfile returning ALERT_PROFILE_MEDIUM");
+            return ALERT_PROFILE_MEDIUM;
+        }
+        if(profile.equals("vibrate only")) {
+            Log.w(TAG, "getAlertProfile returning ALERT_PROFILE_VIBRATE_ONLY");
+            return ALERT_PROFILE_VIBRATE_ONLY;
+        }
+        Log.wtf(TAG, "getAlertProfile unknown value " + profile+ " ALERT_PROFILE_ASCENDING");
+        return ALERT_PROFILE_ASCENDING;
+        
+    }
+    
     private void Vibrate(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, String audioPath, int timeFromStartPlaying) {
         Log.e(TAG, "Vibrate called timeFromStartPlaying = " + timeFromStartPlaying);
         Log.e("ALARM", "setting vibrate alarm");
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-        boolean ascending_bg_alerts = prefs.getBoolean("ascending_bg_alerts", true);
-        if (!ascending_bg_alerts) {
+        int profile = getAlertProfile(ctx);
+        if(alert.uuid.equals(AlertType.LOW_ALERT_55)) {
+            // boost alerts...
+            if(profile == ALERT_PROFILE_VIBRATE_ONLY) {
+                profile = ALERT_PROFILE_ASCENDING;
+            }
+        }
+
+        // We use timeFromStartPlaying as a way to force vibrating/ non vibrating...
+        if (profile != ALERT_PROFILE_ASCENDING) {
             // We start from the non ascending part...
             timeFromStartPlaying = MAX_ASCENDING;
-        }
+        } 
 
         String title = bgValue + " " + alert.name;
         String content = "BG LEVEL ALERT: " + bgValue;
@@ -188,15 +225,20 @@ public class AlertPlayer {
             .setContentText(content)
             .setContentIntent(notificationIntent(ctx, intent))
             .setDeleteIntent(snoozeIntent(ctx));
-        if (timeFromStartPlaying >= MAX_VIBRATING) {
-            // Before this, we only vibrate...
-            float volumeFrac = (float)(timeFromStartPlaying - MAX_VIBRATING) / (MAX_ASCENDING - MAX_VIBRATING);
-            volumeFrac = Math.max(volumeFrac, 1);
-            Log.e(TAG, "Vibrate volumeFrac = " + volumeFrac);
-            if(overrideSilent) {
-                PlayFile(ctx, alert.mp3_file, volumeFrac);
-            } else {
-                builder.setSound(Uri.parse(audioPath), AudioAttributes.USAGE_ALARM);
+        if (profile != ALERT_PROFILE_VIBRATE_ONLY) {
+            if (timeFromStartPlaying >= MAX_VIBRATING) {
+                // Before this, we only vibrate...
+                float volumeFrac = (float)(timeFromStartPlaying - MAX_VIBRATING) / (MAX_ASCENDING - MAX_VIBRATING);
+                volumeFrac = Math.min(volumeFrac, 1);
+                if(profile == ALERT_PROFILE_MEDIUM) {
+                    volumeFrac = (float)0.7;
+                }
+                Log.e(TAG, "Vibrate volumeFrac = " + volumeFrac);
+                if(overrideSilent) {
+                    PlayFile(ctx, alert.mp3_file, volumeFrac);
+                } else {
+                    builder.setSound(Uri.parse(audioPath), AudioAttributes.USAGE_ALARM);
+                }
             }
         }
         //NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);

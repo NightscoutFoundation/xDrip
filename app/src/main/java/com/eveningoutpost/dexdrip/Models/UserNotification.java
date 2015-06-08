@@ -40,6 +40,12 @@ public class UserNotification extends Model {
     @Column(name = "bg_missed_alerts")
     public boolean bg_missed_alerts;
 
+    @Column(name = "bg_rise_alert")
+    public boolean bg_rise_alert;
+
+    @Column(name = "bg_fall_alert")
+    public boolean bg_fall_alert;
+
     public static UserNotification lastBgAlert() {
         return new Select()
                 .from(UserNotification.class)
@@ -68,20 +74,24 @@ public class UserNotification extends Model {
                 .orderBy("_ID desc")
                 .executeSingle();
     }
-    public static UserNotification lastUnclearReadingsAlert() {
+
+    
+    public static UserNotification GetNotificationByType(String type) {
+        type = type + " = ?";
         return new Select()
-                .from(UserNotification.class)
-                .where("bg_unclear_readings_alert = ?", true)
-                .orderBy("_ID desc")
-                .executeSingle();
+        .from(UserNotification.class)
+        .where(type, true)
+        .orderBy("_ID desc")
+        .executeSingle();
     }
-    public static UserNotification LastMissedAlert() {
-        return new Select()
-                .from(UserNotification.class)
-                .where("bg_missed_alerts = ?", true)
-                .orderBy("_ID desc")
-                .executeSingle();
+    
+    public static void DeleteNotificationByType(String type) {
+        UserNotification userNotification = UserNotification.GetNotificationByType(type);
+        if (userNotification != null) {
+            userNotification.delete();
+        }
     }
+    
     public static UserNotification create(String message, String type) {
         UserNotification userNotification = new UserNotification();
         userNotification.timestamp = new Date().getTime();
@@ -95,9 +105,13 @@ public class UserNotification extends Model {
         } else if (type == "extra_calibration_alert") {
             userNotification.extra_calibration_alert = true;
         } else if (type == "bg_unclear_readings_alert") {
-        userNotification.bg_unclear_readings_alert = true;
+            userNotification.bg_unclear_readings_alert = true;
         } else if (type == "bg_missed_alerts") {
-        userNotification.bg_missed_alerts = true;
+            userNotification.bg_missed_alerts = true;
+        } else if (type == "bg_rise_alert") {
+            userNotification.bg_rise_alert = true;
+        } else if (type == "bg_fall_alert") {
+            userNotification.bg_fall_alert = true;
         }
         userNotification.save();
         return userNotification;

@@ -281,7 +281,7 @@ public class EditAlertActivity extends Activity {
         if(overrideSilence) {
             checkboxAlertOverride.setText("");
         } else {
-            checkboxAlertOverride.setText("Warning, no alert will be played at silent/vibrate mode!!!");
+            checkboxAlertOverride.setText("Warning, no alert will be played at phone silent/vibrate mode!!!");
         }
     }
 

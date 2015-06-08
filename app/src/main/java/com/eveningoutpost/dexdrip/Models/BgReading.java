@@ -683,6 +683,151 @@ public class BgReading extends Model {
         }
     }
     
+    // list(0) is the most recent reading.
+    public static List<BgReading> getXRecentPoints(int NumReadings) {
+        List<BgReading> latest = BgReading.latest(NumReadings);
+        if (latest == null || latest.size() != NumReadings) {
+            // for less than NumReadings readings, we can't tell what the situation
+            // 
+            Log.e(TAG_ALERT, "getXRecentPoints we don't have enough readings, returning null");
+            return null;
+        }
+        // So, we have at least three values...
+        for(BgReading bgReading : latest) {
+            Log.e(TAG_ALERT, "getXRecentPoints - reading: time = " + bgReading.timestamp + " calculated_value " + bgReading.calculated_value);
+        }
+        
+        // now let's check that they are relevant. the last reading should be from the last 5 minutes, 
+        // x-1 more readings should be from the last (x-1)*5 minutes. we will allow 5 minutes for the last
+        // x to allow one packet to be missed.
+        if (new Date().getTime() - latest.get(NumReadings - 1).timestamp > (NumReadings * 5 + 6) * 60 * 1000) {
+            Log.e(TAG_ALERT, "getXRecentPoints we don't have enough points from the last " + (NumReadings * 5 + 6) + " minutes, returning null");
+            return null;
+        }
+        return latest;
+
+    }
+    
+    public static void checkForRisingAllert(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        Boolean rising_alert = prefs.getBoolean("rising_alert", false);
+        if(!rising_alert) {
+            return;
+        }
+        if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
+            Log.w("NOTIFICATIONS", "checkForRisingAllert: Notifications are currently disabled!!");
+            return;
+        }
+        
+        if(IsUnclearTime(context)) {
+            Log.e(TAG_ALERT, "checkForRisingAllert we are in an clear time, returning without doing anything");
+            return ;
+        }
+        
+        String riseRate = prefs.getString("rising_bg_val", "2");
+        float friseRate = 2;
+        
+        try
+        {
+            friseRate = Float.parseFloat(riseRate);
+        }
+        catch (NumberFormatException nfe)
+        {
+            Log.e(TAG_ALERT, "checkForRisingAllert reading falling_bg_val failed, continuing with 2", nfe);
+        }
+        Log.w(TAG_ALERT, "checkForRisingAllert will check for rate of " + friseRate);
+        
+        boolean riseAlert = checkForDropRiseAllert(friseRate, false);
+        Notifications.RisingAlert(context, riseAlert);
+    }
+    
+    
+    public static void checkForDropAllert(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        Boolean falling_alert = prefs.getBoolean("falling_alert", false);
+        if(!falling_alert) {
+            return;
+        }
+        if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
+            Log.w("NOTIFICATIONS", "checkForDropAllert: Notifications are currently disabled!!");
+            return;
+        }
+        
+        if(IsUnclearTime(context)) {
+            Log.e(TAG_ALERT, "checkForDropAllert we are in an clear time, returning without doing anything");
+            return ;
+        }
+        
+        String dropRate = prefs.getString("falling_bg_val", "2");
+        float fdropRate = 2;
+        
+        try
+        {
+            fdropRate = Float.parseFloat(dropRate);
+        }
+        catch (NumberFormatException nfe)
+        {
+            Log.e(TAG_ALERT, "reading falling_bg_val failed, continuing with 2", nfe);
+        }
+        Log.w(TAG_ALERT, "checkForDropAllert will check for rate of " + fdropRate);
+        
+        boolean dropAlert = checkForDropRiseAllert(fdropRate, true);
+        Notifications.DropAlert(context, dropAlert);
+    }
+    
+    // true say, alert is on.
+    private static boolean checkForDropRiseAllert(float MaxSpeed, boolean drop) {
+        Log.e(TAG_ALERT, "checkForDropRiseAllert called drop=" + drop);
+        List<BgReading> latest = getXRecentPoints(4);
+        if(latest == null) {
+            Log.e(TAG_ALERT, "checkForDropRiseAllert we don't have enough points from the last 15 minutes, returning false");
+            return false;
+        }
+        float time3 = (latest.get(0).timestamp - latest.get(3).timestamp) / 60000;
+        double bg_diff3 = latest.get(3).calculated_value - latest.get(0).calculated_value;;
+        if (!drop) {
+            bg_diff3 *= (-1);
+        }
+        Log.w(TAG_ALERT, "bg_diff3=" + bg_diff3 + " time3 = " + time3);
+        if(bg_diff3 < time3 * MaxSpeed) {
+            Log.e(TAG_ALERT, "checkForDropRiseAllert for latest 4 points not fast enough, returning false");
+            return false;
+        }
+        // we should alert here, but if the last measurement was less than MaxSpeed / 2, I won't.
+        
+        
+        float time1 = (latest.get(0).timestamp - latest.get(1).timestamp) / 60000;
+        double bg_diff1 = latest.get(1).calculated_value - latest.get(0).calculated_value;
+        if (!drop) {
+            bg_diff1 *= (-1);
+        }
+        
+        if(time1 > 7.0) {
+            Log.e(TAG_ALERT, "checkForDropRiseAllert the two points are not close enough, returning true");
+            return true;
+        }
+        if(bg_diff1 < time1 * MaxSpeed /2) {
+            Log.e(TAG_ALERT, "checkForDropRiseAllert for latest 2 points not fast enough, returning false");
+            return false;
+        }
+        Log.e(TAG_ALERT, "checkForDropRiseAllert returning true speed is " + (bg_diff3 / time3));
+        return true;
+    }
+    
+    private static boolean IsUnclearTime(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        Boolean bg_unclear_readings_alerts = prefs.getBoolean("bg_unclear_readings_alerts", false);
+        if(bg_unclear_readings_alerts) {
+            Long UnclearTimeSetting = Long.parseLong(prefs.getString("bg_unclear_readings_minutes", "90")) * 60000;
+            Long unclearTime = getUnclearTime(UnclearTimeSetting);
+            if (unclearTime > 0) {
+                Log.e(TAG_ALERT, "IsUnclearTime we are in an clear time, returning true");
+                return true;
+            }
+        }
+        return false;
+    }
     /*
      * This function comes to check weather we are in a case that we have an allert but since things are
      * getting better we should not do anything. (This is only in the case that the alert was snoozed before.)
@@ -695,38 +840,18 @@ public class BgReading extends Model {
     public static boolean trendingToAlertEnd(Context context, boolean above) {
         // TODO: check if we are not in an UnclerTime.
         Log.e(TAG_ALERT, "trendingToAlertEnd called");
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        Boolean bg_unclear_readings_alerts = prefs.getBoolean("bg_unclear_readings_alerts", false);
-        if(bg_unclear_readings_alerts) {
-            Long UnclearTimeSetting = Long.parseLong(prefs.getString("bg_unclear_readings_minutes", "90")) * 60000;
-            Long unclearTime = getUnclearTime(UnclearTimeSetting);
-            if (unclearTime > 0) {
-                Log.e(TAG_ALERT, "trendingToAlertEnd we are in an clear time, returning false");
-                return false;
-            }
-        }
-        
-        
-        List<BgReading> latest = BgReading.latest(3);
-        if (latest == null || latest.size() < 2) {
-            // for less than 3 readings, we can't tell what the situation
-            // 
-            Log.e(TAG_ALERT, "trendingToAlertEnd we don't have 3 readings, returning false");
+        if(IsUnclearTime(context)) {
+            Log.e(TAG_ALERT, "trendingToAlertEnd we are in an clear time, returning false");
             return false;
         }
-        // So, we have at least three values...
-        for(BgReading bgReading : latest) {
-            Log.e(TAG_ALERT, "trendingToAlertEnd - reading: time = " + bgReading.timestamp + " calculated_value " + bgReading.calculated_value);
-        }
         
-        // now let's talk that they are relevant. the last reading should be from the last 5 minutes, 
-        // two more readings should be from the last 15 minutes. we will allow 21 minutes for the last
-        // 3 to allow one packet to be missed.
-        if (new Date().getTime() - latest.get(2).timestamp > 21 * 60 * 1000) {
+        List<BgReading> latest = getXRecentPoints(3);
+        if(latest == null) {
             Log.e(TAG_ALERT, "trendingToAlertEnd we don't have enough points from the last 15 minutes, returning false");
             return false;
         }
+        
         if(above == false) {
             // This is a low alert, we should be going up
             if((latest.get(0).calculated_value - latest.get(1).calculated_value > 4) ||
