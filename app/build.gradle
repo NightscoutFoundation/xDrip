@@ -14,6 +14,59 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 
+def generateVersionName = { ->
+
+    StringBuilder stringBuilder = new StringBuilder();
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'describe', '--always'
+            standardOutput = stdout
+        }
+        String commitObject =  stdout.toString().trim()
+        try {
+            stdout = new ByteArrayOutputStream()
+            exec {
+                commandLine 'git', 'describe', '--tags'
+                standardOutput = stdout
+            }
+            stringBuilder.append(stdout.toString().trim())
+            stringBuilder.append("-")
+        } catch (ignored) {
+            // no tags
+        }
+
+        stringBuilder.append(commitObject)
+        stdout = new ByteArrayOutputStream()
+        exec {
+           commandLine 'git', 'rev-parse', '--show-toplevel'
+            standardOutput = stdout
+        }
+        if(stdout.toString().trim().contains("xDrip-Experimental")) {
+            stringBuilder.append("-experimental")
+        }
+
+        stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git',  'rev-parse', '--abbrev-ref', 'HEAD'
+            standardOutput = stdout
+        }
+        String branch = stdout.toString().trim()
+        if(!branch.equals("master")) {
+            stringBuilder.append('-')
+            stringBuilder.append(branch)
+        }
+
+    } catch (ignored) {
+        return "NoGitSystemAvailable";
+    }
+    stringBuilder.append('-')
+    stringBuilder.append((new Date()).format('yyyy.MM.dd'))
+    return stringBuilder.toString()
+
+}
+
+
 
 android {
     compileSdkVersion 22
@@ -24,7 +77,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 21
         versionCode 1
-        versionName "1.0"
+        versionName generateVersionName()
     }
     buildTypes {
     }

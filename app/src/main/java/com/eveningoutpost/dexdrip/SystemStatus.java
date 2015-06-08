@@ -8,6 +8,8 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
@@ -31,6 +33,7 @@ import java.lang.reflect.Method;
 public class SystemStatus extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     private String menu_name = "System Status";
     private NavigationDrawerFragment mNavigationDrawerFragment;
+    private TextView version_name_view;
     public TextView collection_method;
     public TextView current_device;
     public TextView connection_status;
@@ -49,7 +52,7 @@ public class SystemStatus extends Activity implements NavigationDrawerFragment.N
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
-
+        version_name_view = (TextView)findViewById(R.id.version_name);
         collection_method = (TextView)findViewById(R.id.collection_method);
         connection_status = (TextView)findViewById(R.id.connection_status);
         current_device = (TextView)findViewById(R.id.remembered_device);
@@ -74,10 +77,22 @@ public class SystemStatus extends Activity implements NavigationDrawerFragment.N
     private void set_current_values() {
         activeBluetoothDevice = ActiveBluetoothDevice.first();
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        setVersionName();
         setCollectionMethod();
         setCurrentDevice();
         setConnectionStatus();
         setNotes();
+    }
+
+    private void setVersionName(){
+        String versionName = null;
+        try {
+            versionName = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA).versionName;
+            version_name_view.setText(versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            //e.printStackTrace();
+            Log.e(this.getClass().getSimpleName(),"PackageManager.NameNotFoundException:" + e.getMessage());
+        }
     }
 
     public void setCollectionMethod() {
@@ -144,7 +159,7 @@ public class SystemStatus extends Activity implements NavigationDrawerFragment.N
                                     m.invoke(bluetoothDevice, (Object[]) null);
                                     notes.append("\n- Bluetooth unbonded, if using share tell it to forget your device.");
                                     notes.append("\n- Scan for devices again to set connection back up!");
-                                } catch (Exception e) { Log.e("SystemStatus", e.getMessage()); }
+                                } catch (Exception e) { Log.e("SystemStatus", e.getMessage(), e); }
                             }
                         }
 
