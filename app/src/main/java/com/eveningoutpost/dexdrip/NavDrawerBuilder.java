@@ -58,10 +58,10 @@ public class NavDrawerBuilder {
                     if (last_two_calibrations.size() > 1) {
                         if (bGreadings_in_last_30_mins.size() >= 2) {
                             if (time_now - last_two_calibrations.get(0).timestamp < (1000 * 60 * 60)) { //Put steps in place to discourage over calibration
-                                this.nav_drawer_options.add("Override Calibration");
+                                this.nav_drawer_options.add(CalibrationOverride.menu_name);
                                 this.nav_drawer_intents.add(new Intent(context, CalibrationOverride.class));
                             } else {
-                                this.nav_drawer_options.add("Add Calibration");
+                                this.nav_drawer_options.add(AddCalibration.menu_name);
                                 this.nav_drawer_intents.add(new Intent(context, AddCalibration.class));
                             }
                         } else {
@@ -69,12 +69,12 @@ public class NavDrawerBuilder {
                             this.nav_drawer_intents.add(new Intent(context, Home.class));
                         }
                     } else {
-                        this.nav_drawer_options.add("Add Double Calibration");
+                        this.nav_drawer_options.add(DoubleCalibrationActivity.menu_name);
                         this.nav_drawer_intents.add(new Intent(context, DoubleCalibrationActivity.class));
                     }
                 }
             }
-            this.nav_drawer_options.add("Stop Sensor");
+            this.nav_drawer_options.add(StopSensor.menu_name);
             this.nav_drawer_intents.add(new Intent(context, StopSensor.class));
         } else {
             this.nav_drawer_options.add(StartNewSensor.menu_name);
@@ -83,22 +83,22 @@ public class NavDrawerBuilder {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
             if(CollectionServiceStarter.isBTWixel(context) || CollectionServiceStarter.isDexbridgeWixel(context)|| CollectionServiceStarter.isBTShare(context)) {
-                this.nav_drawer_options.add("Scan for BT");
+                this.nav_drawer_options.add(BluetoothScan.menu_name);
                 this.nav_drawer_intents.add(new Intent(context, BluetoothScan.class));
             }
         }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            this.nav_drawer_options.add("System Status");
+            this.nav_drawer_options.add(SystemStatus.menu_name);
             this.nav_drawer_intents.add(new Intent(context, SystemStatus.class));
         }
 
         boolean bg_alerts = prefs.getBoolean("bg_alerts_from_main_menu", false);
         if (bg_alerts) {
-            this.nav_drawer_options.add("BG Level Alerts");
+            this.nav_drawer_options.add(AlertList.menu_name);
             this.nav_drawer_intents.add(new Intent(context, AlertList.class));
         }
-        this.nav_drawer_options.add("Snooze Alerts");
+        this.nav_drawer_options.add(SnoozeActivity.menu_name);
         this.nav_drawer_intents.add(new Intent(context, SnoozeActivity.class));
 
         this.nav_drawer_options.add("Settings");

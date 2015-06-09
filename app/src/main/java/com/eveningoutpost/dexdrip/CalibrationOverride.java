@@ -63,7 +63,7 @@ public class CalibrationOverride extends ActivityWithMenu {
                         value.setError("Calibration Can Not be blank");
                     }
                 } else {
-                    Log.w("CANNOT CALIBRATE WITHOUT CURRENT SENSOR", "ERROR");
+                    Log.w("Calibration", "ERROR, no active sensor");
                 }
             }
         });
