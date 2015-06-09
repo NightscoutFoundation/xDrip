@@ -118,6 +118,17 @@ public class Preferences extends PreferenceActivity {
             return true;
         }
     };
+    private static Preference.OnPreferenceChangeListener sBindNumericPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object value) {
+            String stringValue = value.toString();
+            if (isNumeric(stringValue)) {
+                preference.setSummary(stringValue);
+                return true;
+            }
+            return false;
+        }
+    };
 
     private static void bindPreferenceSummaryToValue(Preference preference) {
         preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
@@ -126,27 +137,33 @@ public class Preferences extends PreferenceActivity {
                         .getDefaultSharedPreferences(preference.getContext())
                         .getString(preference.getKey(), ""));
     }
-
+    private static void bindPreferenceSummaryToValueAndEnsureNumeric(Preference preference) {
+        preference.setOnPreferenceChangeListener(sBindNumericPreferenceSummaryToValueListener);
+        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
+                PreferenceManager
+                        .getDefaultSharedPreferences(preference.getContext())
+                        .getString(preference.getKey(), ""));
+    }
     public static class AllPrefsFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_license);
             addPreferencesFromResource(R.xml.pref_general);
-            bindPreferenceSummaryToValue(findPreference("highValue"));
-            bindPreferenceSummaryToValue(findPreference("lowValue"));
+            bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("highValue"));
+            bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("lowValue"));
             bindPreferenceSummaryToValue(findPreference("units"));
 
             addPreferencesFromResource(R.xml.pref_notifications);
             bindPreferenceSummaryToValue(findPreference("bg_alert_profile"));
             bindPreferenceSummaryToValue(findPreference("calibration_notification_sound"));
-            bindPreferenceSummaryToValue(findPreference("calibration_snooze"));
-            bindPreferenceSummaryToValue(findPreference("bg_unclear_readings_minutes"));
-            bindPreferenceSummaryToValue(findPreference("bg_missed_minutes"));
+            bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("calibration_snooze"));
+            bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("bg_unclear_readings_minutes"));
+            bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("bg_missed_minutes"));
             bindPreferenceSummaryToValue(findPreference("falling_bg_val"));
             bindPreferenceSummaryToValue(findPreference("rising_bg_val"));
             bindPreferenceSummaryToValue(findPreference("other_alerts_sound"));
-            bindPreferenceSummaryToValue(findPreference("other_alerts_snooze"));
+            bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("other_alerts_snooze"));
 
             addPreferencesFromResource(R.xml.pref_data_source);
 
@@ -274,5 +291,14 @@ public class Preferences extends PreferenceActivity {
                 }
             });
         }
+    }
+
+    public static boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+        } catch(NumberFormatException nfe) {
+            return false;
+        }
+        return true;
     }
 }
