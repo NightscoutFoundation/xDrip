@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,6 +28,7 @@ import android.widget.Toast;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
+import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -36,7 +39,8 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class AlertList extends Activity {
+public class AlertList extends ActivityWithMenu {
+    public static String menu_name = "BG Level Alerts";
     ListView listViewLow;
     ListView listViewHigh;
     Button createLowAlert;
@@ -46,7 +50,7 @@ public class AlertList extends Activity {
     final int ADD_ALERT = 1;
     final int EDIT_ALERT = 2;
     SharedPreferences prefs;
-
+    Animation anim;
     private final static String TAG = AlertPlayer.class.getSimpleName();
 
     String stringTimeFromAlert(AlertType alert) {
@@ -86,20 +90,36 @@ public class AlertList extends Activity {
 
 
     class AlertsOnItemLongClickListener implements AdapterView.OnItemLongClickListener {
-        //      @Override
-        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-            ListView lv = (ListView)parent;
-            @SuppressWarnings("unchecked")
-            HashMap<String, String> item = (HashMap<String, String>)lv.getItemAtPosition(position);
-            Log.e(TAG, "Item clicked " + lv.getItemAtPosition(position) + item.get("uuid"));
+        @Override
+        public boolean onItemLongClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+            anim.setAnimationListener(new Animation.AnimationListener() {
 
-            //The XML for each item in the list (should you use a custom XML) must have android:longClickable="true"
-            // as well (or you can use the convenience method lv.setLongClickable(true);). This way you can have a list
-            // with only some items responding to longclick. (might be used for non removable alerts)
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    ListView lv = (ListView) parent;
+                    @SuppressWarnings("unchecked")
+                    HashMap<String, String> item = (HashMap<String, String>) lv.getItemAtPosition(position);
+                    Log.e(TAG, "Item clicked " + lv.getItemAtPosition(position) + item.get("uuid"));
 
-            Intent myIntent = new Intent(AlertList.this, EditAlertActivity.class);
-            myIntent.putExtra("uuid", item.get("uuid")); //Optional parameters
-            AlertList.this.startActivityForResult(myIntent, EDIT_ALERT);
+                    //The XML for each item in the list (should you use a custom XML) must have android:longClickable="true"
+                    // as well (or you can use the convenience method lv.setLongClickable(true);). This way you can have a list
+                    // with only some items responding to longclick. (might be used for non removable alerts)
+
+                    Intent myIntent = new Intent(AlertList.this, EditAlertActivity.class);
+                    myIntent.putExtra("uuid", item.get("uuid")); //Optional parameters
+                    AlertList.this.startActivityForResult(myIntent, EDIT_ALERT);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+
+                }
+            });
+            view.startAnimation(anim);
             return true;
         }
     }
@@ -116,9 +136,14 @@ public class AlertList extends Activity {
 
         addListenerOnButton();
         FillLists();
-
+        anim = AnimationUtils.loadAnimation(this, R.anim.fade_anim);
         listViewLow.setOnItemLongClickListener(new AlertsOnItemLongClickListener());
         listViewHigh.setOnItemLongClickListener(new AlertsOnItemLongClickListener());
+    }
+
+    @Override
+    public String getMenuName() {
+        return menu_name;
     }
 
 

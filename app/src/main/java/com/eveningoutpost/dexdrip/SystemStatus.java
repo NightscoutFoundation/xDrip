@@ -26,13 +26,13 @@ import android.widget.TextView;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 import java.lang.reflect.Method;
 
 
-public class SystemStatus extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-    private String menu_name = "System Status";
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+public class SystemStatus extends ActivityWithMenu {
+    public static String menu_name = "System Status";
     private TextView version_name_view;
     public TextView collection_method;
     public TextView current_device;
@@ -50,9 +50,7 @@ public class SystemStatus extends Activity implements NavigationDrawerFragment.N
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_system_status);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
-        version_name_view = (TextView)findViewById(R.id.version_name);
+       version_name_view = (TextView)findViewById(R.id.version_name);
         collection_method = (TextView)findViewById(R.id.collection_method);
         connection_status = (TextView)findViewById(R.id.connection_status);
         current_device = (TextView)findViewById(R.id.remembered_device);
@@ -70,8 +68,8 @@ public class SystemStatus extends Activity implements NavigationDrawerFragment.N
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        mNavigationDrawerFragment.swapContext(position);
+    public String getMenuName() {
+        return menu_name;
     }
 
     private void set_current_values() {

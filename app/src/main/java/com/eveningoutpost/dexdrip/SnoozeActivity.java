@@ -30,9 +30,12 @@ import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 
-public class SnoozeActivity extends Activity {
+public class SnoozeActivity extends ActivityWithMenu {
+    public static String menu_name = "Snooze Alert";
+
     TextView alertStatus;
     Button buttonSnooze;
     Button disableAlerts;
@@ -114,6 +117,10 @@ public class SnoozeActivity extends Activity {
         }
 
         displayStatus();
+    }
+    @Override
+    public String getMenuName() {
+        return menu_name;
     }
 
     public void addListenerOnButton() {
