@@ -16,10 +16,13 @@ import android.widget.TimePicker;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 import java.util.Date;
 
-public class FakeNumbers extends Activity {
+public class FakeNumbers extends ActivityWithMenu {
+    public static String menu_name = "Fake Numbers";
+
     public Button button;
     public DatePicker dp;
     public TimePicker tp;
@@ -32,7 +35,10 @@ public class FakeNumbers extends Activity {
         addListenerOnButton();
 
     }
-
+    @Override
+    public String getMenuName() {
+        return menu_name;
+    }
     public void addListenerOnButton() {
 
         button = (Button)findViewById(R.id.log);
@@ -53,24 +59,24 @@ public class FakeNumbers extends Activity {
             }
 
         });
-        
+
         button = (Button)findViewById(R.id.StartTest);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 ActiveBgAlert aba = ActiveBgAlert.getOnly();
                 ActiveBgAlert.ClearData();
                 ActiveBgAlert.Create("some string", true, new Date().getTime());
-                
-                
+
+
             }
         });
-        
+
         button = (Button)findViewById(R.id.StartTestAlerts);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 AlertType.testAll(getApplicationContext());
                 BgReading.TestgetUnclearTimes();
-                
+
             }
         });
     }

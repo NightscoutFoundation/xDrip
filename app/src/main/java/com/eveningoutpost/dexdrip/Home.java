@@ -35,6 +35,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 
 import java.io.File;
@@ -53,8 +54,8 @@ import lecho.lib.hellocharts.view.LineChartView;
 import lecho.lib.hellocharts.view.PreviewLineChartView;
 
 
-public class Home extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-    private String menu_name = "xDrip";
+public class Home extends ActivityWithMenu {
+    public static String menu_name = "xDrip";
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private LineChartView chart;
     private PreviewLineChartView previewChart;
@@ -92,6 +93,11 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         setContentView(R.layout.activity_home);
     }
 
+    @Override
+    public String getMenuName() {
+        return menu_name;
+    }
+
     public void checkEula() {
         boolean IUnderstand = prefs.getBoolean("I_understand", false);
         if (!IUnderstand) {
@@ -123,8 +129,6 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
         };
         registerReceiver(_broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         registerReceiver(newDataReceiver, new IntentFilter(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA));
-        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
         holdViewport.set(0, 0, 0, 0);
         setupCharts();
         updateCurrentBgInfo();
@@ -177,11 +181,6 @@ public class Home extends Activity implements NavigationDrawerFragment.Navigatio
             }
         }
 
-    }
-
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        mNavigationDrawerFragment.swapContext(position);
     }
 
     public void setViewport() {

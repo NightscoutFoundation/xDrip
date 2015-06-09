@@ -48,8 +48,10 @@ import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
-public class EditAlertActivity extends Activity {
+public class EditAlertActivity extends ActivityWithMenu {
+    public static String menu_name = "Edit Alert";
 
     TextView viewHeader;
 
@@ -245,6 +247,10 @@ public class EditAlertActivity extends Activity {
 
     }
 
+    @Override
+    public String getMenuName() {
+        return menu_name;
+    }
     public static String UnitsConvert2Disp(boolean doMgdl, double threshold) {
         DecimalFormat df = new DecimalFormat("#");
         if(doMgdl ) {

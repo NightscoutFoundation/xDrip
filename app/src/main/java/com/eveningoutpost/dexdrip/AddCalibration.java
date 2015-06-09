@@ -16,7 +16,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 
 public class AddCalibration extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     Button button;
-    private String menu_name = "Add Calibration";
+    public static String menu_name = "Add Calibration";
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
     @Override

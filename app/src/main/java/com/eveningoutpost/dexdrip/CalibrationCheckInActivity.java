@@ -17,11 +17,11 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.SyncingService;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
-public class CalibrationCheckInActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-    private String menu_name = "Check in calibration";
-    private NavigationDrawerFragment mNavigationDrawerFragment;
-    Button button;
+public class CalibrationCheckInActivity extends ActivityWithMenu {
+    public static String menu_name = "Check in calibration";
+   Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,15 +29,10 @@ public class CalibrationCheckInActivity extends Activity implements NavigationDr
         setContentView(R.layout.activity_calibration_check_in);
         addListenerOnButton();
     }
-    protected void onResume(){
-        super.onResume();
-        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
-    }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        mNavigationDrawerFragment.swapContext(position);
+    public String getMenuName() {
+        return menu_name;
     }
 
     public void addListenerOnButton() {
@@ -54,7 +49,7 @@ public class CalibrationCheckInActivity extends Activity implements NavigationDr
                     startActivity(tableIntent);
                     finish();
                 } else {
-                    Log.w("CANNOT CALIBRATE WITHOUT CURRENT SENSOR", "ERROR");
+                    Log.w("CALIBRATION", "ERROR, sensor not active");
                 }
             }
         });

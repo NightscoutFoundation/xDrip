@@ -25,13 +25,14 @@ import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
 
 import java.util.ArrayList;
 
 @TargetApi(android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class BluetoothScan extends ListActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-    private String menu_name = "Scan for BT";
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+public class BluetoothScan extends ListActivityWithMenu {
+    public static String menu_name = "Scan for BT";
 
     private final static String TAG = BluetoothScan.class.getSimpleName();
     private static final long SCAN_PERIOD = 10000;
@@ -89,15 +90,10 @@ public class BluetoothScan extends ListActivity implements NavigationDrawerFragm
     }
 
     @Override
-    protected void onResume(){
-        super.onResume();
-        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
+    public String getMenuName() {
+        return menu_name;
     }
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        mNavigationDrawerFragment.swapContext(position);
-    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_bluetooth_scan, menu);

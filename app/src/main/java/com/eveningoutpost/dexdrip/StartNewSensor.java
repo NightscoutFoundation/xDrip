@@ -14,14 +14,14 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 import java.util.Calendar;
 import java.util.List;
 
 
-public class StartNewSensor extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-    private String menu_name = "Start Sensor";
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+public class StartNewSensor extends ActivityWithMenu {
+    public static String menu_name = "Start Sensor";
     public Button button;
     public DatePicker dp;
     public TimePicker tp;
@@ -31,40 +31,20 @@ public class StartNewSensor extends Activity implements NavigationDrawerFragment
         super.onCreate(savedInstanceState);
         if(Sensor.isActive() == false) {
             setContentView(R.layout.activity_start_new_sensor);
-
             button = (Button)findViewById(R.id.startNewSensor);
             dp = (DatePicker)findViewById(R.id.datePicker);
             tp = (TimePicker)findViewById(R.id.timePicker);
             addListenerOnButton();
-
-
         } else {
             Intent intent = new Intent(this, StopSensor.class);
             startActivity(intent);
             finish();
         }
     }
-    @Override
-    protected void onResume(){
-        super.onResume();
-        NavigationDrawerFragment mNavigationDrawerFragment;
-        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
-    }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        NavDrawerBuilder navDrawerBuilder = new NavDrawerBuilder(getApplicationContext());
-        List<String> menu_option_list = navDrawerBuilder.nav_drawer_options;
-        int menu_position = menu_option_list.indexOf(menu_name);
-
-        if (position != menu_position) {
-            List<Intent> intent_list = navDrawerBuilder.nav_drawer_intents;
-            Intent[] intent_array = intent_list.toArray(new Intent[intent_list.size()]);
-            startActivity(intent_array[position]);
-            finish();
-        }
-
+    public String getMenuName() {
+        return menu_name;
     }
 
     public void addListenerOnButton() {
