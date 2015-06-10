@@ -245,17 +245,13 @@ public class AlertPlayer {
                     builder.setSound(Uri.parse(audioPath));
                 }
             }
-        } else if (profile == ALERT_PROFILE_VIBRATE_ONLY ) {
-            //NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);
-            builder.setVibrate(Notifications.vibratePattern);
-            NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotifyMgr.cancel(Notifications.exportAlertNotificationId);
-            mNotifyMgr.notify(Notifications.exportAlertNotificationId, builder.build());
-        } else {
-            NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotifyMgr.cancel(Notifications.exportAlertNotificationId);
-            mNotifyMgr.notify(Notifications.exportAlertNotificationId, builder.build());
         }
+        if (profile != ALERT_PROFILE_SILENT ) {
+            builder.setVibrate(Notifications.vibratePattern);
+        }
+        NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotifyMgr.cancel(Notifications.exportAlertNotificationId);
+        mNotifyMgr.notify(Notifications.exportAlertNotificationId, builder.build());
     }
 
     private void notificationDismiss(Context ctx) {
