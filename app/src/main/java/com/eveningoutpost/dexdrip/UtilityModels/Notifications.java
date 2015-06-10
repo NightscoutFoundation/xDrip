@@ -98,7 +98,7 @@ public class Notifications extends IntentService {
         Log.d("Notifications", "Running Notifications Intent Service");
         ReadPerfs(getApplicationContext());
         notificationSetter(getApplicationContext());
-        ArmTimer(getApplicationContext(), callbackPeriod);
+        ArmTimer();
     }
 
     public void ReadPerfs(Context context) {
@@ -176,13 +176,13 @@ public class Notifications extends IntentService {
             if (alertSnoozeOver) {
                 Log.e(TAG, "FileBasedNotifications we had two alerts, the snoozed one is over, we fall down to deleting the snoozed and staring the new");
                 // in such case it is not important which is higher.
-                
+
             } else {
                 // we have a new alert. If it is more important than the previous one. we need to stop
                 // the older one and start a new one (We need to play even if we were snoozed).
                 // If it is a lower level alert, we should keep being snoozed.
-    
-    
+
+
                 // Example, if we have two alerts one for 90 and the other for 80. and we were already alerting for the 80
                 // and we were snoozed. Now bg is 85, the alert for 80 is cleared, but we are alerting for 90.
                 // We should not do anything if we are snoozed for the 80...
@@ -193,7 +193,7 @@ public class Notifications extends IntentService {
                     // the existing alert is the higher, we should check if to play it
                     Log.e(TAG, "FileBasedNotifications The existing alert has the same direcotion, checking if to playit newHigherAlert = " + newHigherAlert.name +
                             "activeBgAlert = " + activeBgAlert.name);
-                    
+
                     boolean trendingToAlertEnd = trendingToAlertEnd(context, newHigherAlert);
                     AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
                     return;
@@ -209,7 +209,7 @@ public class Notifications extends IntentService {
             AlertPlayer.getPlayer().stopAlert(context, true, false);
         }
     }
-    
+
     boolean trendingToAlertEnd(Context context, AlertType Alert) {
         if(!smart_snoozing) {
         //  User does not want smart snoozing at all.
@@ -265,15 +265,20 @@ public class Notifications extends IntentService {
         }
     }
 
-    private void  ArmTimer(Context context, int time) {
+    private void  ArmTimer() {
         Log.e(TAG, "ArmTimer called");
-        if(ActiveBgAlert.getOnly() != null) {
-            Calendar calendar = Calendar.getInstance();
-            AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                alarm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + time, PendingIntent.getService(this, 0, new Intent(this, Notifications.class), 0));
-            } else {
-                alarm.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + time, PendingIntent.getService(this, 0, new Intent(this, Notifications.class), 0));
+        ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
+        if(activeBgAlert != null ) {
+            AlertType alert = AlertType.get_alert(activeBgAlert.alert_uuid);
+            if(alert != null) {
+                int time = alert.minutes_between;
+                Calendar calendar = Calendar.getInstance();
+                AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                    alarm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + time, PendingIntent.getService(this, 0, new Intent(this, Notifications.class), 0));
+                } else {
+                    alarm.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + time, PendingIntent.getService(this, 0, new Intent(this, Notifications.class), 0));
+                }
             }
         }
     }
@@ -469,31 +474,31 @@ public class Notifications extends IntentService {
         int otherAlertSnooze =  Integer.parseInt(prefs.getString("other_alerts_snooze", "20"));
         OtherAlert(context, "bg_unclear_readings_alert", "Unclear Sensor Readings", uncleanAlertNotificationId,  otherAlertSnooze);
     }
-    
+
     public static void bgMissedAlert(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         int otherAlertSnooze =  Integer.parseInt(prefs.getString("other_alerts_snooze", "20"));
         OtherAlert(context, "bg_missed_alerts", "BG Readings Missed", missedAlertNotificationId, otherAlertSnooze);
     }
-    
+
     public static void RisingAlert(Context context, boolean on) {
         RiseDropAlert(context, on, "bg_rise_alert", "bg rising fast", riseAlertNotificationId);
     }
     public static void DropAlert(Context context, boolean on) {
         RiseDropAlert(context, on, "bg_fall_alert", "bg failing fast", failAlertNotificationId);
     }
-    
+
     public static void RiseDropAlert(Context context, boolean on, String type, String message, int notificatioId) {
         if(on) {
          // This alerts will only happen once. Want to have maxint, but not create overflow.
-            OtherAlert(context, type, message, notificatioId, Integer.MAX_VALUE / 100000); 
+            OtherAlert(context, type, message, notificatioId, Integer.MAX_VALUE / 100000);
         } else {
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyMgr.cancel(notificatioId);
             UserNotification.DeleteNotificationByType(type);
         }
     }
-    
+
     public static void OtherAlert(Context context, String type, String message, int notificatioId, int snooze) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String otherAlertsSound = prefs.getString("other_alerts_sound", "content://settings/system/notification_sound");
@@ -501,8 +506,8 @@ public class Notifications extends IntentService {
 
         UserNotification userNotification = UserNotification.GetNotificationByType(type); //"bg_unclear_readings_alert"
         if ((userNotification == null) || (userNotification.timestamp <= ((new Date().getTime()) - (60000 * snooze)))) {
-            if (userNotification != null) { 
-                userNotification.delete(); 
+            if (userNotification != null) {
+                userNotification.delete();
             }
             UserNotification.create(message, type);
             Intent intent = new Intent(context, Home.class);
