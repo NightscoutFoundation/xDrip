@@ -30,14 +30,15 @@ public class AlertPlayer {
     int volumeBeforeAlert;
     int volumeForThisAlert;
     Context context;
-    
+
     final static int ALERT_PROFILE_HIGH = 1;
     final static int ALERT_PROFILE_ASCENDING = 2;
     final static int ALERT_PROFILE_MEDIUM = 3;
     final static int ALERT_PROFILE_VIBRATE_ONLY = 4;
-    
+    final static int ALERT_PROFILE_SILENT = 5;
+
     final static int  MAX_VIBRATING = 2;
-    final static int  MAX_ASCENDING = 5; 
+    final static int  MAX_ASCENDING = 5;
 
 
     public static AlertPlayer getPlayer() {
@@ -75,7 +76,7 @@ public class AlertPlayer {
     }
 
     public synchronized  void Snooze(Context ctx, int repeatTime) {
-        Log.e(TAG, "Snooze called repeatTime = "+ repeatTime);
+        Log.e(TAG, "Snooze called repeatTime = " + repeatTime);
         stopAlert(ctx, false, false);
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
         if (activeBgAlert  == null) {
@@ -111,7 +112,7 @@ public class AlertPlayer {
         }
         if(activeBgAlert.ready_to_alarm()) {
             stopAlert(ctx, false, false);
-            
+
             int timeFromStartPlaying = activeBgAlert.getUpdatePlayTime();
             AlertType alert = AlertType.get_alert(activeBgAlert.alert_uuid);
             if (alert == null) {
@@ -173,7 +174,7 @@ public class AlertPlayer {
         Intent intent = new Intent(ctx, SnoozeOnNotificationDismissService.class);
         return PendingIntent.getService(ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
-    
+
     static private int getAlertProfile(Context ctx){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         String profile = prefs.getString("bg_alert_profile", "ascending");
@@ -193,11 +194,15 @@ public class AlertPlayer {
             Log.w(TAG, "getAlertProfile returning ALERT_PROFILE_VIBRATE_ONLY");
             return ALERT_PROFILE_VIBRATE_ONLY;
         }
-        Log.wtf(TAG, "getAlertProfile unknown value " + profile+ " ALERT_PROFILE_ASCENDING");
+        if(profile.equals("Silent")) {
+            Log.w(TAG, "getAlertProfile returning ALERT_PROFILE_SILENT");
+            return ALERT_PROFILE_SILENT;
+        }
+        Log.wtf(TAG, "getAlertProfile unknown value " + profile + " ALERT_PROFILE_ASCENDING");
         return ALERT_PROFILE_ASCENDING;
-        
+
     }
-    
+
     private void Vibrate(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, String audioPath, int timeFromStartPlaying) {
         Log.e(TAG, "Vibrate called timeFromStartPlaying = " + timeFromStartPlaying);
         Log.e("ALARM", "setting vibrate alarm");
@@ -213,7 +218,7 @@ public class AlertPlayer {
         if (profile != ALERT_PROFILE_ASCENDING) {
             // We start from the non ascending part...
             timeFromStartPlaying = MAX_ASCENDING;
-        } 
+        }
 
         String title = bgValue + " " + alert.name;
         String content = "BG LEVEL ALERT: " + bgValue;
@@ -225,7 +230,7 @@ public class AlertPlayer {
             .setContentText(content)
             .setContentIntent(notificationIntent(ctx, intent))
             .setDeleteIntent(snoozeIntent(ctx));
-        if (profile != ALERT_PROFILE_VIBRATE_ONLY) {
+        if (profile != ALERT_PROFILE_VIBRATE_ONLY && profile != ALERT_PROFILE_SILENT) {
             if (timeFromStartPlaying >= MAX_VIBRATING) {
                 // Before this, we only vibrate...
                 float volumeFrac = (float)(timeFromStartPlaying - MAX_VIBRATING) / (MAX_ASCENDING - MAX_VIBRATING);
@@ -237,21 +242,24 @@ public class AlertPlayer {
                 if(overrideSilent) {
                     PlayFile(ctx, alert.mp3_file, volumeFrac);
                 } else {
-                    builder.setSound(Uri.parse(audioPath), AudioAttributes.USAGE_ALARM);
+                    builder.setSound(Uri.parse(audioPath));
                 }
             }
+        } else if (profile == ALERT_PROFILE_VIBRATE_ONLY ) {
+            //NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);
+            builder.setVibrate(Notifications.vibratePattern);
+            NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotifyMgr.cancel(Notifications.exportAlertNotificationId);
+            mNotifyMgr.notify(Notifications.exportAlertNotificationId, builder.build());
+        } else {
+            NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotifyMgr.cancel(Notifications.exportAlertNotificationId);
+            mNotifyMgr.notify(Notifications.exportAlertNotificationId, builder.build());
         }
-        //NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);
-        builder.setVibrate(Notifications.vibratePattern);
-        NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotifyMgr.cancel(Notifications.exportAlertNotificationId);
-        mNotifyMgr.notify(Notifications.exportAlertNotificationId, builder.build());
-
     }
 
     private void notificationDismiss(Context ctx) {
         NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(Notifications.exportAlertNotificationId);
     }
-
 }
