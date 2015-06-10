@@ -39,13 +39,18 @@ public class CalibrationGraph extends ActivityWithMenu {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calibration_graph);
-
         GraphHeader = (TextView) findViewById(R.id.CalibrationGraphHeader);
     }
 
     @Override
     public String getMenuName() {
         return menu_name;
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        setupCharts();
     }
 
     public void setupCharts() {
