@@ -119,35 +119,6 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:paddingTop="20dp">
-
-                        <TextView
-                            android:id="@+id/view_alert_time_between"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="left"
-                            android:text="Re-raise every \n x minutes if\n unaknowledged:"
-                            android:textSize="15sp"
-                            android:layout_gravity="center_vertical" />
-
-                        <EditText
-                            android:layout_width="80dp"
-                            android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:ems="10"
-                            android:id="@+id/reraise"
-                            android:autoText="false"
-                            android:text=""
-                            android:singleLine="true"
-                            android:textAlignment="center"
-                            android:textSize="15sp"
-                            android:layout_alignParentStart="true" />
-
-                    </LinearLayout>
-                    <LinearLayout
                         android:orientation="vertical"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
