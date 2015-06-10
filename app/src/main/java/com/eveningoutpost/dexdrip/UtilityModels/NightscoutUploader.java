@@ -110,7 +110,8 @@ public class NightscoutUploader {
                 try {
                     doRESTUploadTo(baseURI, glucoseDataSets, meterRecords, calRecords);
                 } catch (Exception e) {
-                    Log.e(TAG, "Unable to do REST API Upload");
+                    Log.e(TAG, "Unable to do REST API Upload " + e.getMessage());
+                    Log.e(TAG, "Unable to do REST API Upload", e.getCause());
                     return false;
                 }
             }
@@ -424,7 +425,8 @@ public class NightscoutUploader {
                     return true;
 
                 } catch (Exception e) {
-                    Log.e(TAG, "Unable to upload data to mongo");
+                    Log.e(TAG, "Unable to upload data to mongo " + e.getMessage());
+                    Log.e(TAG, "Unable to upload data to mongo", e.getCause());
                 }
             }
             return false;
