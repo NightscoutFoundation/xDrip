@@ -589,22 +589,37 @@ public class EditAlertActivity extends ActivityWithMenu {
         viewTimeEnd.setText(timeFormatString(endHour, endMinute));
     }
 
-    public String shortPath(String path) {
-        if(path != null) {
-            if(path.length() == 0) {
-                return "xDrip Default";
-            }
-            Ringtone ringtone = RingtoneManager.getRingtone(mContext, Uri.parse(path));
-            if (ringtone != null) {
-                return ringtone.getTitle(mContext);
-            } else {
-                String[] segments = path.split("/");
-                if (segments.length > 1) {
-                    return segments[segments.length - 1];
-                }
-            }
+    public static boolean isPathRingtone(Context context, String path) {
+        if(path == null) {
+            return false;
         }
-        return "";
+        if(path.length() == 0) {
+            return false;
+        }
+        Ringtone ringtone = RingtoneManager.getRingtone(context, Uri.parse(path));
+        if(ringtone == null) {
+            return false;
+        }
+        return true;
+    }
+
+    public String shortPath(String path) {
+        if(isPathRingtone(mContext, path)) {
+            Ringtone ringtone = RingtoneManager.getRingtone(mContext, Uri.parse(path));
+            // Just verified that the ringtone exists... not checking for null
+            return ringtone.getTitle(mContext);
+        }
+        if(path == null) {
+            return "";
+        }
+        if(path.length() == 0) {
+            return "xDrip Default";
+        }
+        String[] segments = path.split("/");
+        if (segments.length > 1) {
+            return segments[segments.length - 1];
+        }
+        return path;
     }
     public void setDefaultSnoozeSpinner() {
         editSnooze.setText(String.valueOf(defaultSnooze));

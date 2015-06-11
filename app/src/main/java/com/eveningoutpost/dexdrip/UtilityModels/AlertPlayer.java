@@ -19,6 +19,7 @@ import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
+import com.eveningoutpost.dexdrip.EditAlertActivity;
 import com.eveningoutpost.dexdrip.R;
 
 public class AlertPlayer {
@@ -57,7 +58,7 @@ public class AlertPlayer {
         int alertIn = newAlert.minutes_between;
         if(alertIn < 1) { alertIn = 1; }
         ActiveBgAlert.Create(newAlert.uuid, false, new Date().getTime() + alertIn * 60000 );
-        Vibrate(ctx, newAlert, bgValue, newAlert.override_silent_mode, newAlert.mp3_file, 0);
+        Vibrate(ctx, newAlert, bgValue, newAlert.override_silent_mode, 0);
     }
 
     public synchronized void stopAlert(Context ctx, boolean ClearData, boolean clearIfSnoozeFinished) {
@@ -123,7 +124,7 @@ public class AlertPlayer {
                 return;
             }
             Log.e(TAG,"ClockTick: Playing the alert again");
-            Vibrate(ctx, alert, bgValue, alert.override_silent_mode, alert.mp3_file, timeFromStartPlaying);
+            Vibrate(ctx, alert, bgValue, alert.override_silent_mode, timeFromStartPlaying);
         }
 
     }
@@ -205,7 +206,7 @@ public class AlertPlayer {
 
     }
 
-    private void Vibrate(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, String audioPath, int timeFromStartPlaying) {
+    private void Vibrate(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, int timeFromStartPlaying) {
         Log.e(TAG, "Vibrate called timeFromStartPlaying = " + timeFromStartPlaying);
         Log.e("ALARM", "setting vibrate alarm");
         int profile = getAlertProfile(ctx);
@@ -241,11 +242,21 @@ public class AlertPlayer {
                     volumeFrac = (float)0.7;
                 }
                 Log.e(TAG, "Vibrate volumeFrac = " + volumeFrac);
-                if(overrideSilent) {
-                    PlayFile(ctx, alert.mp3_file, volumeFrac);
+                boolean isRingTone = EditAlertActivity.isPathRingtone(ctx, alert.mp3_file);
+                if(isRingTone) {
+                    if(overrideSilent) {
+                        builder.setSound(Uri.parse(alert.mp3_file), AudioAttributes.USAGE_ALARM);
+                    } else {
+                        builder.setSound(Uri.parse(alert.mp3_file));
+                    }
                 } else {
-                    builder.setSound(Uri.parse(audioPath));
+                    if(overrideSilent || isLoudPhone(ctx)) {
+                        PlayFile(ctx, alert.mp3_file, volumeFrac);
+                    }
+
                 }
+
+
             }
         }
         if (profile != ALERT_PROFILE_SILENT ) {
@@ -259,5 +270,21 @@ public class AlertPlayer {
     private void notificationDismiss(Context ctx) {
         NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(Notifications.exportAlertNotificationId);
+    }
+
+    // True means play the file false means only vibrate.
+    private boolean isLoudPhone(Context ctx) {
+        AudioManager am = (AudioManager)ctx.getSystemService(Context.AUDIO_SERVICE);
+
+        switch (am.getRingerMode()) {
+            case AudioManager.RINGER_MODE_SILENT:
+                // fall through
+            case AudioManager.RINGER_MODE_VIBRATE:
+                return false;
+            case AudioManager.RINGER_MODE_NORMAL:
+                return true;
+        }
+        // unknown mode, not sure let's play just in any case.
+        return true;
     }
 }
