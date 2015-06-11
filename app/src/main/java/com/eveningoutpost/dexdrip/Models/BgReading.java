@@ -400,7 +400,7 @@ public class BgReading extends Model {
         } else if (slope_name.compareTo("FortyFiveUp") == 0) {
             slope_by_minute = 2;
         } else if (slope_name.compareTo("SingleUp") == 0) {
-            slope_by_minute = 2;
+            slope_by_minute = 3.5;
         } else if (slope_name.compareTo("DoubleUp") == 0) {
             slope_by_minute = 4;
         } else if (slope_name.compareTo("NOT_COMPUTABLE") == 0 || slope_name.compareTo("OUT_OF_RANGE") == 0) {

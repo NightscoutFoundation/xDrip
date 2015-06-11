@@ -52,10 +52,12 @@ public class AlertPlayer {
     }
 
     public synchronized  void startAlert(Context ctx, AlertType newAlert, String bgValue )  {
-      Log.e(TAG, "start called, Threadid " + Thread.currentThread().getId());
-      stopAlert(ctx, true, false);
-      ActiveBgAlert.Create(newAlert.uuid, false, new Date().getTime() + newAlert.minutes_between * 60000 );
-      Vibrate(ctx, newAlert, bgValue, newAlert.override_silent_mode, newAlert.mp3_file, 0);
+        Log.e(TAG, "start called, Threadid " + Thread.currentThread().getId());
+        stopAlert(ctx, true, false);
+        int alertIn = newAlert.minutes_between;
+        if(alertIn < 1) { alertIn = 1; }
+        ActiveBgAlert.Create(newAlert.uuid, false, new Date().getTime() + alertIn * 60000 );
+        Vibrate(ctx, newAlert, bgValue, newAlert.override_silent_mode, newAlert.mp3_file, 0);
     }
 
     public synchronized void stopAlert(Context ctx, boolean ClearData, boolean clearIfSnoozeFinished) {

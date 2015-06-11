@@ -272,12 +272,13 @@ public class Notifications extends IntentService {
             AlertType alert = AlertType.get_alert(activeBgAlert.alert_uuid);
             if(alert != null) {
                 int time = alert.minutes_between;
+                if (time < 1) { time = 1; }
                 Calendar calendar = Calendar.getInstance();
                 AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                    alarm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + time, PendingIntent.getService(this, 0, new Intent(this, Notifications.class), 0));
+                    alarm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + time * 60000, PendingIntent.getService(this, 0, new Intent(this, Notifications.class), 0));
                 } else {
-                    alarm.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + time, PendingIntent.getService(this, 0, new Intent(this, Notifications.class), 0));
+                    alarm.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + time * 60000, PendingIntent.getService(this, 0, new Intent(this, Notifications.class), 0));
                 }
             }
         }
