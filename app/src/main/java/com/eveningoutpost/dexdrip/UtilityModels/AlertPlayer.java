@@ -278,7 +278,7 @@ public class AlertPlayer {
 
         switch (am.getRingerMode()) {
             case AudioManager.RINGER_MODE_SILENT:
-                // fall through
+                return false;
             case AudioManager.RINGER_MODE_VIBRATE:
                 return false;
             case AudioManager.RINGER_MODE_NORMAL:
