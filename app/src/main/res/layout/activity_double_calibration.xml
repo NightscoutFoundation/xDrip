@@ -2,64 +2,59 @@
     xmlns:tools="http://schemas.android.com/tools" android:id="@+id/drawer_layout"
     android:layout_width="match_parent" android:layout_height="match_parent"
     tools:context="com.eveningoutpost.dexdrip.Home">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center_horizontal">
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/scrollView4" >
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center_horizontal">
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:ems="10"
+                    android:id="@+id/bg_value_1"
+                    android:textAlignment="center"
+                    android:textSize="24sp"
+                    android:hint="Enter First BG Value"
+                    android:layout_marginTop="10dp" />
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:ems="10"
+                    android:id="@+id/bg_value_2"
+                    android:textAlignment="center"
+                    android:textSize="24sp"
+                    android:hint="Enter Second BG Value"
+                    android:layout_marginTop="20dp" />
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-        android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        tools:context="com.eveningoutpost.dexdrip.DoubleCalibration"
-        android:id="@+id/double_calibration_rel_layout">
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:ems="10"
-            android:id="@+id/bg_value_1"
-            android:autoText="false"
-            android:singleLine="true"
-            android:textAlignment="center"
-            android:textSize="24dp"
-            android:hint="Enter First BG Value"
-            android:layout_below="@+id/textView4"
-            android:layout_alignStart="@+id/textView4"
-            android:layout_marginTop="24dp" />
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:ems="10"
-            android:id="@+id/bg_value_2"
-            android:autoText="false"
-            android:singleLine="true"
-            android:textAlignment="center"
-            android:textSize="24dp"
-            android:hint="Enter Second BG Value"
-            android:layout_marginTop="26dp"
-            android:layout_below="@+id/bg_value_1"
-            android:layout_alignStart="@+id/bg_value_1" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="In order to get started, please perform two finger prick tests and enter the values here!"
-            android:id="@+id/textView4"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="In order to get started, please perform two finger prick tests and enter the values here!"
+                    android:layout_margin="15dp" />
 
 
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Done"
-            android:id="@+id/save_calibration_button"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Done"
+                    android:id="@+id/save_calibration_button" />
 
-    </RelativeLayout>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
     <fragment android:id="@+id/navigation_drawer"
         android:layout_width="@dimen/navigation_drawer_width" android:layout_height="match_parent"
         android:layout_gravity="start"
