@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -203,8 +204,10 @@ public class Home extends ActivityWithMenu {
     }
 
     public void updateCurrentBgInfo() {
+        Log.d("Home", "called updateCurrentBgInfo()");
         final TextView notificationText = (TextView)findViewById(R.id.notices);
         notificationText.setText("");
+        notificationText.setTextColor(Color.RED);
         isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
         isDexbridgeWixel = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
         isBTShare = CollectionServiceStarter.isBTShare(getApplicationContext());
@@ -335,6 +338,7 @@ public class Home extends ActivityWithMenu {
         if (lastBgreading != null) {
             double estimate = 0;
             if ((new Date().getTime()) - (60000 * 11) - lastBgreading.timestamp > 0) {
+                notificationText.setTextColor(Color.RED);
                 notificationText.setText("Signal Missed");
                 if(!predictive){
                     estimate=lastBgreading.calculated_value;
@@ -345,6 +349,8 @@ public class Home extends ActivityWithMenu {
                 currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
+                notificationText.setTextColor(Color.WHITE);
+                notificationText.setText((System.currentTimeMillis()-lastBgreading.timestamp)/(60*1000) + " Minutes ago");
                 if(!predictive){
                     estimate=lastBgreading.calculated_value;
                     String stringEstimate = bgGraphBuilder.unitized_string(estimate);
