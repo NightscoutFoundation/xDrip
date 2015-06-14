@@ -51,6 +51,9 @@ public class DatabaseUtil {
                     srcStream.close();
                     dst.close();
                     destStream.close();
+                } else {
+                    Toast.makeText(context, "Problem: No current DB found!", Toast.LENGTH_LONG);
+                    Log.d("DatabaseUtil",  "Problem: No current DB found");
                 }
             } else {
                 Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG);
