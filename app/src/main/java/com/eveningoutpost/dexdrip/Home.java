@@ -56,12 +56,6 @@ import lecho.lib.hellocharts.view.PreviewLineChartView;
 
 public class Home extends ActivityWithMenu {
     public static String menu_name = "xDrip";
-    private NavigationDrawerFragment mNavigationDrawerFragment;
-    private LineChartView chart;
-    private PreviewLineChartView previewChart;
-    SharedPreferences prefs;
-    Viewport tempViewport = new Viewport();
-    Viewport holdViewport = new Viewport();
     public float left;
     public float right;
     public float top;
@@ -69,14 +63,19 @@ public class Home extends ActivityWithMenu {
     public boolean updateStuff;
     public boolean updatingPreviewViewport = false;
     public boolean updatingChartViewport = false;
+    public BgGraphBuilder bgGraphBuilder;
+    SharedPreferences prefs;
+    Viewport tempViewport = new Viewport();
+    Viewport holdViewport = new Viewport();
     boolean isBTWixel;
     boolean isDexbridgeWixel;
     boolean isBTShare;
     boolean isWifiWixel;
-
-    public BgGraphBuilder bgGraphBuilder;
     BroadcastReceiver _broadcastReceiver;
     BroadcastReceiver newDataReceiver;
+    private NavigationDrawerFragment mNavigationDrawerFragment;
+    private LineChartView chart;
+    private PreviewLineChartView previewChart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,35 +151,6 @@ public class Home extends ActivityWithMenu {
         previewChart.setViewportChangeListener(new ViewportListener());
         chart.setViewportChangeListener(new ChartViewPortListener());
         setViewport();
-    }
-
-    private class ChartViewPortListener implements ViewportChangeListener {
-        @Override
-        public void onViewportChanged(Viewport newViewport) {
-            if (!updatingPreviewViewport) {
-                updatingChartViewport = true;
-                previewChart.setZoomType(ZoomType.HORIZONTAL);
-                previewChart.setCurrentViewport(newViewport, false);
-                updatingChartViewport = false;
-            }
-        }
-    }
-
-    private class ViewportListener implements ViewportChangeListener {
-        @Override
-        public void onViewportChanged(Viewport newViewport) {
-            if (!updatingChartViewport) {
-                updatingPreviewViewport = true;
-                chart.setZoomType(ZoomType.HORIZONTAL);
-                chart.setCurrentViewport(newViewport, false);
-                tempViewport = newViewport;
-                updatingPreviewViewport = false;
-            }
-            if (updateStuff) {
-                holdViewport.set(newViewport.left, newViewport.top, newViewport.right, newViewport.bottom);
-            }
-        }
-
     }
 
     public void setViewport() {
@@ -376,6 +346,66 @@ public class Home extends ActivityWithMenu {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_export_database) {
+            new AsyncTask<Void, Void, String>() {
+                @Override
+                protected String doInBackground(Void... params) {
+                    return DatabaseUtil.saveSql(getBaseContext());
+                }
+
+                @Override
+                protected void onPostExecute(String filename) {
+                    super.onPostExecute(filename);
+                    if(filename != null){
+                    SnackbarManager.show(
+                            Snackbar.with(Home.this)
+                                    .type(SnackbarType.MULTI_LINE)
+                                    .duration(4000)
+                                    .text("Exported to " + filename) // text to display
+                                    .actionLabel("Share") // action button label
+                                    .actionListener(new SnackbarUriListener(Uri.fromFile(new File(filename)))),
+                            Home.this);} else {
+                        Toast.makeText(Home.this, "Could not export Database :(", Toast.LENGTH_LONG);
+                    }
+                }
+            }.execute();
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private class ChartViewPortListener implements ViewportChangeListener {
+        @Override
+        public void onViewportChanged(Viewport newViewport) {
+            if (!updatingPreviewViewport) {
+                updatingChartViewport = true;
+                previewChart.setZoomType(ZoomType.HORIZONTAL);
+                previewChart.setCurrentViewport(newViewport, false);
+                updatingChartViewport = false;
+            }
+        }
+    }
+
+    private class ViewportListener implements ViewportChangeListener {
+        @Override
+        public void onViewportChanged(Viewport newViewport) {
+            if (!updatingChartViewport) {
+                updatingPreviewViewport = true;
+                chart.setZoomType(ZoomType.HORIZONTAL);
+                chart.setCurrentViewport(newViewport, false);
+                tempViewport = newViewport;
+                updatingPreviewViewport = false;
+            }
+            if (updateStuff) {
+                holdViewport.set(newViewport.left, newViewport.top, newViewport.right, newViewport.bottom);
+            }
+        }
+
+    }
+
     class SnackbarUriListener implements ActionClickListener {
         Uri uri;
         SnackbarUriListener(Uri uri) {
@@ -390,33 +420,5 @@ public class Home extends ActivityWithMenu {
             shareIntent.setType("application/octet-stream");
             startActivity(Intent.createChooser(shareIntent, "Share database..."));
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_export_database) {
-            new AsyncTask<Void, Void, String>() {
-                @Override
-                protected String doInBackground(Void... params) {
-                    return DatabaseUtil.saveSql(getBaseContext());
-                }
-
-                @Override
-                protected void onPostExecute(String filename) {
-                    super.onPostExecute(filename);
-                    SnackbarManager.show(
-                            Snackbar.with(Home.this)
-                                    .type(SnackbarType.MULTI_LINE)
-                                    .duration(4000)
-                                    .text("Exported to " + filename) // text to display
-                                    .actionLabel("Share") // action button label
-                                    .actionListener(new SnackbarUriListener(Uri.fromFile(new File(filename)))),
-                            Home.this);
-                }
-            }.execute();
-
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 }
