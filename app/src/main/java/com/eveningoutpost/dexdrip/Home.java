@@ -47,6 +47,7 @@ import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.enums.SnackbarType;
 import com.nispok.snackbar.listeners.ActionClickListener;
+
 import lecho.lib.hellocharts.ViewportChangeListener;
 import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.Viewport;
@@ -107,7 +108,7 @@ public class Home extends ActivityWithMenu {
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         checkEula();
         _broadcastReceiver = new BroadcastReceiver() {
@@ -154,7 +155,7 @@ public class Home extends ActivityWithMenu {
     }
 
     public void setViewport() {
-        if (tempViewport.left == 0.0 || holdViewport.left == 0.0 || holdViewport.right  >= (new Date().getTime())) {
+        if (tempViewport.left == 0.0 || holdViewport.left == 0.0 || holdViewport.right >= (new Date().getTime())) {
             previewChart.setCurrentViewport(bgGraphBuilder.advanceViewport(chart, previewChart), false);
         } else {
             previewChart.setCurrentViewport(holdViewport, false);
@@ -167,20 +168,20 @@ public class Home extends ActivityWithMenu {
         if (_broadcastReceiver != null) {
             unregisterReceiver(_broadcastReceiver);
         }
-        if(newDataReceiver != null) {
+        if (newDataReceiver != null) {
             unregisterReceiver(newDataReceiver);
         }
     }
 
     public void updateCurrentBgInfo() {
-        final TextView notificationText = (TextView)findViewById(R.id.notices);
+        final TextView notificationText = (TextView) findViewById(R.id.notices);
         notificationText.setText("");
         isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
         isDexbridgeWixel = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
         isBTShare = CollectionServiceStarter.isBTShare(getApplicationContext());
         isWifiWixel = CollectionServiceStarter.isWifiWixel(getApplicationContext());
-        if(isBTShare) {
-            if((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+        if (isBTShare) {
+            if ((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
                 notificationText.setText("Unfortunately your android version does not support Bluetooth Low Energy");
             } else {
                 String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
@@ -203,7 +204,7 @@ public class Home extends ActivityWithMenu {
                 }
             }
         }
-        if(isBTWixel || isDexbridgeWixel) {
+        if (isBTWixel || isDexbridgeWixel) {
             if ((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
                 notificationText.setText("Unfortunately your android version does not support Bluetooth Low Energy");
             } else {
@@ -222,7 +223,7 @@ public class Home extends ActivityWithMenu {
                                 notificationText.setText("Please enter two calibrations to get started!");
                             }
                         } else {
-                            if(BgReading.latestUnCalculated(2).size() < 2) {
+                            if (BgReading.latestUnCalculated(2).size() < 2) {
                                 notificationText.setText("Please wait, need 2 readings from transmitter first.");
                             } else {
                                 List<Calibration> calibrations = Calibration.latest(2);
@@ -240,7 +241,7 @@ public class Home extends ActivityWithMenu {
                 }
             }
         }
-        if(isWifiWixel) {
+        if (isWifiWixel) {
             if (!WixelReader.IsConfigured(getApplicationContext())) {
                 notificationText.setText("First configure your wifi wixel reader ip addresses");
             } else {
@@ -266,7 +267,7 @@ public class Home extends ActivityWithMenu {
                 }
             }
         }
-        if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
+        if (prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
             notificationText.append("\n ALERTS CURRENTLY DISABLED");
         }
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -280,34 +281,37 @@ public class Home extends ActivityWithMenu {
         boolean isDexbridge = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
         int bridgeBattery = prefs.getInt("bridge_battery", 0);
 
-        final TextView dexbridgeBattery = (TextView)findViewById(R.id.textBridgeBattery);
-        if(isDexbridge) {
-            if(bridgeBattery == 0){
+        final TextView dexbridgeBattery = (TextView) findViewById(R.id.textBridgeBattery);
+        if (isDexbridge) {
+            if (bridgeBattery == 0) {
                 dexbridgeBattery.setText("Waiting for packet");
             } else {
                 dexbridgeBattery.setText("Bridge Battery: " + bridgeBattery + "%");
             }
-            if(bridgeBattery < 50) dexbridgeBattery.setTextColor(Color.YELLOW);
-            if(bridgeBattery < 25) dexbridgeBattery.setTextColor(Color.RED); else dexbridgeBattery.setTextColor(Color.GREEN);
+            if (bridgeBattery < 50) dexbridgeBattery.setTextColor(Color.YELLOW);
+            if (bridgeBattery < 25) dexbridgeBattery.setTextColor(Color.RED);
+            else dexbridgeBattery.setTextColor(Color.GREEN);
             dexbridgeBattery.setVisibility(View.VISIBLE);
         } else {
             dexbridgeBattery.setVisibility(View.INVISIBLE);
         }
-        final TextView currentBgValueText = (TextView)findViewById(R.id.currentBgValueRealTime);
-        final TextView notificationText = (TextView)findViewById(R.id.notices);
+        final TextView currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
+        final TextView notificationText = (TextView) findViewById(R.id.notices);
         if ((currentBgValueText.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) > 0) {
             currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
             dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         }
         BgReading lastBgreading = BgReading.lastNoSenssor();
         boolean predictive = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("predictive_bg", false);
-        if(isBTShare) { predictive = false; }
+        if (isBTShare) {
+            predictive = false;
+        }
         if (lastBgreading != null) {
             double estimate = 0;
             if ((new Date().getTime()) - (60000 * 11) - lastBgreading.timestamp > 0) {
                 notificationText.setText("Signal Missed");
-                if(!predictive){
-                    estimate=lastBgreading.calculated_value;
+                if (!predictive) {
+                    estimate = lastBgreading.calculated_value;
                 } else {
                     estimate = BgReading.estimated_bg(lastBgreading.timestamp + (6000 * 7));
                 }
@@ -315,23 +319,23 @@ public class Home extends ActivityWithMenu {
                 currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
-                if(!predictive){
-                    estimate=lastBgreading.calculated_value;
+                if (!predictive) {
+                    estimate = lastBgreading.calculated_value;
                     String stringEstimate = bgGraphBuilder.unitized_string(estimate);
                     String slope_arrow = BgReading.slopeArrow((lastBgreading.calculated_value_slope * 60000));
-                    if(lastBgreading.hide_slope) {
+                    if (lastBgreading.hide_slope) {
                         slope_arrow = "";
                     }
-                    currentBgValueText.setText( stringEstimate + " " + slope_arrow);
+                    currentBgValueText.setText(stringEstimate + " " + slope_arrow);
                 } else {
                     estimate = BgReading.activePrediction();
                     String stringEstimate = bgGraphBuilder.unitized_string(estimate);
-                    currentBgValueText.setText( stringEstimate + " " + BgReading.slopeArrow());
+                    currentBgValueText.setText(stringEstimate + " " + BgReading.slopeArrow());
                 }
             }
-            if(bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
+            if (bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
                 currentBgValueText.setTextColor(Color.parseColor("#C30909"));
-            } else if(bgGraphBuilder.unitized(estimate) >= bgGraphBuilder.highMark) {
+            } else if (bgGraphBuilder.unitized(estimate) >= bgGraphBuilder.highMark) {
                 currentBgValueText.setTextColor(Color.parseColor("#FFBB33"));
             } else {
                 currentBgValueText.setTextColor(Color.WHITE);
@@ -358,16 +362,17 @@ public class Home extends ActivityWithMenu {
                 @Override
                 protected void onPostExecute(String filename) {
                     super.onPostExecute(filename);
-                    if(filename != null){
-                    SnackbarManager.show(
-                            Snackbar.with(Home.this)
-                                    .type(SnackbarType.MULTI_LINE)
-                                    .duration(4000)
-                                    .text("Exported to " + filename) // text to display
-                                    .actionLabel("Share") // action button label
-                                    .actionListener(new SnackbarUriListener(Uri.fromFile(new File(filename)))),
-                            Home.this);} else {
-                        Toast.makeText(Home.this, "Could not export Database :(", Toast.LENGTH_LONG);
+                    if (filename != null) {
+                        SnackbarManager.show(
+                                Snackbar.with(Home.this)
+                                        .type(SnackbarType.MULTI_LINE)
+                                        .duration(4000)
+                                        .text("Exported to " + filename) // text to display
+                                        .actionLabel("Share") // action button label
+                                        .actionListener(new SnackbarUriListener(Uri.fromFile(new File(filename)))),
+                                Home.this);
+                    } else {
+                        Toast.makeText(Home.this, "Could not export Database :(", Toast.LENGTH_LONG).show();
                     }
                 }
             }.execute();
@@ -408,6 +413,7 @@ public class Home extends ActivityWithMenu {
 
     class SnackbarUriListener implements ActionClickListener {
         Uri uri;
+
         SnackbarUriListener(Uri uri) {
             this.uri = uri;
         }

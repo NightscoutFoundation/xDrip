@@ -22,8 +22,10 @@ import static com.eveningoutpost.dexdrip.utils.FileUtils.*;
  */
 public class DatabaseUtil {
 
-    public static String saveSql(Context context) {
+    public static final String TAG = DatabaseUtil.class.getSimpleName();
 
+
+    public static String saveSql(Context context) {
 
         FileInputStream srcStream = null;
         FileChannel src = null;
@@ -56,41 +58,40 @@ public class DatabaseUtil {
                     dst = destStream.getChannel();
                     dst.transferFrom(src, 0, src.size());
                 } else {
-                    Toast.makeText(context, "Problem: No current DB found!", Toast.LENGTH_LONG);
-                    Log.d("DatabaseUtil",  "Problem: No current DB found");
+                    Toast.makeText(context, "Problem: No current DB found!", Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "Problem: No current DB found");
                 }
             } else {
-                Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG);
-                Log.d("DatabaseUtil",  "SD card not writable!");
+                Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "SD card not writable!");
             }
 
         } catch (IOException e) {
-            Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG);
-            Log.e("DatabaseUtil", "Exception while writing DB", e);
-        }finally{
-            if(src != null) try {
+            Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG).show();
+            Log.e(TAG, "Exception while writing DB", e);
+        } finally {
+            if (src != null) try {
                 src.close();
             } catch (IOException e1) {
-                Log.e("DatabaseUtil", "Something went wrong closing: ", e1);
+                Log.e(TAG, "Something went wrong closing: ", e1);
             }
-            if(destStream != null) try {
+            if (destStream != null) try {
                 destStream.close();
             } catch (IOException e1) {
-                Log.e("DatabaseUtil", "Something went wrong closing: ", e1);
+                Log.e(TAG, "Something went wrong closing: ", e1);
             }
-            if(srcStream != null) try {
+            if (srcStream != null) try {
                 srcStream.close();
             } catch (IOException e1) {
-                Log.e("DatabaseUtil", "Something went wrong closing: ", e1);
+                Log.e(TAG, "Something went wrong closing: ", e1);
             }
-            if(dst != null) try {
+            if (dst != null) try {
                 dst.close();
             } catch (IOException e1) {
-                Log.e("DatabaseUtil", "Something went wrong closing: ", e1);
-
+                Log.e(TAG, "Something went wrong closing: ", e1);
             }
-            return filename;
         }
+        return filename;
     }
 
     public static void loadSql(Context context, String path) {
@@ -104,8 +105,8 @@ public class DatabaseUtil {
             String databaseName = new Configuration.Builder(context).create().getDatabaseName();
             File currentDB = context.getDatabasePath(databaseName);
             File replacement = new File(path);
-            if (!replacement.exists()){
-                Log.d("DatabaseUtil", "File does not exist: " + path);
+            if (!replacement.exists()) {
+                Log.d(TAG, "File does not exist: " + path);
                 return;
             }
             if (currentDB.canWrite()) {
@@ -114,36 +115,32 @@ public class DatabaseUtil {
                 destStream = new FileOutputStream(currentDB);
                 dst = destStream.getChannel();
                 dst.transferFrom(src, 0, src.size());
-                src.close();
-                srcStream.close();
-                dst.close();
-                destStream.close();
             } else {
-                Log.v("DatabaseUtil", "loadSql: No Write access");
+                Log.v(TAG, "loadSql: No Write access");
             }
         } catch (IOException e) {
-            Log.e("DatabaseUtil", "Something went wrong importing Database", e);
+            Log.e(TAG, "Something went wrong importing Database", e);
 
         } finally {
-            if(src != null) try {
+            if (src != null) try {
                 src.close();
             } catch (IOException e1) {
-                Log.e("DatabaseUtil", "Something went wrong closing: ", e1);
+                Log.e(TAG, "Something went wrong closing: ", e1);
             }
-            if(destStream != null) try {
+            if (destStream != null) try {
                 destStream.close();
             } catch (IOException e1) {
-                Log.e("DatabaseUtil", "Something went wrong closing: ", e1);
+                Log.e(TAG, "Something went wrong closing: ", e1);
             }
-            if(srcStream != null) try {
+            if (srcStream != null) try {
                 srcStream.close();
             } catch (IOException e1) {
-                Log.e("DatabaseUtil", "Something went wrong closing: ", e1);
+                Log.e(TAG, "Something went wrong closing: ", e1);
             }
-            if(dst != null) try {
+            if (dst != null) try {
                 dst.close();
             } catch (IOException e1) {
-                Log.e("DatabaseUtil", "Something went wrong closing: ", e1);
+                Log.e(TAG, "Something went wrong closing: ", e1);
 
             }
         }
