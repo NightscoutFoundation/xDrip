@@ -64,7 +64,7 @@ public class DatabaseUtil {
                 Log.d("DatabaseUtil",  "SD card not writable!");
             }
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG);
             Log.e("DatabaseUtil", "Exception while writing DB", e);
         }finally{
@@ -121,7 +121,7 @@ public class DatabaseUtil {
             } else {
                 Log.v("DatabaseUtil", "loadSql: No Write access");
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             Log.e("DatabaseUtil", "Something went wrong importing Database", e);
 
         } finally {
