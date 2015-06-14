@@ -4,12 +4,14 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.format.DateFormat;
+import android.util.Log;
 
 import com.activeandroid.Configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.channels.FileChannel;
 
 import static com.eveningoutpost.dexdrip.utils.FileUtils.*;
@@ -57,27 +59,50 @@ public class DatabaseUtil {
         }
     }
 
-    public static void loadSql(Context context, Uri uri) {
-        try {
-            final String databaseName = new Configuration.Builder(context).create().getDatabaseName();
+    public static void loadSql(Context context, String path) {
 
-            final File currentDB = context.getDatabasePath(databaseName);
-            final File replacement = new File(uri.getPath());
+        FileInputStream srcStream = null;
+        FileChannel src = null;
+        FileOutputStream destStream = null;
+        FileChannel dst = null;
+
+        try {
+            String databaseName = new Configuration.Builder(context).create().getDatabaseName();
+            File currentDB = context.getDatabasePath(databaseName);
+            File replacement = new File(path);
+            if (!replacement.exists()){
+                Log.d("DatabaseUtil", "File does not exist: " + path);
+                return;
+            }
             if (currentDB.canWrite()) {
-                final FileInputStream srcStream = new FileInputStream(replacement);
-                final FileChannel src = srcStream.getChannel();
-                final FileOutputStream destStream = new FileOutputStream(currentDB);
-                final FileChannel dst = destStream.getChannel();
+                srcStream = new FileInputStream(replacement);
+                src = srcStream.getChannel();
+                destStream = new FileOutputStream(currentDB);
+                dst = destStream.getChannel();
                 dst.transferFrom(src, 0, src.size());
                 src.close();
                 srcStream.close();
                 dst.close();
                 destStream.close();
             } else {
-                throw new RuntimeException("Couldn't write to " + currentDB);
+                Log.v("DatabaseUtil", "loadSql: No Write access");
             }
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            Log.e("DatabaseUtil", "Something went wrong importing Database", e);
+
+        } finally {
+            if(src != null) try {
+                src.close();
+            } catch (IOException e1) {}
+            if(destStream != null) try {
+                destStream.close();
+            } catch (IOException e1) {}
+            if(srcStream != null) try {
+                srcStream.close();
+            } catch (IOException e1) {}
+            if(dst != null) try {
+                dst.close();
+            } catch (IOException e1) {}
         }
     }
 }
