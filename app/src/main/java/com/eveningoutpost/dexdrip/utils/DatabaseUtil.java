@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.activeandroid.Configuration;
 
@@ -51,6 +52,9 @@ public class DatabaseUtil {
                     dst.close();
                     destStream.close();
                 }
+            } else {
+                Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG);
+                Log.d("DatabaseUtil",  "SD card not writable!");
             }
 
             return filename;
