@@ -349,8 +349,10 @@ public class Home extends ActivityWithMenu {
                 currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
-                notificationText.setTextColor(Color.WHITE);
-                notificationText.setText((System.currentTimeMillis()-lastBgreading.timestamp)/(60*1000) + " Minutes ago");
+                if (notificationText.getText().length()==0){
+                    notificationText.setTextColor(Color.WHITE);
+                    notificationText.setText((System.currentTimeMillis()-lastBgreading.timestamp)/(60*1000) + " Minutes ago");
+                }
                 if(!predictive){
                     estimate=lastBgreading.calculated_value;
                     String stringEstimate = bgGraphBuilder.unitized_string(estimate);
