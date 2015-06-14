@@ -93,16 +93,25 @@ public class DatabaseUtil {
         } finally {
             if(src != null) try {
                 src.close();
-            } catch (IOException e1) {}
+            } catch (IOException e1) {
+                Log.e("DatabaseUtil", "Something went wrong closing: ", e1);
+            }
             if(destStream != null) try {
                 destStream.close();
-            } catch (IOException e1) {}
+            } catch (IOException e1) {
+                Log.e("DatabaseUtil", "Something went wrong closing: ", e1);
+            }
             if(srcStream != null) try {
                 srcStream.close();
-            } catch (IOException e1) {}
+            } catch (IOException e1) {
+                Log.e("DatabaseUtil", "Something went wrong closing: ", e1);
+            }
             if(dst != null) try {
                 dst.close();
-            } catch (IOException e1) {}
+            } catch (IOException e1) {
+                Log.e("DatabaseUtil", "Something went wrong closing: ", e1);
+
+            }
         }
     }
 }
