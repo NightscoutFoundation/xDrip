@@ -258,20 +258,23 @@ public class DexCollectionService extends Service {
             PowerManager.WakeLock wakeLock1 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                     "DexCollectionService");
             wakeLock1.acquire(8000);
-
-            Log.w(TAG, "onCharacteristicChanged entered");
-            final byte[] data = characteristic.getValue();
-            if (lastdata != null && data != null && data.length > 0) {
-                if (!Arrays.equals(lastdata, data)) {
-                    Log.v(TAG, "broadcastUpdate: new data.");
+            try {
+                Log.w(TAG, "onCharacteristicChanged entered");
+                final byte[] data = characteristic.getValue();
+                if (lastdata != null && data != null && data.length > 0) {
+                    if (!Arrays.equals(lastdata, data)) {
+                        Log.v(TAG, "broadcastUpdate: new data.");
+                        setSerialDataToTransmitterRawData(data, data.length);
+                    } else if (Arrays.equals(lastdata, data)) {
+                        Log.v(TAG, "broadcastUpdate: duplicate data, ignoring");
+                    }
+                } else if (data != null && data.length > 0) {
                     setSerialDataToTransmitterRawData(data, data.length);
-                } else if (Arrays.equals(lastdata, data)) {
-                    Log.v(TAG, "broadcastUpdate: duplicate data, ignoring");
                 }
-            } else if (data != null && data.length > 0) {
-                setSerialDataToTransmitterRawData(data, data.length);
+                lastdata = data;
+            } finally {
+                wakeLock1.release();
             }
-            lastdata = data;
         }
 
         @Override
