@@ -29,6 +29,7 @@ public class DatabaseUtil {
         FileChannel src = null;
         FileOutputStream destStream = null;
         FileChannel dst = null;
+        String filename = null;
 
         try {
 
@@ -43,7 +44,7 @@ public class DatabaseUtil {
             sb.append(DateFormat.format("yyyyMMdd-kkmmss", System.currentTimeMillis()));
             sb.append(".sqlite");
 
-            final String filename = sb.toString();
+            filename = sb.toString();
             final File sd = Environment.getExternalStorageDirectory();
             if (sd.canWrite()) {
                 final File currentDB = context.getDatabasePath(databaseName);
@@ -63,10 +64,10 @@ public class DatabaseUtil {
                 Log.d("DatabaseUtil",  "SD card not writable!");
             }
 
-            return filename;
-        } catch (final Exception e) {
+        } catch (Exception e) {
+            Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG);
             Log.e("DatabaseUtil", "Exception while writing DB", e);
-        }finally {
+        }finally{
             if(src != null) try {
                 src.close();
             } catch (IOException e1) {
@@ -88,6 +89,7 @@ public class DatabaseUtil {
                 Log.e("DatabaseUtil", "Something went wrong closing: ", e1);
 
             }
+            return filename;
         }
     }
 
