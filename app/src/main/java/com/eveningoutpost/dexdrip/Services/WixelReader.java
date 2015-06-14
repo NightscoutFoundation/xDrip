@@ -364,13 +364,7 @@ public class WixelReader  extends Thread {
         int added = 5;
         while (!mStop) {
             try {
-                for (int j = 0 ; j < 3; j++) {
-                    Thread.sleep(1000);
-                    if(mStop ) {
-                    // we were asked to leave, so do it....
-                        return;
-                    }
-                }
+
                 i+=added;
                 if (i==50) {
                     added = -5;
@@ -379,9 +373,22 @@ public class WixelReader  extends Thread {
                     added = 5;
                 }
 
-                int fakedRaw = 150000 + i * 1000;
+                int fakedRaw = 100000 + i * 3000;
                 Log.e(TAG, "calling setSerialDataToTransmitterRawData " + fakedRaw);
-                setSerialDataToTransmitterRawData(fakedRaw, fakedRaw,100, new Date().getTime());
+                setSerialDataToTransmitterRawData(fakedRaw, fakedRaw ,100, new Date().getTime());
+                Log.e(TAG, "returned from setSerialDataToTransmitterRawData " + fakedRaw);
+
+                Long StartLoop = new Date().getTime();
+                for (int j = 0 ; j < 300; j++) {
+                    Thread.sleep(1000);
+                    Log.e(TAG, "looping ...." + i + " " + j + " " + (new Date().getTime() - StartLoop)/1000);
+                    if(mStop ) {
+                    // we were asked to leave, so do it....
+						Log.e(TAG, "EXITING mstop=true" );
+                        return;
+                    }
+                }
+
 
                } catch (InterruptedException e) {
                    // time to get out...
@@ -389,6 +396,7 @@ public class WixelReader  extends Thread {
                    break;
                }
         }
+		Log.e(TAG, "EXITING mstop=true" );
     }
 
     public void Stop()

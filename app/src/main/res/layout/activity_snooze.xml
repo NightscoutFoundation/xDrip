@@ -1,71 +1,81 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:showDividers="middle">
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/drawer_layout"
+    android:layout_width="match_parent" android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight=".3"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
-        <Button
-            android:id="@+id/button_snooze"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:text="@string/snooze"
-            android:layout_margin="20dp"
-            android:textSize="30sp" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight=".3"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
-
-        <NumberPicker
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/snooze"
-            android:layout_gravity="center_horizontal"
-            android:descendantFocusability="blocksDescendants"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight=".3"
+        android:layout_height="fill_parent"
         android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:paddingTop="10dp">
-
-        <TextView
-            android:id="@+id/alert_status"
+        android:showDividers="middle">
+        <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="replace dyanmicly (alert status)"
-            android:textSize="20sp"/>
+            android:layout_height="0dp"
+            android:layout_weight=".3"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+            <Button
+                android:id="@+id/button_snooze"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="@string/snooze"
+                android:layout_margin="20dp"
+                android:textSize="30sp" />
         </LinearLayout>
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight=".1"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
-        <Button
-            android:id="@+id/button_disable_alerts"
+        <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Disable All alerts"/>
-        <Button
-            android:id="@+id/enable_alerts"
+            android:layout_height="0dp"
+            android:layout_weight=".3"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/snooze"
+                android:layout_gravity="center_horizontal"
+                android:descendantFocusability="blocksDescendants"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Re-Enable Alerts"/>
+            android:layout_height="0dp"
+            android:layout_weight=".3"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingTop="10dp">
+
+            <TextView
+                android:id="@+id/alert_status"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="replace dyanmicly (alert status)"
+                android:textSize="20sp"/>
+            </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".1"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+            <Button
+                android:id="@+id/button_disable_alerts"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Disable All alerts"/>
+            <Button
+                android:id="@+id/enable_alerts"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Re-Enable Alerts"/>
+        </LinearLayout>
+
+
+
     </LinearLayout>
+    <fragment android:id="@+id/navigation_drawer"
+    android:layout_width="@dimen/navigation_drawer_width" android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:name="com.eveningoutpost.dexdrip.NavigationDrawerFragment"
+    tools:layout="@layout/fragment_navigation_drawer" />
 
-
-
-</LinearLayout>
+</android.support.v4.widget.DrawerLayout>

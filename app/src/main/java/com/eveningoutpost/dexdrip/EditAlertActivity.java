@@ -48,8 +48,10 @@ import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
-public class EditAlertActivity extends Activity {
+public class EditAlertActivity extends ActivityWithMenu {
+    public static String menu_name = "Edit Alert";
 
     TextView viewHeader;
 
@@ -57,6 +59,7 @@ public class EditAlertActivity extends Activity {
     EditText alertThreshold;
     EditText alertMp3File;
     EditText editSnooze;
+    EditText reraise;
 
     Button buttonalertMp3;
 
@@ -75,6 +78,7 @@ public class EditAlertActivity extends Activity {
     int startMinute = 0;
     int endHour = 23;
     int endMinute = 59;
+    int alertReraise = 1;
 
     int defaultSnooze;
 
@@ -134,6 +138,7 @@ public class EditAlertActivity extends Activity {
         viewTimeStart = (TextView) findViewById(R.id.view_alert_time_start);
         viewTimeEnd = (TextView) findViewById(R.id.view_alert_time_end);
         editSnooze = (EditText) findViewById(R.id.edit_snooze);
+        reraise = (EditText) findViewById(R.id.reraise);
 
         viewAlertOverrideText = (TextView) findViewById(R.id.view_alert_override_silent);
         checkboxAlertOverride = (CheckBox) findViewById(R.id.check_override_silent);
@@ -157,6 +162,7 @@ public class EditAlertActivity extends Activity {
             viewTimeStart.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             viewTimeEnd.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             editSnooze.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            reraise.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             viewAlertOverrideText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
 
             ((TextView) findViewById(R.id.view_alert_text)).setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
@@ -164,6 +170,7 @@ public class EditAlertActivity extends Activity {
             ((TextView) findViewById(R.id.view_alert_default_snooze)).setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             ((TextView) findViewById(R.id.view_alert_mp3_file)).setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             ((TextView) findViewById(R.id.view_alert_time)).setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            ((TextView) findViewById(R.id.view_alert_time_between)).setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
 
         }
         SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -195,7 +202,7 @@ public class EditAlertActivity extends Activity {
             startMinute = 0;
             endHour = 23;
             endMinute = 59;
-
+            alertReraise = 1;
         } else {
             // We are editing an alert
             AlertType at = AlertType.get_alert(uuid);
@@ -225,6 +232,7 @@ public class EditAlertActivity extends Activity {
             startMinute = AlertType.time2Minutes(at.start_time_minutes);
             endHour = AlertType.time2Hours(at.end_time_minutes);
             endMinute = AlertType.time2Minutes(at.end_time_minutes);
+            alertReraise = at.minutes_between;
 
             if(uuid.equals(AlertType.LOW_ALERT_55)) {
                 // This is the 55 alert, can not be edited
@@ -233,8 +241,10 @@ public class EditAlertActivity extends Activity {
                 buttonalertMp3.setEnabled(false);
                 checkboxAllDay.setEnabled(false);
                 checkboxAlertOverride.setEnabled(false);
+                reraise.setEnabled(false);
             }
         }
+        reraise.setText(String.valueOf(alertReraise));
         alertMp3File.setKeyListener(null);
         viewHeader.setText(status);
         setDefaultSnoozeSpinner();
@@ -245,6 +255,10 @@ public class EditAlertActivity extends Activity {
 
     }
 
+    @Override
+    public String getMenuName() {
+        return menu_name;
+    }
     public static String UnitsConvert2Disp(boolean doMgdl, double threshold) {
         DecimalFormat df = new DecimalFormat("#");
         if(doMgdl ) {
@@ -281,7 +295,7 @@ public class EditAlertActivity extends Activity {
         if(overrideSilence) {
             checkboxAlertOverride.setText("");
         } else {
-            checkboxAlertOverride.setText("Warning, no alert will be played at silent/vibrate mode!!!");
+            checkboxAlertOverride.setText("Warning, no alert will be played at phone silent/vibrate mode!!!");
         }
     }
 
@@ -350,6 +364,21 @@ public class EditAlertActivity extends Activity {
                 if(!verifyThreshold(threshold)) {
                     return;
                 }
+                alertReraise = 1;
+                try {
+                    alertReraise = Integer.parseInt((reraise.getText().toString()));
+                }
+                catch (NumberFormatException nfe) {
+                    Log.e(TAG, "Invalid number", nfe);
+                }
+                if(alertReraise < 1) {
+                    Toast.makeText(getApplicationContext(), "Reraise Value must be 1 minute or greater", Toast.LENGTH_LONG).show();
+                    return;
+                } else if (alertReraise >= defaultSnooze) {
+                    Toast.makeText(getApplicationContext(), "Reraise Value must less than snooze length", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
 
                 int timeStart = AlertType.toTime(startHour, startMinute);
                 int timeEnd = AlertType.toTime(endHour, endMinute);
@@ -374,9 +403,9 @@ public class EditAlertActivity extends Activity {
 ;
                 String mp3_file = audioPath;
                 if (uuid != null) {
-                    AlertType.update_alert(uuid, alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze);
+                    AlertType.update_alert(uuid, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze);
                 }  else {
-                    AlertType.add_alert(null, alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze);
+                    AlertType.add_alert(null, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze);
                 }
                 Intent returnIntent = new Intent();
                 setResult(RESULT_OK,returnIntent);
@@ -560,22 +589,37 @@ public class EditAlertActivity extends Activity {
         viewTimeEnd.setText(timeFormatString(endHour, endMinute));
     }
 
-    public String shortPath(String path) {
-        if(path != null) {
-            if(path.length() == 0) {
-                return "xDrip Default";
-            }
-            Ringtone ringtone = RingtoneManager.getRingtone(mContext, Uri.parse(path));
-            if (ringtone != null) {
-                return ringtone.getTitle(mContext);
-            } else {
-                String[] segments = path.split("/");
-                if (segments.length > 1) {
-                    return segments[segments.length - 1];
-                }
-            }
+    public static boolean isPathRingtone(Context context, String path) {
+        if(path == null) {
+            return false;
         }
-        return "";
+        if(path.length() == 0) {
+            return false;
+        }
+        Ringtone ringtone = RingtoneManager.getRingtone(context, Uri.parse(path));
+        if(ringtone == null) {
+            return false;
+        }
+        return true;
+    }
+
+    public String shortPath(String path) {
+        if(isPathRingtone(mContext, path)) {
+            Ringtone ringtone = RingtoneManager.getRingtone(mContext, Uri.parse(path));
+            // Just verified that the ringtone exists... not checking for null
+            return ringtone.getTitle(mContext);
+        }
+        if(path == null) {
+            return "";
+        }
+        if(path.length() == 0) {
+            return "xDrip Default";
+        }
+        String[] segments = path.split("/");
+        if (segments.length > 1) {
+            return segments[segments.length - 1];
+        }
+        return path;
     }
     public void setDefaultSnoozeSpinner() {
         editSnooze.setText(String.valueOf(defaultSnooze));

@@ -14,7 +14,8 @@
             android:paddingLeft="10dp"
             android:paddingTop="2dp"
             android:paddingBottom="10dp"
-            android:paddingRight="10dp">
+            android:paddingRight="10dp"
+        android:layout_gravity="center">
         <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

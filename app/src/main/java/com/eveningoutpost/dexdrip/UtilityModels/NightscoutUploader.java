@@ -110,7 +110,8 @@ public class NightscoutUploader {
                 try {
                     doRESTUploadTo(baseURI, glucoseDataSets, meterRecords, calRecords);
                 } catch (Exception e) {
-                    Log.e(TAG, "Unable to do REST API Upload");
+                    Log.e(TAG, "Unable to do REST API Upload " + e.getMessage());
+                    Log.e(TAG, "Unable to do REST API Upload", e.getCause());
                     return false;
                 }
             }
@@ -276,7 +277,7 @@ public class NightscoutUploader {
             json.put("direction", record.slopeName());
             json.put("type", "sgv");
             json.put("filtered", record.filtered_data * 1000);
-            json.put("unfiltered", record.age_adjusted_raw_value * 1000);
+            json.put("unfiltered", record.usedRaw() * 1000);
             json.put("rssi", 100);
             json.put("noise", Integer.valueOf(record.noiseValue()));
         }
@@ -375,7 +376,7 @@ public class NightscoutUploader {
                         testData.put("direction", record.slopeName());
                         testData.put("type", "sgv");
                         testData.put("filtered", record.filtered_data * 1000);
-                        testData.put("unfiltered", record.age_adjusted_raw_value * 1000 );
+                        testData.put("unfiltered", record.usedRaw() * 1000 );
                         testData.put("rssi", 100);
                         testData.put("noise", Integer.valueOf(record.noiseValue()));
                         dexcomData.update(testData, testData, true, false, WriteConcern.UNACKNOWLEDGED);
@@ -424,7 +425,8 @@ public class NightscoutUploader {
                     return true;
 
                 } catch (Exception e) {
-                    Log.e(TAG, "Unable to upload data to mongo");
+                    Log.e(TAG, "Unable to upload data to mongo " + e.getMessage());
+                    Log.e(TAG, "Unable to upload data to mongo", e.getCause());
                 }
             }
             return false;

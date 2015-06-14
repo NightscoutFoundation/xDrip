@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -120,22 +121,34 @@ public class DexShareCollectionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT){
-            stopSelf();
-            return START_NOT_STICKY;
+        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(getApplicationContext().POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                "DexShareCollectionStart");
+        wakeLock.acquire(40000);
+        try {
+
+            if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+                stopSelf();
+                wakeLock.release();
+                return START_NOT_STICKY;
+            }
+            if (CollectionServiceStarter.isBTShare(getApplicationContext())) {
+                setFailoverTimer();
+            } else {
+                stopSelf();
+                wakeLock.release();
+                return START_NOT_STICKY;
+            }
+            if (Sensor.currentSensor() == null) {
+                setRetryTimer();
+                wakeLock.release();
+                return START_NOT_STICKY;
+            }
+            Log.w(TAG, "STARTING SERVICE");
+            attemptConnection();
+        } finally {
+            wakeLock.release();
         }
-        if (CollectionServiceStarter.isBTShare(getApplicationContext())) {
-            setFailoverTimer();
-        } else {
-            stopSelf();
-            return START_NOT_STICKY;
-        }
-        if (Sensor.currentSensor() == null) {
-            setRetryTimer();
-            return START_NOT_STICKY;
-        }
-        Log.w(TAG, "STARTING SERVICE");
-        attemptConnection();
         return START_STICKY;
     }
 
@@ -174,7 +187,7 @@ public class DexShareCollectionService extends Service {
             BgReading bgReading = BgReading.last();
             long retry_in;
             if (bgReading != null) {
-                retry_in = Math.min(Math.max((1000 * 30), (1000 * 60 * 5) - (new Date().getTime() - bgReading.timestamp) + (1000 * 15)), (1000 * 60 * 5));
+                retry_in = Math.min(Math.max((1000 * 30), (1000 * 60 * 5) - (new Date().getTime() - bgReading.timestamp) + (1000 * 5)), (1000 * 60 * 5));
             } else {
                 retry_in = (1000 * 20);
             }
@@ -252,68 +265,76 @@ public class DexShareCollectionService extends Service {
     }
 
     public void attemptRead() {
-        Log.d(TAG, "Attempting to read data");
-        final Action1<Long> systemTimeListener = new Action1<Long>() {
-            @Override
-            public void call(Long s) {
-                if (s != null) {
-                    Log.d(TAG, "Made the full round trip, got " + s + " as the system time");
-                    final long addativeSystemTimeOffset = new Date().getTime() - s;
+        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(getApplicationContext().POWER_SERVICE);
+        PowerManager.WakeLock wakeLock1 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                "ReadingShareData");
+        wakeLock1.acquire(40000);
+        try {
+            Log.d(TAG, "Attempting to read data");
+            final Action1<Long> systemTimeListener = new Action1<Long>() {
+                @Override
+                public void call(Long s) {
+                    if (s != null) {
+                        Log.d(TAG, "Made the full round trip, got " + s + " as the system time");
+                        final long addativeSystemTimeOffset = new Date().getTime() - s;
 
-                    final Action1<Long> dislpayTimeListener = new Action1<Long>() {
-                        @Override
-                        public void call(Long s) {
-                            if (s != null) {
-                                Log.d(TAG, "Made the full round trip, got " + s + " as the display time offset");
-                                final long addativeDisplayTimeOffset = addativeSystemTimeOffset - (s*1000);
+                        final Action1<Long> dislpayTimeListener = new Action1<Long>() {
+                            @Override
+                            public void call(Long s) {
+                                if (s != null) {
+                                    Log.d(TAG, "Made the full round trip, got " + s + " as the display time offset");
+                                    final long addativeDisplayTimeOffset = addativeSystemTimeOffset - (s * 1000);
 
-                                Log.d(TAG, "Making " + addativeDisplayTimeOffset + " the the total time offset");
+                                    Log.d(TAG, "Making " + addativeDisplayTimeOffset + " the the total time offset");
 
-                                final Action1<EGVRecord[]> evgRecordListener = new Action1<EGVRecord[]>() {
-                                    @Override
-                                    public void call(EGVRecord[] egvRecords) {
-                                        if (egvRecords != null) {
-                                            Log.d(TAG, "Made the full round trip, got " + egvRecords.length + " EVG Records");
-                                            BgReading.create(egvRecords, addativeSystemTimeOffset, getApplicationContext());
-                                            if (shouldDisconnect) {
-                                                stopSelf();
-                                            } else {
-                                                setRetryTimer();
+                                    final Action1<EGVRecord[]> evgRecordListener = new Action1<EGVRecord[]>() {
+                                        @Override
+                                        public void call(EGVRecord[] egvRecords) {
+                                            if (egvRecords != null) {
+                                                Log.d(TAG, "Made the full round trip, got " + egvRecords.length + " EVG Records");
+                                                BgReading.create(egvRecords, addativeSystemTimeOffset, getApplicationContext());
+                                                if (shouldDisconnect) {
+                                                    stopSelf();
+                                                } else {
+                                                    setRetryTimer();
+                                                }
                                             }
                                         }
-                                    }
-                                };
+                                    };
 
-                                final Action1<SensorRecord[]> sensorRecordListener = new Action1<SensorRecord[]>() {
-                                    @Override
-                                    public void call(SensorRecord[] sensorRecords) {
-                                        if (sensorRecords != null) {
-                                            Log.d(TAG, "Made the full round trip, got " + sensorRecords.length + " Sensor Records");
-                                            BgReading.create(sensorRecords, addativeSystemTimeOffset, getApplicationContext());
-                                            readData.getRecentEGVs(evgRecordListener);
+                                    final Action1<SensorRecord[]> sensorRecordListener = new Action1<SensorRecord[]>() {
+                                        @Override
+                                        public void call(SensorRecord[] sensorRecords) {
+                                            if (sensorRecords != null) {
+                                                Log.d(TAG, "Made the full round trip, got " + sensorRecords.length + " Sensor Records");
+                                                BgReading.create(sensorRecords, addativeSystemTimeOffset, getApplicationContext());
+                                                readData.getRecentEGVs(evgRecordListener);
+                                            }
                                         }
-                                    }
-                                };
+                                    };
 
-                                final Action1<CalRecord[]> calRecordListener = new Action1<CalRecord[]>() {
-                                    @Override
-                                    public void call(CalRecord[] calRecords) {
-                                        if (calRecords != null) {
-                                            Log.d(TAG, "Made the full round trip, got " + calRecords.length + " Cal Records");
-                                            Calibration.create(calRecords, addativeDisplayTimeOffset, getApplicationContext());
-                                            readData.getRecentSensorRecords(sensorRecordListener);
+                                    final Action1<CalRecord[]> calRecordListener = new Action1<CalRecord[]>() {
+                                        @Override
+                                        public void call(CalRecord[] calRecords) {
+                                            if (calRecords != null) {
+                                                Log.d(TAG, "Made the full round trip, got " + calRecords.length + " Cal Records");
+                                                Calibration.create(calRecords, addativeDisplayTimeOffset, getApplicationContext());
+                                                readData.getRecentSensorRecords(sensorRecordListener);
+                                            }
                                         }
-                                    }
-                                };
-                                readData.getRecentCalRecords(calRecordListener);
+                                    };
+                                    readData.getRecentCalRecords(calRecordListener);
+                                }
                             }
-                        }
-                    };
-                    readData.readDisplayTimeOffset(dislpayTimeListener);
+                        };
+                        readData.readDisplayTimeOffset(dislpayTimeListener);
+                    }
                 }
-            }
-        };
-        readData.readSystemTime(systemTimeListener);
+            };
+            readData.readSystemTime(systemTimeListener);
+        } finally {
+            wakeLock1.release();
+        }
     }
 
     public boolean connect(final String address) {
