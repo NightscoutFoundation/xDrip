@@ -23,6 +23,13 @@ import static com.eveningoutpost.dexdrip.utils.FileUtils.*;
 public class DatabaseUtil {
 
     public static String saveSql(Context context) {
+
+
+        FileInputStream srcStream = null;
+        FileChannel src = null;
+        FileOutputStream destStream = null;
+        FileChannel dst = null;
+
         try {
 
             final String databaseName = new Configuration.Builder(context).create().getDatabaseName();
@@ -42,15 +49,11 @@ public class DatabaseUtil {
                 final File currentDB = context.getDatabasePath(databaseName);
                 final File backupDB = new File(filename);
                 if (currentDB.exists()) {
-                    final FileInputStream srcStream = new FileInputStream(currentDB);
-                    final FileChannel src = srcStream.getChannel();
-                    final FileOutputStream destStream = new FileOutputStream(backupDB);
-                    final FileChannel dst = destStream.getChannel();
+                    srcStream = new FileInputStream(currentDB);
+                    src = srcStream.getChannel();
+                    destStream = new FileOutputStream(backupDB);
+                    dst = destStream.getChannel();
                     dst.transferFrom(src, 0, src.size());
-                    src.close();
-                    srcStream.close();
-                    dst.close();
-                    destStream.close();
                 } else {
                     Toast.makeText(context, "Problem: No current DB found!", Toast.LENGTH_LONG);
                     Log.d("DatabaseUtil",  "Problem: No current DB found");
@@ -62,7 +65,29 @@ public class DatabaseUtil {
 
             return filename;
         } catch (final Exception e) {
-            throw new RuntimeException(e);
+            Log.e("DatabaseUtil", "Exception while writing DB", e);
+        }finally {
+            if(src != null) try {
+                src.close();
+            } catch (IOException e1) {
+                Log.e("DatabaseUtil", "Something went wrong closing: ", e1);
+            }
+            if(destStream != null) try {
+                destStream.close();
+            } catch (IOException e1) {
+                Log.e("DatabaseUtil", "Something went wrong closing: ", e1);
+            }
+            if(srcStream != null) try {
+                srcStream.close();
+            } catch (IOException e1) {
+                Log.e("DatabaseUtil", "Something went wrong closing: ", e1);
+            }
+            if(dst != null) try {
+                dst.close();
+            } catch (IOException e1) {
+                Log.e("DatabaseUtil", "Something went wrong closing: ", e1);
+
+            }
         }
     }
 
