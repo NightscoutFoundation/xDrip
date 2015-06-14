@@ -253,6 +253,12 @@ public class DexCollectionService extends Service {
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+
+            PowerManager powerManager = (PowerManager) mContext.getSystemService(mContext.POWER_SERVICE);
+            PowerManager.WakeLock wakeLock1 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                    "DexCollectionService");
+            wakeLock1.acquire(8000);
+
             Log.w(TAG, "onCharacteristicChanged entered");
             final byte[] data = characteristic.getValue();
             if (lastdata != null && data != null && data.length > 0) {
