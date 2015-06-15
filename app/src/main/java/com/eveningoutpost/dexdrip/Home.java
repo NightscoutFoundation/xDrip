@@ -353,7 +353,13 @@ public class Home extends ActivityWithMenu {
                     currentBgValueText.setText( stringEstimate + " " + BgReading.slopeArrow());
                 }
             }
-            notificationText.setText((System.currentTimeMillis()-lastBgreading.timestamp)/(60*1000) + " Minutes ago");
+            notificationText.append("\n" + (System.currentTimeMillis() - lastBgreading.timestamp) / (60 * 1000) + " Minutes ago");
+            List<BgReading> bgReadingList = BgReading.latest(2);
+            if(bgReadingList != null && bgReadingList.size() == 2) {
+                // same logic as in xDripWidget (refactor that to BGReadings to avoid redundancy / later inconsistencies)?
+                notificationText.append(" | "
+                        + bgGraphBuilder.unitizedDeltaString(lastBgreading.calculated_value - bgReadingList.get(1).calculated_value));
+            }
             if(bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
                 currentBgValueText.setTextColor(Color.parseColor("#C30909"));
             } else if(bgGraphBuilder.unitized(estimate) >= bgGraphBuilder.highMark) {
