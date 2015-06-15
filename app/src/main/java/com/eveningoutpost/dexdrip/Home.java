@@ -353,7 +353,8 @@ public class Home extends ActivityWithMenu {
                     currentBgValueText.setText( stringEstimate + " " + BgReading.slopeArrow());
                 }
             }
-            notificationText.append("\n" + (System.currentTimeMillis() - lastBgreading.timestamp) / (60 * 1000) + " Minutes ago");
+            int minutes = (int)(System.currentTimeMillis() - lastBgreading.timestamp) / (60 * 1000);
+            notificationText.append("\n" + minutes + ((minutes==1)?" Minute ago":" Minutes ago"));
             List<BgReading> bgReadingList = BgReading.latest(2);
             if(bgReadingList != null && bgReadingList.size() == 2) {
                 // same logic as in xDripWidget (refactor that to BGReadings to avoid redundancy / later inconsistencies)?
