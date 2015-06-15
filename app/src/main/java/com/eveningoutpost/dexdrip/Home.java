@@ -357,7 +357,7 @@ public class Home extends ActivityWithMenu {
             List<BgReading> bgReadingList = BgReading.latest(2);
             if(bgReadingList != null && bgReadingList.size() == 2) {
                 // same logic as in xDripWidget (refactor that to BGReadings to avoid redundancy / later inconsistencies)?
-                notificationText.append(" | "
+                notificationText.append("\n"
                         + bgGraphBuilder.unitizedDeltaString(lastBgreading.calculated_value - bgReadingList.get(1).calculated_value));
             }
             if(bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
