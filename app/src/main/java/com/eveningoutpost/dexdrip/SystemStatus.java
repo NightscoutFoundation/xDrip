@@ -10,17 +10,20 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
@@ -32,6 +35,7 @@ import java.lang.reflect.Method;
 
 
 public class SystemStatus extends ActivityWithMenu {
+    private static final int SMALL_SCREEN_WIDTH = 300;
     public static String menu_name = "System Status";
     private TextView version_name_view;
     public TextView collection_method;
@@ -60,6 +64,23 @@ public class SystemStatus extends ActivityWithMenu {
         restart_collection_service = (Button)findViewById(R.id.restart_collection_service);
         forget_device = (Button)findViewById(R.id.forget_device);
         refresh = (ImageButton)findViewById(R.id.refresh_current_values);
+
+        //check for small devices:
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+        if(width<SMALL_SCREEN_WIDTH){
+            //adapt to small screen
+            LinearLayout layout = (LinearLayout)findViewById(R.id.layout_collectionmethod);
+            layout.setOrientation(LinearLayout.VERTICAL);
+            layout = (LinearLayout)findViewById(R.id.layout_version);
+            layout.setOrientation(LinearLayout.VERTICAL);
+            layout = (LinearLayout)findViewById(R.id.layout_status);
+            layout.setOrientation(LinearLayout.VERTICAL);
+            layout = (LinearLayout)findViewById(R.id.layout_device);
+            layout.setOrientation(LinearLayout.VERTICAL);
+        }
 
         set_current_values();
         restartButtonListener();
