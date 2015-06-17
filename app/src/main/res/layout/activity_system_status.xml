@@ -35,6 +35,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
+                    android:id="@+id/layout_version"
                     android:paddingTop="10dp">
 
                     <TextView
@@ -57,7 +58,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:id="@+id/layout_horiz"
+                    android:id="@+id/layout_collectionmethod"
                     android:paddingTop="10dp">
 
                     <TextView
@@ -79,6 +80,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
+                    android:id="@+id/layout_device"
                     android:paddingTop="10dp">
 
                     <TextView
@@ -99,6 +101,7 @@
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:id="@+id/layout_status"
                     android:paddingTop="10dp">
 
                     <TextView
