@@ -176,6 +176,7 @@ public class Home extends ActivityWithMenu {
     public void updateCurrentBgInfo() {
         final TextView notificationText = (TextView) findViewById(R.id.notices);
         notificationText.setText("");
+        notificationText.setTextColor(Color.RED);
         isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
         isDexbridgeWixel = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
         isBTShare = CollectionServiceStarter.isBTShare(getApplicationContext());
@@ -319,6 +320,9 @@ public class Home extends ActivityWithMenu {
                 currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
+                if (notificationText.getText().length()==0){
+                    notificationText.setTextColor(Color.WHITE);
+                }
                 if (!predictive) {
                     estimate = lastBgreading.calculated_value;
                     String stringEstimate = bgGraphBuilder.unitized_string(estimate);
@@ -333,7 +337,15 @@ public class Home extends ActivityWithMenu {
                     currentBgValueText.setText(stringEstimate + " " + BgReading.slopeArrow());
                 }
             }
-            if (bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
+            int minutes = (int)(System.currentTimeMillis() - lastBgreading.timestamp) / (60 * 1000);
+            notificationText.append("\n" + minutes + ((minutes==1)?" Minute ago":" Minutes ago"));
+            List<BgReading> bgReadingList = BgReading.latest(2);
+            if(bgReadingList != null && bgReadingList.size() == 2) {
+                // same logic as in xDripWidget (refactor that to BGReadings to avoid redundancy / later inconsistencies)?
+                notificationText.append("\n"
+                        + bgGraphBuilder.unitizedDeltaString(lastBgreading.calculated_value - bgReadingList.get(1).calculated_value));
+            }
+            if(bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
                 currentBgValueText.setTextColor(Color.parseColor("#C30909"));
             } else if (bgGraphBuilder.unitized(estimate) >= bgGraphBuilder.highMark) {
                 currentBgValueText.setTextColor(Color.parseColor("#FFBB33"));
