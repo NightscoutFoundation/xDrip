@@ -48,7 +48,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
-                android:text="replace dyanmicly (alert status)"
+                android:text="replace dynamically (alert status)"
                 android:textSize="20sp"/>
             </LinearLayout>
         <LinearLayout

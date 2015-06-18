@@ -11,7 +11,7 @@
             android:id="@+id/view_alert_header"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="replace dyanmicly (edit_alert_header)"
+            android:text="replace dynamically (edit_alert_header)"
             android:textSize="24dp"
             android:layout_gravity="center"
             android:gravity="center_horizontal"
