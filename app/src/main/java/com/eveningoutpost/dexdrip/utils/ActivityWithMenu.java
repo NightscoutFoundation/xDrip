@@ -48,10 +48,8 @@ public abstract class ActivityWithMenu extends Activity implements NavigationDra
     public void onNavigationDrawerItemSelected(int position) {
         if (position != menu_position) {
             startActivity(intent_list.get(position));
-            Set<String> categories = getIntent().getCategories();
-            getIntent().getAction();
             //do not close activity if it is the Launcher or "Home".
-            if(categories == null || ! (categories.contains("android.intent.category.LAUNCHER") || getMenuName().equalsIgnoreCase(Home.menu_name))){
+            if (!getMenuName().equalsIgnoreCase(Home.menu_name)) {
                 finish();
             }
         }
