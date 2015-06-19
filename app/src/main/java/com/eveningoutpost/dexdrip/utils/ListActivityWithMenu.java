@@ -44,7 +44,7 @@ public class ListActivityWithMenu extends ListActivity implements NavigationDraw
     public void onNavigationDrawerItemSelected(int position) {
         if (position != menu_position) {
             startActivity(intent_list.get(position));
-            finish();
+            //finish();
         }
     }
 

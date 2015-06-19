@@ -44,7 +44,7 @@ public class ActivityWithMenu extends Activity implements NavigationDrawerFragme
     public void onNavigationDrawerItemSelected(int position) {
         if (position != menu_position) {
             startActivity(intent_list.get(position));
-            finish();
+            //finish();
         }
     }
 
