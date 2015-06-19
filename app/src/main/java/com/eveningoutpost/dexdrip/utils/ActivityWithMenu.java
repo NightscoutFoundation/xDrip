@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 
 import com.eveningoutpost.dexdrip.NavDrawerBuilder;
 import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
 import com.eveningoutpost.dexdrip.R;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by stephenblack on 6/8/15.
@@ -44,7 +47,10 @@ public class ActivityWithMenu extends Activity implements NavigationDrawerFragme
     public void onNavigationDrawerItemSelected(int position) {
         if (position != menu_position) {
             startActivity(intent_list.get(position));
-            //finish();
+            Set<String> categories = getIntent().getCategories();
+            if(categories == null || ! categories.contains("android.intent.category.LAUNCHER")){
+                finish();
+            }
         }
     }
 
