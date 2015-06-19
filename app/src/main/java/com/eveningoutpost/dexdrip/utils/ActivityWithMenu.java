@@ -17,7 +17,7 @@ import java.util.Set;
 /**
  * Created by stephenblack on 6/8/15.
  */
-public class ActivityWithMenu extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public abstract class ActivityWithMenu extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     private NavDrawerBuilder navDrawerBuilder;
     private List<Intent> intent_list;
     private List<String> menu_option_list;
@@ -48,13 +48,12 @@ public class ActivityWithMenu extends Activity implements NavigationDrawerFragme
         if (position != menu_position) {
             startActivity(intent_list.get(position));
             Set<String> categories = getIntent().getCategories();
-            if(categories == null || ! categories.contains("android.intent.category.LAUNCHER")){
+            getIntent().getAction();
+            if(categories == null || ! (categories.contains("android.intent.category.LAUNCHER"))){
                 finish();
             }
         }
     }
 
-    public String getMenuName() { //NOTE: THIS MUST BE OVERRIDEN!!!
-        throw new RuntimeException("MUST OVERRIDE THIS!");
-    }
+    public abstract String getMenuName();
 }
