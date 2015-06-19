@@ -2,7 +2,7 @@
 <resources>
     <string-array name="DexCollectionMethods">
         <item>Bluetooth Wixel</item>
-        <item>Dexbridge</item>
+        <item>xBridge Wixel</item>
         <item>Wifi Wixel</item>
         <item>DexcomShare</item>
     </string-array>
