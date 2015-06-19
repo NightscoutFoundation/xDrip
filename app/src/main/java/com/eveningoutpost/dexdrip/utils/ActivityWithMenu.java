@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.NavDrawerBuilder;
 import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
 import com.eveningoutpost.dexdrip.R;
@@ -49,7 +50,8 @@ public abstract class ActivityWithMenu extends Activity implements NavigationDra
             startActivity(intent_list.get(position));
             Set<String> categories = getIntent().getCategories();
             getIntent().getAction();
-            if(categories == null || ! (categories.contains("android.intent.category.LAUNCHER"))){
+            //do not close activity if it is the Launcher or "Home".
+            if(categories == null || ! (categories.contains("android.intent.category.LAUNCHER") || getMenuName().equalsIgnoreCase(Home.menu_name))){
                 finish();
             }
         }
