@@ -31,14 +31,6 @@ public class xDripWidget extends AppWidgetProvider {
         final int N = appWidgetIds.length;
         for (int i = 0; i < N; i++) {
 
-            //Add behaviour: open xDrip on click
-            Intent intent = new Intent(context, Home.class);
-            int appWidgetId = appWidgetIds[i];
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.x_drip_widget);
-            views.setOnClickPendingIntent(R.id.xDripwidget, pendingIntent);;
-            appWidgetManager.updateAppWidget(appWidgetId, views);
-
             //update the widget
             updateAppWidget(context, appWidgetManager, appWidgetIds[i]);
 
@@ -60,6 +52,11 @@ public class xDripWidget extends AppWidgetProvider {
     private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.x_drip_widget);
         Log.d(TAG, "Update widget signal received");
+
+        //Add behaviour: open xDrip on click
+        Intent intent = new Intent(context, Home.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        views.setOnClickPendingIntent(R.id.xDripwidget, pendingIntent);;
         displayCurrentInfo(appWidgetManager, appWidgetId, context, views);
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
