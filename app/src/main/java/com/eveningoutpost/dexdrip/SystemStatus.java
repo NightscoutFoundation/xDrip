@@ -32,22 +32,27 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 import java.lang.reflect.Method;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class SystemStatus extends ActivityWithMenu {
     private static final int SMALL_SCREEN_WIDTH = 300;
-    public static String menu_name = "System Status";
+    public static final String menu_name = "System Status";
     private TextView version_name_view;
-    public TextView collection_method;
-    public TextView current_device;
-    public TextView connection_status;
-    public TextView notes;
-    public Button restart_collection_service;
-    public Button forget_device;
-    public ImageButton refresh;
-    public SharedPreferences prefs;
-    public BluetoothManager mBluetoothManager;
-    public ActiveBluetoothDevice activeBluetoothDevice;
+    private TextView collection_method;
+    private TextView current_device;
+    private TextView connection_status;
+    private TextView sensor_status_view;
+    private TextView notes;
+    private Button restart_collection_service;
+    private Button forget_device;
+    private ImageButton refresh;
+    private SharedPreferences prefs;
+    private BluetoothManager mBluetoothManager;
+    private ActiveBluetoothDevice activeBluetoothDevice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +62,7 @@ public class SystemStatus extends ActivityWithMenu {
        version_name_view = (TextView)findViewById(R.id.version_name);
         collection_method = (TextView)findViewById(R.id.collection_method);
         connection_status = (TextView)findViewById(R.id.connection_status);
+        sensor_status_view = (TextView)findViewById(R.id.sensor_status);
         current_device = (TextView)findViewById(R.id.remembered_device);
 
         notes = (TextView)findViewById(R.id.other_notes);
@@ -80,6 +86,8 @@ public class SystemStatus extends ActivityWithMenu {
             layout.setOrientation(LinearLayout.VERTICAL);
             layout = (LinearLayout)findViewById(R.id.layout_device);
             layout.setOrientation(LinearLayout.VERTICAL);
+            layout = (LinearLayout)findViewById(R.id.layout_sensor);
+            layout.setOrientation(LinearLayout.VERTICAL);
         }
 
         set_current_values();
@@ -100,8 +108,30 @@ public class SystemStatus extends ActivityWithMenu {
         setCollectionMethod();
         setCurrentDevice();
         setConnectionStatus();
+        setSensorStatus();
         setNotes();
     }
+
+
+    private void setSensorStatus(){
+        StringBuilder sensor_status= new StringBuilder();
+        if(Sensor.isActive()){
+            Sensor sens = Sensor.currentSensor();
+            Date date = new Date(sens.started_at);
+            DateFormat df = new SimpleDateFormat();
+            sensor_status.append(df.format(date));
+            sensor_status.append(" (");
+            sensor_status.append((int) (System.currentTimeMillis() - sens.started_at) / (1000 * 60 * 60 * 24));
+            sensor_status.append("d ");
+            sensor_status.append((int)((System.currentTimeMillis() - sens.started_at)%(1000 * 60 * 60 * 24))/(1000*60*60));
+            sensor_status.append("h)");
+        } else {
+            sensor_status.append("not available");
+        }
+        sensor_status_view.setText(sensor_status.toString());
+
+    }
+
 
     private void setVersionName(){
         String versionName = null;
@@ -114,7 +144,7 @@ public class SystemStatus extends ActivityWithMenu {
         }
     }
 
-    public void setCollectionMethod() {
+    private void setCollectionMethod() {
         collection_method.setText(prefs.getString("dex_collection_method", "BluetoothWixel"));
     }
 
@@ -126,7 +156,7 @@ public class SystemStatus extends ActivityWithMenu {
         }
     }
 
-    public void setConnectionStatus() {
+    private void setConnectionStatus() {
         boolean connected = false;
         if (mBluetoothManager != null && activeBluetoothDevice != null) {
             for (BluetoothDevice bluetoothDevice : mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
@@ -142,7 +172,7 @@ public class SystemStatus extends ActivityWithMenu {
         }
     }
 
-    public void setNotes() {
+    private void setNotes() {
         if(mBluetoothManager == null) {
             notes.append("\n- This device does not seem to support bluetooth");
         } else {
@@ -156,7 +186,7 @@ public class SystemStatus extends ActivityWithMenu {
         }
     }
 
-    public void restartButtonListener() {
+    private void restartButtonListener() {
         restart_collection_service.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 CollectionServiceStarter.restartCollectionService(getApplicationContext());
@@ -165,7 +195,7 @@ public class SystemStatus extends ActivityWithMenu {
         });
     }
 
-    public void forgetDeviceListener() {
+    private void forgetDeviceListener() {
         forget_device.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if(mBluetoothManager != null && ActiveBluetoothDevice.first() != null) {
@@ -198,7 +228,7 @@ public class SystemStatus extends ActivityWithMenu {
         });
     }
 
-    public void refreshButtonListener() {
+    private void refreshButtonListener() {
         refresh.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 set_current_values();
