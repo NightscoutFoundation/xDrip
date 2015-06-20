@@ -30,7 +30,6 @@ public class xDripWidget extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         final int N = appWidgetIds.length;
         for (int i = 0; i < N; i++) {
-            updateAppWidget(context, appWidgetManager, appWidgetIds[i]);
 
             //Add behaviour: open xDrip on click
             Intent intent = new Intent(context, Home.class);
@@ -39,7 +38,10 @@ public class xDripWidget extends AppWidgetProvider {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.x_drip_widget);
             views.setOnClickPendingIntent(R.id.xDripwidget, pendingIntent);;
             appWidgetManager.updateAppWidget(appWidgetId, views);
-            
+
+            //update the widget
+            updateAppWidget(context, appWidgetManager, appWidgetIds[i]);
+
         }
     }
 
