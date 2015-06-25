@@ -141,6 +141,11 @@ public class DexCollectionService extends Service {
                     Log.w(TAG, "Removing from foreground");
                 }
             }
+            if(key.equals("dex_collection_method") || key.equals("dex_txid")){
+                //if the input method or ID changed, accept any new package once even if they seem duplicates
+                Log.d(TAG, "collection method or txID changed - setting lastdata to null");
+                lastdata = null;
+            }
         }
     };
 
