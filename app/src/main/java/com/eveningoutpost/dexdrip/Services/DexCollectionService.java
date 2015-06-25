@@ -114,6 +114,7 @@ public class DexCollectionService extends Service {
             stopSelf();
             return START_NOT_STICKY;
         }
+        lastdata = null;
         attemptConnection();
         return START_STICKY;
     }
