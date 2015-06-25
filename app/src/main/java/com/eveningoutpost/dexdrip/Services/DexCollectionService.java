@@ -306,11 +306,12 @@ public class DexCollectionService extends Service {
 
     private Integer convertSrc(final String Src) {
         Integer res = 0;
-        res |= getSrcValue(Src.charAt(0)) << 20;
-        res |= getSrcValue(Src.charAt(1)) << 15;
-        res |= getSrcValue(Src.charAt(2)) << 10;
-        res |= getSrcValue(Src.charAt(3)) << 5;
-        res |= getSrcValue(Src.charAt(4));
+        String tmpSrc = Src.toUpperCase();
+        res |= getSrcValue(tmpSrc.charAt(0)) << 20;
+        res |= getSrcValue(tmpSrc.charAt(1)) << 15;
+        res |= getSrcValue(tmpSrc.charAt(2)) << 10;
+        res |= getSrcValue(tmpSrc.charAt(3)) << 5;
+        res |= getSrcValue(tmpSrc.charAt(4));
         return res;
     }
 
