@@ -22,7 +22,8 @@
                 android:key="cloud_storage_mongodb_uri"
                 android:dialogTitle="@string/pref_dialog_mongodb_uri"
                 android:dialogMessage="@string/pref_message_mongodb_uri"
-                android:defaultValue="@string/pref_default_mongodb_uri">
+                android:defaultValue="@string/pref_default_mongodb_uri"
+                android:inputType="textUri">
             </EditTextPreference>
             <EditTextPreference
                 android:dependency="cloud_storage_mongodb_enable"
@@ -60,7 +61,8 @@
                 android:key="cloud_storage_api_base"
                 android:dialogTitle="@string/pref_dialog_api_url"
                 android:dialogMessage="@string/pref_message_api_url"
-                android:defaultValue="@string/pref_default_api_url">
+                android:defaultValue="@string/pref_default_api_url"
+                android:inputType="textUri">
             </EditTextPreference>
 
         </PreferenceScreen>
@@ -73,20 +75,20 @@
             <CheckBoxPreference
                 android:key="share_upload"
                 android:title="Upload BG values as Dexcom Share"
-                android:summary="Enable this to upload to dexcoms servers"
+                android:summary="Enable this to upload to Dexcom's servers"
                 android:defaultValue="false" />
             <EditTextPreference
                 android:dependency="share_upload"
                 android:key="dexcom_account_name"
                 android:title="Dexcom Account Login"
-                android:summary="Your login for Dexcoms Website"
+                android:summary="Your login for Dexcom's Website"
                 android:defaultValue=""/>
             <EditTextPreference
                 android:dependency="share_upload"
                 android:key="dexcom_account_password"
                 android:title="Dexcom Account Password"
                 android:inputType="textPassword"
-                android:summary="Your password for Dexcoms Website"
+                android:summary="Your password for Dexcom's Website"
                 android:defaultValue=""/>
         </PreferenceScreen>
 
