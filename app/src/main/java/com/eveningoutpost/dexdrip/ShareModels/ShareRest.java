@@ -1,12 +1,18 @@
 package com.eveningoutpost.dexdrip.ShareModels;
 
+import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.OkHttpClient;
@@ -36,10 +42,11 @@ import retrofit.mime.TypedByteArray;
 /**
  * Created by stephenblack on 12/26/14.
  */
-public class ShareRest {
+public class ShareRest extends Service {
     private Context mContext;
     private String login;
     private String password;
+    private String receiverSn;
     private SharedPreferences prefs;
     OkClient client;
 
@@ -47,13 +54,32 @@ public class ShareRest {
             .excludeFieldsWithoutExposeAnnotation()
             .create();
 
-    public ShareRest(Context context) {
+    @Override
+    public IBinder onBind(Intent intent) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public void onCreate() {
         client = getOkClient();
-        mContext = context;
-        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        mContext = getApplicationContext();
+        prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
         login = prefs.getString("dexcom_account_name", "");
         password = prefs.getString("dexcom_account_password", "");
+        receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
+        if (prefs.getBoolean("share_upload", false) && login.compareTo("") != 0 && password.compareTo("") != 0 && receiverSn.compareTo("SM00000000") != 0) {
+            //authenticate();
+            //loginAndSendData(bg);
+        } else {
+            stopSelf();
+        }
+        return START_NOT_STICKY;
     }
+
 
     public boolean getBgData() {
         if (prefs.getBoolean("share_poll", false) && login.compareTo("") != 0 && password.compareTo("") != 0) {
@@ -116,6 +142,11 @@ public class ShareRest {
             Log.e("REST CALL ERROR: ", "BOOOO");
             return false;
         }
+    }
+
+    private boolean checkIfSessionStillActive() {
+        return false;
+
     }
 
     private void getBgData(String sessionId) {
