@@ -268,7 +268,7 @@ public class DexShareCollectionService extends Service {
         PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(getApplicationContext().POWER_SERVICE);
         PowerManager.WakeLock wakeLock1 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "ReadingShareData");
-        wakeLock1.acquire(40000);
+        wakeLock1.acquire();
         try {
             Log.d(TAG, "Attempting to read data");
             final Action1<Long> systemTimeListener = new Action1<Long>() {
