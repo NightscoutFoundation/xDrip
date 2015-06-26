@@ -257,7 +257,7 @@ public class DexCollectionService extends Service {
             PowerManager powerManager = (PowerManager) mContext.getSystemService(mContext.POWER_SERVICE);
             PowerManager.WakeLock wakeLock1 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                     "DexCollectionService");
-            wakeLock1.acquire(8000);
+            wakeLock1.acquire();
             try {
                 Log.w(TAG, "onCharacteristicChanged entered");
                 final byte[] data = characteristic.getValue();
