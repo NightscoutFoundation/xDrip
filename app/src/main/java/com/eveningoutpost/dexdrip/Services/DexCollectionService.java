@@ -114,6 +114,7 @@ public class DexCollectionService extends Service {
             stopSelf();
             return START_NOT_STICKY;
         }
+        lastdata = null;
         attemptConnection();
         return START_STICKY;
     }
@@ -140,6 +141,11 @@ public class DexCollectionService extends Service {
                     dexCollectionService.stopForeground(true);
                     Log.w(TAG, "Removing from foreground");
                 }
+            }
+            if(key.equals("dex_collection_method") || key.equals("dex_txid")){
+                //if the input method or ID changed, accept any new package once even if they seem duplicates
+                Log.d(TAG, "collection method or txID changed - setting lastdata to null");
+                lastdata = null;
             }
         }
     };
@@ -306,11 +312,12 @@ public class DexCollectionService extends Service {
 
     private Integer convertSrc(final String Src) {
         Integer res = 0;
-        res |= getSrcValue(Src.charAt(0)) << 20;
-        res |= getSrcValue(Src.charAt(1)) << 15;
-        res |= getSrcValue(Src.charAt(2)) << 10;
-        res |= getSrcValue(Src.charAt(3)) << 5;
-        res |= getSrcValue(Src.charAt(4));
+        String tmpSrc = Src.toUpperCase();
+        res |= getSrcValue(tmpSrc.charAt(0)) << 20;
+        res |= getSrcValue(tmpSrc.charAt(1)) << 15;
+        res |= getSrcValue(tmpSrc.charAt(2)) << 10;
+        res |= getSrcValue(tmpSrc.charAt(3)) << 5;
+        res |= getSrcValue(tmpSrc.charAt(4));
         return res;
     }
 
