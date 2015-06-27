@@ -118,7 +118,15 @@ public class BgSendQueue extends Model {
                 Intent intent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE);
                 intent.putExtras(bundle);
                 intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+
+
                 context.sendBroadcast(intent, Intents.RECEIVER_PERMISSION);
+
+                //just keep it alive for 3 more seconds to allow the watch to be updated
+                // TODO: change NightWatch to not allow the system to sleep.
+                powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                        "broadcstNightWatch").acquire(3000);
+
             }
 
             if(prefs.getBoolean("broadcast_to_pebble", false)) {
