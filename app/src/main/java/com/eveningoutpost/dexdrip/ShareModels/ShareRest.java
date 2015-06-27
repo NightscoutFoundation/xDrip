@@ -38,6 +38,9 @@ import retrofit.client.OkClient;
 import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
 import retrofit.mime.TypedByteArray;
+import rx.Observable;
+import rx.functions.Action1;
+import rx.functions.Action2;
 
 /**
  * Created by stephenblack on 12/26/14.
@@ -47,7 +50,10 @@ public class ShareRest extends Service {
     private String login;
     private String password;
     private String receiverSn;
+    private String sessionId = null;
     private SharedPreferences prefs;
+    private boolean retrying = false;
+    private BgReading bg = null;
     OkClient client;
 
     public static Gson gson = new GsonBuilder()
@@ -64,94 +70,124 @@ public class ShareRest extends Service {
         client = getOkClient();
         mContext = getApplicationContext();
         prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
         login = prefs.getString("dexcom_account_name", "");
         password = prefs.getString("dexcom_account_password", "");
         receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
         if (prefs.getBoolean("share_upload", false) && login.compareTo("") != 0 && password.compareTo("") != 0 && receiverSn.compareTo("SM00000000") != 0) {
-            //authenticate();
-            //loginAndSendData(bg);
+            getValidSessionId();
+        }
+     }
+
+    @Override
+    public int onStartCommand (Intent intent,int flags, int startId) {
+        retrying = false;
+        bg = null;
+        login = prefs.getString("dexcom_account_name", "");
+        password = prefs.getString("dexcom_account_password", "");
+        receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
+        if (prefs.getBoolean("share_upload", false) && login.compareTo("") != 0 && password.compareTo("") != 0 && receiverSn.compareTo("SM00000000") != 0) {
+            if(intent != null ) {
+                String uuid = intent.getStringExtra("BgUuid");
+                if(uuid != null && !uuid.contentEquals("")) {
+                    if(sessionId != null && !sessionId.contentEquals("")) {
+                        bg = BgReading.findByUuid(uuid);
+                        continueUpload();
+                    } else {
+                        getValidSessionId();
+                    }
+                }
+            }
         } else {
             stopSelf();
         }
         return START_NOT_STICKY;
     }
 
+    public void getValidSessionId() {
+        if (sessionId != null && !sessionId.equalsIgnoreCase("")) {
+            try {
+                emptyBodyInterface().checkSessionActive(querySessionMap(sessionId), new Callback() {
+                    @Override
+                    public void success(Object o, Response response) {
+                        Log.d("ShareRest", "Success!! got a response checking if session is active");
+                        if (response.getBody() != null) {
+                            if(response.getBody().toString().toLowerCase().contains("true")) {
+                                Log.d("ShareRest", "Session is active :-)");
+                                StartRemoteMonitoringSession();
+                            } else {
+                                Log.d("ShareRest", "Session is apparently not active :-(");
+                                Log.d("ShareRest", response.getBody().toString());
+                                sessionId = null;
+//                                getValidSessionId(); // TODO: test this and find out if I should retry here
+                            }
+                        }
+                    }
 
-    public boolean getBgData() {
-        if (prefs.getBoolean("share_poll", false) && login.compareTo("") != 0 && password.compareTo("") != 0) {
-            return loginAndGetData();
-        } else {
-            return false;
-        }
-    }
-    public boolean sendBgData(BgReading bg) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        String receiverSn = preferences.getString("share_key", "SM00000000").toUpperCase();
-        if (prefs.getBoolean("share_upload", false) && login.compareTo("") != 0 && password.compareTo("") != 0 && receiverSn.compareTo("SM00000000") != 0) {
-            return loginAndSendData(bg);
-        } else {
-            return false;
-        }
-    }
-
-    private boolean loginAndGetData() {
-        try {
-            dexcomShareAuthorizeInterface().getSessionId(new ShareAuthenticationBody(password, login), new Callback() {
-                @Override
-                public void success(Object o, Response response) {
-                    Log.d("ShareRest", "Success!! got a response on auth.");
-                    String returnedSessionId = new String(((TypedByteArray) response.getBody()).getBytes()).replace("\"", "");
-
-                    getBgData(returnedSessionId);
-                }
-
-                @Override
-                public void failure(RetrofitError retrofitError) {
-                    Log.e("RETROFIT ERROR: ", ""+retrofitError.toString());
-                }
-            });
-            return true;
-        } catch (Exception e) {
+                    @Override
+                    public void failure(RetrofitError retrofitError) {
+                        sessionId = null;
+                        Log.e("RETROFIT ERROR: ", "" + retrofitError.toString());
+                        getValidSessionId();
+                    }
+                });
+            } catch (Exception e) {
                 Log.e("REST CALL ERROR: ", "BOOOO");
-                    return false;
+            }
+        } else {
+            try {
+                jsonBodyInterface().getSessionId(new ShareAuthenticationBody(password, login), new Callback() {
+                    @Override
+                    public void success(Object o, Response response) {
+                        Log.d("ShareRest", "Success!! got a response on auth.");
+                        Log.e("RETROFIT ERROR: ", "Auth succesfull");
+                        sessionId = new String(((TypedByteArray) response.getBody()).getBytes()).replace("\"", "");
+                        getValidSessionId();
+                    }
+
+                    @Override
+                    public void failure(RetrofitError retrofitError) {
+                        sessionId = null;
+                        Log.e("RETROFIT ERROR: ", "" + retrofitError.toString());
+                        Log.e("RETROFIT ERROR: ", "Unable to auth");
+                    }
+                });
+            } catch (Exception e) {
+                Log.e("REST CALL ERROR: ", "BOOOO");
+            }
         }
     }
 
-    private boolean loginAndSendData(final BgReading bg) {
-        try {
-            dexcomShareAuthorizeInterface().getSessionId(new ShareAuthenticationBody(password, login), new Callback() {
-                @Override
-                public void success(Object o, Response response) {
-                    Log.d("ShareRest", "Success!! got a response on auth.");
-                    String returnedSessionId = new String(((TypedByteArray) response.getBody()).getBytes()).replace("\"", "");
+    public void StartRemoteMonitoringSession() {
+        if (sessionId != null && !sessionId.equalsIgnoreCase("")) {
+            try {
+                emptyBodyInterface().StartRemoteMonitoringSession(queryActivateSessionMap(), new Callback() {
+                    @Override
+                    public void success(Object o, Response response) {
+                        Log.d("ShareRest", "Success!! Our remote monitoring session is up!");
+                        if (response.getBody() != null) {
+                           continueUpload();
+                        }
+                    }
 
-                    sendBgData(returnedSessionId, bg);
-                }
-
-                @Override
-                public void failure(RetrofitError retrofitError) {
-                    Log.e("RETROFIT ERROR: ", ""+retrofitError.toString());
-                }
-            });
-            return true;
-        } catch (Exception e) {
-            Log.e("REST CALL ERROR: ", "BOOOO");
-            return false;
+                    @Override
+                    public void failure(RetrofitError retrofitError) {
+                        sessionId = null;
+                        Log.e("RETROFIT ERROR: ", "Unable to start a remote monitoring session");
+                        getValidSessionId();
+                    }
+                });
+            } catch (Exception e) {
+                Log.e("REST CALL ERROR: ", "BOOOO");
+            }
         }
     }
 
-    private boolean checkIfSessionStillActive() {
-        return false;
-
-    }
-
-    private void getBgData(String sessionId) {
-        DataFetcher dataFetcher = new DataFetcher(mContext, sessionId);
-        dataFetcher.execute((Void) null);
+    public void continueUpload() {
+        if(bg != null) {
+            sendBgData(sessionId, bg);
+        } else {
+            Log.d("ShareRest", "No BG, cannot continue");
+        }
     }
 
     private void sendBgData(String sessionId, BgReading bg) {
@@ -159,28 +195,14 @@ public class ShareRest extends Service {
         dataSender.execute((Void) null);
     }
 
-    private DexcomShareInterface dexcomShareAuthorizeInterface() {
+    private DexcomShareInterface jsonBodyInterface() {
         RestAdapter adapter = authoirizeAdapterBuilder().build();
         DexcomShareInterface dexcomShareInterface =
                 adapter.create(DexcomShareInterface.class);
         return dexcomShareInterface;
     }
 
-    private DexcomShareInterface dexcomShareGetBgInterface() {
-        RestAdapter adapter = getBgAdapterBuilder().build();
-        DexcomShareInterface dexcomShareInterface =
-                adapter.create(DexcomShareInterface.class);
-        return dexcomShareInterface;
-    }
-
-    private DexcomShareInterface dexcomShareSendBgInterface() {
-        RestAdapter adapter = authoirizeAdapterBuilder().build();
-        DexcomShareInterface dexcomShareInterface =
-                adapter.create(DexcomShareInterface.class);
-        return dexcomShareInterface;
-    }
-
-    private DexcomShareInterface checkSessionActive() {
+    private DexcomShareInterface emptyBodyInterface() {
         RestAdapter adapter = getBgAdapterBuilder().build();
         DexcomShareInterface checkSessionActive =
                 adapter.create(DexcomShareInterface.class);
@@ -232,7 +254,6 @@ public class ShareRest extends Service {
     };
 
     public OkHttpClient getOkHttpClient() {
-
         try {
             final TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
                 @Override
@@ -271,54 +292,12 @@ public class ShareRest extends Service {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public OkClient getOkClient (){
         OkHttpClient client1 = getOkHttpClient();
         OkClient _client = new OkClient(client1);
         return _client;
-    }
-
-    public Map<String, String> queryParamMap(String sessionId) {
-        Map map = new HashMap<String, String>();
-        map.put("sessionID", sessionId);
-        map.put("minutes", String.valueOf(minutesCount()));
-        map.put("maxCount", String.valueOf(requestCount()));
-        return map;
-
-    }
-
-    public class DataFetcher extends AsyncTask<Void, Void, Boolean> {
-        Context mContext;
-        String mSessionId;
-        DataFetcher(Context context, String sessionId) {
-            mContext = context;
-            mSessionId = sessionId;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            try {
-                try {
-                    final ShareGlucose[] shareGlucoses = dexcomShareGetBgInterface().getShareBg(queryParamMap(mSessionId));
-                    Log.d("REST Success: ", "YAY!");
-                    if(shareGlucoses != null && shareGlucoses.length > 0) {
-                        for (ShareGlucose shareGlucose : shareGlucoses) {
-                            shareGlucose.processShareData(mContext);
-                        }
-                    return true;
-                    }
-                    return false;
-                } catch (Exception e) {
-                    Log.d("REST CALL ERROR: ", "BOOOO");
-                    return false;
-                }
-            }
-            catch (RetrofitError e) { Log.d("Retrofit Error: ", "BOOOO"); }
-            catch (Exception ex) { Log.d("Unrecognized Error: ", "BOOOO"); }
-            return false;
-        }
     }
 
     public class DataSender extends AsyncTask<Void, Void, Boolean> {
@@ -336,15 +315,23 @@ public class ShareRest extends Service {
             try {
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
                 String receiverSn = preferences.getString("share_key", "SM00000000").toUpperCase();
-                dexcomShareSendBgInterface().uploadBGRecords(querySessionMap(mSessionId), new ShareUploadPayload(receiverSn, mBg), new Callback() {
+                jsonBodyInterface().uploadBGRecords(querySessionMap(mSessionId), new ShareUploadPayload(receiverSn, mBg), new Callback() {
                     @Override
                     public void success(Object o, Response response) {
                         Log.d("ShareRest", "Success!! Uploaded!!");
+                        bg = null;
                     }
 
                     @Override
                     public void failure(RetrofitError retrofitError) {
                         Log.e("RETROFIT ERROR: ", ""+retrofitError.toString());
+                        if(retrofitError.toString().contains("EvgPost is only allowed when monitoring session is active") && retrying == false) {
+                            sessionId = null;
+                            retrying = true;
+                            getValidSessionId();
+                        } else {
+                            bg = null;
+                        }
                     }
                 });
             }
@@ -353,30 +340,17 @@ public class ShareRest extends Service {
             return false;
         }
     }
-    public int requestCount() {
-        BgReading bg = BgReading.last();
-        if(bg != null) {
-            return 20;
-        } else if (bg.timestamp < new Date().getTime()) {
-            return Math.min((int) Math.ceil(((new Date().getTime() - bg.timestamp) / (5 * 1000 * 60))), 10);
-        } else {
-            return 1;
-        }
-    }
-
-    public int minutesCount() {
-        BgReading bg = BgReading.last();
-        if(bg != null && bg.timestamp < new Date().getTime()) {
-            return Math.min((int) Math.ceil(((new Date().getTime() - bg.timestamp) / (1000 * 60))), 1440);
-        } else {
-            return 1440;
-        }
-    }
 
     public Map<String, String> querySessionMap(String sessionId) {
         Map map = new HashMap<String, String>();
         map.put("sessionID", sessionId);
         return map;
+    }
 
+    public Map<String, String> queryActivateSessionMap() {
+        Map map = new HashMap<String, String>();
+        map.put("sessionID", sessionId);
+        map.put("serialNumber", receiverSn);
+        return map;
     }
 }

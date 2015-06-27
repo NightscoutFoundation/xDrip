@@ -12,9 +12,6 @@ import retrofit.http.QueryMap;
  * Created by stephenblack on 3/16/15.
  */
 public interface DexcomShareInterface {
-    @POST("/Publisher/ReadPublisherLatestGlucoseValues")
-    ShareGlucose[] getShareBg(@QueryMap Map<String, String> options);
-
     @POST("/General/LoginPublisherAccountByName")
     void getSessionId(@Body ShareAuthenticationBody body, Callback<Response> callback);
     //Since this seems to respond with a string we need a callback that will parse the response body
@@ -25,9 +22,14 @@ public interface DexcomShareInterface {
     // needs ?sessionId={YourSessionId}
     // returns true or false
 
+    @POST("/Publisher/StartRemoteMonitoringSession")
+    void StartRemoteMonitoringSession(@QueryMap Map<String, String> options, Callback<Response> callback);
+    // needs ?sessionId={YourSessionId}&serialNumber={YourdexcomSerialNumber}
+    // returns status code
+
     @POST("/Publisher/PostReceiverEgvRecords")
     void uploadBGRecords(@QueryMap Map<String, String> options, @Body ShareUploadPayload payload, Callback<Response> callback);
     // needs ?sessionId={YourSessionId}
     // body ShareUploadPayload
-    // status code
+    // returns status code
 }

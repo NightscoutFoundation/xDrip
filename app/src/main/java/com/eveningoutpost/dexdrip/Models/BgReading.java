@@ -490,6 +490,15 @@ public class BgReading extends Model {
                 .orderBy("timestamp desc")
                 .execute();
     }
+    public static BgReading findByUuid(String uuid) {
+        return new Select()
+                .from(BgReading.class)
+                .where("uuid = " + uuid)
+                .where("calculated_value != 0")
+                .where("raw_data != 0")
+                .orderBy("timestamp desc")
+                .executeSingle();
+    }
 
     public static double estimated_bg(double timestamp) {
         timestamp = timestamp + BESTOFFSET;
@@ -783,7 +792,7 @@ public class BgReading extends Model {
             return false;
         }
         float time3 = (latest.get(0).timestamp - latest.get(3).timestamp) / 60000;
-        double bg_diff3 = latest.get(3).calculated_value - latest.get(0).calculated_value;;
+        double bg_diff3 = latest.get(3).calculated_value - latest.get(0).calculated_value;
         if (!drop) {
             bg_diff3 *= (-1);
         }
@@ -874,10 +883,7 @@ public class BgReading extends Model {
     // Should that be combined with noiseValue?
     private Boolean Unclear() {
         Log.e(TAG_ALERT, "Unclear filtered_data=" + filtered_data + " raw_data=" + raw_data);
-        if (raw_data > filtered_data * 1.3 || raw_data < filtered_data * 0.7) {
-            return true;
-        }
-        return false;
+        return raw_data > filtered_data * 1.3 || raw_data < filtered_data * 0.7;
     }
 
     /*
