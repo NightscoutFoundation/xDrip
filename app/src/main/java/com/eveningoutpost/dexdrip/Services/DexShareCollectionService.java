@@ -129,19 +129,16 @@ public class DexShareCollectionService extends Service {
 
             if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
                 stopSelf();
-                wakeLock.release();
                 return START_NOT_STICKY;
             }
             if (CollectionServiceStarter.isBTShare(getApplicationContext())) {
                 setFailoverTimer();
             } else {
                 stopSelf();
-                wakeLock.release();
                 return START_NOT_STICKY;
             }
             if (Sensor.currentSensor() == null) {
                 setRetryTimer();
-                wakeLock.release();
                 return START_NOT_STICKY;
             }
             Log.w(TAG, "STARTING SERVICE");

@@ -335,6 +335,8 @@ public class BgGraphBuilder {
         if(doMgdl) {
             return delta_sign + df.format(unitized(value)) + " mg/dl";
         } else {
+            df.setMinimumFractionDigits(1);
+            df.setMinimumIntegerDigits(1);
             return delta_sign + df.format(unitized(value)) + " mmol";
         }
     }

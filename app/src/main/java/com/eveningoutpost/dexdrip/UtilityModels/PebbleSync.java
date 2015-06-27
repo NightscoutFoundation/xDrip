@@ -171,27 +171,16 @@ public class PebbleSync extends Service {
     }
 
     public String slopeOrdinal(){
-        double slope_by_minute = mBgReading.calculated_value_slope * 60000;
-        String arrow = "0";
-        if (slope_by_minute <= (-3.5)) {
-            arrow = "7";
-        } else if (slope_by_minute <= (-2)) {
-            arrow = "6";
-        } else if (slope_by_minute <= (-1)) {
-            arrow = "5";
-        } else if (slope_by_minute <= (1)) {
-            arrow = "4";
-        } else if (slope_by_minute <= (2)) {
-            arrow = "3";
-        } else if (slope_by_minute <= (3.5)) {
-            arrow = "2";
-        } else {
-            arrow = "1";
-        }
-        if(mBgReading.hide_slope) {
-            arrow = "9";
-        }
-        return arrow;
+        String arrow_name = mBgReading.slopeName();
+        if(arrow_name.compareTo("DoubleDown")==0) return "7";
+        if(arrow_name.compareTo("SingleDown")==0) return "6";
+        if(arrow_name.compareTo("FortyFiveDown")==0) return "5";
+        if(arrow_name.compareTo("Flat")==0) return "4";
+        if(arrow_name.compareTo("FortyFiveUp")==0) return "3";
+        if(arrow_name.compareTo("SingleUp")==0) return "2";
+        if(arrow_name.compareTo("DoubleUp")==0) return "1";
+        if(arrow_name.compareTo("9")==0) return arrow_name;
+        return "0";
     }
 }
 

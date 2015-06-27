@@ -30,7 +30,8 @@
             android:key="wifi_recievers_addresses"
             android:dialogTitle="@string/wifi_recievers_dialog_title"
             android:dialogMessage="@string/wifi_recievers_dialog_message"
-            android:defaultValue="">
+            android:defaultValue=""
+            android:inputType="textUri">
         </EditTextPreference>
     </PreferenceCategory>
 </PreferenceScreen>

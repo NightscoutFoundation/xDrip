@@ -20,11 +20,11 @@ public class Sensor extends Model {
 
 //    @Expose
     @Column(name = "started_at", index = true)
-    public double started_at;
+    public long started_at;
 
 //    @Expose
     @Column(name = "stopped_at")
-    public double stopped_at;
+    public long stopped_at;
 
 //    @Expose
     @Column(name = "latest_battery_level")
@@ -34,7 +34,7 @@ public class Sensor extends Model {
     @Column(name = "uuid", index = true)
     public String uuid;
 
-    public static Sensor create(double started_at) {
+    public static Sensor create(long started_at) {
         Sensor sensor = new Sensor();
         sensor.started_at = started_at;
         sensor.uuid = UUID.randomUUID().toString();
