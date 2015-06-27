@@ -46,6 +46,7 @@ import rx.functions.Action2;
  * Created by stephenblack on 12/26/14.
  */
 public class ShareRest extends Service {
+    private final static String TAG = ShareRest.class.getSimpleName();
     private Context mContext;
     private String login;
     private String password;
@@ -67,15 +68,13 @@ public class ShareRest extends Service {
 
     @Override
     public void onCreate() {
+        Log.d(TAG, "Creating service");
         client = getOkClient();
         mContext = getApplicationContext();
         prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         login = prefs.getString("dexcom_account_name", "");
         password = prefs.getString("dexcom_account_password", "");
         receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
-        if (prefs.getBoolean("share_upload", false) && login.compareTo("") != 0 && password.compareTo("") != 0 && receiverSn.compareTo("SM00000000") != 0) {
-            getValidSessionId();
-        }
      }
 
     @Override
@@ -85,14 +84,19 @@ public class ShareRest extends Service {
         login = prefs.getString("dexcom_account_name", "");
         password = prefs.getString("dexcom_account_password", "");
         receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
+        Log.d(TAG, "Starting service");
         if (prefs.getBoolean("share_upload", false) && login.compareTo("") != 0 && password.compareTo("") != 0 && receiverSn.compareTo("SM00000000") != 0) {
             if(intent != null ) {
                 String uuid = intent.getStringExtra("BgUuid");
+
+                Log.d(TAG, "UUID: " + uuid);
+                bg = BgReading.findByUuid(uuid);
                 if(uuid != null && !uuid.contentEquals("")) {
                     if(sessionId != null && !sessionId.contentEquals("")) {
-                        bg = BgReading.findByUuid(uuid);
+                        Log.d(TAG, "New BG reading found and session exists");
                         continueUpload();
                     } else {
+                        Log.d(TAG, "New BG reading found but session does not exist");
                         getValidSessionId();
                     }
                 }
@@ -106,19 +110,20 @@ public class ShareRest extends Service {
     public void getValidSessionId() {
         if (sessionId != null && !sessionId.equalsIgnoreCase("")) {
             try {
+                Log.d(TAG, "Session ID not null, checking if active");
                 emptyBodyInterface().checkSessionActive(querySessionMap(sessionId), new Callback() {
                     @Override
                     public void success(Object o, Response response) {
-                        Log.d("ShareRest", "Success!! got a response checking if session is active");
+                        Log.d(TAG, "Success!! got a response checking if session is active");
                         if (response.getBody() != null) {
-                            if(response.getBody().toString().toLowerCase().contains("true")) {
-                                Log.d("ShareRest", "Session is active :-)");
-                                StartRemoteMonitoringSession();
+                            if(new String(((TypedByteArray) response.getBody()).getBytes()).toLowerCase().contains("true")) {
+                                Log.d(TAG, "Session is active :-)");
+                                continueUpload();
                             } else {
-                                Log.d("ShareRest", "Session is apparently not active :-(");
-                                Log.d("ShareRest", response.getBody().toString());
+                                Log.d(TAG, "Session is apparently not active :-(");
+                                Log.d(TAG, new String(((TypedByteArray) response.getBody()).getBytes()));
                                 sessionId = null;
-//                                getValidSessionId(); // TODO: test this and find out if I should retry here
+                                StartRemoteMonitoringSession();
                             }
                         }
                     }
@@ -135,10 +140,11 @@ public class ShareRest extends Service {
             }
         } else {
             try {
+                Log.d(TAG, "Session ID is null, Getting a new one");
                 jsonBodyInterface().getSessionId(new ShareAuthenticationBody(password, login), new Callback() {
                     @Override
                     public void success(Object o, Response response) {
-                        Log.d("ShareRest", "Success!! got a response on auth.");
+                        Log.d(TAG, "Success!! got a response on auth.");
                         Log.e("RETROFIT ERROR: ", "Auth succesfull");
                         sessionId = new String(((TypedByteArray) response.getBody()).getBytes()).replace("\"", "");
                         getValidSessionId();
@@ -163,7 +169,7 @@ public class ShareRest extends Service {
                 emptyBodyInterface().StartRemoteMonitoringSession(queryActivateSessionMap(), new Callback() {
                     @Override
                     public void success(Object o, Response response) {
-                        Log.d("ShareRest", "Success!! Our remote monitoring session is up!");
+                        Log.d(TAG, "Success!! Our remote monitoring session is up!");
                         if (response.getBody() != null) {
                            continueUpload();
                         }
@@ -173,7 +179,6 @@ public class ShareRest extends Service {
                     public void failure(RetrofitError retrofitError) {
                         sessionId = null;
                         Log.e("RETROFIT ERROR: ", "Unable to start a remote monitoring session");
-                        getValidSessionId();
                     }
                 });
             } catch (Exception e) {
@@ -186,7 +191,7 @@ public class ShareRest extends Service {
         if(bg != null) {
             sendBgData(sessionId, bg);
         } else {
-            Log.d("ShareRest", "No BG, cannot continue");
+            Log.d(TAG, "No BG, cannot continue");
         }
     }
 
@@ -213,7 +218,7 @@ public class ShareRest extends Service {
         RestAdapter.Builder adapterBuilder = new RestAdapter.Builder();
         adapterBuilder
                 .setClient(client)
-                .setLogLevel(RestAdapter.LogLevel.FULL).setLog(new AndroidLog("SHAREREST"))
+                .setLogLevel(RestAdapter.LogLevel.FULL).setLog(new AndroidLog(TAG))
                 .setEndpoint("https://share1.dexcom.com/ShareWebServices/Services")
                 .setRequestInterceptor(authorizationRequestInterceptor)
                 .setConverter(new GsonConverter(new GsonBuilder()
@@ -226,7 +231,7 @@ public class ShareRest extends Service {
         RestAdapter.Builder adapterBuilder = new RestAdapter.Builder();
         adapterBuilder
                 .setClient(client)
-                .setLogLevel(RestAdapter.LogLevel.FULL).setLog(new AndroidLog("SHAREREST"))
+                .setLogLevel(RestAdapter.LogLevel.FULL).setLog(new AndroidLog(TAG))
                 .setEndpoint("https://share1.dexcom.com/ShareWebServices/Services")
                 .setRequestInterceptor(getBgRequestInterceptor)
                 .setConverter(new GsonConverter(new GsonBuilder()
@@ -318,7 +323,7 @@ public class ShareRest extends Service {
                 jsonBodyInterface().uploadBGRecords(querySessionMap(mSessionId), new ShareUploadPayload(receiverSn, mBg), new Callback() {
                     @Override
                     public void success(Object o, Response response) {
-                        Log.d("ShareRest", "Success!! Uploaded!!");
+                        Log.d(TAG, "Success!! Uploaded!!");
                         bg = null;
                     }
 

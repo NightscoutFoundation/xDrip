@@ -493,10 +493,7 @@ public class BgReading extends Model {
     public static BgReading findByUuid(String uuid) {
         return new Select()
                 .from(BgReading.class)
-                .where("uuid = " + uuid)
-                .where("calculated_value != 0")
-                .where("raw_data != 0")
-                .orderBy("timestamp desc")
+                .where("uuid = ?", uuid)
                 .executeSingle();
     }
 

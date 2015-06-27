@@ -75,7 +75,6 @@ public class BgSendQueue extends Model {
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "sendQueue");
         wakeLock.acquire();
-
         try {
             BgSendQueue bgSendQueue = new BgSendQueue();
             bgSendQueue.operation_type = operation_type;
@@ -126,9 +125,9 @@ public class BgSendQueue extends Model {
             }
 
             if (prefs.getBoolean("share_upload", false)) {
-                Intent shareIntent = new Intent(context, ShareRest.class);
-                shareIntent.putExtra("bg_uuid", bgReading.uuid);
                 Log.w("ShareRest", "About to call ShareRest!!");
+                Intent shareIntent = new Intent(context, ShareRest.class);
+                shareIntent.putExtra("BgUuid", bgReading.uuid);
                 context.startService(shareIntent);
             }
             context.startService(new Intent(context, SyncService.class));

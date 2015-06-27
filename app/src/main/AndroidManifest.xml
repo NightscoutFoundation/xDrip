@@ -15,7 +15,6 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.BATTERY_STATS" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
-    <uses-permission android:name="android.permission-group.DEVICE_ALARMS" />
 
     <application
         android:name=".xdrip" android:allowBackup="true" android:icon="@drawable/ic_launcher"
@@ -66,6 +65,7 @@
         <service android:name=".UtilityModels.Notifications" android:exported="false" />
         <service android:name=".Services.MissedReadingIntentService" android:exported="false" />
         <service android:name=".UtilityModels.PebbleSync" android:enabled="true" android:exported="true" />
+        <service android:name=".ShareModels.ShareRest" android:enabled="true" android:exported="true" />
 
         <receiver android:name=".AutoStart" >
             <intent-filter>
