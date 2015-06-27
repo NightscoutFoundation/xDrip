@@ -680,11 +680,11 @@ public class BgReading extends Model {
         return gson.toJson(this);
     }
 
-    public String noiseValue() {
+    public int noiseValue() {
         if(noise == null || noise.compareTo("") == 0) {
-            return "1";
+            return 1;
         } else {
-            return String.valueOf(noise);
+            return Integer.valueOf(noise);
         }
     }
 

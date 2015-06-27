@@ -91,6 +91,7 @@
                 android:summary="Your password for Dexcom's Website"
                 android:defaultValue=""/>
             <EditTextPreference
+                android:dependency="share_upload"
                 android:title="10 Character Dexcom Receiver Serial Number"
                 android:key="share_key"
                 android:shouldDisableView="true"
