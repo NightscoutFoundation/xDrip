@@ -22,24 +22,18 @@ import java.util.List;
  * Implementation of App Widget functionality.
  */
 public class xDripWidget extends AppWidgetProvider {
-    public static RemoteViews views;
-    public static Context mContext;
-    public static String TAG = "xDripWidget";
+
+    public static final String TAG = "xDripWidget";
 
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         final int N = appWidgetIds.length;
         for (int i = 0; i < N; i++) {
+
+            //update the widget
             updateAppWidget(context, appWidgetManager, appWidgetIds[i]);
 
-            //Add behaviour: open xDrip on click
-            Intent intent = new Intent(context, Home.class);
-            int appWidgetId = appWidgetIds[i];
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.x_drip_widget);
-            views.setOnClickPendingIntent(R.id.xDripwidget, pendingIntent);;
-            appWidgetManager.updateAppWidget(appWidgetId, views);
         }
     }
 
@@ -55,23 +49,27 @@ public class xDripWidget extends AppWidgetProvider {
         // Enter relevant functionality for when the last widget is disabled
     }
 
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-        mContext = context;
-        views = new RemoteViews(context.getPackageName(), R.layout.x_drip_widget);
+    private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.x_drip_widget);
         Log.d(TAG, "Update widget signal received");
-        displayCurrentInfo(appWidgetManager, appWidgetId);
+
+        //Add behaviour: open xDrip on click
+        Intent intent = new Intent(context, Home.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        views.setOnClickPendingIntent(R.id.xDripwidget, pendingIntent);;
+        displayCurrentInfo(appWidgetManager, appWidgetId, context, views);
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
 
-    public static void displayCurrentInfo(AppWidgetManager appWidgetManager, int appWidgetId) {
-        BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(mContext);
+    private static void displayCurrentInfo(AppWidgetManager appWidgetManager, int appWidgetId, Context context, RemoteViews views) {
+        BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
         BgReading lastBgreading = BgReading.lastNoSenssor();
         if (lastBgreading != null) {
             double estimate = 0;
             int height = appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT);
             int width = appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
-            views.setImageViewBitmap(R.id.widgetGraph, new BgSparklineBuilder(mContext)
+            views.setImageViewBitmap(R.id.widgetGraph, new BgSparklineBuilder(context)
                     .setBgGraphBuilder(bgGraphBuilder)
                     .setHeight(height).setWidth(width).build());
 

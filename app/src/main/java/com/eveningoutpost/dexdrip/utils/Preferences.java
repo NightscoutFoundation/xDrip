@@ -8,6 +8,7 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -17,6 +18,7 @@ import android.preference.PreferenceGroup;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -182,7 +184,7 @@ public class Preferences extends PreferenceActivity {
             final Preference predictiveBG = findPreference("predictive_bg");
             final Preference interpretRaw = findPreference("interpret_raw");
             final Preference shareKey = findPreference("share_key");
-            final Preference transmitterId = findPreference("dex_txid");
+            final EditTextPreference transmitterId = (EditTextPreference) findPreference("dex_txid");
             final Preference pebbleSync = findPreference("broadcast_to_pebble");
             final PreferenceCategory collectionCategory = (PreferenceCategory) findPreference("collection_category");
             final PreferenceCategory otherCategory = (PreferenceCategory) findPreference("other_category");
@@ -226,6 +228,8 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValue(collectionMethod);
             bindPreferenceSummaryToValue(shareKey);
             bindPreferenceSummaryToValue(wifiRecievers);
+            bindPreferenceSummaryToValue(transmitterId);
+            transmitterId.getEditText().setFilters(new InputFilter[]{new InputFilter.AllCaps()});
             collectionMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {

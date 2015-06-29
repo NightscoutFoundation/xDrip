@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by stephenblack on 6/8/15.
  */
-public class ListActivityWithMenu extends ListActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public abstract class ListActivityWithMenu extends ListActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     private NavDrawerBuilder navDrawerBuilder;
     private List<Intent> intent_list;
     private List<String> menu_option_list;
@@ -48,7 +48,5 @@ public class ListActivityWithMenu extends ListActivity implements NavigationDraw
         }
     }
 
-    public String getMenuName() { //NOTE: THIS MUST BE OVERRIDEN!!!
-        throw new RuntimeException("MUST OVERRIDE THIS!");
-    }
+    public abstract String getMenuName();
 }
