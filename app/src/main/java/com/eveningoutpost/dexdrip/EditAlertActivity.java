@@ -3,9 +3,7 @@ package com.eveningoutpost.dexdrip;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -14,10 +12,8 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -25,7 +21,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.text.InputType;
-import android.text.Layout;
 import android.text.format.DateFormat;
 import android.text.method.DigitsKeyListener;
 import android.util.Log;
@@ -47,7 +42,6 @@ import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 public class EditAlertActivity extends ActivityWithMenu {
@@ -73,6 +67,10 @@ public class EditAlertActivity extends ActivityWithMenu {
     LinearLayout timeInstructions;
     TextView viewTimeStart;
     TextView viewTimeEnd;
+    TextView timeInstructionsStart;
+    TextView timeInstructionsEnd;
+
+
 
     int startHour = 0;
     int startMinute = 0;
@@ -135,6 +133,10 @@ public class EditAlertActivity extends ActivityWithMenu {
 
         layoutTimeBetween = (LinearLayout) findViewById(R.id.time_between);
         timeInstructions = (LinearLayout) findViewById(R.id.time_instructions);
+        timeInstructionsStart = (TextView) findViewById(R.id.time_instructions_start);
+        timeInstructionsEnd = (TextView) findViewById(R.id.time_instructions_end);
+
+
         viewTimeStart = (TextView) findViewById(R.id.view_alert_time_start);
         viewTimeEnd = (TextView) findViewById(R.id.view_alert_time_end);
         editSnooze = (EditText) findViewById(R.id.edit_snooze);
@@ -216,7 +218,7 @@ public class EditAlertActivity extends ActivityWithMenu {
 
             above =at.above;
             alertText.setText(at.name);
-            alertThreshold.setText(UnitsConvert2Disp(doMgdl, at.threshold));
+            alertThreshold.setText(unitsConvert2Disp(doMgdl, at.threshold));
             checkboxAllDay.setChecked(at.all_day);
             checkboxAlertOverride.setChecked(at.override_silent_mode);
             defaultSnooze = at.default_snooze;
@@ -259,7 +261,8 @@ public class EditAlertActivity extends ActivityWithMenu {
     public String getMenuName() {
         return menu_name;
     }
-    public static String UnitsConvert2Disp(boolean doMgdl, double threshold) {
+
+    public static String unitsConvert2Disp(boolean doMgdl, double threshold) {
         DecimalFormat df = new DecimalFormat("#");
         if(doMgdl ) {
             df.setMaximumFractionDigits(0);
@@ -272,7 +275,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         }
     }
 
-    double UnitsConvertFromDisp(double threshold ) {
+    double unitsConvertFromDisp(double threshold) {
         if(doMgdl ) {
             return threshold;
         } else {
@@ -360,7 +363,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                 catch (NumberFormatException nfe) {
                     Log.e(TAG, "Invalid number", nfe);
                 }
-                threshold = UnitsConvertFromDisp(threshold);
+                threshold = unitsConvertFromDisp(threshold);
                 if(!verifyThreshold(threshold)) {
                     return;
                 }
@@ -481,7 +484,9 @@ public class EditAlertActivity extends ActivityWithMenu {
             }
         });
 
-        viewTimeStart.setOnClickListener(new View.OnClickListener() {
+        //Register Liseners to modify start and end time
+
+        View.OnClickListener startTimeListener = new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -497,9 +502,9 @@ public class EditAlertActivity extends ActivityWithMenu {
                 mTimePicker.show();
 
             }
-        });
+        } ;
 
-        viewTimeEnd.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener endTimeListener = new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -515,7 +520,13 @@ public class EditAlertActivity extends ActivityWithMenu {
                 mTimePicker.show();
 
             }
-        });
+        };
+
+        viewTimeStart.setOnClickListener(startTimeListener);
+        timeInstructionsStart.setOnClickListener(startTimeListener);
+        viewTimeEnd.setOnClickListener(endTimeListener);
+        timeInstructionsEnd.setOnClickListener(endTimeListener);
+
     }
 
 
@@ -705,7 +716,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         catch (NumberFormatException nfe) {
             Log.e(TAG, "Invalid number", nfe);
         }
-        threshold = UnitsConvertFromDisp(threshold);
+        threshold = unitsConvertFromDisp(threshold);
         if(!verifyThreshold(threshold)) {
             return;
         }
