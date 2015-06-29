@@ -261,7 +261,8 @@
                             android:gravity="left"
                             android:text="(tap to change)"
                             android:textSize="15sp"
-                            android:paddingRight="25dp" />
+                            android:paddingRight="25dp"
+                            android:id="@+id/time_instructions_start"/>
 
 
                         <TextView
@@ -270,7 +271,8 @@
                             android:gravity="left"
                             android:text="(tap to change)"
                             android:textSize="15sp"
-                            android:paddingLeft="25dp" />
+                            android:paddingLeft="25dp"
+                            android:id="@+id/time_instructions_end"/>
 
                     </LinearLayout>
 
