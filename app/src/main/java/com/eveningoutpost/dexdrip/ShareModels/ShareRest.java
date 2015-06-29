@@ -123,7 +123,6 @@ public class ShareRest extends Service {
                             } else {
                                 Log.d(TAG, "Session is apparently not active :-(");
                                 Log.d(TAG, new String(((TypedByteArray) response.getBody()).getBytes()));
-                                sessionId = null;
                                 StartRemoteMonitoringSession();
                             }
                         }

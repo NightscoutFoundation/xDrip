@@ -323,8 +323,12 @@ public class BgReading extends Model {
                     }
                     bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
                 }
-
-                bgReading.calculated_value = Math.min(400, Math.max(40, bgReading.calculated_value));
+                if (bgReading.calculated_value < 10) {
+                    bgReading.calculated_value = 9;
+                    bgReading.hide_slope = true;
+                } else {
+                    bgReading.calculated_value = Math.min(400, Math.max(40, bgReading.calculated_value));
+                }
                 Log.w(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
 
                 bgReading.save();
