@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.ShareModels;
 
+import com.eveningoutpost.dexdrip.ShareModels.UserAgentInfo.UserAgent;
+
 import java.util.Map;
 
 import retrofit.Callback;
@@ -32,4 +34,10 @@ public interface DexcomShareInterface {
     // needs ?sessionId={YourSessionId}
     // body ShareUploadPayload
     // returns status code
+
+    @POST("/Publisher/UpdatePublisherAccountRuntimeInfo")
+    void updatePublisherAccountInfo(@Body UserAgent body, Callback<Response> callback);
+    //Since this seems to respond with a string we need a callback that will parse the response body
+    //new String(((TypedByteArray) response.getBody()).getBytes());
+
 }

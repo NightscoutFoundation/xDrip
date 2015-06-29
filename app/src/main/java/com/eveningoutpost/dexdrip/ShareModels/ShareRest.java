@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.ShareModels.UserAgentInfo.UserAgent;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.google.gson.Gson;
@@ -147,7 +148,7 @@ public class ShareRest extends Service {
                         Log.d(TAG, "Success!! got a response on auth.");
                         Log.e("RETROFIT ERROR: ", "Auth succesfull");
                         sessionId = new String(((TypedByteArray) response.getBody()).getBytes()).replace("\"", "");
-                        getValidSessionId();
+                        sendUserAgentData();
                     }
 
                     @Override
@@ -161,6 +162,27 @@ public class ShareRest extends Service {
                 Log.e("REST CALL ERROR: ", "BOOOO");
             }
         }
+    }
+
+    public void sendUserAgentData() {
+        try {
+            jsonBodyInterface().updatePublisherAccountInfo(new UserAgent(sessionId), new Callback() {
+                @Override
+                public void success(Object o, Response response) {
+                    Log.d(TAG, "User Agent Data Updated!!");
+                    getValidSessionId();
+                }
+
+                @Override
+                public void failure(RetrofitError retrofitError) {
+                    Log.e("RETROFIT ERROR: ", ""+retrofitError.toString());
+                    Log.e("RETROFIT ERROR: ", "Error updating user agent data");
+
+                }
+            });
+        }
+        catch (RetrofitError e) { Log.d("Retrofit Error: ", "BOOOO"); }
+        catch (Exception ex) { Log.d("Unrecognized Error: ", "BOOOO"); }
     }
 
     public void StartRemoteMonitoringSession() {
