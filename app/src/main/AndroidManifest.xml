@@ -102,7 +102,10 @@
             android:enabled="true"
             android:exported="true" >
         </service>
-
+        <activity
+            android:name=".stats.StatsActivity"
+            android:label="StatsActivity" >
+        </activity>
         <activity
             android:name=".SnoozeActivity"
             android:label="@string/title_snooze" >
