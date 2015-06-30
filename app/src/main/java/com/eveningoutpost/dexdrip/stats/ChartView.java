@@ -21,7 +21,10 @@ public class ChartView extends View {
         Log.d("DrawStats", "onDraw");
         super.onDraw(canvas);
         Paint myPaint = new Paint();
-        myPaint.setColor(Color.rgb(255, 255, 255));
+        int r = (int)(Math.random()*255);
+        int g = (int)(Math.random()*255);
+        int b = (int)(Math.random()*255);
+        myPaint.setColor(Color.rgb(r, g, b));
         myPaint.setStrokeWidth(10);
         myPaint.setAntiAlias(true);
         myPaint.setStyle(Paint.Style.STROKE);

@@ -19,7 +19,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TD"
-                android:id="@+id/button_satats_today" />
+                android:id="@+id/button_stats_today" />
 
             <Button
                 android:layout_width="wrap_content"
@@ -31,7 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="7d"
-                android:id="@+id/button_satats_7d" />
+                android:id="@+id/button_stats_7d" />
 
             <Button
                 android:layout_width="wrap_content"

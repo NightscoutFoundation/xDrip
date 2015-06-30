@@ -5,11 +5,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -67,6 +69,31 @@ public class StatsActivity extends ActivityWithMenu {
             }
         });
         mViewPager.setCurrentItem(0);
+
+        registerButtonListeners();
+
+    }
+
+    private void registerButtonListeners() {
+        Button buttonTD = (Button) findViewById(R.id.button_stats_today);
+        Button buttonYTD = (Button) findViewById(R.id.button_stats_yesterday);
+        Button button7d = (Button) findViewById(R.id.button_stats_7d);
+        Button button30d = (Button) findViewById(R.id.button_stats_30d);
+        Button button90d = (Button) findViewById(R.id.button_stats_90d);
+
+        //TODO: real listeners, not just repaint dummies
+
+
+        View.OnClickListener myListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("DrawStats", "button pressed, invalidating");
+                mDemoCollectionPagerAdapter.notifyDataSetChanged();
+                mViewPager.invalidate();
+            }
+        };
+        buttonTD.setOnClickListener(myListener);
+
 
     }
 
@@ -130,6 +157,14 @@ public class StatsActivity extends ActivityWithMenu {
         public CharSequence getPageTitle(int position) {
             return "OBJECT " + (position + 1);
         }
+
+        @Override
+        public int getItemPosition(Object object) {
+            // return POSITION_NONE to update/repaint the views if notifyDataSetChanged()+invalidate() is called
+            return POSITION_NONE;
+        }
+
+
     }
 
     // Instances of this class are fragments representing a single
