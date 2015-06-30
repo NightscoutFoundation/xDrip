@@ -51,20 +51,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:id="@+id/indicator_layout">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="."
-            android:id="@+id/textView4"
-            android:layout_gravity="center_horizontal" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="."
-                android:id="@+id/textView5"
-                android:layout_gravity="center_horizontal" />
         </LinearLayout>
         <android.support.v4.view.ViewPager
         xmlns:android="http://schemas.android.com/apk/res/android"

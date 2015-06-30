@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.R;
@@ -23,6 +24,7 @@ public class StatsActivity extends ActivityWithMenu {
     // representing an object in the collection.
     DemoCollectionPagerAdapter mDemoCollectionPagerAdapter;
     ViewPager mViewPager;
+    TextView[] indicationDots;
 
 
     @Override
@@ -30,13 +32,42 @@ public class StatsActivity extends ActivityWithMenu {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
 
-        // ViewPager and its adapters use support library
-        // fragments, so use getSupportFragmentManager.
         mDemoCollectionPagerAdapter =
                 new DemoCollectionPagerAdapter(
                         getSupportFragmentManager());
+        // set dots for indication
+        indicationDots = new TextView[mDemoCollectionPagerAdapter.getCount()];
+        LinearLayout indicator = (LinearLayout)findViewById(R.id.indicator_layout);
+        for (int i = 0; i < indicationDots.length; i++) {
+            indicationDots[i] = new TextView(this);
+            indicationDots[i].setText("\u25EF");
+            indicationDots[i].setTextSize(15);
+            indicator.addView(indicationDots[i], new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        }
+        indicationDots[0].setText("\u26AB");
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mDemoCollectionPagerAdapter);
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                for (int i = 0; i < indicationDots.length; i++) {
+                    indicationDots[i].setText("\u25EF"); //U+2B24
+                }
+                indicationDots[position].setText("\u26AB");
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        mViewPager.setCurrentItem(0);
+
     }
 
     @Override
@@ -87,7 +118,7 @@ public class StatsActivity extends ActivityWithMenu {
 
         @Override
         public int getCount() {
-            return 100;
+            return 5;
         }
 
         @Override
