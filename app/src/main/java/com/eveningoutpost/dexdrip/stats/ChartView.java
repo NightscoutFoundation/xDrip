@@ -3,9 +3,7 @@ package com.eveningoutpost.dexdrip.stats;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.DashPathEffect;
 import android.graphics.Paint;
-import android.graphics.PathEffect;
 import android.graphics.RectF;
 import android.util.Log;
 import android.view.View;
@@ -15,119 +13,80 @@ import android.view.View;
  */
 public class ChartView extends View {
 
-    private RangeData tdRangeData = null;
-    private boolean tdDataCalculating = false;
+    private RangeData rangeData = null;
+    private boolean ranteDataCalculating = false;
 
     public ChartView(Context context) {
         super(context);
     }
-
-    public void setRandom(double random) {
-        this.random = random;
-    }
-
-    private double random = 0d;
-
 
     @Override
     protected void onDraw(Canvas canvas) {
         Log.d("DrawStats", "onDraw");
         super.onDraw(canvas);
 
+        RangeData rd = getMaybeRangeData();
 
-//        Thread thread = new Thread(){
-//            @Override
-//            public void run() {
-//                super.run();
-//                //TODO: just for testing
-//                DBSearchUtil.readingsToday();
-//                DBSearchUtil.readingsYesterday();
-//                DBSearchUtil.lastXDays(90);
-//                //setRandom(Math.random());
-//                postInvalidate();
-//            }
-//        };
-//        thread.start();
-
-        RangeData rd = getMaybeTDRangeData();
-        if (rd == null){
+        if (rd == null) {
             Paint myPaint = new Paint();
-            int r = (int)(Math.random()*255);
-            int g = (int)(Math.random()*255);
-            int b = (int)(Math.random()*255);
-            myPaint.setColor(Color.rgb(r, g, b));
-            myPaint.setStrokeWidth(3);
+            myPaint.setColor(Color.WHITE);
+            myPaint.setStrokeWidth(2);
             myPaint.setAntiAlias(true);
             myPaint.setStyle(Paint.Style.STROKE);
-            canvas.drawText("Calculating", 10, 10, myPaint);
-            //canvas.drawLine(0, 0, canvas.getWidth(), canvas.getHeight(), myPaint);
+            canvas.drawText("Calculating", 30, canvas.getHeight() / 2, myPaint);
         } else {
 
-            int side = Math.min((canvas.getWidth()-10), (canvas.getHeight()-10));
-
-            RectF rect = new RectF((canvas.getWidth()-side)/2, (canvas.getHeight()-side)/2, (canvas.getWidth()-side)/2+side, (canvas.getHeight()-side)/2+side);
+            int side = Math.min((canvas.getWidth() - 10), (canvas.getHeight() - 10));
+            RectF rect = new RectF((canvas.getWidth() - side) / 2, (canvas.getHeight() - side) / 2, (canvas.getWidth() - side) / 2 + side, (canvas.getHeight() - side) / 2 + side);
             Paint myPaint = new Paint();
             myPaint.setStyle(Paint.Style.FILL_AND_STROKE);
             myPaint.setAntiAlias(true);
 
-            float inDeg = rd.inRange*380f/(rd.inRange + rd.belowRange + rd.aboveRange);
-            float lowDeg = rd.belowRange*380f/(rd.inRange + rd.belowRange + rd.aboveRange);
-            float highDeg = rd.aboveRange*380f/(rd.inRange + rd.belowRange + rd.aboveRange);
+            float inDeg = rd.inRange * 380f / (rd.inRange + rd.belowRange + rd.aboveRange);
+            float lowDeg = rd.belowRange * 380f / (rd.inRange + rd.belowRange + rd.aboveRange);
+            float highDeg = rd.aboveRange * 380f / (rd.inRange + rd.belowRange + rd.aboveRange);
 
 
             myPaint.setColor(android.graphics.Color.RED);
             canvas.drawArc(rect, -90, lowDeg, true, myPaint);
             myPaint.setColor(Color.GREEN);
-            canvas.drawArc(rect, -90+lowDeg, inDeg, true, myPaint);
+            canvas.drawArc(rect, -90 + lowDeg, inDeg, true, myPaint);
             myPaint.setColor(Color.YELLOW);
-            canvas.drawArc(rect, -90+lowDeg+inDeg, highDeg, true, myPaint);
-
-            /*Paint myPaint = new Paint();
-            int r = (int)(Math.random()*255);
-            int g = (int)(Math.random()*255);
-            int b = (int)(Math.random()*255);
-            myPaint.setColor(Color.rgb(r, g, b));
-            myPaint.setStrokeWidth(3);
-            myPaint.setAntiAlias(true);
-            String text = "" + Math.round(rd.inRange*1000d/(rd.inRange + rd.belowRange + rd.aboveRange))/10d +
-                    "%, " + + Math.round(rd.aboveRange*1000d/(rd.inRange + rd.belowRange + rd.aboveRange))/10d +
-                    "%, " + + Math.round(rd.belowRange*1000d/(rd.inRange + rd.belowRange + rd.aboveRange))/10d + "%";
-            canvas.drawText(text, 10, 10, myPaint);*/
+            canvas.drawArc(rect, -90 + lowDeg + inDeg, highDeg, true, myPaint);
         }
 
 
-
     }
 
 
-    public  synchronized  void setTdRangeData(RangeData rd){
-        tdRangeData = rd;
+    public synchronized void setRangeData(RangeData rd) {
+        rangeData = rd;
         postInvalidate();
     }
 
-    public synchronized RangeData getMaybeTDRangeData(){
-        if (!tdDataCalculating){
-            tdDataCalculating = true;
-            Thread thread = new Thread(){
+
+    //return either RangeData or start a calculation if not already started
+    public synchronized RangeData getMaybeRangeData() {
+        if (!ranteDataCalculating) {
+            ranteDataCalculating = true;
+            Thread thread = new Thread() {
                 @Override
                 public void run() {
                     super.run();
                     RangeData rd = new RangeData();
-                    rd.aboveRange = DBSearchUtil.readingsAboveRangeAfterTimestamp(getContext());
-                    rd.belowRange = DBSearchUtil.readingsBelowRangeAfterTimestamp( getContext());
-                    rd.inRange = DBSearchUtil.readingsInRangeAfterTimestamp(getContext());
-                    setTdRangeData(rd);
+                    rd.aboveRange = DBSearchUtil.noReadingsAboveRange(getContext());
+                    rd.belowRange = DBSearchUtil.noReadingsBelowRange(getContext());
+                    rd.inRange = DBSearchUtil.noReadingsInRange(getContext());
+                    setRangeData(rd);
                 }
             };
             thread.start();
-
         }
-
-
-        return tdRangeData;
+        //will return null if not precalculated
+        return rangeData;
     }
 
-    protected class RangeData  {
+    protected class RangeData {
         public int inRange;
         public int aboveRange;
         public int belowRange;

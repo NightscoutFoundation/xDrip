@@ -2,17 +2,14 @@ package com.eveningoutpost.dexdrip.stats;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.LightingColorFilter;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Sensor;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -32,7 +29,7 @@ public class DBSearchUtil {
                 .execute();
     }
 
-    public static int readingsAboveRangeAfterTimestamp(Context context) {
+    public static int noReadingsAboveRange(Context context) {
         long stop = System.currentTimeMillis();
         long start = System.currentTimeMillis();
 
@@ -66,7 +63,7 @@ public class DBSearchUtil {
                 .where("calculated_value > " + high).count();
     }
 
-    public static int readingsInRangeAfterTimestamp(Context context) {
+    public static int noReadingsInRange(Context context) {
         long stop = System.currentTimeMillis();
         long start = System.currentTimeMillis();
 
@@ -102,7 +99,7 @@ public class DBSearchUtil {
                 .count();
     }
 
-    public static int readingsBelowRangeAfterTimestamp(Context context) {
+    public static int noReadingsBelowRange(Context context) {
         long stop = System.currentTimeMillis();
         long start = System.currentTimeMillis();
 
