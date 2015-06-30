@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.stats;
 
+import android.graphics.Color;
+import android.graphics.LightingColorFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -27,12 +29,25 @@ public class StatsActivity extends ActivityWithMenu {
     DemoCollectionPagerAdapter mDemoCollectionPagerAdapter;
     ViewPager mViewPager;
     TextView[] indicationDots;
+    private Button buttonTD;
+    private Button buttonYTD;
+    private Button button7d;
+    private Button button30d;
+    private Button button90d;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
+
+        buttonTD = (Button) findViewById(R.id.button_stats_today);
+        buttonYTD = (Button) findViewById(R.id.button_stats_yesterday);
+        button7d = (Button) findViewById(R.id.button_stats_7d);
+        button30d = (Button) findViewById(R.id.button_stats_30d);
+        button90d = (Button) findViewById(R.id.button_stats_90d);
+
+
 
         mDemoCollectionPagerAdapter =
                 new DemoCollectionPagerAdapter(
@@ -43,7 +58,7 @@ public class StatsActivity extends ActivityWithMenu {
         for (int i = 0; i < indicationDots.length; i++) {
             indicationDots[i] = new TextView(this);
             indicationDots[i].setText("\u25EF");
-            indicationDots[i].setTextSize(15);
+            indicationDots[i].setTextSize(12);
             indicator.addView(indicationDots[i], new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
         indicationDots[0].setText("\u26AB");
@@ -75,24 +90,31 @@ public class StatsActivity extends ActivityWithMenu {
     }
 
     private void registerButtonListeners() {
-        Button buttonTD = (Button) findViewById(R.id.button_stats_today);
-        Button buttonYTD = (Button) findViewById(R.id.button_stats_yesterday);
-        Button button7d = (Button) findViewById(R.id.button_stats_7d);
-        Button button30d = (Button) findViewById(R.id.button_stats_30d);
-        Button button90d = (Button) findViewById(R.id.button_stats_90d);
+
 
         //TODO: real listeners, not just repaint dummies
-
+        buttonTD.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
 
         View.OnClickListener myListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d("DrawStats", "button pressed, invalidating");
-                mDemoCollectionPagerAdapter.notifyDataSetChanged();
+               mDemoCollectionPagerAdapter.notifyDataSetChanged();
                 mViewPager.invalidate();
+                buttonTD.getBackground().setColorFilter(null);;
+                buttonYTD.getBackground().setColorFilter(null);
+                button7d.getBackground().setColorFilter(null);
+                button30d.getBackground().setColorFilter(null);
+                button90d.getBackground().setColorFilter(null);
+                v.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+
             }
         };
         buttonTD.setOnClickListener(myListener);
+        buttonYTD.setOnClickListener(myListener);
+        button7d.setOnClickListener(myListener);
+        button30d.setOnClickListener(myListener);
+        button90d.setOnClickListener(myListener);
 
 
     }

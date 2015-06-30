@@ -104,7 +104,7 @@
         </service>
         <activity
             android:name=".stats.StatsActivity"
-            android:label="StatsActivity" >
+            android:label="Statistics" >
         </activity>
         <activity
             android:name=".SnoozeActivity"
