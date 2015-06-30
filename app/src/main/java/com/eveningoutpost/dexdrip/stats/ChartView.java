@@ -3,7 +3,10 @@ package com.eveningoutpost.dexdrip.stats;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.PathEffect;
+import android.graphics.RectF;
 import android.util.Log;
 import android.view.View;
 
@@ -59,7 +62,27 @@ public class ChartView extends View {
             canvas.drawText("Calculating", 10, 10, myPaint);
             //canvas.drawLine(0, 0, canvas.getWidth(), canvas.getHeight(), myPaint);
         } else {
+
+            int side = Math.min((canvas.getWidth()-10), (canvas.getHeight()-10));
+
+            RectF rect = new RectF((canvas.getWidth()-side)/2, (canvas.getHeight()-side)/2, (canvas.getWidth()-side)/2+side, (canvas.getHeight()-side)/2+side);
             Paint myPaint = new Paint();
+            myPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+            myPaint.setAntiAlias(true);
+
+            float inDeg = rd.inRange*380f/(rd.inRange + rd.belowRange + rd.aboveRange);
+            float lowDeg = rd.belowRange*380f/(rd.inRange + rd.belowRange + rd.aboveRange);
+            float highDeg = rd.aboveRange*380f/(rd.inRange + rd.belowRange + rd.aboveRange);
+
+
+            myPaint.setColor(android.graphics.Color.RED);
+            canvas.drawArc(rect, -90, lowDeg, true, myPaint);
+            myPaint.setColor(Color.GREEN);
+            canvas.drawArc(rect, -90+lowDeg, inDeg, true, myPaint);
+            myPaint.setColor(Color.YELLOW);
+            canvas.drawArc(rect, -90+lowDeg+inDeg, highDeg, true, myPaint);
+
+            /*Paint myPaint = new Paint();
             int r = (int)(Math.random()*255);
             int g = (int)(Math.random()*255);
             int b = (int)(Math.random()*255);
@@ -69,7 +92,7 @@ public class ChartView extends View {
             String text = "" + Math.round(rd.inRange*1000d/(rd.inRange + rd.belowRange + rd.aboveRange))/10d +
                     "%, " + + Math.round(rd.aboveRange*1000d/(rd.inRange + rd.belowRange + rd.aboveRange))/10d +
                     "%, " + + Math.round(rd.belowRange*1000d/(rd.inRange + rd.belowRange + rd.aboveRange))/10d + "%";
-            canvas.drawText(text, 10, 10, myPaint);
+            canvas.drawText(text, 10, 10, myPaint);*/
         }
 
 
@@ -90,9 +113,9 @@ public class ChartView extends View {
                 public void run() {
                     super.run();
                     RangeData rd = new RangeData();
-                    rd.aboveRange = DBSearchUtil.readingsAboveRangeAfterTimestamp(DBSearchUtil.getTodayTimestamp(), getContext()).size();
-                    rd.belowRange = DBSearchUtil.readingsBelowRangeAfterTimestamp(DBSearchUtil.getTodayTimestamp(), getContext()).size();
-                    rd.inRange = DBSearchUtil.readingsInRangeAfterTimestamp(DBSearchUtil.getTodayTimestamp(), getContext()).size();
+                    rd.aboveRange = DBSearchUtil.readingsAboveRangeAfterTimestamp(getContext());
+                    rd.belowRange = DBSearchUtil.readingsBelowRangeAfterTimestamp( getContext());
+                    rd.inRange = DBSearchUtil.readingsInRangeAfterTimestamp(getContext());
                     setTdRangeData(rd);
                 }
             };

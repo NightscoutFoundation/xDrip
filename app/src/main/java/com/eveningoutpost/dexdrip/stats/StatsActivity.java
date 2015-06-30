@@ -34,7 +34,13 @@ public class StatsActivity extends ActivityWithMenu {
     private Button button7d;
     private Button button30d;
     private Button button90d;
+    public static final int TODAY = 0;
+    public static final int YESTERDAY = 1;
+    public static final int D7 = 2;
+    public static final int D30 = 3;
+    public static final int D90 = 4;
 
+    public static int state = TODAY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,29 +90,56 @@ public class StatsActivity extends ActivityWithMenu {
             }
         });
         mViewPager.setCurrentItem(0);
-
+        setButtonColors();
         registerButtonListeners();
 
     }
+
+    void setButtonColors(){
+        buttonTD.getBackground().setColorFilter(null);;
+        buttonYTD.getBackground().setColorFilter(null);
+        button7d.getBackground().setColorFilter(null);
+        button30d.getBackground().setColorFilter(null);
+        button90d.getBackground().setColorFilter(null);
+        switch (state){
+            case TODAY: buttonTD.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+                break;
+            case YESTERDAY: buttonYTD.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+                break;
+            case D7: button7d.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+                break;
+            case D30: button30d.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+                break;
+            case D90: button90d.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+                break;
+        }
+    }
+
 
     private void registerButtonListeners() {
 
 
         //TODO: real listeners, not just repaint dummies
-        buttonTD.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
-
         View.OnClickListener myListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if (v == buttonTD){
+                    state = TODAY;
+                } else if (v == buttonYTD){
+                    state = YESTERDAY;
+                }else if (v == button7d){
+                    state = D7;
+                }else if (v == button30d){
+                    state = D30;
+                }else if (v == button90d){
+                    state = D90;
+                }
+
                 Log.d("DrawStats", "button pressed, invalidating");
                mDemoCollectionPagerAdapter.notifyDataSetChanged();
                 mViewPager.invalidate();
-                buttonTD.getBackground().setColorFilter(null);;
-                buttonYTD.getBackground().setColorFilter(null);
-                button7d.getBackground().setColorFilter(null);
-                button30d.getBackground().setColorFilter(null);
-                button90d.getBackground().setColorFilter(null);
-                v.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+                setButtonColors();
 
             }
         };

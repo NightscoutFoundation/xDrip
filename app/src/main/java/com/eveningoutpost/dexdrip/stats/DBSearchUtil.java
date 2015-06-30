@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.stats;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.LightingColorFilter;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -31,54 +32,116 @@ public class DBSearchUtil {
                 .execute();
     }
 
-    public static List<BgReading> readingsAboveRangeAfterTimestamp(long timestamp, Context context) {
+    public static int readingsAboveRangeAfterTimestamp(Context context) {
+        long stop = System.currentTimeMillis();
+        long start = System.currentTimeMillis();
+
+        switch (StatsActivity.state){
+            case StatsActivity.TODAY:
+                start = getTodayTimestamp();
+                break;
+            case StatsActivity.YESTERDAY:
+                start = getYesterdayTimestamp();
+                stop = getTodayTimestamp();
+                break;
+            case StatsActivity.D7:
+                start= getXDaysTimestamp(7);
+                break;
+            case StatsActivity.D30:
+                start= getXDaysTimestamp(30);
+                break;
+            case StatsActivity.D90:
+                start= getXDaysTimestamp(90);
+                break;
+        }
+
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
         int high = Integer.parseInt(settings.getString("highValue", "170"));
         int low = Integer.parseInt(settings.getString("lowValue", "70"));
-        Sensor sensor = Sensor.currentSensor();
         return new Select()
                 .from(BgReading.class)
-                .where("timestamp >= " + timestamp)
+                .where("timestamp >= " + start)
+                .where("timestamp <= " + stop)
                 .where("calculated_value != 0")
-                .where("calculated_value > " + high)
-                .orderBy("timestamp desc")
-                .execute();
+                .where("calculated_value > " + high).count();
     }
 
-    public static List<BgReading> readingsInRangeAfterTimestamp(long timestamp, Context context) {
+    public static int readingsInRangeAfterTimestamp(Context context) {
+        long stop = System.currentTimeMillis();
+        long start = System.currentTimeMillis();
+
+        switch (StatsActivity.state){
+            case StatsActivity.TODAY:
+                start = getTodayTimestamp();
+                break;
+            case StatsActivity.YESTERDAY:
+                start = getYesterdayTimestamp();
+                stop = getTodayTimestamp();
+                break;
+            case StatsActivity.D7:
+                start= getXDaysTimestamp(7);
+                break;
+            case StatsActivity.D30:
+                start= getXDaysTimestamp(30);
+                break;
+            case StatsActivity.D90:
+                start= getXDaysTimestamp(90);
+                break;
+        }
+
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
         int high = Integer.parseInt(settings.getString("highValue", "170"));
         int low = Integer.parseInt(settings.getString("lowValue", "70"));
-        Sensor sensor = Sensor.currentSensor();
         return new Select()
                 .from(BgReading.class)
-                .where("timestamp >= " + timestamp)
+                .where("timestamp >= " + start)
+                .where("timestamp <= " + stop)
                 .where("calculated_value != 0")
                 .where("calculated_value <= " + high)
                 .where("calculated_value >= " + low)
-                .orderBy("timestamp desc")
-                .execute();
+                .count();
     }
 
-    public static List<BgReading> readingsBelowRangeAfterTimestamp(long timestamp, Context context) {
+    public static int readingsBelowRangeAfterTimestamp(Context context) {
+        long stop = System.currentTimeMillis();
+        long start = System.currentTimeMillis();
+
+        switch (StatsActivity.state){
+            case StatsActivity.TODAY:
+                start = getTodayTimestamp();
+                break;
+            case StatsActivity.YESTERDAY:
+                start = getYesterdayTimestamp();
+                stop = getTodayTimestamp();
+                break;
+            case StatsActivity.D7:
+                start= getXDaysTimestamp(7);
+                break;
+            case StatsActivity.D30:
+                start= getXDaysTimestamp(30);
+                break;
+            case StatsActivity.D90:
+                start= getXDaysTimestamp(90);
+                break;
+        }
+
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
         int high = Integer.parseInt(settings.getString("highValue", "170"));
         int low = Integer.parseInt(settings.getString("lowValue", "70"));
-        Sensor sensor = Sensor.currentSensor();
-        return new Select()
+        int count = new Select()
                 .from(BgReading.class)
-                .where("timestamp >= " + timestamp)
+                .where("timestamp >= " + start)
+                .where("timestamp <= " + stop)
                 .where("calculated_value != 0")
                 .where("calculated_value < " + low)
-                .orderBy("timestamp desc")
-                .execute();
+                .count();
+        return count;
     }
 
 
 
 
     public static List<BgReading> readingsBetweenTimestamps(long start, long stop) {
-        Sensor sensor = Sensor.currentSensor();
         return new Select()
                 .from(BgReading.class)
                 .where("timestamp >= " + start)
@@ -95,6 +158,22 @@ public class DBSearchUtil {
         date.set(Calendar.MINUTE, 0);
         date.set(Calendar.SECOND, 0);
         date.set(Calendar.MILLISECOND, 0);
+        return date.getTimeInMillis();
+    }
+
+    public static long getYesterdayTimestamp(){
+        Calendar date = new GregorianCalendar();
+        date.set(Calendar.HOUR_OF_DAY, 0);
+        date.set(Calendar.MINUTE, 0);
+        date.set(Calendar.SECOND, 0);
+        date.set(Calendar.MILLISECOND, 0);
+        date.add(Calendar.DATE, -1);
+        return date.getTimeInMillis();
+    }
+
+    public static long getXDaysTimestamp(int x){
+        Calendar date = new GregorianCalendar();
+        date.add(Calendar.DATE, -x);
         return date.getTimeInMillis();
     }
 
