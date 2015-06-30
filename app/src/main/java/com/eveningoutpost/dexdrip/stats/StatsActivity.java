@@ -108,6 +108,11 @@ public class StatsActivity extends ActivityWithMenu {
 
         @Override
         public Fragment getItem(int i) {
+
+            if (i ==1) {
+                return new ChartFragment();
+            }
+
             Fragment fragment = new DemoObjectFragment();
             Bundle args = new Bundle();
             // Our object is just an integer :-P
