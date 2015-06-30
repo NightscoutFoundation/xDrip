@@ -1,9 +1,13 @@
 package com.eveningoutpost.dexdrip.stats;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Sensor;
 
 import java.util.Calendar;
@@ -27,6 +31,52 @@ public class DBSearchUtil {
                 .execute();
     }
 
+    public static List<BgReading> readingsAboveRangeAfterTimestamp(long timestamp, Context context) {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+        int high = Integer.parseInt(settings.getString("highValue", "170"));
+        int low = Integer.parseInt(settings.getString("lowValue", "70"));
+        Sensor sensor = Sensor.currentSensor();
+        return new Select()
+                .from(BgReading.class)
+                .where("timestamp >= " + timestamp)
+                .where("calculated_value != 0")
+                .where("calculated_value > " + high)
+                .orderBy("timestamp desc")
+                .execute();
+    }
+
+    public static List<BgReading> readingsInRangeAfterTimestamp(long timestamp, Context context) {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+        int high = Integer.parseInt(settings.getString("highValue", "170"));
+        int low = Integer.parseInt(settings.getString("lowValue", "70"));
+        Sensor sensor = Sensor.currentSensor();
+        return new Select()
+                .from(BgReading.class)
+                .where("timestamp >= " + timestamp)
+                .where("calculated_value != 0")
+                .where("calculated_value <= " + high)
+                .where("calculated_value >= " + low)
+                .orderBy("timestamp desc")
+                .execute();
+    }
+
+    public static List<BgReading> readingsBelowRangeAfterTimestamp(long timestamp, Context context) {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+        int high = Integer.parseInt(settings.getString("highValue", "170"));
+        int low = Integer.parseInt(settings.getString("lowValue", "70"));
+        Sensor sensor = Sensor.currentSensor();
+        return new Select()
+                .from(BgReading.class)
+                .where("timestamp >= " + timestamp)
+                .where("calculated_value != 0")
+                .where("calculated_value < " + low)
+                .orderBy("timestamp desc")
+                .execute();
+    }
+
+
+
+
     public static List<BgReading> readingsBetweenTimestamps(long start, long stop) {
         Sensor sensor = Sensor.currentSensor();
         return new Select()
@@ -38,6 +88,15 @@ public class DBSearchUtil {
                 .execute();
     }
 
+
+    public static long getTodayTimestamp(){
+        Calendar date = new GregorianCalendar();
+        date.set(Calendar.HOUR_OF_DAY, 0);
+        date.set(Calendar.MINUTE, 0);
+        date.set(Calendar.SECOND, 0);
+        date.set(Calendar.MILLISECOND, 0);
+        return date.getTimeInMillis();
+    }
 
 
     public static List<BgReading> readingsToday() {
