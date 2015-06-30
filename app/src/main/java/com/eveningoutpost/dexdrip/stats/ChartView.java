@@ -20,6 +20,12 @@ public class ChartView extends View {
     protected void onDraw(Canvas canvas) {
         Log.d("DrawStats", "onDraw");
         super.onDraw(canvas);
+
+        //TODO: just for testing
+        DBSearchUtil.readingsToday();
+        DBSearchUtil.readingsYesterday();
+        DBSearchUtil.lastXDays(90);
+
         Paint myPaint = new Paint();
         int r = (int)(Math.random()*255);
         int g = (int)(Math.random()*255);
