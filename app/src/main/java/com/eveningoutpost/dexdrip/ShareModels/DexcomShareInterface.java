@@ -35,6 +35,12 @@ public interface DexcomShareInterface {
     // body ShareUploadPayload
     // returns status code
 
+    @POST("/General/AuthenticatePublisherAccount")
+    void authenticatePublisherAccount(@Body ShareAuthenticationBody body, @QueryMap Map<String, String> options, Callback<Response> callback);
+    // maybe needs ?sessionId={YourSessionId}&serialNumber={YourdexcomSerialNumber}
+    // body ShareUploadPayload
+    // returns status code
+
     @POST("/Publisher/UpdatePublisherAccountRuntimeInfo")
     void updatePublisherAccountInfo(@Body UserAgent body, Callback<Response> callback);
     //Since this seems to respond with a string we need a callback that will parse the response body

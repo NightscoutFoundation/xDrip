@@ -187,24 +187,43 @@ public class ShareRest extends Service {
     public void StartRemoteMonitoringSession() {
         if (sessionId != null && !sessionId.equalsIgnoreCase("")) {
             try {
-                emptyBodyInterface().StartRemoteMonitoringSession(queryActivateSessionMap(), new Callback() {
+                jsonBodyInterface().authenticatePublisherAccount(new ShareAuthenticationBody(password, login), queryActivateSessionMap(), new Callback() {
                     @Override
                     public void success(Object o, Response response) {
-                        Log.d(TAG, "Success!! Our remote monitoring session is up!");
-                        if (response.getBody() != null) {
-                           continueUpload();
+                        Log.d(TAG, "Success!! Authenticated Publisher account!!!");
+
+                        try {
+                            emptyBodyInterface().StartRemoteMonitoringSession(queryActivateSessionMap(), new Callback() {
+                                @Override
+                                public void success(Object o, Response response) {
+                                    Log.d(TAG, "Success!! Our remote monitoring session is up!");
+                                    if (response.getBody() != null) {
+                                        continueUpload();
+                                    }
+                                }
+
+                                @Override
+                                public void failure(RetrofitError retrofitError) {
+                                    sessionId = null;
+                                    Log.e("RETROFIT ERROR: ", "Unable to start a remote monitoring session");
+                                }
+                            });
+                        } catch (Exception e) {
+                            Log.e("REST CALL ERROR: ", "BOOOO");
                         }
                     }
 
                     @Override
                     public void failure(RetrofitError retrofitError) {
                         sessionId = null;
-                        Log.e("RETROFIT ERROR: ", "Unable to start a remote monitoring session");
+                        Log.e("RETROFIT ERROR: ", "Unable to authenticate publisher account");
                     }
                 });
             } catch (Exception e) {
                 Log.e("REST CALL ERROR: ", "BOOOO");
             }
+
+
         }
     }
 
