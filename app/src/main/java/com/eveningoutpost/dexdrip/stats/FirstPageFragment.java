@@ -8,28 +8,33 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.eveningoutpost.dexdrip.R;
+
 /**
  * Created by adrian on 30/06/15.
  */
-public class ChartFragment extends Fragment {
+public class FirstPageFragment extends Fragment {
 
-    private FirstPage chartView;
+    private FirstPage firstPage;
+
+    private View myView;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d("DrawStats", "onCreateView");
+
+        myView = inflater.inflate(
+                R.layout.stats_general, container, false);
+
         return getView();
     }
 
     @Nullable
     @Override
     public View getView() {
-        Log.d("DrawStats", "getView");
 
-        if(chartView == null){
-            chartView = new FirstPage(getActivity().getApplicationContext());
-        }
-        return chartView;
+        //TODO: Update?
+       return myView;
     }
 }

@@ -209,9 +209,11 @@ public class StatsActivity extends ActivityWithMenu {
         @Override
         public Fragment getItem(int i) {
 
-            if (i == 1) {
-                return new ChartFragment();
+            switch (i){
+                case 0: return new FirstPageFragment();
+                case 1: return new ChartFragment();
             }
+
 
             Fragment fragment = new MockupFragment();
             Bundle args = new Bundle();
