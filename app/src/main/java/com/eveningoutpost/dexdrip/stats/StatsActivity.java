@@ -209,13 +209,13 @@ public class StatsActivity extends ActivityWithMenu {
             switch (i){
                 case 0: return new FirstPageFragment();
                 case 1: return new ChartFragment();
+                case 2: return new PercentileFragment();
             }
-
 
             Fragment fragment = new MockupFragment();
             Bundle args = new Bundle();
             // Our object is just an integer
-            args.putInt(MockupFragment.ARG_OBJECT, i -1);
+            args.putInt(MockupFragment.ARG_OBJECT, i -2);
             fragment.setArguments(args);
             return fragment;
         }
