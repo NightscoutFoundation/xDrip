@@ -72,25 +72,52 @@ public class FirstPageFragment extends Fragment {
             TextView rangespercent = (TextView) localView.findViewById(R.id.textView_ranges_percent);
             TextView rangesabsolute = (TextView) localView.findViewById(R.id.textView_ranges_absolute);
 
-            updateText(rangespercent, inRange*100/total + "%/" + aboveRange*100/total + "%/" + belowRange*100/total + "%");
-            updateText(rangesabsolute, inRange + "/" + aboveRange + "/" + belowRange);
+            updateText(localView, rangespercent, inRange*100/total + "%/" + aboveRange*100/total + "%/" + belowRange*100/total + "%");
+            updateText(localView, rangesabsolute, inRange + "/" + aboveRange + "/" + belowRange);
+
+
+
 
 
         }
 
-        private void updateText(final TextView tv, final String s){
+        private void updateText(final View localView, final TextView tv, final String s){
             Log.d("DrawStats", "updateText: " + s);
 
-            boolean success = tv.post(new Runnable() {
+            Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    tv.setText(s);
-                    Log.d("DrawStats", "setText actually called: " + s);
 
+                    //Adrian: after screen rotation it might take some time to attach the view to the window
+                    //Wait up to 3 seconds for this to happen.
+                    int i = 0;
+                    while (localView.getHandler() == null && i < 10){
+                        i++;
+                        try {
+                            Thread.sleep(300);
+                        } catch (InterruptedException e) {
+                        }
+
+                    }
+
+                    if (localView.getHandler() == null){
+                        Log.d("DrawStats", "no Handler found - stopping to update view");
+                        return;
+                    }
+
+
+                    boolean success = localView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            tv.setText(s);
+                            Log.d("DrawStats", "setText actually called: " + s);
+
+                        }
+                    });
+                    Log.d("DrawStats", "updateText: " + s + " success: " + success);
                 }
             });
-            Log.d("DrawStats", "updateText: " + s + " success: " + success);
-
+            thread.start();
 
         }
 
