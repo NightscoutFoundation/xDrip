@@ -1,7 +1,9 @@
 package com.eveningoutpost.dexdrip.stats;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.R;
 
@@ -42,7 +45,7 @@ public class FirstPageFragment extends Fragment {
         //TODO: Update?
 
 
-       return myView;
+        return myView;
     }
 
 
@@ -61,7 +64,11 @@ public class FirstPageFragment extends Fragment {
         public void run() {
             super.run();
             Log.d("DrawStats", "FirstPageFragment CalculationThread started");
-            if (context == null){
+
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+            boolean mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
+
+            if (context == null) {
                 Log.d("DrawStats", "FirstPageFragment context == null, do not calculate if fragment is not attached");
                 return;
             }
@@ -75,54 +82,62 @@ public class FirstPageFragment extends Fragment {
             TextView rangespercent = (TextView) localView.findViewById(R.id.textView_ranges_percent);
             TextView rangesabsolute = (TextView) localView.findViewById(R.id.textView_ranges_absolute);
 
-            updateText(localView, rangespercent, inRange*100/total + "%/" + aboveRange*100/total + "%/" + belowRange*100/total + "%");
+            updateText(localView, rangespercent, inRange * 100 / total + "%/" + aboveRange * 100 / total + "%/" + belowRange * 100 / total + "%");
             updateText(localView, rangesabsolute, inRange + "/" + aboveRange + "/" + belowRange);
 
             List<BgReading> bgList = DBSearchUtil.getReadingsOrderedInTimeframe(context);
-            if (bgList.size() > 0){
-                double median = bgList.get(bgList.size()/2).calculated_value;
-                median = Math.round(median*10)/10;
+            if (bgList.size() > 0) {
+                double median = bgList.get(bgList.size() / 2).calculated_value;
                 TextView medianView = (TextView) localView.findViewById(R.id.textView_median);
-                updateText(localView, medianView, median + "");
+
+                if (mgdl) {
+                    updateText(localView, medianView, Math.round(median * 10) / 10d + " mg/dl");
+
+                } else {
+                    updateText(localView, medianView, Math.round(median * Constants.MG_DL_TO_MMOL_L * 100) / 100d + " mmol/l");
+
+                }
 
                 double mean = 0;
                 double len = bgList.size();
                 double stdev = 0;
-                for(BgReading bgr : bgList){
-                    mean += bgr.calculated_value/len;
+                for (BgReading bgr : bgList) {
+                    mean += bgr.calculated_value / len;
                 }
 
                 TextView meanView = (TextView) localView.findViewById(R.id.textView_mean);
                 //update mean
-                updateText(localView, meanView, (Math.round(mean*10)/10) + "");
+                if (mgdl) {
+                    updateText(localView, meanView, (Math.round(mean * 10) / 10d) + " mg/dl");
+                } else {
+                    updateText(localView, meanView, (Math.round(mean * Constants.MG_DL_TO_MMOL_L * 100) / 100d) + " mmol/l");
+
+                }
                 //update A1c
                 TextView a1cView = (TextView) localView.findViewById(R.id.textView_a1c);
-                double a1c_ifcc = Math.round(((mean+46.7)/28.7 - 2.15)*10.929);
-                double a1c_dcct = Math.round(10*(mean+46.7)/28.7)/10d;
+                int a1c_ifcc = (int) Math.round(((mean + 46.7) / 28.7 - 2.15) * 10.929);
+                double a1c_dcct = Math.round(10 * (mean + 46.7) / 28.7) / 10d;
                 updateText(localView, a1cView, a1c_ifcc + " mmol/mol\n" + a1c_dcct + "%");
 
 
-
-                for(BgReading bgr : bgList){
-                    stdev += (bgr.calculated_value-mean)*(bgr.calculated_value-mean)/len;
+                for (BgReading bgr : bgList) {
+                    stdev += (bgr.calculated_value - mean) * (bgr.calculated_value - mean) / len;
                 }
                 stdev = Math.sqrt(stdev);
                 TextView stdevView = (TextView) localView.findViewById(R.id.textView_stdev);
-                updateText(localView, stdevView, (Math.round(stdev*10)/10) + "");
-
-
-
+                if (mgdl) {
+                    updateText(localView, stdevView, (Math.round(stdev * 10) / 10d) + " mg/dl");
+                } else {
+                    updateText(localView, stdevView, (Math.round(stdev * Constants.MG_DL_TO_MMOL_L * 100) / 100d) + " mmol/l");
+                }
 
 
             }
 
 
-
-
-
         }
 
-        private void updateText(final View localView, final TextView tv, final String s){
+        private void updateText(final View localView, final TextView tv, final String s) {
             Log.d("DrawStats", "updateText: " + s);
 
             Thread thread = new Thread(new Runnable() {
@@ -132,7 +147,7 @@ public class FirstPageFragment extends Fragment {
                     //Adrian: after screen rotation it might take some time to attach the view to the window
                     //Wait up to 3 seconds for this to happen.
                     int i = 0;
-                    while (localView.getHandler() == null && i < 10){
+                    while (localView.getHandler() == null && i < 10) {
                         i++;
                         try {
                             Thread.sleep(300);
@@ -141,7 +156,7 @@ public class FirstPageFragment extends Fragment {
 
                     }
 
-                    if (localView.getHandler() == null){
+                    if (localView.getHandler() == null) {
                         Log.d("DrawStats", "no Handler found - stopping to update view");
                         return;
                     }

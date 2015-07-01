@@ -9,6 +9,7 @@ import com.activeandroid.Model;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -55,8 +56,15 @@ public class DBSearchUtil {
         }
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-        int high = Integer.parseInt(settings.getString("highValue", "170"));
-        int low = Integer.parseInt(settings.getString("lowValue", "70"));
+        boolean mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
+
+        double high = Double.parseDouble(settings.getString("highValue", "170"));
+        double low = Double.parseDouble(settings.getString("lowValue", "70"));
+        if (!mgdl){
+            high *= Constants.MMOLL_TO_MGDL;
+            low *= Constants.MMOLL_TO_MGDL;
+
+        }
         return new Select()
                 .from(BgReading.class)
                 .where("timestamp >= " + start)
@@ -92,8 +100,16 @@ public class DBSearchUtil {
         }
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-        int high = Integer.parseInt(settings.getString("highValue", "170"));
-        int low = Integer.parseInt(settings.getString("lowValue", "70"));
+        boolean mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
+
+        double high = Double.parseDouble(settings.getString("highValue", "170"));
+        double low = Double.parseDouble(settings.getString("lowValue", "70"));
+        if (!mgdl){
+            high *= Constants.MMOLL_TO_MGDL;
+            low *= Constants.MMOLL_TO_MGDL;
+
+        }
+
         int count =  new Select()
                 .from(BgReading.class)
                 .where("timestamp >= " + start)
@@ -166,8 +182,15 @@ public class DBSearchUtil {
         }
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-        int high = Integer.parseInt(settings.getString("highValue", "170"));
-        int low = Integer.parseInt(settings.getString("lowValue", "70"));
+        boolean mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
+
+        double high = Double.parseDouble(settings.getString("highValue", "170"));
+        double low = Double.parseDouble(settings.getString("lowValue", "70"));
+        if (!mgdl){
+            high *= Constants.MMOLL_TO_MGDL;
+            low *= Constants.MMOLL_TO_MGDL;
+
+        }
         int count =  new Select()
                 .from(BgReading.class)
                 .where("timestamp >= " + start)
@@ -203,10 +226,16 @@ public class DBSearchUtil {
                 start= getXDaysTimestamp(90);
                 break;
         }
-
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-        int high = Integer.parseInt(settings.getString("highValue", "170"));
-        int low = Integer.parseInt(settings.getString("lowValue", "70"));
+        boolean mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
+
+        double high = Double.parseDouble(settings.getString("highValue", "170"));
+        double low = Double.parseDouble(settings.getString("lowValue", "70"));
+        if (!mgdl){
+            high *= Constants.MMOLL_TO_MGDL;
+            low *= Constants.MMOLL_TO_MGDL;
+
+        }
         int count = new Select()
                 .from(BgReading.class)
                 .where("timestamp >= " + start)
