@@ -18,7 +18,7 @@ public class ChartFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d("DrawStats", "onCreateView");
+        Log.d("DrawStats", "ChartFragment onCreateView");
         return getView();
     }
 
