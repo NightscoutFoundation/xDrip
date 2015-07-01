@@ -104,6 +104,44 @@ public class DBSearchUtil {
         return count;
     }
 
+
+
+
+    public static List<BgReading> getReadingsOrderedInTimeframe(Context context) {
+        long stop = System.currentTimeMillis();
+        long start = System.currentTimeMillis();
+
+        switch (StatsActivity.state){
+            case StatsActivity.TODAY:
+                start = getTodayTimestamp();
+                break;
+            case StatsActivity.YESTERDAY:
+                start = getYesterdayTimestamp();
+                stop = getTodayTimestamp();
+                break;
+            case StatsActivity.D7:
+                start= getXDaysTimestamp(7);
+                break;
+            case StatsActivity.D30:
+                start= getXDaysTimestamp(30);
+                break;
+            case StatsActivity.D90:
+                start= getXDaysTimestamp(90);
+                break;
+        }
+
+        return   new Select()
+                .from(BgReading.class)
+                .where("timestamp >= " + start)
+                .where("timestamp <= " + stop)
+                .where("calculated_value != 0")
+                .orderBy("calculated_value desc")
+                .execute();
+    }
+
+
+
+
     public static int noReadingsInRange(Context context) {
         long stop = System.currentTimeMillis();
         long start = System.currentTimeMillis();

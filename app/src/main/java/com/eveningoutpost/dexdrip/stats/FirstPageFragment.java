@@ -10,7 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.R;
+
+import java.util.List;
 
 /**
  * Created by adrian on 30/06/15.
@@ -74,6 +77,14 @@ public class FirstPageFragment extends Fragment {
 
             updateText(localView, rangespercent, inRange*100/total + "%/" + aboveRange*100/total + "%/" + belowRange*100/total + "%");
             updateText(localView, rangesabsolute, inRange + "/" + aboveRange + "/" + belowRange);
+
+            List<BgReading> bgList = DBSearchUtil.getReadingsOrderedInTimeframe(context);
+            if (bgList.size() > 0){
+                double median = bgList.get(bgList.size()/2).calculated_value;
+                median = Math.round(median*10)/10;
+                TextView medianView = (TextView) localView.findViewById(R.id.textView_median);
+                updateText(localView, medianView, median + "");
+            }
 
 
 
