@@ -1,13 +1,17 @@
 package com.eveningoutpost.dexdrip.stats;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
 /**
  * Created by adrian on 30/06/15.
@@ -17,7 +21,7 @@ public class PercentileView extends View {
     private RangeData rangeData = null;
     private boolean ranteDataCalculating = false;
 
-    public static final int OFFSET = 10;
+    public static final int OFFSET = 20;
 
     public PercentileView(Context context) {
         super(context);
@@ -41,14 +45,6 @@ public class PercentileView extends View {
             canvas.drawText("Calculating", 30, canvas.getHeight() / 2, myPaint);
         } else {
             Log.d("DrawStats", "onDraw else");
-
-            int side = Math.min((canvas.getWidth() - 10), (canvas.getHeight() - 10));
-            RectF rect = new RectF((canvas.getWidth() - side) / 2, (canvas.getHeight() - side) / 2, (canvas.getWidth() - side) / 2 + side, (canvas.getHeight() - side) / 2 + side);
-            Paint myPaint = new Paint();
-            myPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-            myPaint.setAntiAlias(true);
-            myPaint.setColor(Color.BLUE);
-
             int[] q25 = new int[24];
             int[] q75 = new int[24];
             for (int i = 0; i<q25.length; i++){
@@ -56,7 +52,12 @@ public class PercentileView extends View {
                 q75[i] = (int) (200 + Math.random()*200);
             }
 
-            drawPolygon(canvas, myPaint, q25, q75);
+            drawPolygon(canvas, q25, q75, Color.BLUE);
+
+
+
+            drawHighLow(canvas);
+            //draw(canvas);
 
 
 //            myPaint.setColor(Color.WHITE);
@@ -70,19 +71,53 @@ public class PercentileView extends View {
 
     }
 
-    private void drawPolygon(Canvas canvas, Paint myPaint, int[] q25, int[] q75) {
+    private void drawHighLow(Canvas canvas) {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
+        boolean mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
+        double high = Double.parseDouble(settings.getString("highValue", "170"));
+        double low = Double.parseDouble(settings.getString("lowValue", "70"));
+        if (!mgdl){
+            high *= Constants.MMOLL_TO_MGDL;
+            low *= Constants.MMOLL_TO_MGDL;
+
+        }
+
+        int highPosition = (int) (canvas.getHeight() - (high * (canvas.getHeight()-OFFSET)) / 400);
+        int lowPosition = (int) (canvas.getHeight() - (low * (canvas.getHeight()-OFFSET)) / 400);
+        Paint myPaint = new Paint();
+        myPaint.setStyle(Paint.Style.STROKE);
+        myPaint.setAntiAlias(false);
+        myPaint.setColor(Color.RED);
+        myPaint.setStrokeWidth(3);
+        canvas.drawLine(OFFSET, lowPosition, canvas.getWidth(), lowPosition, myPaint);
+        myPaint.setColor(Color.YELLOW);
+        canvas.drawLine(OFFSET, highPosition, canvas.getWidth(), highPosition, myPaint);
+    }
+
+    private void drawPolygon(Canvas canvas, int[] lowerValues, int[] higherValues,  int color) {
+
+        Paint myPaint = new Paint();
+        myPaint.setStyle(Paint.Style.FILL);
+        myPaint.setAntiAlias(true);
+        myPaint.setColor(color);
+
         Path myPath = new Path();
         myPath.reset();
-        myPath.moveTo(0, q25[0] * canvas.getHeight() / 400);
 
         int height = canvas.getHeight() - OFFSET;
 
-        double xStep = canvas.getWidth()*1d/q25.length;
-        for (int i = 1; i<q25.length; i++){
-            myPath.lineTo((int)(i * xStep), (q25[i] * height) / 400);
+        double xStep = (canvas.getWidth()-OFFSET)*1d/lowerValues.length;
+        //lowerValuies
+        myPath.moveTo(OFFSET,canvas.getHeight() - lowerValues[0] * canvas.getHeight() / 400);
+        for (int i = 1; i<lowerValues.length; i++){
+            myPath.lineTo((int)(i * xStep + OFFSET), canvas.getHeight() - (lowerValues[i] * height) / 400);
         }
-        for (int i = q75.length-1; i>=0; i--){
-            myPath.lineTo((int)(i * xStep), (q75[i] * height) / 400);
+        // 00:00 == 24:00
+        myPath.lineTo((int) (lowerValues.length * xStep + OFFSET), canvas.getHeight() - (lowerValues[0] * height) / 400);
+        myPath.lineTo((int) (higherValues.length * xStep + OFFSET), canvas.getHeight() - (higherValues[0] * height) / 400);
+        //higher Values
+        for (int i = higherValues.length-1; i>=0; i--){
+            myPath.lineTo((int)(i * xStep + OFFSET), canvas.getHeight() - (higherValues[i] * height) / 400);
         }
         myPath.close();
         canvas.drawPath(myPath, myPaint);
