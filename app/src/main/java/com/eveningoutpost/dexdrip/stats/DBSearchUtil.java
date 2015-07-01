@@ -94,12 +94,14 @@ public class DBSearchUtil {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
         int high = Integer.parseInt(settings.getString("highValue", "170"));
         int low = Integer.parseInt(settings.getString("lowValue", "70"));
-        return new Select()
+        int count =  new Select()
                 .from(BgReading.class)
                 .where("timestamp >= " + start)
                 .where("timestamp <= " + stop)
                 .where("calculated_value != 0")
                 .where("calculated_value > " + high).count();
+        Log.d("DrawStats", "High count: " + count);
+        return count;
     }
 
     public static int noReadingsInRange(Context context) {
@@ -128,7 +130,7 @@ public class DBSearchUtil {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
         int high = Integer.parseInt(settings.getString("highValue", "170"));
         int low = Integer.parseInt(settings.getString("lowValue", "70"));
-        return new Select()
+        int count =  new Select()
                 .from(BgReading.class)
                 .where("timestamp >= " + start)
                 .where("timestamp <= " + stop)
@@ -136,6 +138,9 @@ public class DBSearchUtil {
                 .where("calculated_value <= " + high)
                 .where("calculated_value >= " + low)
                 .count();
+        Log.d("DrawStats", "In count: " + count);
+
+        return count;
     }
 
     public static int noReadingsBelowRange(Context context) {
@@ -171,6 +176,8 @@ public class DBSearchUtil {
                 .where("calculated_value != 0")
                 .where("calculated_value < " + low)
                 .count();
+        Log.d("DrawStats", "Low count: " + count);
+
         return count;
     }
 

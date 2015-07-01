@@ -13,7 +13,7 @@ import android.view.ViewGroup;
  */
 public class ChartFragment extends Fragment {
 
-    private FirstPage chartView;
+    private ChartView chartView;
 
     @Nullable
     @Override
@@ -28,7 +28,7 @@ public class ChartFragment extends Fragment {
         Log.d("DrawStats", "getView");
 
         if(chartView == null){
-            chartView = new FirstPage(getActivity().getApplicationContext());
+            chartView = new ChartView(getActivity().getApplicationContext());
         }
         return chartView;
     }

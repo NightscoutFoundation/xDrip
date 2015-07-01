@@ -15,8 +15,6 @@ import com.eveningoutpost.dexdrip.R;
  */
 public class FirstPageFragment extends Fragment {
 
-    private FirstPage firstPage;
-
     private View myView;
 
     @Nullable

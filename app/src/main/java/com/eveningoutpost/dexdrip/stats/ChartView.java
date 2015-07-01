@@ -28,6 +28,8 @@ public class ChartView extends View {
         RangeData rd = getMaybeRangeData();
 
         if (rd == null) {
+            Log.d("DrawStats", "onDraw if");
+
             Paint myPaint = new Paint();
             myPaint.setColor(Color.WHITE);
             myPaint.setStrokeWidth(2);
@@ -35,6 +37,7 @@ public class ChartView extends View {
             myPaint.setStyle(Paint.Style.STROKE);
             canvas.drawText("Calculating", 30, canvas.getHeight() / 2, myPaint);
         } else {
+            Log.d("DrawStats", "onDraw else");
 
             int side = Math.min((canvas.getWidth() - 10), (canvas.getHeight() - 10));
             RectF rect = new RectF((canvas.getWidth() - side) / 2, (canvas.getHeight() - side) / 2, (canvas.getWidth() - side) / 2 + side, (canvas.getHeight() - side) / 2 + side);
@@ -42,10 +45,11 @@ public class ChartView extends View {
             myPaint.setStyle(Paint.Style.FILL_AND_STROKE);
             myPaint.setAntiAlias(true);
 
-            float inDeg = rd.inRange * 380f / (rd.inRange + rd.belowRange + rd.aboveRange);
-            float lowDeg = rd.belowRange * 380f / (rd.inRange + rd.belowRange + rd.aboveRange);
-            float highDeg = rd.aboveRange * 380f / (rd.inRange + rd.belowRange + rd.aboveRange);
+            float inDeg = rd.inRange * 360f / (rd.inRange + rd.belowRange + rd.aboveRange);
+            float lowDeg = rd.belowRange * 360f / (rd.inRange + rd.belowRange + rd.aboveRange);
+            float highDeg = rd.aboveRange * 360f / (rd.inRange + rd.belowRange + rd.aboveRange);
 
+            Log.d("DrawStats", "in,low, high degree: " + inDeg + " " + lowDeg + " " + highDeg);
 
             myPaint.setColor(android.graphics.Color.RED);
             canvas.drawArc(rect, -90, lowDeg, true, myPaint);
