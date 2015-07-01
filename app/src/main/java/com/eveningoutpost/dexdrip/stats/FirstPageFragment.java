@@ -84,6 +84,36 @@ public class FirstPageFragment extends Fragment {
                 median = Math.round(median*10)/10;
                 TextView medianView = (TextView) localView.findViewById(R.id.textView_median);
                 updateText(localView, medianView, median + "");
+
+                double mean = 0;
+                double len = bgList.size();
+                double stdev = 0;
+                for(BgReading bgr : bgList){
+                    mean += bgr.calculated_value/len;
+                }
+
+                TextView meanView = (TextView) localView.findViewById(R.id.textView_mean);
+                //update mean
+                updateText(localView, meanView, (Math.round(mean*10)/10) + "");
+                //update A1c
+                TextView a1cView = (TextView) localView.findViewById(R.id.textView_a1c);
+                double a1c_ifcc = Math.round(((mean+46.7)/28.7 - 2.15)*10.929);
+                double a1c_dcct = Math.round(10*(mean+46.7)/28.7)/10d;
+                updateText(localView, a1cView, a1c_ifcc + " mmol/mol\n" + a1c_dcct + "%");
+
+
+
+                for(BgReading bgr : bgList){
+                    stdev += (bgr.calculated_value-mean)*(bgr.calculated_value-mean)/len;
+                }
+                stdev = Math.sqrt(stdev);
+                TextView stdevView = (TextView) localView.findViewById(R.id.textView_stdev);
+                updateText(localView, stdevView, (Math.round(stdev*10)/10) + "");
+
+
+
+
+
             }
 
 
