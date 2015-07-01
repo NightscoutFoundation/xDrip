@@ -42,7 +42,6 @@ public class StatsActivity extends ActivityWithMenu {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
-
         assignButtonNames();
         initPagerAndIndicator();
         setButtonColors();
@@ -190,13 +189,11 @@ public class StatsActivity extends ActivityWithMenu {
         @Override
         public View onCreateView(LayoutInflater inflater,
                                  ViewGroup container, Bundle savedInstanceState) {
-            // The last two arguments ensure LayoutParams are inflated
-            // properly.
             View rootView = inflater.inflate(
                     R.layout.stats_layout_test, container, false);
             Bundle args = getArguments();
             ((TextView) rootView.findViewById(android.R.id.text1)).setText(
-                    Integer.toString(args.getInt(ARG_OBJECT)));
+                    "One more chart? " + Integer.toString(args.getInt(ARG_OBJECT)));
             return rootView;
         }
     }
@@ -218,7 +215,7 @@ public class StatsActivity extends ActivityWithMenu {
             Fragment fragment = new MockupFragment();
             Bundle args = new Bundle();
             // Our object is just an integer
-            args.putInt(MockupFragment.ARG_OBJECT, i + 1);
+            args.putInt(MockupFragment.ARG_OBJECT, i -1);
             fragment.setArguments(args);
             return fragment;
         }
