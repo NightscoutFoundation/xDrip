@@ -222,7 +222,8 @@ public class StatsActivity extends ActivityWithMenu {
 
         @Override
         public int getCount() {
-            return 5;
+            return 3;
+            //return 5; // add mockup views
         }
 
         @Override
