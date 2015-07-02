@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.stats;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.CornerPathEffect;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
 import java.util.Calendar;
@@ -31,11 +33,25 @@ public class PercentileView extends View {
 
     public static final int OFFSET = 30;
     public static final int NO_TIMESLOTS = 48;
-
+    private Paint outerPaint, innerPaint, medianPaint;
 
 
     public PercentileView(Context context) {
         super(context);
+        Resources resources = context.getResources();
+
+        outerPaint = new Paint();
+        outerPaint.setColor(resources.getColor(R.color.percentile_outer));
+        outerPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        outerPaint.setPathEffect(new CornerPathEffect(10));
+        innerPaint = new Paint();
+        innerPaint.setColor(resources.getColor(R.color.percentile_inner));
+        innerPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        innerPaint.setPathEffect(new CornerPathEffect(10));
+        medianPaint = new Paint();
+        medianPaint.setColor(resources.getColor(R.color.percentile_median));
+        medianPaint.setStyle(Paint.Style.STROKE);
+        medianPaint.setPathEffect(new CornerPathEffect(10));
     }
 
     @Override
@@ -56,9 +72,9 @@ public class PercentileView extends View {
             canvas.drawText("Calculating", 30, canvas.getHeight() / 2, myPaint);
         } else {
             Log.d("DrawStats", "onDraw else");
-            drawPolygon(canvas, rd.q10, rd.q90, Color.CYAN, Paint.Style.FILL_AND_STROKE);
-            drawPolygon(canvas, rd.q25, rd.q75, Color.BLUE, Paint.Style.FILL_AND_STROKE);
-            drawPolygon(canvas, rd.q50, rd.q50, Color.WHITE, Paint.Style.STROKE);
+            drawPolygon(canvas, rd.q10, rd.q90, outerPaint);
+            drawPolygon(canvas, rd.q25, rd.q75, innerPaint);
+            drawPolygon(canvas, rd.q50, rd.q50, medianPaint);
 
             drawHighLow(canvas);
             drawGrid(canvas);
@@ -69,15 +85,9 @@ public class PercentileView extends View {
     }
 
     private void drawLegend(Canvas canvas) {
-        Paint myPaint = new Paint();
-        myPaint.setStyle(Paint.Style.STROKE);
-        myPaint.setAntiAlias(false);
-        myPaint.setColor(Color.CYAN);
-        canvas.drawText("10%/90%", OFFSET + 10, 10, myPaint);
-        myPaint.setColor(Color.BLUE);
-        canvas.drawText("25%/75%", OFFSET + 80, 10, myPaint);
-        myPaint.setColor(Color.WHITE);
-        canvas.drawText("50% (median)", OFFSET + 150, 10, myPaint);
+        canvas.drawText("10%/90%", OFFSET + 10, 10, outerPaint);
+        canvas.drawText("25%/75%", OFFSET + 80, 10, innerPaint);
+        canvas.drawText("50% (median)", OFFSET + 150, 10, medianPaint);
     }
 
 
@@ -156,13 +166,7 @@ public class PercentileView extends View {
         canvas.drawLine(OFFSET, highPosition, canvas.getWidth(), highPosition, myPaint);
     }
 
-    private void drawPolygon(Canvas canvas, double[] lowerValues, double[] higherValues, int color, Paint.Style style ) {
-
-        Paint myPaint = new Paint();
-        myPaint.setStyle(style);
-        myPaint.setAntiAlias(true);
-        myPaint.setColor(color);
-        myPaint.setPathEffect(new CornerPathEffect(10));
+    private void drawPolygon(Canvas canvas, double[] lowerValues, double[] higherValues, Paint paint ) {
 
         Path myPath = new Path();
         myPath.reset();
@@ -181,7 +185,7 @@ public class PercentileView extends View {
             myPath.lineTo((int) (i * xStep + OFFSET), getYfromBG(higherValues[i], canvas));
         }
         myPath.close();
-        canvas.drawPath(myPath, myPaint);
+        canvas.drawPath(myPath, paint);
     }
 
     private int getYfromBG(double bgValue, Canvas canvas) {
