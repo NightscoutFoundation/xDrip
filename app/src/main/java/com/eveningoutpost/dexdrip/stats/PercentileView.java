@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.CornerPathEffect;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -11,7 +12,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 
-import com.eveningoutpost.dexdrip.DoubleCalibrationActivity;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
@@ -30,6 +30,9 @@ public class PercentileView extends View {
     private boolean ranteDataCalculating = false;
 
     public static final int OFFSET = 30;
+    public static final int NO_TIMESLOTS = 48;
+
+
 
     public PercentileView(Context context) {
         super(context);
@@ -59,9 +62,22 @@ public class PercentileView extends View {
 
             drawHighLow(canvas);
             drawGrid(canvas);
+            drawLegend(canvas);
         }
 
 
+    }
+
+    private void drawLegend(Canvas canvas) {
+        Paint myPaint = new Paint();
+        myPaint.setStyle(Paint.Style.STROKE);
+        myPaint.setAntiAlias(false);
+        myPaint.setColor(Color.CYAN);
+        canvas.drawText("10%/90%", OFFSET + 10, 10, myPaint);
+        myPaint.setColor(Color.BLUE);
+        canvas.drawText("25%/75%", OFFSET + 80, 10, myPaint);
+        myPaint.setColor(Color.WHITE);
+        canvas.drawText("50% (median)", OFFSET + 150, 10, myPaint);
     }
 
 
@@ -146,6 +162,7 @@ public class PercentileView extends View {
         myPaint.setStyle(style);
         myPaint.setAntiAlias(true);
         myPaint.setColor(color);
+        myPaint.setPathEffect(new CornerPathEffect(10));
 
         Path myPath = new Path();
         myPath.reset();
@@ -187,10 +204,9 @@ public class PercentileView extends View {
                 public void run() {
                     super.run();
                     List<BgReading> readings = DBSearchUtil.getReadings(getContext());
-                    int noTimeslots = 24;
                     int day = 1000 * 60 * 60 * 24;
 
-                    int timeslot = day / noTimeslots;
+                    int timeslot = day / NO_TIMESLOTS;
 
                     Calendar date = new GregorianCalendar();
                     date.set(Calendar.HOUR_OF_DAY, 0);
@@ -200,16 +216,15 @@ public class PercentileView extends View {
 
                     final long offset = date.getTimeInMillis() % day;
 
-                    double[] q10 = new double[noTimeslots];
-                    double[] q25 = new double[noTimeslots];
-                    double[] q50 = new double[noTimeslots];
-                    double[] q75 = new double[noTimeslots];
-                    double[] q90 = new double[noTimeslots];
-
-                    Log.d("LALALA", "readings.size(): " + readings.size());
+                    double[] q10 = new double[NO_TIMESLOTS];
+                    double[] q25 = new double[NO_TIMESLOTS];
+                    double[] q50 = new double[NO_TIMESLOTS];
+                    double[] q75 = new double[NO_TIMESLOTS];
+                    double[] q90 = new double[NO_TIMESLOTS];
 
 
-                    for (int i = 0; i < noTimeslots; i++) {
+
+                    for (int i = 0; i < NO_TIMESLOTS; i++) {
                         int begin = i*timeslot;
                         int end = begin+timeslot;
                         List<Double> filtered = new Vector<Double>();
@@ -221,7 +236,6 @@ public class PercentileView extends View {
                             }
                         }
                         Collections.sort(filtered);
-                        Log.d("LALALA", i + " : " + filtered.size());
                         if(filtered.size()>0){
                             q10[i] = filtered.get((int)(filtered.size()*0.1));
                             q25[i] = filtered.get((int)(filtered.size()*0.25));
