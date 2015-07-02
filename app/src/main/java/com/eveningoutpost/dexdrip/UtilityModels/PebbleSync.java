@@ -86,9 +86,12 @@ public class PebbleSync extends Service {
                 Log.d(TAG, "receiveData: transactionId is " + String.valueOf(transactionId));
                 if (lastTransactionId == 0 || transactionId != lastTransactionId) {
                     lastTransactionId = transactionId;
-                    Log.d(TAG, "Received Query. data: " + data.size());
+                    Log.d(TAG, "Received Query. data: " + data.size() + ". sending ACK and data");
                     PebbleKit.sendAckToPebble(context, transactionId);
                     sendData();
+                } else {
+                    Log.d(TAG, "receiveData: lastTransactionId is "+ String.valueOf(lastTransactionId)+ ", sending NACK");
+                    PebbleKit.sendNackToPebble(context,transactionId);
                 }
             }
         });
