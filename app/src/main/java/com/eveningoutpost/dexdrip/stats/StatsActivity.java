@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.stats;
 
+import android.graphics.Color;
 import android.graphics.LightingColorFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,12 +8,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
@@ -26,8 +29,7 @@ public class StatsActivity extends ActivityWithMenu {
     public static final int D30 = 3;
     public static final int D90 = 4;
     public static int state = TODAY;
-    // When requested, this adapter returns a MockupFragment,
-    // representing an object in the collection.
+    private static boolean swipeInfoNotNeeded = false; // don't show info if already swiped after startup.
     StatisticsPageAdapter mStatisticsPageAdapter;
     ViewPager mViewPager;
     TextView[] indicationDots;
@@ -46,7 +48,26 @@ public class StatsActivity extends ActivityWithMenu {
         initPagerAndIndicator();
         setButtonColors();
         registerButtonListeners();
+        showStartupInfo();
 
+    }
+
+    private void showStartupInfo() {
+        if (swipeInfoNotNeeded) {
+            return;
+        }
+
+        TextView tv = new TextView(this);
+        tv.setText("Swipe left/right to switch between reports!");
+        tv.setTextColor(Color.CYAN);
+        tv.setTextSize(28);
+
+        for (int i = 0; i < 2 ; i++) {
+            Toast toast = new Toast(getApplicationContext());
+            toast.setView(tv);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+        }
     }
 
     private void assignButtonNames() {
@@ -81,6 +102,11 @@ public class StatsActivity extends ActivityWithMenu {
 
             @Override
             public void onPageSelected(int position) {
+
+                if(position !=0){
+                    swipeInfoNotNeeded = true;
+                }
+
                 for (int i = 0; i < indicationDots.length; i++) {
                     indicationDots[i].setText("\u25EF"); //U+2B24
                 }
