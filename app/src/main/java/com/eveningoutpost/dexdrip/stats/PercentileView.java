@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -21,7 +22,7 @@ public class PercentileView extends View {
     private RangeData rangeData = null;
     private boolean ranteDataCalculating = false;
 
-    public static final int OFFSET = 20;
+    public static final int OFFSET = 30;
 
     public PercentileView(Context context) {
         super(context);
@@ -54,20 +55,53 @@ public class PercentileView extends View {
 
             drawPolygon(canvas, q25, q75, Color.BLUE);
 
-
-
             drawHighLow(canvas);
-            //draw(canvas);
+            drawGrid(canvas);
 
-
-//            myPaint.setColor(Color.WHITE);
-//            myPaint.setStrokeWidth(2);
-//            myPaint.setAntiAlias(true);
-//            myPaint.setStyle(Paint.Style.STROKE);
-//            canvas.drawText("DUMMY!", 30, canvas.getHeight() / 2, myPaint);
+            Paint myPaint = new Paint();
+            myPaint.setColor(Color.WHITE);
+            myPaint.setStrokeWidth(2);
+            myPaint.setAntiAlias(true);
+            myPaint.setStyle(Paint.Style.STROKE);
+            canvas.drawText("DUMMY! - random data", 60, canvas.getHeight() / 2, myPaint);
 
         }
 
+
+    }
+
+    private void drawGrid(Canvas canvas) {
+        Paint myPaint = new Paint();
+        myPaint.setStyle(Paint.Style.STROKE);
+        myPaint.setAntiAlias(false);
+        myPaint.setColor(Color.LTGRAY);
+        canvas.drawLine(OFFSET, 0, OFFSET, canvas.getHeight() - OFFSET, myPaint);
+        canvas.drawLine(OFFSET, canvas.getHeight() - OFFSET, canvas.getWidth(), canvas.getHeight() - OFFSET, myPaint);
+
+        for (int i= 0; i <24; i++){
+            int x = (int)(OFFSET + ((canvas.getWidth()-OFFSET)/24d)*i);
+            if(i%2 ==0 ) {
+                canvas.drawLine(x, canvas.getHeight() - OFFSET - 2, x, canvas.getHeight() - OFFSET + 3, myPaint);
+                if(i>=10) x = x-3;
+                canvas.drawText(i + "", x - 4, canvas.getHeight() - OFFSET + 13, myPaint);
+            } else {
+                canvas.drawLine(x, canvas.getHeight() - OFFSET - 2, x, canvas.getHeight() - OFFSET+6, myPaint);
+                if(i>=10) x = x-3;
+                canvas.drawText(i + "", x - 4, canvas.getHeight() - OFFSET + 20, myPaint);
+            }
+        }
+
+        myPaint.setPathEffect(new DashPathEffect(new float[]{2, 3}, 0));
+        Path path = new Path();
+        double[] levels = new double[]{50,100,150,200,250,300,350};
+
+        for (int i = 0; i < levels.length; i++) {
+            path.moveTo(OFFSET, getYfromBG(levels[i], canvas));
+            path.lineTo(canvas.getWidth(), getYfromBG(levels[i], canvas));
+            canvas.drawText((int)levels[i] + "", 5, getYfromBG(levels[i], canvas)+5, myPaint);
+        }
+
+        canvas.drawPath(path, myPaint);
 
     }
 
@@ -81,9 +115,10 @@ public class PercentileView extends View {
             low *= Constants.MMOLL_TO_MGDL;
 
         }
+        
 
-        int highPosition = (int) (canvas.getHeight() - (high * (canvas.getHeight()-OFFSET)) / 400);
-        int lowPosition = (int) (canvas.getHeight() - (low * (canvas.getHeight()-OFFSET)) / 400);
+        int highPosition = getYfromBG(high, canvas);
+        int lowPosition = getYfromBG(low, canvas);
         Paint myPaint = new Paint();
         myPaint.setStyle(Paint.Style.STROKE);
         myPaint.setAntiAlias(false);
@@ -104,23 +139,25 @@ public class PercentileView extends View {
         Path myPath = new Path();
         myPath.reset();
 
-        int height = canvas.getHeight() - OFFSET;
-
         double xStep = (canvas.getWidth()-OFFSET)*1d/lowerValues.length;
-        //lowerValuies
-        myPath.moveTo(OFFSET,canvas.getHeight() - lowerValues[0] * canvas.getHeight() / 400);
+        //lowerValues
+        myPath.moveTo(OFFSET, getYfromBG(lowerValues[0], canvas));
         for (int i = 1; i<lowerValues.length; i++){
-            myPath.lineTo((int)(i * xStep + OFFSET), canvas.getHeight() - (lowerValues[i] * height) / 400);
+            myPath.lineTo((int)(i * xStep + OFFSET), getYfromBG(lowerValues[i], canvas));
         }
         // 00:00 == 24:00
-        myPath.lineTo((int) (lowerValues.length * xStep + OFFSET), canvas.getHeight() - (lowerValues[0] * height) / 400);
-        myPath.lineTo((int) (higherValues.length * xStep + OFFSET), canvas.getHeight() - (higherValues[0] * height) / 400);
+        myPath.lineTo((int) (lowerValues.length * xStep + OFFSET), getYfromBG(lowerValues[0], canvas));
+        myPath.lineTo((int) (higherValues.length * xStep + OFFSET), getYfromBG(higherValues[0], canvas));
         //higher Values
         for (int i = higherValues.length-1; i>=0; i--){
-            myPath.lineTo((int)(i * xStep + OFFSET), canvas.getHeight() - (higherValues[i] * height) / 400);
+            myPath.lineTo((int)(i * xStep + OFFSET), getYfromBG(higherValues[i], canvas));
         }
         myPath.close();
         canvas.drawPath(myPath, myPaint);
+    }
+
+    private int getYfromBG(double bgValue, Canvas canvas) {
+        return (int)(canvas.getHeight()- OFFSET - bgValue * (canvas.getHeight()-OFFSET) / 400);
     }
 
 
