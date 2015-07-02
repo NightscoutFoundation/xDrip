@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="percentile_outer">#006494</color>
+    <color name="percentile_inner">#2684ad</color>
+    <color name="percentile_median">#e8f1f2</color>
+</resources>
