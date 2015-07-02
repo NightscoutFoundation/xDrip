@@ -10,6 +10,7 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 
@@ -33,25 +34,56 @@ public class PercentileView extends View {
 
     public static final int OFFSET = 30;
     public static final int NO_TIMESLOTS = 48;
-    private Paint outerPaint, innerPaint, medianPaint;
+    private Paint outerPaint, outerPaintLabel, innerPaint, innerPaintLabel, medianPaint, medianPaintLabel;
+    private Resources resources;
+    private int dpOffset;
 
 
     public PercentileView(Context context) {
         super(context);
-        Resources resources = context.getResources();
+        resources = context.getResources();
+        dpOffset = dp2px(OFFSET);
 
+        float textSize = dp2px(14);
         outerPaint = new Paint();
         outerPaint.setColor(resources.getColor(R.color.percentile_outer));
         outerPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         outerPaint.setPathEffect(new CornerPathEffect(10));
+        outerPaint.setStrokeWidth(dp2px(1));
+
+
+        outerPaintLabel = new Paint();
+        outerPaintLabel.setColor(resources.getColor(R.color.percentile_outer));
+        outerPaintLabel.setStyle(Paint.Style.FILL_AND_STROKE);
+        outerPaintLabel.setPathEffect(new CornerPathEffect(10));
+        outerPaintLabel.setTextSize(textSize);
+
         innerPaint = new Paint();
         innerPaint.setColor(resources.getColor(R.color.percentile_inner));
         innerPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         innerPaint.setPathEffect(new CornerPathEffect(10));
+        innerPaint.setStrokeWidth(dp2px(1));
+
+        innerPaintLabel = new Paint();
+        innerPaintLabel.setColor(resources.getColor(R.color.percentile_inner));
+        innerPaintLabel.setStyle(Paint.Style.FILL_AND_STROKE);
+        innerPaintLabel.setPathEffect(new CornerPathEffect(10));
+        innerPaintLabel.setTextSize(textSize);
+
+
         medianPaint = new Paint();
         medianPaint.setColor(resources.getColor(R.color.percentile_median));
         medianPaint.setStyle(Paint.Style.STROKE);
         medianPaint.setPathEffect(new CornerPathEffect(10));
+        medianPaint.setStrokeWidth(dp2px(1));
+
+
+        medianPaintLabel = new Paint();
+        medianPaintLabel.setColor(resources.getColor(R.color.percentile_median));
+        medianPaintLabel.setStyle(Paint.Style.STROKE);
+        medianPaintLabel.setPathEffect(new CornerPathEffect(10));
+        medianPaintLabel.setTextSize(textSize);
+
     }
 
     @Override
@@ -69,7 +101,8 @@ public class PercentileView extends View {
             myPaint.setStrokeWidth(2);
             myPaint.setAntiAlias(true);
             myPaint.setStyle(Paint.Style.STROKE);
-            canvas.drawText("Calculating", 30, canvas.getHeight() / 2, myPaint);
+            myPaint.getTextSize();
+            canvas.drawText("Calculating", dp2px(30), canvas.getHeight() / 2, myPaint);
         } else {
             Log.d("DrawStats", "onDraw else");
             drawPolygon(canvas, rd.q10, rd.q90, outerPaint);
@@ -85,9 +118,9 @@ public class PercentileView extends View {
     }
 
     private void drawLegend(Canvas canvas) {
-        canvas.drawText("10%/90%", OFFSET + 10, 10, outerPaint);
-        canvas.drawText("25%/75%", OFFSET + 80, 10, innerPaint);
-        canvas.drawText("50% (median)", OFFSET + 150, 10, medianPaint);
+        canvas.drawText("10%/90%", dpOffset + dp2px(10), dp2px(14), outerPaintLabel);
+        canvas.drawText("25%/75%", dpOffset + dp2px(80), dp2px(14), innerPaintLabel);
+        canvas.drawText("50% (median)", dpOffset + dp2px(150), dp2px(14), medianPaintLabel);
     }
 
 
@@ -96,25 +129,35 @@ public class PercentileView extends View {
         myPaint.setStyle(Paint.Style.STROKE);
         myPaint.setAntiAlias(false);
         myPaint.setColor(Color.LTGRAY);
-        canvas.drawLine(OFFSET, 0, OFFSET, canvas.getHeight() - OFFSET, myPaint);
-        canvas.drawLine(OFFSET, canvas.getHeight() - OFFSET, canvas.getWidth(), canvas.getHeight() - OFFSET, myPaint);
+        myPaint.setStrokeWidth(dp2px(1));
+
+        Paint myPaintText = new Paint();
+        myPaintText.setStyle(Paint.Style.STROKE);
+        myPaintText.setAntiAlias(false);
+        myPaintText.setColor(Color.LTGRAY);
+        myPaintText.setTextSize(dp2px(10));
+
+
+
+        canvas.drawLine(dpOffset, 0, dpOffset, canvas.getHeight() - dpOffset, myPaint);
+        canvas.drawLine(dpOffset, canvas.getHeight() - dpOffset, canvas.getWidth(), canvas.getHeight() - dpOffset, myPaint);
 
         for (int i = 0; i < 24; i++) {
-            int x = (int) (OFFSET + ((canvas.getWidth() - OFFSET) / 24d) * i);
+            int x = (int) (dpOffset + ((canvas.getWidth() - dpOffset) / 24d) * i);
             if (i % 2 == 0) {
-                canvas.drawLine(x, canvas.getHeight() - OFFSET - 2, x, canvas.getHeight() - OFFSET + 3, myPaint);
-                if (i >= 10) x = x - 3;
-                canvas.drawText(i + "", x - 4, canvas.getHeight() - OFFSET + 13, myPaint);
+                canvas.drawLine(x, canvas.getHeight() - dpOffset - dp2px(2), x, canvas.getHeight() - dpOffset + dp2px(3), myPaint);
+                if (i >= 10) x = x - dp2px(3);
+                canvas.drawText(i + "", x - dp2px(4), canvas.getHeight() - dpOffset + dp2px(13), myPaintText);
             } else {
-                canvas.drawLine(x, canvas.getHeight() - OFFSET - 2, x, canvas.getHeight() - OFFSET + 6, myPaint);
-                if (i >= 10) x = x - 3;
-                canvas.drawText(i + "", x - 4, canvas.getHeight() - OFFSET + 20, myPaint);
+                canvas.drawLine(x, canvas.getHeight() - dpOffset - dp2px(2), x, canvas.getHeight() - dpOffset + dp2px(6), myPaint);
+                if (i >= 10) x = x - dp2px(3);
+                canvas.drawText(i + "", x - dp2px(4), canvas.getHeight() - dpOffset + dp2px(20), myPaintText);
             }
         }
 
 
         // add level markings
-        myPaint.setPathEffect(new DashPathEffect(new float[]{2, 3}, 0));
+        myPaint.setPathEffect(new DashPathEffect(new float[]{dp2px(2), dp2px(3)}, 0));
         Path path = new Path();
         double[] levels;
         String[] labels;
@@ -133,9 +176,9 @@ public class PercentileView extends View {
 
         }
         for (int i = 0; i < levels.length; i++) {
-            path.moveTo(OFFSET, getYfromBG(levels[i], canvas));
+            path.moveTo(dpOffset, getYfromBG(levels[i], canvas));
             path.lineTo(canvas.getWidth(), getYfromBG(levels[i], canvas));
-            canvas.drawText(labels[i], 5, getYfromBG(levels[i], canvas) + 4, myPaint);
+            canvas.drawText(labels[i], dp2px(5), getYfromBG(levels[i], canvas) + dp2px(4), myPaintText);
         }
 
         canvas.drawPath(path, myPaint);
@@ -160,10 +203,10 @@ public class PercentileView extends View {
         myPaint.setStyle(Paint.Style.STROKE);
         myPaint.setAntiAlias(false);
         myPaint.setColor(Color.RED);
-        myPaint.setStrokeWidth(3);
-        canvas.drawLine(OFFSET, lowPosition, canvas.getWidth(), lowPosition, myPaint);
+        myPaint.setStrokeWidth(dp2px(3));
+        canvas.drawLine(dpOffset, lowPosition, canvas.getWidth(), lowPosition, myPaint);
         myPaint.setColor(Color.YELLOW);
-        canvas.drawLine(OFFSET, highPosition, canvas.getWidth(), highPosition, myPaint);
+        canvas.drawLine(dpOffset, highPosition, canvas.getWidth(), highPosition, myPaint);
     }
 
     private void drawPolygon(Canvas canvas, double[] lowerValues, double[] higherValues, Paint paint ) {
@@ -171,25 +214,31 @@ public class PercentileView extends View {
         Path myPath = new Path();
         myPath.reset();
 
-        double xStep = (canvas.getWidth() - OFFSET) * 1d / lowerValues.length;
+        double xStep = (canvas.getWidth() - dpOffset) * 1d / lowerValues.length;
         //lowerValues
-        myPath.moveTo(OFFSET, getYfromBG(lowerValues[0], canvas));
+        myPath.moveTo(dpOffset, getYfromBG(lowerValues[0], canvas));
         for (int i = 1; i < lowerValues.length; i++) {
-            myPath.lineTo((int) (i * xStep + OFFSET), getYfromBG(lowerValues[i], canvas));
+            myPath.lineTo((int) (i * xStep + dpOffset), getYfromBG(lowerValues[i], canvas));
         }
         // 00:00 == 24:00
-        myPath.lineTo((int) (lowerValues.length * xStep + OFFSET), getYfromBG(lowerValues[0], canvas));
-        myPath.lineTo((int) (higherValues.length * xStep + OFFSET), getYfromBG(higherValues[0], canvas));
+        myPath.lineTo((int) (lowerValues.length * xStep + dpOffset), getYfromBG(lowerValues[0], canvas));
+        myPath.lineTo((int) (higherValues.length * xStep + dpOffset), getYfromBG(higherValues[0], canvas));
         //higher Values
         for (int i = higherValues.length - 1; i >= 0; i--) {
-            myPath.lineTo((int) (i * xStep + OFFSET), getYfromBG(higherValues[i], canvas));
+            myPath.lineTo((int) (i * xStep + dpOffset), getYfromBG(higherValues[i], canvas));
         }
         myPath.close();
         canvas.drawPath(myPath, paint);
     }
 
     private int getYfromBG(double bgValue, Canvas canvas) {
-        return (int) (canvas.getHeight() - OFFSET - bgValue * (canvas.getHeight() - OFFSET) / 400);
+        return (int) (canvas.getHeight() - dpOffset - bgValue * (canvas.getHeight() - dpOffset) / 400);
+    }
+
+    private int dp2px(float dp){
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        int px = (int) (dp * (metrics.densityDpi / 160f));
+        return px;
     }
 
 
