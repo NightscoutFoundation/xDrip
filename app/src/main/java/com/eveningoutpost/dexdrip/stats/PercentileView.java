@@ -91,14 +91,30 @@ public class PercentileView extends View {
             }
         }
 
+
+        // add level markings
         myPaint.setPathEffect(new DashPathEffect(new float[]{2, 3}, 0));
         Path path = new Path();
-        double[] levels = new double[]{50,100,150,200,250,300,350};
+        double[] levels;
+        String[] labels;
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
+        boolean mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
+        if(mgdl) {
+            levels = new double[]{50, 100, 150, 200, 250, 300, 350};
+            labels = new String[]{"50", "100", "150", "200", "250", "300", "350"};
+        } else {
+            levels = new double[]{2.8, 5.5, 8.3, 11, 14, 17, 20};
+            labels = new String[]{"2.8", "5.5", "8.3", "11", "14", "17", "20"};
+            for (int i = 0; i < levels.length; i++) {
+                levels[i] *= Constants.MMOLL_TO_MGDL;
+            }
 
+
+            }
         for (int i = 0; i < levels.length; i++) {
             path.moveTo(OFFSET, getYfromBG(levels[i], canvas));
             path.lineTo(canvas.getWidth(), getYfromBG(levels[i], canvas));
-            canvas.drawText((int)levels[i] + "", 5, getYfromBG(levels[i], canvas)+5, myPaint);
+            canvas.drawText(labels[i], 5, getYfromBG(levels[i], canvas)+4, myPaint);
         }
 
         canvas.drawPath(path, myPaint);
@@ -115,7 +131,7 @@ public class PercentileView extends View {
             low *= Constants.MMOLL_TO_MGDL;
 
         }
-        
+
 
         int highPosition = getYfromBG(high, canvas);
         int lowPosition = getYfromBG(low, canvas);
