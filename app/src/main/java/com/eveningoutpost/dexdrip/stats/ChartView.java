@@ -39,11 +39,22 @@ public class ChartView extends View {
         } else {
             Log.d("DrawStats", "onDraw else");
 
+            if((rd.aboveRange + rd.belowRange + rd.inRange) == 0){
+                Paint myPaint = new Paint();
+                myPaint.setColor(Color.WHITE);
+                myPaint.setStrokeWidth(2);
+                myPaint.setAntiAlias(true);
+                myPaint.setStyle(Paint.Style.STROKE);
+                canvas.drawText("Not enough data!", 30, canvas.getHeight() / 2, myPaint);
+                return;
+            }
+
             int side = Math.min((canvas.getWidth() - 10), (canvas.getHeight() - 10));
             RectF rect = new RectF((canvas.getWidth() - side) / 2, (canvas.getHeight() - side) / 2, (canvas.getWidth() - side) / 2 + side, (canvas.getHeight() - side) / 2 + side);
             Paint myPaint = new Paint();
             myPaint.setStyle(Paint.Style.FILL_AND_STROKE);
             myPaint.setAntiAlias(true);
+
 
             float inDeg = rd.inRange * 360f / (rd.inRange + rd.belowRange + rd.aboveRange);
             float lowDeg = rd.belowRange * 360f / (rd.inRange + rd.belowRange + rd.aboveRange);

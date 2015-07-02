@@ -79,6 +79,10 @@ public class FirstPageFragment extends Fragment {
             long inRange = DBSearchUtil.noReadingsInRange(context);
             long total = aboveRange + belowRange + inRange;
 
+            if(total == 0){
+                total = Long.MAX_VALUE;
+            }
+
             TextView rangespercent = (TextView) localView.findViewById(R.id.textView_ranges_percent);
             TextView rangesabsolute = (TextView) localView.findViewById(R.id.textView_ranges_absolute);
 
