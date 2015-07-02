@@ -48,40 +48,40 @@ public class PercentileView extends View {
         outerPaint = new Paint();
         outerPaint.setColor(resources.getColor(R.color.percentile_outer));
         outerPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        outerPaint.setPathEffect(new CornerPathEffect(10));
+        outerPaint.setPathEffect(new CornerPathEffect(dp2px(10)));
         outerPaint.setStrokeWidth(dp2px(1));
 
 
         outerPaintLabel = new Paint();
         outerPaintLabel.setColor(resources.getColor(R.color.percentile_outer));
         outerPaintLabel.setStyle(Paint.Style.FILL_AND_STROKE);
-        outerPaintLabel.setPathEffect(new CornerPathEffect(10));
+        outerPaintLabel.setPathEffect(new CornerPathEffect(dp2px(10)));
         outerPaintLabel.setTextSize(textSize);
 
         innerPaint = new Paint();
         innerPaint.setColor(resources.getColor(R.color.percentile_inner));
         innerPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        innerPaint.setPathEffect(new CornerPathEffect(10));
+        innerPaint.setPathEffect(new CornerPathEffect(dp2px(10)));
         innerPaint.setStrokeWidth(dp2px(1));
 
         innerPaintLabel = new Paint();
         innerPaintLabel.setColor(resources.getColor(R.color.percentile_inner));
         innerPaintLabel.setStyle(Paint.Style.FILL_AND_STROKE);
-        innerPaintLabel.setPathEffect(new CornerPathEffect(10));
+        innerPaintLabel.setPathEffect(new CornerPathEffect(dp2px(10)));
         innerPaintLabel.setTextSize(textSize);
 
 
         medianPaint = new Paint();
         medianPaint.setColor(resources.getColor(R.color.percentile_median));
         medianPaint.setStyle(Paint.Style.STROKE);
-        medianPaint.setPathEffect(new CornerPathEffect(10));
+        medianPaint.setPathEffect(new CornerPathEffect(dp2px(10)));
         medianPaint.setStrokeWidth(dp2px(1));
 
 
         medianPaintLabel = new Paint();
         medianPaintLabel.setColor(resources.getColor(R.color.percentile_median));
         medianPaintLabel.setStyle(Paint.Style.STROKE);
-        medianPaintLabel.setPathEffect(new CornerPathEffect(10));
+        medianPaintLabel.setPathEffect(new CornerPathEffect(dp2px(10)));
         medianPaintLabel.setTextSize(textSize);
 
     }
@@ -98,7 +98,7 @@ public class PercentileView extends View {
 
             Paint myPaint = new Paint();
             myPaint.setColor(Color.WHITE);
-            myPaint.setStrokeWidth(2);
+            myPaint.setStrokeWidth(dp2px(2));
             myPaint.setAntiAlias(true);
             myPaint.setStyle(Paint.Style.STROKE);
             myPaint.getTextSize();
