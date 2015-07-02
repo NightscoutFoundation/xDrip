@@ -73,6 +73,47 @@ public class DBSearchUtil {
                 .orderBy("calculated_value").execute();
     }
 
+    public static List<BgReading> getReadings(Context context) {
+        long stop = System.currentTimeMillis();
+        long start = System.currentTimeMillis();
+
+        switch (StatsActivity.state){
+            case StatsActivity.TODAY:
+                start = getTodayTimestamp();
+                break;
+            case StatsActivity.YESTERDAY:
+                start = getYesterdayTimestamp();
+                stop = getTodayTimestamp();
+                break;
+            case StatsActivity.D7:
+                start= getXDaysTimestamp(7);
+                break;
+            case StatsActivity.D30:
+                start= getXDaysTimestamp(30);
+                break;
+            case StatsActivity.D90:
+                start= getXDaysTimestamp(90);
+                break;
+        }
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
+
+        double high = Double.parseDouble(settings.getString("highValue", "170"));
+        double low = Double.parseDouble(settings.getString("lowValue", "70"));
+        if (!mgdl){
+            high *= Constants.MMOLL_TO_MGDL;
+            low *= Constants.MMOLL_TO_MGDL;
+
+        }
+        return new Select()
+                .from(BgReading.class)
+                .where("timestamp >= " + start)
+                .where("timestamp <= " + stop)
+                .where("calculated_value != 0")
+                .execute();
+    }
+
 
 
 
