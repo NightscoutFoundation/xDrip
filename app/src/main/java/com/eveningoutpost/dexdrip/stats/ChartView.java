@@ -1,10 +1,12 @@
 package com.eveningoutpost.dexdrip.stats;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 
@@ -15,9 +17,11 @@ public class ChartView extends View {
 
     private RangeData rangeData = null;
     private boolean ranteDataCalculating = false;
-
+    private Resources resources;
     public ChartView(Context context) {
         super(context);
+        resources = context.getResources();
+
     }
 
     @Override
@@ -32,20 +36,20 @@ public class ChartView extends View {
 
             Paint myPaint = new Paint();
             myPaint.setColor(Color.WHITE);
-            myPaint.setStrokeWidth(2);
             myPaint.setAntiAlias(true);
             myPaint.setStyle(Paint.Style.STROKE);
-            canvas.drawText("Calculating", 30, canvas.getHeight() / 2, myPaint);
+            myPaint.setTextSize(dp2px(15));
+            canvas.drawText("Calculating...", dp2px(30), canvas.getHeight() / 2, myPaint);
         } else {
             Log.d("DrawStats", "onDraw else");
 
             if((rd.aboveRange + rd.belowRange + rd.inRange) == 0){
                 Paint myPaint = new Paint();
                 myPaint.setColor(Color.WHITE);
-                myPaint.setStrokeWidth(2);
                 myPaint.setAntiAlias(true);
                 myPaint.setStyle(Paint.Style.STROKE);
-                canvas.drawText("Not enough data!", 30, canvas.getHeight() / 2, myPaint);
+                myPaint.setTextSize(dp2px(15));
+                canvas.drawText("Not enough data!", dp2px(30), canvas.getHeight() / 2, myPaint);
                 return;
             }
 
@@ -79,6 +83,11 @@ public class ChartView extends View {
         postInvalidate();
     }
 
+    private int dp2px(float dp){
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        int px = (int) (dp * (metrics.densityDpi / 160f));
+        return px;
+    }
 
     //return either RangeData or start a calculation if not already started
     public synchronized RangeData getMaybeRangeData() {
