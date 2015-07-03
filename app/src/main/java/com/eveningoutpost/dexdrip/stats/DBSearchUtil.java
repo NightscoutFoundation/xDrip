@@ -22,116 +22,38 @@ import java.util.Vector;
  */
 public class DBSearchUtil {
 
-
-    public static List<BgReadingStats> getReadings() {
-        long stop = System.currentTimeMillis();
-        long start = System.currentTimeMillis();
-
-        switch (StatsActivity.state) {
-            case StatsActivity.TODAY:
-                start = getTodayTimestamp();
-                break;
-            case StatsActivity.YESTERDAY:
-                start = getYesterdayTimestamp();
-                stop = getTodayTimestamp();
-                break;
-            case StatsActivity.D7:
-                start = getXDaysTimestamp(7);
-                break;
-            case StatsActivity.D30:
-                start = getXDaysTimestamp(30);
-                break;
-            case StatsActivity.D90:
-                start = getXDaysTimestamp(90);
-                break;
-        }
-
-        SQLiteDatabase db = Cache.openDatabase();
-        Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, "timestamp >= ? AND timestamp <=  ? AND calculated_value > 13", new String[]{"" + start, "" + stop}, null, null, null);
-        List<BgReadingStats> readings = new Vector<BgReadingStats>();
-        BgReadingStats reading;
-        if (cur.moveToFirst()) {
-            do {
-                reading = new BgReadingStats();
-                reading.timestamp = (Long.parseLong(cur.getString(0)));
-                reading.calculated_value = (Double.parseDouble(cur.getString(1)));
-                readings.add(reading);
-            } while (cur.moveToNext());
-        }
-        return readings;
-    }
+    public static final String CUTOFF = "13";
 
 
     public static int noReadingsAboveRange(Context context) {
-        long stop = System.currentTimeMillis();
-        long start = System.currentTimeMillis();
-
-        switch (StatsActivity.state) {
-            case StatsActivity.TODAY:
-                start = getTodayTimestamp();
-                break;
-            case StatsActivity.YESTERDAY:
-                start = getYesterdayTimestamp();
-                stop = getTodayTimestamp();
-                break;
-            case StatsActivity.D7:
-                start = getXDaysTimestamp(7);
-                break;
-            case StatsActivity.D30:
-                start = getXDaysTimestamp(30);
-                break;
-            case StatsActivity.D90:
-                start = getXDaysTimestamp(90);
-                break;
-        }
+        Bounds bounds = new Bounds().invoke();
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
         boolean mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
 
         double high = Double.parseDouble(settings.getString("highValue", "170"));
-        double low = Double.parseDouble(settings.getString("lowValue", "70"));
         if (!mgdl) {
             high *= Constants.MMOLL_TO_MGDL;
-            low *= Constants.MMOLL_TO_MGDL;
-
         }
 
         int count = new Select()
                 .from(BgReading.class)
-                .where("timestamp >= " + start)
-                .where("timestamp <= " + stop)
-                .where("calculated_value > 13")
+                .where("timestamp >= " + bounds.start)
+                .where("timestamp <= " + bounds.stop)
+                .where("calculated_value > " + CUTOFF)
                 .where("calculated_value > " + high).count();
         Log.d("DrawStats", "High count: " + count);
         return count;
     }
 
 
-    public static List<BgReadingStats> getReadingsOrdered() {
-        long stop = System.currentTimeMillis();
-        long start = System.currentTimeMillis();
+    public static List<BgReadingStats> getReadings(boolean ordered) {
+        Bounds bounds = new Bounds().invoke();
 
-        switch (StatsActivity.state) {
-            case StatsActivity.TODAY:
-                start = getTodayTimestamp();
-                break;
-            case StatsActivity.YESTERDAY:
-                start = getYesterdayTimestamp();
-                stop = getTodayTimestamp();
-                break;
-            case StatsActivity.D7:
-                start = getXDaysTimestamp(7);
-                break;
-            case StatsActivity.D30:
-                start = getXDaysTimestamp(30);
-                break;
-            case StatsActivity.D90:
-                start = getXDaysTimestamp(90);
-                break;
-        }
+        String orderBy = ordered?"calculated_value desc":null;
 
         SQLiteDatabase db = Cache.openDatabase();
-        Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, "timestamp >= ? AND timestamp <=  ? AND calculated_value > 13", new String[]{"" + start, "" + stop}, null, null, "calculated_value desc");
+        Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, "timestamp >= ? AND timestamp <=  ? AND calculated_value > ?", new String[]{"" + bounds.start, "" + bounds.stop, CUTOFF}, null, null, orderBy);
         List<BgReadingStats> readings = new Vector<BgReadingStats>();
         BgReadingStats reading;
         if (cur.moveToFirst()) {
@@ -148,27 +70,7 @@ public class DBSearchUtil {
 
 
     public static int noReadingsInRange(Context context) {
-        long stop = System.currentTimeMillis();
-        long start = System.currentTimeMillis();
-
-        switch (StatsActivity.state) {
-            case StatsActivity.TODAY:
-                start = getTodayTimestamp();
-                break;
-            case StatsActivity.YESTERDAY:
-                start = getYesterdayTimestamp();
-                stop = getTodayTimestamp();
-                break;
-            case StatsActivity.D7:
-                start = getXDaysTimestamp(7);
-                break;
-            case StatsActivity.D30:
-                start = getXDaysTimestamp(30);
-                break;
-            case StatsActivity.D90:
-                start = getXDaysTimestamp(90);
-                break;
-        }
+        Bounds bounds = new Bounds().invoke();
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
         boolean mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
@@ -182,9 +84,9 @@ public class DBSearchUtil {
         }
         int count = new Select()
                 .from(BgReading.class)
-                .where("timestamp >= " + start)
-                .where("timestamp <= " + stop)
-                .where("calculated_value > 13")
+                .where("timestamp >= " + bounds.start)
+                .where("timestamp <= " + bounds.stop)
+                .where("calculated_value > " + CUTOFF)
                 .where("calculated_value <= " + high)
                 .where("calculated_value >= " + low)
                 .count();
@@ -194,42 +96,21 @@ public class DBSearchUtil {
     }
 
     public static int noReadingsBelowRange(Context context) {
-        long stop = System.currentTimeMillis();
-        long start = System.currentTimeMillis();
+        Bounds bounds = new Bounds().invoke();
 
-        switch (StatsActivity.state) {
-            case StatsActivity.TODAY:
-                start = getTodayTimestamp();
-                break;
-            case StatsActivity.YESTERDAY:
-                start = getYesterdayTimestamp();
-                stop = getTodayTimestamp();
-                break;
-            case StatsActivity.D7:
-                start = getXDaysTimestamp(7);
-                break;
-            case StatsActivity.D30:
-                start = getXDaysTimestamp(30);
-                break;
-            case StatsActivity.D90:
-                start = getXDaysTimestamp(90);
-                break;
-        }
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
         boolean mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
 
-        double high = Double.parseDouble(settings.getString("highValue", "170"));
         double low = Double.parseDouble(settings.getString("lowValue", "70"));
         if (!mgdl) {
-            high *= Constants.MMOLL_TO_MGDL;
             low *= Constants.MMOLL_TO_MGDL;
 
         }
         int count = new Select()
                 .from(BgReading.class)
-                .where("timestamp >= " + start)
-                .where("timestamp <= " + stop)
-                .where("calculated_value > 13")
+                .where("timestamp >= " + bounds.start)
+                .where("timestamp <= " + bounds.stop)
+                .where("calculated_value > " + CUTOFF)
                 .where("calculated_value < " + low)
                 .count();
         Log.d("DrawStats", "Low count: " + count);
@@ -261,5 +142,43 @@ public class DBSearchUtil {
         Calendar date = new GregorianCalendar();
         date.add(Calendar.DATE, -x);
         return date.getTimeInMillis();
+    }
+
+    private static class Bounds {
+        private long stop;
+        private long start;
+
+        public long getStop() {
+            return stop;
+        }
+
+        public long getStart() {
+            return start;
+        }
+
+        public Bounds invoke() {
+            stop = System.currentTimeMillis();
+            start = System.currentTimeMillis();
+
+            switch (StatsActivity.state) {
+                case StatsActivity.TODAY:
+                    start = getTodayTimestamp();
+                    break;
+                case StatsActivity.YESTERDAY:
+                    start = getYesterdayTimestamp();
+                    stop = getTodayTimestamp();
+                    break;
+                case StatsActivity.D7:
+                    start = getXDaysTimestamp(7);
+                    break;
+                case StatsActivity.D30:
+                    start = getXDaysTimestamp(30);
+                    break;
+                case StatsActivity.D90:
+                    start = getXDaysTimestamp(90);
+                    break;
+            }
+            return this;
+        }
     }
 }

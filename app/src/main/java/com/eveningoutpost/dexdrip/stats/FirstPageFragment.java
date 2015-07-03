@@ -88,7 +88,7 @@ public class FirstPageFragment extends Fragment {
             updateText(localView, rangespercent, inRange * 100 / total + "%/" + aboveRange * 100 / total + "%/" + belowRange * 100 / total + "%");
             updateText(localView, rangesabsolute, inRange + "/" + aboveRange + "/" + belowRange);
 
-            List<BgReadingStats> bgList = DBSearchUtil.getReadingsOrdered();
+            List<BgReadingStats> bgList = DBSearchUtil.getReadings(true);
             if (bgList.size() > 0) {
                 double median = bgList.get(bgList.size() / 2).calculated_value;
                 TextView medianView = (TextView) localView.findViewById(R.id.textView_median);

@@ -97,11 +97,10 @@ public class PercentileView extends View {
 
             Paint myPaint = new Paint();
             myPaint.setColor(Color.WHITE);
-            myPaint.setStrokeWidth(dp2px(2));
             myPaint.setAntiAlias(true);
             myPaint.setStyle(Paint.Style.STROKE);
-            myPaint.getTextSize();
-            canvas.drawText("Calculating", dp2px(30), canvas.getHeight() / 2, myPaint);
+            myPaint.setTextSize(dp2px(15));
+            canvas.drawText("Calculating...", dp2px(30), canvas.getHeight() / 2, myPaint);
         } else {
             Log.d("DrawStats", "onDraw else");
             drawPolygon(canvas, rd.q10, rd.q90, outerPaint);
@@ -255,7 +254,7 @@ public class PercentileView extends View {
                 @Override
                 public void run() {
                     super.run();
-                    List<BgReadingStats> readings = DBSearchUtil.getReadings();
+                    List<BgReadingStats> readings = DBSearchUtil.getReadings(false);
                     int day = 1000 * 60 * 60 * 24;
 
                     int timeslot = day / NO_TIMESLOTS;
