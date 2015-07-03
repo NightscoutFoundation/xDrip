@@ -14,60 +14,60 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="0dp"
-            android:layout_marginBottom="0dp"
-            android:paddingTop="0dp"
-            android:paddingBottom="0dp"
-            android:minHeight="0dp"
-            android:minWidth="0dp">
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:paddingTop="1dp"
+            android:paddingBottom="1dp"
+            android:minHeight="1dp"
+            android:minWidth="1dp">
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TD"
                 android:id="@+id/button_stats_today"
-                android:layout_marginTop="0dp"
-                android:layout_marginBottom="0dp"
-                android:paddingTop="0dp"
-                android:paddingBottom="0dp"
-                android:minHeight="0dp"
-                android:minWidth="0dp"/>
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:paddingTop="1dp"
+                android:paddingBottom="1dp"
+                android:minHeight="1dp"
+                android:minWidth="1dp"/>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="YTD"
                 android:id="@+id/button_stats_yesterday"
-                android:layout_marginTop="0dp"
-                android:layout_marginBottom="0dp"
-                android:paddingTop="0dp"
-                android:paddingBottom="0dp"
-                android:minHeight="0dp"
-                android:minWidth="0dp"/>
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:paddingTop="1dp"
+                android:paddingBottom="1dp"
+                android:minHeight="1dp"
+                android:minWidth="1dp"/>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="7d"
                 android:id="@+id/button_stats_7d"
-                android:layout_marginTop="0dp"
-                android:layout_marginBottom="0dp"
-                android:paddingTop="0dp"
-                android:paddingBottom="0dp"
-                android:minHeight="0dp"
-                android:minWidth="0dp"/>
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:paddingTop="1dp"
+                android:paddingBottom="1dp"
+                android:minHeight="1dp"
+                android:minWidth="1dp"/>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="30d"
                 android:id="@+id/button_stats_30d"
-                android:layout_marginTop="0dp"
-                android:layout_marginBottom="0dp"
-                android:paddingTop="0dp"
-                android:paddingBottom="0dp"
-                android:minHeight="0dp"
-                android:minWidth="0dp"/>
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:paddingTop="1dp"
+                android:paddingBottom="1dp"
+                android:minHeight="1dp"
+                android:minWidth="1dp"/>
 
             <Button
                 android:layout_width="wrap_content"
@@ -76,10 +76,10 @@
                 android:id="@+id/button_stats_90d"
                 android:layout_marginTop="0dp"
                 android:layout_marginBottom="0dp"
-                android:paddingTop="0dp"
-                android:paddingBottom="0dp"
-                android:minHeight="0dp"
-                android:minWidth="0dp"/>
+                android:paddingTop="1dp"
+                android:paddingBottom="1dp"
+                android:minHeight="1dp"
+                android:minWidth="1dp"/>
         </LinearLayout>
         <LinearLayout
             android:orientation="horizontal"
