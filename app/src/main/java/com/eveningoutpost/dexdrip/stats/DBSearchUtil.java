@@ -4,15 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.activeandroid.Cache;
-import com.activeandroid.Model;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
 import java.util.Calendar;
@@ -26,22 +23,11 @@ import java.util.Vector;
 public class DBSearchUtil {
 
 
-    public static List<BgReading> readingsAfterTimestamp(long timestamp) {
-        Sensor sensor = Sensor.currentSensor();
-        return new Select()
-                .from(BgReading.class)
-                .where("timestamp >= " + timestamp)
-                .where("calculated_value > 13")
-                .orderBy("timestamp desc")
-                .execute();
-    }
-
-
-    public static List<BgReading> sortedList(Context context) {
+    public static List<BgReadingStats> getReadings() {
         long stop = System.currentTimeMillis();
         long start = System.currentTimeMillis();
 
-        switch (StatsActivity.state){
+        switch (StatsActivity.state) {
             case StatsActivity.TODAY:
                 start = getTodayTimestamp();
                 break;
@@ -50,109 +36,15 @@ public class DBSearchUtil {
                 stop = getTodayTimestamp();
                 break;
             case StatsActivity.D7:
-                start= getXDaysTimestamp(7);
+                start = getXDaysTimestamp(7);
                 break;
             case StatsActivity.D30:
-                start= getXDaysTimestamp(30);
+                start = getXDaysTimestamp(30);
                 break;
             case StatsActivity.D90:
-                start= getXDaysTimestamp(90);
+                start = getXDaysTimestamp(90);
                 break;
         }
-
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
-
-        double high = Double.parseDouble(settings.getString("highValue", "170"));
-        double low = Double.parseDouble(settings.getString("lowValue", "70"));
-        if (!mgdl){
-            high *= Constants.MMOLL_TO_MGDL;
-            low *= Constants.MMOLL_TO_MGDL;
-
-        }
-        return new Select()
-                .from(BgReading.class)
-                .where("timestamp >= " + start)
-                .where("timestamp <= " + stop)
-                .where("calculated_value > 13")
-                .orderBy("calculated_value").execute();
-    }
-
-    public static List<BgReading> getReadings(Context context) {
-        long stop = System.currentTimeMillis();
-        long start = System.currentTimeMillis();
-
-        switch (StatsActivity.state){
-            case StatsActivity.TODAY:
-                start = getTodayTimestamp();
-                break;
-            case StatsActivity.YESTERDAY:
-                start = getYesterdayTimestamp();
-                stop = getTodayTimestamp();
-                break;
-            case StatsActivity.D7:
-                start= getXDaysTimestamp(7);
-                break;
-            case StatsActivity.D30:
-                start= getXDaysTimestamp(30);
-                break;
-            case StatsActivity.D90:
-                start= getXDaysTimestamp(90);
-                break;
-        }
-
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
-
-        double high = Double.parseDouble(settings.getString("highValue", "170"));
-        double low = Double.parseDouble(settings.getString("lowValue", "70"));
-        if (!mgdl){
-            high *= Constants.MMOLL_TO_MGDL;
-            low *= Constants.MMOLL_TO_MGDL;
-
-        }
-        return new Select()
-                .from(BgReading.class)
-                .where("timestamp >= " + start)
-                .where("timestamp <= " + stop)
-                .where("calculated_value > 13")
-                .execute();
-    }
-
-    public static List<BgReadingStats> getReadingsDirectQuery(Context context) {
-        long stop = System.currentTimeMillis();
-        long start = System.currentTimeMillis();
-
-        switch (StatsActivity.state){
-            case StatsActivity.TODAY:
-                start = getTodayTimestamp();
-                break;
-            case StatsActivity.YESTERDAY:
-                start = getYesterdayTimestamp();
-                stop = getTodayTimestamp();
-                break;
-            case StatsActivity.D7:
-                start= getXDaysTimestamp(7);
-                break;
-            case StatsActivity.D30:
-                start= getXDaysTimestamp(30);
-                break;
-            case StatsActivity.D90:
-                start= getXDaysTimestamp(90);
-                break;
-        }
-
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
-
-        double high = Double.parseDouble(settings.getString("highValue", "170"));
-        double low = Double.parseDouble(settings.getString("lowValue", "70"));
-        if (!mgdl){
-            high *= Constants.MMOLL_TO_MGDL;
-            low *= Constants.MMOLL_TO_MGDL;
-
-        }
-
 
         SQLiteDatabase db = Cache.openDatabase();
         Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, "timestamp >= ? AND timestamp <=  ? AND calculated_value > 13", new String[]{"" + start, "" + stop}, null, null, null);
@@ -170,15 +62,11 @@ public class DBSearchUtil {
     }
 
 
-
-
-
-
     public static int noReadingsAboveRange(Context context) {
         long stop = System.currentTimeMillis();
         long start = System.currentTimeMillis();
 
-        switch (StatsActivity.state){
+        switch (StatsActivity.state) {
             case StatsActivity.TODAY:
                 start = getTodayTimestamp();
                 break;
@@ -187,13 +75,13 @@ public class DBSearchUtil {
                 stop = getTodayTimestamp();
                 break;
             case StatsActivity.D7:
-                start= getXDaysTimestamp(7);
+                start = getXDaysTimestamp(7);
                 break;
             case StatsActivity.D30:
-                start= getXDaysTimestamp(30);
+                start = getXDaysTimestamp(30);
                 break;
             case StatsActivity.D90:
-                start= getXDaysTimestamp(90);
+                start = getXDaysTimestamp(90);
                 break;
         }
 
@@ -202,13 +90,13 @@ public class DBSearchUtil {
 
         double high = Double.parseDouble(settings.getString("highValue", "170"));
         double low = Double.parseDouble(settings.getString("lowValue", "70"));
-        if (!mgdl){
+        if (!mgdl) {
             high *= Constants.MMOLL_TO_MGDL;
             low *= Constants.MMOLL_TO_MGDL;
 
         }
 
-        int count =  new Select()
+        int count = new Select()
                 .from(BgReading.class)
                 .where("timestamp >= " + start)
                 .where("timestamp <= " + stop)
@@ -219,13 +107,11 @@ public class DBSearchUtil {
     }
 
 
-
-
-    public static List<BgReadingStats> getReadingsOrderedInTimeframe(Context context) {
+    public static List<BgReadingStats> getReadingsOrdered() {
         long stop = System.currentTimeMillis();
         long start = System.currentTimeMillis();
 
-        switch (StatsActivity.state){
+        switch (StatsActivity.state) {
             case StatsActivity.TODAY:
                 start = getTodayTimestamp();
                 break;
@@ -234,13 +120,13 @@ public class DBSearchUtil {
                 stop = getTodayTimestamp();
                 break;
             case StatsActivity.D7:
-                start= getXDaysTimestamp(7);
+                start = getXDaysTimestamp(7);
                 break;
             case StatsActivity.D30:
-                start= getXDaysTimestamp(30);
+                start = getXDaysTimestamp(30);
                 break;
             case StatsActivity.D90:
-                start= getXDaysTimestamp(90);
+                start = getXDaysTimestamp(90);
                 break;
         }
 
@@ -261,13 +147,11 @@ public class DBSearchUtil {
     }
 
 
-
-
     public static int noReadingsInRange(Context context) {
         long stop = System.currentTimeMillis();
         long start = System.currentTimeMillis();
 
-        switch (StatsActivity.state){
+        switch (StatsActivity.state) {
             case StatsActivity.TODAY:
                 start = getTodayTimestamp();
                 break;
@@ -276,13 +160,13 @@ public class DBSearchUtil {
                 stop = getTodayTimestamp();
                 break;
             case StatsActivity.D7:
-                start= getXDaysTimestamp(7);
+                start = getXDaysTimestamp(7);
                 break;
             case StatsActivity.D30:
-                start= getXDaysTimestamp(30);
+                start = getXDaysTimestamp(30);
                 break;
             case StatsActivity.D90:
-                start= getXDaysTimestamp(90);
+                start = getXDaysTimestamp(90);
                 break;
         }
 
@@ -291,12 +175,12 @@ public class DBSearchUtil {
 
         double high = Double.parseDouble(settings.getString("highValue", "170"));
         double low = Double.parseDouble(settings.getString("lowValue", "70"));
-        if (!mgdl){
+        if (!mgdl) {
             high *= Constants.MMOLL_TO_MGDL;
             low *= Constants.MMOLL_TO_MGDL;
 
         }
-        int count =  new Select()
+        int count = new Select()
                 .from(BgReading.class)
                 .where("timestamp >= " + start)
                 .where("timestamp <= " + stop)
@@ -313,7 +197,7 @@ public class DBSearchUtil {
         long stop = System.currentTimeMillis();
         long start = System.currentTimeMillis();
 
-        switch (StatsActivity.state){
+        switch (StatsActivity.state) {
             case StatsActivity.TODAY:
                 start = getTodayTimestamp();
                 break;
@@ -322,13 +206,13 @@ public class DBSearchUtil {
                 stop = getTodayTimestamp();
                 break;
             case StatsActivity.D7:
-                start= getXDaysTimestamp(7);
+                start = getXDaysTimestamp(7);
                 break;
             case StatsActivity.D30:
-                start= getXDaysTimestamp(30);
+                start = getXDaysTimestamp(30);
                 break;
             case StatsActivity.D90:
-                start= getXDaysTimestamp(90);
+                start = getXDaysTimestamp(90);
                 break;
         }
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
@@ -336,7 +220,7 @@ public class DBSearchUtil {
 
         double high = Double.parseDouble(settings.getString("highValue", "170"));
         double low = Double.parseDouble(settings.getString("lowValue", "70"));
-        if (!mgdl){
+        if (!mgdl) {
             high *= Constants.MMOLL_TO_MGDL;
             low *= Constants.MMOLL_TO_MGDL;
 
@@ -354,20 +238,7 @@ public class DBSearchUtil {
     }
 
 
-
-
-    public static List<BgReading> readingsBetweenTimestamps(long start, long stop) {
-        return new Select()
-                .from(BgReading.class)
-                .where("timestamp >= " + start)
-                .where("timestamp < " + stop)
-                .where("calculated_value > 13")
-                .orderBy("timestamp desc")
-                .execute();
-    }
-
-
-    public static long getTodayTimestamp(){
+    public static long getTodayTimestamp() {
         Calendar date = new GregorianCalendar();
         date.set(Calendar.HOUR_OF_DAY, 0);
         date.set(Calendar.MINUTE, 0);
@@ -376,7 +247,7 @@ public class DBSearchUtil {
         return date.getTimeInMillis();
     }
 
-    public static long getYesterdayTimestamp(){
+    public static long getYesterdayTimestamp() {
         Calendar date = new GregorianCalendar();
         date.set(Calendar.HOUR_OF_DAY, 0);
         date.set(Calendar.MINUTE, 0);
@@ -386,60 +257,9 @@ public class DBSearchUtil {
         return date.getTimeInMillis();
     }
 
-    public static long getXDaysTimestamp(int x){
+    public static long getXDaysTimestamp(int x) {
         Calendar date = new GregorianCalendar();
         date.add(Calendar.DATE, -x);
         return date.getTimeInMillis();
     }
-
-
-    public static List<BgReading> readingsToday() {
-        // find beginning of today
-        Calendar date = new GregorianCalendar();
-        date.set(Calendar.HOUR_OF_DAY, 0);
-        date.set(Calendar.MINUTE, 0);
-        date.set(Calendar.SECOND, 0);
-        date.set(Calendar.MILLISECOND, 0);
-        long start = date.getTimeInMillis();
-
-        List<BgReading> readings = readingsAfterTimestamp(start);
-        Log.d("CreateStats", "found today: " + readings.size());
-
-        return readings;
-    }
-
-    public static List<BgReading> lastXDays(int x) {
-        // find beginning of today
-        Calendar date = new GregorianCalendar();
-        date.add(Calendar.DATE, -x);
-        long start = date.getTimeInMillis();
-        List<BgReading> readings = readingsAfterTimestamp(start);
-        Log.d("CreateStats", "found last " + x + " days: " + readings.size());
-        return readings;
-    }
-
-
-    public static List<BgReading> readingsYesterday() {
-        // find beginning of today
-        Calendar date = new GregorianCalendar();
-        date.set(Calendar.HOUR_OF_DAY, 0);
-        date.set(Calendar.MINUTE, 0);
-        date.set(Calendar.SECOND, 0);
-        date.set(Calendar.MILLISECOND, 0);
-        long stop = date.getTimeInMillis();
-
-        //yesterday:
-        date.add(Calendar.DATE, -1);
-        long start = date.getTimeInMillis();
-
-        List<BgReading> readings = readingsBetweenTimestamps(start, stop);
-        Log.d("CreateStats", "found yesteray: " + readings.size());
-
-        return readings;
-    }
-
-
-
-
-
 }

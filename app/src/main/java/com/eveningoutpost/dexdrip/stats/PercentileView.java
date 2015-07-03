@@ -14,7 +14,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
@@ -256,7 +255,7 @@ public class PercentileView extends View {
                 @Override
                 public void run() {
                     super.run();
-                    List<BgReadingStats> readings = DBSearchUtil.getReadingsDirectQuery(getContext());
+                    List<BgReadingStats> readings = DBSearchUtil.getReadings();
                     int day = 1000 * 60 * 60 * 24;
 
                     int timeslot = day / NO_TIMESLOTS;
