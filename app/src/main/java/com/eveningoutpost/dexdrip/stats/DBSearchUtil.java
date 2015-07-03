@@ -26,7 +26,7 @@ public class DBSearchUtil {
         return new Select()
                 .from(BgReading.class)
                 .where("timestamp >= " + timestamp)
-                .where("calculated_value != 0")
+                .where("calculated_value > 13")
                 .orderBy("timestamp desc")
                 .execute();
     }
@@ -69,7 +69,7 @@ public class DBSearchUtil {
                 .from(BgReading.class)
                 .where("timestamp >= " + start)
                 .where("timestamp <= " + stop)
-                .where("calculated_value != 0")
+                .where("calculated_value > 13")
                 .orderBy("calculated_value").execute();
     }
 
@@ -110,7 +110,7 @@ public class DBSearchUtil {
                 .from(BgReading.class)
                 .where("timestamp >= " + start)
                 .where("timestamp <= " + stop)
-                .where("calculated_value != 0")
+                .where("calculated_value > 13")
                 .execute();
     }
 
@@ -155,7 +155,7 @@ public class DBSearchUtil {
                 .from(BgReading.class)
                 .where("timestamp >= " + start)
                 .where("timestamp <= " + stop)
-                .where("calculated_value != 0")
+                .where("calculated_value > 13")
                 .where("calculated_value > " + high).count();
         Log.d("DrawStats", "High count: " + count);
         return count;
@@ -191,7 +191,7 @@ public class DBSearchUtil {
                 .from(BgReading.class)
                 .where("timestamp >= " + start)
                 .where("timestamp <= " + stop)
-                .where("calculated_value != 0")
+                .where("calculated_value > 13")
                 .orderBy("calculated_value desc")
                 .execute();
     }
@@ -236,7 +236,7 @@ public class DBSearchUtil {
                 .from(BgReading.class)
                 .where("timestamp >= " + start)
                 .where("timestamp <= " + stop)
-                .where("calculated_value != 0")
+                .where("calculated_value > 13")
                 .where("calculated_value <= " + high)
                 .where("calculated_value >= " + low)
                 .count();
@@ -281,7 +281,7 @@ public class DBSearchUtil {
                 .from(BgReading.class)
                 .where("timestamp >= " + start)
                 .where("timestamp <= " + stop)
-                .where("calculated_value != 0")
+                .where("calculated_value > 13")
                 .where("calculated_value < " + low)
                 .count();
         Log.d("DrawStats", "Low count: " + count);
@@ -297,7 +297,7 @@ public class DBSearchUtil {
                 .from(BgReading.class)
                 .where("timestamp >= " + start)
                 .where("timestamp < " + stop)
-                .where("calculated_value != 0")
+                .where("calculated_value > 13")
                 .orderBy("timestamp desc")
                 .execute();
     }
