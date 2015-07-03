@@ -256,7 +256,7 @@ public class PercentileView extends View {
                 @Override
                 public void run() {
                     super.run();
-                    List<BgReading> readings = DBSearchUtil.getReadings(getContext());
+                    List<BgReadingStats> readings = DBSearchUtil.getReadingsDirectQuery(getContext());
                     int day = 1000 * 60 * 60 * 24;
 
                     int timeslot = day / NO_TIMESLOTS;
@@ -282,7 +282,7 @@ public class PercentileView extends View {
                         int end = begin+timeslot;
                         List<Double> filtered = new Vector<Double>();
 
-                        for (BgReading reading: readings){
+                        for (BgReadingStats reading: readings){
                             long timeOfDay = (reading.timestamp-offset)%day;
                             if(timeOfDay >= begin && timeOfDay< end){
                                 filtered.add(reading.calculated_value);

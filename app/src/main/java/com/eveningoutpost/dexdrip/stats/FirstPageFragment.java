@@ -89,7 +89,7 @@ public class FirstPageFragment extends Fragment {
             updateText(localView, rangespercent, inRange * 100 / total + "%/" + aboveRange * 100 / total + "%/" + belowRange * 100 / total + "%");
             updateText(localView, rangesabsolute, inRange + "/" + aboveRange + "/" + belowRange);
 
-            List<BgReading> bgList = DBSearchUtil.getReadingsOrderedInTimeframe(context);
+            List<BgReadingStats> bgList = DBSearchUtil.getReadingsOrderedInTimeframe(context);
             if (bgList.size() > 0) {
                 double median = bgList.get(bgList.size() / 2).calculated_value;
                 TextView medianView = (TextView) localView.findViewById(R.id.textView_median);
@@ -105,7 +105,7 @@ public class FirstPageFragment extends Fragment {
                 double mean = 0;
                 double len = bgList.size();
                 double stdev = 0;
-                for (BgReading bgr : bgList) {
+                for (BgReadingStats bgr : bgList) {
                     mean += bgr.calculated_value / len;
                 }
 
@@ -124,7 +124,7 @@ public class FirstPageFragment extends Fragment {
                 updateText(localView, a1cView, a1c_ifcc + " mmol/mol\n" + a1c_dcct + "%");
 
 
-                for (BgReading bgr : bgList) {
+                for (BgReadingStats bgr : bgList) {
                     stdev += (bgr.calculated_value - mean) * (bgr.calculated_value - mean) / len;
                 }
                 stdev = Math.sqrt(stdev);

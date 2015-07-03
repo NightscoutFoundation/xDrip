@@ -2,9 +2,13 @@ package com.eveningoutpost.dexdrip.stats;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.activeandroid.Cache;
 import com.activeandroid.Model;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -14,6 +18,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Created by adrian on 30/06/15.
@@ -114,6 +119,58 @@ public class DBSearchUtil {
                 .execute();
     }
 
+    public static List<BgReadingStats> getReadingsDirectQuery(Context context) {
+        long stop = System.currentTimeMillis();
+        long start = System.currentTimeMillis();
+
+        switch (StatsActivity.state){
+            case StatsActivity.TODAY:
+                start = getTodayTimestamp();
+                break;
+            case StatsActivity.YESTERDAY:
+                start = getYesterdayTimestamp();
+                stop = getTodayTimestamp();
+                break;
+            case StatsActivity.D7:
+                start= getXDaysTimestamp(7);
+                break;
+            case StatsActivity.D30:
+                start= getXDaysTimestamp(30);
+                break;
+            case StatsActivity.D90:
+                start= getXDaysTimestamp(90);
+                break;
+        }
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
+
+        double high = Double.parseDouble(settings.getString("highValue", "170"));
+        double low = Double.parseDouble(settings.getString("lowValue", "70"));
+        if (!mgdl){
+            high *= Constants.MMOLL_TO_MGDL;
+            low *= Constants.MMOLL_TO_MGDL;
+
+        }
+
+
+        SQLiteDatabase db = Cache.openDatabase();
+        Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, "timestamp >= ? AND timestamp <=  ? AND calculated_value > 13", new String[]{"" + start, "" + stop}, null, null, null);
+        List<BgReadingStats> readings = new Vector<BgReadingStats>();
+        BgReadingStats reading;
+        if (cur.moveToFirst()) {
+            do {
+                reading = new BgReadingStats();
+                reading.timestamp = (Long.parseLong(cur.getString(0)));
+                reading.calculated_value = (Double.parseDouble(cur.getString(1)));
+                readings.add(reading);
+            } while (cur.moveToNext());
+        }
+        return readings;
+    }
+
+
+
 
 
 
@@ -164,7 +221,7 @@ public class DBSearchUtil {
 
 
 
-    public static List<BgReading> getReadingsOrderedInTimeframe(Context context) {
+    public static List<BgReadingStats> getReadingsOrderedInTimeframe(Context context) {
         long stop = System.currentTimeMillis();
         long start = System.currentTimeMillis();
 
@@ -187,13 +244,20 @@ public class DBSearchUtil {
                 break;
         }
 
-        return   new Select()
-                .from(BgReading.class)
-                .where("timestamp >= " + start)
-                .where("timestamp <= " + stop)
-                .where("calculated_value > 13")
-                .orderBy("calculated_value desc")
-                .execute();
+        SQLiteDatabase db = Cache.openDatabase();
+        Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, "timestamp >= ? AND timestamp <=  ? AND calculated_value > 13", new String[]{"" + start, "" + stop}, null, null, "calculated_value desc");
+        List<BgReadingStats> readings = new Vector<BgReadingStats>();
+        BgReadingStats reading;
+        if (cur.moveToFirst()) {
+            do {
+                reading = new BgReadingStats();
+                reading.timestamp = (Long.parseLong(cur.getString(0)));
+                reading.calculated_value = (Double.parseDouble(cur.getString(1)));
+                readings.add(reading);
+            } while (cur.moveToNext());
+        }
+        return readings;
+
     }
 
 
