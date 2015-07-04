@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -187,42 +186,6 @@ public class StatsActivity extends ActivityWithMenu {
         return MENU_NAME;
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_stats, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
-
-    public static class MockupFragment extends Fragment {
-        public static final String ARG_OBJECT = "object";
-
-        @Override
-        public View onCreateView(LayoutInflater inflater,
-                                 ViewGroup container, Bundle savedInstanceState) {
-            View rootView = inflater.inflate(
-                    R.layout.stats_layout_test, container, false);
-            Bundle args = getArguments();
-            ((TextView) rootView.findViewById(android.R.id.text1)).setText(
-                    "One more chart? " + Integer.toString(args.getInt(ARG_OBJECT)));
-            return rootView;
-        }
-    }
 
     public class StatisticsPageAdapter extends FragmentStatePagerAdapter {
         public StatisticsPageAdapter(FragmentManager fm) {
@@ -235,21 +198,13 @@ public class StatsActivity extends ActivityWithMenu {
             switch (i){
                 case 0: return new FirstPageFragment();
                 case 1: return new ChartFragment();
-                case 2: return new PercentileFragment();
+                default: return new PercentileFragment();
             }
-
-            Fragment fragment = new MockupFragment();
-            Bundle args = new Bundle();
-            // Our object is just an integer
-            args.putInt(MockupFragment.ARG_OBJECT, i -2);
-            fragment.setArguments(args);
-            return fragment;
         }
 
         @Override
         public int getCount() {
             return 3;
-            //return 5; // add mockup views
         }
 
         @Override
