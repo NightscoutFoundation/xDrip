@@ -87,13 +87,13 @@ public class PercentileView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Log.d("DrawStats", "onDraw");
+        Log.d("DrawStats", "PercentileView - onDraw");
         super.onDraw(canvas);
 
         CalculatedData rd = getMaybeCalculatedData();
 
         if (rd == null) {
-            Log.d("DrawStats", "onDraw if");
+            Log.d("DrawStats", "PercentileView - onDraw if");
 
             Paint myPaint = new Paint();
             myPaint.setColor(Color.WHITE);
@@ -102,7 +102,7 @@ public class PercentileView extends View {
             myPaint.setTextSize(dp2px(15));
             canvas.drawText("Calculating...", dp2px(30), canvas.getHeight() / 2, myPaint);
         } else {
-            Log.d("DrawStats", "onDraw else");
+            Log.d("DrawStats", "PercentileView - onDraw else");
             drawPolygon(canvas, rd.q10, rd.q90, outerPaint);
             drawPolygon(canvas, rd.q25, rd.q75, innerPaint);
             drawPolygon(canvas, rd.q50, rd.q50, medianPaint);
@@ -134,8 +134,6 @@ public class PercentileView extends View {
         myPaintText.setAntiAlias(false);
         myPaintText.setColor(Color.LTGRAY);
         myPaintText.setTextSize(dp2px(10));
-
-
 
         canvas.drawLine(dpOffset, 0, dpOffset, canvas.getHeight() - dpOffset, myPaint);
         canvas.drawLine(dpOffset, canvas.getHeight() - dpOffset, canvas.getWidth(), canvas.getHeight() - dpOffset, myPaint);
@@ -170,8 +168,6 @@ public class PercentileView extends View {
             for (int i = 0; i < levels.length; i++) {
                 levels[i] *= Constants.MMOLL_TO_MGDL;
             }
-
-
         }
         for (int i = 0; i < levels.length; i++) {
             path.moveTo(dpOffset, getYfromBG(levels[i], canvas));
@@ -194,7 +190,6 @@ public class PercentileView extends View {
 
         }
 
-
         int highPosition = getYfromBG(high, canvas);
         int lowPosition = getYfromBG(low, canvas);
         Paint myPaint = new Paint();
@@ -207,7 +202,7 @@ public class PercentileView extends View {
         canvas.drawLine(dpOffset, highPosition, canvas.getWidth(), highPosition, myPaint);
     }
 
-    private void drawPolygon(Canvas canvas, double[] lowerValues, double[] higherValues, Paint paint ) {
+    private void drawPolygon(Canvas canvas, double[] lowerValues, double[] higherValues, Paint paint) {
 
         Path myPath = new Path();
         myPath.reset();
@@ -233,7 +228,7 @@ public class PercentileView extends View {
         return (int) (canvas.getHeight() - dpOffset - bgValue * (canvas.getHeight() - dpOffset) / 400);
     }
 
-    private int dp2px(float dp){
+    private int dp2px(float dp) {
         DisplayMetrics metrics = resources.getDisplayMetrics();
         int px = (int) (dp * (metrics.densityDpi / 160f));
         return px;
@@ -274,25 +269,24 @@ public class PercentileView extends View {
                     double[] q90 = new double[NO_TIMESLOTS];
 
 
-
                     for (int i = 0; i < NO_TIMESLOTS; i++) {
-                        int begin = i*timeslot;
-                        int end = begin+timeslot;
+                        int begin = i * timeslot;
+                        int end = begin + timeslot;
                         List<Double> filtered = new Vector<Double>();
 
-                        for (BgReadingStats reading: readings){
-                            long timeOfDay = (reading.timestamp-offset)%day;
-                            if(timeOfDay >= begin && timeOfDay< end){
+                        for (BgReadingStats reading : readings) {
+                            long timeOfDay = (reading.timestamp - offset) % day;
+                            if (timeOfDay >= begin && timeOfDay < end) {
                                 filtered.add(reading.calculated_value);
                             }
                         }
                         Collections.sort(filtered);
-                        if(filtered.size()>0){
-                            q10[i] = filtered.get((int)(filtered.size()*0.1));
-                            q25[i] = filtered.get((int)(filtered.size()*0.25));
-                            q50[i] = filtered.get((int)(filtered.size()*0.50));
-                            q75[i] = filtered.get((int)(filtered.size()*0.75));
-                            q90[i] = filtered.get((int)(filtered.size()*0.9));
+                        if (filtered.size() > 0) {
+                            q10[i] = filtered.get((int) (filtered.size() * 0.1));
+                            q25[i] = filtered.get((int) (filtered.size() * 0.25));
+                            q50[i] = filtered.get((int) (filtered.size() * 0.50));
+                            q75[i] = filtered.get((int) (filtered.size() * 0.75));
+                            q90[i] = filtered.get((int) (filtered.size() * 0.9));
                         }
 
                     }

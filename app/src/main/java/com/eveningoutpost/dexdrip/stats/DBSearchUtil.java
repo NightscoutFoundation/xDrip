@@ -50,7 +50,7 @@ public class DBSearchUtil {
     public static List<BgReadingStats> getReadings(boolean ordered) {
         Bounds bounds = new Bounds().invoke();
 
-        String orderBy = ordered?"calculated_value desc":null;
+        String orderBy = ordered ? "calculated_value desc" : null;
 
         SQLiteDatabase db = Cache.openDatabase();
         Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, "timestamp >= ? AND timestamp <=  ? AND calculated_value > ?", new String[]{"" + bounds.start, "" + bounds.stop, CUTOFF}, null, null, orderBy);

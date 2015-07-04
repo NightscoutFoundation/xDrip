@@ -18,6 +18,7 @@ public class ChartView extends View {
     private RangeData rangeData = null;
     private boolean ranteDataCalculating = false;
     private Resources resources;
+
     public ChartView(Context context) {
         super(context);
         resources = context.getResources();
@@ -26,13 +27,13 @@ public class ChartView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Log.d("DrawStats", "onDraw");
+        Log.d("DrawStats", "onDraw - ChartView");
         super.onDraw(canvas);
 
         RangeData rd = getMaybeRangeData();
 
         if (rd == null) {
-            Log.d("DrawStats", "onDraw if");
+            Log.d("DrawStats", "ChartView - onDraw if");
 
             Paint myPaint = new Paint();
             myPaint.setColor(Color.WHITE);
@@ -43,7 +44,7 @@ public class ChartView extends View {
         } else {
             Log.d("DrawStats", "onDraw else");
 
-            if((rd.aboveRange + rd.belowRange + rd.inRange) == 0){
+            if ((rd.aboveRange + rd.belowRange + rd.inRange) == 0) {
                 Paint myPaint = new Paint();
                 myPaint.setColor(Color.WHITE);
                 myPaint.setAntiAlias(true);
@@ -83,7 +84,7 @@ public class ChartView extends View {
         postInvalidate();
     }
 
-    private int dp2px(float dp){
+    private int dp2px(float dp) {
         DisplayMetrics metrics = resources.getDisplayMetrics();
         int px = (int) (dp * (metrics.densityDpi / 160f));
         return px;

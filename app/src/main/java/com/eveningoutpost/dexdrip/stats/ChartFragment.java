@@ -25,9 +25,9 @@ public class ChartFragment extends Fragment {
     @Nullable
     @Override
     public View getView() {
-        Log.d("DrawStats", "getView");
+        Log.d("DrawStats", "getView - ChartFragment");
 
-        if(chartView == null){
+        if (chartView == null) {
             chartView = new ChartView(getActivity().getApplicationContext());
         }
         return chartView;

@@ -53,6 +53,7 @@ public class StatsActivity extends ActivityWithMenu {
 
     private void showStartupInfo() {
         if (swipeInfoNotNeeded) {
+            //show info only if user didn't swipe already.
             return;
         }
 
@@ -61,7 +62,8 @@ public class StatsActivity extends ActivityWithMenu {
         tv.setTextColor(Color.CYAN);
         tv.setTextSize(28);
 
-        for (int i = 0; i < 2 ; i++) {
+        for (int i = 0; i < 2; i++) {
+            //Show toast twice the "long" period
             Toast toast = new Toast(getApplicationContext());
             toast.setView(tv);
             toast.setGravity(Gravity.CENTER, 0, 0);
@@ -102,7 +104,7 @@ public class StatsActivity extends ActivityWithMenu {
             @Override
             public void onPageSelected(int position) {
 
-                if(position !=0){
+                if (position != 0) {
                     swipeInfoNotNeeded = true;
                 }
 
@@ -122,7 +124,6 @@ public class StatsActivity extends ActivityWithMenu {
 
     void setButtonColors() {
         buttonTD.getBackground().setColorFilter(null);
-        ;
         buttonYTD.getBackground().setColorFilter(null);
         button7d.getBackground().setColorFilter(null);
         button30d.getBackground().setColorFilter(null);
@@ -195,10 +196,13 @@ public class StatsActivity extends ActivityWithMenu {
         @Override
         public Fragment getItem(int i) {
 
-            switch (i){
-                case 0: return new FirstPageFragment();
-                case 1: return new ChartFragment();
-                default: return new PercentileFragment();
+            switch (i) {
+                case 0:
+                    return new FirstPageFragment();
+                case 1:
+                    return new ChartFragment();
+                default:
+                    return new PercentileFragment();
             }
         }
 
@@ -209,9 +213,14 @@ public class StatsActivity extends ActivityWithMenu {
 
         @Override
         public CharSequence getPageTitle(int position) {
-
-            if(position == 1) return "Range Pi Chart";
-            return "OBJECT " + (position + 1);
+            switch (position) {
+                case 0:
+                    return "General";
+                case 1:
+                    return "Range Pi Chart";
+                default:
+                    return "Percentile Chart";
+            }
         }
 
         @Override

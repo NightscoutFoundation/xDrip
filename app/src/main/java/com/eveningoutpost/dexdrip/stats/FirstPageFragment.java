@@ -40,16 +40,10 @@ public class FirstPageFragment extends Fragment {
     @Nullable
     @Override
     public View getView() {
-
-        //TODO: Update?
-
-
         return myView;
     }
 
-
     private class CalculationThread extends Thread {
-
 
         private final View localView;
         private final Context context;
@@ -78,7 +72,7 @@ public class FirstPageFragment extends Fragment {
             long inRange = DBSearchUtil.noReadingsInRange(context);
             long total = aboveRange + belowRange + inRange;
 
-            if(total == 0){
+            if (total == 0) {
                 total = Long.MAX_VALUE;
             }
 
@@ -133,16 +127,11 @@ public class FirstPageFragment extends Fragment {
                 } else {
                     updateText(localView, stdevView, (Math.round(stdev * Constants.MG_DL_TO_MMOL_L * 100) / 100d) + " mmol/l");
                 }
-
-
             }
-
-
         }
 
         private void updateText(final View localView, final TextView tv, final String s) {
             Log.d("DrawStats", "updateText: " + s);
-
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {

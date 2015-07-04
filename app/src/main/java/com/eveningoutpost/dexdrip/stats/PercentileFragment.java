@@ -18,16 +18,16 @@ public class PercentileFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d("DrawStats", "ChartFragment onCreateView");
+        Log.d("DrawStats", "PercentileFragment - onCreateView");
         return getView();
     }
 
     @Nullable
     @Override
     public View getView() {
-        Log.d("DrawStats", "getView");
+        Log.d("DrawStats", "PercentileFragment - getView");
 
-        if(percentileView == null){
+        if (percentileView == null) {
             percentileView = new PercentileView(getActivity().getApplicationContext());
         }
         return percentileView;
