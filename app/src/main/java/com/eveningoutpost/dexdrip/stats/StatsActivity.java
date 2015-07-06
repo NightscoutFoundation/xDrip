@@ -127,7 +127,7 @@ public class StatsActivity extends ActivityWithMenu {
 
     void setButtonColors() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             ColorStateList csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0xFF606060});
             buttonTD.setBackgroundTintList(csl);
             buttonYTD.setBackgroundTintList(csl);
