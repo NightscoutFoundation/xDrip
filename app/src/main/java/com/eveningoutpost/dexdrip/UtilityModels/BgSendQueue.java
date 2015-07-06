@@ -94,14 +94,6 @@ public class BgSendQueue extends Model {
                 context.startService(new Intent(context, widgetUpdateService.class));
             }
 
-            if (prefs.getBoolean("cloud_storage_mongodb_enable", false) || prefs.getBoolean("cloud_storage_api_enable", false)) {
-                Log.w("SENSOR QUEUE:", String.valueOf(bgSendQueue.mongo_success));
-                if (operation_type.compareTo("create") == 0) {
-                    MongoSendTask task = new MongoSendTask(context, bgSendQueue);
-                    task.execute();
-                }
-            }
-
             if (prefs.getBoolean("broadcast_data_through_intents", false)) {
                 Log.i("SENSOR QUEUE:", "Broadcast data");
                 final Bundle bundle = new Bundle();
