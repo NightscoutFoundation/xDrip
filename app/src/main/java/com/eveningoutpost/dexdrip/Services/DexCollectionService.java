@@ -228,6 +228,12 @@ public class DexCollectionService extends Service {
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 mConnectionState = STATE_DISCONNECTED;
                 ActiveBluetoothDevice.disconnected();
+                if(mBluetoothGatt != null) {
+                    Log.w(TAG, "onConnectionStateChange: mBluetoothGatt is not null, closing.");
+                    mBluetoothGatt.close();
+                    mBluetoothGatt = null;
+                    mCharacteristic = null;
+                }
                 lastdata = null;
                 Log.w(TAG, "onConnectionStateChange: Disconnected from GATT server.");
                 setRetryTimer();
