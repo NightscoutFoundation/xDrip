@@ -176,11 +176,6 @@ public class StatsActivity extends ActivityWithMenu {
                     break;
             }
         }
-
-
-
-
-
     }
 
 
