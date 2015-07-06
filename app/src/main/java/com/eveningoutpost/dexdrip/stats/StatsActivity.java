@@ -1,7 +1,10 @@
 package com.eveningoutpost.dexdrip.stats;
 
+
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.LightingColorFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -123,28 +126,60 @@ public class StatsActivity extends ActivityWithMenu {
     }
 
     void setButtonColors() {
-        buttonTD.getBackground().setColorFilter(null);
-        buttonYTD.getBackground().setColorFilter(null);
-        button7d.getBackground().setColorFilter(null);
-        button30d.getBackground().setColorFilter(null);
-        button90d.getBackground().setColorFilter(null);
-        switch (state) {
-            case TODAY:
-                buttonTD.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
-                break;
-            case YESTERDAY:
-                buttonYTD.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
-                break;
-            case D7:
-                button7d.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
-                break;
-            case D30:
-                button30d.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
-                break;
-            case D90:
-                button90d.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
-                break;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            buttonTD.setBackgroundTintList(null);
+            buttonYTD.setBackgroundTintList(null);
+            button7d.setBackgroundTintList(null);
+            button30d.setBackgroundTintList(null);
+            button90d.setBackgroundTintList(null);
+            ColorStateList csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0xFFAA0000});
+            switch (state) {
+                case TODAY:
+                    buttonTD.setBackgroundTintList(csl);
+                    break;
+                case YESTERDAY:
+                    buttonYTD.setBackgroundTintList(csl);
+                    break;
+                case D7:
+                    button7d.setBackgroundTintList(csl);
+                    break;
+                case D30:
+                    button30d.setBackgroundTintList(csl);
+                    break;
+                case D90:
+                    button90d.setBackgroundTintList(csl);
+                    break;
+            }
+        } else {
+            buttonTD.getBackground().mutate().setColorFilter(null);
+            buttonYTD.getBackground().mutate().setColorFilter(null);
+            button7d.getBackground().mutate().setColorFilter(null);
+            button30d.getBackground().mutate().setColorFilter(null);
+            button90d.getBackground().mutate().setColorFilter(null);
+            switch (state) {
+                case TODAY:
+                    buttonTD.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+                    break;
+                case YESTERDAY:
+                    buttonYTD.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+                    break;
+                case D7:
+                    button7d.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+                    break;
+                case D30:
+                    button30d.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+                    break;
+                case D90:
+                    button90d.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+                    break;
+            }
         }
+
+
+
+
+
     }
 
 
