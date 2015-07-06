@@ -128,12 +128,13 @@ public class StatsActivity extends ActivityWithMenu {
     void setButtonColors() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            buttonTD.setBackgroundTintList(null);
-            buttonYTD.setBackgroundTintList(null);
-            button7d.setBackgroundTintList(null);
-            button30d.setBackgroundTintList(null);
-            button90d.setBackgroundTintList(null);
-            ColorStateList csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0xFFAA0000});
+            ColorStateList csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0xFF606060});
+            buttonTD.setBackgroundTintList(csl);
+            buttonYTD.setBackgroundTintList(csl);
+            button7d.setBackgroundTintList(csl);
+            button30d.setBackgroundTintList(csl);
+            button90d.setBackgroundTintList(csl);
+            csl = new ColorStateList(new int[][]{new int[0]}, new int[]{0xFFAA0000});
             switch (state) {
                 case TODAY:
                     buttonTD.setBackgroundTintList(csl);
