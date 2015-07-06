@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.utils;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 
@@ -18,7 +19,7 @@ import java.util.Set;
 /**
  * Created by stephenblack on 6/8/15.
  */
-public abstract class ActivityWithMenu extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public abstract class ActivityWithMenu extends FragmentActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     private NavDrawerBuilder navDrawerBuilder;
     private List<Intent> intent_list;
     private List<String> menu_option_list;
