@@ -71,11 +71,10 @@ public class BgSendQueue extends Model {
     }
 
     public static void addToQueue(BgReading bgReading, String operation_type, Context context) {
-        PowerManager powerManager = (PowerManager) context.getSystemService(context.POWER_SERVICE);
+        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "sendQueue");
         wakeLock.acquire();
-
         try {
             BgSendQueue bgSendQueue = new BgSendQueue();
             bgSendQueue.operation_type = operation_type;
@@ -126,9 +125,10 @@ public class BgSendQueue extends Model {
             }
 
             if (prefs.getBoolean("share_upload", false)) {
-                ShareRest shareRest = new ShareRest(context);
                 Log.w("ShareRest", "About to call ShareRest!!");
-                shareRest.sendBgData(bgReading);
+                Intent shareIntent = new Intent(context, ShareRest.class);
+                shareIntent.putExtra("BgUuid", bgReading.uuid);
+                context.startService(shareIntent);
             }
             context.startService(new Intent(context, SyncService.class));
         } finally {

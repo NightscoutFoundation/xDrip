@@ -265,73 +265,69 @@ public class DexShareCollectionService extends Service {
         PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(getApplicationContext().POWER_SERVICE);
         PowerManager.WakeLock wakeLock1 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "ReadingShareData");
-        wakeLock1.acquire(40000);
-        try {
+        wakeLock1.acquire(15000);
             Log.d(TAG, "Attempting to read data");
             final Action1<Long> systemTimeListener = new Action1<Long>() {
                 @Override
                 public void call(Long s) {
-                    if (s != null) {
-                        Log.d(TAG, "Made the full round trip, got " + s + " as the system time");
-                        final long addativeSystemTimeOffset = new Date().getTime() - s;
+                if (s != null) {
+                    Log.d(TAG, "Made the full round trip, got " + s + " as the system time");
+                    final long addativeSystemTimeOffset = new Date().getTime() - s;
 
-                        final Action1<Long> dislpayTimeListener = new Action1<Long>() {
-                            @Override
-                            public void call(Long s) {
-                                if (s != null) {
-                                    Log.d(TAG, "Made the full round trip, got " + s + " as the display time offset");
-                                    final long addativeDisplayTimeOffset = addativeSystemTimeOffset - (s * 1000);
+                    final Action1<Long> dislpayTimeListener = new Action1<Long>() {
+                        @Override
+                        public void call(Long s) {
+                            if (s != null) {
+                                Log.d(TAG, "Made the full round trip, got " + s + " as the display time offset");
+                                final long addativeDisplayTimeOffset = addativeSystemTimeOffset - (s * 1000);
 
-                                    Log.d(TAG, "Making " + addativeDisplayTimeOffset + " the the total time offset");
+                                Log.d(TAG, "Making " + addativeDisplayTimeOffset + " the the total time offset");
 
-                                    final Action1<EGVRecord[]> evgRecordListener = new Action1<EGVRecord[]>() {
-                                        @Override
-                                        public void call(EGVRecord[] egvRecords) {
-                                            if (egvRecords != null) {
-                                                Log.d(TAG, "Made the full round trip, got " + egvRecords.length + " EVG Records");
-                                                BgReading.create(egvRecords, addativeSystemTimeOffset, getApplicationContext());
-                                                if (shouldDisconnect) {
-                                                    stopSelf();
-                                                } else {
-                                                    setRetryTimer();
-                                                }
+                                final Action1<EGVRecord[]> evgRecordListener = new Action1<EGVRecord[]>() {
+                                    @Override
+                                    public void call(EGVRecord[] egvRecords) {
+                                        if (egvRecords != null) {
+                                            Log.d(TAG, "Made the full round trip, got " + egvRecords.length + " EVG Records");
+                                            BgReading.create(egvRecords, addativeSystemTimeOffset, getApplicationContext());
+                                            if (shouldDisconnect) {
+                                                stopSelf();
+                                            } else {
+                                                setRetryTimer();
                                             }
                                         }
-                                    };
+                                    }
+                                };
 
-                                    final Action1<SensorRecord[]> sensorRecordListener = new Action1<SensorRecord[]>() {
-                                        @Override
-                                        public void call(SensorRecord[] sensorRecords) {
-                                            if (sensorRecords != null) {
-                                                Log.d(TAG, "Made the full round trip, got " + sensorRecords.length + " Sensor Records");
-                                                BgReading.create(sensorRecords, addativeSystemTimeOffset, getApplicationContext());
-                                                readData.getRecentEGVs(evgRecordListener);
-                                            }
+                                final Action1<SensorRecord[]> sensorRecordListener = new Action1<SensorRecord[]>() {
+                                    @Override
+                                    public void call(SensorRecord[] sensorRecords) {
+                                        if (sensorRecords != null) {
+                                            Log.d(TAG, "Made the full round trip, got " + sensorRecords.length + " Sensor Records");
+                                            BgReading.create(sensorRecords, addativeSystemTimeOffset, getApplicationContext());
+                                            readData.getRecentEGVs(evgRecordListener);
                                         }
-                                    };
+                                    }
+                                };
 
-                                    final Action1<CalRecord[]> calRecordListener = new Action1<CalRecord[]>() {
-                                        @Override
-                                        public void call(CalRecord[] calRecords) {
-                                            if (calRecords != null) {
-                                                Log.d(TAG, "Made the full round trip, got " + calRecords.length + " Cal Records");
-                                                Calibration.create(calRecords, addativeDisplayTimeOffset, getApplicationContext());
-                                                readData.getRecentSensorRecords(sensorRecordListener);
-                                            }
+                                final Action1<CalRecord[]> calRecordListener = new Action1<CalRecord[]>() {
+                                    @Override
+                                    public void call(CalRecord[] calRecords) {
+                                        if (calRecords != null) {
+                                            Log.d(TAG, "Made the full round trip, got " + calRecords.length + " Cal Records");
+                                            Calibration.create(calRecords, addativeDisplayTimeOffset, getApplicationContext());
+                                            readData.getRecentSensorRecords(sensorRecordListener);
                                         }
-                                    };
-                                    readData.getRecentCalRecords(calRecordListener);
-                                }
+                                    }
+                                };
+                                readData.getRecentCalRecords(calRecordListener);
                             }
-                        };
-                        readData.readDisplayTimeOffset(dislpayTimeListener);
-                    }
+                        }
+                    };
+                    readData.readDisplayTimeOffset(dislpayTimeListener);
                 }
-            };
-            readData.readSystemTime(systemTimeListener);
-        } finally {
-            wakeLock1.release();
-        }
+            }
+        };
+        readData.readSystemTime(systemTimeListener);
     }
 
     public boolean connect(final String address) {
