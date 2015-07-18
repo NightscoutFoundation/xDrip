@@ -15,7 +15,6 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.SystemClock;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -36,7 +35,6 @@ import com.eveningoutpost.dexdrip.Models.CalibrationRequest;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Sensor;
-import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -158,7 +156,7 @@ public class Notifications extends IntentService {
             if(activeBgAlert == null) {
                 Log.e(TAG, "FileBasedNotifications we have a new alert, starting to play it... " + newAlert.name);
                 // We need to create a new alert  and start playing
-                AlertPlayer.getPlayer().startAlert(context, newAlert, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
+                AlertPlayer.getPlayer().startAlert(context, newAlert, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
                 return;
             }
 
@@ -167,7 +165,7 @@ public class Notifications extends IntentService {
                 // This is the same alert. Might need to play again...
                 Log.e(TAG, "FileBasedNotifications we have found an active alert, checking if we need to play it " + newAlert.name);
                 boolean trendingToAlertEnd = trendingToAlertEnd(context, newAlert);
-                AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
+                AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
                 return;
             }
            // Currently the ui blocks having two alerts with the same alert value.
@@ -195,14 +193,14 @@ public class Notifications extends IntentService {
                             "activeBgAlert = " + activeBgAlert.name);
 
                     boolean trendingToAlertEnd = trendingToAlertEnd(context, newHigherAlert);
-                    AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
+                    AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
                     return;
                 }
             }
             // For now, we are stopping the old alert and starting a new one.
             Log.e(TAG, "Found a new alert, that is higher than the previous one will play it. " + newAlert.name);
             AlertPlayer.getPlayer().stopAlert(context, true, false);
-            AlertPlayer.getPlayer().startAlert(context, newAlert, EditAlertActivity.UnitsConvert2Disp(doMgdl, bgReading.calculated_value));
+            AlertPlayer.getPlayer().startAlert(context, newAlert, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
             return;
 
         } else {

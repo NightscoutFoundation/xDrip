@@ -93,14 +93,6 @@ public class BgSendQueue extends Model {
                 context.startService(new Intent(context, widgetUpdateService.class));
             }
 
-            if (prefs.getBoolean("cloud_storage_mongodb_enable", false) || prefs.getBoolean("cloud_storage_api_enable", false)) {
-                Log.w("SENSOR QUEUE:", String.valueOf(bgSendQueue.mongo_success));
-                if (operation_type.compareTo("create") == 0) {
-                    MongoSendTask task = new MongoSendTask(context, bgSendQueue);
-                    task.execute();
-                }
-            }
-
             if (prefs.getBoolean("broadcast_data_through_intents", false)) {
                 Log.i("SENSOR QUEUE:", "Broadcast data");
                 final Bundle bundle = new Bundle();
@@ -117,7 +109,15 @@ public class BgSendQueue extends Model {
                 Intent intent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE);
                 intent.putExtras(bundle);
                 intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+
+
                 context.sendBroadcast(intent, Intents.RECEIVER_PERMISSION);
+
+                //just keep it alive for 3 more seconds to allow the watch to be updated
+                // TODO: change NightWatch to not allow the system to sleep.
+                powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                        "broadcstNightWatch").acquire(3000);
+
             }
 
             if(prefs.getBoolean("broadcast_to_pebble", false)) {
