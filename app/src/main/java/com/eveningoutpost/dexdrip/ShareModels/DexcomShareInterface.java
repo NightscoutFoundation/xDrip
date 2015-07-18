@@ -57,4 +57,22 @@ public interface DexcomShareInterface {
     //Since this seems to respond with a string we need a callback that will parse the response body
     //new String(((TypedByteArray) response.getBody()).getBytes());
 
+
+
+    //Follower Related
+    @POST("/Publisher/DoesContactExistByName")
+    void doesContactExist(@QueryMap Map<String, String> options, Callback<Response> callback);
+    // needs ?sessionId={YourSessionId}&contactName={newcontactName}
+    // returns true or false
+
+    @POST("/Publisher/CreateContact")
+    void createContact(@QueryMap Map<String, String> options, Callback<Response> callback);
+    // needs ?sessionId={YourSessionId}&contactName={newcontactName}&emailAddress={FollowerEmail}
+    // returns a contact id
+
+    @POST("/Publisher/CreateSubscriptionInvitation")
+    void createInvitationForContact(@Body InvitationPayload body, @QueryMap Map<String, String> options, Callback<Response> callback);
+    // needs ?sessionId={YourSessionId}&contactId={ContactId}
+    // returns a contact id
+
 }

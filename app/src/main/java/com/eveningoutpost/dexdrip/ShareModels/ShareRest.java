@@ -268,14 +268,14 @@ public class ShareRest extends Service {
         dataSender.execute((Void) null);
     }
 
-    private DexcomShareInterface jsonBodyInterface() {
+    public DexcomShareInterface jsonBodyInterface() {
         RestAdapter adapter = authoirizeAdapterBuilder().build();
         DexcomShareInterface dexcomShareInterface =
                 adapter.create(DexcomShareInterface.class);
         return dexcomShareInterface;
     }
 
-    private DexcomShareInterface emptyBodyInterface() {
+    public DexcomShareInterface emptyBodyInterface() {
         RestAdapter adapter = getBgAdapterBuilder().build();
         DexcomShareInterface checkSessionActive =
                 adapter.create(DexcomShareInterface.class);
@@ -308,7 +308,7 @@ public class ShareRest extends Service {
         return adapterBuilder;
     }
 
-    RequestInterceptor authorizationRequestInterceptor = new RequestInterceptor() {
+    static RequestInterceptor authorizationRequestInterceptor = new RequestInterceptor() {
         @Override
         public void intercept(RequestInterceptor.RequestFacade request) {
             request.addHeader("User-Agent", "Dexcom Share/3.0.2.11 CFNetwork/711.2.23 Darwin/14.0.0");

@@ -20,7 +20,7 @@
         android:name=".xdrip" android:allowBackup="true" android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" android:largeHeap="true" android:theme="@style/AppTheme" >
         <meta-data android:name="AA_DB_NAME" android:value="DexDrip.db" />
-        <meta-data android:name="AA_DB_VERSION" android:value="34" />
+        <meta-data android:name="AA_DB_VERSION" android:value="35" />
         <provider android:name="com.activeandroid.content.ContentProvider" android:authorities="com.example" android:exported="false" />
 
         <activity android:name=".Home" android:label="@string/app_name" android:launchMode="singleInstance" >
