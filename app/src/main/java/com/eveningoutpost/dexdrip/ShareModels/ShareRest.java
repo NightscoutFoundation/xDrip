@@ -5,21 +5,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.ShareModels.UserAgentInfo.UserAgent;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.security.cert.CertificateException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,9 +35,6 @@ import retrofit.client.OkClient;
 import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
 import retrofit.mime.TypedByteArray;
-import rx.Observable;
-import rx.functions.Action1;
-import rx.functions.Action2;
 
 /**
  * Created by stephenblack on 12/26/14.
@@ -169,7 +162,7 @@ public class ShareRest extends Service {
                 @Override
                 public void success(Object o, Response response) {
                     Log.d(TAG, "User Agent Data Updated!!");
-                    getValidSessionId();
+                    checkAndSetRecieverAssignment();
                 }
 
                 @Override
@@ -225,6 +218,41 @@ public class ShareRest extends Service {
 
 
         }
+    }
+
+    public void checkAndSetRecieverAssignment() {
+        emptyBodyInterface().checkMonitorAssignment(queryActivateSessionMap(), new Callback() {
+            @Override
+            public void success(Object o, Response response) {
+                Log.d(TAG, "Success!! Our remote monitoring session is up!");
+                if (response.getBody() != null) {
+                    if (!(new String(((TypedByteArray) response.getBody()).getBytes()).contains("AssignedToYou"))) {
+
+                        Log.e("Receiver trouble: ", "That receiver is not assigned to your account, trying to re-assign");
+                        emptyBodyInterface().updateMonitorAssignment(queryActivateSessionMap(), new Callback() {
+                            @Override
+                            public void success(Object o, Response response) {
+                                getValidSessionId();
+
+                            }
+                            @Override
+                            public void failure(RetrofitError retrofitError) {
+                                Log.e("RETROFIT ERROR: ", "Unable to set yourself as the publisher for that receiver");
+                            }
+                        });
+                    } else {
+                        getValidSessionId();
+
+                    }
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                sessionId = null;
+                Log.e("RETROFIT ERROR: ", "Unable to check receiver ownership");
+            }
+        });
     }
 
     public void continueUpload() {
@@ -370,7 +398,8 @@ public class ShareRest extends Service {
                     @Override
                     public void failure(RetrofitError retrofitError) {
                         Log.e("RETROFIT ERROR: ", ""+retrofitError.toString());
-                        if(retrofitError.toString().contains("EvgPost is only allowed when monitoring session is active") && retrying == false) {
+                        if((retrofitError.toString().contains("EvgPost is only allowed when monitoring session is active") && retrying == false) ||
+                                (retrofitError.toString().contains("SessionNotValid")  && retrying == false)) {
                             sessionId = null;
                             retrying = true;
                             getValidSessionId();

@@ -41,6 +41,17 @@ public interface DexcomShareInterface {
     // body ShareUploadPayload
     // returns status code
 
+    @POST("/Publisher/CheckMonitoredReceiverAssignmentStatus")
+    void checkMonitorAssignment(@QueryMap Map<String, String> options, Callback<Response> callback);
+    // needs ?sessionId={YourSessionId}&serialNumber={YourdexcomSerialNumber}
+    // returns `AssignedToYou` or `NotAssigned`
+
+    @POST("/Publisher/ReplacePublisherAccountMonitoredReceiver")
+    void updateMonitorAssignment(@QueryMap Map<String, String> options, Callback<Response> callback);
+    // needs ?sessionId={YourSessionId}&serialNumber={YourdexcomSerialNumber}
+    // returns status code?
+
+
     @POST("/Publisher/UpdatePublisherAccountRuntimeInfo")
     void updatePublisherAccountInfo(@Body UserAgent body, Callback<Response> callback);
     //Since this seems to respond with a string we need a callback that will parse the response body
