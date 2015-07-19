@@ -31,7 +31,6 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -40,25 +39,18 @@ import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
-import com.eveningoutpost.dexdrip.Models.TransmitterData;
 
-import java.nio.charset.Charset;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.UUID;
-import static com.activeandroid.ActiveAndroid.beginTransaction;
-import static com.activeandroid.ActiveAndroid.endTransaction;
-import static com.activeandroid.ActiveAndroid.setTransactionSuccessful;
-import com.activeandroid.query.Select;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class DexCollectionService extends Service {
@@ -223,7 +215,7 @@ public class DexCollectionService extends Service {
             PowerManager powerManager = (PowerManager) mContext.getSystemService(mContext.POWER_SERVICE);
             PowerManager.WakeLock wakeLock2 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                     "DexCollectionService");
-            wakeLock2.acquire(100);
+            wakeLock2.acquire();
             try {
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
                     mConnectionState = STATE_CONNECTED;
@@ -278,7 +270,7 @@ public class DexCollectionService extends Service {
             PowerManager powerManager = (PowerManager) mContext.getSystemService(mContext.POWER_SERVICE);
             PowerManager.WakeLock wakeLock1 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                     "DexCollectionService");
-            wakeLock1.acquire(8000);
+            wakeLock1.acquire();
             try {
                 Log.w(TAG, "onCharacteristicChanged entered");
                 final byte[] data = characteristic.getValue();

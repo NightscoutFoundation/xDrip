@@ -19,14 +19,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.ReadDataShare;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
@@ -40,15 +37,11 @@ import com.eveningoutpost.dexdrip.UtilityModels.DexShareAttributes;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
 
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 import rx.Observable;
 import rx.functions.Action1;
@@ -124,7 +117,7 @@ public class DexShareCollectionService extends Service {
         PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(getApplicationContext().POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "DexShareCollectionStart");
-        wakeLock.acquire(40000);
+        wakeLock.acquire();
         try {
 
             if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
@@ -265,7 +258,7 @@ public class DexShareCollectionService extends Service {
         PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(getApplicationContext().POWER_SERVICE);
         PowerManager.WakeLock wakeLock1 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "ReadingShareData");
-        wakeLock1.acquire(40000);
+        wakeLock1.acquire();
         try {
             Log.d(TAG, "Attempting to read data");
             final Action1<Long> systemTimeListener = new Action1<Long>() {
