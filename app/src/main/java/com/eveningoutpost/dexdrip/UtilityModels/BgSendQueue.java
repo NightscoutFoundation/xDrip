@@ -71,11 +71,10 @@ public class BgSendQueue extends Model {
     }
 
     public static void addToQueue(BgReading bgReading, String operation_type, Context context) {
-        PowerManager powerManager = (PowerManager) context.getSystemService(context.POWER_SERVICE);
+        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "sendQueue");
         wakeLock.acquire();
-
         try {
             BgSendQueue bgSendQueue = new BgSendQueue();
             bgSendQueue.operation_type = operation_type;
@@ -92,14 +91,6 @@ public class BgSendQueue extends Model {
 
             if(AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, xDripWidget.class)).length > 0){
                 context.startService(new Intent(context, widgetUpdateService.class));
-            }
-
-            if (prefs.getBoolean("cloud_storage_mongodb_enable", false) || prefs.getBoolean("cloud_storage_api_enable", false)) {
-                Log.w("SENSOR QUEUE:", String.valueOf(bgSendQueue.mongo_success));
-                if (operation_type.compareTo("create") == 0) {
-                    MongoSendTask task = new MongoSendTask(context, bgSendQueue);
-                    task.execute();
-                }
             }
 
             if (prefs.getBoolean("broadcast_data_through_intents", false)) {
@@ -134,9 +125,10 @@ public class BgSendQueue extends Model {
             }
 
             if (prefs.getBoolean("share_upload", false)) {
-                ShareRest shareRest = new ShareRest(context);
                 Log.w("ShareRest", "About to call ShareRest!!");
-                shareRest.sendBgData(bgReading);
+                Intent shareIntent = new Intent(context, ShareRest.class);
+                shareIntent.putExtra("BgUuid", bgReading.uuid);
+                context.startService(shareIntent);
             }
             context.startService(new Intent(context, SyncService.class));
         } finally {

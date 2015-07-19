@@ -1,0 +1,107 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/drawer_layout"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:id="@+id/stats_main_layout">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:paddingTop="1dp"
+            android:paddingBottom="1dp"
+            android:minHeight="1dp"
+            android:minWidth="1dp">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TD"
+                android:id="@+id/button_stats_today"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:paddingTop="1dp"
+                android:paddingBottom="1dp"
+                android:minHeight="1dp"
+                android:minWidth="1dp"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="YTD"
+                android:id="@+id/button_stats_yesterday"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:paddingTop="1dp"
+                android:paddingBottom="1dp"
+                android:minHeight="1dp"
+                android:minWidth="1dp"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="7d"
+                android:id="@+id/button_stats_7d"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:paddingTop="1dp"
+                android:paddingBottom="1dp"
+                android:minHeight="1dp"
+                android:minWidth="1dp"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="30d"
+                android:id="@+id/button_stats_30d"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:paddingTop="1dp"
+                android:paddingBottom="1dp"
+                android:minHeight="1dp"
+                android:minWidth="1dp"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="90d"
+                android:id="@+id/button_stats_90d"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="0dp"
+                android:paddingTop="1dp"
+                android:paddingBottom="1dp"
+                android:minHeight="1dp"
+                android:minWidth="1dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/indicator_layout">
+        </LinearLayout>
+        <android.support.v4.view.ViewPager
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+
+
+    </LinearLayout>
+    <fragment android:id="@+id/navigation_drawer"
+        android:layout_width="@dimen/navigation_drawer_width" android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:name="com.eveningoutpost.dexdrip.NavigationDrawerFragment"
+        tools:layout="@layout/fragment_navigation_drawer" />
+
+</android.support.v4.widget.DrawerLayout>

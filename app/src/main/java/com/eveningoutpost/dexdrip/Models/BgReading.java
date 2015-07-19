@@ -323,8 +323,12 @@ public class BgReading extends Model {
                     }
                     bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
                 }
-
-                bgReading.calculated_value = Math.min(400, Math.max(40, bgReading.calculated_value));
+                if (bgReading.calculated_value < 10) {
+                    bgReading.calculated_value = 9;
+                    bgReading.hide_slope = true;
+                } else {
+                    bgReading.calculated_value = Math.min(400, Math.max(40, bgReading.calculated_value));
+                }
                 Log.w(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
 
                 bgReading.save();
@@ -489,6 +493,12 @@ public class BgReading extends Model {
                 .where("raw_data != 0")
                 .orderBy("timestamp desc")
                 .execute();
+    }
+    public static BgReading findByUuid(String uuid) {
+        return new Select()
+                .from(BgReading.class)
+                .where("uuid = ?", uuid)
+                .executeSingle();
     }
 
     public static double estimated_bg(double timestamp) {
@@ -674,11 +684,11 @@ public class BgReading extends Model {
         return gson.toJson(this);
     }
 
-    public String noiseValue() {
+    public int noiseValue() {
         if(noise == null || noise.compareTo("") == 0) {
-            return "1";
+            return 1;
         } else {
-            return String.valueOf(noise);
+            return Integer.valueOf(noise);
         }
     }
 
@@ -783,7 +793,7 @@ public class BgReading extends Model {
             return false;
         }
         float time3 = (latest.get(0).timestamp - latest.get(3).timestamp) / 60000;
-        double bg_diff3 = latest.get(3).calculated_value - latest.get(0).calculated_value;;
+        double bg_diff3 = latest.get(3).calculated_value - latest.get(0).calculated_value;
         if (!drop) {
             bg_diff3 *= (-1);
         }
@@ -874,10 +884,7 @@ public class BgReading extends Model {
     // Should that be combined with noiseValue?
     private Boolean Unclear() {
         Log.e(TAG_ALERT, "Unclear filtered_data=" + filtered_data + " raw_data=" + raw_data);
-        if (raw_data > filtered_data * 1.3 || raw_data < filtered_data * 0.7) {
-            return true;
-        }
-        return false;
+        return raw_data > filtered_data * 1.3 || raw_data < filtered_data * 0.7;
     }
 
     /*

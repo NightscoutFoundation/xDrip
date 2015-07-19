@@ -55,13 +55,12 @@ public class TransmitterData extends Model {
             for (int i = 0; i < len; ++i) { data_string.append((char) buffer[i]); }
             String[] data = data_string.toString().split("\\s+");
 
-            randomDelay(100, 2000);
+            randomDelay(100, 1000);
             TransmitterData lastTransmitterData = TransmitterData.last();
             if (lastTransmitterData != null && lastTransmitterData.raw_data == Integer.parseInt(data[0]) && Math.abs(lastTransmitterData.timestamp - timestamp) < (10000)) { //Stop allowing duplicate data, its bad!
                 return null;
             }
             if (data.length > 1) { transmitterData.sensor_battery_level = Integer.parseInt(data[1]); }
-            if (Integer.parseInt(data[0]) < 1000) { return null; }
             transmitterData.raw_data = Integer.parseInt(data[0]);
             transmitterData.filtered_data = Integer.parseInt(data[0]);
         }
@@ -72,7 +71,7 @@ public class TransmitterData extends Model {
     }
 
     public static TransmitterData create(int raw_data ,int sensor_battery_level, long timestamp) {
-        randomDelay(100, 2000);
+        randomDelay(100, 1000);
         TransmitterData lastTransmitterData = TransmitterData.last();
         if (lastTransmitterData != null && lastTransmitterData.raw_data == raw_data && Math.abs(lastTransmitterData.timestamp - new Date().getTime()) < (10000)) { //Stop allowing duplicate data, its bad!
             return null;
