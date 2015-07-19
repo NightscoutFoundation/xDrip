@@ -94,6 +94,7 @@
     <orderEntry type="library" exported="" name="crashlytics-2.2.3" level="project" />
     <orderEntry type="library" exported="" name="answers-1.1.2" level="project" />
     <orderEntry type="library" exported="" name="rxjava-1.0.0" level="project" />
+    <orderEntry type="library" exported="" name="acra-4.5.0" level="project" />
     <orderEntry type="library" exported="" name="retrofit-1.9.0" level="project" />
     <orderEntry type="library" exported="" name="acra-4.5.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-22.1.1" level="project" />
