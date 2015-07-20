@@ -1,9 +1,5 @@
 package com.eveningoutpost.dexdrip;
 
-import android.app.Activity;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +11,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,18 +18,14 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
-import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
-import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 
@@ -182,97 +173,132 @@ public class Home extends ActivityWithMenu {
         isBTShare = CollectionServiceStarter.isBTShare(getApplicationContext());
         isWifiWixel = CollectionServiceStarter.isWifiWixel(getApplicationContext());
         if (isBTShare) {
-            if ((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
-                notificationText.setText("Unfortunately your android version does not support Bluetooth Low Energy");
-            } else {
-                String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
-                if (receiverSn.compareTo("SM00000000") == 0 || receiverSn.length() == 0) {
-                    notificationText.setText("Please set your Dex Receiver Serial Number in App Settings");
-                } else {
-                    if (receiverSn.length() < 10) {
-                        notificationText.setText("Double Check Dex Receiver Serial Number, should be 10 characters, don't forget the letters");
-                    } else {
-                        if (ActiveBluetoothDevice.first() == null) {
-                            notificationText.setText("Now pair with your Dexcom Share");
-                        } else {
-                            if (!Sensor.isActive()) {
-                                notificationText.setText("Now choose start your sensor in your settings");
-                            } else {
-                                displayCurrentInfo();
-                            }
-                        }
-                    }
-                }
-            }
+            updateCurrentBgInfoForBtShare(notificationText);
         }
         if (isBTWixel || isDexbridgeWixel) {
-            if ((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
-                notificationText.setText("Unfortunately your android version does not support Bluetooth Low Energy");
-            } else {
-                if (ActiveBluetoothDevice.first() == null) {
-                    notificationText.setText("First pair with your BT device!");
-                } else {
-                    if (Sensor.isActive() && (Sensor.currentSensor().started_at + (60000 * 60 * 2)) < new Date().getTime()) {
-                        if (BgReading.latest(2).size() > 1) {
-                            List<Calibration> calibrations = Calibration.latest(2);
-                            if (calibrations.size() > 1) {
-                                if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
-                                    notificationText.setText("Possible bad calibration slope, please have a glass of water, wash hands, then recalibrate in a few!");
-                                }
-                                displayCurrentInfo();
-                            } else {
-                                notificationText.setText("Please enter two calibrations to get started!");
-                            }
-                        } else {
-                            if (BgReading.latestUnCalculated(2).size() < 2) {
-                                notificationText.setText("Please wait, need 2 readings from transmitter first.");
-                            } else {
-                                List<Calibration> calibrations = Calibration.latest(2);
-                                if (calibrations.size() < 2) {
-                                    notificationText.setText("Please enter two calibrations to get started!");
-                                }
-                            }
-                        }
-                    } else if (Sensor.isActive() && ((Sensor.currentSensor().started_at + (60000 * 60 * 2))) >= new Date().getTime()) {
-                        double waitTime = ((Sensor.currentSensor().started_at + (60000 * 60 * 2)) - (new Date().getTime())) / (60000);
-                        notificationText.setText("Please wait while sensor warms up! (" + String.format("%.2f", waitTime) + " minutes)");
-                    } else {
-                        notificationText.setText("Now start your sensor");
-                    }
-                }
-            }
+            updateCurrentBgInfoForBtBasedWixel(notificationText);
         }
         if (isWifiWixel) {
-            if (!WixelReader.IsConfigured(getApplicationContext())) {
-                notificationText.setText("First configure your wifi wixel reader ip addresses");
-            } else {
-                if (Sensor.isActive() && (Sensor.currentSensor().started_at + (60000 * 60 * 2)) < new Date().getTime()) {
-                    if (BgReading.latest(2).size() > 1) {
-                        List<Calibration> calibrations = Calibration.latest(2);
-                        if (calibrations.size() > 1) {
-                            if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
-                                notificationText.setText("Possible bad calibration slope, please have a glass of water, wash hands, then recalibrate in a few!");
-                            }
-                            displayCurrentInfo();
-                        } else {
-                            notificationText.setText("Please enter two calibrations to get started!");
-                        }
-                    } else {
-                        notificationText.setText("Please wait, need 2 readings from transmitter first.");
-                    }
-                } else if (Sensor.isActive() && ((Sensor.currentSensor().started_at + (60000 * 60 * 2))) >= new Date().getTime()) {
-                    double waitTime = ((Sensor.currentSensor().started_at + (60000 * 60 * 2)) - (new Date().getTime())) / (60000);
-                    notificationText.setText("Please wait while sensor warms up! (" + String.format("%.2f", waitTime) + " minutes)");
-                } else {
-                    notificationText.setText("Now start your sensor");
-                }
-            }
+            updateCurrentBgInfoForWifiWixel(notificationText);
         }
         if (prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
             notificationText.append("\n ALERTS CURRENTLY DISABLED");
         }
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
+    }
+
+    private void updateCurrentBgInfoForWifiWixel(TextView notificationText) {
+        if (!WixelReader.IsConfigured(getApplicationContext())) {
+            notificationText.setText("First configure your wifi wixel reader ip addresses");
+            return;
+        }
+
+        final boolean sensorIsActive = Sensor.isActive();
+        if(!sensorIsActive) {
+            notificationText.setText("Now start your sensor");
+            return;
+        }
+
+        final long now = System.currentTimeMillis();
+        if (Sensor.currentSensor().started_at + 60000 * 60 * 2 >= now) {
+            double waitTime = ((Sensor.currentSensor().started_at + (60000 * 60 * 2)) - now) / (60000);
+            notificationText.setText("Please wait while sensor warms up! (" + String.format("%.2f", waitTime) + " minutes)");
+            return;
+        }
+
+        if (BgReading.latest(2).size() < 2) {
+            notificationText.setText("Please wait, need 2 readings from transmitter first.");
+            return;
+        }
+
+        List<Calibration> calibrations = Calibration.latest(2);
+        if(calibrations.size() < 2) {
+            notificationText.setText("Please enter two calibrations to get started!");
+            return;
+        }
+
+        if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
+            notificationText.setText("Possible bad calibration slope, please have a glass of water, wash hands, then recalibrate in a few!");
+        }
+        displayCurrentInfo();
+
+    }
+
+    private void updateCurrentBgInfoForBtBasedWixel(TextView notificationText) {
+        if ((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+            notificationText.setText("Unfortunately your android version does not support Bluetooth Low Energy");
+            return;
+        }
+
+        if (ActiveBluetoothDevice.first() == null) {
+            notificationText.setText("First pair with your BT device!");
+            return;
+        }
+
+        final boolean isSensorActive = Sensor.isActive();
+        if(!isSensorActive){
+            notificationText.setText("Now start your sensor");
+            return;
+        }
+
+        final long now = System.currentTimeMillis();
+        if (Sensor.currentSensor().started_at + 60000 * 60 * 2 >= now) {
+            double waitTime = (Sensor.currentSensor().started_at + 60000 * 60 * 2 - now) / 60000.0;
+            notificationText.setText("Please wait while sensor warms up! (" + String.format("%.2f", waitTime) + " minutes)");
+            return;
+        }
+
+        if (BgReading.latest(2).size() > 1) {
+            List<Calibration> calibrations = Calibration.latest(2);
+            if (calibrations.size() > 1) {
+                if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
+                    notificationText.setText("Possible bad calibration slope, please have a glass of water, wash hands, then recalibrate in a few!");
+                }
+                displayCurrentInfo();
+            } else {
+                notificationText.setText("Please enter two calibrations to get started!");
+            }
+        } else {
+            if (BgReading.latestUnCalculated(2).size() < 2) {
+                notificationText.setText("Please wait, need 2 readings from transmitter first.");
+            } else {
+                List<Calibration> calibrations = Calibration.latest(2);
+                if (calibrations.size() < 2) {
+                    notificationText.setText("Please enter two calibrations to get started!");
+                }
+            }
+        }
+    }
+
+    private void updateCurrentBgInfoForBtShare(TextView notificationText) {
+        if ((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+            notificationText.setText("Unfortunately your android version does not support Bluetooth Low Energy");
+            return;
+        }
+
+        String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
+        if (receiverSn.compareTo("SM00000000") == 0 || receiverSn.length() == 0) {
+            notificationText.setText("Please set your Dex Receiver Serial Number in App Settings");
+            return;
+        }
+
+        if (receiverSn.length() < 10) {
+            notificationText.setText("Double Check Dex Receiver Serial Number, should be 10 characters, don't forget the letters");
+            return;
+        }
+
+        if (ActiveBluetoothDevice.first() == null) {
+            notificationText.setText("Now pair with your Dexcom Share");
+            return;
+        }
+
+        if (!Sensor.isActive()) {
+            notificationText.setText("Now choose start your sensor in your settings");
+            return;
+        }
+
+        displayCurrentInfo();
     }
 
     public void displayCurrentInfo() {
