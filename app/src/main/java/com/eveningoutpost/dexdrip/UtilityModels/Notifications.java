@@ -51,7 +51,6 @@ public class Notifications extends IntentService {
     public static boolean bg_lights;
     public static boolean bg_sound;
     public static boolean bg_sound_in_silent;
-    public static int bg_snooze;
     public static String bg_notification_sound;
 
     public static boolean calibration_notifications;
@@ -60,6 +59,7 @@ public class Notifications extends IntentService {
     public static String calibration_notification_sound;
     public static boolean doMgdl;
     public static boolean smart_snoozing;
+    public static boolean smart_alerting;
     private final static String TAG = AlertPlayer.class.getSimpleName();
 
     Context mContext;
@@ -106,7 +106,6 @@ public class Notifications extends IntentService {
         bg_vibrate = prefs.getBoolean("bg_vibrate", true);
         bg_lights = prefs.getBoolean("bg_lights", true);
         bg_sound = prefs.getBoolean("bg_play_sound", true);
-        bg_snooze = Integer.parseInt(prefs.getString("bg_snooze", "20"));
         bg_notification_sound = prefs.getString("bg_notification_sound", "content://settings/system/notification_sound");
         bg_sound_in_silent = prefs.getBoolean("bg_sound_in_silent", false);
 
@@ -116,6 +115,7 @@ public class Notifications extends IntentService {
         calibration_notification_sound = prefs.getString("calibration_notification_sound", "content://settings/system/notification_sound");
         doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
         smart_snoozing = prefs.getBoolean("smart_snoozing", true);
+        smart_alerting = prefs.getBoolean("smart_alerting", true);
         bg_ongoing = prefs.getBoolean("run_service_in_foreground", false);
     }
 
@@ -156,7 +156,8 @@ public class Notifications extends IntentService {
             if(activeBgAlert == null) {
                 Log.e(TAG, "FileBasedNotifications we have a new alert, starting to play it... " + newAlert.name);
                 // We need to create a new alert  and start playing
-                AlertPlayer.getPlayer().startAlert(context, newAlert, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
+                boolean trendingToAlertEnd = trendingToAlertEnd(context, true, newAlert);
+                AlertPlayer.getPlayer().startAlert(context, trendingToAlertEnd, newAlert, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
                 return;
             }
 
@@ -164,7 +165,7 @@ public class Notifications extends IntentService {
             if (activeBgAlert.uuid.equals(newAlert.uuid)) {
                 // This is the same alert. Might need to play again...
                 Log.e(TAG, "FileBasedNotifications we have found an active alert, checking if we need to play it " + newAlert.name);
-                boolean trendingToAlertEnd = trendingToAlertEnd(context, newAlert);
+                boolean trendingToAlertEnd = trendingToAlertEnd(context, false, newAlert);
                 AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
                 return;
             }
@@ -192,7 +193,7 @@ public class Notifications extends IntentService {
                     Log.e(TAG, "FileBasedNotifications The existing alert has the same direcotion, checking if to playit newHigherAlert = " + newHigherAlert.name +
                             "activeBgAlert = " + activeBgAlert.name);
 
-                    boolean trendingToAlertEnd = trendingToAlertEnd(context, newHigherAlert);
+                    boolean trendingToAlertEnd = trendingToAlertEnd(context, false, newHigherAlert);
                     AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
                     return;
                 }
@@ -200,7 +201,8 @@ public class Notifications extends IntentService {
             // For now, we are stopping the old alert and starting a new one.
             Log.e(TAG, "Found a new alert, that is higher than the previous one will play it. " + newAlert.name);
             AlertPlayer.getPlayer().stopAlert(context, true, false);
-            AlertPlayer.getPlayer().startAlert(context, newAlert, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
+            boolean trendingToAlertEnd = trendingToAlertEnd(context, true, newAlert);
+            AlertPlayer.getPlayer().startAlert(context, trendingToAlertEnd, newAlert, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
             return;
 
         } else {
@@ -208,8 +210,12 @@ public class Notifications extends IntentService {
         }
     }
 
-    boolean trendingToAlertEnd(Context context, AlertType Alert) {
-        if(!smart_snoozing) {
+    boolean trendingToAlertEnd(Context context, Boolean newAlert, AlertType Alert) {
+        if(newAlert && !smart_alerting) {
+        //  User does not want smart alerting at all.
+            return false;
+        }
+        if((!newAlert) && (!smart_snoozing)) {
         //  User does not want smart snoozing at all.
             return false;
         }
