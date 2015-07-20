@@ -29,6 +29,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.json.JSONObject;
 
+import java.net.URI;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -107,7 +108,7 @@ public class NightscoutUploader {
 
             for (String baseURI : baseURIs) {
                 try {
-                    doRESTUploadTo(baseURI, glucoseDataSets, meterRecords, calRecords);
+                    doRESTUploadTo(URI.create(baseURI), glucoseDataSets, meterRecords, calRecords);
                 } catch (Exception e) {
                     Log.e(TAG, "Unable to do REST API Upload " + e.getMessage());
                     Log.e(TAG, "Unable to do REST API Upload", e.getCause());
@@ -117,22 +118,19 @@ public class NightscoutUploader {
             return true;
         }
 
-        private void doRESTUploadTo(String baseURI, List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) {
+        private void doRESTUploadTo(URI baseURI, List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) {
             try {
                 int apiVersion = 0;
-                if (baseURI.endsWith("/v1/")) apiVersion = 1;
+                if (baseURI.getPath().endsWith("/v1/")) apiVersion = 1;
 
-                String baseURL = null;
-                String secret = null;
-                String[] uriParts = baseURI.split("@");
-
-                if (uriParts.length == 1 && apiVersion == 0) {
-                    baseURL = uriParts[0];
-                } else if (uriParts.length == 1 && apiVersion > 0) {
+                String secret = baseURI.getUserInfo();
+                String baseURL;
+                if ((secret == null || secret.isEmpty()) && apiVersion == 0) {
+                    baseURL = baseURI.toString();
+                } else if ((secret == null || secret.isEmpty()) && apiVersion > 0) {
                     throw new Exception("Starting with API v1, a pass phase is required");
-                } else if (uriParts.length == 2 && apiVersion > 0) {
-                    secret = uriParts[0];
-                    baseURL = uriParts[1];
+                } else if ((secret != null && !secret.isEmpty()) && apiVersion > 0) {
+                    baseURL = baseURI.toString().replaceFirst("//[^@]+@", "//");
                 } else {
                     throw new Exception("Unexpected baseURI");
                 }
