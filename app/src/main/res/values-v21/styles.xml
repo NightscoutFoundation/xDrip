@@ -11,6 +11,5 @@
     <style name="MyActionBar"
         parent="@android:style/Widget.Material.ActionBar">
         <item name="android:background">#212121</item>
-        <item name="android:elevation">0dp</item>
-    </style>
+g    </style>
 </resources>
