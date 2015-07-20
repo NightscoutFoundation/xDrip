@@ -66,8 +66,11 @@ public class Home extends ActivityWithMenu {
     BroadcastReceiver _broadcastReceiver;
     BroadcastReceiver newDataReceiver;
     private NavigationDrawerFragment mNavigationDrawerFragment;
-    private LineChartView chart;
-    private PreviewLineChartView previewChart;
+    private LineChartView            chart;
+    private PreviewLineChartView     previewChart;
+    private TextView                 dexbridgeBattery;
+    private TextView                 currentBgValueText;
+    private TextView                 notificationText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +85,10 @@ public class Home extends ActivityWithMenu {
         checkEula();
         new IdempotentMigrations(getApplicationContext()).performAll();
         setContentView(R.layout.activity_home);
+
+        this.dexbridgeBattery = (TextView) findViewById(R.id.textBridgeBattery);
+        this.currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
+        this.notificationText = (TextView) findViewById(R.id.notices);
     }
 
     @Override
@@ -308,7 +315,6 @@ public class Home extends ActivityWithMenu {
         boolean isDexbridge = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
         int bridgeBattery = prefs.getInt("bridge_battery", 0);
 
-        final TextView dexbridgeBattery = (TextView) findViewById(R.id.textBridgeBattery);
         if (isDexbridge) {
             if (bridgeBattery == 0) {
                 dexbridgeBattery.setText("Waiting for packet");
@@ -322,64 +328,67 @@ public class Home extends ActivityWithMenu {
         } else {
             dexbridgeBattery.setVisibility(View.INVISIBLE);
         }
-        final TextView currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
-        final TextView notificationText = (TextView) findViewById(R.id.notices);
+
         if ((currentBgValueText.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) > 0) {
             currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
             dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         }
-        BgReading lastBgreading = BgReading.lastNoSenssor();
+        BgReading lastBgReading = BgReading.lastNoSenssor();
         boolean predictive = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("predictive_bg", false);
         if (isBTShare) {
             predictive = false;
         }
-        if (lastBgreading != null) {
-            double estimate = 0;
-            if ((new Date().getTime()) - (60000 * 11) - lastBgreading.timestamp > 0) {
-                notificationText.setText("Signal Missed");
-                if (!predictive) {
-                    estimate = lastBgreading.calculated_value;
-                } else {
-                    estimate = BgReading.estimated_bg(lastBgreading.timestamp + (6000 * 7));
-                }
-                currentBgValueText.setText(bgGraphBuilder.unitized_string(estimate));
-                currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            } else {
-                if (notificationText.getText().length()==0){
-                    notificationText.setTextColor(Color.WHITE);
-                }
-                if (!predictive) {
-                    estimate = lastBgreading.calculated_value;
-                    String stringEstimate = bgGraphBuilder.unitized_string(estimate);
-                    String slope_arrow = BgReading.slopeArrow((lastBgreading.calculated_value_slope * 60000));
-                    if (lastBgreading.hide_slope) {
-                        slope_arrow = "";
-                    }
-                    currentBgValueText.setText(stringEstimate + " " + slope_arrow);
-                } else {
-                    estimate = BgReading.activePrediction();
-                    String stringEstimate = bgGraphBuilder.unitized_string(estimate);
-                    currentBgValueText.setText(stringEstimate + " " + BgReading.slopeArrow());
-                }
-            }
-            int minutes = (int)(System.currentTimeMillis() - lastBgreading.timestamp) / (60 * 1000);
-            notificationText.append("\n" + minutes + ((minutes==1)?" Minute ago":" Minutes ago"));
-            List<BgReading> bgReadingList = BgReading.latest(2);
-            if(bgReadingList != null && bgReadingList.size() == 2) {
-                // same logic as in xDripWidget (refactor that to BGReadings to avoid redundancy / later inconsistencies)?
-                notificationText.append("\n"
-                        + bgGraphBuilder.unitizedDeltaString(lastBgreading.calculated_value - bgReadingList.get(1).calculated_value));
-            }
-            if(bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
-                currentBgValueText.setTextColor(Color.parseColor("#C30909"));
-            } else if (bgGraphBuilder.unitized(estimate) >= bgGraphBuilder.highMark) {
-                currentBgValueText.setTextColor(Color.parseColor("#FFBB33"));
-            } else {
-                currentBgValueText.setTextColor(Color.WHITE);
-            }
+        if (lastBgReading != null) {
+            displayCurrentInfoFromReading(lastBgReading, predictive);
         }
         setupCharts();
+    }
+
+    private void displayCurrentInfoFromReading(BgReading lastBgReading, boolean predictive) {
+        double estimate = 0;
+        if ((new Date().getTime()) - (60000 * 11) - lastBgReading.timestamp > 0) {
+            notificationText.setText("Signal Missed");
+            if (!predictive) {
+                estimate = lastBgReading.calculated_value;
+            } else {
+                estimate = BgReading.estimated_bg(lastBgReading.timestamp + (6000 * 7));
+            }
+            currentBgValueText.setText(bgGraphBuilder.unitized_string(estimate));
+            currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            if (notificationText.getText().length()==0){
+                notificationText.setTextColor(Color.WHITE);
+            }
+            if (!predictive) {
+                estimate = lastBgReading.calculated_value;
+                String stringEstimate = bgGraphBuilder.unitized_string(estimate);
+                String slope_arrow = BgReading.slopeArrow((lastBgReading.calculated_value_slope * 60000));
+                if (lastBgReading.hide_slope) {
+                    slope_arrow = "";
+                }
+                currentBgValueText.setText(stringEstimate + " " + slope_arrow);
+            } else {
+                estimate = BgReading.activePrediction();
+                String stringEstimate = bgGraphBuilder.unitized_string(estimate);
+                currentBgValueText.setText(stringEstimate + " " + BgReading.slopeArrow());
+            }
+        }
+        int minutes = (int)(System.currentTimeMillis() - lastBgReading.timestamp) / (60 * 1000);
+        notificationText.append("\n" + minutes + ((minutes==1)?" Minute ago":" Minutes ago"));
+        List<BgReading> bgReadingList = BgReading.latest(2);
+        if(bgReadingList != null && bgReadingList.size() == 2) {
+            // same logic as in xDripWidget (refactor that to BGReadings to avoid redundancy / later inconsistencies)?
+            notificationText.append("\n"
+                    + bgGraphBuilder.unitizedDeltaString(lastBgReading.calculated_value - bgReadingList.get(1).calculated_value));
+        }
+        if(bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
+            currentBgValueText.setTextColor(Color.parseColor("#C30909"));
+        } else if (bgGraphBuilder.unitized(estimate) >= bgGraphBuilder.highMark) {
+            currentBgValueText.setTextColor(Color.parseColor("#FFBB33"));
+        } else {
+            currentBgValueText.setTextColor(Color.WHITE);
+        }
     }
 
     @Override
