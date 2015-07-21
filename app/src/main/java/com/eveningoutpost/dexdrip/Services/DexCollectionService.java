@@ -59,7 +59,6 @@ public class DexCollectionService extends Service {
 
     public DexCollectionService dexCollectionService;
 
-    private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothGatt mBluetoothGatt;
     private ForegroundServiceStarter foregroundServiceStarter;
@@ -176,13 +175,13 @@ public class DexCollectionService extends Service {
     }
 
     public void attemptConnection() {
-        mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        if (mBluetoothManager == null) {
+        final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        if (bluetoothManager == null) {
             setRetryTimer();
             return;
         }
 
-        mBluetoothAdapter = mBluetoothManager.getAdapter();
+        mBluetoothAdapter = bluetoothManager.getAdapter();
         if (mBluetoothAdapter == null) {
             setRetryTimer();
             return;
@@ -190,7 +189,7 @@ public class DexCollectionService extends Service {
 
         if (device != null) {
             mConnectionState = STATE_DISCONNECTED;
-            for (BluetoothDevice bluetoothDevice : mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
+            for (BluetoothDevice bluetoothDevice : bluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
                 if (bluetoothDevice.getAddress().compareTo(device.getAddress()) == 0) {
                     mConnectionState = STATE_CONNECTED;
                 }
