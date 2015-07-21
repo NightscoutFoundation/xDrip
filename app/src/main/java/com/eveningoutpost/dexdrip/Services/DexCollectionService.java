@@ -55,8 +55,7 @@ import java.util.UUID;
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class DexCollectionService extends Service {
     private final static String TAG = DexCollectionService.class.getSimpleName();
-    private String mDeviceAddress;
-    SharedPreferences prefs;
+    private SharedPreferences prefs;
 
     public DexCollectionService dexCollectionService;
 
@@ -202,9 +201,9 @@ public class DexCollectionService extends Service {
         if (mConnectionState == STATE_DISCONNECTED || mConnectionState == STATE_DISCONNECTING) {
             ActiveBluetoothDevice btDevice = ActiveBluetoothDevice.first();
             if (btDevice != null) {
-                mDeviceAddress = btDevice.address;
-                if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(mDeviceAddress) != null) {
-                    connect(mDeviceAddress);
+                String deviceAddress = btDevice.address;
+                if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(deviceAddress) != null) {
+                    connect(deviceAddress);
                     return;
                 }
             }
@@ -277,6 +276,7 @@ public class DexCollectionService extends Service {
             final BluetoothGattService gattService = mBluetoothGatt.getService(xDripDataService);
             if (gattService == null) {
                 Log.w(TAG, "onServicesDiscovered: service " + xDripDataService + " not found");
+                listAvailableServices(mBluetoothGatt);
                 return;
             }
 
@@ -331,6 +331,20 @@ public class DexCollectionService extends Service {
             }
         }
     };
+
+    /**
+     * Displays all services and characteristics for debugging purposes.
+     * @param bluetoothGatt BLE gatt profile.
+     */
+    private void listAvailableServices(BluetoothGatt bluetoothGatt) {
+        Log.d(TAG, "Listing available services:");
+        for (BluetoothGattService service : bluetoothGatt.getServices()) {
+            Log.d(TAG, "Service: " + service.getUuid().toString());
+            for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
+                Log.d(TAG, "|-- Characteristic: " + characteristic.getUuid().toString());
+            }
+        }
+    }
 
     private boolean sendBtMessage(final ByteBuffer message) {
         //check mBluetoothGatt is available
