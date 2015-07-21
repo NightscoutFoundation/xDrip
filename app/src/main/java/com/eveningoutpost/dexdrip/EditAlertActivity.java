@@ -1,19 +1,13 @@
 package com.eveningoutpost.dexdrip;
 
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -43,6 +37,12 @@ import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 public class EditAlertActivity extends ActivityWithMenu {
     public static String menu_name = "Edit Alert";
@@ -357,23 +357,30 @@ public class EditAlertActivity extends ActivityWithMenu {
 
                 // Check that values are ok.
                 double threshold = 0;
+                final String thresholdStr = alertThreshold.getText().toString();
                 try {
-                    threshold = Double.parseDouble((alertThreshold.getText().toString()));
-                }
-                catch (NumberFormatException nfe) {
+                    threshold = Double.parseDouble(thresholdStr);
+                } catch (NumberFormatException nfe) {
                     Log.e(TAG, "Invalid number", nfe);
+                    Toast.makeText(getApplicationContext(), "Invalid number: " + thresholdStr, Toast.LENGTH_LONG).show();
+                    return;
                 }
                 threshold = unitsConvertFromDisp(threshold);
                 if(!verifyThreshold(threshold)) {
                     return;
                 }
+
                 alertReraise = 1;
+                final String alertReraiseStr = reraise.getText().toString();
                 try {
-                    alertReraise = Integer.parseInt((reraise.getText().toString()));
+                    alertReraise = Integer.parseInt(alertReraiseStr);
                 }
                 catch (NumberFormatException nfe) {
                     Log.e(TAG, "Invalid number", nfe);
+                    Toast.makeText(getApplicationContext(), "Invalid number: " + alertReraiseStr, Toast.LENGTH_LONG).show();
+                    return;
                 }
+
                 if(alertReraise < 1) {
                     Toast.makeText(getApplicationContext(), "Reraise Value must be 1 minute or greater", Toast.LENGTH_LONG).show();
                     return;
@@ -381,7 +388,6 @@ public class EditAlertActivity extends ActivityWithMenu {
                     Toast.makeText(getApplicationContext(), "Reraise Value must less than snooze length", Toast.LENGTH_LONG).show();
                     return;
                 }
-
 
                 int timeStart = AlertType.toTime(startHour, startMinute);
                 int timeEnd = AlertType.toTime(endHour, endMinute);
