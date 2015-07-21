@@ -433,25 +433,28 @@ public class DexCollectionService extends Service {
                     ackMessage.put(1, (byte) 0xF0);
                     sendBtMessage(ackMessage);
                     Log.v(TAG, "setSerialDataToTransmitterRawData: Creating TransmitterData at " + timestamp);
-                    ProcessNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
+                    processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
                 }
             }
         } else {
-            ProcessNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
+            processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
         }
     }
 
-    private void ProcessNewTransmitterData(TransmitterData transmitterData, long timestamp) {
-        if (transmitterData != null) {
-            Sensor sensor = Sensor.currentSensor();
-            if (sensor != null) {
-                sensor.latest_battery_level = transmitterData.sensor_battery_level;
-                sensor.save();
-
-                BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, timestamp);
-            } else {
-                Log.w(TAG, "setSerialDataToTransmitterRawData: No Active Sensor, Data only stored in Transmitter Data");
-            }
+    private void processNewTransmitterData(TransmitterData transmitterData, long timestamp) {
+        if (transmitterData == null) {
+            return;
         }
+
+        Sensor sensor = Sensor.currentSensor();
+        if (sensor == null) {
+            Log.w(TAG, "setSerialDataToTransmitterRawData: No Active Sensor, Data only stored in Transmitter Data");
+            return;
+        }
+
+        sensor.latest_battery_level = transmitterData.sensor_battery_level;
+        sensor.save();
+
+        BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, timestamp);
     }
 }
