@@ -70,10 +70,10 @@ public class DexCollectionService extends Service {
     long lastPacketTime;
     private byte[] lastdata = null;
     private Context mContext;
-    private final int STATE_DISCONNECTED = BluetoothProfile.STATE_DISCONNECTED;
-    private final int STATE_DISCONNECTING = BluetoothProfile.STATE_DISCONNECTING;
-    private final int STATE_CONNECTING = BluetoothProfile.STATE_CONNECTING;
-    private final int STATE_CONNECTED = BluetoothProfile.STATE_CONNECTED;
+    private static final int STATE_DISCONNECTED = BluetoothProfile.STATE_DISCONNECTED;
+    private static final int STATE_DISCONNECTING = BluetoothProfile.STATE_DISCONNECTING;
+    private static final int STATE_CONNECTING = BluetoothProfile.STATE_CONNECTING;
+    private static final int STATE_CONNECTED = BluetoothProfile.STATE_CONNECTED;
 
     public final UUID xDripDataService = UUID.fromString(HM10Attributes.HM_10_SERVICE);
     public final UUID xDripDataCharacteristic = UUID.fromString(HM10Attributes.HM_RX_TX);
@@ -178,62 +178,87 @@ public class DexCollectionService extends Service {
 
     public void attemptConnection() {
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        if (mBluetoothManager != null) {
-            mBluetoothAdapter = mBluetoothManager.getAdapter();
-            if (mBluetoothAdapter != null) {
-                if (device != null) {
-                    mConnectionState = STATE_DISCONNECTED;
-                    for (BluetoothDevice bluetoothDevice : mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
-                        if (bluetoothDevice.getAddress().compareTo(device.getAddress()) == 0) {
-                            mConnectionState = STATE_CONNECTED;
-                        }
-                    }
-                }
+        if (mBluetoothManager == null) {
+            setRetryTimer();
+            return;
+        }
 
-                Log.w(TAG, "attemptConnection: Connection state: " + mConnectionState);
-                if (mConnectionState == STATE_DISCONNECTED || mConnectionState == STATE_DISCONNECTING) {
-                    ActiveBluetoothDevice btDevice = ActiveBluetoothDevice.first();
-                    if (btDevice != null) {
-                        mDeviceAddress = btDevice.address;
-                        if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(mDeviceAddress) != null) {
-                            connect(mDeviceAddress);
-                            return;
-                        }
-                    }
-                } else if (mConnectionState == STATE_CONNECTED) { //WOOO, we are good to go, nothing to do here!
-                    Log.w(TAG, "attemptConnection: Looks like we are already connected, going to read!");
-                    return;
+        mBluetoothAdapter = mBluetoothManager.getAdapter();
+        if (mBluetoothAdapter == null) {
+            setRetryTimer();
+            return;
+        }
+
+        if (device != null) {
+            mConnectionState = STATE_DISCONNECTED;
+            for (BluetoothDevice bluetoothDevice : mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
+                if (bluetoothDevice.getAddress().compareTo(device.getAddress()) == 0) {
+                    mConnectionState = STATE_CONNECTED;
                 }
             }
         }
+
+        Log.w(TAG, "attemptConnection: Connection state: " + getStateStr(mConnectionState));
+        if (mConnectionState == STATE_DISCONNECTED || mConnectionState == STATE_DISCONNECTING) {
+            ActiveBluetoothDevice btDevice = ActiveBluetoothDevice.first();
+            if (btDevice != null) {
+                mDeviceAddress = btDevice.address;
+                if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(mDeviceAddress) != null) {
+                    connect(mDeviceAddress);
+                    return;
+                }
+            }
+        } else if (mConnectionState == STATE_CONNECTED) { //WOOO, we are good to go, nothing to do here!
+            Log.w(TAG, "attemptConnection: Looks like we are already connected, going to read!");
+            return;
+        }
+
         setRetryTimer();
+    }
+
+    private String getStateStr(int mConnectionState) {
+        switch (mConnectionState){
+            case STATE_CONNECTED:
+                return "CONNECTED";
+            case STATE_CONNECTING:
+                return "CONNECTING";
+            case STATE_DISCONNECTED:
+                return "DISCONNECTED";
+            case STATE_DISCONNECTING:
+                return "DISCONNECTING";
+            default:
+                return "UNKNOWN STATE!";
+        }
     }
 
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            PowerManager powerManager = (PowerManager) mContext.getSystemService(mContext.POWER_SERVICE);
+            PowerManager powerManager = (PowerManager) mContext.getSystemService(POWER_SERVICE);
             PowerManager.WakeLock wakeLock2 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                     "DexCollectionService");
             wakeLock2.acquire();
             try {
-                if (newState == BluetoothProfile.STATE_CONNECTED) {
-                    mConnectionState = STATE_CONNECTED;
-                    ActiveBluetoothDevice.connected();
-                    Log.w(TAG, "onConnectionStateChange: Connected to GATT server.");
-                    mBluetoothGatt.discoverServices();
-                } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                    mConnectionState = STATE_DISCONNECTED;
-                    ActiveBluetoothDevice.disconnected();
-                    if (mBluetoothGatt != null) {
-                        Log.w(TAG, "onConnectionStateChange: mBluetoothGatt is not null, closing.");
-                        mBluetoothGatt.close();
-                        mBluetoothGatt = null;
-                        mCharacteristic = null;
-                    }
-                    lastdata = null;
-                    Log.w(TAG, "onConnectionStateChange: Disconnected from GATT server.");
-                    setRetryTimer();
+                switch (newState) {
+                    case BluetoothProfile.STATE_CONNECTED:
+                        mConnectionState = STATE_CONNECTED;
+                        ActiveBluetoothDevice.connected();
+                        Log.w(TAG, "onConnectionStateChange: Connected to GATT server.");
+                        mBluetoothGatt.discoverServices();
+                        break;
+                    case BluetoothProfile.STATE_DISCONNECTED:
+                        mConnectionState = STATE_DISCONNECTED;
+                        ActiveBluetoothDevice.disconnected();
+                        if (mBluetoothGatt != null) {
+                            Log.w(TAG, "onConnectionStateChange: mBluetoothGatt is not null, closing.");
+                            mBluetoothGatt.close();
+                            mBluetoothGatt = null;
+                            mCharacteristic = null;
+                        }
+                        lastdata = null;
+                        Log.w(TAG, "onConnectionStateChange: Disconnected from GATT server.");
+                        setRetryTimer();
+                        break;
                 }
             } finally {
                 wakeLock2.release();
@@ -242,32 +267,38 @@ public class DexCollectionService extends Service {
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                BluetoothGattService gattService = mBluetoothGatt.getService(xDripDataService);
-                if (gattService != null) {
-                    BluetoothGattCharacteristic gattCharacteristic = gattService.getCharacteristic(xDripDataCharacteristic);
-                    if (gattCharacteristic != null) {
-                        mCharacteristic = gattCharacteristic;
-                        final int charaProp = gattCharacteristic.getProperties();
-                        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
-                            mBluetoothGatt.setCharacteristicNotification(gattCharacteristic, true);
-                        } else {
-                            Log.w(TAG, "onServicesDiscovered: characteristic " + xDripDataCharacteristic + " not found");
-                        }
-                    } else {
-                        Log.w(TAG, "onServicesDiscovered: service " + xDripDataService + " not found");
-                    }
-                    Log.d(TAG, "onServicesDiscovered received success: " + status);
-                }
-            } else {
+            if (status != BluetoothGatt.GATT_SUCCESS) {
                 Log.d(TAG, "onServicesDiscovered received: " + status);
+                return;
+            }
+
+            Log.d(TAG, "onServicesDiscovered received status: " + status);
+
+            final BluetoothGattService gattService = mBluetoothGatt.getService(xDripDataService);
+            if (gattService == null) {
+                Log.w(TAG, "onServicesDiscovered: service " + xDripDataService + " not found");
+                return;
+            }
+
+            final BluetoothGattCharacteristic gattCharacteristic = gattService.getCharacteristic(xDripDataCharacteristic);
+            if (gattCharacteristic == null) {
+                Log.w(TAG, "onServicesDiscovered: characteristic " + xDripDataCharacteristic + " not found");
+                return;
+            }
+
+            mCharacteristic = gattCharacteristic;
+            final int charaProp = gattCharacteristic.getProperties();
+            if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+                mBluetoothGatt.setCharacteristicNotification(gattCharacteristic, true);
+            } else {
+                Log.w(TAG, "onServicesDiscovered: characteristic " + xDripDataCharacteristic + " not found");
             }
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 
-            PowerManager powerManager = (PowerManager) mContext.getSystemService(mContext.POWER_SERVICE);
+            PowerManager powerManager = (PowerManager) mContext.getSystemService(POWER_SERVICE);
             PowerManager.WakeLock wakeLock1 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                     "DexCollectionService");
             wakeLock1.acquire();
@@ -337,7 +368,7 @@ public class DexCollectionService extends Service {
     }
 
     public boolean connect(final String address) {
-        Log.w(TAG, "connect: going to connect to device at address" + address);
+        Log.w(TAG, "connect: going to connect to device at address: " + address);
         if (mBluetoothAdapter == null || address == null) {
             Log.w(TAG, "connect: BluetoothAdapter not initialized or unspecified address.");
             setRetryTimer();
