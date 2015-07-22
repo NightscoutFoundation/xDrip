@@ -19,6 +19,14 @@
         android:layout_gravity="center_horizontal"
         android:inputType="text"
         android:hint=""/>
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/scannerButton"
+        android:layout_margin="5dp"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="@string/scan_share2_barcode"
+        android:src="@drawable/ic_scan" />
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"

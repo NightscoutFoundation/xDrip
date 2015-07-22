@@ -1,13 +1,19 @@
 package com.eveningoutpost.dexdrip;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -21,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,9 +35,17 @@ import android.widget.Toast;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utils.AndroidBarcode;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+import com.nightscout.core.barcode.NSBarcodeConfig;
 
+import net.tribe7.common.base.Joiner;
+
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
 
 import lecho.lib.hellocharts.util.Utils;
 
@@ -39,7 +54,7 @@ public class BluetoothScan extends ListActivityWithMenu {
     public static String menu_name = "Scan for BT";
 
     private final static String TAG = BluetoothScan.class.getSimpleName();
-    private static final long SCAN_PERIOD = 10000;
+    private static final long SCAN_PERIOD = 30000;
     private boolean is_scanning;
 
     private Handler mHandler;
@@ -47,6 +62,7 @@ public class BluetoothScan extends ListActivityWithMenu {
 
     private ArrayList<BluetoothDevice> found_devices;
     private BluetoothAdapter bluetooth_adapter;
+    private BluetoothLeScanner lollipopScanner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +85,8 @@ public class BluetoothScan extends ListActivityWithMenu {
                 Toast.makeText(this, "The android version of this device is not compatible with Bluetooth Low Energy", Toast.LENGTH_LONG).show();
             }
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            initializeScannerCallback();
 
         mLeDeviceListAdapter = new LeDeviceListAdapter();
         setListAdapter(mLeDeviceListAdapter);
@@ -99,11 +117,15 @@ public class BluetoothScan extends ListActivityWithMenu {
         }
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_scan:
-                scanLeDevice(true);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    scanLeDeviceLollipop(true);
+                } else
+                    scanLeDevice(true);
                 BluetoothManager bluetooth_manager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
                 Toast.makeText(this, "Scanning", Toast.LENGTH_LONG).show();
                 if(bluetooth_manager == null) {
@@ -127,9 +149,11 @@ public class BluetoothScan extends ListActivityWithMenu {
         }
     }
 
+    @TargetApi(19)
     private void scanLeDevice(final boolean enable) {
         if (enable) {
             // Stops scanning after a pre-defined scan period.
+            Log.d(TAG,"Start scan 19");
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -148,11 +172,85 @@ public class BluetoothScan extends ListActivityWithMenu {
         invalidateOptionsMenu();
     }
 
+    @TargetApi(21)
+    private void initializeScannerCallback() {
+        Log.d(TAG, "initializeScannerCallback");
+        mScanCallback = new ScanCallback() {
+            @Override
+            public void onBatchScanResults(final List<ScanResult> results) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (ScanResult result: results) {
+                            mLeDeviceListAdapter.addDevice(result.getDevice());
+                        }
+                        mLeDeviceListAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+
+            @Override
+            public void onScanResult(int callbackType, ScanResult result) {
+                final BluetoothDevice device = result.getDevice();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mLeDeviceListAdapter.addDevice(device);
+                        mLeDeviceListAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        };
+    }
+
+    @TargetApi(21)
+    private void scanLeDeviceLollipop(final boolean enable) {
+        if (enable) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                lollipopScanner = bluetooth_adapter.getBluetoothLeScanner();
+            }
+
+            Log.d(TAG, "Starting scanner 21");
+            // Stops scanning after a pre-defined scan period.
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    is_scanning = false;
+                    lollipopScanner.stopScan(mScanCallback);
+                    invalidateOptionsMenu();
+                }
+            }, SCAN_PERIOD);
+            ScanSettings settings = new ScanSettings.Builder()
+                    .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                    .build();
+            is_scanning = true;
+            lollipopScanner.startScan(null, settings, mScanCallback);
+        } else {
+            is_scanning = false;
+            lollipopScanner.stopScan(mScanCallback);
+        }
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (scanResult == null || scanResult.getContents() == null) {
+            return;
+        }
+        if (scanResult.getFormatName().equals("CODE_128")) {
+            Log.d(TAG, "Setting serial number to: " + scanResult.getContents());
+            prefs.edit().putString("share_key", scanResult.getContents()).apply();
+            returnToHome();
+        }
+    }
+
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         Log.d(TAG, "Item Clicked");
         final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
-        if (device == null) return;
+        if (device == null || device.getName() == null) return;
         Toast.makeText(this, R.string.connecting_to_device, Toast.LENGTH_LONG).show();
 
         ActiveBluetoothDevice btDevice = new Select().from(ActiveBluetoothDevice.class)
@@ -295,6 +393,9 @@ public class BluetoothScan extends ListActivityWithMenu {
                 }
             };
 
+
+    private ScanCallback mScanCallback;
+
     static class ViewHolder {
         TextView deviceName;
         TextView deviceAddress;
@@ -308,6 +409,14 @@ public class BluetoothScan extends ListActivityWithMenu {
         final EditText serialNumberView = (EditText) dialog.findViewById(R.id.editTextField);
         serialNumberView.setHint("SM00000000");
         ((TextView) dialog.findViewById(R.id.instructionsTextField)).setText("Enter Your Dexcom Receiver Serial Number");
+
+        dialog.findViewById(R.id.scannerButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AndroidBarcode(BluetoothScan.this).scan();
+                dialog.dismiss();
+            }
+        });
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
