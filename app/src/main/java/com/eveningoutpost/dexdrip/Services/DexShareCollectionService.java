@@ -262,14 +262,14 @@ public class DexShareCollectionService extends Service {
     }
 
     public void attemptRead() {
-        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(getApplicationContext().POWER_SERVICE);
-        PowerManager.WakeLock wakeLock1 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
+        final PowerManager.WakeLock wakeLock1 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "ReadingShareData");
-        wakeLock1.acquire(15000);
-            Log.d(TAG, "Attempting to read data");
-            final Action1<Long> systemTimeListener = new Action1<Long>() {
-                @Override
-                public void call(Long s) {
+        wakeLock1.acquire(60000);
+        Log.d(TAG, "Attempting to read data");
+        final Action1<Long> systemTimeListener = new Action1<Long>() {
+            @Override
+            public void call(Long s) {
                 if (s != null) {
                     Log.d(TAG, "Made the full round trip, got " + s + " as the system time");
                     final long addativeSystemTimeOffset = new Date().getTime() - s;
@@ -289,6 +289,11 @@ public class DexShareCollectionService extends Service {
                                         if (egvRecords != null) {
                                             Log.d(TAG, "Made the full round trip, got " + egvRecords.length + " EVG Records");
                                             BgReading.create(egvRecords, addativeSystemTimeOffset, getApplicationContext());
+                                            {
+                                                Log.d(TAG, "Releasing wl in egv");
+                                                wakeLock1.release();
+                                                Log.d(TAG, "released");
+                                            }
                                             if (shouldDisconnect) {
                                                 stopSelf();
                                             } else {
@@ -320,11 +325,13 @@ public class DexShareCollectionService extends Service {
                                     }
                                 };
                                 readData.getRecentCalRecords(calRecordListener);
-                            }
+                            } else
+                                wakeLock1.release();
                         }
                     };
                     readData.readDisplayTimeOffset(dislpayTimeListener);
-                }
+                } else
+                    wakeLock1.release();
             }
         };
         readData.readSystemTime(systemTimeListener);
