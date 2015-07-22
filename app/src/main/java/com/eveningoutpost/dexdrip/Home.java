@@ -15,6 +15,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -84,7 +86,14 @@ public class Home extends ActivityWithMenu {
 
         this.dexbridgeBattery = (TextView) findViewById(R.id.textBridgeBattery);
         this.currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
+        if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+            this.currentBgValueText.setTextSize(100);
+        }
         this.notificationText = (TextView) findViewById(R.id.notices);
+        if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+            this.notificationText.setTextSize(40);
+        }
+
     }
 
     @Override
@@ -132,6 +141,13 @@ public class Home extends ActivityWithMenu {
         bgGraphBuilder = new BgGraphBuilder(this);
         updateStuff = false;
         chart = (LineChartView) findViewById(R.id.chart);
+
+        if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) chart.getLayoutParams();
+            params.topMargin = 105;
+            chart.setLayoutParams(params);
+        }
+
         chart.setZoomType(ZoomType.HORIZONTAL);
 
         previewChart = (PreviewLineChartView) findViewById(R.id.chart_preview);
@@ -169,6 +185,9 @@ public class Home extends ActivityWithMenu {
 
     public void updateCurrentBgInfo() {
         final TextView notificationText = (TextView) findViewById(R.id.notices);
+        if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+            notificationText.setTextSize(40);
+        }
         notificationText.setText("");
         notificationText.setTextColor(Color.RED);
         isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
@@ -197,34 +216,7 @@ public class Home extends ActivityWithMenu {
             return;
         }
 
-        final boolean sensorIsActive = Sensor.isActive();
-        if(!sensorIsActive) {
-            notificationText.setText("Now start your sensor");
-            return;
-        }
-
-        final long now = System.currentTimeMillis();
-        if (Sensor.currentSensor().started_at + 60000 * 60 * 2 >= now) {
-            double waitTime = ((Sensor.currentSensor().started_at + (60000 * 60 * 2)) - now) / (60000);
-            notificationText.setText("Please wait while sensor warms up! (" + String.format("%.2f", waitTime) + " minutes)");
-            return;
-        }
-
-        if (BgReading.latest(2).size() < 2) {
-            notificationText.setText("Please wait, need 2 readings from transmitter first.");
-            return;
-        }
-
-        List<Calibration> calibrations = Calibration.latest(2);
-        if(calibrations.size() < 2) {
-            notificationText.setText("Please enter two calibrations to get started!");
-            return;
-        }
-
-        if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
-            notificationText.setText("Possible bad calibration slope, please have a glass of water, wash hands, then recalibrate in a few!");
-        }
-        displayCurrentInfo();
+        updateCurrentBgInfoCommon(notificationText);
 
     }
 
@@ -238,7 +230,10 @@ public class Home extends ActivityWithMenu {
             notificationText.setText("First pair with your BT device!");
             return;
         }
-
+        updateCurrentBgInfoCommon(notificationText);
+    }
+    
+    private void updateCurrentBgInfoCommon(TextView notificationText) {
         final boolean isSensorActive = Sensor.isActive();
         if(!isSensorActive){
             notificationText.setText("Now start your sensor");
@@ -271,7 +266,7 @@ public class Home extends ActivityWithMenu {
                     notificationText.setText("Please enter two calibrations to get started!");
                 }
             }
-        }
+        }        
     }
 
     private void updateCurrentBgInfoForBtShare(TextView notificationText) {
@@ -375,8 +370,13 @@ public class Home extends ActivityWithMenu {
         List<BgReading> bgReadingList = BgReading.latest(2);
         if(bgReadingList != null && bgReadingList.size() == 2) {
             // same logic as in xDripWidget (refactor that to BGReadings to avoid redundancy / later inconsistencies)?
-            notificationText.append("\n"
-                    + bgGraphBuilder.unitizedDeltaString(lastBgReading.calculated_value - bgReadingList.get(1).calculated_value));
+            if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+                notificationText.append("  ");
+            } else {
+                notificationText.append("\n");
+            }
+            notificationText.append(
+                    bgGraphBuilder.unitizedDeltaString(lastBgReading.calculated_value - bgReadingList.get(1).calculated_value));
         }
         if(bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
             currentBgValueText.setTextColor(Color.parseColor("#C30909"));
