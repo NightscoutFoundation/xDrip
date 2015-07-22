@@ -26,7 +26,13 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.PebbleSync;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+import com.nightscout.core.barcode.NSBarcodeConfig;
 
+import net.tribe7.common.base.Joiner;
+
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -41,7 +47,82 @@ import java.util.List;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class Preferences extends PreferenceActivity {
-    public  static SharedPreferences prefs;
+    private static final String TAG = "PREFS";
+    private AllPrefsFragment preferenceFragment;
+
+
+    private void refreshFragments() {
+        preferenceFragment = new AllPrefsFragment();
+        getFragmentManager().beginTransaction().replace(android.R.id.content,
+                preferenceFragment).commit();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (scanResult == null || scanResult.getContents() == null) {
+            return;
+        }
+        if (scanResult.getFormatName().equals("QR_CODE")) {
+            NSBarcodeConfig barcode = new NSBarcodeConfig(scanResult.getContents());
+            if (barcode.hasMongoConfig()) {
+                if (barcode.getMongoUri().isPresent()) {
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("cloud_storage_mongodb_uri", barcode.getMongoUri().get());
+                    editor.putString("cloud_storage_mongodb_collection", barcode.getMongoCollection().or("entries"));
+                    editor.putString("cloud_storage_mongodb_device_status_collection", barcode.getMongoDeviceStatusCollection().or("devicestatus"));
+                    editor.putBoolean("cloud_storage_mongodb_enable", true);
+                    editor.apply();
+                }
+                if (barcode.hasApiConfig()) {
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putBoolean("cloud_storage_api_enable", true);
+                    editor.putString("cloud_storage_api_base", Joiner.on(' ').join(barcode.getApiUris()));
+                    editor.apply();
+                } else {
+                    prefs.edit().putBoolean("cloud_storage_api_enable", false).apply();
+                }
+            }
+            if (barcode.hasApiConfig()) {
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean("cloud_storage_api_enable", true);
+                editor.putString("cloud_storage_api_base", Joiner.on(' ').join(barcode.getApiUris()));
+                editor.apply();
+            } else {
+                prefs.edit().putBoolean("cloud_storage_api_enable", false).apply();
+            }
+
+            if (barcode.hasMqttConfig()) {
+                if (barcode.getMqttUri().isPresent()) {
+                    URI uri = URI.create(barcode.getMqttUri().or(""));
+                    if (uri.getUserInfo() != null) {
+                        String[] userInfo = uri.getUserInfo().split(":");
+                        if (userInfo.length == 2) {
+                            String endpoint = uri.getScheme() + "://" + uri.getHost() + ":" + uri.getPort();
+                            if (userInfo[0].length() > 0 && userInfo[1].length() > 0) {
+                                SharedPreferences.Editor editor = prefs.edit();
+                                editor.putString("cloud_storage_mqtt_endpoint", endpoint);
+                                editor.putString("cloud_storage_mqtt_user", userInfo[0]);
+                                editor.putString("cloud_storage_mqtt_password", userInfo[1]);
+                                editor.putBoolean("cloud_storage_mqtt_enable", true);
+                                editor.apply();
+                            }
+                        }
+                    }
+                }
+            } else {
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean("cloud_storage_mqtt_enable", false);
+                editor.apply();
+            }
+        } else if (scanResult.getFormatName().equals("CODE_128")) {
+            Log.d(TAG, "Setting serial number to: " + scanResult.getContents());
+            prefs.edit().putString("share_key", scanResult.getContents()).apply();
+        }
+        refreshFragments();
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -146,8 +227,9 @@ public class Preferences extends PreferenceActivity {
                         .getDefaultSharedPreferences(preference.getContext())
                         .getString(preference.getKey(), ""));
     }
+
     public static class AllPrefsFragment extends PreferenceFragment {
-        @Override
+       @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_license);
@@ -171,6 +253,8 @@ public class Preferences extends PreferenceActivity {
 
 
             addPreferencesFromResource(R.xml.pref_data_sync);
+            setupBarcodeConfigScanner();
+            setupBarcodeShareScanner();
             bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_uri"));
             bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_collection"));
             bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_device_status_collection"));
@@ -190,8 +274,8 @@ public class Preferences extends PreferenceActivity {
             final PreferenceCategory otherCategory = (PreferenceCategory) findPreference("other_category");
             final PreferenceScreen calibrationAlertsScreen = (PreferenceScreen) findPreference("calibration_alerts_screen");
             final PreferenceCategory alertsCategory = (PreferenceCategory) findPreference("alerts_category");
-            prefs =  getPreferenceManager().getDefaultSharedPreferences(getActivity());
-            Log.d("PREF", prefs.getString("dex_collection_method", "BluetoothWixel"));
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            Log.d(TAG, prefs.getString("dex_collection_method", "BluetoothWixel"));
             if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomShare") != 0) {
                 collectionCategory.removePreference(shareKey);
                 otherCategory.removePreference(interpretRaw);
@@ -295,6 +379,28 @@ public class Preferences extends PreferenceActivity {
                 }
             });
         }
+
+        private void setupBarcodeConfigScanner() {
+            findPreference("auto_configure").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    new AndroidBarcode(getActivity()).scan();
+                    return true;
+                }
+            });
+        }
+
+
+        private void setupBarcodeShareScanner() {
+            findPreference("scan_share2_barcode").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    new AndroidBarcode(getActivity()).scan();
+                    return true;
+                }
+            });
+        }
+
     }
 
     public static boolean isNumeric(String str) {
