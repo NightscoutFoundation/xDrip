@@ -1,15 +1,17 @@
 package com.eveningoutpost.dexdrip;
 
 import android.annotation.TargetApi;
-import android.app.ListActivity;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.widget.DrawerLayout;
+import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,18 +19,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
 
 import java.util.ArrayList;
+
+import lecho.lib.hellocharts.util.Utils;
 
 @TargetApi(android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothScan extends ListActivityWithMenu {
@@ -165,6 +170,9 @@ public class BluetoothScan extends ListActivityWithMenu {
         ActiveBluetoothDevice btDevice = new Select().from(ActiveBluetoothDevice.class)
                 .orderBy("_ID desc")
                 .executeSingle();
+
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        prefs.edit().putString("last_connected_device_address", device.getAddress()).apply();
         if (btDevice == null) {
             ActiveBluetoothDevice newBtDevice = new ActiveBluetoothDevice();
             newBtDevice.name = device.getName();
@@ -175,7 +183,32 @@ public class BluetoothScan extends ListActivityWithMenu {
             btDevice.address = device.getAddress();
             btDevice.save();
         }
+        if(device.getName().toLowerCase().contains("dexcom")) {
+            if(!CollectionServiceStarter.isBTShare(getApplicationContext())) {
+                prefs.edit().putString("dex_collection_method", "DexcomShare").apply();
+                prefs.edit().putBoolean("calibration_notifications", false).apply();
+            }
+            if(prefs.getString("share_key", "SM00000000").compareTo("SM00000000") == 0 || prefs.getString("share_key", "SM00000000").length() < 10) {
+                requestSerialNumber(prefs);
+            } else returnToHome();
 
+        } else if(device.getName().toLowerCase().contains("bridge")) {
+            if(!CollectionServiceStarter.isDexbridgeWixel(getApplicationContext()))
+                prefs.edit().putString("dex_collection_method", "DexbridgeWixel").apply();
+            if(prefs.getString("dex_txid", "00000").compareTo("00000") == 0 || prefs.getString("dex_txid", "00000").length() < 5) {
+                requestTransmitterId(prefs);
+            } else returnToHome();
+
+        } else if(device.getName().toLowerCase().contains("drip")) {
+            if (!CollectionServiceStarter.isBTWixel(getApplicationContext()))
+                prefs.edit().putString("dex_collection_method", "BluetoothWixel").apply();
+            returnToHome();
+        } else {
+            returnToHome();
+        }
+    }
+
+    public void returnToHome() {
         if (is_scanning) {
             bluetooth_adapter.stopLeScan(mLeScanCallback);
             is_scanning = false;
@@ -241,8 +274,14 @@ public class BluetoothScan extends ListActivityWithMenu {
                 viewHolder = (ViewHolder) view.getTag();
             }
 
+
             BluetoothDevice device = mLeDevices.get(i);
             final String deviceName = device.getName();
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            if(prefs.getString("last_connected_device_address", "").compareTo(device.getAddress()) == 0) {
+                viewHolder.deviceName.setTextColor(Utils.COLOR_BLUE);
+                viewHolder.deviceAddress.setTextColor(Utils.COLOR_BLUE);
+            }
             if (deviceName != null && deviceName.length() > 0)
                 viewHolder.deviceName.setText(deviceName);
             else
@@ -251,8 +290,6 @@ public class BluetoothScan extends ListActivityWithMenu {
             return view;
         }
     }
-
-
 
     private BluetoothAdapter.LeScanCallback mLeScanCallback =
             new BluetoothAdapter.LeScanCallback() {
@@ -273,6 +310,62 @@ public class BluetoothScan extends ListActivityWithMenu {
     static class ViewHolder {
         TextView deviceName;
         TextView deviceAddress;
+    }
+
+    private void requestSerialNumber(final SharedPreferences prefs) {
+        final Dialog dialog = new Dialog(BluetoothScan.this);
+        dialog.setContentView(R.layout.dialog_single_text_field);
+        Button saveButton = (Button) dialog.findViewById(R.id.saveButton);
+        Button cancelButton = (Button) dialog.findViewById(R.id.cancelButton);
+        final EditText serialNumberView = (EditText) dialog.findViewById(R.id.editTextField);
+        serialNumberView.setHint("SM00000000");
+        ((TextView) dialog.findViewById(R.id.instructionsTextField)).setText("Enter Your Dexcom Receiver Serial Number");
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!TextUtils.isEmpty(serialNumberView.getText()))
+                    prefs.edit().putString("share_key", serialNumberView.getText().toString()).apply();
+                dialog.dismiss();
+                returnToHome();
+            }
+        });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                return;
+            }
+        });
+        dialog.show();
+    }
+
+    private void requestTransmitterId(final SharedPreferences prefs) {
+        final Dialog dialog = new Dialog(BluetoothScan.this);
+        dialog.setContentView(R.layout.dialog_single_text_field);
+        Button saveButton = (Button) dialog.findViewById(R.id.saveButton);
+        Button cancelButton = (Button) dialog.findViewById(R.id.cancelButton);
+        final EditText serialNumberView = (EditText) dialog.findViewById(R.id.editTextField);
+        serialNumberView.setHint("00000");
+        ((TextView) dialog.findViewById(R.id.instructionsTextField)).setText("Enter Your Dexcom Transmitter ID");
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!TextUtils.isEmpty(serialNumberView.getText())) {
+                    prefs.edit().putString("dex_txid", serialNumberView.getText().toString()).apply();
+                }
+                dialog.dismiss();
+                returnToHome();
+            }
+        });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 
 }

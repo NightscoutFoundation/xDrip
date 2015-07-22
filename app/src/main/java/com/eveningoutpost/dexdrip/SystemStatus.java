@@ -1,38 +1,29 @@
 package com.eveningoutpost.dexdrip;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v4.widget.DrawerLayout;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
-import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 import java.lang.reflect.Method;
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -199,7 +190,7 @@ public class SystemStatus extends ActivityWithMenu {
         forget_device.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if(mBluetoothManager != null && ActiveBluetoothDevice.first() != null) {
-                    BluetoothAdapter bluetoothAdapter = mBluetoothManager.getAdapter();
+                    final BluetoothAdapter bluetoothAdapter = mBluetoothManager.getAdapter();
                     if(bluetoothAdapter != null) {
                         for( BluetoothDevice bluetoothDevice : bluetoothAdapter.getBondedDevices()) {
                             if(bluetoothDevice.getAddress().compareTo(ActiveBluetoothDevice.first().address) == 0) {
@@ -214,16 +205,21 @@ public class SystemStatus extends ActivityWithMenu {
 
                         ActiveBluetoothDevice.forget();
                         bluetoothAdapter.disable();
-                        bluetoothAdapter.enable();
-                        try {
-                            wait(1000);
-                        } catch(Exception e) {
-                            Log.e("SystemStatus", "Error stalling");
-                        }
+
+
+                        mHandler.postDelayed(new Runnable() {
+                            public void run() {
+                                bluetoothAdapter.enable();
+                                mHandler2.postDelayed(new Runnable() {
+                                    public void run() {
+                                        CollectionServiceStarter.restartCollectionService(getApplicationContext());
+                                        set_current_values();
+                                    }
+                                }, 5000);
+                            }
+                        }, 1000);
                     }
                 }
-                CollectionServiceStarter.restartCollectionService(getApplicationContext());
-                set_current_values();
             }
         });
     }
@@ -235,4 +231,8 @@ public class SystemStatus extends ActivityWithMenu {
             }
         });
     }
+
+    private Handler mHandler = new Handler();
+    private Handler mHandler2 = new Handler();
+
 }
