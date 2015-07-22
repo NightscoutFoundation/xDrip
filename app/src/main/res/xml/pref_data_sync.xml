@@ -6,7 +6,10 @@
     <PreferenceCategory
         android:title="Data Sync"
         android:key="dataSync">
-
+        <PreferenceScreen
+            android:title="@string/auto_configure_title"
+            android:key="auto_configure"
+            android:summary="@string/prefs_auto_config_summary" />
         <PreferenceScreen
             android:key="cloud_storage_mongo"
             android:title="@string/pref_title_mongodb"

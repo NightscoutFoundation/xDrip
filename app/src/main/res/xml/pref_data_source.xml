@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
     <PreferenceCategory
         android:key="collection_category"
         android:title="Data Source Settings">
+
         <ListPreference
             android:key="dex_collection_method"
             android:title="Dexcom Data Collection Method"
@@ -15,6 +17,12 @@
             android:key="share_key"
             android:shouldDisableView="true"
             android:defaultValue="SM00000000"/>
+        <PreferenceScreen
+            android:title="@string/scan_share2_barcode"
+            android:key="scan_share2_barcode"
+            android:shouldDisableView="true"
+            android:summary="@string/pref_share2_scan_barcode_summary" />
+
         <CheckBoxPreference
             android:key="run_service_in_foreground"
             android:title="Run Collection Service in foreground"
