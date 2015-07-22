@@ -102,7 +102,7 @@ dependencies {
     compile 'io.reactivex:rxjava:1.0.0'
     compile 'ch.acra:acra:4.5.0'
 
-    compile('com.github.mgranberry:android-uploader:ced79c5f0f') {
+    compile('com.github.nightscout:android-uploader:CORE_FOR_XDRIP') {
         transitive = false;
     }
     /* begin relevant android-uploader dependencies */
