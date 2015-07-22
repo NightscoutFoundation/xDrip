@@ -21,7 +21,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,7 +41,6 @@ public class BluetoothScan extends ListActivityWithMenu {
     private final static String TAG = BluetoothScan.class.getSimpleName();
     private static final long SCAN_PERIOD = 10000;
     private boolean is_scanning;
-    private boolean has_bluetooth;
 
     private Handler mHandler;
     private LeDeviceListAdapter mLeDeviceListAdapter;
@@ -54,9 +52,6 @@ public class BluetoothScan extends ListActivityWithMenu {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_scan);
-
-        ListView lv = (ListView)findViewById(android.R.id.list);
-
         final BluetoothManager bluetooth_manager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 
         bluetooth_adapter = bluetooth_manager.getAdapter();
@@ -64,26 +59,19 @@ public class BluetoothScan extends ListActivityWithMenu {
 
         if (bluetooth_adapter == null) {
             Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_LONG).show();
-            has_bluetooth = false;
             finish();
             return;
-        } else {
-            has_bluetooth = true;
         }
-        if(bluetooth_manager == null) {
-            Toast.makeText(this, "This device does not seem to support bluetooth", Toast.LENGTH_LONG).show();
+        if(!bluetooth_manager.getAdapter().isEnabled()) {
+            Toast.makeText(this, "Bluetooth is turned off on this device currently", Toast.LENGTH_LONG).show();
         } else {
-            if(!bluetooth_manager.getAdapter().isEnabled()) {
-                Toast.makeText(this, "Bluetooth is turned off on this device currently", Toast.LENGTH_LONG).show();
-            } else {
-                if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2){
-                    Toast.makeText(this, "The android version of this device is not compatible with Bluetooth Low Energy", Toast.LENGTH_LONG).show();
-                }
+            if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2){
+                Toast.makeText(this, "The android version of this device is not compatible with Bluetooth Low Energy", Toast.LENGTH_LONG).show();
             }
         }
+
         mLeDeviceListAdapter = new LeDeviceListAdapter();
         setListAdapter(mLeDeviceListAdapter);
-
     }
 
     @Override
@@ -225,7 +213,7 @@ public class BluetoothScan extends ListActivityWithMenu {
 
         public LeDeviceListAdapter() {
             super();
-            mLeDevices = new ArrayList<BluetoothDevice>();
+            mLeDevices = new ArrayList<>();
             mInflator = BluetoothScan.this.getLayoutInflater();
         }
 
@@ -334,7 +322,6 @@ public class BluetoothScan extends ListActivityWithMenu {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                return;
             }
         });
         dialog.show();

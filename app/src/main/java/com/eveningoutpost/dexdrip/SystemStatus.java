@@ -125,7 +125,7 @@ public class SystemStatus extends ActivityWithMenu {
 
 
     private void setVersionName(){
-        String versionName = null;
+        String versionName;
         try {
             versionName = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA).versionName;
             version_name_view.setText(versionName);
