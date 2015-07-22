@@ -210,6 +210,7 @@ public class SystemStatus extends ActivityWithMenu {
                         mHandler.postDelayed(new Runnable() {
                             public void run() {
                                 bluetoothAdapter.enable();
+                                set_current_values();
                                 mHandler2.postDelayed(new Runnable() {
                                     public void run() {
                                         CollectionServiceStarter.restartCollectionService(getApplicationContext());

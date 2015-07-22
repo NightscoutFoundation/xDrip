@@ -202,7 +202,7 @@ public class BluetoothScan extends ListActivityWithMenu {
             is_scanning = false;
         }
         Intent intent = new Intent(this, Home.class);
-        CollectionServiceStarter.newStart(getApplicationContext());
+        CollectionServiceStarter.restartCollectionService(getApplicationContext());
         startActivity(intent);
         finish();
     }
