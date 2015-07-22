@@ -15,6 +15,9 @@ repositories {
     maven {
         url "https://raw.github.com/embarkmobile/zxing-android-minimal/mvn-repo/maven-repository/"
     }
+    maven {
+        url "https://jitpack.io"
+    }
 }
 
 def generateVersionName = { ->
@@ -99,7 +102,10 @@ dependencies {
     compile 'io.reactivex:rxjava:1.0.0'
     compile 'ch.acra:acra:4.5.0'
 
-    /* ugh, barcode scanner */
+    compile('com.github.mgranberry:android-uploader:ced79c5f0f') {
+        transitive = false;
+    }
+    /* begin relevant android-uploader dependencies */
     compile 'com.embarkmobile:zxing-android-minimal:2.0.0@aar'
     compile 'com.embarkmobile:zxing-android-legacy:2.0.0@aar'
     compile 'com.embarkmobile:zxing-android-integration:2.0.0@aar'
@@ -107,7 +113,7 @@ dependencies {
     compile 'net.tribe7.seeds:seeds-functional:16.0.1'
     compile 'net.tribe7.seeds:seeds-primitives:16.0.1'
     compile 'org.slf4j:slf4j-api:1.7.7'
-    /* end ugh */
+    /* end relevant android-uploader dependencies */
 
     compile('com.crashlytics.sdk.android:crashlytics:2.2.3@aar') {
         transitive = true;
