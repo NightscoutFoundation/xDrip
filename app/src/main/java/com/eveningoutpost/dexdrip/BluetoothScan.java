@@ -1,7 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -27,7 +26,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,11 +37,7 @@ import com.eveningoutpost.dexdrip.utils.AndroidBarcode;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-import com.nightscout.core.barcode.NSBarcodeConfig;
 
-import net.tribe7.common.base.Joiner;
-
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -182,7 +176,10 @@ public class BluetoothScan extends ListActivityWithMenu {
                     @Override
                     public void run() {
                         for (ScanResult result: results) {
-                            mLeDeviceListAdapter.addDevice(result.getDevice());
+                            BluetoothDevice device = result.getDevice();
+                            if (device.getName() != null && device.getName().length() > 0) {
+                                mLeDeviceListAdapter.addDevice(device);
+                            }
                         }
                         mLeDeviceListAdapter.notifyDataSetChanged();
                     }
@@ -195,8 +192,10 @@ public class BluetoothScan extends ListActivityWithMenu {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mLeDeviceListAdapter.addDevice(device);
-                        mLeDeviceListAdapter.notifyDataSetChanged();
+                        if (device.getName() != null && device.getName().length() > 0) {
+                            mLeDeviceListAdapter.addDevice(device);
+                            mLeDeviceListAdapter.notifyDataSetChanged();
+                        }
                     }
                 });
             }
@@ -360,7 +359,6 @@ public class BluetoothScan extends ListActivityWithMenu {
                 viewHolder = (ViewHolder) view.getTag();
             }
 
-
             BluetoothDevice device = mLeDevices.get(i);
             final String deviceName = device.getName();
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -368,10 +366,7 @@ public class BluetoothScan extends ListActivityWithMenu {
                 viewHolder.deviceName.setTextColor(Utils.COLOR_BLUE);
                 viewHolder.deviceAddress.setTextColor(Utils.COLOR_BLUE);
             }
-            if (deviceName != null && deviceName.length() > 0)
-                viewHolder.deviceName.setText(deviceName);
-            else
-                viewHolder.deviceName.setText(R.string.unknown_device);
+            viewHolder.deviceName.setText(deviceName);
             viewHolder.deviceAddress.setText(device.getAddress());
             return view;
         }
@@ -385,14 +380,14 @@ public class BluetoothScan extends ListActivityWithMenu {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mLeDeviceListAdapter.addDevice(device);
-                            mLeDeviceListAdapter.notifyDataSetChanged();
-
+                            if (device.getName() != null && device.getName().length() > 0) {
+                                mLeDeviceListAdapter.addDevice(device);
+                                mLeDeviceListAdapter.notifyDataSetChanged();
+                            }
                         }
                     });
                 }
             };
-
 
     private ScanCallback mScanCallback;
 
@@ -463,5 +458,4 @@ public class BluetoothScan extends ListActivityWithMenu {
         });
         dialog.show();
     }
-
 }
