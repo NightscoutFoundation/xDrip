@@ -235,31 +235,27 @@ public class DexCollectionService extends Service {
             PowerManager powerManager = (PowerManager) mContext.getSystemService(POWER_SERVICE);
             PowerManager.WakeLock wakeLock2 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                     "DexCollectionService");
-            wakeLock2.acquire();
-            try {
-                switch (newState) {
-                    case BluetoothProfile.STATE_CONNECTED:
-                        mConnectionState = STATE_CONNECTED;
-                        ActiveBluetoothDevice.connected();
-                        Log.w(TAG, "onConnectionStateChange: Connected to GATT server.");
-                        mBluetoothGatt.discoverServices();
-                        break;
-                    case BluetoothProfile.STATE_DISCONNECTED:
-                        mConnectionState = STATE_DISCONNECTED;
-                        ActiveBluetoothDevice.disconnected();
-                        if (mBluetoothGatt != null) {
-                            Log.w(TAG, "onConnectionStateChange: mBluetoothGatt is not null, closing.");
-                            mBluetoothGatt.close();
-                            mBluetoothGatt = null;
-                            mCharacteristic = null;
-                        }
-                        lastdata = null;
-                        Log.w(TAG, "onConnectionStateChange: Disconnected from GATT server.");
-                        setRetryTimer();
-                        break;
-                }
-            } finally {
-                wakeLock2.release();
+            wakeLock2.acquire(45000);
+            switch (newState) {
+                case BluetoothProfile.STATE_CONNECTED:
+                    mConnectionState = STATE_CONNECTED;
+                    ActiveBluetoothDevice.connected();
+                    Log.w(TAG, "onConnectionStateChange: Connected to GATT server.");
+                    mBluetoothGatt.discoverServices();
+                    break;
+                case BluetoothProfile.STATE_DISCONNECTED:
+                    mConnectionState = STATE_DISCONNECTED;
+                    ActiveBluetoothDevice.disconnected();
+                    if (mBluetoothGatt != null) {
+                        Log.w(TAG, "onConnectionStateChange: mBluetoothGatt is not null, closing.");
+                        mBluetoothGatt.close();
+                        mBluetoothGatt = null;
+                        mCharacteristic = null;
+                    }
+                    lastdata = null;
+                    Log.w(TAG, "onConnectionStateChange: Disconnected from GATT server.");
+                    setRetryTimer();
+                    break;
             }
         }
 
