@@ -51,8 +51,13 @@ public class AlertPlayer {
         return singletone;
     }
 
-    public synchronized  void startAlert(Context ctx, AlertType newAlert, String bgValue )  {
-        Log.e(TAG, "start called, Threadid " + Thread.currentThread().getId());
+    public synchronized  void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue )  {
+        Log.e(TAG, "startAlert called, Threadid " + Thread.currentThread().getId());
+        if (trendingToAlertEnd) {
+            Log.e(TAG,"startAlert: This alert is trending to it's end will not do anything");
+            return;
+        }
+
         stopAlert(ctx, true, false);
         int alertIn = newAlert.minutes_between;
         if(alertIn < 1) { alertIn = 1; }

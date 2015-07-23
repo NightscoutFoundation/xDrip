@@ -1,9 +1,5 @@
 package com.eveningoutpost.dexdrip;
 
-import android.app.Activity;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,26 +11,23 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
-import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
-import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 
@@ -57,26 +50,25 @@ import lecho.lib.hellocharts.view.PreviewLineChartView;
 
 public class Home extends ActivityWithMenu {
     public static String menu_name = "xDrip";
-    public float left;
-    public float right;
-    public float top;
-    public float bottom;
-    public boolean updateStuff;
-    public boolean updatingPreviewViewport = false;
-    public boolean updatingChartViewport = false;
-    public BgGraphBuilder bgGraphBuilder;
-    SharedPreferences prefs;
-    Viewport tempViewport = new Viewport();
-    Viewport holdViewport = new Viewport();
-    boolean isBTWixel;
-    boolean isDexbridgeWixel;
-    boolean isBTShare;
-    boolean isWifiWixel;
-    BroadcastReceiver _broadcastReceiver;
-    BroadcastReceiver newDataReceiver;
+    private boolean updateStuff;
+    private boolean updatingPreviewViewport = false;
+    private boolean updatingChartViewport = false;
+    private BgGraphBuilder bgGraphBuilder;
+    private SharedPreferences prefs;
+    private Viewport tempViewport = new Viewport();
+    private Viewport holdViewport = new Viewport();
+    private boolean isBTWixel;
+    private boolean isDexbridgeWixel;
+    private boolean isBTShare;
+    private boolean isWifiWixel;
+    private BroadcastReceiver _broadcastReceiver;
+    private BroadcastReceiver newDataReceiver;
     private NavigationDrawerFragment mNavigationDrawerFragment;
-    private LineChartView chart;
-    private PreviewLineChartView previewChart;
+    private LineChartView            chart;
+    private PreviewLineChartView     previewChart;
+    private TextView                 dexbridgeBattery;
+    private TextView                 currentBgValueText;
+    private TextView                 notificationText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +83,17 @@ public class Home extends ActivityWithMenu {
         checkEula();
         new IdempotentMigrations(getApplicationContext()).performAll();
         setContentView(R.layout.activity_home);
+
+        this.dexbridgeBattery = (TextView) findViewById(R.id.textBridgeBattery);
+        this.currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
+        if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+            this.currentBgValueText.setTextSize(100);
+        }
+        this.notificationText = (TextView) findViewById(R.id.notices);
+        if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+            this.notificationText.setTextSize(40);
+        }
+
     }
 
     @Override
@@ -138,6 +141,13 @@ public class Home extends ActivityWithMenu {
         bgGraphBuilder = new BgGraphBuilder(this);
         updateStuff = false;
         chart = (LineChartView) findViewById(R.id.chart);
+
+        if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) chart.getLayoutParams();
+            params.topMargin = 105;
+            chart.setLayoutParams(params);
+        }
+
         chart.setZoomType(ZoomType.HORIZONTAL);
 
         previewChart = (PreviewLineChartView) findViewById(R.id.chart_preview);
@@ -175,6 +185,9 @@ public class Home extends ActivityWithMenu {
 
     public void updateCurrentBgInfo() {
         final TextView notificationText = (TextView) findViewById(R.id.notices);
+        if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+            notificationText.setTextSize(40);
+        }
         notificationText.setText("");
         notificationText.setTextColor(Color.RED);
         isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
@@ -182,97 +195,108 @@ public class Home extends ActivityWithMenu {
         isBTShare = CollectionServiceStarter.isBTShare(getApplicationContext());
         isWifiWixel = CollectionServiceStarter.isWifiWixel(getApplicationContext());
         if (isBTShare) {
-            if ((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
-                notificationText.setText("Unfortunately your android version does not support Bluetooth Low Energy");
-            } else {
-                String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
-                if (receiverSn.compareTo("SM00000000") == 0 || receiverSn.length() == 0) {
-                    notificationText.setText("Please set your Dex Receiver Serial Number in App Settings");
-                } else {
-                    if (receiverSn.length() < 10) {
-                        notificationText.setText("Double Check Dex Receiver Serial Number, should be 10 characters, don't forget the letters");
-                    } else {
-                        if (ActiveBluetoothDevice.first() == null) {
-                            notificationText.setText("Now pair with your Dexcom Share");
-                        } else {
-                            if (!Sensor.isActive()) {
-                                notificationText.setText("Now choose start your sensor in your settings");
-                            } else {
-                                displayCurrentInfo();
-                            }
-                        }
-                    }
-                }
-            }
+            updateCurrentBgInfoForBtShare(notificationText);
         }
         if (isBTWixel || isDexbridgeWixel) {
-            if ((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
-                notificationText.setText("Unfortunately your android version does not support Bluetooth Low Energy");
-            } else {
-                if (ActiveBluetoothDevice.first() == null) {
-                    notificationText.setText("First pair with your BT device!");
-                } else {
-                    if (Sensor.isActive() && (Sensor.currentSensor().started_at + (60000 * 60 * 2)) < new Date().getTime()) {
-                        if (BgReading.latest(2).size() > 1) {
-                            List<Calibration> calibrations = Calibration.latest(2);
-                            if (calibrations.size() > 1) {
-                                if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
-                                    notificationText.setText("Possible bad calibration slope, please have a glass of water, wash hands, then recalibrate in a few!");
-                                }
-                                displayCurrentInfo();
-                            } else {
-                                notificationText.setText("Please enter two calibrations to get started!");
-                            }
-                        } else {
-                            if (BgReading.latestUnCalculated(2).size() < 2) {
-                                notificationText.setText("Please wait, need 2 readings from transmitter first.");
-                            } else {
-                                List<Calibration> calibrations = Calibration.latest(2);
-                                if (calibrations.size() < 2) {
-                                    notificationText.setText("Please enter two calibrations to get started!");
-                                }
-                            }
-                        }
-                    } else if (Sensor.isActive() && ((Sensor.currentSensor().started_at + (60000 * 60 * 2))) >= new Date().getTime()) {
-                        double waitTime = ((Sensor.currentSensor().started_at + (60000 * 60 * 2)) - (new Date().getTime())) / (60000);
-                        notificationText.setText("Please wait while sensor warms up! (" + String.format("%.2f", waitTime) + " minutes)");
-                    } else {
-                        notificationText.setText("Now start your sensor");
-                    }
-                }
-            }
+            updateCurrentBgInfoForBtBasedWixel(notificationText);
         }
         if (isWifiWixel) {
-            if (!WixelReader.IsConfigured(getApplicationContext())) {
-                notificationText.setText("First configure your wifi wixel reader ip addresses");
-            } else {
-                if (Sensor.isActive() && (Sensor.currentSensor().started_at + (60000 * 60 * 2)) < new Date().getTime()) {
-                    if (BgReading.latest(2).size() > 1) {
-                        List<Calibration> calibrations = Calibration.latest(2);
-                        if (calibrations.size() > 1) {
-                            if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
-                                notificationText.setText("Possible bad calibration slope, please have a glass of water, wash hands, then recalibrate in a few!");
-                            }
-                            displayCurrentInfo();
-                        } else {
-                            notificationText.setText("Please enter two calibrations to get started!");
-                        }
-                    } else {
-                        notificationText.setText("Please wait, need 2 readings from transmitter first.");
-                    }
-                } else if (Sensor.isActive() && ((Sensor.currentSensor().started_at + (60000 * 60 * 2))) >= new Date().getTime()) {
-                    double waitTime = ((Sensor.currentSensor().started_at + (60000 * 60 * 2)) - (new Date().getTime())) / (60000);
-                    notificationText.setText("Please wait while sensor warms up! (" + String.format("%.2f", waitTime) + " minutes)");
-                } else {
-                    notificationText.setText("Now start your sensor");
-                }
-            }
+            updateCurrentBgInfoForWifiWixel(notificationText);
         }
         if (prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
             notificationText.append("\n ALERTS CURRENTLY DISABLED");
         }
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
+    }
+
+    private void updateCurrentBgInfoForWifiWixel(TextView notificationText) {
+        if (!WixelReader.IsConfigured(getApplicationContext())) {
+            notificationText.setText("First configure your wifi wixel reader ip addresses");
+            return;
+        }
+
+        updateCurrentBgInfoCommon(notificationText);
+
+    }
+
+    private void updateCurrentBgInfoForBtBasedWixel(TextView notificationText) {
+        if ((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+            notificationText.setText("Unfortunately your android version does not support Bluetooth Low Energy");
+            return;
+        }
+
+        if (ActiveBluetoothDevice.first() == null) {
+            notificationText.setText("First pair with your BT device!");
+            return;
+        }
+        updateCurrentBgInfoCommon(notificationText);
+    }
+    
+    private void updateCurrentBgInfoCommon(TextView notificationText) {
+        final boolean isSensorActive = Sensor.isActive();
+        if(!isSensorActive){
+            notificationText.setText("Now start your sensor");
+            return;
+        }
+
+        final long now = System.currentTimeMillis();
+        if (Sensor.currentSensor().started_at + 60000 * 60 * 2 >= now) {
+            double waitTime = (Sensor.currentSensor().started_at + 60000 * 60 * 2 - now) / 60000.0;
+            notificationText.setText("Please wait while sensor warms up! (" + String.format("%.2f", waitTime) + " minutes)");
+            return;
+        }
+
+        if (BgReading.latest(2).size() > 1) {
+            List<Calibration> calibrations = Calibration.latest(2);
+            if (calibrations.size() > 1) {
+                if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
+                    notificationText.setText("Possible bad calibration slope, please have a glass of water, wash hands, then recalibrate in a few!");
+                }
+                displayCurrentInfo();
+            } else {
+                notificationText.setText("Please enter two calibrations to get started!");
+            }
+        } else {
+            if (BgReading.latestUnCalculated(2).size() < 2) {
+                notificationText.setText("Please wait, need 2 readings from transmitter first.");
+            } else {
+                List<Calibration> calibrations = Calibration.latest(2);
+                if (calibrations.size() < 2) {
+                    notificationText.setText("Please enter two calibrations to get started!");
+                }
+            }
+        }        
+    }
+
+    private void updateCurrentBgInfoForBtShare(TextView notificationText) {
+        if ((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
+            notificationText.setText("Unfortunately your android version does not support Bluetooth Low Energy");
+            return;
+        }
+
+        String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
+        if (receiverSn.compareTo("SM00000000") == 0 || receiverSn.length() == 0) {
+            notificationText.setText("Please set your Dex Receiver Serial Number in App Settings");
+            return;
+        }
+
+        if (receiverSn.length() < 10) {
+            notificationText.setText("Double Check Dex Receiver Serial Number, should be 10 characters, don't forget the letters");
+            return;
+        }
+
+        if (ActiveBluetoothDevice.first() == null) {
+            notificationText.setText("Now pair with your Dexcom Share");
+            return;
+        }
+
+        if (!Sensor.isActive()) {
+            notificationText.setText("Now choose start your sensor in your settings");
+            return;
+        }
+
+        displayCurrentInfo();
     }
 
     public void displayCurrentInfo() {
@@ -282,7 +306,6 @@ public class Home extends ActivityWithMenu {
         boolean isDexbridge = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
         int bridgeBattery = prefs.getInt("bridge_battery", 0);
 
-        final TextView dexbridgeBattery = (TextView) findViewById(R.id.textBridgeBattery);
         if (isDexbridge) {
             if (bridgeBattery == 0) {
                 dexbridgeBattery.setText("Waiting for packet");
@@ -296,64 +319,72 @@ public class Home extends ActivityWithMenu {
         } else {
             dexbridgeBattery.setVisibility(View.INVISIBLE);
         }
-        final TextView currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
-        final TextView notificationText = (TextView) findViewById(R.id.notices);
+
         if ((currentBgValueText.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) > 0) {
             currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
             dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         }
-        BgReading lastBgreading = BgReading.lastNoSenssor();
+        BgReading lastBgReading = BgReading.lastNoSenssor();
         boolean predictive = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("predictive_bg", false);
         if (isBTShare) {
             predictive = false;
         }
-        if (lastBgreading != null) {
-            double estimate = 0;
-            if ((new Date().getTime()) - (60000 * 11) - lastBgreading.timestamp > 0) {
-                notificationText.setText("Signal Missed");
-                if (!predictive) {
-                    estimate = lastBgreading.calculated_value;
-                } else {
-                    estimate = BgReading.estimated_bg(lastBgreading.timestamp + (6000 * 7));
-                }
-                currentBgValueText.setText(bgGraphBuilder.unitized_string(estimate));
-                currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            } else {
-                if (notificationText.getText().length()==0){
-                    notificationText.setTextColor(Color.WHITE);
-                }
-                if (!predictive) {
-                    estimate = lastBgreading.calculated_value;
-                    String stringEstimate = bgGraphBuilder.unitized_string(estimate);
-                    String slope_arrow = BgReading.slopeArrow((lastBgreading.calculated_value_slope * 60000));
-                    if (lastBgreading.hide_slope) {
-                        slope_arrow = "";
-                    }
-                    currentBgValueText.setText(stringEstimate + " " + slope_arrow);
-                } else {
-                    estimate = BgReading.activePrediction();
-                    String stringEstimate = bgGraphBuilder.unitized_string(estimate);
-                    currentBgValueText.setText(stringEstimate + " " + BgReading.slopeArrow());
-                }
-            }
-            int minutes = (int)(System.currentTimeMillis() - lastBgreading.timestamp) / (60 * 1000);
-            notificationText.append("\n" + minutes + ((minutes==1)?" Minute ago":" Minutes ago"));
-            List<BgReading> bgReadingList = BgReading.latest(2);
-            if(bgReadingList != null && bgReadingList.size() == 2) {
-                // same logic as in xDripWidget (refactor that to BGReadings to avoid redundancy / later inconsistencies)?
-                notificationText.append("\n"
-                        + bgGraphBuilder.unitizedDeltaString(lastBgreading.calculated_value - bgReadingList.get(1).calculated_value));
-            }
-            if(bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
-                currentBgValueText.setTextColor(Color.parseColor("#C30909"));
-            } else if (bgGraphBuilder.unitized(estimate) >= bgGraphBuilder.highMark) {
-                currentBgValueText.setTextColor(Color.parseColor("#FFBB33"));
-            } else {
-                currentBgValueText.setTextColor(Color.WHITE);
-            }
+        if (lastBgReading != null) {
+            displayCurrentInfoFromReading(lastBgReading, predictive);
         }
         setupCharts();
+    }
+
+    private void displayCurrentInfoFromReading(BgReading lastBgReading, boolean predictive) {
+        double estimate = 0;
+        if ((new Date().getTime()) - (60000 * 11) - lastBgReading.timestamp > 0) {
+            notificationText.setText("Signal Missed");
+            if (!predictive) {
+                estimate = lastBgReading.calculated_value;
+            } else {
+                estimate = BgReading.estimated_bg(lastBgReading.timestamp + (6000 * 7));
+            }
+            currentBgValueText.setText(bgGraphBuilder.unitized_string(estimate));
+            currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            if (notificationText.getText().length()==0){
+                notificationText.setTextColor(Color.WHITE);
+            }
+            if (!predictive) {
+                estimate = lastBgReading.calculated_value;
+                String stringEstimate = bgGraphBuilder.unitized_string(estimate);
+                String slope_arrow = BgReading.slopeArrow((lastBgReading.calculated_value_slope * 60000));
+                if (lastBgReading.hide_slope) {
+                    slope_arrow = "";
+                }
+                currentBgValueText.setText(stringEstimate + " " + slope_arrow);
+            } else {
+                estimate = BgReading.activePrediction();
+                String stringEstimate = bgGraphBuilder.unitized_string(estimate);
+                currentBgValueText.setText(stringEstimate + " " + BgReading.slopeArrow());
+            }
+        }
+        int minutes = (int)(System.currentTimeMillis() - lastBgReading.timestamp) / (60 * 1000);
+        notificationText.append("\n" + minutes + ((minutes==1)?" Minute ago":" Minutes ago"));
+        List<BgReading> bgReadingList = BgReading.latest(2);
+        if(bgReadingList != null && bgReadingList.size() == 2) {
+            // same logic as in xDripWidget (refactor that to BGReadings to avoid redundancy / later inconsistencies)?
+            if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+                notificationText.append("  ");
+            } else {
+                notificationText.append("\n");
+            }
+            notificationText.append(
+                    bgGraphBuilder.unitizedDeltaString(lastBgReading.calculated_value - bgReadingList.get(1).calculated_value));
+        }
+        if(bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
+            currentBgValueText.setTextColor(Color.parseColor("#C30909"));
+        } else if (bgGraphBuilder.unitized(estimate) >= bgGraphBuilder.highMark) {
+            currentBgValueText.setTextColor(Color.parseColor("#FFBB33"));
+        } else {
+            currentBgValueText.setTextColor(Color.WHITE);
+        }
     }
 
     @Override

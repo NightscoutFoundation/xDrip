@@ -12,6 +12,12 @@ apply plugin: 'io.fabric'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
+    maven {
+        url "https://raw.github.com/embarkmobile/zxing-android-minimal/mvn-repo/maven-repository/"
+    }
+    maven {
+        url "https://jitpack.io"
+    }
 }
 
 def generateVersionName = { ->
@@ -95,6 +101,20 @@ dependencies {
     compile 'com.getpebble:pebblekit:2.6.0@aar'
     compile 'io.reactivex:rxjava:1.0.0'
     compile 'ch.acra:acra:4.5.0'
+
+    compile('com.github.nightscout:android-uploader:CORE_FOR_XDRIP') {
+        transitive = false;
+    }
+    /* begin relevant android-uploader dependencies */
+    compile 'com.embarkmobile:zxing-android-minimal:2.0.0@aar'
+    compile 'com.embarkmobile:zxing-android-legacy:2.0.0@aar'
+    compile 'com.embarkmobile:zxing-android-integration:2.0.0@aar'
+    compile 'com.google.zxing:core:3.1.0'
+    compile 'net.tribe7.seeds:seeds-functional:16.0.1'
+    compile 'net.tribe7.seeds:seeds-primitives:16.0.1'
+    compile 'org.slf4j:slf4j-api:1.7.7'
+    /* end relevant android-uploader dependencies */
+
     compile('com.crashlytics.sdk.android:crashlytics:2.2.3@aar') {
         transitive = true;
     }

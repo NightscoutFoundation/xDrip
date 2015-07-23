@@ -50,7 +50,7 @@ public class ActiveBgAlert extends Model {
         ActiveBgAlert activeBgAlert = getOnly();
         if (activeBgAlert == null) {
             // no alert exists, so snoozing is over... (this should not happen)
-		Log.wtf(TAG, "ActiveBgAlert getOnly returning null (we have just checked it)");
+            Log.wtf(TAG, "ActiveBgAlert getOnly returning null (we have just checked it)");
             return true;
         }
         return activeBgAlert.ready_to_alarm();
