@@ -61,7 +61,7 @@
     <string name="auto_configure_title">Auto configure</string>
     <string name="prefs_auto_config_summary">Auto configure using a barcode. See http://nightscout.github.io/pages/configure/ for more details</string>
     <string name="scan_share2_barcode">Scan Share Barcode</string>
-    <string name="pref_share2_scan_barcode_summary">Scan the barcode on the share receiver</string>
+    <string name="pref_share2_scan_barcode_summary">Or scan the barcode on the share receiver</string>
 
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>

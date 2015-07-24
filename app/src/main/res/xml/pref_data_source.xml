@@ -13,7 +13,7 @@
             android:entryValues="@array/DexCollectionMethodValues"
             android:defaultValue="BluetoothWixel"/>
         <EditTextPreference
-            android:title="10 Character Dexcom Receiver Serial Number"
+            android:title="Enter 10 Character Dexcom Receiver Serial Number"
             android:key="share_key"
             android:shouldDisableView="true"
             android:defaultValue="SM00000000"/>
