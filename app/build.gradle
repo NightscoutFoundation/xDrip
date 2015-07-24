@@ -115,7 +115,7 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.7'
     /* end relevant android-uploader dependencies */
 
-    compile('com.crashlytics.sdk.android:crashlytics:2.2.3@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.0@aar') {
         transitive = true;
     }
 }
