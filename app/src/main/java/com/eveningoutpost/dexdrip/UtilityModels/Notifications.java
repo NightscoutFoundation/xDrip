@@ -371,8 +371,10 @@ public class Notifications extends IntentService {
                 NotificationManagerCompat
                         .from(mContext)
                         .notify(ongoingNotificationId, createOngoingNotification(bgGraphBuilder, mContext));
-                iconBitmap.recycle();
-                notifiationBitmap.recycle();
+                if (iconBitmap != null)
+                    iconBitmap.recycle();
+                if (notifiationBitmap != null)
+                    notifiationBitmap.recycle();
             }
         });
     }
