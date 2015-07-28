@@ -504,7 +504,7 @@ public class Notifications extends IntentService {
         }
     }
 
-    public static void OtherAlert(Context context, String type, String message, int notificatioId, int snooze) {
+    private static void OtherAlert(Context context, String type, String message, int notificatioId, int snooze) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String otherAlertsSound = prefs.getString("other_alerts_sound", "content://settings/system/notification_sound");
         Boolean otherAlertsOverrideSilent = prefs.getBoolean("other_alerts_override_silent", false);
@@ -520,6 +520,7 @@ public class Notifications extends IntentService {
                     new NotificationCompat.Builder(context)
                             .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                             .setContentTitle(message)
+                            .setContentText(message)
                             .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
             mBuilder.setVibrate(vibratePattern);
             mBuilder.setLights(0xff00ff00, 300, 1000);
