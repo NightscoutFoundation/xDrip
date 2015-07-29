@@ -40,7 +40,7 @@ import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 
-import lecho.lib.hellocharts.ViewportChangeListener;
+import lecho.lib.hellocharts.listener.ViewportChangeListener;
 import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
@@ -166,9 +166,9 @@ public class Home extends ActivityWithMenu {
 
     public void setViewport() {
         if (tempViewport.left == 0.0 || holdViewport.left == 0.0 || holdViewport.right >= (new Date().getTime())) {
-            previewChart.setCurrentViewport(bgGraphBuilder.advanceViewport(chart, previewChart), false);
+            previewChart.setCurrentViewport(bgGraphBuilder.advanceViewport(chart, previewChart));
         } else {
-            previewChart.setCurrentViewport(holdViewport, false);
+            previewChart.setCurrentViewport(holdViewport);
         }
     }
 
@@ -439,7 +439,7 @@ public class Home extends ActivityWithMenu {
             if (!updatingPreviewViewport) {
                 updatingChartViewport = true;
                 previewChart.setZoomType(ZoomType.HORIZONTAL);
-                previewChart.setCurrentViewport(newViewport, false);
+                previewChart.setCurrentViewport(newViewport);
                 updatingChartViewport = false;
             }
         }
@@ -451,7 +451,7 @@ public class Home extends ActivityWithMenu {
             if (!updatingChartViewport) {
                 updatingPreviewViewport = true;
                 chart.setZoomType(ZoomType.HORIZONTAL);
-                chart.setCurrentViewport(newViewport, false);
+                chart.setCurrentViewport(newViewport);
                 tempViewport = newViewport;
                 updatingPreviewViewport = false;
             }
