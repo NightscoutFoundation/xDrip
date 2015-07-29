@@ -346,7 +346,7 @@ public class Notifications extends IntentService {
                 .setUsesChronometer(false);
         if (lastReading != null) {
             b.setWhen(lastReading.timestamp);
-            String deltaString = "Delta: " + bgGraphBuilder.unitizedDeltaString(lastReading.calculated_value - lastReadings.get(1).calculated_value);
+            String deltaString = "Delta: " + bgGraphBuilder.unitizedDeltaString(true);
             b.setContentText(deltaString);
             iconBitmap = new BgSparklineBuilder(mContext)
                     .setHeight(64)

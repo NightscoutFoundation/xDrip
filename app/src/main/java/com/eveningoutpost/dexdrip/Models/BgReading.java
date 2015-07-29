@@ -172,7 +172,23 @@ public class BgReading extends Model {
     }
 
 
+    public static double calculateSlope(BgReading current, BgReading last) {
+        if (current.timestamp == last.timestamp || current.calculated_value == last.calculated_value) {
+            return 0;
+        } else {
+            return (last.calculated_value - current.calculated_value) / (last.timestamp - current.timestamp);
+        }
+    }
 
+    public static double currentSlope(){
+        List<BgReading> last_2 = BgReading.latest(2);
+        if (last_2.size() == 2) {
+            return calculateSlope(last_2.get(0), last_2.get(1));
+        } else{
+            return 0d;
+        }
+
+    }
 
 
     //*******CLASS METHODS***********//
@@ -542,17 +558,11 @@ public class BgReading extends Model {
 
     public void find_slope() {
         List<BgReading> last_2 = BgReading.latest(2);
+
+        assert last_2.get(0)==this : "Invariant condition not fulfilled: calculating slope and current reading wasn't saved before";
+
         if (last_2.size() == 2) {
-            BgReading second_latest = last_2.get(1);
-            double y1 = calculated_value;
-            double x1 = timestamp;
-            double y2 = second_latest.calculated_value;
-            double x2 = second_latest.timestamp;
-            if(y1 == y2) {
-                calculated_value_slope = 0;
-            } else {
-                calculated_value_slope = (y2 - y1)/(x2 - x1);
-            }
+            calculated_value_slope = calculateSlope(this, last_2.get(1));
             save();
         } else if (last_2.size() == 1) {
             calculated_value_slope = 0;

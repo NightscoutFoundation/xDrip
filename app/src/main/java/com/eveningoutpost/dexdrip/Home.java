@@ -375,7 +375,7 @@ public class Home extends ActivityWithMenu {
                 notificationText.append("\n");
             }
             notificationText.append(
-                    bgGraphBuilder.unitizedDeltaString(lastBgReading.calculated_value - bgReadingList.get(1).calculated_value));
+                    bgGraphBuilder.unitizedDeltaString(true));
         }
         if(bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
             currentBgValueText.setTextColor(Color.parseColor("#C30909"));
