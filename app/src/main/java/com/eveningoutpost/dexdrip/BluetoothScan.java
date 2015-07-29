@@ -41,7 +41,7 @@ import com.google.zxing.integration.android.IntentResult;
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 
 @TargetApi(android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothScan extends ListActivityWithMenu {
@@ -116,22 +116,26 @@ public class BluetoothScan extends ListActivityWithMenu {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_scan:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    scanLeDeviceLollipop(true);
-                } else
-                    scanLeDevice(true);
                 BluetoothManager bluetooth_manager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
                 Toast.makeText(this, "Scanning", Toast.LENGTH_LONG).show();
                 if(bluetooth_manager == null) {
                     Toast.makeText(this, "This device does not seem to support bluetooth", Toast.LENGTH_LONG).show();
+                    return true;
                 } else {
                     if(!bluetooth_manager.getAdapter().isEnabled()) {
                         Toast.makeText(this, "Bluetooth is turned off on this device currently", Toast.LENGTH_LONG).show();
+                        return true;
                     } else {
-                        if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2){
+                        if(android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2){
                             Toast.makeText(this, "The android version of this device is not compatible with Bluetooth Low Energy", Toast.LENGTH_LONG).show();
+                            return true;
                         }
                     }
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    scanLeDeviceLollipop(true);
+                } else {
+                    scanLeDevice(true);
                 }
                 return true;
 //            case R.id.menu_stop:
@@ -208,22 +212,29 @@ public class BluetoothScan extends ListActivityWithMenu {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 lollipopScanner = bluetooth_adapter.getBluetoothLeScanner();
             }
-
-            Log.d(TAG, "Starting scanner 21");
-            // Stops scanning after a pre-defined scan period.
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    is_scanning = false;
-                    lollipopScanner.stopScan(mScanCallback);
-                    invalidateOptionsMenu();
+            if(lollipopScanner != null) {
+                Log.d(TAG, "Starting scanner 21");
+                // Stops scanning after a pre-defined scan period.
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        is_scanning = false;
+                        lollipopScanner.stopScan(mScanCallback);
+                        invalidateOptionsMenu();
+                    }
+                }, SCAN_PERIOD);
+                ScanSettings settings = new ScanSettings.Builder()
+                        .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                        .build();
+                is_scanning = true;
+                lollipopScanner.startScan(null, settings, mScanCallback);
+            } else {
+                try {
+                    scanLeDevice(true);
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to scan for ble device", e);
                 }
-            }, SCAN_PERIOD);
-            ScanSettings settings = new ScanSettings.Builder()
-                    .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                    .build();
-            is_scanning = true;
-            lollipopScanner.startScan(null, settings, mScanCallback);
+            }
         } else {
             is_scanning = false;
             lollipopScanner.stopScan(mScanCallback);
@@ -363,8 +374,8 @@ public class BluetoothScan extends ListActivityWithMenu {
             final String deviceName = device.getName();
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             if(prefs.getString("last_connected_device_address", "").compareTo(device.getAddress()) == 0) {
-                viewHolder.deviceName.setTextColor(Utils.COLOR_BLUE);
-                viewHolder.deviceAddress.setTextColor(Utils.COLOR_BLUE);
+                viewHolder.deviceName.setTextColor(ChartUtils.COLOR_BLUE);
+                viewHolder.deviceAddress.setTextColor(ChartUtils.COLOR_BLUE);
             }
             viewHolder.deviceName.setText(deviceName);
             viewHolder.deviceAddress.setText(device.getAddress());

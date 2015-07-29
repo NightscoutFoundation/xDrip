@@ -24,7 +24,7 @@ import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 
 /**
@@ -103,7 +103,7 @@ public class BgGraphBuilder {
 
     public Line highValuesLine() {
         Line highValuesLine = new Line(highValues);
-        highValuesLine.setColor(Utils.COLOR_ORANGE);
+        highValuesLine.setColor(ChartUtils.COLOR_ORANGE);
         highValuesLine.setHasLines(false);
         highValuesLine.setPointRadius(pointSize);
         highValuesLine.setHasPoints(true);
@@ -121,7 +121,7 @@ public class BgGraphBuilder {
 
     public Line inRangeValuesLine() {
         Line inRangeValuesLine = new Line(inRangeValues);
-        inRangeValuesLine.setColor(Utils.COLOR_BLUE);
+        inRangeValuesLine.setColor(ChartUtils.COLOR_BLUE);
         inRangeValuesLine.setHasLines(false);
         inRangeValuesLine.setPointRadius(pointSize);
         inRangeValuesLine.setHasPoints(true);
@@ -161,7 +161,7 @@ public class BgGraphBuilder {
         Line highLine = new Line(highLineValues);
         highLine.setHasPoints(false);
         highLine.setStrokeWidth(1);
-        highLine.setColor(Utils.COLOR_ORANGE);
+        highLine.setColor(ChartUtils.COLOR_ORANGE);
         return highLine;
     }
 

@@ -12,11 +12,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,16 +30,15 @@ import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.SnackbarManager;
+import com.nispok.snackbar.enums.SnackbarType;
+import com.nispok.snackbar.listeners.ActionClickListener;
 
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
-
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.SnackbarManager;
-import com.nispok.snackbar.enums.SnackbarType;
-import com.nispok.snackbar.listeners.ActionClickListener;
 
 import lecho.lib.hellocharts.ViewportChangeListener;
 import lecho.lib.hellocharts.gesture.ZoomType;
@@ -49,6 +48,7 @@ import lecho.lib.hellocharts.view.PreviewLineChartView;
 
 
 public class Home extends ActivityWithMenu {
+    static String TAG = Home.class.getName();
     public static String menu_name = "xDrip";
     private boolean updateStuff;
     private boolean updatingPreviewViewport = false;
@@ -175,11 +175,19 @@ public class Home extends ActivityWithMenu {
     @Override
     public void onPause() {
         super.onPause();
-        if (_broadcastReceiver != null) {
-            unregisterReceiver(_broadcastReceiver);
+        if (_broadcastReceiver != null ) {
+            try {
+                unregisterReceiver(_broadcastReceiver);
+            } catch (IllegalArgumentException e) {
+                Log.e(TAG, "_broadcast_receiver not registered", e);
+            }
         }
         if (newDataReceiver != null) {
-            unregisterReceiver(newDataReceiver);
+            try {
+                unregisterReceiver(newDataReceiver);
+            } catch (IllegalArgumentException e) {
+                Log.e(TAG, "newDataReceiver not registered", e);
+            }
         }
     }
 
@@ -232,7 +240,7 @@ public class Home extends ActivityWithMenu {
         }
         updateCurrentBgInfoCommon(notificationText);
     }
-    
+
     private void updateCurrentBgInfoCommon(TextView notificationText) {
         final boolean isSensorActive = Sensor.isActive();
         if(!isSensorActive){
@@ -266,7 +274,7 @@ public class Home extends ActivityWithMenu {
                     notificationText.setText("Please enter two calibrations to get started!");
                 }
             }
-        }        
+        }
     }
 
     private void updateCurrentBgInfoForBtShare(TextView notificationText) {
