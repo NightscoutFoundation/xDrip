@@ -82,7 +82,7 @@ public class xDripWidget extends AppWidgetProvider {
             } else {
                 estimate = lastBgreading.calculated_value;
                 String stringEstimate = bgGraphBuilder.unitized_string(estimate);
-                String slope_arrow = BgReading.slopeArrow((lastBgreading.calculated_value_slope * 60000));
+                String slope_arrow = lastBgreading.slopeArrow();
                 if (lastBgreading.hide_slope) {
                     slope_arrow = "--";
                 }

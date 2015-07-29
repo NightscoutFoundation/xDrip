@@ -11,12 +11,9 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.Sensor;
-import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
-import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
@@ -173,6 +170,10 @@ public class BgReading extends Model {
         }
         return 0;
     }
+
+
+
+
 
     //*******CLASS METHODS***********//
     public static void create(EGVRecord[] egvRecords, long addativeOffset, Context context) {
@@ -347,29 +348,31 @@ public class BgReading extends Model {
         return bgReading;
     }
 
-    public static String slopeArrow() {
+    public static String activeSlopeArrow() {
         double slope = (float) (BgReading.activeSlope() * 60000);
-        return slopeArrow(slope);
+        return slopeToArrowSymbol(slope);
     }
 
-    public static String slopeArrow(double slope) {
-        String arrow;
+    public static String slopeToArrowSymbol(double slope) {
         if (slope <= (-3.5)) {
-            arrow = "\u21ca";
+            return "\u21ca";
         } else if (slope <= (-2)) {
-            arrow = "\u2193";
+            return "\u2193";
         } else if (slope <= (-1)) {
-            arrow = "\u2198";
+            return "\u2198";
         } else if (slope <= (1)) {
-            arrow = "\u2192";
+            return "\u2192";
         } else if (slope <= (2)) {
-            arrow = "\u2197";
+            return "\u2197";
         } else if (slope <= (3.5)) {
-            arrow = "\u2191";
+            return "\u2191";
         } else {
-            arrow = "\u21c8";
+            return "\u21c8";
         }
-        return arrow;
+    }
+
+    public String slopeArrow(){
+        return slopeToArrowSymbol(this.calculated_value_slope*60000);
     }
 
     public String slopeName() {
@@ -558,6 +561,7 @@ public class BgReading extends Model {
             Log.w(TAG, "NO BG? COULDNT FIND SLOPE!");
         }
     }
+
 
     public void find_new_curve() {
         List<BgReading> last_3 = BgReading.latest(3);

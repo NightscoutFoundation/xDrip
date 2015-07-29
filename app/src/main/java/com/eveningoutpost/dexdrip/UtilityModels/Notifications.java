@@ -339,7 +339,7 @@ public class Notifications extends IntentService {
         NotificationCompat.Builder b = new NotificationCompat.Builder(mContext);
         //b.setOngoing(true);
         b.setCategory(NotificationCompat.CATEGORY_STATUS);
-        String titleString = lastReading == null ? "BG Reading Unavailable" : (lastReading.displayValue(mContext) + " " + BgReading.slopeArrow(lastReading.calculated_value_slope * 60000));
+        String titleString = lastReading == null ? "BG Reading Unavailable" : (lastReading.displayValue(mContext) + " " + lastReading.slopeArrow());
         b.setContentTitle(titleString)
                 .setContentText("xDrip Data collection service is running.")
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
