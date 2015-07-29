@@ -94,7 +94,6 @@
     <orderEntry type="library" exported="" name="crashlytics-2.2.3" level="project" />
     <orderEntry type="library" exported="" name="answers-1.1.2" level="project" />
     <orderEntry type="library" exported="" name="rxjava-1.0.0" level="project" />
-    <orderEntry type="library" exported="" name="acra-4.5.0" level="project" />
     <orderEntry type="library" exported="" name="mongo-java-driver-2.10.1" level="project" />
     <orderEntry type="library" exported="" name="seeds-functional-16.0.1" level="project" />
     <orderEntry type="library" exported="" name="seeds-strings-16.0.1" level="project" />
@@ -110,13 +109,13 @@
     <orderEntry type="library" exported="" name="retrofit-1.9.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-22.1.1" level="project" />
     <orderEntry type="library" exported="" name="beta-1.1.2" level="project" />
-    <orderEntry type="library" exported="" name="gson-2.3.1" level="project" />
     <orderEntry type="library" exported="" name="slf4j-api-1.7.7" level="project" />
+    <orderEntry type="library" exported="" name="gson-2.3.1" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-22.1.1" level="project" />
     <orderEntry type="library" exported="" name="snackbar-2.10.8" level="project" />
     <orderEntry type="library" exported="" name="seeds-primitives-16.0.1" level="project" />
-    <orderEntry type="library" exported="" name="pebblekit-2.6.0" level="project" />
-    <orderEntry type="library" exported="" name="hellocharts-library-1.1" level="project" />
+    <orderEntry type="library" exported="" name="pebblekit-3.0.0" level="project" />
     <orderEntry type="library" exported="" name="support-v4-22.1.1" level="project" />
+    <orderEntry type="library" exported="" name="hellocharts-android-v1.5.5" level="project" />
   </component>
 </module>

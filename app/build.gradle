@@ -101,7 +101,7 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.getpebble:pebblekit:3.0.0'
     compile 'io.reactivex:rxjava:1.0.0'
-    compile 'ch.acra:acra:4.5.0'
+    compile 'com.github.lecho:hellocharts-android:v1.5.5'
 
     compile('com.github.nightscout:android-uploader:CORE_FOR_XDRIP') {
         transitive = false;

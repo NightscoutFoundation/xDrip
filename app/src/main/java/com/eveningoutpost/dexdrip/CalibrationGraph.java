@@ -1,15 +1,9 @@
 package com.eveningoutpost.dexdrip;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 import java.text.DateFormat;
@@ -22,7 +16,7 @@ import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
 
 
@@ -65,7 +59,7 @@ public class CalibrationGraph extends ActivityWithMenu {
         }
 
         Line line = new Line(values);
-        line.setColor(Utils.COLOR_BLUE);
+        line.setColor(ChartUtils.COLOR_BLUE);
         line.setHasLines(false);
         line.setPointRadius(4);
         line.setHasPoints(true);
@@ -84,7 +78,7 @@ public class CalibrationGraph extends ActivityWithMenu {
             GraphHeader.setText(Header);
         }
         Line calibrationLine = new Line(lineValues);
-        calibrationLine.setColor(Utils.COLOR_RED);
+        calibrationLine.setColor(ChartUtils.COLOR_RED);
         calibrationLine.setHasLines(true);
         calibrationLine.setHasPoints(false);
         Axis axisX = new Axis();
