@@ -144,7 +144,7 @@ public class Home extends ActivityWithMenu {
 
         if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) chart.getLayoutParams();
-            params.topMargin = 105;
+            params.topMargin = 130;
             chart.setLayoutParams(params);
         }
 
