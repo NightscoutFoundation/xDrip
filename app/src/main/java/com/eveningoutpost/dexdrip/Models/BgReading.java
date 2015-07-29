@@ -275,64 +275,73 @@ public class BgReading extends Model {
     public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp) {
         BgReading bgReading = new BgReading();
         Sensor sensor = Sensor.currentSensor();
-        if (sensor != null) {
-            Calibration calibration = Calibration.last();
-            if (calibration == null) {
-                Log.d(TAG,"create: No calibration yet");
-                bgReading.sensor = sensor;
-                bgReading.sensor_uuid = sensor.uuid;
-                bgReading.raw_data = (raw_data / 1000);
-                bgReading.filtered_data = (filtered_data / 1000);
-                bgReading.timestamp = timestamp;
-                bgReading.uuid = UUID.randomUUID().toString();
-                bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
-                bgReading.synced = false;
-                bgReading.calibration_flag = false;
+        if (sensor == null) {
+            Log.w("BG GSON: ",bgReading.toS());
 
-                bgReading.calculateAgeAdjustedRawValue();
-
-                bgReading.save();
-                bgReading.perform_calculations();
-            } else {
-                Log.d(TAG,"Calibrations, so doing everything");
-                bgReading.sensor = sensor;
-                bgReading.sensor_uuid = sensor.uuid;
-                bgReading.calibration = calibration;
-                bgReading.calibration_uuid = calibration.uuid;
-                bgReading.raw_data = (raw_data/1000);
-                bgReading.filtered_data = (filtered_data/1000);
-                bgReading.timestamp = timestamp;
-                bgReading.uuid = UUID.randomUUID().toString();
-                bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
-                bgReading.synced = false;
-
-                bgReading.calculateAgeAdjustedRawValue();
-
-                if(calibration.check_in) {
-                    double firstAdjSlope = calibration.first_slope + (calibration.first_decay * (Math.ceil(new Date().getTime() - calibration.timestamp)/(1000 * 60 * 10)));
-                    double calSlope = (calibration.first_scale / firstAdjSlope)*1000;
-                    double calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope)*-1;
-                    bgReading.calculated_value = (((calSlope * bgReading.raw_data) + calIntercept) - 5);
-
-                } else {
-                    BgReading lastBgReading = BgReading.last();
-                    if (lastBgReading != null && lastBgReading.calibration != null) {
-                        if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp) && ((lastBgReading.calibration.timestamp + (60000 * 20)) > bgReading.timestamp)) {
-                            lastBgReading.calibration.rawValueOverride(BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value), context);
-                        }
-                    }
-                    bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
-                }
-
-                bgReading.calculated_value = Math.min(400, Math.max(40, bgReading.calculated_value));
-                Log.w(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
-
-                bgReading.save();
-                bgReading.perform_calculations();
-                context.startService(new Intent(context, Notifications.class));
-                BgSendQueue.addToQueue(bgReading, "create", context);
-            }
+            return bgReading;
         }
+
+        Calibration calibration = Calibration.last();
+        if (calibration == null) {
+            Log.d(TAG, "create: No calibration yet");
+            bgReading.sensor = sensor;
+            bgReading.sensor_uuid = sensor.uuid;
+            bgReading.raw_data = (raw_data / 1000);
+            bgReading.filtered_data = (filtered_data / 1000);
+            bgReading.timestamp = timestamp;
+            bgReading.uuid = UUID.randomUUID().toString();
+            bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
+            bgReading.synced = false;
+            bgReading.calibration_flag = false;
+
+            bgReading.calculateAgeAdjustedRawValue();
+
+            bgReading.save();
+            bgReading.perform_calculations();
+        } else {
+            Log.d(TAG,"Calibrations, so doing everything");
+            bgReading.sensor = sensor;
+            bgReading.sensor_uuid = sensor.uuid;
+            bgReading.calibration = calibration;
+            bgReading.calibration_uuid = calibration.uuid;
+            bgReading.raw_data = (raw_data/1000);
+            bgReading.filtered_data = (filtered_data/1000);
+            bgReading.timestamp = timestamp;
+            bgReading.uuid = UUID.randomUUID().toString();
+            bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
+            bgReading.synced = false;
+
+            bgReading.calculateAgeAdjustedRawValue();
+
+            if(calibration.check_in) {
+                double firstAdjSlope = calibration.first_slope + (calibration.first_decay * (Math.ceil(new Date().getTime() - calibration.timestamp)/(1000 * 60 * 10)));
+                double calSlope = (calibration.first_scale / firstAdjSlope)*1000;
+                double calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope)*-1;
+                bgReading.calculated_value = (((calSlope * bgReading.raw_data) + calIntercept) - 5);
+
+            } else {
+                BgReading lastBgReading = BgReading.last();
+                if (lastBgReading != null && lastBgReading.calibration != null) {
+                    if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp) && ((lastBgReading.calibration.timestamp + (60000 * 20)) > bgReading.timestamp)) {
+                        lastBgReading.calibration.rawValueOverride(BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value), context);
+                    }
+                }
+                bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
+            }
+            if (bgReading.calculated_value < 10) {
+                bgReading.calculated_value = 9;
+                bgReading.hide_slope = true;
+            } else {
+                bgReading.calculated_value = Math.min(400, Math.max(39, bgReading.calculated_value));
+            }
+            Log.w(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
+
+            bgReading.save();
+            bgReading.perform_calculations();
+            context.startService(new Intent(context, Notifications.class));
+            BgSendQueue.addToQueue(bgReading, "create", context);
+        }
+
         Log.w("BG GSON: ",bgReading.toS());
 
         return bgReading;
@@ -489,6 +498,12 @@ public class BgReading extends Model {
                 .where("raw_data != 0")
                 .orderBy("timestamp desc")
                 .execute();
+    }
+    public static BgReading findByUuid(String uuid) {
+        return new Select()
+                .from(BgReading.class)
+                .where("uuid = ?", uuid)
+                .executeSingle();
     }
 
     public static double estimated_bg(double timestamp) {
@@ -674,11 +689,11 @@ public class BgReading extends Model {
         return gson.toJson(this);
     }
 
-    public String noiseValue() {
+    public int noiseValue() {
         if(noise == null || noise.compareTo("") == 0) {
-            return "1";
+            return 1;
         } else {
-            return String.valueOf(noise);
+            return Integer.valueOf(noise);
         }
     }
 
@@ -783,7 +798,7 @@ public class BgReading extends Model {
             return false;
         }
         float time3 = (latest.get(0).timestamp - latest.get(3).timestamp) / 60000;
-        double bg_diff3 = latest.get(3).calculated_value - latest.get(0).calculated_value;;
+        double bg_diff3 = latest.get(3).calculated_value - latest.get(0).calculated_value;
         if (!drop) {
             bg_diff3 *= (-1);
         }
@@ -874,10 +889,7 @@ public class BgReading extends Model {
     // Should that be combined with noiseValue?
     private Boolean Unclear() {
         Log.e(TAG_ALERT, "Unclear filtered_data=" + filtered_data + " raw_data=" + raw_data);
-        if (raw_data > filtered_data * 1.3 || raw_data < filtered_data * 0.7) {
-            return true;
-        }
-        return false;
+        return raw_data > filtered_data * 1.3 || raw_data < filtered_data * 0.7;
     }
 
     /*

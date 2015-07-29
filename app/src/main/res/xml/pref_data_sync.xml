@@ -6,7 +6,10 @@
     <PreferenceCategory
         android:title="Data Sync"
         android:key="dataSync">
-
+        <PreferenceScreen
+            android:title="@string/auto_configure_title"
+            android:key="auto_configure"
+            android:summary="@string/prefs_auto_config_summary" />
         <PreferenceScreen
             android:key="cloud_storage_mongo"
             android:title="@string/pref_title_mongodb"
@@ -90,6 +93,12 @@
                 android:inputType="textPassword"
                 android:summary="Your password for Dexcom's Website"
                 android:defaultValue=""/>
+            <EditTextPreference
+                android:dependency="share_upload"
+                android:title="10 Character Dexcom Receiver Serial Number"
+                android:key="share_key"
+                android:shouldDisableView="true"
+                android:defaultValue="SM00000000"/>
         </PreferenceScreen>
 
     </PreferenceCategory>

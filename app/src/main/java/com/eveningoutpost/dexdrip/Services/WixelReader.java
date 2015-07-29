@@ -337,7 +337,7 @@ public class WixelReader  extends Thread {
 	        		// Make sure we do not report packets from the far future...
 	        		if ((LastReading.CaptureDateTime > LastReportedTime ) &&
 	        		        (!almostEquals(LastReading, LastReportedReading)) &&
-	        		        LastReading.CaptureDateTime < new Date().getTime() + 12000) {
+	        		        LastReading.CaptureDateTime < new Date().getTime() + 120000) {
 	        			// We have a real new reading...
 	        			Log.e(TAG, "calling setSerialDataToTransmitterRawData " + LastReading.RawValue +
 	        			        " LastReading.CaptureDateTime " + LastReading.CaptureDateTime + " " + LastReading.TransmissionId);

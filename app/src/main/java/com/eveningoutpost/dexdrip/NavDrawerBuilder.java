@@ -12,6 +12,7 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Tables.BgReadingTable;
 import com.eveningoutpost.dexdrip.Tables.CalibrationDataTable;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.stats.StatsActivity;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 
 import java.util.ArrayList;
@@ -99,6 +100,9 @@ public class NavDrawerBuilder {
         }
         this.nav_drawer_options.add(SnoozeActivity.menu_name);
         this.nav_drawer_intents.add(new Intent(context, SnoozeActivity.class));
+
+        this.nav_drawer_options.add(StatsActivity.MENU_NAME);
+        this.nav_drawer_intents.add(new Intent(context, StatsActivity.class));
 
         this.nav_drawer_options.add("Settings");
         this.nav_drawer_intents.add(new Intent(context, Preferences.class));

@@ -29,12 +29,12 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.json.JSONObject;
 
+import java.net.URI;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -108,7 +108,7 @@ public class NightscoutUploader {
 
             for (String baseURI : baseURIs) {
                 try {
-                    doRESTUploadTo(baseURI, glucoseDataSets, meterRecords, calRecords);
+                    doRESTUploadTo(URI.create(baseURI), glucoseDataSets, meterRecords, calRecords);
                 } catch (Exception e) {
                     Log.e(TAG, "Unable to do REST API Upload " + e.getMessage());
                     Log.e(TAG, "Unable to do REST API Upload", e.getCause());
@@ -118,22 +118,19 @@ public class NightscoutUploader {
             return true;
         }
 
-        private void doRESTUploadTo(String baseURI, List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) {
+        private void doRESTUploadTo(URI baseURI, List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) {
             try {
                 int apiVersion = 0;
-                if (baseURI.endsWith("/v1/")) apiVersion = 1;
+                if (baseURI.getPath().endsWith("/v1/")) apiVersion = 1;
 
-                String baseURL = null;
-                String secret = null;
-                String[] uriParts = baseURI.split("@");
-
-                if (uriParts.length == 1 && apiVersion == 0) {
-                    baseURL = uriParts[0];
-                } else if (uriParts.length == 1 && apiVersion > 0) {
+                String secret = baseURI.getUserInfo();
+                String baseURL;
+                if ((secret == null || secret.isEmpty()) && apiVersion == 0) {
+                    baseURL = baseURI.toString();
+                } else if ((secret == null || secret.isEmpty()) && apiVersion > 0) {
                     throw new Exception("Starting with API v1, a pass phase is required");
-                } else if (uriParts.length == 2 && apiVersion > 0) {
-                    secret = uriParts[0];
-                    baseURL = uriParts[1];
+                } else if ((secret != null && !secret.isEmpty()) && apiVersion > 0) {
+                    baseURL = baseURI.toString().replaceFirst("//[^@]+@", "//");
                 } else {
                     throw new Exception("Unexpected baseURI");
                 }
@@ -268,7 +265,7 @@ public class NightscoutUploader {
         }
 
         private void populateV1APIBGEntry(JSONObject json, BgReading record) throws Exception {
-            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss a");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
             format.setTimeZone(TimeZone.getDefault());
             json.put("device", "xDrip-"+prefs.getString("dex_collection_method", "BluetoothWixel"));
             json.put("date", record.timestamp);
@@ -279,11 +276,11 @@ public class NightscoutUploader {
             json.put("filtered", record.filtered_data * 1000);
             json.put("unfiltered", record.usedRaw() * 1000);
             json.put("rssi", 100);
-            json.put("noise", Integer.valueOf(record.noiseValue()));
+            json.put("noise", record.noiseValue());
         }
 
         private void populateLegacyAPIEntry(JSONObject json, BgReading record) throws Exception {
-            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss a");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
             format.setTimeZone(TimeZone.getDefault());
             json.put("device", "xDrip-"+prefs.getString("dex_collection_method", "BluetoothWixel"));
             json.put("date", record.timestamp);
@@ -293,7 +290,7 @@ public class NightscoutUploader {
         }
 
         private void populateV1APIMeterReadingEntry(JSONObject json, Calibration record) throws Exception {
-            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss a");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
             format.setTimeZone(TimeZone.getDefault());
             json.put("device", "xDrip-"+prefs.getString("dex_collection_method", "BluetoothWixel"));
             json.put("type", "mbg");
@@ -303,7 +300,7 @@ public class NightscoutUploader {
         }
 
         private void populateV1APICalibrationEntry(JSONObject json, Calibration record) throws Exception {
-            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss a");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
             format.setTimeZone(TimeZone.getDefault());
             json.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
             json.put("type", "cal");
@@ -346,7 +343,7 @@ public class NightscoutUploader {
 
         private boolean doMongoUpload(SharedPreferences prefs, List<BgReading> glucoseDataSets,
                                       List<Calibration> meterRecords,  List<Calibration> calRecords) {
-            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss a");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
             format.setTimeZone(TimeZone.getDefault());
 
             String dbURI = prefs.getString("cloud_storage_mongodb_uri", null);
@@ -365,68 +362,75 @@ public class NightscoutUploader {
 
                     // get collection
                     DBCollection dexcomData = db.getCollection(collectionName.trim());
-                    Log.i(TAG, "The number of EGV records being sent to MongoDB is " + glucoseDataSets.size());
-                    for (BgReading record : glucoseDataSets) {
-                        // make db object
-                        BasicDBObject testData = new BasicDBObject();
-                        testData.put("device", "xDrip-"+prefs.getString("dex_collection_method", "BluetoothWixel"));
-                        testData.put("date", record.timestamp);
-                        testData.put("dateString", format.format(record.timestamp));
-                        testData.put("sgv", Math.round(record.calculated_value));
-                        testData.put("direction", record.slopeName());
-                        testData.put("type", "sgv");
-                        testData.put("filtered", record.filtered_data * 1000);
-                        testData.put("unfiltered", record.usedRaw() * 1000 );
-                        testData.put("rssi", 100);
-                        testData.put("noise", Integer.valueOf(record.noiseValue()));
-                        dexcomData.update(testData, testData, true, false, WriteConcern.UNACKNOWLEDGED);
-                    }
 
-                    Log.i(TAG, "The number of MBG records being sent to MongoDB is " + meterRecords.size());
-                    for (Calibration meterRecord : meterRecords) {
-                        // make db object
-                        BasicDBObject testData = new BasicDBObject();
-                        testData.put("device", "xDrip-"+prefs.getString("dex_collection_method", "BluetoothWixel"));
-                        testData.put("type", "mbg");
-                        testData.put("date", meterRecord.timestamp);
-                        testData.put("dateString", format.format(meterRecord.timestamp));
-                        testData.put("mbg", meterRecord.bg);
-                        dexcomData.update(testData, testData, true, false, WriteConcern.UNACKNOWLEDGED);
-                    }
-
-                    for (Calibration calRecord : calRecords) {
-                        // make db object
-                        BasicDBObject testData = new BasicDBObject();
-                        testData.put("device", "xDrip-"+prefs.getString("dex_collection_method", "BluetoothWixel"));
-                        testData.put("date", calRecord.timestamp);
-                        testData.put("dateString", format.format(calRecord.timestamp));
-                        if(calRecord.check_in) {
-                            testData.put("slope", (long) (calRecord.first_slope));
-                            testData.put("intercept", (long) ((calRecord.first_intercept)));
-                            testData.put("scale", calRecord.first_scale);
-                        } else {
-                            testData.put("slope", (long) (calRecord.slope * 1000));
-                            testData.put("intercept", (long) ((calRecord.intercept * -1000) / (calRecord.slope * 1000)));
-                            testData.put("scale", 1);
+                    try {
+                        Log.i(TAG, "The number of EGV records being sent to MongoDB is " + glucoseDataSets.size());
+                        for (BgReading record : glucoseDataSets) {
+                            // make db object
+                            BasicDBObject testData = new BasicDBObject();
+                            testData.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
+                            testData.put("date", record.timestamp);
+                            testData.put("dateString", format.format(record.timestamp));
+                            testData.put("sgv", Math.round(record.calculated_value));
+                            testData.put("direction", record.slopeName());
+                            testData.put("type", "sgv");
+                            testData.put("filtered", record.filtered_data * 1000);
+                            testData.put("unfiltered", record.usedRaw() * 1000);
+                            testData.put("rssi", 100);
+                            testData.put("noise", record.noiseValue());
+                            dexcomData.insert(testData, WriteConcern.UNACKNOWLEDGED);
                         }
-                        testData.put("type", "cal");
-                        dexcomData.update(testData, testData, true, false, WriteConcern.UNACKNOWLEDGED);
+
+                        Log.i(TAG, "The number of MBG records being sent to MongoDB is " + meterRecords.size());
+                        for (Calibration meterRecord : meterRecords) {
+                            // make db object
+                            BasicDBObject testData = new BasicDBObject();
+                            testData.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
+                            testData.put("type", "mbg");
+                            testData.put("date", meterRecord.timestamp);
+                            testData.put("dateString", format.format(meterRecord.timestamp));
+                            testData.put("mbg", meterRecord.bg);
+                            dexcomData.insert(testData, WriteConcern.UNACKNOWLEDGED);
+                        }
+
+                        for (Calibration calRecord : calRecords) {
+                            // make db object
+                            BasicDBObject testData = new BasicDBObject();
+                            testData.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
+                            testData.put("date", calRecord.timestamp);
+                            testData.put("dateString", format.format(calRecord.timestamp));
+                            if (calRecord.check_in) {
+                                testData.put("slope", (long) (calRecord.first_slope));
+                                testData.put("intercept", (long) ((calRecord.first_intercept)));
+                                testData.put("scale", calRecord.first_scale);
+                            } else {
+                                testData.put("slope", (long) (calRecord.slope * 1000));
+                                testData.put("intercept", (long) ((calRecord.intercept * -1000) / (calRecord.slope * 1000)));
+                                testData.put("scale", 1);
+                            }
+                            testData.put("type", "cal");
+                            dexcomData.insert(testData, WriteConcern.UNACKNOWLEDGED);
+                        }
+
+                        // TODO: quick port from original code, revisit before release
+                        DBCollection dsCollection = db.getCollection(dsCollectionName);
+                        BasicDBObject devicestatus = new BasicDBObject();
+                        devicestatus.put("uploaderBattery", getBatteryLevel());
+                        devicestatus.put("created_at", new Date());
+                        dsCollection.insert(devicestatus, WriteConcern.UNACKNOWLEDGED);
+
+                        client.close();
+
+                        return true;
+
+                    } catch (Exception e) {
+                        Log.e(TAG, "Unable to upload data to mongo " + e.getMessage());
+                        Log.e(TAG, "Unable to upload data to mongo", e.getCause());
+                    } finally {
+                        if(client != null) { client.close(); }
                     }
-
-                    // TODO: quick port from original code, revisit before release
-                    DBCollection dsCollection = db.getCollection(dsCollectionName);
-                    BasicDBObject devicestatus = new BasicDBObject();
-                    devicestatus.put("uploaderBattery", getBatteryLevel());
-                    devicestatus.put("created_at", new Date());
-                    dsCollection.insert(devicestatus, WriteConcern.UNACKNOWLEDGED);
-
-                    client.close();
-
-                    return true;
-
                 } catch (Exception e) {
                     Log.e(TAG, "Unable to upload data to mongo " + e.getMessage());
-                    Log.e(TAG, "Unable to upload data to mongo", e.getCause());
                 }
             }
             return false;

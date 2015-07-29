@@ -1,19 +1,13 @@
 package com.eveningoutpost.dexdrip;
 
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -44,54 +38,58 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 public class EditAlertActivity extends ActivityWithMenu {
     public static String menu_name = "Edit Alert";
 
-    TextView viewHeader;
+    private TextView viewHeader;
 
-    EditText alertText;
-    EditText alertThreshold;
-    EditText alertMp3File;
-    EditText editSnooze;
-    EditText reraise;
+    private EditText alertText;
+    private EditText alertThreshold;
+    private EditText alertMp3File;
+    private EditText editSnooze;
+    private EditText reraise;
 
-    Button buttonalertMp3;
+    private Button buttonalertMp3;
 
-    Button buttonSave;
-    Button buttonRemove;
-    Button buttonTest;
-    Button buttonPreSnooze;
-    CheckBox checkboxAllDay;
+    private Button buttonSave;
+    private Button buttonRemove;
+    private Button buttonTest;
+    private Button buttonPreSnooze;
+    private CheckBox checkboxAllDay;
 
-    LinearLayout layoutTimeBetween;
-    LinearLayout timeInstructions;
-    TextView viewTimeStart;
-    TextView viewTimeEnd;
-    TextView timeInstructionsStart;
-    TextView timeInstructionsEnd;
+    private LinearLayout layoutTimeBetween;
+    private LinearLayout timeInstructions;
+    private TextView viewTimeStart;
+    private TextView viewTimeEnd;
+    private TextView timeInstructionsStart;
+    private TextView timeInstructionsEnd;
 
+    private int startHour = 0;
+    private int startMinute = 0;
+    private int endHour = 23;
+    private int endMinute = 59;
+    private int alertReraise = 1;
 
+    private int defaultSnooze;
 
-    int startHour = 0;
-    int startMinute = 0;
-    int endHour = 23;
-    int endMinute = 59;
-    int alertReraise = 1;
+    private String audioPath;
 
-    int defaultSnooze;
+    private TextView viewAlertOverrideText;
+    private CheckBox checkboxAlertOverride;
+    private boolean doMgdl;
 
-    String audioPath;
-
-    TextView viewAlertOverrideText;
-    CheckBox checkboxAlertOverride;
-    Boolean doMgdl;
-
-    String uuid;
-    Context mContext;
-    boolean above;
-    final int CHOOSE_FILE = 1;
-    final int MIN_ALERT = 40;
-    final int MAX_ALERT = 400;
+    private String uuid;
+    private Context mContext;
+    private boolean above;
+    private final int CHOOSE_FILE = 1;
+    private final int MIN_ALERT = 40;
+    private final int MAX_ALERT = 400;
 
     private final static String TAG = AlertPlayer.class.getSimpleName();
 
@@ -262,17 +260,26 @@ public class EditAlertActivity extends ActivityWithMenu {
         return menu_name;
     }
 
-    public static String unitsConvert2Disp(boolean doMgdl, double threshold) {
+
+    public static DecimalFormat getNumberFormatter(boolean doMgdl) {
         DecimalFormat df = new DecimalFormat("#");
-        if(doMgdl ) {
+        if (doMgdl) {
             df.setMaximumFractionDigits(0);
             df.setMinimumFractionDigits(0);
-            return df.format(threshold);
         } else {
             df.setMaximumFractionDigits(1);
             df.setMinimumFractionDigits(1);
-            return df.format(threshold / Constants.MMOLL_TO_MGDL);
         }
+
+        return df;
+    }
+
+    public static String unitsConvert2Disp(boolean doMgdl, double threshold) {
+        DecimalFormat df = getNumberFormatter(doMgdl);
+        if (doMgdl)
+            return df.format(threshold);
+
+        return df.format(threshold / Constants.MMOLL_TO_MGDL);
     }
 
     double unitsConvertFromDisp(double threshold) {
@@ -307,7 +314,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         List<AlertType> highAlerts = AlertType.getAll(true);
 
         if(threshold < MIN_ALERT || threshold > MAX_ALERT) {
-            Toast.makeText(getApplicationContext(), "threshold has to be between " + MIN_ALERT + " and " + MAX_ALERT,Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "threshold has to be between " +unitsConvert2Disp(doMgdl, MIN_ALERT) + " and " + unitsConvert2Disp(doMgdl, MAX_ALERT),Toast.LENGTH_LONG).show();
             return false;
         }
         if (uuid == null) {
@@ -350,30 +357,52 @@ public class EditAlertActivity extends ActivityWithMenu {
         return true;
     }
 
+    private double parseDouble(String str) {
+        try {
+            final DecimalFormat numberFormatter = getNumberFormatter(doMgdl);
+            return numberFormatter.parse(str).doubleValue();
+        } catch (NumberFormatException nfe) {
+            Log.e(TAG, "Invalid number", nfe);
+            Toast.makeText(getApplicationContext(), "Invalid number: " + str, Toast.LENGTH_LONG).show();
+            return Double.NaN;
+        } catch (ParseException e) {
+            Log.e(TAG, "Invalid number", e);
+            Toast.makeText(getApplicationContext(), "Invalid number: " + str, Toast.LENGTH_LONG).show();
+            return Double.NaN;
+        }
+    }
+
+    private Integer parseInt(String str) {
+        try {
+            return Integer.parseInt(str);
+        }
+        catch (NumberFormatException nfe) {
+            Log.e(TAG, "Invalid number", nfe);
+            Toast.makeText(getApplicationContext(), "Invalid number: " + str, Toast.LENGTH_LONG).show();
+            return null;
+        }
+    }
+
     public void addListenerOnButtons() {
 
         buttonSave.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
                 // Check that values are ok.
-                double threshold = 0;
-                try {
-                    threshold = Double.parseDouble((alertThreshold.getText().toString()));
-                }
-                catch (NumberFormatException nfe) {
-                    Log.e(TAG, "Invalid number", nfe);
-                }
+                double threshold = parseDouble(alertThreshold.getText().toString());
+                if(Double.isNaN(threshold))
+                    return;
+
                 threshold = unitsConvertFromDisp(threshold);
                 if(!verifyThreshold(threshold)) {
                     return;
                 }
+
                 alertReraise = 1;
-                try {
-                    alertReraise = Integer.parseInt((reraise.getText().toString()));
-                }
-                catch (NumberFormatException nfe) {
-                    Log.e(TAG, "Invalid number", nfe);
-                }
+                Integer alterReraiseInt = parseInt(reraise.getText().toString());
+                if(alterReraiseInt ==null)
+                    return;
+                alertReraise = alterReraiseInt;
+
                 if(alertReraise < 1) {
                     Toast.makeText(getApplicationContext(), "Reraise Value must be 1 minute or greater", Toast.LENGTH_LONG).show();
                     return;
@@ -381,7 +410,6 @@ public class EditAlertActivity extends ActivityWithMenu {
                     Toast.makeText(getApplicationContext(), "Reraise Value must less than snooze length", Toast.LENGTH_LONG).show();
                     return;
                 }
-
 
                 int timeStart = AlertType.toTime(startHour, startMinute);
                 int timeEnd = AlertType.toTime(endHour, endMinute);
@@ -403,7 +431,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                     return;
                 }
                 boolean overrideSilentMode = checkboxAlertOverride.isChecked();
-;
+
                 String mp3_file = audioPath;
                 if (uuid != null) {
                     AlertType.update_alert(uuid, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze);
@@ -709,13 +737,10 @@ public class EditAlertActivity extends ActivityWithMenu {
 
     public void testAlert() {
         // Check that values are ok.
-        double threshold = 0;
-        try {
-            threshold = Double.parseDouble((alertThreshold.getText().toString()));
-        }
-        catch (NumberFormatException nfe) {
-            Log.e(TAG, "Invalid number", nfe);
-        }
+        double threshold = parseDouble(alertThreshold.getText().toString());
+        if(Double.isNaN(threshold))
+            return;
+
         threshold = unitsConvertFromDisp(threshold);
         if(!verifyThreshold(threshold)) {
             return;
