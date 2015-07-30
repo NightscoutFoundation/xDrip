@@ -61,7 +61,7 @@ public class BgGraphBuilder {
         this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
         this.highMark = Double.parseDouble(prefs.getString("highValue", "170"));
         this.lowMark = Double.parseDouble(prefs.getString("lowValue", "70"));
-        this.doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
+        this.doMgdl = (prefs.getString("units", "mgdl").equals("mgdl"));
         defaultMinY = unitized(40);
         defaultMaxY = unitized(250);
         pointSize = isXLargeTablet(context) ? 5 : 3;
@@ -156,8 +156,8 @@ public class BgGraphBuilder {
 
     public Line highLine() {
         List<PointValue> highLineValues = new ArrayList<PointValue>();
-        highLineValues.add(new PointValue((float)start_time, (float)highMark));
-        highLineValues.add(new PointValue((float)end_time, (float)highMark));
+        highLineValues.add(new PointValue((float) start_time, (float) highMark));
+        highLineValues.add(new PointValue((float) end_time, (float) highMark));
         Line highLine = new Line(highLineValues);
         highLine.setHasPoints(false);
         highLine.setStrokeWidth(1);
@@ -190,8 +190,8 @@ public class BgGraphBuilder {
 
     public Line minShowLine() {
         List<PointValue> minShowValues = new ArrayList<PointValue>();
-        minShowValues.add(new PointValue((float)start_time, (float)defaultMinY));
-        minShowValues.add(new PointValue((float)end_time, (float)defaultMinY));
+        minShowValues.add(new PointValue((float) start_time, (float) defaultMinY));
+        minShowValues.add(new PointValue((float) end_time, (float) defaultMinY));
         Line minShowLine = new Line(minShowValues);
         minShowLine.setHasPoints(false);
         minShowLine.setHasLines(false);
@@ -327,35 +327,29 @@ public class BgGraphBuilder {
         }
     }
 
-    public String unitizedDeltaString(double value) {
-        DecimalFormat df = new DecimalFormat("#");
-        df.setMaximumFractionDigits(1);
-        String delta_sign = "";
-        if (value > 0.1) { delta_sign = "+"; }
-        if(doMgdl) {
-            return delta_sign + df.format(unitized(value)) + " mg/dl";
-        } else {
-            df.setMinimumFractionDigits(1);
-            df.setMinimumIntegerDigits(1);
-            return delta_sign + df.format(unitized(value)) + " mmol";
+    public String unitizedDeltaString(boolean showUnit) {
+        List<BgReading> last2 = BgReading.latest(2);
+        if(last2.size() < 2 || last2.get(0).timestamp - last2.get(1).timestamp > 20 * 60 * 1000){
+            // don't show delta if there are not enough values or the values are more than 20 mintes apart
+            return "--";
         }
-    }
 
-    public String unitizedDeltaStringShort(double value) {
+        double value = BgReading.currentSlope() * 5*60*1000;
+
         DecimalFormat df = new DecimalFormat("#");
         String delta_sign = "";
-        if (value > 0.1) { delta_sign = "+"; }
+        if (value > 0) { delta_sign = "+"; }
         if(doMgdl) {
-            return delta_sign + df.format(unitized(value)) + " mg/dl";
-        } else {
             df.setMaximumFractionDigits(1);
+            return delta_sign + df.format(unitized(value)) +  (showUnit?" mg/dl":"");
+        } else {
             df.setMinimumFractionDigits(1);
             df.setMinimumIntegerDigits(1);
-            return delta_sign + df.format(unitized(value)) + " mmol";
+            return delta_sign + df.format(unitized(value)) + (showUnit?" mmol/l":"");
         }
     }
 
-    public double mmolConvert(double mgdl) {
+    public static double mmolConvert(double mgdl) {
         return mgdl * Constants.MGDL_TO_MMOLL;
     }
 

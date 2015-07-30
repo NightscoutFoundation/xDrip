@@ -362,7 +362,7 @@ public class Home extends ActivityWithMenu {
             if (!predictive) {
                 estimate = lastBgReading.calculated_value;
                 String stringEstimate = bgGraphBuilder.unitized_string(estimate);
-                String slope_arrow = BgReading.slopeArrow((lastBgReading.calculated_value_slope * 60000));
+                String slope_arrow = lastBgReading.slopeArrow();
                 if (lastBgReading.hide_slope) {
                     slope_arrow = "";
                 }
@@ -370,7 +370,7 @@ public class Home extends ActivityWithMenu {
             } else {
                 estimate = BgReading.activePrediction();
                 String stringEstimate = bgGraphBuilder.unitized_string(estimate);
-                currentBgValueText.setText(stringEstimate + " " + BgReading.slopeArrow());
+                currentBgValueText.setText(stringEstimate + " " + BgReading.activeSlopeArrow());
             }
         }
         int minutes = (int)(System.currentTimeMillis() - lastBgReading.timestamp) / (60 * 1000);
@@ -384,7 +384,7 @@ public class Home extends ActivityWithMenu {
                 notificationText.append("\n");
             }
             notificationText.append(
-                    bgGraphBuilder.unitizedDeltaString(lastBgReading.calculated_value - bgReadingList.get(1).calculated_value));
+                    bgGraphBuilder.unitizedDeltaString(true));
         }
         if(bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
             currentBgValueText.setTextColor(Color.parseColor("#C30909"));
