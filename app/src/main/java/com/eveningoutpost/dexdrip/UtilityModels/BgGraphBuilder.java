@@ -180,8 +180,8 @@ public class BgGraphBuilder {
 
     public Line maxShowLine() {
         List<PointValue> maxShowValues = new ArrayList<PointValue>();
-        maxShowValues.add(new PointValue((float)start_time, (float)defaultMaxY));
-        maxShowValues.add(new PointValue((float)end_time, (float)defaultMaxY));
+        maxShowValues.add(new PointValue((float) start_time, (float) defaultMaxY));
+        maxShowValues.add(new PointValue((float) end_time, (float) defaultMaxY));
         Line maxShowLine = new Line(maxShowValues);
         maxShowLine.setHasLines(false);
         maxShowLine.setHasPoints(false);
@@ -273,7 +273,7 @@ public class BgGraphBuilder {
     /////////VIEWPORT RELATED//////////////
     public Viewport advanceViewport(Chart chart, Chart previewChart) {
         viewport = new Viewport(previewChart.getMaximumViewport());
-        viewport.inset((float)((86400000 / 2.5)/ FUZZER), 0);
+        viewport.inset((float) ((86400000 / 2.5) / FUZZER), 0);
         double distance_to_move = ((new Date().getTime())/ FUZZER) - viewport.left - (((viewport.right - viewport.left) /2));
         viewport.offset((float) distance_to_move, 0);
         return viewport;
@@ -335,6 +335,20 @@ public class BgGraphBuilder {
         if(doMgdl) {
             return delta_sign + df.format(unitized(value)) + " mg/dl";
         } else {
+            df.setMinimumFractionDigits(1);
+            df.setMinimumIntegerDigits(1);
+            return delta_sign + df.format(unitized(value)) + " mmol";
+        }
+    }
+
+    public String unitizedDeltaStringShort(double value) {
+        DecimalFormat df = new DecimalFormat("#");
+        String delta_sign = "";
+        if (value > 0.1) { delta_sign = "+"; }
+        if(doMgdl) {
+            return delta_sign + df.format(unitized(value)) + " mg/dl";
+        } else {
+            df.setMaximumFractionDigits(1);
             df.setMinimumFractionDigits(1);
             df.setMinimumIntegerDigits(1);
             return delta_sign + df.format(unitized(value)) + " mmol";

@@ -13,7 +13,8 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_height="fill_parent"
+            android:background="#212121">
 
             <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
@@ -25,20 +26,6 @@
                 android:paddingBottom="0dp" tools:context=".Home"
                 android:layout_marginTop="0dp">
 
-                <TextView
-                    android:layout_width="900dp"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="#C30909"
-                    android:id="@+id/notices"
-                    android:background="#212121"
-                    android:paddingEnd="10dp"
-                    android:paddingStart="10dp"
-                    android:gravity="left|top"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentTop="true"
-                    android:text="Alerts and messages" />
-
                 <lecho.lib.hellocharts.view.LineChartView
                     android:id="@+id/chart"
                     android:layout_width="match_parent"
@@ -49,9 +36,22 @@
                 </lecho.lib.hellocharts.view.LineChartView>
 
                 <TextView
+                    android:layout_width="900dp"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="#C30909"
+                    android:id="@+id/notices"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:gravity="left|top"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:text="Alerts and messages" />
+
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="#212121"
                     android:id="@+id/currentBgValueRealTime"
                     android:gravity="right"
                     android:layout_alignParentEnd="true"
