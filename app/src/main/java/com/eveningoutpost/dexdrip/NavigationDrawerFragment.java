@@ -80,6 +80,7 @@ public class NavigationDrawerFragment extends Fragment {
         navDrawerBuilder = new NavDrawerBuilder(getActivity());
         List<String> menu_option_list = navDrawerBuilder.nav_drawer_options;
         String[] menu_options = menu_option_list.toArray(new String[menu_option_list.size()]);
+        intent_list = navDrawerBuilder.nav_drawer_intents;
 
         mDrawerListView.setAdapter(new ArrayAdapter<String>(
                 getActionBar().getThemedContext(),
