@@ -182,8 +182,8 @@ public class BgGraphBuilder {
 
     public Line maxShowLine() {
         List<PointValue> maxShowValues = new ArrayList<PointValue>();
-        maxShowValues.add(new PointValue((float)start_time, (float)defaultMaxY));
-        maxShowValues.add(new PointValue((float)end_time, (float)defaultMaxY));
+        maxShowValues.add(new PointValue((float) start_time, (float) defaultMaxY));
+        maxShowValues.add(new PointValue((float) end_time, (float) defaultMaxY));
         Line maxShowLine = new Line(maxShowValues);
         maxShowLine.setHasLines(false);
         maxShowLine.setHasPoints(false);
@@ -329,7 +329,7 @@ public class BgGraphBuilder {
         }
     }
 
-    public String unitizedDeltaString(boolean showUnit) {
+    public String unitizedDeltaString(boolean showUnit, boolean highGranularity) {
 
         List<BgReading> last2 = BgReading.latest(2);
         if(last2.size() < 2 || last2.get(0).timestamp - last2.get(1).timestamp > 20 * 60 * 1000){
@@ -346,12 +346,25 @@ public class BgGraphBuilder {
 
         // TODO: allow localization from os settings once pebble doesn't require english locale
         DecimalFormat df = new DecimalFormat("#", new DecimalFormatSymbols(Locale.ENGLISH));
-        df.setMaximumFractionDigits(1);
         String delta_sign = "";
         if (value > 0) { delta_sign = "+"; }
         if(doMgdl) {
+
+            if(highGranularity){
+                df.setMaximumFractionDigits(1);
+            } else {
+                df.setMaximumFractionDigits(0);
+            }
+
             return delta_sign + df.format(unitized(value)) +  (showUnit?" mg/dl":"");
         } else {
+
+            if(highGranularity){
+                df.setMaximumFractionDigits(2);
+            } else {
+                df.setMaximumFractionDigits(1);
+            }
+
             df.setMinimumFractionDigits(1);
             df.setMinimumIntegerDigits(1);
             return delta_sign + df.format(unitized(value)) + (showUnit?" mmol/l":"");
