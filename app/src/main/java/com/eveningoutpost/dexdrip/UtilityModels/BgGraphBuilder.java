@@ -10,12 +10,14 @@ import android.text.format.DateFormat;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import lecho.lib.hellocharts.model.Axis;
@@ -342,14 +344,14 @@ public class BgGraphBuilder {
             return "ERR";
         }
 
-        DecimalFormat df = new DecimalFormat("#");
+        // TODO: allow localization from os settings once pebble doesn't require english locale
+        DecimalFormat df = new DecimalFormat("#", new DecimalFormatSymbols(Locale.ENGLISH));
+        df.setMaximumFractionDigits(1);
         String delta_sign = "";
         if (value > 0) { delta_sign = "+"; }
         if(doMgdl) {
-            df.setMaximumFractionDigits(1);
             return delta_sign + df.format(unitized(value)) +  (showUnit?" mg/dl":"");
         } else {
-            df.setMaximumFractionDigits(2);
             df.setMinimumFractionDigits(1);
             df.setMinimumIntegerDigits(1);
             return delta_sign + df.format(unitized(value)) + (showUnit?" mmol/l":"");
