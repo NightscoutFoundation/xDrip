@@ -7,7 +7,7 @@
 
         <ListPreference
             android:key="dex_collection_method"
-            android:title="Data Collection Method"
+            android:title="Hardware Data Source"
             android:summary="How are you going to receive data from your Dexcom/Transmitter?"
             android:entries="@array/DexCollectionMethods"
             android:entryValues="@array/DexCollectionMethodValues"
