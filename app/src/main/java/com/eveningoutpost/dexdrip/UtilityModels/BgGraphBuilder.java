@@ -337,6 +337,11 @@ public class BgGraphBuilder {
 
         double value = BgReading.currentSlope() * 5*60*1000;
 
+        if(Math.abs(value) > 100){
+            // a delta > 100 will not happen with real BG values -> problematic sensor data
+            return "ERR";
+        }
+
         DecimalFormat df = new DecimalFormat("#");
         String delta_sign = "";
         if (value > 0) { delta_sign = "+"; }
