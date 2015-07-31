@@ -332,7 +332,7 @@ public class BgGraphBuilder {
         List<BgReading> last2 = BgReading.latest(2);
         if(last2.size() < 2 || last2.get(0).timestamp - last2.get(1).timestamp > 20 * 60 * 1000){
             // don't show delta if there are not enough values or the values are more than 20 mintes apart
-            return "--";
+            return "???";
         }
 
         double value = BgReading.currentSlope() * 5*60*1000;
