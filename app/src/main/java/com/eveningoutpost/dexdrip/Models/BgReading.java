@@ -29,6 +29,7 @@ import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Table(name = "BgReadings", id = BaseColumns._ID)
@@ -896,12 +897,14 @@ public class BgReading extends Model {
      * returns the time (in ms) that the state is not clear and no alerts should work
      * The base of the algorithm is that any period can be bad or not. bgReading.Unclear() tells that.
      * a non clear bgReading means MAX_INFLUANCE time after it we are in a bad position
-     * Since this code is based on hurstics, and since times are not acurate, boundery issues can be ignored.
+     * Since this code is based on heuristics, and since times are not accurate, boundary issues can be ignored.
      *
      * interstingTime is the period to check. That is if the last period is bad, we want to know how long does it go bad...
      * */
 
-    static final int MAX_INFLUANCE = 30 * 60000; // A bad point means data is untrusted for 30 minutes.
+    // The extra 120,000 is to allow the packet to be delayed for some time and still be counted in that group
+    // Please don't use for MAX_INFLUANCE a number that is complete multiply of 5 minutes (300,000) 
+    static final int MAX_INFLUANCE = 30 * 60000 - 120000; // A bad point means data is untrusted for 30 minutes.
     private static Long getUnclearTimeHelper(List<BgReading> latest, Long interstingTime, final Long now) {
 
         // The code ignores missing points (that is they some times are treated as good and some times as bad.
@@ -916,7 +919,7 @@ public class BgReading extends Model {
                 // Some readings are missing, we can stop checking
                 break;
             }
-            if(bgReading.timestamp <= now - MAX_INFLUANCE && UnclearTime == 0) {
+            if(bgReading.timestamp <= now - MAX_INFLUANCE  && UnclearTime == 0) {
                 Log.e(TAG_ALERT, "We did not have a problematic reading for MAX_INFLUANCE time, so now all is well");
                 return 0l;
 
@@ -934,7 +937,11 @@ public class BgReading extends Model {
                 } else {
                     // we have some good period, is it good enough?
                     if(LastGoodTime - bgReading.timestamp >= MAX_INFLUANCE) {
-                        Log.e(TAG_ALERT, "We have a good period from " + bgReading.timestamp + " to " + LastGoodTime + "returning " + (now - UnclearTime +60000));
+                        // Here UnclearTime should be already set, otherwise we will return a toob big value
+                        if (UnclearTime ==0) {
+                            Log.wtf(TAG_ALERT, "ERROR - UnclearTime must not be 0 here !!!");
+                        }
+                        Log.e(TAG_ALERT, "We have a good period from " + bgReading.timestamp + " to " + LastGoodTime + "returning " + (now - UnclearTime +5 *60000));
                         return now - UnclearTime + 5 *60000;
                     }
                 }
@@ -981,16 +988,18 @@ public class BgReading extends Model {
 
     // the input of this function is a string. each char can be g(=good) or b(=bad) or s(=skip, point unmissed).
     static List<BgReading> createlatestTest(String input, Long now) {
+        Random randomGenerator = new Random();
         List<BgReading> out = new LinkedList<BgReading> ();
         char[] chars=  input.toCharArray();
         for(int i=0; i < chars.length; i++) {
             BgReading bg = new BgReading();
-            bg.timestamp = now - i * 5 * 60000;
+            int rand = randomGenerator.nextInt(20000) - 10000;
+            bg.timestamp = now - i * 5 * 60000 + rand;
             bg.raw_data = 150;
             if(chars[i] == 'g') {
                 bg.filtered_data = 151;
             } else if (chars[i] == 'b') {
-                bg.filtered_data = 130;
+                bg.filtered_data = 110;
             } else {
                 continue;
             }
@@ -1004,10 +1013,10 @@ public class BgReading extends Model {
         final Long now = new Date().getTime();
         List<BgReading> readings = createlatestTest(input, now);
         Long result = getUnclearTimeHelper(readings, interstingTime * 60000, now);
-        if (result == expectedResult * 60000) {
+        if (result >= expectedResult * 60000 - 20000 && result <= expectedResult * 60000+20000) {
             Log.e(TAG_ALERT, "Test passed");
         } else {
-            Log.e(TAG_ALERT, "Test failed expectedResult = " + expectedResult + " result = "+ result /5 / 60000);
+            Log.e(TAG_ALERT, "Test failed expectedResult = " + expectedResult + " result = "+ result / 60000.0);
         }
 
     }
