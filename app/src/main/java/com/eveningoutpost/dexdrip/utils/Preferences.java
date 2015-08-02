@@ -374,7 +374,11 @@ public class Preferences extends PreferenceActivity {
                     } else {
                         preference.setSummary(stringValue);
                     }
-                    CollectionServiceStarter.restartCollectionService(preference.getContext());
+                    if(preference.getKey().equals("dex_collection_method")) {
+                        CollectionServiceStarter.restartCollectionService(preference.getContext(), (String) newValue);
+                    } else {
+                        CollectionServiceStarter.restartCollectionService(preference.getContext());
+                    }
                     return true;
                 }
             });
