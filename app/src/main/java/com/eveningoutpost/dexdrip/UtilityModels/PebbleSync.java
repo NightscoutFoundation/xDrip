@@ -135,18 +135,7 @@ public class PebbleSync extends Service {
     }
 
     public String bgDelta() {
-        String deltaString;
-        if((PreferenceManager.getDefaultSharedPreferences(mContext).getString("units","mgdl").compareTo("mgdl") == 0)) {
-            deltaString = String.format("%.0f", mBgReading.calculated_value_slope * 360000);
-        } else {
-            deltaString = String.format("%.1f", (mBgReading.calculated_value_slope * 360000)*Constants.MGDL_TO_MMOLL);
-        }
-        Log.v(TAG,"bgDelta: "+ deltaString);
-        if(Float.valueOf(deltaString) > 0) {
-            return ("+"+deltaString);
-        } else {
-            return deltaString;
-        }
+        return new BgGraphBuilder(mContext).unitizedDeltaString(false, false);
     }
 
     public String phoneBattery() {

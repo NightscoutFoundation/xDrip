@@ -11,12 +11,9 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.Sensor;
-import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
-import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
@@ -173,6 +170,26 @@ public class BgReading extends Model {
         }
         return 0;
     }
+
+
+    public static double calculateSlope(BgReading current, BgReading last) {
+        if (current.timestamp == last.timestamp || current.calculated_value == last.calculated_value) {
+            return 0;
+        } else {
+            return (last.calculated_value - current.calculated_value) / (last.timestamp - current.timestamp);
+        }
+    }
+
+    public static double currentSlope(){
+        List<BgReading> last_2 = BgReading.latest(2);
+        if (last_2.size() == 2) {
+            return calculateSlope(last_2.get(0), last_2.get(1));
+        } else{
+            return 0d;
+        }
+
+    }
+
 
     //*******CLASS METHODS***********//
     public static void create(EGVRecord[] egvRecords, long addativeOffset, Context context) {
@@ -347,29 +364,31 @@ public class BgReading extends Model {
         return bgReading;
     }
 
-    public static String slopeArrow() {
+    public static String activeSlopeArrow() {
         double slope = (float) (BgReading.activeSlope() * 60000);
-        return slopeArrow(slope);
+        return slopeToArrowSymbol(slope);
     }
 
-    public static String slopeArrow(double slope) {
-        String arrow;
+    public static String slopeToArrowSymbol(double slope) {
         if (slope <= (-3.5)) {
-            arrow = "\u21ca";
+            return "\u21ca";
         } else if (slope <= (-2)) {
-            arrow = "\u2193";
+            return "\u2193";
         } else if (slope <= (-1)) {
-            arrow = "\u2198";
+            return "\u2198";
         } else if (slope <= (1)) {
-            arrow = "\u2192";
+            return "\u2192";
         } else if (slope <= (2)) {
-            arrow = "\u2197";
+            return "\u2197";
         } else if (slope <= (3.5)) {
-            arrow = "\u2191";
+            return "\u2191";
         } else {
-            arrow = "\u21c8";
+            return "\u21c8";
         }
-        return arrow;
+    }
+
+    public String slopeArrow(){
+        return slopeToArrowSymbol(this.calculated_value_slope*60000);
     }
 
     public String slopeName() {
@@ -539,17 +558,11 @@ public class BgReading extends Model {
 
     public void find_slope() {
         List<BgReading> last_2 = BgReading.latest(2);
+
+        assert last_2.get(0)==this : "Invariant condition not fulfilled: calculating slope and current reading wasn't saved before";
+
         if (last_2.size() == 2) {
-            BgReading second_latest = last_2.get(1);
-            double y1 = calculated_value;
-            double x1 = timestamp;
-            double y2 = second_latest.calculated_value;
-            double x2 = second_latest.timestamp;
-            if(y1 == y2) {
-                calculated_value_slope = 0;
-            } else {
-                calculated_value_slope = (y2 - y1)/(x2 - x1);
-            }
+            calculated_value_slope = calculateSlope(this, last_2.get(1));
             save();
         } else if (last_2.size() == 1) {
             calculated_value_slope = 0;
@@ -558,6 +571,7 @@ public class BgReading extends Model {
             Log.w(TAG, "NO BG? COULDNT FIND SLOPE!");
         }
     }
+
 
     public void find_new_curve() {
         List<BgReading> last_3 = BgReading.latest(3);
