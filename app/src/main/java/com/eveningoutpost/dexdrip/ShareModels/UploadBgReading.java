@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.ShareModels;
 
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,10 +36,9 @@ import retrofit.converter.GsonConverter;
 import retrofit.mime.TypedByteArray;
 
 /**
- * Created by stephenblack on 12/26/14.
+ * Created by stephenblack on 7/31/15.
  */
-public class ShareRest extends Service {
-    private final static String TAG = ShareRest.class.getSimpleName();
+public class UploadBgReading {
     private Context mContext;
     private String login;
     private String password;
@@ -50,31 +48,30 @@ public class ShareRest extends Service {
     private boolean retrying = false;
     private BgReading bg = null;
     OkClient client;
+    private final static String TAG = ShareRest.class.getSimpleName();
+
+
+
+    public UploadBgReading(BgReading bg, Context context) { //todo: implement an interface for what a bg needs to have on it
+        this.client = getOkClient();
+        this.mContext = context;
+        this.prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+        login = prefs.getString("dexcom_account_name", "");
+        password = prefs.getString("dexcom_account_password", "");
+        receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
+        
+    }
 
     public static Gson gson = new GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation()
             .create();
 
     @Override
-    public IBinder onBind(Intent intent) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    @Override
-    public void onCreate() {
-        Log.d(TAG, "Creating service");
-        client = getOkClient();
-        mContext = getApplicationContext();
-        prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-     }
-
-    @Override
     public int onStartCommand (Intent intent,int flags, int startId) {
         retrying = false;
         bg = null;
-        login = prefs.getString("dexcom_account_name", "");
-        password = prefs.getString("dexcom_account_password", "");
-        receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
+
         Log.d(TAG, "Starting service");
 
 
@@ -356,7 +353,7 @@ public class ShareRest extends Service {
 
                 @Override
                 public boolean verify(String hostname, SSLSession session) {
-                        return true;
+                    return true;
                 }
             });
 
