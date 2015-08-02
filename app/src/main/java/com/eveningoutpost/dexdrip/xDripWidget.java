@@ -94,7 +94,7 @@ public class xDripWidget extends AppWidgetProvider {
             List<BgReading> bgReadingList =  BgReading.latest(2);
             if(bgReadingList != null && bgReadingList.size() == 2) {
 
-                views.setTextViewText(R.id.widgetDelta, bgGraphBuilder.unitizedDeltaString(true));
+                views.setTextViewText(R.id.widgetDelta, bgGraphBuilder.unitizedDeltaString(true, true));
             } else {
                 views.setTextViewText(R.id.widgetDelta, "--");
             }

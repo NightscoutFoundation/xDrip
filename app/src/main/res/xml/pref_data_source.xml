@@ -7,8 +7,8 @@
 
         <ListPreference
             android:key="dex_collection_method"
-            android:title="Dexcom Data Collection Method"
-            android:summary="How are you going to receive data from your Dexcom?"
+            android:title="Hardware Data Source"
+            android:summary="How are you going to receive data from your Dexcom/Transmitter?"
             android:entries="@array/DexCollectionMethods"
             android:entryValues="@array/DexCollectionMethodValues"
             android:defaultValue="BluetoothWixel"/>

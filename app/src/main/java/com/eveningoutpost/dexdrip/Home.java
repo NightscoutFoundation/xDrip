@@ -384,7 +384,7 @@ public class Home extends ActivityWithMenu {
                 notificationText.append("\n");
             }
             notificationText.append(
-                    bgGraphBuilder.unitizedDeltaString(true));
+                    bgGraphBuilder.unitizedDeltaString(true, true));
         }
         if(bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
             currentBgValueText.setTextColor(Color.parseColor("#C30909"));

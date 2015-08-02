@@ -10,12 +10,14 @@ import android.text.format.DateFormat;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import lecho.lib.hellocharts.model.Axis;
@@ -327,22 +329,42 @@ public class BgGraphBuilder {
         }
     }
 
-    public String unitizedDeltaString(boolean showUnit) {
+    public String unitizedDeltaString(boolean showUnit, boolean highGranularity) {
+
         List<BgReading> last2 = BgReading.latest(2);
         if(last2.size() < 2 || last2.get(0).timestamp - last2.get(1).timestamp > 20 * 60 * 1000){
             // don't show delta if there are not enough values or the values are more than 20 mintes apart
-            return "--";
+            return "???";
         }
 
         double value = BgReading.currentSlope() * 5*60*1000;
 
-        DecimalFormat df = new DecimalFormat("#");
+        if(Math.abs(value) > 100){
+            // a delta > 100 will not happen with real BG values -> problematic sensor data
+            return "ERR";
+        }
+
+        // TODO: allow localization from os settings once pebble doesn't require english locale
+        DecimalFormat df = new DecimalFormat("#", new DecimalFormatSymbols(Locale.ENGLISH));
         String delta_sign = "";
         if (value > 0) { delta_sign = "+"; }
         if(doMgdl) {
-            df.setMaximumFractionDigits(1);
+
+            if(highGranularity){
+                df.setMaximumFractionDigits(1);
+            } else {
+                df.setMaximumFractionDigits(0);
+            }
+
             return delta_sign + df.format(unitized(value)) +  (showUnit?" mg/dl":"");
         } else {
+
+            if(highGranularity){
+                df.setMaximumFractionDigits(2);
+            } else {
+                df.setMaximumFractionDigits(1);
+            }
+
             df.setMinimumFractionDigits(1);
             df.setMinimumIntegerDigits(1);
             return delta_sign + df.format(unitized(value)) + (showUnit?" mmol/l":"");
