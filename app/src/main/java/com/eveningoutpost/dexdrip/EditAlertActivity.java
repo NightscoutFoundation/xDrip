@@ -62,6 +62,7 @@ public class EditAlertActivity extends ActivityWithMenu {
     private Button buttonTest;
     private Button buttonPreSnooze;
     private CheckBox checkboxAllDay;
+    private CheckBox checkboxVibrate;
 
     private LinearLayout layoutTimeBetween;
     private LinearLayout timeInstructions;
@@ -128,6 +129,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         alertMp3File = (EditText) findViewById(R.id.edit_alert_mp3_file);
 
         checkboxAllDay = (CheckBox) findViewById(R.id.check_alert_time);
+        checkboxVibrate = (CheckBox) findViewById(R.id.check_vibrate);
 
         layoutTimeBetween = (LinearLayout) findViewById(R.id.time_between);
         timeInstructions = (LinearLayout) findViewById(R.id.time_instructions);
@@ -158,6 +160,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             alertMp3File.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
 
             checkboxAllDay.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            checkboxVibrate.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
 
             viewTimeStart.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             viewTimeEnd.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
@@ -188,6 +191,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             // This is a new alert
             above = Boolean.parseBoolean(getExtra(savedInstanceState, "above"));
             checkboxAllDay.setChecked(true);
+            checkboxVibrate.setChecked(true);
             checkboxAlertOverride.setChecked(true);
 
             audioPath = "";
@@ -218,6 +222,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             alertText.setText(at.name);
             alertThreshold.setText(unitsConvert2Disp(doMgdl, at.threshold));
             checkboxAllDay.setChecked(at.all_day);
+            checkboxVibrate.setChecked(at.vibrate);
             checkboxAlertOverride.setChecked(at.override_silent_mode);
             defaultSnooze = at.default_snooze;
             if(defaultSnooze == 0) {
@@ -240,6 +245,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                 alertThreshold.setKeyListener(null);
                 buttonalertMp3.setEnabled(false);
                 checkboxAllDay.setEnabled(false);
+                checkboxVibrate.setEnabled(false);
                 checkboxAlertOverride.setEnabled(false);
                 reraise.setEnabled(false);
             }
@@ -430,13 +436,14 @@ public class EditAlertActivity extends ActivityWithMenu {
                     Toast.makeText(getApplicationContext(), "start time and end time of alert can not be equal",Toast.LENGTH_LONG).show();
                     return;
                 }
+                boolean vibrate = checkboxVibrate.isChecked();
                 boolean overrideSilentMode = checkboxAlertOverride.isChecked();
 
                 String mp3_file = audioPath;
                 if (uuid != null) {
-                    AlertType.update_alert(uuid, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze);
+                    AlertType.update_alert(uuid, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, vibrate);
                 }  else {
-                    AlertType.add_alert(null, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze);
+                    AlertType.add_alert(null, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, vibrate);
                 }
                 Intent returnIntent = new Intent();
                 setResult(RESULT_OK,returnIntent);
@@ -765,9 +772,10 @@ public class EditAlertActivity extends ActivityWithMenu {
             Toast.makeText(getApplicationContext(), "start time and end time of alert can not be equal",Toast.LENGTH_LONG).show();
             return;
         }
+        boolean vibrate = checkboxVibrate.isChecked();
         boolean overrideSilentMode = checkboxAlertOverride.isChecked();
         String mp3_file = audioPath;
-        AlertType.testAlert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, mContext);
+        AlertType.testAlert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, vibrate, mContext);
 
     }
 }
