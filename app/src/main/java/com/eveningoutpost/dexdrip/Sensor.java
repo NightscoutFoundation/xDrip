@@ -40,7 +40,7 @@ public class Sensor extends Model {
         sensor.uuid = UUID.randomUUID().toString();
         sensor.save();
         SensorSendQueue.addToQueue(sensor);
-        Log.w("SENSOR MODEL:", sensor.toString());
+        Log.d("SENSOR MODEL:", sensor.toString());
         return sensor;
     }
 

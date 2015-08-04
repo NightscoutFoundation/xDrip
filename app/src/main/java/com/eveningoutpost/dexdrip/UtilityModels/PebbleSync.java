@@ -60,7 +60,7 @@ public class PebbleSync extends Service {
             stopSelf();
             return START_NOT_STICKY;
         }
-        Log.w(TAG, "STARTING SERVICE");
+        Log.i(TAG, "STARTING SERVICE");
         sendData();
         return START_STICKY;
     }

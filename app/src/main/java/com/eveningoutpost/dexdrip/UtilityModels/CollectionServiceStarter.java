@@ -1,15 +1,11 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import java.io.IOException;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.Services.SyncService;
@@ -87,18 +83,6 @@ public class CollectionServiceStarter {
         }
         startSyncService();
         Log.d(TAG, collection_method);
-
-       // Start logging to logcat
-        if(prefs.getBoolean("store_logs",false)) {
-            String filePath = Environment.getExternalStorageDirectory() + "/xdriplogcat.txt";
-            try {
-                String[] cmd = {"/system/bin/sh", "-c", "ps | grep logcat  || logcat -f " + filePath +
-                        " -v threadtime AlertPlayer:V com.eveningoutpost.dexdrip.Services.WixelReader:V *:E "};
-                Runtime.getRuntime().exec(cmd);
-            } catch (IOException e2) {
-                Log.e(TAG, "running logcat failed, is the device rooted?", e2);
-            }
-        }
     }
 
     public CollectionServiceStarter(Context context) {

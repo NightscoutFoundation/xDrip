@@ -41,16 +41,16 @@ public class TransmitterData extends Model {
         TransmitterData transmitterData = new TransmitterData();
         if (buffer[0] == 0x11 && buffer[1] == 0x00) {
             //this is a dexbridge packet.  Process accordingly.
-            Log.w(TAG, "create Processing a Dexbridge packet");
+            Log.i(TAG, "create Processing a Dexbridge packet");
             ByteBuffer txData = ByteBuffer.allocate(len);
             txData.order(ByteOrder.LITTLE_ENDIAN);
             txData.put(buffer, 0, len);
             transmitterData.raw_data = txData.getInt(2);
             transmitterData.filtered_data = txData.getInt(6);
             transmitterData.sensor_battery_level = txData.get(10);
-            Log.w(TAG, "Created transmitterData record with Raw value of " + transmitterData.raw_data + " and Filtered value of " + transmitterData.filtered_data + " at " + transmitterData.timestamp);
+            Log.i(TAG, "Created transmitterData record with Raw value of " + transmitterData.raw_data + " and Filtered value of " + transmitterData.filtered_data + " at " + transmitterData.timestamp);
         } else { //this is NOT a dexbridge packet.  Process accordingly.
-            Log.w(TAG, "create Processing a BTWixel or IPWixel packet");
+            Log.i(TAG, "create Processing a BTWixel or IPWixel packet");
             StringBuilder data_string = new StringBuilder();
             for (int i = 0; i < len; ++i) { data_string.append((char) buffer[i]); }
             String[] data = data_string.toString().split("\\s+");

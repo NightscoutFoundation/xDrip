@@ -72,7 +72,7 @@ public class AlertList extends ActivityWithMenu {
 
         List<AlertType> alerts = AlertType.getAll(above);
         for (AlertType alert : alerts) {
-            Log.e(TAG, alert.toString());
+            Log.d(TAG, alert.toString());
             feedList.add(createAlertMap(alert));
         }
         return feedList;
@@ -161,10 +161,10 @@ public class AlertList extends ActivityWithMenu {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e(TAG, "onActivityResult called ");
+        Log.d(TAG, "onActivityResult called ");
         if (requestCode == ADD_ALERT || requestCode == EDIT_ALERT) {
             if(resultCode == RESULT_OK) {
-                Log.e(TAG, "onActivityResult called invalidating...");
+                Log.d(TAG, "onActivityResult called invalidating...");
                 FillLists();
             }
             if (resultCode == RESULT_CANCELED) {

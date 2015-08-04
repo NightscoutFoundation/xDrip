@@ -79,7 +79,6 @@ public class User extends Model {
                     @Override
                     public void failure(RetrofitError error) {
                         Response response = error.getResponse();
-                        Log.w("REST CALL ERROR:", "****************");
                         Log.w("REST CALL STATUS:", "" + response.getStatus());
                         Log.w("REST CALL REASON:", response.getReason());
                     }
