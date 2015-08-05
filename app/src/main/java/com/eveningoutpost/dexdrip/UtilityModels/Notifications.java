@@ -339,14 +339,14 @@ public class Notifications extends IntentService {
         NotificationCompat.Builder b = new NotificationCompat.Builder(mContext);
         //b.setOngoing(true);
         b.setCategory(NotificationCompat.CATEGORY_STATUS);
-        String titleString = lastReading == null ? "BG Reading Unavailable" : (lastReading.displayValue(mContext) + " " + BgReading.slopeArrow(lastReading.calculated_value_slope * 60000));
+        String titleString = lastReading == null ? "BG Reading Unavailable" : (lastReading.displayValue(mContext) + " " + lastReading.slopeArrow());
         b.setContentTitle(titleString)
                 .setContentText("xDrip Data collection service is running.")
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setUsesChronometer(false);
         if (lastReading != null) {
             b.setWhen(lastReading.timestamp);
-            String deltaString = "Delta: " + bgGraphBuilder.unitizedDeltaString(lastReading.calculated_value - lastReadings.get(1).calculated_value);
+            String deltaString = "Delta: " + bgGraphBuilder.unitizedDeltaString(true, true);
             b.setContentText(deltaString);
             iconBitmap = new BgSparklineBuilder(mContext)
                     .setHeight(64)
@@ -377,8 +377,10 @@ public class Notifications extends IntentService {
                 NotificationManagerCompat
                         .from(mContext)
                         .notify(ongoingNotificationId, createOngoingNotification(bgGraphBuilder, mContext));
-                iconBitmap.recycle();
-                notifiationBitmap.recycle();
+                if (iconBitmap != null)
+                    iconBitmap.recycle();
+                if (notifiationBitmap != null)
+                    notifiationBitmap.recycle();
             }
         });
     }
@@ -504,11 +506,12 @@ public class Notifications extends IntentService {
         }
     }
 
-    public static void OtherAlert(Context context, String type, String message, int notificatioId, int snooze) {
+    private static void OtherAlert(Context context, String type, String message, int notificatioId, int snooze) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String otherAlertsSound = prefs.getString("other_alerts_sound", "content://settings/system/notification_sound");
         Boolean otherAlertsOverrideSilent = prefs.getBoolean("other_alerts_override_silent", false);
 
+        Log.e(TAG,"OtherAlert called " + type + " " + message);
         UserNotification userNotification = UserNotification.GetNotificationByType(type); //"bg_unclear_readings_alert"
         if ((userNotification == null) || (userNotification.timestamp <= ((new Date().getTime()) - (60000 * snooze)))) {
             if (userNotification != null) {
@@ -520,6 +523,7 @@ public class Notifications extends IntentService {
                     new NotificationCompat.Builder(context)
                             .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                             .setContentTitle(message)
+                            .setContentText(message)
                             .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
             mBuilder.setVibrate(vibratePattern);
             mBuilder.setLights(0xff00ff00, 300, 1000);

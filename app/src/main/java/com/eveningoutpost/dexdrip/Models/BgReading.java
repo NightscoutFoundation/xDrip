@@ -11,12 +11,9 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.Sensor;
-import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
-import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
@@ -29,6 +26,7 @@ import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Table(name = "BgReadings", id = BaseColumns._ID)
@@ -173,6 +171,26 @@ public class BgReading extends Model {
         }
         return 0;
     }
+
+
+    public static double calculateSlope(BgReading current, BgReading last) {
+        if (current.timestamp == last.timestamp || current.calculated_value == last.calculated_value) {
+            return 0;
+        } else {
+            return (last.calculated_value - current.calculated_value) / (last.timestamp - current.timestamp);
+        }
+    }
+
+    public static double currentSlope(){
+        List<BgReading> last_2 = BgReading.latest(2);
+        if (last_2.size() == 2) {
+            return calculateSlope(last_2.get(0), last_2.get(1));
+        } else{
+            return 0d;
+        }
+
+    }
+
 
     //*******CLASS METHODS***********//
     public static void create(EGVRecord[] egvRecords, long addativeOffset, Context context) {
@@ -347,29 +365,31 @@ public class BgReading extends Model {
         return bgReading;
     }
 
-    public static String slopeArrow() {
+    public static String activeSlopeArrow() {
         double slope = (float) (BgReading.activeSlope() * 60000);
-        return slopeArrow(slope);
+        return slopeToArrowSymbol(slope);
     }
 
-    public static String slopeArrow(double slope) {
-        String arrow;
+    public static String slopeToArrowSymbol(double slope) {
         if (slope <= (-3.5)) {
-            arrow = "\u21ca";
+            return "\u21ca";
         } else if (slope <= (-2)) {
-            arrow = "\u2193";
+            return "\u2193";
         } else if (slope <= (-1)) {
-            arrow = "\u2198";
+            return "\u2198";
         } else if (slope <= (1)) {
-            arrow = "\u2192";
+            return "\u2192";
         } else if (slope <= (2)) {
-            arrow = "\u2197";
+            return "\u2197";
         } else if (slope <= (3.5)) {
-            arrow = "\u2191";
+            return "\u2191";
         } else {
-            arrow = "\u21c8";
+            return "\u21c8";
         }
-        return arrow;
+    }
+
+    public String slopeArrow(){
+        return slopeToArrowSymbol(this.calculated_value_slope*60000);
     }
 
     public String slopeName() {
@@ -539,17 +559,11 @@ public class BgReading extends Model {
 
     public void find_slope() {
         List<BgReading> last_2 = BgReading.latest(2);
+
+        assert last_2.get(0)==this : "Invariant condition not fulfilled: calculating slope and current reading wasn't saved before";
+
         if (last_2.size() == 2) {
-            BgReading second_latest = last_2.get(1);
-            double y1 = calculated_value;
-            double x1 = timestamp;
-            double y2 = second_latest.calculated_value;
-            double x2 = second_latest.timestamp;
-            if(y1 == y2) {
-                calculated_value_slope = 0;
-            } else {
-                calculated_value_slope = (y2 - y1)/(x2 - x1);
-            }
+            calculated_value_slope = calculateSlope(this, last_2.get(1));
             save();
         } else if (last_2.size() == 1) {
             calculated_value_slope = 0;
@@ -558,6 +572,7 @@ public class BgReading extends Model {
             Log.w(TAG, "NO BG? COULDNT FIND SLOPE!");
         }
     }
+
 
     public void find_new_curve() {
         List<BgReading> last_3 = BgReading.latest(3);
@@ -896,12 +911,14 @@ public class BgReading extends Model {
      * returns the time (in ms) that the state is not clear and no alerts should work
      * The base of the algorithm is that any period can be bad or not. bgReading.Unclear() tells that.
      * a non clear bgReading means MAX_INFLUANCE time after it we are in a bad position
-     * Since this code is based on hurstics, and since times are not acurate, boundery issues can be ignored.
+     * Since this code is based on heuristics, and since times are not accurate, boundary issues can be ignored.
      *
      * interstingTime is the period to check. That is if the last period is bad, we want to know how long does it go bad...
      * */
 
-    static final int MAX_INFLUANCE = 30 * 60000; // A bad point means data is untrusted for 30 minutes.
+    // The extra 120,000 is to allow the packet to be delayed for some time and still be counted in that group
+    // Please don't use for MAX_INFLUANCE a number that is complete multiply of 5 minutes (300,000) 
+    static final int MAX_INFLUANCE = 30 * 60000 - 120000; // A bad point means data is untrusted for 30 minutes.
     private static Long getUnclearTimeHelper(List<BgReading> latest, Long interstingTime, final Long now) {
 
         // The code ignores missing points (that is they some times are treated as good and some times as bad.
@@ -916,7 +933,7 @@ public class BgReading extends Model {
                 // Some readings are missing, we can stop checking
                 break;
             }
-            if(bgReading.timestamp <= now - MAX_INFLUANCE && UnclearTime == 0) {
+            if(bgReading.timestamp <= now - MAX_INFLUANCE  && UnclearTime == 0) {
                 Log.e(TAG_ALERT, "We did not have a problematic reading for MAX_INFLUANCE time, so now all is well");
                 return 0l;
 
@@ -934,7 +951,11 @@ public class BgReading extends Model {
                 } else {
                     // we have some good period, is it good enough?
                     if(LastGoodTime - bgReading.timestamp >= MAX_INFLUANCE) {
-                        Log.e(TAG_ALERT, "We have a good period from " + bgReading.timestamp + " to " + LastGoodTime + "returning " + (now - UnclearTime +60000));
+                        // Here UnclearTime should be already set, otherwise we will return a toob big value
+                        if (UnclearTime ==0) {
+                            Log.wtf(TAG_ALERT, "ERROR - UnclearTime must not be 0 here !!!");
+                        }
+                        Log.e(TAG_ALERT, "We have a good period from " + bgReading.timestamp + " to " + LastGoodTime + "returning " + (now - UnclearTime +5 *60000));
                         return now - UnclearTime + 5 *60000;
                     }
                 }
@@ -981,16 +1002,18 @@ public class BgReading extends Model {
 
     // the input of this function is a string. each char can be g(=good) or b(=bad) or s(=skip, point unmissed).
     static List<BgReading> createlatestTest(String input, Long now) {
+        Random randomGenerator = new Random();
         List<BgReading> out = new LinkedList<BgReading> ();
         char[] chars=  input.toCharArray();
         for(int i=0; i < chars.length; i++) {
             BgReading bg = new BgReading();
-            bg.timestamp = now - i * 5 * 60000;
+            int rand = randomGenerator.nextInt(20000) - 10000;
+            bg.timestamp = now - i * 5 * 60000 + rand;
             bg.raw_data = 150;
             if(chars[i] == 'g') {
                 bg.filtered_data = 151;
             } else if (chars[i] == 'b') {
-                bg.filtered_data = 130;
+                bg.filtered_data = 110;
             } else {
                 continue;
             }
@@ -1004,10 +1027,10 @@ public class BgReading extends Model {
         final Long now = new Date().getTime();
         List<BgReading> readings = createlatestTest(input, now);
         Long result = getUnclearTimeHelper(readings, interstingTime * 60000, now);
-        if (result == expectedResult * 60000) {
+        if (result >= expectedResult * 60000 - 20000 && result <= expectedResult * 60000+20000) {
             Log.e(TAG_ALERT, "Test passed");
         } else {
-            Log.e(TAG_ALERT, "Test failed expectedResult = " + expectedResult + " result = "+ result /5 / 60000);
+            Log.e(TAG_ALERT, "Test failed expectedResult = " + expectedResult + " result = "+ result / 60000.0);
         }
 
     }

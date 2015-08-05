@@ -97,7 +97,10 @@ public class BgSendQueue extends Model {
                 Log.i("SENSOR QUEUE:", "Broadcast data");
                 final Bundle bundle = new Bundle();
                 bundle.putDouble(Intents.EXTRA_BG_ESTIMATE, bgReading.calculated_value);
-                bundle.putDouble(Intents.EXTRA_BG_SLOPE, bgReading.calculated_value_slope);
+
+                //TODO: change back to bgReading.calculated_value_slope if it will also get calculated for Share data
+                // bundle.putDouble(Intents.EXTRA_BG_SLOPE, bgReading.calculated_value_slope);
+                bundle.putDouble(Intents.EXTRA_BG_SLOPE, BgReading.currentSlope());
                 if (bgReading.hide_slope) {
                     bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, "9");
                 } else {

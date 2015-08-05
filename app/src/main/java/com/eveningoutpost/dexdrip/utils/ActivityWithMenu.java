@@ -20,9 +20,6 @@ import java.util.Set;
  * Created by stephenblack on 6/8/15.
  */
 public abstract class ActivityWithMenu extends FragmentActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-    private NavDrawerBuilder navDrawerBuilder;
-    private List<Intent> intent_list;
-    private List<String> menu_option_list;
     private int menu_position;
     private String menu_name;
     private NavigationDrawerFragment mNavigationDrawerFragment;
@@ -36,9 +33,8 @@ public abstract class ActivityWithMenu extends FragmentActivity implements Navig
     protected void onResume(){
         super.onResume();
         menu_name = getMenuName();
-        navDrawerBuilder = new NavDrawerBuilder(getApplicationContext());
-        menu_option_list = navDrawerBuilder.nav_drawer_options;
-        intent_list = navDrawerBuilder.nav_drawer_intents;
+        NavDrawerBuilder navDrawerBuilder = new NavDrawerBuilder(getApplicationContext());
+        List<String> menu_option_list = navDrawerBuilder.nav_drawer_options;
         menu_position = menu_option_list.indexOf(menu_name);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -47,6 +43,9 @@ public abstract class ActivityWithMenu extends FragmentActivity implements Navig
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
+        NavDrawerBuilder navDrawerBuilder = new NavDrawerBuilder(getApplicationContext());
+        List<String> menu_option_list = navDrawerBuilder.nav_drawer_options;
+        List<Intent> intent_list = navDrawerBuilder.nav_drawer_intents;
         if (position != menu_position) {
             startActivity(intent_list.get(position));
             //do not close activity if it is the Launcher or "Home".

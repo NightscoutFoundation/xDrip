@@ -1,7 +1,5 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import java.io.IOException;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,11 +7,12 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
+
+import java.io.IOException;
 
 /**
  * Created by stephenblack on 12/22/14.
@@ -31,6 +30,8 @@ public class CollectionServiceStarter {
         }
         return false;
     }
+    public static boolean isBTWixel(String collection_method) { return collection_method.equals("BluetoothWixel"); }
+
     public static boolean isDexbridgeWixel(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
@@ -39,6 +40,8 @@ public class CollectionServiceStarter {
         }
         return false;
     }
+    public static boolean isDexbridgeWixel(String collection_method) { return collection_method.equals("DexbridgeWixel"); }
+
     public static boolean isBTShare(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
@@ -47,6 +50,8 @@ public class CollectionServiceStarter {
         }
         return false;
     }
+    public static boolean isBTShare(String collection_method) { return collection_method.equals("DexcomShare"); }
+
     public static boolean isWifiWixel(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
@@ -55,28 +60,28 @@ public class CollectionServiceStarter {
         }
         return false;
     }
+    public static boolean isWifiWixel(String collection_method) { return collection_method.equals("WifiWixel"); }
+
     public static void newStart(Context context) {
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
         collectionServiceStarter.start(context);
     }
 
-    public void start(Context context) {
+    public void start(Context context, String collection_method) {
         mContext = context;
-
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
 
-        if(isBTWixel(context)||isDexbridgeWixel(context)) {
+        if(isBTWixel(collection_method)||isDexbridgeWixel(collection_method)) {
             Log.d("DexDrip", "Starting bt wixel collector");
             stopWifWixelThread();
             stopBtShareService();
             startBtWixelService();
-        } else if(isWifiWixel(context)){
+        } else if(isWifiWixel(collection_method)){
             Log.d("DexDrip", "Starting wifi wixel collector");
             stopBtWixelService();
             stopBtShareService();
             startWifWixelThread();
-        } else if(isBTShare(context)) {
+        } else if(isBTShare(collection_method)) {
             Log.d("DexDrip", "Starting bt share collector");
             stopBtWixelService();
             stopWifWixelThread();
@@ -88,7 +93,7 @@ public class CollectionServiceStarter {
         startSyncService();
         Log.d(TAG, collection_method);
 
-       // Start logging to logcat
+        // Start logging to logcat
         if(prefs.getBoolean("store_logs",false)) {
             String filePath = Environment.getExternalStorageDirectory() + "/xdriplogcat.txt";
             try {
@@ -99,6 +104,14 @@ public class CollectionServiceStarter {
                 Log.e(TAG, "running logcat failed, is the device rooted?", e2);
             }
         }
+
+    }
+
+    public void start(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
+
+        start(context, collection_method);
     }
 
     public CollectionServiceStarter(Context context) {
@@ -111,6 +124,14 @@ public class CollectionServiceStarter {
         collectionServiceStarter.stopBtWixelService();
         collectionServiceStarter.stopWifWixelThread();
         collectionServiceStarter.start(context);
+    }
+
+    public static void restartCollectionService(Context context, String collection_method) {
+        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
+        collectionServiceStarter.stopBtShareService();
+        collectionServiceStarter.stopBtWixelService();
+        collectionServiceStarter.stopWifWixelThread();
+        collectionServiceStarter.start(context, collection_method);
     }
 
     private void startBtWixelService() {
