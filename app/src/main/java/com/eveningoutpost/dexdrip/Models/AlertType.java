@@ -241,7 +241,8 @@ public class AlertType extends Model {
             int start_time_minutes,
             int end_time_minutes,
             boolean override_silent_mode,
-            int snooze) {
+            int snooze,
+            boolean vibrate) {
         AlertType at = new AlertType();
         at.name = name;
         at.above = above;
@@ -255,6 +256,7 @@ public class AlertType extends Model {
         at.end_time_minutes = end_time_minutes;
         at.override_silent_mode = override_silent_mode;
         at.default_snooze = snooze;
+        at.vibrate = vibrate;
         at.save();
     }
 
@@ -269,7 +271,8 @@ public class AlertType extends Model {
             int start_time_minutes,
             int end_time_minutes,
             boolean override_silent_mode,
-            int snooze) {
+            int snooze,
+            boolean vibrate) {
 
         if(uuid.equals(LOW_ALERT_55)) {
             // This alert can not be removed/updated
@@ -289,6 +292,7 @@ public class AlertType extends Model {
         at.end_time_minutes = end_time_minutes;
         at.override_silent_mode = override_silent_mode;
         at.default_snooze = snooze;
+        at.vibrate = vibrate;
         at.save();
     }
     public static void remove_alert(String uuid) {
@@ -348,7 +352,7 @@ public class AlertType extends Model {
     // This alert will not be editable/removable.
     public static void CreateStaticAlerts() {
         if(get_alert(LOW_ALERT_55) == null) {
-            add_alert(LOW_ALERT_55, "low alert (unchangable)", false, 55, true, 1, null, 0, 0, true, 20);
+            add_alert(LOW_ALERT_55, "low alert (unchangable)", false, 55, true, 1, null, 0, 0, true, 20, true);
         }
     }
 
@@ -356,9 +360,9 @@ public class AlertType extends Model {
     public static void testAll(Context context) {
 
         remove_all();
-        add_alert(null, "high alert 1", true, 180, true, 10, null, 0, 0, true, 20);
-        add_alert(null, "high alert 2", true, 200, true, 10, null, 0, 0, true, 20);
-        add_alert(null, "high alert 3", true, 220, true, 10, null, 0, 0, true, 20);
+        add_alert(null, "high alert 1", true, 180, true, 10, null, 0, 0, true, 20, true);
+        add_alert(null, "high alert 2", true, 200, true, 10, null, 0, 0, true, 20, true);
+        add_alert(null, "high alert 3", true, 220, true, 10, null, 0, 0, true, 20, true);
         print_all();
         AlertType a1 = get_highest_active_alert(context, 190);
         Log.e(TAG, "a1 = " + a1.toString());
@@ -369,8 +373,8 @@ public class AlertType extends Model {
         AlertType a3 = get_alert(a1.uuid);
         Log.e(TAG, "a1 == a3 ? need to see true " + (a1==a3) + a1 + " " + a3);
 
-        add_alert(null, "low alert 1", false, 80, true, 10, null, 0, 0, true, 20);
-        add_alert(null, "low alert 2", false, 60, true, 10, null, 0, 0, true, 20);
+        add_alert(null, "low alert 1", false, 80, true, 10, null, 0, 0, true, 20, true);
+        add_alert(null, "low alert 2", false, 60, true, 10, null, 0, 0, true, 20, true);
 
         AlertType al1 = get_highest_active_alert(context, 90);
         Log.e(TAG, "al1 should be null  " + al1);
@@ -451,6 +455,7 @@ public class AlertType extends Model {
         int end_time_minutes,
         boolean override_silent_mode,
         int snooze,
+        boolean vibrate,
         Context context) {
             AlertType at = new AlertType();
             at.name = name;
@@ -465,6 +470,7 @@ public class AlertType extends Model {
             at.end_time_minutes = end_time_minutes;
             at.override_silent_mode = override_silent_mode;
             at.default_snooze = snooze;
+            at.vibrate = vibrate;
             AlertPlayer.getPlayer().startAlert(context, false, at, "TEST");
     }
 

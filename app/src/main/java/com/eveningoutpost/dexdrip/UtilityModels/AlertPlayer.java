@@ -256,7 +256,7 @@ public class AlertPlayer {
                 }
             }
         }
-        if (profile != ALERT_PROFILE_SILENT ) {
+        if (profile != ALERT_PROFILE_SILENT && alert.vibrate) {
             builder.setVibrate(Notifications.vibratePattern);
         }
         NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);

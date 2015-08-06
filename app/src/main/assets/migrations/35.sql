@@ -1,0 +1,1 @@
+UPDATE alerttype SET vibrate=1
