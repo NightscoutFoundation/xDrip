@@ -103,6 +103,8 @@ dependencies {
     compile 'io.reactivex:rxjava:1.0.0'
     compile 'com.github.lecho:hellocharts-android:v1.5.5'
 
+    compile 'com.google.guava:guava:18.0'
+
     compile('com.github.nightscout:android-uploader:CORE_FOR_XDRIP') {
         transitive = false;
     }

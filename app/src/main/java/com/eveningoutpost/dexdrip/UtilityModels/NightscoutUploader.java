@@ -6,16 +6,19 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.BatteryManager;
 import android.preference.PreferenceManager;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.google.common.hash.Hashing;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.WriteConcern;
+
+import net.tribe7.common.base.Charsets;
 
 import org.apache.http.Header;
 import org.apache.http.client.ResponseHandler;
@@ -30,7 +33,6 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONObject;
 
 import java.net.URI;
-import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -151,15 +153,7 @@ public class NightscoutUploader {
                     if (secret == null || secret.isEmpty()) {
                         throw new Exception("Starting with API v1, a pass phase is required");
                     } else {
-                        MessageDigest digest = MessageDigest.getInstance("SHA-1");
-                        byte[] bytes = secret.getBytes("UTF-8");
-                        digest.update(bytes, 0, bytes.length);
-                        bytes = digest.digest();
-                        StringBuilder sb = new StringBuilder(bytes.length * 2);
-                        for (byte b: bytes) {
-                            sb.append(String.format("%02x", b & 0xff));
-                        }
-                        String token = sb.toString();
+                        String token =  Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
                         apiSecretHeader = new BasicHeader("api-secret", token);
                     }
                 }

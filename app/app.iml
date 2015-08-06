@@ -95,6 +95,7 @@
     <orderEntry type="library" exported="" name="core-3.1.0" level="project" />
     <orderEntry type="library" exported="" name="rxjava-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="crashlytics-2.5.0" level="project" />
+    <orderEntry type="library" exported="" name="guava-18.0" level="project" />
     <orderEntry type="library" exported="" name="mongo-java-driver-2.10.1" level="project" />
     <orderEntry type="library" exported="" name="seeds-functional-16.0.1" level="project" />
     <orderEntry type="library" exported="" name="seeds-strings-16.0.1" level="project" />
