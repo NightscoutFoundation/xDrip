@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
@@ -237,7 +237,7 @@ public class Calibration extends Model {
     public static void create(CalRecord[] calRecords, Context context) { create(calRecords, context, false, 0); }
     public static void create(CalRecord[] calRecords, Context context, boolean override, long addativeOffset) {
         //TODO: Change calibration.last and other queries to order calibrations by timestamp rather than ID
-        Log.w("CALIBRATION-CHECK-IN: ", "Creating Calibration Record");
+        Log.i("CALIBRATION-CHECK-IN: ", "Creating Calibration Record");
         Sensor sensor = Sensor.currentSensor();
         CalRecord firstCalRecord = calRecords[0];
         CalRecord secondCalRecord = calRecords[0];
@@ -493,7 +493,7 @@ public class Calibration extends Model {
         double lastTimeStarted =   Calibration.last().sensor_age_at_time_of_estimation;
         double time_percentage = Math.min(((sensor_age_at_time_of_estimation - firstTimeStarted) / (lastTimeStarted - firstTimeStarted)) / (.85), 1);
         time_percentage = (time_percentage + .01);
-        Log.w(TAG, "CALIBRATIONS TIME PERCENTAGE WEIGHT: " + time_percentage);
+        Log.i(TAG, "CALIBRATIONS TIME PERCENTAGE WEIGHT: " + time_percentage);
         return Math.max((((((slope_confidence + sensor_confidence) * (time_percentage))) / 2) * 100), 1);
     }
     public static void adjustRecentBgReadings() {// This just adjust the last 30 bg readings transition from one calibration point to the next

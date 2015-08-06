@@ -10,7 +10,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.EditAlertActivity;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
@@ -43,7 +43,7 @@ public class AlertPlayer {
 
     public static AlertPlayer getPlayer() {
         if(singletone == null) {
-            Log.e(TAG,"getPlayer: Creating a new AlertPlayer");
+            Log.i(TAG,"getPlayer: Creating a new AlertPlayer");
             singletone = new AlertPlayer();
         } else {
             Log.i(TAG,"getPlayer: Using existing AlertPlayer");
@@ -52,9 +52,9 @@ public class AlertPlayer {
     }
 
     public synchronized  void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue )  {
-        Log.e(TAG, "startAlert called, Threadid " + Thread.currentThread().getId());
+        Log.d(TAG, "startAlert called, Threadid " + Thread.currentThread().getId());
         if (trendingToAlertEnd) {
-            Log.e(TAG,"startAlert: This alert is trending to it's end will not do anything");
+            Log.d(TAG,"startAlert: This alert is trending to it's end will not do anything");
             return;
         }
 
@@ -67,7 +67,7 @@ public class AlertPlayer {
 
     public synchronized void stopAlert(Context ctx, boolean ClearData, boolean clearIfSnoozeFinished) {
 
-        Log.e(TAG, "stopAlert: stop called ClearData " + ClearData + "  ThreadID " + Thread.currentThread().getId());
+        Log.d(TAG, "stopAlert: stop called ClearData " + ClearData + "  ThreadID " + Thread.currentThread().getId());
         if (ClearData) {
             ActiveBgAlert.ClearData();
         }
@@ -83,7 +83,7 @@ public class AlertPlayer {
     }
 
     public synchronized  void Snooze(Context ctx, int repeatTime) {
-        Log.e(TAG, "Snooze called repeatTime = " + repeatTime);
+        Log.i(TAG, "Snooze called repeatTime = " + repeatTime);
         stopAlert(ctx, false, false);
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
         if (activeBgAlert  == null) {
@@ -94,12 +94,12 @@ public class AlertPlayer {
     }
 
     public synchronized  void PreSnooze(Context ctx, String uuid, int repeatTime) {
-        Log.e(TAG, "PreSnooze called repeatTime = "+ repeatTime);
+        Log.i(TAG, "PreSnooze called repeatTime = "+ repeatTime);
         stopAlert(ctx, true, false);
         ActiveBgAlert.Create(uuid, true, new Date().getTime() + repeatTime * 60000 );
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
         if (activeBgAlert  == null) {
-            Log.wtf(TAG, "Just created the allert, where did it go...");
+            Log.wtf(TAG, "Just created the alert, where did it go...");
             return;
         }
         activeBgAlert.snooze(repeatTime);
@@ -109,7 +109,7 @@ public class AlertPlayer {
     public void ClockTick(Context ctx, boolean trendingToAlertEnd, String bgValue)
     {
         if (trendingToAlertEnd) {
-            Log.e(TAG,"ClockTick: This alert is trending to it's end will not do anything");
+            Log.d(TAG,"ClockTick: This alert is trending to it's end will not do anything");
             return;
         }
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
@@ -127,22 +127,22 @@ public class AlertPlayer {
                 ActiveBgAlert.ClearData();
                 return;
             }
-            Log.e(TAG,"ClockTick: Playing the alert again");
+            Log.d(TAG,"ClockTick: Playing the alert again");
             Vibrate(ctx, alert, bgValue, alert.override_silent_mode, timeFromStartPlaying);
         }
 
     }
 
     private void PlayFile(Context ctx, String FileName, float VolumeFrac) {
-        Log.e(TAG, "PlayFile: called FileName = " + FileName);
+        Log.i(TAG, "PlayFile: called FileName = " + FileName);
         if(mediaPlayer != null) {
-            Log.e(TAG, "ERROR, PlayFile:going to leak a mediaplayer !!!");
+            Log.i(TAG, "ERROR, PlayFile:going to leak a mediaplayer !!!");
         }
         if(FileName != null && FileName.length() > 0) {
             mediaPlayer = MediaPlayer.create(ctx, Uri.parse(FileName), null);
         }
         if(mediaPlayer == null) {
-            Log.w(TAG, "PlayFile: Creating mediaplayer with file " + FileName + " failed. using default alarm");
+            Log.i(TAG, "PlayFile: Creating mediaplayer with file " + FileName + " failed. using default alarm");
             mediaPlayer = MediaPlayer.create(ctx, R.raw.default_alert);
         }
         if(mediaPlayer != null) {
@@ -156,7 +156,7 @@ public class AlertPlayer {
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    Log.e(TAG, "PlayFile: onCompletion called (finished playing) ");
+                    Log.i(TAG, "PlayFile: onCompletion called (finished playing) ");
                     AudioManager manager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
                     int currentVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
                     if(volumeForThisAlert == currentVolume) {
@@ -165,7 +165,7 @@ public class AlertPlayer {
                     }
                 }
             });
-            Log.e(TAG, "PlayFile: calling mediaPlayer.start() ");
+            Log.i(TAG, "PlayFile: calling mediaPlayer.start() ");
             mediaPlayer.start();
         } else {
             // TODO, what should we do here???
@@ -186,23 +186,23 @@ public class AlertPlayer {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         String profile = prefs.getString("bg_alert_profile", "ascending");
         if(profile.equals("High")) {
-            Log.w(TAG, "getAlertProfile returning ALERT_PROFILE_HIGH");
+            Log.i(TAG, "getAlertProfile returning ALERT_PROFILE_HIGH");
             return ALERT_PROFILE_HIGH;
         }
         if(profile.equals("ascending")) {
-            Log.w(TAG, "getAlertProfile returning ALERT_PROFILE_ASCENDING");
+            Log.i(TAG, "getAlertProfile returning ALERT_PROFILE_ASCENDING");
             return ALERT_PROFILE_ASCENDING;
         }
         if(profile.equals("medium")) {
-            Log.w(TAG, "getAlertProfile returning ALERT_PROFILE_MEDIUM");
+            Log.i(TAG, "getAlertProfile returning ALERT_PROFILE_MEDIUM");
             return ALERT_PROFILE_MEDIUM;
         }
         if(profile.equals("vibrate only")) {
-            Log.w(TAG, "getAlertProfile returning ALERT_PROFILE_VIBRATE_ONLY");
+            Log.i(TAG, "getAlertProfile returning ALERT_PROFILE_VIBRATE_ONLY");
             return ALERT_PROFILE_VIBRATE_ONLY;
         }
         if(profile.equals("Silent")) {
-            Log.w(TAG, "getAlertProfile returning ALERT_PROFILE_SILENT");
+            Log.i(TAG, "getAlertProfile returning ALERT_PROFILE_SILENT");
             return ALERT_PROFILE_SILENT;
         }
         Log.wtf(TAG, "getAlertProfile unknown value " + profile + " ALERT_PROFILE_ASCENDING");
@@ -211,8 +211,8 @@ public class AlertPlayer {
     }
 
     private void Vibrate(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, int timeFromStartPlaying) {
-        Log.e(TAG, "Vibrate called timeFromStartPlaying = " + timeFromStartPlaying);
-        Log.e("ALARM", "setting vibrate alarm");
+        Log.d(TAG, "Vibrate called timeFromStartPlaying = " + timeFromStartPlaying);
+        Log.d("ALARM", "setting vibrate alarm");
         int profile = getAlertProfile(ctx);
         if(alert.uuid.equals(AlertType.LOW_ALERT_55)) {
             // boost alerts...
@@ -245,7 +245,7 @@ public class AlertPlayer {
                 if(profile == ALERT_PROFILE_MEDIUM) {
                     volumeFrac = (float)0.7;
                 }
-                Log.e(TAG, "Vibrate volumeFrac = " + volumeFrac);
+                Log.d(TAG, "Vibrate volumeFrac = " + volumeFrac);
                 boolean isRingTone = EditAlertActivity.isPathRingtone(ctx, alert.mp3_file);
                 if(isRingTone && !overrideSilent) {
                         builder.setSound(Uri.parse(alert.mp3_file));

@@ -5,12 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 
 
@@ -64,7 +64,7 @@ public class AddCalibration extends Activity implements NavigationDrawerFragment
                         value.setError("Calibration Can Not be blank");
                     }
                 } else {
-                    Log.w("CALERROR", "ERROR");
+                    Log.w("CALERROR", "Sensor is not active, cannot calibrate");
                 }
             }
         });

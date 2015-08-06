@@ -1,20 +1,16 @@
 package com.eveningoutpost.dexdrip.utils;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.NavDrawerBuilder;
 import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
 import com.eveningoutpost.dexdrip.R;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by stephenblack on 6/8/15.

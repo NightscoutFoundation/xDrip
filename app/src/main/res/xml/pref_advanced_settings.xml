@@ -30,5 +30,13 @@
             android:title="Store logs for troubleshooting"
             android:summary="Only enable if you are having trouble with the app."
             android:defaultValue="false" />
+        <Preference
+            android:title="View Recent Errors/Warnings"
+            android:key="recent_errors">
+            <intent
+                android:action="android.intent.action.MAIN"
+                android:targetPackage="com.eveningoutpost.dexdrip"
+                android:targetClass="com.eveningoutpost.dexdrip.ErrorsActivity"/>
+        </Preference>
     </PreferenceCategory>
 </PreferenceScreen>
