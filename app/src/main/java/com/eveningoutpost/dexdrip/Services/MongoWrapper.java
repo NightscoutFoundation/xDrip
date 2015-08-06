@@ -1,5 +1,5 @@
 package com.eveningoutpost.dexdrip.Services;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;

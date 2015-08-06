@@ -8,7 +8,7 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;

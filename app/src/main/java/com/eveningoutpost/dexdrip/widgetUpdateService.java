@@ -12,7 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.ReadDataShare;
 import com.eveningoutpost.dexdrip.Models.BgReading;

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.view.View;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;

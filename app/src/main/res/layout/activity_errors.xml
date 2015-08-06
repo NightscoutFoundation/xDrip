@@ -12,17 +12,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Low"
-            android:id="@+id/lowSeverityCheckBox"/>
+            android:id="@+id/lowSeverityCheckBox"
+            android:checked="false"/>
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Mid"
-            android:id="@+id/midSeverityCheckbox"/>
+            android:id="@+id/midSeverityCheckbox"
+            android:checked="true"/>
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="High"
-            android:id="@+id/highSeverityCheckbox"/>
+            android:id="@+id/highSeverityCheckbox"
+            android:checked="true"/>
     </LinearLayout>
 
     <ListView

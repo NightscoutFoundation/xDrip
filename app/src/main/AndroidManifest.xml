@@ -191,8 +191,11 @@
 
         <activity
             android:name=".AlertList"
-            android:label="@string/title_activity_alert_list" >
-        </activity>
+            android:label="@string/title_activity_alert_list" />
+
+        <activity
+            android:name=".ErrorsActivity"
+            android:label="Error List" />
 
         <service
             android:name=".Services.SnoozeOnNotificationDismissService"

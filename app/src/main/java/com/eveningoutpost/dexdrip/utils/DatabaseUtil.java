@@ -4,7 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.format.DateFormat;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.widget.Toast;
 
 import com.activeandroid.Configuration;

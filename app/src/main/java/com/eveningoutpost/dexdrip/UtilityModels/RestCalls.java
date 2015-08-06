@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.Interfaces.BgReadingInterface;
 import com.eveningoutpost.dexdrip.Interfaces.CalibrationInterface;

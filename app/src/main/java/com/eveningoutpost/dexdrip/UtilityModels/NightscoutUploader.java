@@ -6,7 +6,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.BatteryManager;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -111,7 +111,6 @@ public class NightscoutUploader {
                     doRESTUploadTo(URI.create(baseURI), glucoseDataSets, meterRecords, calRecords);
                 } catch (Exception e) {
                     Log.e(TAG, "Unable to do REST API Upload " + e.getMessage());
-                    Log.e(TAG, "Unable to do REST API Upload", e.getCause());
                     return false;
                 }
             }
@@ -425,7 +424,6 @@ public class NightscoutUploader {
 
                     } catch (Exception e) {
                         Log.e(TAG, "Unable to upload data to mongo " + e.getMessage());
-                        Log.e(TAG, "Unable to upload data to mongo", e.getCause());
                     } finally {
                         if(client != null) { client.close(); }
                     }

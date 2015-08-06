@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 /**
  * Created by stephenblack on 12/25/14.

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import android.os.AsyncTask;
 import android.provider.BaseColumns;
 
 import com.activeandroid.Model;
@@ -41,6 +42,7 @@ public class UserError extends Model {
         this.message = message;
         this.timestamp = new Date().getTime();
         this.save();
+        cleanup();
     }
 
     public UserError(String shortError, String message) {
@@ -56,9 +58,7 @@ public class UserError extends Model {
     }
 
     public static void cleanup() {
-        for(UserError userError : deletable()) {
-            userError.delete();
-        }
+       new Cleanup().execute(deletable());
     }
 
     public static List<UserError> all() {
@@ -97,6 +97,20 @@ public class UserError extends Model {
                 .execute();
     }
 
+    private static class Cleanup extends AsyncTask<List<UserError>, Integer, Boolean> {
+        @Override
+        protected Boolean doInBackground(List<UserError>... errors) {
+            try {
+                for(UserError userError : errors[0]) {
+                    userError.delete();
+                }
+                return true;
+            } catch(Exception e) {
+                return false;
+            }
+        }
+    }
+
     public static List<UserError> bySeverity(int level) {
         return bySeverity(new int[]{level});
     }
@@ -123,12 +137,22 @@ public class UserError extends Model {
             android.util.Log.w(a, b);
             UserError.UserErrorLow(a, b);
         }
-
+        public static void w(String a, String b, Exception e){
+            android.util.Log.w(a, b, e);
+            UserError.UserErrorLow(a, b + "\n" + e.toString());
+        }
         public static void wtf(String a, String b){
             android.util.Log.wtf(a, b);
             UserError.UserErrorHigh(a, b);
         }
-
+        public static void wtf(String a, String b, Exception e){
+            android.util.Log.wtf(a, b, e);
+            UserError.UserErrorHigh(a, b + "\n" + e.toString());
+        }
+        public static void wtf(String a, Exception e){
+            android.util.Log.wtf(a, e);
+            UserError.UserErrorHigh(a, e.toString());
+        }
         public static void d(String a, String b){
             android.util.Log.d(a, b);
         }

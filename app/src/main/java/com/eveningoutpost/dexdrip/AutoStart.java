@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 
