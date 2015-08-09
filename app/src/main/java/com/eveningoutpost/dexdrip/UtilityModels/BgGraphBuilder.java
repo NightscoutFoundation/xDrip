@@ -93,6 +93,8 @@ public class BgGraphBuilder {
     public List<Line> defaultLines() {
         addBgReadingValues();
         List<Line> lines = new ArrayList<Line>();
+        Line[] calib = calibrationValuesLine();
+        lines.add(calib[0]); // white circle of calib in background
         lines.add(minShowLine());
         lines.add(maxShowLine());
         lines.add(highLine());
@@ -101,9 +103,7 @@ public class BgGraphBuilder {
         lines.add(lowValuesLine());
         lines.add(highValuesLine());
         lines.add(rawInterpretedLine());
-        Line[] calib = calibrationValuesLine();
-        for (Line line : calib)
-            lines.add(line);
+        lines.add(calib[1]); // red dot of calib in foreground
         return lines;
     }
 
