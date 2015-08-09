@@ -17,7 +17,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,6 +31,7 @@ import android.widget.Toast;
 
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.AndroidBarcode;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
@@ -165,7 +165,9 @@ public class BluetoothScan extends ListActivityWithMenu {
             bluetooth_adapter.startLeScan(mLeScanCallback);
         } else {
             is_scanning = false;
-            bluetooth_adapter.stopLeScan(mLeScanCallback);
+            if(bluetooth_adapter != null && bluetooth_adapter.isEnabled()) {
+                bluetooth_adapter.stopLeScan(mLeScanCallback);
+            }
         }
         invalidateOptionsMenu();
     }
@@ -219,7 +221,9 @@ public class BluetoothScan extends ListActivityWithMenu {
                     @Override
                     public void run() {
                         is_scanning = false;
-                        lollipopScanner.stopScan(mScanCallback);
+                        if(bluetooth_adapter != null && bluetooth_adapter.isEnabled()) {
+                            lollipopScanner.stopScan(mScanCallback);
+                        }
                         invalidateOptionsMenu();
                     }
                 }, SCAN_PERIOD);
@@ -237,7 +241,9 @@ public class BluetoothScan extends ListActivityWithMenu {
             }
         } else {
             is_scanning = false;
-            lollipopScanner.stopScan(mScanCallback);
+            if(bluetooth_adapter != null && bluetooth_adapter.isEnabled()) {
+                lollipopScanner.stopScan(mScanCallback);
+            }
         }
         invalidateOptionsMenu();
     }
