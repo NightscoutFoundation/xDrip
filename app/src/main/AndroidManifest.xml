@@ -206,7 +206,11 @@
             android:enabled="true"
             android:exported="true" >
         </service>
-
+        <service
+            android:name=".ShareModels.ShareRest"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
         <service
             android:name=".UtilityModels.Notifications"
             android:exported="false" >

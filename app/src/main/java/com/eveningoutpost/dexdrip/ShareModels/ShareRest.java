@@ -66,9 +66,6 @@ public class ShareRest extends Service {
         client = getOkClient();
         mContext = getApplicationContext();
         prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        login = prefs.getString("dexcom_account_name", "");
-        password = prefs.getString("dexcom_account_password", "");
-        receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
      }
 
     @Override
@@ -93,9 +90,14 @@ public class ShareRest extends Service {
                         Log.d(TAG, "New BG reading found but session does not exist");
                         getValidSessionId();
                     }
+                } else {
+                    Log.e(TAG, "Intent UUID was not null, but an empty string, cannot upload");
                 }
+            } else {
+                Log.e(TAG, "Intent UUID was null, cannot upload");
             }
         } else {
+            Log.w(TAG, "Share Credentials not entered!");
             stopSelf();
         }
         return START_NOT_STICKY;
@@ -259,7 +261,7 @@ public class ShareRest extends Service {
         if(bg != null) {
             sendBgData(sessionId, bg);
         } else {
-            Log.d(TAG, "No BG, cannot continue");
+            Log.e(TAG, "BG was not found in database, cannot continue");
         }
     }
 
@@ -286,7 +288,6 @@ public class ShareRest extends Service {
         RestAdapter.Builder adapterBuilder = new RestAdapter.Builder();
         adapterBuilder
                 .setClient(client)
-                .setLogLevel(RestAdapter.LogLevel.FULL).setLog(new AndroidLog(TAG))
                 .setEndpoint("https://share1.dexcom.com/ShareWebServices/Services")
                 .setRequestInterceptor(authorizationRequestInterceptor)
                 .setConverter(new GsonConverter(new GsonBuilder()
@@ -299,7 +300,6 @@ public class ShareRest extends Service {
         RestAdapter.Builder adapterBuilder = new RestAdapter.Builder();
         adapterBuilder
                 .setClient(client)
-                .setLogLevel(RestAdapter.LogLevel.FULL).setLog(new AndroidLog(TAG))
                 .setEndpoint("https://share1.dexcom.com/ShareWebServices/Services")
                 .setRequestInterceptor(getBgRequestInterceptor)
                 .setConverter(new GsonConverter(new GsonBuilder()
