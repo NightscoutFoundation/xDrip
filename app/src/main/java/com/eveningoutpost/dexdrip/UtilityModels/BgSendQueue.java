@@ -20,7 +20,6 @@ import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
-import com.eveningoutpost.dexdrip.ShareModels.ShareRest;
 import com.eveningoutpost.dexdrip.widgetUpdateService;
 import com.eveningoutpost.dexdrip.xDripWidget;
 
