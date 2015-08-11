@@ -23,6 +23,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.internal.bind.DateTypeAdapter;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -626,6 +627,17 @@ public class Calibration extends Model {
         return new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())
+                .orderBy("timestamp desc")
+                .limit(number)
+                .execute();
+    }
+
+    public static List<Calibration> latestForGraph(int number, double startTime) {
+        DecimalFormat df = new DecimalFormat("#");
+        df.setMaximumFractionDigits(1);
+        return new Select()
+                .from(Calibration.class)
+                .where("timestamp >= " + df.format(startTime))
                 .orderBy("timestamp desc")
                 .limit(number)
                 .execute();

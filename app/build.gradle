@@ -97,7 +97,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.squareup.okhttp:okhttp:2.2.0'
     compile 'com.google.code.gson:gson:2.3'
-    compile 'org.mongodb:mongo-java-driver:2.10.1'
+    compile 'org.mongodb:mongo-java-driver:3.0.3'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.getpebble:pebblekit:3.0.0'
     compile 'io.reactivex:rxjava:1.0.0'
