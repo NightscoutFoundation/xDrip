@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.widget.RemoteViews;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -94,7 +94,7 @@ public class xDripWidget extends AppWidgetProvider {
             List<BgReading> bgReadingList =  BgReading.latest(2);
             if(bgReadingList != null && bgReadingList.size() == 2) {
 
-                views.setTextViewText(R.id.widgetDelta, bgGraphBuilder.unitizedDeltaString(true));
+                views.setTextViewText(R.id.widgetDelta, bgGraphBuilder.unitizedDeltaString(true, true));
             } else {
                 views.setTextViewText(R.id.widgetDelta, "--");
             }

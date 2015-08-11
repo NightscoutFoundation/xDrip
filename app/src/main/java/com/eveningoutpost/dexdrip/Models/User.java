@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.provider.BaseColumns;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
@@ -79,7 +79,6 @@ public class User extends Model {
                     @Override
                     public void failure(RetrofitError error) {
                         Response response = error.getResponse();
-                        Log.w("REST CALL ERROR:", "****************");
                         Log.w("REST CALL STATUS:", "" + response.getStatus());
                         Log.w("REST CALL REASON:", response.getReason());
                     }

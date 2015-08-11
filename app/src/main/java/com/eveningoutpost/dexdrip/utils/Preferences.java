@@ -19,7 +19,7 @@ import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.text.InputFilter;
 import android.text.TextUtils;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -376,7 +376,11 @@ public class Preferences extends PreferenceActivity {
                     } else {
                         preference.setSummary(stringValue);
                     }
-                    CollectionServiceStarter.restartCollectionService(preference.getContext());
+                    if(preference.getKey().equals("dex_collection_method")) {
+                        CollectionServiceStarter.restartCollectionService(preference.getContext(), (String) newValue);
+                    } else {
+                        CollectionServiceStarter.restartCollectionService(preference.getContext());
+                    }
                     return true;
                 }
             });

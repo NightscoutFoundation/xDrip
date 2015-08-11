@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.view.View;
 
 import java.util.ArrayList;

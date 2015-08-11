@@ -22,7 +22,7 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util;
 
 import android.hardware.usb.UsbRequest;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialPort;
 

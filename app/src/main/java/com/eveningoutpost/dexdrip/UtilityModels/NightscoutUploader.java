@@ -6,16 +6,19 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.BatteryManager;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.google.common.hash.Hashing;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.WriteConcern;
+
+import net.tribe7.common.base.Charsets;
 
 import org.apache.http.Header;
 import org.apache.http.client.ResponseHandler;
@@ -30,7 +33,6 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONObject;
 
 import java.net.URI;
-import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -111,7 +113,6 @@ public class NightscoutUploader {
                     doRESTUploadTo(URI.create(baseURI), glucoseDataSets, meterRecords, calRecords);
                 } catch (Exception e) {
                     Log.e(TAG, "Unable to do REST API Upload " + e.getMessage());
-                    Log.e(TAG, "Unable to do REST API Upload", e.getCause());
                     return false;
                 }
             }
@@ -152,15 +153,7 @@ public class NightscoutUploader {
                     if (secret == null || secret.isEmpty()) {
                         throw new Exception("Starting with API v1, a pass phase is required");
                     } else {
-                        MessageDigest digest = MessageDigest.getInstance("SHA-1");
-                        byte[] bytes = secret.getBytes("UTF-8");
-                        digest.update(bytes, 0, bytes.length);
-                        bytes = digest.digest();
-                        StringBuilder sb = new StringBuilder(bytes.length * 2);
-                        for (byte b: bytes) {
-                            sb.append(String.format("%02x", b & 0xff));
-                        }
-                        String token = sb.toString();
+                        String token =  Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
                         apiSecretHeader = new BasicHeader("api-secret", token);
                     }
                 }
@@ -178,7 +171,7 @@ public class NightscoutUploader {
                         else
                             populateLegacyAPIEntry(json, record);
                     } catch (Exception e) {
-                        Log.w(TAG, "Unable to populate entry");
+                        Log.e(TAG, "Unable to populate entry", e);
                         continue;
                     }
 
@@ -195,7 +188,7 @@ public class NightscoutUploader {
                         ResponseHandler responseHandler = new BasicResponseHandler();
                         httpclient.execute(post, responseHandler);
                     } catch (Exception e) {
-                        Log.w(TAG, "Unable to populate entry");
+                        Log.e(TAG, "Unable to populate entry", e);
                     }
                 }
 
@@ -206,7 +199,7 @@ public class NightscoutUploader {
                         try {
                             populateV1APIMeterReadingEntry(json, record);
                         } catch (Exception e) {
-                            Log.w(TAG, "Unable to populate entry");
+                            Log.e(TAG, "Unable to populate entry", e);
                             continue;
                         }
 
@@ -222,7 +215,7 @@ public class NightscoutUploader {
                             ResponseHandler responseHandler = new BasicResponseHandler();
                             httpclient.execute(post, responseHandler);
                         } catch (Exception e) {
-                            Log.w(TAG, "Unable to post data");
+                            Log.e(TAG, "Unable to post data", e);
                         }
                     }
                 }
@@ -235,7 +228,7 @@ public class NightscoutUploader {
                         try {
                             populateV1APICalibrationEntry(json, calRecord);
                         } catch (Exception e) {
-                            Log.w(TAG, "Unable to populate entry");
+                            Log.e(TAG, "Unable to populate entry", e);
                             continue;
                         }
 
@@ -251,7 +244,7 @@ public class NightscoutUploader {
                             ResponseHandler responseHandler = new BasicResponseHandler();
                             httpclient.execute(post, responseHandler);
                         } catch (Exception e) {
-                            Log.w(TAG, "Unable to post data");
+                            Log.e(TAG, "Unable to post data", e);
                         }
                     }
                 }
@@ -260,7 +253,7 @@ public class NightscoutUploader {
                 postDeviceStatus(baseURL, apiSecretHeader, httpclient);
 
             } catch (Exception e) {
-                Log.w(TAG, "Unable to post data");
+                Log.e(TAG, "Unable to post data", e);
             }
         }
 
@@ -425,7 +418,6 @@ public class NightscoutUploader {
 
                     } catch (Exception e) {
                         Log.e(TAG, "Unable to upload data to mongo " + e.getMessage());
-                        Log.e(TAG, "Unable to upload data to mongo", e.getCause());
                     } finally {
                         if(client != null) { client.close(); }
                     }

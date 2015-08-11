@@ -1,18 +1,16 @@
 package com.eveningoutpost.dexdrip;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-import java.util.Date;
+
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+
+import java.util.Date;
 
 public class StopSensor extends ActivityWithMenu {
     public static String menu_name = "Stop Sensor";
@@ -45,7 +43,7 @@ public class StopSensor extends ActivityWithMenu {
             public void onClick(View v) {
                 Sensor sensor = Sensor.currentSensor();
                 sensor.stopped_at = new Date().getTime();
-                Log.w("NEW SENSOR", "Sensor stopped at " + sensor.stopped_at);
+                Log.i("NEW SENSOR", "Sensor stopped at " + sensor.stopped_at);
                 sensor.save();
                 AlertPlayer.getPlayer().stopAlert(getApplicationContext(),true, false);
 

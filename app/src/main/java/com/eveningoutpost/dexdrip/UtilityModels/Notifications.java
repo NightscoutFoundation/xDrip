@@ -21,7 +21,7 @@ import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.DoubleCalibrationActivity;
@@ -88,7 +88,7 @@ public class Notifications extends IntentService {
 
     public Notifications() {
         super("Notifications");
-        Log.w("Notifications", "Running Notifications Intent Service");
+        Log.i("Notifications", "Running Notifications Intent Service");
     }
 
     @Override
@@ -136,7 +136,7 @@ public class Notifications extends IntentService {
             return;
         }
 
-        Log.e(TAG, "FileBasedNotifications called bgReading.calculated_value = " + bgReading.calculated_value);
+        Log.d(TAG, "FileBasedNotifications called bgReading.calculated_value = " + bgReading.calculated_value);
 
         // TODO: tzachi what is the time of this last bgReading
         // If the last reading does not have a sensor, or that sensor was stopped.
@@ -146,7 +146,7 @@ public class Notifications extends IntentService {
             AlertType newAlert = AlertType.get_highest_active_alert(context, bgReading.calculated_value);
 
             if (newAlert == null) {
-                Log.e(TAG, "FileBasedNotifications - No active notifcation exists, stopping all alerts");
+                Log.d(TAG, "FileBasedNotifications - No active notifcation exists, stopping all alerts");
                 // No alert should work, Stop all alerts, but keep the snoozing...
                 AlertPlayer.getPlayer().stopAlert(context, false, true);
                 return;
@@ -154,7 +154,7 @@ public class Notifications extends IntentService {
 
             AlertType activeBgAlert = ActiveBgAlert.alertTypegetOnly();
             if(activeBgAlert == null) {
-                Log.e(TAG, "FileBasedNotifications we have a new alert, starting to play it... " + newAlert.name);
+                Log.d(TAG, "FileBasedNotifications we have a new alert, starting to play it... " + newAlert.name);
                 // We need to create a new alert  and start playing
                 boolean trendingToAlertEnd = trendingToAlertEnd(context, true, newAlert);
                 AlertPlayer.getPlayer().startAlert(context, trendingToAlertEnd, newAlert, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
@@ -164,7 +164,7 @@ public class Notifications extends IntentService {
 
             if (activeBgAlert.uuid.equals(newAlert.uuid)) {
                 // This is the same alert. Might need to play again...
-                Log.e(TAG, "FileBasedNotifications we have found an active alert, checking if we need to play it " + newAlert.name);
+                Log.d(TAG, "FileBasedNotifications we have found an active alert, checking if we need to play it " + newAlert.name);
                 boolean trendingToAlertEnd = trendingToAlertEnd(context, false, newAlert);
                 AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
                 return;
@@ -173,7 +173,7 @@ public class Notifications extends IntentService {
 
             boolean alertSnoozeOver = ActiveBgAlert.alertSnoozeOver();
             if (alertSnoozeOver) {
-                Log.e(TAG, "FileBasedNotifications we had two alerts, the snoozed one is over, we fall down to deleting the snoozed and staring the new");
+                Log.d(TAG, "FileBasedNotifications we had two alerts, the snoozed one is over, we fall down to deleting the snoozed and staring the new");
                 // in such case it is not important which is higher.
 
             } else {
@@ -190,7 +190,7 @@ public class Notifications extends IntentService {
                 AlertType  newHigherAlert = AlertType.HigherAlert(activeBgAlert, newAlert);
                 if ((newHigherAlert == activeBgAlert) && (!opositeDirection)) {
                     // the existing alert is the higher, we should check if to play it
-                    Log.e(TAG, "FileBasedNotifications The existing alert has the same direcotion, checking if to playit newHigherAlert = " + newHigherAlert.name +
+                    Log.d(TAG, "FileBasedNotifications The existing alert has the same direcotion, checking if to playit newHigherAlert = " + newHigherAlert.name +
                             "activeBgAlert = " + activeBgAlert.name);
 
                     boolean trendingToAlertEnd = trendingToAlertEnd(context, false, newHigherAlert);
@@ -199,7 +199,7 @@ public class Notifications extends IntentService {
                 }
             }
             // For now, we are stopping the old alert and starting a new one.
-            Log.e(TAG, "Found a new alert, that is higher than the previous one will play it. " + newAlert.name);
+            Log.d(TAG, "Found a new alert, that is higher than the previous one will play it. " + newAlert.name);
             AlertPlayer.getPlayer().stopAlert(context, true, false);
             boolean trendingToAlertEnd = trendingToAlertEnd(context, true, newAlert);
             AlertPlayer.getPlayer().startAlert(context, trendingToAlertEnd, newAlert, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
@@ -260,7 +260,7 @@ public class Notifications extends IntentService {
                 extraCalibrationRequest();
             } else { clearExtraCalibrationRequest(); }
             if (calibrations.size() >= 1 && Math.abs((new Date().getTime() - calibrations.get(0).timestamp))/(1000*60*60) > 12) {
-                Log.e("NOTIFICATIONS", "Calibration difference in hours: " + ((new Date().getTime() - calibrations.get(0).timestamp))/(1000*60*60));
+                Log.d("NOTIFICATIONS", "Calibration difference in hours: " + ((new Date().getTime() - calibrations.get(0).timestamp))/(1000*60*60));
                 calibrationRequest();
             } else { clearCalibrationRequest(); }
 
@@ -270,7 +270,7 @@ public class Notifications extends IntentService {
     }
 
     private void  ArmTimer() {
-        Log.e(TAG, "ArmTimer called");
+        Log.d(TAG, "ArmTimer called");
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
         if(activeBgAlert != null ) {
             AlertType alert = AlertType.get_alert(activeBgAlert.alert_uuid);
@@ -346,7 +346,7 @@ public class Notifications extends IntentService {
                 .setUsesChronometer(false);
         if (lastReading != null) {
             b.setWhen(lastReading.timestamp);
-            String deltaString = "Delta: " + bgGraphBuilder.unitizedDeltaString(true);
+            String deltaString = "Delta: " + bgGraphBuilder.unitizedDeltaString(true, true);
             b.setContentText(deltaString);
             iconBitmap = new BgSparklineBuilder(mContext)
                     .setHeight(64)
@@ -511,6 +511,7 @@ public class Notifications extends IntentService {
         String otherAlertsSound = prefs.getString("other_alerts_sound", "content://settings/system/notification_sound");
         Boolean otherAlertsOverrideSilent = prefs.getBoolean("other_alerts_override_silent", false);
 
+        Log.e(TAG,"OtherAlert called " + type + " " + message);
         UserNotification userNotification = UserNotification.GetNotificationByType(type); //"bg_unclear_readings_alert"
         if ((userNotification == null) || (userNotification.timestamp <= ((new Date().getTime()) - (60000 * snooze)))) {
             if (userNotification != null) {

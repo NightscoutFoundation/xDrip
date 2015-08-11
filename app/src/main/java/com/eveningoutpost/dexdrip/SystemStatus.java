@@ -11,7 +11,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
@@ -112,9 +112,9 @@ public class SystemStatus extends ActivityWithMenu {
             DateFormat df = new SimpleDateFormat();
             sensor_status.append(df.format(date));
             sensor_status.append(" (");
-            sensor_status.append((int) (System.currentTimeMillis() - sens.started_at) / (1000 * 60 * 60 * 24));
+            sensor_status.append((System.currentTimeMillis() - sens.started_at) / (1000 * 60 * 60 * 24));
             sensor_status.append("d ");
-            sensor_status.append((int)((System.currentTimeMillis() - sens.started_at)%(1000 * 60 * 60 * 24))/(1000*60*60));
+            sensor_status.append(((System.currentTimeMillis() - sens.started_at)%(1000 * 60 * 60 * 24))/(1000*60*60));
             sensor_status.append("h)");
         } else {
             sensor_status.append("not available");

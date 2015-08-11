@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
 import android.provider.BaseColumns;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
@@ -40,7 +40,7 @@ public class Sensor extends Model {
         sensor.uuid = UUID.randomUUID().toString();
         sensor.save();
         SensorSendQueue.addToQueue(sensor);
-        Log.w("SENSOR MODEL:", sensor.toString());
+        Log.d("SENSOR MODEL:", sensor.toString());
         return sensor;
     }
 

@@ -11,7 +11,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
@@ -128,7 +128,7 @@ public class BgSendQueue extends Model {
             }
 
             if (prefs.getBoolean("share_upload", false)) {
-                Log.w("ShareRest", "About to call ShareRest!!");
+                Log.d("ShareRest", "About to call ShareRest!!");
                 String login = prefs.getString("dexcom_account_name", "");
                 String password = prefs.getString("dexcom_account_password", "");
                 String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();

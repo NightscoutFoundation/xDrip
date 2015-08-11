@@ -2,12 +2,11 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.app.Service;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 /**
  * Created by stephenblack on 12/25/14.
@@ -29,7 +28,7 @@ public class ForegroundServiceStarter {
 
     public void start() {
         if (run_service_in_foreground) {
-            Log.e("FOREGROUND", "should be moving to foreground");
+            Log.d("FOREGROUND", "should be moving to foreground");
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -41,7 +40,7 @@ public class ForegroundServiceStarter {
 
     public void stop() {
         if (run_service_in_foreground) {
-            Log.e("FOREGROUND", "should be moving out of foreground");
+            Log.d("FOREGROUND", "should be moving out of foreground");
             mService.stopForeground(true);
         }
     }

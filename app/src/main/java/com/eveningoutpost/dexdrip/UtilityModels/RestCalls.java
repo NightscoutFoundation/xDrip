@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.Interfaces.BgReadingInterface;
 import com.eveningoutpost.dexdrip.Interfaces.CalibrationInterface;
@@ -50,7 +50,6 @@ public class RestCalls {
                     @Override
                     public void failure(RetrofitError error) {
                         Response response = error.getResponse();
-                        Log.w("REST CALL ERROR:", "****************");
                         Log.w("REST CALL STATUS:", "" + response.getStatus());
                         Log.w("REST CALL REASON:", response.getReason());
                     }
@@ -64,14 +63,12 @@ public class RestCalls {
         bgReadingInterface().updateReading(user.uuid, bgSendQueue.bgReading.uuid, bgSendQueue.bgReading, new Callback<Gson>() {
                     @Override
                     public void success(Gson gsonResponse, Response response) {
-                        Log.w("REST CALL Update Success!:", "****************");
                         bgSendQueue.success = true;
                         bgSendQueue.save();
                     }
                     @Override
                     public void failure(RetrofitError error) {
                         Response response = error.getResponse();
-                        Log.w("REST CALL ERROR:", "****************");
                         Log.w("REST CALL STATUS:", "" + response.getStatus());
                         Log.w("REST CALL REASON:", response.getReason());
                     }
@@ -93,7 +90,6 @@ public class RestCalls {
                     @Override
                     public void failure(RetrofitError error) {
                         Response response = error.getResponse();
-                        Log.w("REST CALL ERROR:", "****************");
                         Log.w("REST CALL STATUS:", "" + response.getStatus());
                         Log.w("REST CALL REASON:", response.getReason());
                     }
@@ -115,7 +111,6 @@ public class RestCalls {
                     @Override
                     public void failure(RetrofitError error) {
                         Response response = error.getResponse();
-                        Log.w("REST CALL ERROR:", "****************");
                         Log.w("REST CALL STATUS:", "" + response.getStatus());
                         Log.w("REST CALL REASON:", response.getReason());
                     }

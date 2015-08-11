@@ -8,14 +8,17 @@ import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.Calibration;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import lecho.lib.hellocharts.model.Axis;
@@ -49,10 +52,12 @@ public class BgGraphBuilder {
     private double endHour;
     private final int numValues =(60/5)*24;
     private final List<BgReading> bgReadings = BgReading.latestForGraph( numValues, (start_time * FUZZER));
+    private final List<Calibration> calibrations = Calibration.latestForGraph( numValues, (start_time * FUZZER));
     private List<PointValue> inRangeValues = new ArrayList<PointValue>();
     private List<PointValue> highValues = new ArrayList<PointValue>();
     private List<PointValue> lowValues = new ArrayList<PointValue>();
     private List<PointValue> rawInterpretedValues = new ArrayList<PointValue>();
+    private List<PointValue> calibrationValues = new ArrayList<PointValue>();
     public Viewport viewport;
 
 
@@ -90,6 +95,8 @@ public class BgGraphBuilder {
     public List<Line> defaultLines() {
         addBgReadingValues();
         List<Line> lines = new ArrayList<Line>();
+        Line[] calib = calibrationValuesLine();
+        lines.add(calib[0]); // white circle of calib in background
         lines.add(minShowLine());
         lines.add(maxShowLine());
         lines.add(highLine());
@@ -98,6 +105,7 @@ public class BgGraphBuilder {
         lines.add(lowValuesLine());
         lines.add(highValuesLine());
         lines.add(rawInterpretedLine());
+        lines.add(calib[1]); // red dot of calib in foreground
         return lines;
     }
 
@@ -136,6 +144,22 @@ public class BgGraphBuilder {
         return line;
     }
 
+    public Line[] calibrationValuesLine() {
+        Line[] lines = new Line[2];
+        lines[0] = new Line(calibrationValues);
+        lines[0].setColor(Color.parseColor("#FFFFFF"));
+        lines[0].setHasLines(false);
+        lines[0].setPointRadius(pointSize * 3 / 2);
+        lines[0].setHasPoints(true);
+        lines[1] = new Line(calibrationValues);
+        lines[1].setColor(ChartUtils.COLOR_RED);
+        lines[1].setHasLines(false);
+        lines[1].setPointRadius(pointSize * 3 / 4);
+        lines[1].setHasPoints(true);
+        return lines;
+    }
+
+
     private void addBgReadingValues() {
         for (BgReading bgReading : bgReadings) {
             if (bgReading.raw_calculated != 0 && prefs.getBoolean("interpret_raw", false)) {
@@ -151,6 +175,9 @@ public class BgGraphBuilder {
             } else if (bgReading.calculated_value > 13) {
                 lowValues.add(new PointValue((float)(bgReading.timestamp/ FUZZER), (float) unitized(40)));
             }
+        }
+        for (Calibration calibration : calibrations) {
+            calibrationValues.add(new PointValue((float)(calibration.timestamp/ FUZZER), (float) unitized(calibration.bg)));
         }
     }
 
@@ -327,22 +354,42 @@ public class BgGraphBuilder {
         }
     }
 
-    public String unitizedDeltaString(boolean showUnit) {
+    public String unitizedDeltaString(boolean showUnit, boolean highGranularity) {
+
         List<BgReading> last2 = BgReading.latest(2);
         if(last2.size() < 2 || last2.get(0).timestamp - last2.get(1).timestamp > 20 * 60 * 1000){
             // don't show delta if there are not enough values or the values are more than 20 mintes apart
-            return "--";
+            return "???";
         }
 
         double value = BgReading.currentSlope() * 5*60*1000;
 
-        DecimalFormat df = new DecimalFormat("#");
+        if(Math.abs(value) > 100){
+            // a delta > 100 will not happen with real BG values -> problematic sensor data
+            return "ERR";
+        }
+
+        // TODO: allow localization from os settings once pebble doesn't require english locale
+        DecimalFormat df = new DecimalFormat("#", new DecimalFormatSymbols(Locale.ENGLISH));
         String delta_sign = "";
         if (value > 0) { delta_sign = "+"; }
         if(doMgdl) {
-            df.setMaximumFractionDigits(1);
+
+            if(highGranularity){
+                df.setMaximumFractionDigits(1);
+            } else {
+                df.setMaximumFractionDigits(0);
+            }
+
             return delta_sign + df.format(unitized(value)) +  (showUnit?" mg/dl":"");
         } else {
+
+            if(highGranularity){
+                df.setMaximumFractionDigits(2);
+            } else {
+                df.setMaximumFractionDigits(1);
+            }
+
             df.setMinimumFractionDigits(1);
             df.setMinimumIntegerDigits(1);
             return delta_sign + df.format(unitized(value)) + (showUnit?" mmol/l":"");

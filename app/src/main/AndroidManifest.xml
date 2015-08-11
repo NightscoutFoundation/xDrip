@@ -32,7 +32,7 @@
             android:value="DexDrip.db" />
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="34" />
+            android:value="36" />
 
         <provider
             android:name="com.activeandroid.content.ContentProvider"
@@ -191,8 +191,11 @@
 
         <activity
             android:name=".AlertList"
-            android:label="@string/title_activity_alert_list" >
-        </activity>
+            android:label="@string/title_activity_alert_list" />
+
+        <activity
+            android:name=".ErrorsActivity"
+            android:label="Error List" />
 
         <service
             android:name=".Services.SnoozeOnNotificationDismissService"
@@ -203,7 +206,11 @@
             android:enabled="true"
             android:exported="true" >
         </service>
-
+        <service
+            android:name=".ShareModels.ShareRest"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
         <service
             android:name=".UtilityModels.Notifications"
             android:exported="false" >
