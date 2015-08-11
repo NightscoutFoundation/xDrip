@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.ShareModels;
+package com.eveningoutpost.dexdrip.ShareModels.Models;
 
 /**
  * Created by stephenblack on 7/17/15.

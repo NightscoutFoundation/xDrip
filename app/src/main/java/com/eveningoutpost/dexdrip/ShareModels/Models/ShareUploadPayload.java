@@ -1,6 +1,6 @@
-package com.eveningoutpost.dexdrip.ShareModels;
+package com.eveningoutpost.dexdrip.ShareModels.Models;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.ShareModels.ShareUploadableBg;
 import com.google.gson.annotations.Expose;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public class ShareUploadPayload {
     @Expose
     public long TA = -5;
 
-    public ShareUploadPayload(String sn, BgReading bg) {
+    public ShareUploadPayload(String sn, ShareUploadableBg bg) {
         this.SN = sn;
         List<Egv> egvList = new ArrayList<Egv>();
         egvList.add(new Egv(bg));

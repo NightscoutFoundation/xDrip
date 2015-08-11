@@ -1,7 +1,12 @@
 package com.eveningoutpost.dexdrip.ShareModels;
 
+import com.eveningoutpost.dexdrip.ShareModels.Models.ExistingFollower;
+import com.eveningoutpost.dexdrip.ShareModels.Models.InvitationPayload;
+import com.eveningoutpost.dexdrip.ShareModels.Models.ShareAuthenticationBody;
+import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
 import com.eveningoutpost.dexdrip.ShareModels.UserAgentInfo.UserAgent;
 
+import java.util.List;
 import java.util.Map;
 
 import retrofit.Callback;
@@ -60,6 +65,36 @@ public interface DexcomShareInterface {
 
 
     //Follower Related
+    @POST("/Publisher/ListPublisherAccountSubscriptions")
+   void getContacts(@QueryMap Map<String, String> options, Callback<List<ExistingFollower>> callback);
+    // needs ?sessionId={YourSessionId}
+    // returns
+    // [
+    //    {
+    //        "ContactId":"FollowersContactId",
+    //            "ContactName":"FollowersName",
+    //            "DateTimeCreated":{
+    //        "DateTime":"\/Date(1437101121008)\/",
+    //                "OffsetMinutes":0
+    //          },
+    //        "DateTimeModified":{
+    //        "DateTime":"\/Date(1437101121008)\/",
+    //                "OffsetMinutes":0
+    //          },
+    //        "DisplayName":"YourDisplayName",
+    //            "InviteExpires":{
+    //        "DateTime":"\/Date(1437705921008)\/",
+    //                "OffsetMinutes":0
+    //          },
+    //        "IsEnabled":false,
+    //        "IsMonitoringSessionActive":true,
+    //        "Permissions":1,
+    //        "State":2,
+    //        "SubscriberId":"00000000-0000-0000-0000-000000000000",
+    //        "SubscriptionId":"theirSubscriptionIdIsuppose?"
+    //    }
+    //]
+
     @POST("/Publisher/DoesContactExistByName")
     void doesContactExist(@QueryMap Map<String, String> options, Callback<Response> callback);
     // needs ?sessionId={YourSessionId}&contactName={newcontactName}
@@ -74,5 +109,10 @@ public interface DexcomShareInterface {
     void createInvitationForContact(@Body InvitationPayload body, @QueryMap Map<String, String> options, Callback<Response> callback);
     // needs ?sessionId={YourSessionId}&contactId={ContactId}
     // returns a contact id
+
+    @POST("/Publisher/DeleteContact")
+    void deleteContact(@QueryMap Map<String, String> options, Callback<Response> callback);
+    // needs ?sessionId={YourSessionId}&contactId={followersContactId}
+    // just a status
 
 }

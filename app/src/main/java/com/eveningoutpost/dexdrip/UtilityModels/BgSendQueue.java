@@ -19,6 +19,7 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Services.SyncService;
+import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
 import com.eveningoutpost.dexdrip.ShareModels.ShareRest;
 import com.eveningoutpost.dexdrip.widgetUpdateService;
 import com.eveningoutpost.dexdrip.xDripWidget;
@@ -129,9 +130,11 @@ public class BgSendQueue extends Model {
 
             if (prefs.getBoolean("share_upload", false)) {
                 Log.w("ShareRest", "About to call ShareRest!!");
-                Intent shareIntent = new Intent(context, ShareRest.class);
-                shareIntent.putExtra("BgUuid", bgReading.uuid);
-                context.startService(shareIntent);
+                String login = prefs.getString("dexcom_account_name", "");
+                String password = prefs.getString("dexcom_account_password", "");
+                String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
+                BgUploader bgUploader = new BgUploader(login, password, receiverSn, context);
+                bgUploader.upload(bgReading);
             }
             context.startService(new Intent(context, SyncService.class));
         } finally {

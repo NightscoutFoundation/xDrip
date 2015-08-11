@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.ShareModels.Models.ShareAuthenticationBody;
 import com.eveningoutpost.dexdrip.ShareModels.UserAgentInfo.UserAgent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -38,7 +39,7 @@ import rx.functions.Action1;
  * Created by stephenblack on 7/31/15.
  */
 public class ShareAuthentication {
-    private final static String TAG = ShareRest.class.getSimpleName();
+    private final static String TAG = ShareAuthentication.class.getSimpleName();
     private Context mContext;
     private String login;
     private String password;
@@ -65,7 +66,7 @@ public class ShareAuthentication {
     }
 
     public static void invalidate(Context context){
-        SharedPreferences prefs = prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.edit().putString("dexcom_share_session_id", "").apply();
     }
 
@@ -104,8 +105,7 @@ public class ShareAuthentication {
                             Log.d(TAG, "Session is active :-)");
                             authSuccess();
                         } else {
-                            Log.d(TAG, "Session is apparently not active :-(");
-                            Log.d(TAG, new String(((TypedByteArray) response.getBody()).getBytes()));
+                            Log.w(TAG, "Session is apparently not active :-( " + new String(((TypedByteArray) response.getBody()).getBytes()));
                             StartRemoteMonitoringSession();
                         }
                     }
@@ -114,7 +114,7 @@ public class ShareAuthentication {
                 @Override
                 public void failure(RetrofitError retrofitError) {
                     sessionId = null;
-                    Log.e("RETROFIT ERROR: ", "" + retrofitError.toString());
+                    Log.e(TAG, "Failed to check if session is active", retrofitError);
                     getValidSessionId();
                 }
             });
@@ -124,15 +124,13 @@ public class ShareAuthentication {
                 @Override
                 public void success(Object o, Response response) {
                     Log.d(TAG, "Success!! got a response on auth.");
-                    Log.e("RETROFIT ERROR: ", "Auth succesfull");
                     sessionId = new String(((TypedByteArray) response.getBody()).getBytes()).replace("\"", "");
                     sendUserAgentData();
                 }
 
                 @Override
                 public void failure(RetrofitError retrofitError) {
-                    Log.e("RETROFIT ERROR: ", "" + retrofitError.toString());
-                    Log.e("RETROFIT ERROR: ", "Unable to auth");
+                    Log.e(TAG, "Unable to auth", retrofitError);
                     authFailure();
                 }
             });
@@ -149,8 +147,7 @@ public class ShareAuthentication {
 
             @Override
             public void failure(RetrofitError retrofitError) {
-                Log.e("RETROFIT ERROR: ", ""+retrofitError.toString());
-                Log.e("RETROFIT ERROR: ", "Error updating user agent data");
+                Log.e(TAG, "Error updating user agent data", retrofitError);
                 authFailure();
             }
         });
@@ -173,7 +170,7 @@ public class ShareAuthentication {
 
                         @Override
                         public void failure(RetrofitError retrofitError) {
-                            Log.e("RETROFIT ERROR: ", "Unable to start a remote monitoring session");
+                            Log.e(TAG, "Unable to start a remote monitoring session", retrofitError);
                             authFailure();
                         }
                     });
@@ -181,7 +178,7 @@ public class ShareAuthentication {
 
                 @Override
                 public void failure(RetrofitError retrofitError) {
-                    Log.e("RETROFIT ERROR: ", "Unable to authenticate publisher account");
+                    Log.e(TAG, "Unable to authenticate publisher account", retrofitError);
                     authFailure();
                 }
             });
@@ -204,7 +201,7 @@ public class ShareAuthentication {
                             }
                             @Override
                             public void failure(RetrofitError retrofitError) {
-                                Log.e("RETROFIT ERROR: ", "Unable to set yourself as the publisher for that receiver");
+                                Log.e(TAG, "Unable to set yourself as the publisher for that receiver", retrofitError);
                                 authFailure();
                             }
                         });
@@ -216,7 +213,7 @@ public class ShareAuthentication {
 
             @Override
             public void failure(RetrofitError retrofitError) {
-                Log.e("RETROFIT ERROR: ", "Unable to check receiver ownership");
+                Log.e(TAG, "Unable to check receiver ownership", retrofitError);
                 authFailure();
             }
         });
@@ -337,5 +334,13 @@ public class ShareAuthentication {
         map.put("sessionID", sessionId);
         map.put("serialNumber", receiverSn);
         return map;
+    }
+
+    public static boolean shouldReAuth(Context context, RetrofitError retrofitError, boolean retried) {
+        if (retrofitError.toString().toLowerCase().contains("session") && !retried) {
+            ShareAuthentication.invalidate(context);
+            return true;
+        }
+        return false;
     }
 }

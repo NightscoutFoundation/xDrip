@@ -14,6 +14,7 @@ import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.ShareModels.ShareUploadableBg;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
@@ -29,7 +30,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Table(name = "BgReadings", id = BaseColumns._ID)
-public class BgReading extends Model {
+public class BgReading extends Model implements ShareUploadableBg{
     private static boolean predictBG;
     private final static String TAG = BgReading.class.getSimpleName();
     private final static String TAG_ALERT = TAG +" AlertBg";
@@ -239,7 +240,8 @@ public class BgReading extends Model {
             Log.w(TAG, "create: NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
             bgReading.calculated_value_slope = bgReading.slopefromName(egvRecord.getTrend().friendlyTrendName());
             bgReading.noise = egvRecord.noiseValue();
-            if(egvRecord.getTrend().friendlyTrendName().compareTo("NOT_COMPUTABLE") == 0 || egvRecord.getTrend().friendlyTrendName().compareTo("OUT_OF_RANGE") == 0) {
+            String friendlyName = egvRecord.getTrend().friendlyTrendName();
+            if(friendlyName.compareTo("NONE") == 0 || friendlyName.compareTo("NOT_COMPUTABLE") == 0 || friendlyName.compareTo("OUT_OF_RANGE") == 0) {
                 bgReading.hide_slope = true;
             }
             bgReading.save();
@@ -431,7 +433,7 @@ public class BgReading extends Model {
             slope_by_minute = 3.5;
         } else if (slope_name.compareTo("DoubleUp") == 0) {
             slope_by_minute = 4;
-        } else if (slope_name.compareTo("NOT_COMPUTABLE") == 0 || slope_name.compareTo("OUT_OF_RANGE") == 0) {
+        } else if (slope_name.compareTo("NOT_COMPUTABLE") == 0 || slope_name.compareTo("OUT_OF_RANGE") == 0 || slope_name.compareTo("NONE") == 0) {
             slope_by_minute = 0;
         }
         return slope_by_minute /60000;
@@ -1058,4 +1060,34 @@ public class BgReading extends Model {
         TestgetUnclearTime("bb",                       10l, 2l * 5);
     }
 
+    public int getSlopeOrdinal() {
+        double slope_by_minute = calculated_value_slope * 60000;
+        int ordinal = 0;
+        if(!hide_slope) {
+            if (slope_by_minute <= (-3.5)) {
+                ordinal = 7;
+            } else if (slope_by_minute <= (-2)) {
+                ordinal = 6;
+            } else if (slope_by_minute <= (-1)) {
+                ordinal = 5;
+            } else if (slope_by_minute <= (1)) {
+                ordinal = 4;
+            } else if (slope_by_minute <= (2)) {
+                ordinal = 3;
+            } else if (slope_by_minute <= (3.5)) {
+                ordinal = 2;
+            } else {
+                ordinal = 1;
+            }
+        }
+        return ordinal;
+    }
+
+    public int getMgdlValue() {
+        return (int) calculated_value;
+    }
+
+    public long getEpochTimestamp() {
+        return timestamp;
+    }
 }
