@@ -71,14 +71,16 @@ public class ShareAuthentication {
     }
 
     public void authenticate() {
-        if (login.length() != 0 && password.length() != 0 && receiverSn.length() != 0 && !receiverSn.equals("SM00000000")) {
+        if (login.length() == 0 || password.length() == 0 || receiverSn.length() == 0 || receiverSn.equals("SM00000000")) {
             authFailure();
         }
 
         sessionId = prefs.getString("dexcom_share_session_id", "");
-        if(sessionId != null && sessionId.length() > 0) {
+        if(sessionId.length() != 0) {
+            Log.d(TAG, "We already have a stored session ID");
             authSuccess();
         } else {
+            Log.d(TAG, "There is no stored session id, we need to get a new one");
             getValidSessionId();
         }
     }
@@ -96,9 +98,9 @@ public class ShareAuthentication {
     public void getValidSessionId() {
         if (sessionId != null && !sessionId.equalsIgnoreCase("")) {
             Log.d(TAG, "Session ID not null, checking if active");
-            emptyBodyInterface().checkSessionActive(querySessionMap(sessionId), new Callback() {
+            emptyBodyInterface().checkSessionActive(querySessionMap(sessionId), new Callback<Response>() {
                 @Override
-                public void success(Object o, Response response) {
+                public void success(Response o, Response response) {
                     Log.d(TAG, "Success!! got a response checking if session is active");
                     if (response.getBody() != null) {
                         if(new String(((TypedByteArray) response.getBody()).getBytes()).toLowerCase().contains("true")) {
@@ -120,9 +122,9 @@ public class ShareAuthentication {
             });
         } else {
             Log.d(TAG, "Session ID is null, Getting a new one");
-            jsonBodyInterface().getSessionId(new ShareAuthenticationBody(password, login), new Callback() {
+            jsonBodyInterface().getSessionId(new ShareAuthenticationBody(password, login), new Callback<Response>() {
                 @Override
-                public void success(Object o, Response response) {
+                public void success(Response o, Response response) {
                     Log.d(TAG, "Success!! got a response on auth.");
                     sessionId = new String(((TypedByteArray) response.getBody()).getBytes()).replace("\"", "");
                     sendUserAgentData();
@@ -138,9 +140,9 @@ public class ShareAuthentication {
     }
 
     public void sendUserAgentData() {
-        jsonBodyInterface().updatePublisherAccountInfo(new UserAgent(sessionId), new Callback() {
+        jsonBodyInterface().updatePublisherAccountInfo(new UserAgent(sessionId), new Callback<Response>() {
             @Override
-            public void success(Object o, Response response) {
+            public void success(Response o, Response response) {
                 Log.d(TAG, "User Agent Data Updated!!");
                 checkAndSetRecieverAssignment();
             }
@@ -155,13 +157,13 @@ public class ShareAuthentication {
 
     public void StartRemoteMonitoringSession() {
         if (sessionId != null && !sessionId.equalsIgnoreCase("")) {
-            jsonBodyInterface().authenticatePublisherAccount(new ShareAuthenticationBody(password, login), queryActivateSessionMap(), new Callback() {
+            jsonBodyInterface().authenticatePublisherAccount(new ShareAuthenticationBody(password, login), queryActivateSessionMap(), new Callback<Response>() {
                 @Override
-                public void success(Object o, Response response) {
+                public void success(Response o, Response response) {
                     Log.d(TAG, "Success!! Authenticated Publisher account!!!");
-                    emptyBodyInterface().StartRemoteMonitoringSession(queryActivateSessionMap(), new Callback() {
+                    emptyBodyInterface().StartRemoteMonitoringSession(queryActivateSessionMap(), new Callback<Response>() {
                         @Override
-                        public void success(Object o, Response response) {
+                        public void success(Response o, Response response) {
                             Log.d(TAG, "Success!! Our remote monitoring session is up!");
                             if (response.getBody() != null) {
                                 authSuccess();
@@ -186,17 +188,17 @@ public class ShareAuthentication {
     }
 
     public void checkAndSetRecieverAssignment() {
-        emptyBodyInterface().checkMonitorAssignment(queryActivateSessionMap(), new Callback() {
+        emptyBodyInterface().checkMonitorAssignment(queryActivateSessionMap(), new Callback<Response>() {
             @Override
-            public void success(Object o, Response response) {
+            public void success(Response o, Response response) {
                 Log.d(TAG, "Success!! Our remote monitoring session is up!");
                 if (response.getBody() != null) {
                     if (!(new String(((TypedByteArray) response.getBody()).getBytes()).contains("AssignedToYou"))) {
 
                         Log.e("Receiver trouble: ", "That receiver is not assigned to your account, trying to re-assign");
-                        emptyBodyInterface().updateMonitorAssignment(queryActivateSessionMap(), new Callback() {
+                        emptyBodyInterface().updateMonitorAssignment(queryActivateSessionMap(), new Callback<Response>() {
                             @Override
-                            public void success(Object o, Response response) {
+                            public void success(Response o, Response response) {
                                 getValidSessionId();
                             }
                             @Override

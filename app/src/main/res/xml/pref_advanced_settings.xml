@@ -30,6 +30,11 @@
             android:title="Store logs for troubleshooting"
             android:summary="Only enable if you are having trouble with the app."
             android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="show_data_tables"
+            android:title="Show Datatables"
+            android:summary="Show Calibration and BG datatables in the app drawer."
+            android:defaultValue="false" />
         <Preference
             android:title="View Recent Errors/Warnings"
             android:key="recent_errors">

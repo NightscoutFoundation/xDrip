@@ -197,6 +197,10 @@
             android:name=".ErrorsActivity"
             android:label="Error List" />
 
+        <activity
+            android:name=".FollowerManagementActivity"
+            android:label="Manage Followers" />
+
         <service
             android:name=".Services.SnoozeOnNotificationDismissService"
             android:exported="false" >

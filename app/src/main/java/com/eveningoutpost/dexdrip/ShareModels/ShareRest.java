@@ -17,6 +17,7 @@ import javax.net.ssl.X509TrustManager;
 
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
+import retrofit.android.AndroidLog;
 import retrofit.client.OkClient;
 import retrofit.converter.GsonConverter;
 
@@ -48,6 +49,7 @@ public class ShareRest {
         RestAdapter.Builder adapterBuilder = new RestAdapter.Builder();
         adapterBuilder
                 .setClient(getOkClient())
+                .setLogLevel(RestAdapter.LogLevel.FULL).setLog(new AndroidLog(TAG))
                 .setEndpoint("https://share1.dexcom.com/ShareWebServices/Services")
                 .setRequestInterceptor(authorizationRequestInterceptor())
                 .setConverter(new GsonConverter(new GsonBuilder()
@@ -60,6 +62,7 @@ public class ShareRest {
         RestAdapter.Builder adapterBuilder = new RestAdapter.Builder();
         adapterBuilder
                 .setClient(getOkClient())
+                .setLogLevel(RestAdapter.LogLevel.FULL).setLog(new AndroidLog(TAG))
                 .setEndpoint("https://share1.dexcom.com/ShareWebServices/Services")
                 .setRequestInterceptor(getBgRequestInterceptor())
                 .setConverter(new GsonConverter(new GsonBuilder()

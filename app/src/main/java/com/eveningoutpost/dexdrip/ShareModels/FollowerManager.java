@@ -24,7 +24,7 @@ import rx.functions.Action1;
  * Created by stephenblack on 8/10/15.
  */
 public class FollowerManager {
-    public static String TAG = FollowerManager.class.getName();
+    public static String TAG = FollowerManager.class.getSimpleName();
     private String sessionId;
 
     private String username;
@@ -93,7 +93,7 @@ public class FollowerManager {
                 }
             }
         };
-        new ShareAuthentication(username, password, serialNumber, context, followerAuthListener);
+        new ShareAuthentication(username, password, serialNumber, context, followerAuthListener).authenticate();
     }
 
     private void getListOfFollowers() {
@@ -132,13 +132,13 @@ public class FollowerManager {
                 }
             }
         };
-        new ShareAuthentication(username, password, serialNumber, context, authListener);
+        new ShareAuthentication(username, password, serialNumber, context, authListener).authenticate();
     }
 
     private void deleteFollower() {
-        ShareRest.emptyBodyInterface().deleteContact(deleteFollowerPayload(sessionId, contactId), new Callback() {
+        ShareRest.emptyBodyInterface().deleteContact(deleteFollowerPayload(sessionId, contactId), new Callback<Response>() {
             @Override
-            public void success(Object o, Response response) {
+            public void success(Response o, Response response) {
                 Log.d("ShareFollower", "contact Invite sent!");
                 Observable.just(true).subscribe(deletedListener);
             }
@@ -178,7 +178,7 @@ public class FollowerManager {
                 }
             }
         };
-        new ShareAuthentication(username, password, serialNumber, context, authListener);
+        new ShareAuthentication(username, password, serialNumber, context, authListener).authenticate();
     }
 
     private void invite() {

@@ -17,7 +17,7 @@ import rx.functions.Action1;
  * Created by stephenblack on 7/31/15.
  */
 public class BgUploader {
-    public static String TAG = BgUploader.class.getName();
+    public static String TAG = BgUploader.class.getSimpleName();
     private String sessionId;
 
     private String username;
@@ -54,7 +54,7 @@ public class BgUploader {
     }
 
     private void tryUpload() {
-        Action1<Boolean> followerAuthListener = new Action1<Boolean>() {
+        Action1<Boolean> authListener = new Action1<Boolean>() {
             @Override
             public void call(Boolean authed) {
                 if (authed) {
@@ -67,7 +67,7 @@ public class BgUploader {
                 }
             }
         };
-        new ShareAuthentication(username, password, serialNumber, context, followerAuthListener);
+        new ShareAuthentication(username, password, serialNumber, context, authListener).authenticate();
     }
 
     private void upload() {
