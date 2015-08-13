@@ -71,12 +71,15 @@ public class FollowerManagementActivity extends ActivityWithMenu {
             public void call(List<ExistingFollower> existingFollowers) {
                 if(followerListAdapter != null) {
                     existingFollowerList.clear();
-                    existingFollowerList.addAll(existingFollowers);
+                    if(existingFollowers != null && existingFollowers.size() > 0)
+                        existingFollowerList.addAll(existingFollowers);
                     followerListAdapter.notifyDataSetChanged();
                 } else {
-                    existingFollowerList = existingFollowers;
-                    followerListAdapter = new FollowerListAdapter(getApplicationContext(), followerManager, existingFollowerList);
-                    existingFollowersView.setAdapter(followerListAdapter);
+                    if(existingFollowers != null && existingFollowers.size() > 0) {
+                        existingFollowerList = existingFollowers;
+                        followerListAdapter = new FollowerListAdapter(getApplicationContext(), followerManager, existingFollowerList);
+                        existingFollowersView.setAdapter(followerListAdapter);
+                    }
                 }
             }
         };
