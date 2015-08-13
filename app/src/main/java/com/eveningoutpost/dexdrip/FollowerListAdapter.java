@@ -54,7 +54,6 @@ public class FollowerListAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.item_follower, null);
         }
         TextView followerName = (TextView) view.findViewById(R.id.follwerName);
-        final LinearLayout row = (LinearLayout) view.findViewById(R.id.followerListRow);
         Button deleteButton = (Button) view.findViewById(R.id.deleteFollower);
 
         final ExistingFollower follower = list.get(position);
