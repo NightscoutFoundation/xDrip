@@ -60,7 +60,6 @@ public class FollowerListAdapter extends BaseAdapter {
         final ExistingFollower follower = list.get(position);
 
         followerName.setText(follower.ContactName);
-        final View finalView = view;
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
