@@ -46,9 +46,7 @@ public class ShareAuthentication {
     private String receiverSn;
     private String sessionId = null;
     private SharedPreferences prefs;
-    private boolean retrying = false;
     private Action1<Boolean> authListener;
-    private BgReading bg = null;
     OkClient client;
 
     public static Gson gson = new GsonBuilder()
@@ -339,10 +337,20 @@ public class ShareAuthentication {
     }
 
     public static boolean shouldReAuth(Context context, RetrofitError retrofitError, boolean retried) {
-        if (retrofitError.toString().toLowerCase().contains("session") && !retried) {
+        if (body(retrofitError).toLowerCase().contains("session") && !retried) {
             ShareAuthentication.invalidate(context);
             return true;
+        } else {
+            Log.e("ShareServerError", "Body: " + body(retrofitError));
+            return false;
         }
-        return false;
+    }
+
+    public static String body(Response response) {
+        return (response == null) ? "" : ((response.getBody() == null) ? "" : new String(((TypedByteArray) (response.getBody())).getBytes()));
+    }
+
+    public static String body(RetrofitError error) {
+        return body(error.getResponse());
     }
 }

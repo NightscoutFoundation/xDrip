@@ -69,7 +69,8 @@ public class FollowerListAdapter extends BaseAdapter {
                     public void call(Boolean deleted) {
                         if (deleted) {
                             Toast.makeText(context, "Follower deleted succesfully", Toast.LENGTH_LONG).show();
-                            finalView.setVisibility(View.GONE);
+                            list.remove(position);
+                            notifyDataSetChanged();
                         } else {
                             Toast.makeText(context, "Failed to delete follower", Toast.LENGTH_LONG).show();
                         }

@@ -47,7 +47,6 @@ public class FollowerManager {
     private Action1<Boolean> invitedListener;
     private boolean inviteRetried = false;
 
-
     public FollowerManager(String username, String password, String serialNumber, Context context) {
         this.username = username;
         this.password = password;
