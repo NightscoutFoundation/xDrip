@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
@@ -37,6 +38,7 @@ public class SystemStatus extends ActivityWithMenu {
     private TextView current_device;
     private TextView connection_status;
     private TextView sensor_status_view;
+    private TextView transmitter_status_view;
     private TextView notes;
     private Button restart_collection_service;
     private Button forget_device;
@@ -54,6 +56,7 @@ public class SystemStatus extends ActivityWithMenu {
         collection_method = (TextView)findViewById(R.id.collection_method);
         connection_status = (TextView)findViewById(R.id.connection_status);
         sensor_status_view = (TextView)findViewById(R.id.sensor_status);
+        transmitter_status_view = (TextView)findViewById(R.id.transmitter_status);
         current_device = (TextView)findViewById(R.id.remembered_device);
 
         notes = (TextView)findViewById(R.id.other_notes);
@@ -102,7 +105,35 @@ public class SystemStatus extends ActivityWithMenu {
         setCurrentDevice();
         setConnectionStatus();
         setSensorStatus();
+        setTransmitterStatus();
         setNotes();
+    }
+
+    private void setTransmitterStatus() {
+
+        if(prefs.getString("dex_collection_method", "BluetoothWixel").equals("DexcomShare")){
+            transmitter_status_view.setText("See Share Receiver");
+            return;
+        }
+
+        TransmitterData td = TransmitterData.last();
+
+        if (td== null || td.sensor_battery_level == 0){
+            transmitter_status_view.setText("not available");
+        } else {
+            transmitter_status_view.setText("" + td.sensor_battery_level);
+
+            if (td.sensor_battery_level < 212) {
+                transmitter_status_view.append(" (empty) ");
+            } else if (td.sensor_battery_level == 213) {
+                transmitter_status_view.append(" (ok - on the low side) ");
+            } else {
+                transmitter_status_view.append(" (ok) ");
+            }
+            transmitter_status_view.append("\n (experimental interpretation) ");
+
+        }
+
     }
 
 
