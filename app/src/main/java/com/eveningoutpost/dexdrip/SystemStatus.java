@@ -79,6 +79,8 @@ public class SystemStatus extends ActivityWithMenu {
             layout.setOrientation(LinearLayout.VERTICAL);
             layout = (LinearLayout)findViewById(R.id.layout_sensor);
             layout.setOrientation(LinearLayout.VERTICAL);
+            layout = (LinearLayout)findViewById(R.id.layout_transmitter);
+            layout.setOrientation(LinearLayout.VERTICAL);
         }
 
         set_current_values();
