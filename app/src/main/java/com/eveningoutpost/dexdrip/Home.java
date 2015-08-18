@@ -10,8 +10,6 @@ import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.Shape;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
