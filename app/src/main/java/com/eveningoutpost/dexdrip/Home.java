@@ -5,13 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.Shape;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -148,6 +154,47 @@ public class Home extends ActivityWithMenu {
         }
 
         chart.setZoomType(ZoomType.HORIZONTAL);
+
+        //TODO: Adrian test Background
+
+        Drawable shape = new Drawable(){
+
+            @Override
+            public void draw(Canvas canvas) {
+
+                DisplayMetrics metrics = getApplicationContext().getResources().getDisplayMetrics();
+                int px = (int) (30 * (metrics.densityDpi / 160f));
+
+                Paint paint = new Paint();
+                paint.setTextSize(px);
+                paint.setAntiAlias(true);
+                paint.setColor(Color.parseColor("#FFFFAA"));
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setAlpha(100);
+
+
+                canvas.drawText("transmitter battery", 10, chart.getHeight()/3 - (int)(1.2*px), paint );
+                canvas.drawText("rather low", 10, chart.getHeight()/3, paint );
+
+            }
+
+            @Override
+            public void setAlpha(int alpha) {
+
+            }
+
+            @Override
+            public void setColorFilter(ColorFilter cf) {
+
+            }
+
+            @Override
+            public int getOpacity() {
+                return 0;
+            }
+
+        };
+        chart.setBackground(shape);
 
         previewChart = (PreviewLineChartView) findViewById(R.id.chart_preview);
         previewChart.setZoomType(ZoomType.HORIZONTAL);
@@ -470,3 +517,4 @@ public class Home extends ActivityWithMenu {
         }
     }
 }
+
