@@ -120,18 +120,19 @@ public class SystemStatus extends ActivityWithMenu {
 
         if (td== null || td.sensor_battery_level == 0){
             transmitter_status_view.setText("not available");
+        } else if((System.currentTimeMillis() - td.timestamp) > 1000*60*60*24){
+            transmitter_status_view.setText("no data in 24 hours");
         } else {
             transmitter_status_view.setText("" + td.sensor_battery_level);
 
             if (td.sensor_battery_level <= 207) {
-                transmitter_status_view.append(" (empty) ");
-            } else if (td.sensor_battery_level <= 213) {
-                transmitter_status_view.append(" (ok - on the low side) ");
+                transmitter_status_view.append(" - empty");
+            } else if (td.sensor_battery_level <= 210) {
+                transmitter_status_view.append(" - ok - rather low");
+                transmitter_status_view.append("\n(experimental interpretation)");
             } else {
-                transmitter_status_view.append(" (ok) ");
+                transmitter_status_view.append(" - ok");
             }
-            transmitter_status_view.append("\n (experimental interpretation) ");
-
         }
 
     }
