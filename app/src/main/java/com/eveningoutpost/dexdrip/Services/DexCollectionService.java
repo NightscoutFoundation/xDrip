@@ -492,7 +492,7 @@ public class DexCollectionService extends Service {
             return;
         }
 
-        sensor.latest_battery_level = transmitterData.sensor_battery_level;
+        sensor.latest_battery_level = Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level);
         sensor.save();
 
         BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, timestamp);
