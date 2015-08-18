@@ -55,6 +55,8 @@ public class Constants {
     public final static int EGV_NOISE_MASK = 112;
     public final static float MG_DL_TO_MMOL_L = 0.05556f;
     public final static int CRC_LEN = 2;
+    public static final int TRANSMITTER_BATTERY_LOW = 210;
+    public static final int TRANSMITTER_BATTERY_EMPTY = 207;
 
     public enum BATTERY_STATES {
         NONE,
