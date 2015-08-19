@@ -47,7 +47,8 @@ public class TransmitterData extends Model {
             txData.put(buffer, 0, len);
             transmitterData.raw_data = txData.getInt(2);
             transmitterData.filtered_data = txData.getInt(6);
-            transmitterData.sensor_battery_level = txData.get(10);
+            //  bitwise and with 0xff (1111....1) to avoid that the byte is treated as signed.
+            transmitterData.sensor_battery_level = txData.get(10) & 0xff;
             Log.i(TAG, "Created transmitterData record with Raw value of " + transmitterData.raw_data + " and Filtered value of " + transmitterData.filtered_data + " at " + transmitterData.timestamp);
         } else { //this is NOT a dexbridge packet.  Process accordingly.
             Log.i(TAG, "create Processing a BTWixel or IPWixel packet");
