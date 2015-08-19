@@ -127,9 +127,9 @@ public class SystemStatus extends ActivityWithMenu {
             transmitter_status_view.setText("" + td.sensor_battery_level);
 
             if (td.sensor_battery_level <= Constants.TRANSMITTER_BATTERY_EMPTY) {
-                transmitter_status_view.append(" - empty");
+                transmitter_status_view.append(" - very low");
             } else if (td.sensor_battery_level <= Constants.TRANSMITTER_BATTERY_LOW) {
-                transmitter_status_view.append(" - ok - rather low");
+                transmitter_status_view.append(" - low");
                 transmitter_status_view.append("\n(experimental interpretation)");
             } else {
                 transmitter_status_view.append(" - ok");

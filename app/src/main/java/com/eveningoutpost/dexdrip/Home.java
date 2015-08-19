@@ -173,9 +173,9 @@ public class Home extends ActivityWithMenu {
                     canvas.drawText("transmitter battery", 10, chart.getHeight() / 3 - (int) (1.2 * px), paint);
                     if(sensor.latest_battery_level <= Constants.TRANSMITTER_BATTERY_EMPTY){
                         paint.setTextSize((int)(px*1.5));
-                        canvas.drawText("EMPTY !!!", 10, chart.getHeight() / 3, paint);
+                        canvas.drawText("VERY LOW", 10, chart.getHeight() / 3, paint);
                     } else {
-                        canvas.drawText("rather low", 10, chart.getHeight() / 3, paint);
+                        canvas.drawText("low", 10, chart.getHeight() / 3, paint);
                     }
                 }
 
