@@ -1,13 +1,17 @@
 package com.eveningoutpost.dexdrip.utils;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.activeandroid.Cache;
 import com.activeandroid.Configuration;
+import com.eveningoutpost.dexdrip.stats.BgReadingStats;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -17,6 +21,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -167,6 +175,10 @@ public class DatabaseUtil {
         return filename;
     }
 
+
+    /**
+     * Generate a csv that can be imported by SiDiary
+     * */
     public static String saveCSV(Context context) {
 
         FileOutputStream foStream = null;
@@ -197,16 +209,31 @@ public class DatabaseUtil {
                 zipOutputStream.putNextEntry(new ZipEntry("export" + DateFormat.format("yyyyMMdd-kkmmss", System.currentTimeMillis()) + ".csv"));
                 printStream = new PrintStream(zipOutputStream);
 
-                for(int i = 0; i<200; i++){
-                    printStream.println("DAY;TIME;UDT_CGMS");
+                printStream.println("DAY;TIME;UDT_CGMS");
+
+
+                SQLiteDatabase db = Cache.openDatabase();
+                //Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, "timestamp >= ? AND timestamp <=  ? AND calculated_value > ?", new String[]{"" + bounds.start, "" + bounds.stop, CUTOFF}, null, null, orderBy);
+
+                Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, null, null, null, null, null);
+
+                double value;
+                long timestamp;
+                java.text.DateFormat df = new SimpleDateFormat("dd.MM.yyyy; hh:mm; ");
+                Date date = new Date();
+
+                if (cur.moveToFirst()) {
+                    do {
+                        timestamp = cur.getLong(0);
+                        value = cur.getDouble(1);
+                        if(value > 13){
+                            date.setTime(timestamp);
+                            printStream.println(df.format(date) + Math.round(value));
+                        }
+
+
+                    } while (cur.moveToNext());
                 }
-
-
-                   /* byte buffer[] = new byte[BUFFER_SIZE];
-                    int count;
-                    while ((count = biStream.read(buffer, 0, BUFFER_SIZE)) != -1) {
-                        zipOutputStream.write(buffer, 0, count);
-                    }*/
 
                 printStream.flush();
 
