@@ -219,7 +219,7 @@ public class DatabaseUtil {
 
                 double value;
                 long timestamp;
-                java.text.DateFormat df = new SimpleDateFormat("dd.MM.yyyy; hh:mm; ");
+                java.text.DateFormat df = new SimpleDateFormat("dd.MM.yyyy;hh:mm;");
                 Date date = new Date();
 
                 if (cur.moveToFirst()) {
