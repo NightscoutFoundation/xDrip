@@ -421,6 +421,37 @@ public class Home extends ActivityWithMenu {
 
             return true;
         }
+
+
+        if (item.getItemId() == R.id.action_export_csv) {
+            new AsyncTask<Void, Void, String>() {
+                @Override
+                protected String doInBackground(Void... params) {
+                    return DatabaseUtil.saveCSV(getBaseContext());
+                }
+
+                @Override
+                protected void onPostExecute(String filename) {
+                    super.onPostExecute(filename);
+                    if (filename != null) {
+                        SnackbarManager.show(
+                                Snackbar.with(Home.this)
+                                        .type(SnackbarType.MULTI_LINE)
+                                        .duration(4000)
+                                        .text("Exported to " + filename) // text to display
+                                        .actionLabel("Share") // action button label
+                                        .actionListener(new SnackbarUriListener(Uri.fromFile(new File(filename)))),
+                                Home.this);
+                    } else {
+                        Toast.makeText(Home.this, "Could not export CSV :(", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }.execute();
+
+            return true;
+        }
+
+
         return super.onOptionsItemSelected(item);
     }
 

@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.channels.FileChannel;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -165,6 +166,74 @@ public class DatabaseUtil {
         }
         return filename;
     }
+
+    public static String saveCSV(Context context) {
+
+        FileOutputStream foStream = null;
+        PrintStream printStream = null;
+        ZipOutputStream zipOutputStream =null;
+        String zipFilename = null;
+
+
+        try {
+
+            final String databaseName = new Configuration.Builder(context).create().getDatabaseName();
+
+            final String dir = getExternalDir();
+            makeSureDirectoryExists(dir);
+
+            final StringBuilder sb = new StringBuilder();
+            sb.append(dir);
+            sb.append("/exportCSV");
+            sb.append(DateFormat.format("yyyyMMdd-kkmmss", System.currentTimeMillis()));
+            sb.append(".zip");
+            zipFilename = sb.toString();
+            final File sd = Environment.getExternalStorageDirectory();
+            if (sd.canWrite()) {
+                final File zipOutputFile = new File(zipFilename);
+
+                foStream = new FileOutputStream(zipOutputFile);
+                zipOutputStream = new ZipOutputStream(new BufferedOutputStream(foStream));
+                zipOutputStream.putNextEntry(new ZipEntry("export" + DateFormat.format("yyyyMMdd-kkmmss", System.currentTimeMillis()) + ".csv"));
+                printStream = new PrintStream(zipOutputStream);
+
+                for(int i = 0; i<200; i++){
+                    printStream.println("DAY;TIME;UDT_CGMS");
+                }
+
+
+                   /* byte buffer[] = new byte[BUFFER_SIZE];
+                    int count;
+                    while ((count = biStream.read(buffer, 0, BUFFER_SIZE)) != -1) {
+                        zipOutputStream.write(buffer, 0, count);
+                    }*/
+
+                printStream.flush();
+
+
+            } else {
+                Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "SD card not writable!");
+            }
+
+        } catch (IOException e) {
+            Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG).show();
+            Log.e(TAG, "Exception while writing DB", e);
+        } finally {
+            if (printStream != null) {
+                printStream.close();
+            }
+            if (zipOutputStream != null) try {
+                zipOutputStream.close();
+            } catch (IOException e1) {
+                Log.e(TAG, "Something went wrong closing: ", e1);
+            }
+        }
+        return zipFilename;
+    }
+
+
+
 
     public static void loadSql(Context context, String path) {
 
