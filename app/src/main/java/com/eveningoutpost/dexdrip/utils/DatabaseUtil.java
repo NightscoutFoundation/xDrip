@@ -85,11 +85,13 @@ public class DatabaseUtil {
             } else {
                 Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG).show();
                 Log.d(TAG, "SD card not writable!");
+                zipFilename = null;
             }
 
         } catch (IOException e) {
             Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG).show();
             Log.e(TAG, "Exception while writing DB", e);
+            zipFilename = null;
         } finally {
             if (biStream != null) try {
                 biStream.close();
