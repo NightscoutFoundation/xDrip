@@ -19,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -125,10 +126,10 @@ public class SystemStatus extends ActivityWithMenu {
         } else {
             transmitter_status_view.setText("" + td.sensor_battery_level);
 
-            if (td.sensor_battery_level <= 207) {
-                transmitter_status_view.append(" - empty");
-            } else if (td.sensor_battery_level <= 210) {
-                transmitter_status_view.append(" - ok - rather low");
+            if (td.sensor_battery_level <= Constants.TRANSMITTER_BATTERY_EMPTY) {
+                transmitter_status_view.append(" - very low");
+            } else if (td.sensor_battery_level <= Constants.TRANSMITTER_BATTERY_LOW) {
+                transmitter_status_view.append(" - low");
                 transmitter_status_view.append("\n(experimental interpretation)");
             } else {
                 transmitter_status_view.append(" - ok");
@@ -170,7 +171,7 @@ public class SystemStatus extends ActivityWithMenu {
     }
 
     private void setCollectionMethod() {
-        collection_method.setText(prefs.getString("dex_collection_method", "BluetoothWixel"));
+        collection_method.setText(prefs.getString("dex_collection_method", "BluetoothWixel").replace("Dexbridge", "xBridge"));
     }
 
     public void setCurrentDevice() {
