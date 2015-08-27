@@ -73,7 +73,8 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
         Collections.sort(databases, new Comparator<File>() {
             @Override
             public int compare(File lhs, File rhs) {
-                return lhs.getName().compareTo(rhs.getName());
+                //descending sort
+                return rhs.getName().compareTo(lhs.getName());
             }
         });
     }
