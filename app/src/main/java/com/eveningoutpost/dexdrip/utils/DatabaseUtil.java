@@ -3,7 +3,6 @@ package com.eveningoutpost.dexdrip.utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.Environment;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -11,7 +10,6 @@ import android.widget.Toast;
 
 import com.activeandroid.Cache;
 import com.activeandroid.Configuration;
-import com.eveningoutpost.dexdrip.stats.BgReadingStats;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -23,8 +21,6 @@ import java.io.PrintStream;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
