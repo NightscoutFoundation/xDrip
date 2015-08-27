@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
@@ -42,10 +41,14 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
         setContentView(R.layout.activity_import_db);
 
         showWarningAndInstructions();
+    }
 
+    private void generateDBGui() {
         if (findAllDatabases()) {
             sortDatabasesAlphabetically();
             showDatabasesInList();
+        } else {
+            postImportDB("\'xdrip\' is not a directory... aborting.");
         }
     }
 
@@ -55,7 +58,13 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle("Import Instructions");
         alertDialog.setView(view);
-        alertDialog.setPositiveButton(R.string.ok, null);
+        alertDialog.setCancelable(false);
+        alertDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                generateDBGui();
+            }
+        });
         AlertDialog alert = alertDialog.create();
         alert.show();
     }
@@ -74,7 +83,6 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
 
         File file = new File(FileUtils.getExternalDir());
         if (!FileUtils.makeSureDirectoryExists(file.getAbsolutePath())) {
-            Toast.makeText(this, "Directory does not exist", Toast.LENGTH_LONG).show();
             return false;
         }
 
@@ -107,7 +115,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
         setListAdapter(adapter);
 
         if (databaseNames.size() == 0) {
-            Toast.makeText(this, "No databases found.", Toast.LENGTH_LONG).show();
+            postImportDB("No databases found.");
         }
     }
 
@@ -140,7 +148,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
             }
         });
         builder.setTitle("Confirm Import");
-        builder.setMessage("Do you really want to import '" + databases.get(position).getName() + "'?\n This may negatively affect the data integrity and stability of your system!");
+        builder.setMessage("Do you really want to import '" + databases.get(position).getName() + "'?\n This may negatively affect the data integrity of your system!");
         AlertDialog dialog = builder.create();
         dialog.show();
 
@@ -267,5 +275,4 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
 
         }
     }
-
 }
