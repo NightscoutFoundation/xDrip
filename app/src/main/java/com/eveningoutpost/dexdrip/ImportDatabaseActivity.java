@@ -6,13 +6,14 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
@@ -22,33 +23,104 @@ import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class ImportDatabaseActivity extends ListActivityWithMenu {
-    public static String menu_name = "Import Database";
-
     private final static String TAG = ImportDatabaseActivity.class.getSimpleName();
-
-    private Handler mHandler;
-
-    private ArrayList<String> found_databases;
-    private File[] databases;
-
+    public static String menu_name = "Import Database";
     AlertDialog progressDialog;
+    private Handler mHandler;
+    private ArrayList<String> databaseNames;
+    private ArrayList<File> databases;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mHandler = new Handler();
-        setContentView(R.layout.activity_bluetooth_scan);
-        found_databases = new ArrayList<String>();
+        setContentView(R.layout.activity_import_db);
+
+        showWarningAndInstructions();
+    }
+
+    private void generateDBGui() {
+        if (findAllDatabases()) {
+            sortDatabasesAlphabetically();
+            showDatabasesInList();
+        } else {
+            postImportDB("\'xdrip\' is not a directory... aborting.");
+        }
+    }
+
+    private void showWarningAndInstructions() {
+        LayoutInflater inflater= LayoutInflater.from(this);
+        View view=inflater.inflate(R.layout.import_db_warning, null);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle("Import Instructions");
+        alertDialog.setView(view);
+        alertDialog.setCancelable(false);
+        alertDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                generateDBGui();
+            }
+        });
+        AlertDialog alert = alertDialog.create();
+        alert.show();
+    }
+
+    private void sortDatabasesAlphabetically() {
+        Collections.sort(databases, new Comparator<File>() {
+            @Override
+            public int compare(File lhs, File rhs) {
+                return lhs.getName().compareTo(rhs.getName());
+            }
+        });
+    }
+
+    private boolean findAllDatabases() {
+        databases = new ArrayList<File>();
 
         File file = new File(FileUtils.getExternalDir());
-        if(!FileUtils.makeSureDirectoryExists(file.getAbsolutePath())){
-            Toast.makeText(this, "Directory does not exist", Toast.LENGTH_LONG).show();
-            return;
+        if (!FileUtils.makeSureDirectoryExists(file.getAbsolutePath())) {
+            return false;
         }
 
-        databases = file.listFiles(new FileFilter() {
+        // add from "root"
+        addAllDatabases(file, databases);
+
+        // add from level below (Andriod usually unzips to a subdirectory)
+        File[] subdirectories = file.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File path) {
+                return path.isDirectory();
+            }
+        });
+        for (int i = 0; i < subdirectories.length; i++) {
+            addAllDatabases(subdirectories[i], databases);
+        }
+        return true;
+    }
+
+    private void showDatabasesInList() {
+        databaseNames = new ArrayList<String>();
+
+        //show found databases in List
+        for (File db : databases) {
+            databaseNames.add(db.getName());
+        }
+
+        final ArrayAdapter adapter = new ArrayAdapter(this,
+                android.R.layout.simple_list_item_1, databaseNames);
+        setListAdapter(adapter);
+
+        if (databaseNames.size() == 0) {
+            postImportDB("No databases found.");
+        }
+    }
+
+    private void addAllDatabases(File file, ArrayList<File> databases) {
+        File[] files = file.listFiles(new FileFilter() {
             @Override
             public boolean accept(File pathname) {
                 if (pathname.getPath().endsWith(".sqlite")) return true;
@@ -56,16 +128,8 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
             }
         });
 
-        for (int i = 0; i < databases.length; i++) {
-            found_databases.add(databases[i].getName());
-        }
-
-        final ArrayAdapter adapter = new ArrayAdapter(this,
-                android.R.layout.simple_list_item_1, found_databases);
-        setListAdapter(adapter);
-
-        if(found_databases.size() == 0){
-            Toast.makeText(this, "No databases found.", Toast.LENGTH_LONG).show();
+        for (int i = 0; i < files.length; i++) {
+            databases.add(files[i]);
         }
     }
 
@@ -84,7 +148,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
             }
         });
         builder.setTitle("Confirm Import");
-        builder.setMessage("Do you really want to import '" + databases[position].getName() + "'?\n This may negatively affect the data integrity and stability of your system!");
+        builder.setMessage("Do you really want to import '" + databases.get(position).getName() + "'?\n This may negatively affect the data integrity of your system!");
         AlertDialog dialog = builder.create();
         dialog.show();
 
@@ -123,9 +187,9 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
         builder.setMessage("Importing, please wait");
         AlertDialog dialog = builder.create();
         dialog.show();
-        dialog.setMessage("Step 1: exporting current DB");
+        dialog.setMessage("Step 1: checking prerequisites");
         dialog.setCancelable(false);
-        LoadTask lt = new LoadTask(dialog, databases[position]);
+        LoadTask lt = new LoadTask(dialog, databases.get(position));
         lt.execute();
     }
 
@@ -163,6 +227,25 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
 
 
         protected String doInBackground(Void... args) {
+            //Check if db has the correct version:
+            try {
+                SQLiteDatabase db = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
+                int version = db.getVersion();
+                db.close();
+                if (getDBVersion() != version) {
+                    statusDialog.dismiss();
+                    return "Wrong Database version.\n(" + version + " instead of " + getDBVersion() + ")";
+                }
+            } catch (SQLiteException e){
+                statusDialog.dismiss();
+                return "Database cannot be opened... aborting.";
+            }
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    statusDialog.setMessage("Step 2: exporting current DB");
+                }
+            });
 
             String export = DatabaseUtil.saveSql(getBaseContext());
 
@@ -172,20 +255,10 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                 return "Exporting database not successfull... aborting.";
             }
 
-
-            //Check if db has the correct version:
-            SQLiteDatabase db = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
-            int version = db.getVersion();
-            db.close();
-            if (getDBVersion() != version){
-                statusDialog.dismiss();
-                return "Wrong Database version.\n("+version+" instead of "+getDBVersion()+")";
-            }
-
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    statusDialog.setMessage("Step 2: importing DB");
+                    statusDialog.setMessage("Step 3: importing DB");
                 }
             });
 
@@ -202,5 +275,4 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
 
         }
     }
-
 }

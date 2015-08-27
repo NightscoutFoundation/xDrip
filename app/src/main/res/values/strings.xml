@@ -108,5 +108,20 @@
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
     <string name="title_activity_alert_list">AlertList</string>
-
+    <string name="import_db_warning">
+        WARNING: Importing a database might cause SEVERE DATA LOSS. If you don\'t know why you want to use the import, don\'t use it.
+        In regular operation of xDrip it is not needed. Just use it in case of previous data loss.
+        If you are not sure what to do, in case you still want to use the import, please ask an expert user.\n\n
+        Instructions:\n
+        Place the database you want to install in the directory \'xdrip\' on your primary external storage
+        (sometimes called \'internal storage\' by the file browser).
+        It is the same directory xDrip exports to.\n
+        In case you have a zipped export in this directory, unzip it (usually longpress->extract on the file in the file browser).
+        If it gets extracted to a subdirectory it will still be found by the import.\n\n
+        After having placed the file, start this import routine.
+        Scroll to the correct database name, click on it and follow the instructions on the screen.  \n\n
+        ATTENTION: A Database can only be imported if it has the same database version number currently needed for this xDrip version.
+        The database verions number may change with xDrip updates.
+        It is best to import the database with the same version of the xDrip app it was exported and then update xDrip.
+    </string>
 </resources>
