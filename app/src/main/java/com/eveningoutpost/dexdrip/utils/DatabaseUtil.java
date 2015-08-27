@@ -264,12 +264,14 @@ public class DatabaseUtil {
 
 
 
-    public static void loadSql(Context context, String path) {
+    public static String loadSql(Context context, String path) {
 
         FileInputStream srcStream = null;
         FileChannel src = null;
         FileOutputStream destStream = null;
         FileChannel dst = null;
+
+        String returnString = "";
 
         try {
             String databaseName = new Configuration.Builder(context).create().getDatabaseName();
@@ -277,7 +279,7 @@ public class DatabaseUtil {
             File replacement = new File(path);
             if (!replacement.exists()) {
                 Log.d(TAG, "File does not exist: " + path);
-                return;
+                return "File does not exist: " + path;
             }
             if (currentDB.canWrite()) {
                 srcStream = new FileInputStream(replacement);
@@ -285,11 +287,15 @@ public class DatabaseUtil {
                 destStream = new FileOutputStream(currentDB);
                 dst = destStream.getChannel();
                 dst.transferFrom(src, 0, src.size());
+                returnString = "Successfully imported database";
             } else {
                 Log.v(TAG, "loadSql: No Write access");
+                returnString = "loadSql: No Write access";
             }
         } catch (IOException e) {
             Log.e(TAG, "Something went wrong importing Database", e);
+            returnString = "Something went wrong importing database";
+
 
         } finally {
             if (src != null) try {
@@ -313,6 +319,7 @@ public class DatabaseUtil {
                 Log.e(TAG, "Something went wrong closing: ", e1);
 
             }
+            return returnString;
         }
     }
 }
