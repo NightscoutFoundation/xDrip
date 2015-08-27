@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -39,10 +40,23 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
         mHandler = new Handler();
         setContentView(R.layout.activity_import_db);
 
+        showWarningAndInstructions();
+
         if (findAllDatabases()) {
             sortDatabasesAlphabetically();
             showDatabasesInList();
         }
+    }
+
+    private void showWarningAndInstructions() {
+        LayoutInflater inflater= LayoutInflater.from(this);
+        View view=inflater.inflate(R.layout.import_db_warning, null);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle("Import Instructions");
+        alertDialog.setView(view);
+        alertDialog.setPositiveButton(R.string.ok, null);
+        AlertDialog alert = alertDialog.create();
+        alert.show();
     }
 
     private void sortDatabasesAlphabetically() {
