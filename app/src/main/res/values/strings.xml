@@ -14,6 +14,7 @@
     <string name="menu_refresh">Refresh</string>
     <string name="menu_export_database">Export database</string>
     <string name="menu_export_csv_sidiary">Export CSV (SiDiary format)</string>
+    <string name="menu_import_db">Import database</string>
     <string name="error_bluetooth_not_supported">Error: Bluetooth not supported by this device</string>
     <string name="unknown_device">Unrecognized Device</string>
     <string name="connecting_to_device">Connecting to device</string>
@@ -38,6 +39,10 @@
     <string name="title_activity_usb_connected">UsbConnectedActivity</string>
     <string name="snooze">Snooze</string>
     <string name="snooze_hint">Snooze alert for x minutes</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
+
 
     <string-array name="menu_options">
         <item>Dex Drip</item>
