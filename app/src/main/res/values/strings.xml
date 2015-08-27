@@ -120,7 +120,8 @@
         If it gets extracted to a subdirectory it will still be found by the import.\n\n
         After having placed the file, start this import routine.
         Scroll to the correct database name, click on it and follow the instructions on the screen.  \n\n
-        Attentions: Databases can only be imported if they have the same database version number that may change with xDrip updates.
+        ATTENTION: A Database can only be imported if it has the same database version number currently needed for this xDrip version.
+        The database verions number may change with xDrip updates.
         It is best to import the database with the same version of the xDrip app it was exported and then update xDrip.
     </string>
 </resources>

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -178,7 +179,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
         builder.setMessage("Importing, please wait");
         AlertDialog dialog = builder.create();
         dialog.show();
-        dialog.setMessage("Step 1: exporting current DB");
+        dialog.setMessage("Step 1: checking prerequisites");
         dialog.setCancelable(false);
         LoadTask lt = new LoadTask(dialog, databases.get(position));
         lt.execute();
@@ -218,6 +219,25 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
 
 
         protected String doInBackground(Void... args) {
+            //Check if db has the correct version:
+            try {
+                SQLiteDatabase db = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
+                int version = db.getVersion();
+                db.close();
+                if (getDBVersion() != version) {
+                    statusDialog.dismiss();
+                    return "Wrong Database version.\n(" + version + " instead of " + getDBVersion() + ")";
+                }
+            } catch (SQLiteException e){
+                statusDialog.dismiss();
+                return "Database cannot be opened... aborting.";
+            }
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    statusDialog.setMessage("Step 2: exporting current DB");
+                }
+            });
 
             String export = DatabaseUtil.saveSql(getBaseContext());
 
@@ -227,20 +247,10 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                 return "Exporting database not successfull... aborting.";
             }
 
-
-            //Check if db has the correct version:
-            SQLiteDatabase db = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
-            int version = db.getVersion();
-            db.close();
-            if (getDBVersion() != version) {
-                statusDialog.dismiss();
-                return "Wrong Database version.\n(" + version + " instead of " + getDBVersion() + ")";
-            }
-
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    statusDialog.setMessage("Step 2: importing DB");
+                    statusDialog.setMessage("Step 3: importing DB");
                 }
             });
 
