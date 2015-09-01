@@ -3,7 +3,6 @@ package com.eveningoutpost.dexdrip.utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.Environment;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -11,7 +10,6 @@ import android.widget.Toast;
 
 import com.activeandroid.Cache;
 import com.activeandroid.Configuration;
-import com.eveningoutpost.dexdrip.stats.BgReadingStats;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -23,8 +21,6 @@ import java.io.PrintStream;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -85,11 +81,13 @@ public class DatabaseUtil {
             } else {
                 Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG).show();
                 Log.d(TAG, "SD card not writable!");
+                zipFilename = null;
             }
 
         } catch (IOException e) {
             Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG).show();
             Log.e(TAG, "Exception while writing DB", e);
+            zipFilename = null;
         } finally {
             if (biStream != null) try {
                 biStream.close();
@@ -262,12 +260,14 @@ public class DatabaseUtil {
 
 
 
-    public static void loadSql(Context context, String path) {
+    public static String loadSql(Context context, String path) {
 
         FileInputStream srcStream = null;
         FileChannel src = null;
         FileOutputStream destStream = null;
         FileChannel dst = null;
+
+        String returnString = "";
 
         try {
             String databaseName = new Configuration.Builder(context).create().getDatabaseName();
@@ -275,7 +275,7 @@ public class DatabaseUtil {
             File replacement = new File(path);
             if (!replacement.exists()) {
                 Log.d(TAG, "File does not exist: " + path);
-                return;
+                return "File does not exist: " + path;
             }
             if (currentDB.canWrite()) {
                 srcStream = new FileInputStream(replacement);
@@ -283,11 +283,15 @@ public class DatabaseUtil {
                 destStream = new FileOutputStream(currentDB);
                 dst = destStream.getChannel();
                 dst.transferFrom(src, 0, src.size());
+                returnString = "Successfully imported database";
             } else {
                 Log.v(TAG, "loadSql: No Write access");
+                returnString = "loadSql: No Write access";
             }
         } catch (IOException e) {
             Log.e(TAG, "Something went wrong importing Database", e);
+            returnString = "Something went wrong importing database";
+
 
         } finally {
             if (src != null) try {
@@ -311,6 +315,7 @@ public class DatabaseUtil {
                 Log.e(TAG, "Something went wrong closing: ", e1);
 
             }
+            return returnString;
         }
     }
 }

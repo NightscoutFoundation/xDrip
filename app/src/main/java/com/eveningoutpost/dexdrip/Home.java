@@ -422,9 +422,15 @@ public class Home extends ActivityWithMenu {
             return true;
         }
 
+        if (item.getItemId() == R.id.action_import_db) {
+            startActivity(new Intent(this, ImportDatabaseActivity.class));
+            return true;
+        }
 
-        if (item.getItemId() == R.id.action_export_csv) {
-            new AsyncTask<Void, Void, String>() {
+
+
+        if (item.getItemId() == R.id.action_export_csv_sidiary) {
+          new AsyncTask<Void, Void, String>() {
                 @Override
                 protected String doInBackground(Void... params) {
                     return DatabaseUtil.saveCSV(getBaseContext());
