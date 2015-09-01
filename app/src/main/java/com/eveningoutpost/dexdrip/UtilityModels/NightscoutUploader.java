@@ -265,7 +265,7 @@ public class NightscoutUploader {
         }
 
         private void populateV1APIBGEntry(JSONObject json, BgReading record) throws Exception {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
             format.setTimeZone(TimeZone.getDefault());
             json.put("device", "xDrip-"+prefs.getString("dex_collection_method", "BluetoothWixel"));
             json.put("date", record.timestamp);
@@ -280,7 +280,7 @@ public class NightscoutUploader {
         }
 
         private void populateLegacyAPIEntry(JSONObject json, BgReading record) throws Exception {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
             format.setTimeZone(TimeZone.getDefault());
             json.put("device", "xDrip-"+prefs.getString("dex_collection_method", "BluetoothWixel"));
             json.put("date", record.timestamp);
@@ -290,7 +290,7 @@ public class NightscoutUploader {
         }
 
         private void populateV1APIMeterReadingEntry(JSONObject json, Calibration record) throws Exception {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
             format.setTimeZone(TimeZone.getDefault());
             json.put("device", "xDrip-"+prefs.getString("dex_collection_method", "BluetoothWixel"));
             json.put("type", "mbg");
@@ -300,7 +300,7 @@ public class NightscoutUploader {
         }
 
         private void populateV1APICalibrationEntry(JSONObject json, Calibration record) throws Exception {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
             format.setTimeZone(TimeZone.getDefault());
             json.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
             json.put("type", "cal");
@@ -343,7 +343,7 @@ public class NightscoutUploader {
 
         private boolean doMongoUpload(SharedPreferences prefs, List<BgReading> glucoseDataSets,
                                       List<Calibration> meterRecords,  List<Calibration> calRecords) {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
             format.setTimeZone(TimeZone.getDefault());
 
             String dbURI = prefs.getString("cloud_storage_mongodb_uri", null);
