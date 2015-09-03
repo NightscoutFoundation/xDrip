@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="community_help_category"
+        android:title="Help the community">
+        <CheckBoxPreference
+            android:key="store_sensor_location"
+            android:title="Store sensor locaton to help algorithm improvment"
+            android:summary="Help the developers improve the xbridge algorithm."
+            android:defaultValue="true" />
+    </PreferenceCategory>
+</PreferenceScreen>

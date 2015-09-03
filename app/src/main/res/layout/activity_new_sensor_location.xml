@@ -1,0 +1,111 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/drawer_layout"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    tools:context="com.eveningoutpost.dexdrip.Home">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center_horizontal">
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/scrollView4" >
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center_horizontal">
+
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/sensor_location_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left"
+                        android:text="Xdrip is collecting data for algorthm improvment. In the future you will be asked to allow the developers access your data. You will have to donote this data actively. This will not happen automaticly. Back for not entering the data"
+                        android:textSize="15sp"/>
+
+
+
+                    <RadioGroup 
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/textView"
+                        android:id="@+id/myRadioGroup"
+                        android:checkedButton="@+id/sensor_location_private" >
+
+                        <RadioButton 
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/sensor_location_private"
+                            android:text="private" />
+                        
+                        <RadioButton 
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/sensor_location_hand"
+                            android:text="hand" />
+
+                        <RadioButton 
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/sensor_location_bottom"
+                            android:text="bottom" />
+				        
+                        <RadioButton 
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/sensor_location_other"
+                            android:text="other" />
+                    </RadioGroup>
+
+                    <EditText
+                        android:id="@+id/edit_sensor_location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:ems="10"
+                        android:autoText="false"
+                        android:text=""
+                        android:singleLine="true"
+                        android:textAlignment="center"
+                        android:textSize="15sp"
+                        android:layout_alignParentStart="true" />
+                </LinearLayout>
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pref_sensor_location_dont_ask_again"
+                    android:id="@+id/sensorLocationDontAskAgain"
+                    android:checked="false" />
+
+                
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Save sensor location"
+                    android:id="@+id/startNewSensor"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp" />
+            </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
+
+    <fragment android:id="@+id/navigation_drawer"
+        android:layout_width="@dimen/navigation_drawer_width" android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:name="com.eveningoutpost.dexdrip.NavigationDrawerFragment"
+        tools:layout="@layout/fragment_navigation_drawer" />
+
+</android.support.v4.widget.DrawerLayout>
+

@@ -81,6 +81,10 @@
             android:label="@string/title_activity_start_new_sensor" >
         </activity>
         <activity
+            android:name=".NewSensorLocation"
+            android:label="@string/title_activity_new_sensor_location" >
+        </activity>
+        <activity
             android:name=".StopSensor"
             android:label="@string/title_activity_stop_sensor" >
         </activity>
