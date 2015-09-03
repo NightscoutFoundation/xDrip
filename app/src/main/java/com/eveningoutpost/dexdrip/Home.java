@@ -5,13 +5,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -149,6 +154,40 @@ public class Home extends ActivityWithMenu {
 
         chart.setZoomType(ZoomType.HORIZONTAL);
 
+        //Transmitter Battery Level
+        final Sensor sensor = Sensor.currentSensor();
+        if (sensor != null && sensor.latest_battery_level != 0 && sensor.latest_battery_level <= Constants.TRANSMITTER_BATTERY_LOW) {
+            Drawable background = new Drawable() {
+
+                @Override
+                public void draw(Canvas canvas) {
+
+                    DisplayMetrics metrics = getApplicationContext().getResources().getDisplayMetrics();
+                    int px = (int) (30 * (metrics.densityDpi / 160f));
+                    Paint paint = new Paint();
+                    paint.setTextSize(px);
+                    paint.setAntiAlias(true);
+                    paint.setColor(Color.parseColor("#FFFFAA"));
+                    paint.setStyle(Paint.Style.STROKE);
+                    paint.setAlpha(100);
+                    canvas.drawText("transmitter battery", 10, chart.getHeight() / 3 - (int) (1.2 * px), paint);
+                    if(sensor.latest_battery_level <= Constants.TRANSMITTER_BATTERY_EMPTY){
+                        paint.setTextSize((int)(px*1.5));
+                        canvas.drawText("VERY LOW", 10, chart.getHeight() / 3, paint);
+                    } else {
+                        canvas.drawText("low", 10, chart.getHeight() / 3, paint);
+                    }
+                }
+
+                @Override
+                public void setAlpha(int alpha) {}
+                @Override
+                public void setColorFilter(ColorFilter cf) {}
+                @Override
+                public int getOpacity() {return 0;}
+            };
+            chart.setBackground(background);
+        }
         previewChart = (PreviewLineChartView) findViewById(R.id.chart_preview);
         previewChart.setZoomType(ZoomType.HORIZONTAL);
 
@@ -507,3 +546,4 @@ public class Home extends ActivityWithMenu {
         }
     }
 }
+
