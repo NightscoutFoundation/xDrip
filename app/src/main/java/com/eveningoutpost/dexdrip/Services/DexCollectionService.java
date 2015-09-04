@@ -94,7 +94,7 @@ public class DexCollectionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT){
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2){
             stopSelf();
             return START_NOT_STICKY;
         }
