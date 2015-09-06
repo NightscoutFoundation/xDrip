@@ -242,7 +242,11 @@ public class BgReading extends Model implements ShareUploadableBg{
             bgReading.calculated_value_slope = bgReading.slopefromName(egvRecord.getTrend().friendlyTrendName());
             bgReading.noise = egvRecord.noiseValue();
             String friendlyName = egvRecord.getTrend().friendlyTrendName();
-            if(friendlyName.compareTo("NONE") == 0 || friendlyName.compareTo("NOT_COMPUTABLE") == 0 || friendlyName.compareTo("OUT_OF_RANGE") == 0) {
+            if(friendlyName.compareTo("NONE") == 0 ||
+                    friendlyName.compareTo("NOT_COMPUTABLE") == 0 ||
+                    friendlyName.compareTo("NOT COMPUTABLE") == 0 ||
+                    friendlyName.compareTo("OUT OF RANGE")   == 0 ||
+                    friendlyName.compareTo("OUT_OF_RANGE") == 0) {
                 bgReading.hide_slope = true;
             }
             bgReading.save();
@@ -269,7 +273,7 @@ public class BgReading extends Model implements ShareUploadableBg{
                 return bgReading;
             }
         }
-        Log.w(TAG, "getForTimestamp: No luck finding a BG timestamp match");
+        Log.d(TAG, "getForTimestamp: No luck finding a BG timestamp match");
         return null;
     }
 
@@ -413,7 +417,7 @@ public class BgReading extends Model implements ShareUploadableBg{
             arrow = "DoubleUp";
         }
         if(hide_slope) {
-            arrow = "NOT_COMPUTABLE";
+            arrow = "NOT COMPUTABLE";
         }
         return arrow;
     }
@@ -434,7 +438,11 @@ public class BgReading extends Model implements ShareUploadableBg{
             slope_by_minute = 3.5;
         } else if (slope_name.compareTo("DoubleUp") == 0) {
             slope_by_minute = 4;
-        } else if (slope_name.compareTo("NOT_COMPUTABLE") == 0 || slope_name.compareTo("OUT_OF_RANGE") == 0 || slope_name.compareTo("NONE") == 0) {
+        } else if (slope_name.compareTo("NOT_COMPUTABLE") == 0 ||
+                   slope_name.compareTo("NOT COMPUTABLE") == 0 ||
+                   slope_name.compareTo("OUT_OF_RANGE")   == 0 ||
+                   slope_name.compareTo("OUT OF RANGE")   == 0 ||
+                   slope_name.compareTo("NONE") == 0) {
             slope_by_minute = 0;
         }
         return slope_by_minute /60000;
@@ -521,6 +529,16 @@ public class BgReading extends Model implements ShareUploadableBg{
                 .orderBy("timestamp desc")
                 .execute();
     }
+
+    public static List<BgReading> futureReadings() {
+        double timestamp = new Date().getTime();
+        return new Select()
+                .from(BgReading.class)
+                .where("timestamp > " + timestamp)
+                .orderBy("timestamp desc")
+                .execute();
+    }
+
     public static BgReading findByUuid(String uuid) {
         return new Select()
                 .from(BgReading.class)
@@ -780,7 +798,7 @@ public class BgReading extends Model implements ShareUploadableBg{
             return;
         }
         if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
-            Log.w("NOTIFICATIONS", "checkForDropAllert: Notifications are currently disabled!!");
+            Log.d("NOTIFICATIONS", "checkForDropAllert: Notifications are currently disabled!!");
             return;
         }
 
@@ -968,7 +986,7 @@ public class BgReading extends Model implements ShareUploadableBg{
             Log.d(TAG_ALERT, "Since we did not find a good period, but we also did not find a single bad value, we assume things are good");
             return 0l;
         }
-        Log.w(TAG_ALERT, "We scanned all over, but could not find a good period. we have a bad value, so assuming that the whole period is bad" +
+        Log.d(TAG_ALERT, "We scanned all over, but could not find a good period. we have a bad value, so assuming that the whole period is bad" +
                 " returning " + interstingTime);
         // Note that we might now have all the points, and in this case, since we don't have a good period I return a bad period.
         return interstingTime;

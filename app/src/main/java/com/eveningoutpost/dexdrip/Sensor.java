@@ -27,6 +27,7 @@ public class Sensor extends Model {
     public long stopped_at;
 
 //    @Expose
+    //latest minimal battery level
     @Column(name = "latest_battery_level")
     public int latest_battery_level;
 

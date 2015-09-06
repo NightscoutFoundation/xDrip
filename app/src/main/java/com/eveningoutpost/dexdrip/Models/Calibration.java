@@ -256,7 +256,7 @@ public class Calibration extends Model {
                     calibration.bg = calSubrecord.getCalBGL();
                     calibration.timestamp = calSubrecord.getDateEntered().getTime() + addativeOffset;
                     if (calibration.timestamp > new Date().getTime()) {
-                        Log.e(TAG, "ERROR - Calibration timestamp is from the future, wont save!");
+                        Log.w(TAG, "ERROR - Calibration timestamp is from the future, wont save!");
                         return;
                     }
                     calibration.raw_value = calSubrecord.getCalRaw() / 1000;
@@ -375,7 +375,7 @@ public class Calibration extends Model {
                 Calibration.requestCalibrationIfRangeTooNarrow();
             }
         } else {
-            Log.w("CALIBRATION", "No sensor, cant save!");
+            Log.d("CALIBRATION", "No sensor, cant save!");
         }
         return Calibration.last();
     }
@@ -446,7 +446,7 @@ public class Calibration extends Model {
                 calibration.save();
             }
         } else {
-            Log.w(TAG, "NO Current active sensor found!!");
+            Log.d(TAG, "NO Current active sensor found!!");
         }
     }
 
@@ -664,6 +664,15 @@ public class Calibration extends Model {
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
                 .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 4)))
+                .orderBy("timestamp desc")
+                .execute();
+    }
+
+    public static List<Calibration> futureCalibrations() {
+        double timestamp = new Date().getTime();
+        return new Select()
+                .from(Calibration.class)
+                .where("timestamp > " + timestamp)
                 .orderBy("timestamp desc")
                 .execute();
     }

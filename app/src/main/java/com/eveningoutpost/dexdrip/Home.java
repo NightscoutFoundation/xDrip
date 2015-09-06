@@ -5,14 +5,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,9 +23,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -40,8 +45,8 @@ import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 
-import lecho.lib.hellocharts.listener.ViewportChangeListener;
 import lecho.lib.hellocharts.gesture.ZoomType;
+import lecho.lib.hellocharts.listener.ViewportChangeListener;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
 import lecho.lib.hellocharts.view.PreviewLineChartView;
@@ -150,6 +155,40 @@ public class Home extends ActivityWithMenu {
 
         chart.setZoomType(ZoomType.HORIZONTAL);
 
+        //Transmitter Battery Level
+        final Sensor sensor = Sensor.currentSensor();
+        if (sensor != null && sensor.latest_battery_level != 0 && sensor.latest_battery_level <= Constants.TRANSMITTER_BATTERY_LOW) {
+            Drawable background = new Drawable() {
+
+                @Override
+                public void draw(Canvas canvas) {
+
+                    DisplayMetrics metrics = getApplicationContext().getResources().getDisplayMetrics();
+                    int px = (int) (30 * (metrics.densityDpi / 160f));
+                    Paint paint = new Paint();
+                    paint.setTextSize(px);
+                    paint.setAntiAlias(true);
+                    paint.setColor(Color.parseColor("#FFFFAA"));
+                    paint.setStyle(Paint.Style.STROKE);
+                    paint.setAlpha(100);
+                    canvas.drawText("transmitter battery", 10, chart.getHeight() / 3 - (int) (1.2 * px), paint);
+                    if(sensor.latest_battery_level <= Constants.TRANSMITTER_BATTERY_EMPTY){
+                        paint.setTextSize((int)(px*1.5));
+                        canvas.drawText("VERY LOW", 10, chart.getHeight() / 3, paint);
+                    } else {
+                        canvas.drawText("low", 10, chart.getHeight() / 3, paint);
+                    }
+                }
+
+                @Override
+                public void setAlpha(int alpha) {}
+                @Override
+                public void setColorFilter(ColorFilter cf) {}
+                @Override
+                public int getOpacity() {return 0;}
+            };
+            chart.setBackground(background);
+        }
         previewChart = (PreviewLineChartView) findViewById(R.id.chart_preview);
         previewChart.setZoomType(ZoomType.HORIZONTAL);
 
@@ -179,14 +218,14 @@ public class Home extends ActivityWithMenu {
             try {
                 unregisterReceiver(_broadcastReceiver);
             } catch (IllegalArgumentException e) {
-                Log.e(TAG, "_broadcast_receiver not registered", e);
+                UserError.Log.e(TAG, "_broadcast_receiver not registered", e);
             }
         }
         if (newDataReceiver != null) {
             try {
                 unregisterReceiver(newDataReceiver);
             } catch (IllegalArgumentException e) {
-                Log.e(TAG, "newDataReceiver not registered", e);
+                UserError.Log.e(TAG, "newDataReceiver not registered", e);
             }
         }
     }
@@ -430,6 +469,43 @@ public class Home extends ActivityWithMenu {
 
             return true;
         }
+
+        if (item.getItemId() == R.id.action_import_db) {
+            startActivity(new Intent(this, ImportDatabaseActivity.class));
+            return true;
+        }
+
+
+
+        if (item.getItemId() == R.id.action_export_csv_sidiary) {
+          new AsyncTask<Void, Void, String>() {
+                @Override
+                protected String doInBackground(Void... params) {
+                    return DatabaseUtil.saveCSV(getBaseContext());
+                }
+
+                @Override
+                protected void onPostExecute(String filename) {
+                    super.onPostExecute(filename);
+                    if (filename != null) {
+                        SnackbarManager.show(
+                                Snackbar.with(Home.this)
+                                        .type(SnackbarType.MULTI_LINE)
+                                        .duration(4000)
+                                        .text("Exported to " + filename) // text to display
+                                        .actionLabel("Share") // action button label
+                                        .actionListener(new SnackbarUriListener(Uri.fromFile(new File(filename)))),
+                                Home.this);
+                    } else {
+                        Toast.makeText(Home.this, "Could not export CSV :(", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }.execute();
+
+            return true;
+        }
+
+
         return super.onOptionsItemSelected(item);
     }
 

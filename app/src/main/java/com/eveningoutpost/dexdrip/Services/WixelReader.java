@@ -411,7 +411,7 @@ public class WixelReader  extends Thread {
             Sensor sensor = Sensor.currentSensor();
             if (sensor != null) {
                 BgReading bgReading = BgReading.create(transmitterData.raw_data, filtered_data, mContext, CaptureTime);
-                sensor.latest_battery_level = transmitterData.sensor_battery_level;
+                sensor.latest_battery_level = (sensor.latest_battery_level!=0)?Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level):transmitterData.sensor_battery_level;;
                 sensor.save();
             } else {
                 Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");

@@ -115,8 +115,7 @@ public class DexShareCollectionService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(getApplicationContext().POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                "DexShareCollectionStart");
+        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "DexShareCollectionStart");
         wakeLock.acquire(40000);
         try {
 
@@ -523,12 +522,7 @@ public class DexShareCollectionService extends Service {
             if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
                 final int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
                 if (state == BluetoothDevice.BOND_BONDED) {
-                    Log.d(TAG, "CALLBACK RECIEVED Bonded");
                     authenticateConnection();
-                } else if (state == BluetoothDevice.BOND_NONE) {
-                    Log.d(TAG, "CALLBACK RECIEVED: Not Bonded");
-                } else if (state == BluetoothDevice.BOND_BONDING) {
-                    Log.d(TAG, "CALLBACK RECIEVED: Trying to bond");
                 }
             }
         }
@@ -538,9 +532,8 @@ public class DexShareCollectionService extends Service {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             Log.i(TAG, "Gatt state change status: " + status + " new state: " + newState);
-            writeStatusConnectionFailures(status);
             if (status == 133) {
-                Log.e(TAG, "Got the status 133 bug, GROSS!!");
+                Log.e(TAG, "Got the status 133 bug, bad news! Might require devices to forget each other");
             }
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mBluetoothGatt = gatt;
@@ -640,7 +633,7 @@ public class DexShareCollectionService extends Service {
                     state_authInProgress = true;
                     bondDevice();
                 } else {
-                    Log.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug?");
+                    Log.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug? Have the dexcom forget whatever device it was previously paired to");
                 }
             } else {
                 Log.e(TAG, "Unknown error writing descriptor");
@@ -662,7 +655,7 @@ public class DexShareCollectionService extends Service {
                     state_authInProgress = true;
                     bondDevice();
                 } else {
-                    Log.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug?");
+                    Log.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug? Have the dexcom forget whatever device it was previously paired to");
                 }
             } else {
                 Log.e(TAG, "Unknown error writing Characteristic");
@@ -675,18 +668,5 @@ public class DexShareCollectionService extends Service {
         registerReceiver(mPairReceiver, bondintent);
         if(!share2){ device.setPin("000000".getBytes()); }
         device.createBond();
-    }
-
-    private void writeStatusConnectionFailures(int status) {
-        if(status != 0) {
-            Log.e(TAG, "ERRR: GATT_WRITE_NOT_PERMITTED " + (status & BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
-            Log.e(TAG, "ERRR: GATT_INSUFFICIENT_AUTHENTICATION " + (status & BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION));
-            Log.e(TAG, "ERRR: GATT_REQUEST_NOT_SUPPORTED " + (status & BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED));
-            Log.e(TAG, "ERRR: GATT_INSUFFICIENT_ENCRYPTION " + (status & BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION));
-            Log.e(TAG, "ERRR: GATT_INVALID_OFFSET " + (status & BluetoothGatt.GATT_INVALID_OFFSET));
-            Log.e(TAG, "ERRR: GATT_FAILURE " + (status & BluetoothGatt.GATT_FAILURE));
-            Log.e(TAG, "ERRR: GATT_INVALID_ATTRIBUTE_LENGTH " + (status & BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH));
-            Log.e(TAG, "ERRR: GATT_READ_NOT_PERMITTED" + (status & BluetoothGatt.GATT_READ_NOT_PERMITTED));
-        }
     }
 }
