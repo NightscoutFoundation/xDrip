@@ -271,7 +271,7 @@ public class Notifications extends IntentService {
 
         //Text to speech
         Log.d("BgToSpeech", "gonna call speak");
-        BgToSpeech.getSingleton(context).speak(bgReading.calculated_value);
+        BgToSpeech.getSingleton(context).speak(bgReading.calculated_value, bgReading.timestamp);
     }
 
     private void  ArmTimer() {

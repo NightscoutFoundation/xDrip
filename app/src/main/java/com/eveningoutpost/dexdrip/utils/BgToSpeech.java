@@ -22,6 +22,8 @@ public class BgToSpeech {
 
     private TextToSpeech tts = null;
 
+    private long timestamp = 0;
+
     public static BgToSpeech getSingleton(Context context){
 
         if(instance == null) {
@@ -36,12 +38,19 @@ public class BgToSpeech {
 
 
 
-    public void speak(final double value){
+    public void speak(final double value, long timestamp){
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         if (! prefs.getBoolean("bg_to_speech", false)){
             return;
         }
+
+        if(this.timestamp == timestamp){
+            return;
+        }
+
+        this.timestamp = timestamp;
+
         if(tts == null){
             tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
                 @Override
