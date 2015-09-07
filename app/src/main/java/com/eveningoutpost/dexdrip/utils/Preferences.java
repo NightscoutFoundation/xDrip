@@ -1,6 +1,8 @@
 package com.eveningoutpost.dexdrip.utils;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -14,7 +16,6 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceGroup;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
@@ -24,7 +25,6 @@ import android.util.Log;
 
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.PebbleSync;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -59,6 +59,9 @@ public class Preferences extends PreferenceActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+
+
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (scanResult == null || scanResult.getContents() == null) {
@@ -127,9 +130,9 @@ public class Preferences extends PreferenceActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        preferenceFragment = new AllPrefsFragment();
         getFragmentManager().beginTransaction().replace(android.R.id.content,
-                new AllPrefsFragment()).commit();
+                preferenceFragment).commit();
     }
 
     @Override
@@ -228,10 +231,11 @@ public class Preferences extends PreferenceActivity {
                         .getString(preference.getKey(), ""));
     }
 
+
     public static class AllPrefsFragment extends PreferenceFragment {
        @Override
         public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
+           super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_license);
             addPreferencesFromResource(R.xml.pref_general);
             bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("highValue"));
@@ -261,7 +265,7 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("cloud_storage_api_base"));
 
             addPreferencesFromResource(R.xml.pref_advanced_settings);
-
+            bindTTSListener();
             final Preference collectionMethod = findPreference("dex_collection_method");
             final Preference runInForeground = findPreference("run_service_in_foreground");
             final Preference wifiRecievers = findPreference("wifi_recievers_addresses");
@@ -405,6 +409,32 @@ public class Preferences extends PreferenceActivity {
             });
         }
 
+        private void bindTTSListener(){
+            findPreference("bg_to_speech").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    if ((Boolean)newValue) {
+
+                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                        alertDialog.setTitle("Install Text-To-Speech Data?");
+                        alertDialog.setMessage("Install Text-To-Speech Data?");
+                        alertDialog.setCancelable(true);
+                        alertDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                BgToSpeech.installTTSData(getActivity());
+                            }
+                        });
+                        alertDialog.setNegativeButton(R.string.cancel, null);
+                        AlertDialog alert = alertDialog.create();
+                        alert.show();
+                    }
+                    return true;
+                }
+            });
+
+        }
+
     }
 
     public static boolean isNumeric(String str) {
@@ -416,3 +446,4 @@ public class Preferences extends PreferenceActivity {
         return true;
     }
 }
+

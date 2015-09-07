@@ -35,6 +35,7 @@ import com.eveningoutpost.dexdrip.Models.CalibrationRequest;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -267,6 +268,10 @@ public class Notifications extends IntentService {
         } else {
             clearAllCalibrationNotifications();
         }
+
+        //Text to speech
+        Log.d("BgToSpeech", "gonna call speak");
+        BgToSpeech.getSingleton(context).speak(bgReading.calculated_value);
     }
 
     private void  ArmTimer() {
@@ -562,3 +567,4 @@ public class Notifications extends IntentService {
         }
     }
 }
+
