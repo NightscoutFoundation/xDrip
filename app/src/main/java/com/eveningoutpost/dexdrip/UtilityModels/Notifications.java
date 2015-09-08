@@ -275,7 +275,6 @@ public class Notifications extends IntentService {
         } else {
             clearAllCalibrationNotifications();
         }
-
     }
 
     private void  ArmTimer() {
