@@ -232,7 +232,7 @@ public class Preferences extends PreferenceActivity {
     public static class AllPrefsFragment extends PreferenceFragment {
        @Override
         public void onCreate(Bundle savedInstanceState) {
-           super.onCreate(savedInstanceState);
+            super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_license);
             addPreferencesFromResource(R.xml.pref_general);
             bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("highValue"));
