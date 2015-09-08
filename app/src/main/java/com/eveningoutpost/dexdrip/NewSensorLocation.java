@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TimePicker;
@@ -23,27 +25,71 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
+
+class Location {
+    Location(String location, int location_id) {
+        this.location = location;
+        this.location_id = location_id;
+    }
+    public String location;
+    public int location_id;
+}
 
 
 public class NewSensorLocation extends ActivityWithMenu {
     public static String menu_name = "New sensor location";
     private Button button;
     private RadioGroup radioGroup;
-    private EditText sensor_location;
+    private EditText sensor_location_other;
     CheckBox DontAskAgain;
+    List<Location> locations;
+    
+    final int PRIVATE_ID = 200;
+    final int OTHER_ID = 201;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_sensor_location);
         button = (Button)findViewById(R.id.startNewSensor);
-        sensor_location = (EditText) findViewById(R.id.edit_sensor_location);
-        sensor_location.setEnabled(false);
+        sensor_location_other = (EditText) findViewById(R.id.edit_sensor_location);
+        sensor_location_other.setEnabled(false);
         DontAskAgain = (CheckBox)findViewById(R.id.sensorLocationDontAskAgain);
+        radioGroup = (RadioGroup) findViewById(R.id.myRadioGroup);
         addListenerOnButton();
+        
+        locations = new LinkedList<Location>();
+        
+        locations.add(new Location("private", PRIVATE_ID));
+        locations.add(new Location("Upper arm", 1));
+        locations.add(new Location("Thigh", 2));
+        locations.add(new Location("Belly (abdomen)", 3));
+        locations.add(new Location("Tummy", 4));
+        locations.add(new Location("Lower back", 5));
+        locations.add(new Location("buttocks", 6));
+        locations.add(new Location("other", OTHER_ID));
+        
+        for(Location location : locations) {
+            AddButton(location.location, location.location_id);
+        }
+        radioGroup.check(PRIVATE_ID);
+        
     }
 
+    
+    private void AddButton(String text, int id) {
+        RadioButton newRadioButton = new RadioButton(this);
+        newRadioButton.setText(text);
+        newRadioButton.setId(id);
+        LinearLayout.LayoutParams layoutParams = new RadioGroup.LayoutParams(
+                RadioGroup.LayoutParams.WRAP_CONTENT,
+                RadioGroup.LayoutParams.WRAP_CONTENT);
+        radioGroup.addView(newRadioButton);
+
+    }
+    
     @Override
     public String getMenuName() {
         return menu_name;
@@ -59,15 +105,19 @@ public class NewSensorLocation extends ActivityWithMenu {
               
               int selectedId = radioGroup.getCheckedRadioButtonId();
               String location = new String();
-              if(selectedId == R.id.sensor_location_private) {
-                  location = "private";
-              } else if(selectedId == R.id.sensor_location_hand) {
-                  location = "hand";
-              } else if (selectedId == R.id.sensor_location_bottom) {
-                  location = "bottom";
-              } else if (selectedId == R.id.sensor_location_other) {
-                  location = sensor_location.getText().toString();
+
+              if (selectedId == OTHER_ID) {
+                  location = sensor_location_other.getText().toString();;
+              } else {
+                  for(Location it : locations) {
+                      if(selectedId == it.location_id) {
+                          location = it.location;
+                          break;
+                      }
+                  }
               }
+              Toast.makeText(getApplicationContext(), "Sensor locaton is " + location, Toast.LENGTH_LONG).show();
+              
               
               Log.w("NEW SENSOR", "Sensor location is " + location);
               Sensor.updateSensorLocation(location);
@@ -83,20 +133,19 @@ public class NewSensorLocation extends ActivityWithMenu {
 
         });
         
-        radioGroup = (RadioGroup) findViewById(R.id.myRadioGroup);
-        
         radioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId == R.id.sensor_location_other) {
-                    sensor_location.setEnabled(true);
-                    sensor_location.requestFocus();
+                if(checkedId == OTHER_ID) {
+                    sensor_location_other.setEnabled(true);
+                    sensor_location_other.requestFocus();
                 } else {
-                    sensor_location.setEnabled(false);
+                    sensor_location_other.setEnabled(false);
                 }
             }
         });
+        
         
     }
 }
