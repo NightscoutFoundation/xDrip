@@ -169,7 +169,7 @@ public class Notifications extends IntentService {
                 AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
                 return;
             }
-            // Currently the ui blocks having two alerts with the same alert value.
+           // Currently the ui blocks having two alerts with the same alert value.
 
             boolean alertSnoozeOver = ActiveBgAlert.alertSnoozeOver();
             if (alertSnoozeOver) {
@@ -212,11 +212,11 @@ public class Notifications extends IntentService {
 
     boolean trendingToAlertEnd(Context context, Boolean newAlert, AlertType Alert) {
         if(newAlert && !smart_alerting) {
-            //  User does not want smart alerting at all.
+        //  User does not want smart alerting at all.
             return false;
         }
         if((!newAlert) && (!smart_snoozing)) {
-            //  User does not want smart snoozing at all.
+        //  User does not want smart snoozing at all.
             return false;
         }
         return BgReading.trendingToAlertEnd(context, Alert.above);
@@ -497,7 +497,7 @@ public class Notifications extends IntentService {
 
     public static void RiseDropAlert(Context context, boolean on, String type, String message, int notificatioId) {
         if(on) {
-            // This alerts will only happen once. Want to have maxint, but not create overflow.
+         // This alerts will only happen once. Want to have maxint, but not create overflow.
             OtherAlert(context, type, message, notificatioId, Integer.MAX_VALUE / 100000);
         } else {
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
