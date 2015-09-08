@@ -59,9 +59,6 @@ public class Preferences extends PreferenceActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-
-
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (scanResult == null || scanResult.getContents() == null) {
