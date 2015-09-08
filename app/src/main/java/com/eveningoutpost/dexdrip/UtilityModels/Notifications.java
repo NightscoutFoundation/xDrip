@@ -35,7 +35,6 @@ import com.eveningoutpost.dexdrip.Models.CalibrationRequest;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Sensor;
-import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -170,7 +169,7 @@ public class Notifications extends IntentService {
                 AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
                 return;
             }
-           // Currently the ui blocks having two alerts with the same alert value.
+            // Currently the ui blocks having two alerts with the same alert value.
 
             boolean alertSnoozeOver = ActiveBgAlert.alertSnoozeOver();
             if (alertSnoozeOver) {
@@ -213,11 +212,11 @@ public class Notifications extends IntentService {
 
     boolean trendingToAlertEnd(Context context, Boolean newAlert, AlertType Alert) {
         if(newAlert && !smart_alerting) {
-        //  User does not want smart alerting at all.
+            //  User does not want smart alerting at all.
             return false;
         }
         if((!newAlert) && (!smart_snoozing)) {
-        //  User does not want smart snoozing at all.
+            //  User does not want smart snoozing at all.
             return false;
         }
         return BgReading.trendingToAlertEnd(context, Alert.above);
@@ -233,15 +232,6 @@ public class Notifications extends IntentService {
         if (bg_ongoing && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)) {
             bgOngoingNotification(bgGraphBuilder);
         }
-
-        List<BgReading> bgReadings = BgReading.latest(3);
-        if(bgReadings == null || bgReadings.size() < 1) { return; }
-        BgReading bgReading = bgReadings.get(0);
-
-        //Text to speech
-        Log.d("BgToSpeech", "gonna call speak");
-        BgToSpeech.getSingleton(context).speak(bgReading.calculated_value, bgReading.timestamp);
-
         if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
             Log.w("NOTIFICATIONS", "Notifications are currently disabled!!");
             return;
@@ -252,9 +242,11 @@ public class Notifications extends IntentService {
 
         Sensor sensor = Sensor.currentSensor();
 
+        List<BgReading> bgReadings = BgReading.latest(3);
         List<Calibration> calibrations = Calibration.allForSensorInLastFourDays();
         if(bgReadings == null || bgReadings.size() < 3) { return; }
         if(calibrations == null || calibrations.size() < 2) { return; }
+        BgReading bgReading = bgReadings.get(0);
 
         if (calibration_notifications) {
             if (bgReadings.size() >= 3) {
@@ -505,7 +497,7 @@ public class Notifications extends IntentService {
 
     public static void RiseDropAlert(Context context, boolean on, String type, String message, int notificatioId) {
         if(on) {
-         // This alerts will only happen once. Want to have maxint, but not create overflow.
+            // This alerts will only happen once. Want to have maxint, but not create overflow.
             OtherAlert(context, type, message, notificatioId, Integer.MAX_VALUE / 100000);
         } else {
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -570,4 +562,3 @@ public class Notifications extends IntentService {
         }
     }
 }
-
