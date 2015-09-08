@@ -26,7 +26,7 @@ public class BgToSpeech {
 
     public static BgToSpeech getSingleton(Context context){
 
-        if(instance == null) {
+        if(instance == null ||  instance.context != context) {
             instance = new BgToSpeech(context);
         }
         return instance;
