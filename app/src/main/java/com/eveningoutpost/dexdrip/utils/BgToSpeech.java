@@ -36,8 +36,6 @@ public class BgToSpeech {
         this.context = context;
     }
 
-
-
     public void speak(final double value, long timestamp){
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -73,7 +71,13 @@ public class BgToSpeech {
                             tts = null;
                         } else {
                             //first call will be made after initialization
-                            tts.speak(calculateText(value, prefs), TextToSpeech.QUEUE_FLUSH, null);
+                            int speakresult = tts.speak(calculateText(value, prefs), TextToSpeech.QUEUE_FLUSH, null);
+                            if(speakresult == TextToSpeech.SUCCESS){
+                                Log.d("BgToSpeech", "successfully spoken after initialization");
+                            } else {
+                                Log.d("BgToSpeech", "error " + result + ". not trying again.");
+                                tts = null;
+                            }
                         }
 
                     } else {
@@ -86,7 +90,15 @@ public class BgToSpeech {
         if (tts == null) {
             return;
         }
-        tts.speak(calculateText(value, prefs), TextToSpeech.QUEUE_FLUSH, null);
+        int result = tts.speak(calculateText(value, prefs), TextToSpeech.QUEUE_FLUSH, null);
+            if(result == TextToSpeech.SUCCESS){
+                Log.d("BgToSpeech", "successfully spoken");
+            } else {
+                Log.d("BgToSpeech", "error " + result + ". trying again with new tts-object.");
+                tts = null;
+                speak(value, timestamp);
+            }
+
     }
     }
 
@@ -112,7 +124,7 @@ public class BgToSpeech {
         } else {
             text = "no value";
         }
-        Log.d("BgToSpeech", "speaking: " + text);
+        Log.d("BgToSpeech", "text: " + text);
         return text;
     }
 
