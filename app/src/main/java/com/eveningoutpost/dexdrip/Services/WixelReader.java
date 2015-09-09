@@ -49,10 +49,9 @@ public class WixelReader  extends Thread {
         if(sStarted) {
             return;
         }
+        bgToSpeech = BgToSpeech.setupTTS(ctx); //keep reference to not being garbage collected
         WixelReader theWixelReader =  getInstance(ctx);
         theWixelReader.start();
-        bgToSpeech = BgToSpeech.setupTTS(ctx); //keep reference to not being garbage collected
-
         sStarted = true;
 
     }
