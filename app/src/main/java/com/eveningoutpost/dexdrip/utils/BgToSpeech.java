@@ -37,6 +37,13 @@ public class BgToSpeech {
     }
 
     public void speak(final double value, long timestamp){
+
+
+        if(timestamp < System.currentTimeMillis()-4*60*1000){
+            // don't read old values.
+            return;
+        }
+
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         if (! prefs.getBoolean("bg_to_speech", false)){
@@ -53,10 +60,9 @@ public class BgToSpeech {
             tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
                 @Override
                 public void onInit(int status) {
-
+                    Log.d("BgToSpeech", "Calling onInit()");
                     if (status == TextToSpeech.SUCCESS) {
-
-
+                        Log.d("BgToSpeech", "status == TextToSpeech.SUCCESS");
                         //try local language
                         int result = tts.setLanguage(Locale.getDefault());
                         if (result == TextToSpeech.LANG_MISSING_DATA
@@ -81,6 +87,7 @@ public class BgToSpeech {
                         }
 
                     } else {
+                        Log.d("BgToSpeech", "status != TextToSpeech.SUCCESS; status: " + status);
                         tts= null;
                     }
                 }
@@ -96,6 +103,7 @@ public class BgToSpeech {
             } else {
                 Log.d("BgToSpeech", "error " + result + ". trying again with new tts-object.");
                 tts = null;
+                this.timestamp = -1;
                 speak(value, timestamp);
             }
 
