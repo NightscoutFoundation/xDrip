@@ -36,6 +36,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.DexShareAttributes;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
+import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
@@ -98,6 +99,7 @@ public class DexShareCollectionService extends Service {
     public boolean shouldDisconnect = false;
     public boolean share2 = false;
     public Service service;
+    private BgToSpeech bgToSpeech;
 
     @Override
     public void onCreate() {
@@ -110,6 +112,7 @@ public class DexShareCollectionService extends Service {
         registerReceiver(mPairReceiver, bondintent);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         listenForChangeInSettings();
+        bgToSpeech = BgToSpeech.setupTTS(getApplicationContext()); //keep reference to not being garbage collected
     }
 
     @Override
@@ -149,6 +152,7 @@ public class DexShareCollectionService extends Service {
         setRetryTimer();
         foregroundServiceStarter.stop();
         unregisterReceiver(mPairReceiver);
+        BgToSpeech.tearDownTTS();
         Log.w(TAG, "SERVICE STOPPED");
     }
 

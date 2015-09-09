@@ -411,10 +411,9 @@ public class Preferences extends PreferenceActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     if ((Boolean)newValue) {
-
                         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
                         alertDialog.setTitle("Install Text-To-Speech Data?");
-                        alertDialog.setMessage("Install Text-To-Speech Data?");
+                        alertDialog.setMessage("Install Text-To-Speech Data?\n(After installation of languages you might have to press \"Restart Collector\" in System Status.)");
                         alertDialog.setCancelable(true);
                         alertDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
@@ -422,14 +421,13 @@ public class Preferences extends PreferenceActivity {
                                 BgToSpeech.installTTSData(getActivity());
                             }
                         });
-                        alertDialog.setNegativeButton(R.string.cancel, null);
+                        alertDialog.setNegativeButton(R.string.no, null);
                         AlertDialog alert = alertDialog.create();
                         alert.show();
                     }
                     return true;
                 }
             });
-
         }
 
     }

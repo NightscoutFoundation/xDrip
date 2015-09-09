@@ -22,92 +22,87 @@ public class BgToSpeech {
 
     private TextToSpeech tts = null;
 
-    private long timestamp = 0;
-
-    public static BgToSpeech getSingleton(Context context){
-
-        if(instance == null ||  instance.context != context) {
+    public static BgToSpeech setupTTS(Context context){
+        if(instance == null) {
             instance = new BgToSpeech(context);
+            return instance;
+        } else {
+            tearDownTTS();
+            instance = new BgToSpeech(context);
+            return instance;
         }
-        return instance;
+    }
+
+    public static void tearDownTTS(){
+        if(instance!=null){
+            instance.tearDown();
+            instance = null;
+        } else {
+            Log.e("BgToSpeech", "tearDownTTS() called but instance is null!");
+
+        }
+    }
+
+    public static void speak(final double value, long timestamp){
+        if(instance == null){
+            Log.e("BgToSpeech", "speak() called but instance is null!");
+        } else {
+            instance.speakInternal(value, timestamp);
+        }
+    }
+
+    private void tearDown() {
+        tts.shutdown();
+        tts = null;
     }
 
     private BgToSpeech(Context context){
         this.context = context;
+        this.tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+
+                Log.d("BgToSpeech", "Calling onInit()");
+                if (status == TextToSpeech.SUCCESS) {
+                    Log.d("BgToSpeech", "status == TextToSpeech.SUCCESS");
+                    //try local language
+                    int result = tts.setLanguage(Locale.getDefault());
+                    if (result == TextToSpeech.LANG_MISSING_DATA
+                            || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        Log.e("BgToSpeech", "Default system language is not supported");
+                        result = tts.setLanguage(Locale.ENGLISH);
+                    }
+                    //try any english
+                    if (result == TextToSpeech.LANG_MISSING_DATA
+                            || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        Log.e("BgToSpeech", "English is not supported");
+                        tts = null;
+                    }
+                } else {
+                    Log.e("BgToSpeech", "status != TextToSpeech.SUCCESS; status: " + status);
+                    tts= null;
+                }
+            }
+        });
     }
 
-    public void speak(final double value, long timestamp){
-
-
+    private void speakInternal(final double value, long timestamp){
         if(timestamp < System.currentTimeMillis()-4*60*1000){
             // don't read old values.
             return;
         }
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
         if (! prefs.getBoolean("bg_to_speech", false)){
             return;
         }
 
-        if(this.timestamp == timestamp){
-            return;
-        }
-
-        this.timestamp = timestamp;
-
-        if(tts == null){
-            tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
-                @Override
-                public void onInit(int status) {
-                    Log.d("BgToSpeech", "Calling onInit()");
-                    if (status == TextToSpeech.SUCCESS) {
-                        Log.d("BgToSpeech", "status == TextToSpeech.SUCCESS");
-                        //try local language
-                        int result = tts.setLanguage(Locale.getDefault());
-                        if (result == TextToSpeech.LANG_MISSING_DATA
-                                || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                            Log.e("BgToSpeech", "Default system language is not supported");
-                            result = tts.setLanguage(Locale.ENGLISH);
-                        }
-                        //try any english
-                        if (result == TextToSpeech.LANG_MISSING_DATA
-                                || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                            Log.e("BgToSpeech", "English is not supported");
-                            tts = null;
-                        } else {
-                            //first call will be made after initialization
-                            int speakresult = tts.speak(calculateText(value, prefs), TextToSpeech.QUEUE_FLUSH, null);
-                            if(speakresult == TextToSpeech.SUCCESS){
-                                Log.d("BgToSpeech", "successfully spoken after initialization");
-                            } else {
-                                Log.d("BgToSpeech", "error " + result + ". not trying again.");
-                                tts = null;
-                            }
-                        }
-
-                    } else {
-                        Log.d("BgToSpeech", "status != TextToSpeech.SUCCESS; status: " + status);
-                        tts= null;
-                    }
-                }
-            });
-        } else {
-
-        if (tts == null) {
-            return;
-        }
         int result = tts.speak(calculateText(value, prefs), TextToSpeech.QUEUE_FLUSH, null);
             if(result == TextToSpeech.SUCCESS){
                 Log.d("BgToSpeech", "successfully spoken");
             } else {
                 Log.d("BgToSpeech", "error " + result + ". trying again with new tts-object.");
-                tts = null;
-                this.timestamp = -1;
-                speak(value, timestamp);
             }
-
-    }
     }
 
     private String calculateText(double value, SharedPreferences prefs) {
@@ -130,7 +125,7 @@ public class BgToSpeech {
         } else if (value > 12) {
             text =  "low";
         } else {
-            text = "no value";
+            text = "error";
         }
         Log.d("BgToSpeech", "text: " + text);
         return text;

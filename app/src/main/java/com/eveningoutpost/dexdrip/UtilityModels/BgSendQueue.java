@@ -138,7 +138,7 @@ public class BgSendQueue extends Model {
 
             //Text to speech
             Log.d("BgToSpeech", "gonna call speak");
-            BgToSpeech.getSingleton(context).speak(bgReading.calculated_value, bgReading.timestamp);
+            BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp);
 
 
         } finally {
