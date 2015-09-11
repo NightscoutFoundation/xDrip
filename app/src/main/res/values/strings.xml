@@ -41,8 +41,7 @@
     <string name="snooze_hint">Snooze alert for x minutes</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
-
-
+    <string name="no">No</string>
 
     <string-array name="menu_options">
         <item>Dex Drip</item>

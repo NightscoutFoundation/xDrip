@@ -26,9 +26,15 @@
             android:summary="If using Share, DexDrip will show values when they are normally hidden on the receiver."
             android:defaultValue="false" />
         <CheckBoxPreference
+            android:key="bg_to_speech"
+            android:title="Speak Readings"
+            android:summary="If the phone has text-to-speech capabilities it will read new readings out loud."
+            android:defaultValue="false" />
+        <CheckBoxPreference
             android:key="store_logs"
             android:title="Store logs for troubleshooting"
             android:summary="Only enable if you are having trouble with the app."
             android:defaultValue="false" />
     </PreferenceCategory>
 </PreferenceScreen>
+
