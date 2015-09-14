@@ -3,10 +3,8 @@ package com.eveningoutpost.dexdrip;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 
-import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Tables.BgReadingTable;
@@ -36,7 +34,7 @@ public class NavDrawerBuilder {
         context = aContext;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean IUnderstand = prefs.getBoolean("I_understand", false);
-        if(IUnderstand == false) {
+        if (IUnderstand == false) {
             this.nav_drawer_options.add("Settings");
             this.nav_drawer_intents.add(new Intent(context, Preferences.class));
             return;
@@ -44,14 +42,18 @@ public class NavDrawerBuilder {
 
         this.nav_drawer_options.add(Home.menu_name);
         this.nav_drawer_intents.add(new Intent(context, Home.class));
-        if(is_active_sensor) {
+        if (is_active_sensor) {
             this.nav_drawer_options.add("Calibration Graph");
             this.nav_drawer_intents.add(new Intent(context, CalibrationGraph.class));
         }
-        this.nav_drawer_options.add("BG Data Table");
-        this.nav_drawer_intents.add(new Intent(context, BgReadingTable.class));
-        this.nav_drawer_options.add("Calibration Data Table");
-        this.nav_drawer_intents.add(new Intent(context, CalibrationDataTable.class));
+
+        if (prefs.getBoolean("show_data_tables", false)) {
+            this.nav_drawer_options.add("BG Data Table");
+            this.nav_drawer_intents.add(new Intent(context, BgReadingTable.class));
+            this.nav_drawer_options.add("Calibration Data Table");
+            this.nav_drawer_intents.add(new Intent(context, CalibrationDataTable.class));
+        }
+
         if(is_active_sensor) {
             if(!CollectionServiceStarter.isBTShare(context)) {
                 if (last_two_bgReadings.size() > 1) {

@@ -27,7 +27,7 @@ import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 
 /**
@@ -111,7 +111,7 @@ public class BgGraphBuilder {
 
     public Line highValuesLine() {
         Line highValuesLine = new Line(highValues);
-        highValuesLine.setColor(Utils.COLOR_ORANGE);
+        highValuesLine.setColor(ChartUtils.COLOR_ORANGE);
         highValuesLine.setHasLines(false);
         highValuesLine.setPointRadius(pointSize);
         highValuesLine.setHasPoints(true);
@@ -129,7 +129,7 @@ public class BgGraphBuilder {
 
     public Line inRangeValuesLine() {
         Line inRangeValuesLine = new Line(inRangeValues);
-        inRangeValuesLine.setColor(Utils.COLOR_BLUE);
+        inRangeValuesLine.setColor(ChartUtils.COLOR_BLUE);
         inRangeValuesLine.setHasLines(false);
         inRangeValuesLine.setPointRadius(pointSize);
         inRangeValuesLine.setHasPoints(true);
@@ -152,7 +152,7 @@ public class BgGraphBuilder {
         lines[0].setPointRadius(pointSize * 3 / 2);
         lines[0].setHasPoints(true);
         lines[1] = new Line(calibrationValues);
-        lines[1].setColor(Utils.COLOR_RED);
+        lines[1].setColor(ChartUtils.COLOR_RED);
         lines[1].setHasLines(false);
         lines[1].setPointRadius(pointSize * 3 / 4);
         lines[1].setHasPoints(true);
@@ -188,7 +188,7 @@ public class BgGraphBuilder {
         Line highLine = new Line(highLineValues);
         highLine.setHasPoints(false);
         highLine.setStrokeWidth(1);
-        highLine.setColor(Utils.COLOR_ORANGE);
+        highLine.setColor(ChartUtils.COLOR_ORANGE);
         return highLine;
     }
 
@@ -300,7 +300,7 @@ public class BgGraphBuilder {
     /////////VIEWPORT RELATED//////////////
     public Viewport advanceViewport(Chart chart, Chart previewChart) {
         viewport = new Viewport(previewChart.getMaximumViewport());
-        viewport.inset((float)((86400000 / 2.5)/ FUZZER), 0);
+        viewport.inset((float) ((86400000 / 2.5) / FUZZER), 0);
         double distance_to_move = ((new Date().getTime())/ FUZZER) - viewport.left - (((viewport.right - viewport.left) /2));
         viewport.offset((float) distance_to_move, 0);
         return viewport;

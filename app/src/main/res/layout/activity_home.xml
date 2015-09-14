@@ -13,31 +13,17 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_height="fill_parent"
+            android:background="#212121">
 
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:paddingLeft="0dp"
                 android:paddingRight="0dp"
                 android:layout_weight="0.80"
                 android:paddingTop="0dp"
-                android:paddingBottom="0dp" tools:context=".Home"
                 android:layout_marginTop="0dp">
-
-                <TextView
-                    android:layout_width="900dp"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="#C30909"
-                    android:id="@+id/notices"
-                    android:background="#212121"
-                    android:paddingEnd="10dp"
-                    android:paddingStart="10dp"
-                    android:gravity="left|top"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentTop="true"
-                    android:text="Alerts and messages" />
 
                 <lecho.lib.hellocharts.view.LineChartView
                     android:id="@+id/chart"
@@ -45,19 +31,33 @@
                     android:layout_alignParentStart="false"
                     android:layout_alignParentEnd="true"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="55dp">
-                </lecho.lib.hellocharts.view.LineChartView>
+                    android:layout_marginTop="55dp"/>
+
+                <TextView
+                    android:layout_width="900dp"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="#C30909"
+                    android:id="@+id/notices"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:gravity="left|top"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:text="Alerts and messages"
+                    android:background="@android:color/transparent"/>
+
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="#212121"
                     android:id="@+id/currentBgValueRealTime"
                     android:gravity="right"
                     android:layout_alignParentEnd="true"
                     android:paddingEnd="20dp"
                     android:textSize="50dp"
-                    android:paddingTop="0dp" />
+                    android:paddingTop="0dp"
+                    android:background="@android:color/transparent"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -69,7 +69,8 @@
                     android:textSize="12sp"
                     android:inputType="none"
                     android:layout_below="@+id/notices"
-                    android:layout_alignParentStart="true" />
+                    android:layout_alignParentStart="true"
+                    android:background="@android:color/transparent"/>
             </RelativeLayout>
 
             <lecho.lib.hellocharts.view.PreviewLineChartView

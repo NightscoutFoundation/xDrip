@@ -27,6 +27,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -34,25 +35,25 @@ import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.SnackbarManager;
+import com.nispok.snackbar.enums.SnackbarType;
+import com.nispok.snackbar.listeners.ActionClickListener;
 
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.SnackbarManager;
-import com.nispok.snackbar.enums.SnackbarType;
-import com.nispok.snackbar.listeners.ActionClickListener;
-
-import lecho.lib.hellocharts.ViewportChangeListener;
 import lecho.lib.hellocharts.gesture.ZoomType;
+import lecho.lib.hellocharts.listener.ViewportChangeListener;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
 import lecho.lib.hellocharts.view.PreviewLineChartView;
 
 
 public class Home extends ActivityWithMenu {
+    static String TAG = Home.class.getName();
     public static String menu_name = "xDrip";
     private boolean updateStuff;
     private boolean updatingPreviewViewport = false;
@@ -204,20 +205,28 @@ public class Home extends ActivityWithMenu {
 
     public void setViewport() {
         if (tempViewport.left == 0.0 || holdViewport.left == 0.0 || holdViewport.right >= (new Date().getTime())) {
-            previewChart.setCurrentViewport(bgGraphBuilder.advanceViewport(chart, previewChart), false);
+            previewChart.setCurrentViewport(bgGraphBuilder.advanceViewport(chart, previewChart));
         } else {
-            previewChart.setCurrentViewport(holdViewport, false);
+            previewChart.setCurrentViewport(holdViewport);
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (_broadcastReceiver != null) {
-            unregisterReceiver(_broadcastReceiver);
+        if (_broadcastReceiver != null ) {
+            try {
+                unregisterReceiver(_broadcastReceiver);
+            } catch (IllegalArgumentException e) {
+                UserError.Log.e(TAG, "_broadcast_receiver not registered", e);
+            }
         }
         if (newDataReceiver != null) {
-            unregisterReceiver(newDataReceiver);
+            try {
+                unregisterReceiver(newDataReceiver);
+            } catch (IllegalArgumentException e) {
+                UserError.Log.e(TAG, "newDataReceiver not registered", e);
+            }
         }
     }
 
@@ -270,7 +279,7 @@ public class Home extends ActivityWithMenu {
         }
         updateCurrentBgInfoCommon(notificationText);
     }
-    
+
     private void updateCurrentBgInfoCommon(TextView notificationText) {
         final boolean isSensorActive = Sensor.isActive();
         if(!isSensorActive){
@@ -304,7 +313,7 @@ public class Home extends ActivityWithMenu {
                     notificationText.setText("Please enter two calibrations to get started!");
                 }
             }
-        }        
+        }
     }
 
     private void updateCurrentBgInfoForBtShare(TextView notificationText) {
@@ -506,7 +515,7 @@ public class Home extends ActivityWithMenu {
             if (!updatingPreviewViewport) {
                 updatingChartViewport = true;
                 previewChart.setZoomType(ZoomType.HORIZONTAL);
-                previewChart.setCurrentViewport(newViewport, false);
+                previewChart.setCurrentViewport(newViewport);
                 updatingChartViewport = false;
             }
         }
@@ -518,7 +527,7 @@ public class Home extends ActivityWithMenu {
             if (!updatingChartViewport) {
                 updatingPreviewViewport = true;
                 chart.setZoomType(ZoomType.HORIZONTAL);
-                chart.setCurrentViewport(newViewport, false);
+                chart.setCurrentViewport(newViewport);
                 tempViewport = newViewport;
                 updatingPreviewViewport = false;
             }
@@ -546,4 +555,3 @@ public class Home extends ActivityWithMenu {
         }
     }
 }
-

@@ -26,7 +26,7 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbRequest;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 

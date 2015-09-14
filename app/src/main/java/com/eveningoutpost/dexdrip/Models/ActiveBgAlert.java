@@ -1,14 +1,13 @@
 package com.eveningoutpost.dexdrip.Models;
 
-import android.util.Log;
 import android.provider.BaseColumns;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
-import com.activeandroid.annotation.Column;
 import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
-import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -119,7 +118,7 @@ public class ActiveBgAlert extends Model {
     }
 
     public static void Create(String alert_uuid, boolean is_snoozed, Long next_alert_at) {
-        Log.e(TAG, "ActiveBgAlert Create called");
+        Log.d(TAG, "ActiveBgAlert Create called");
         ActiveBgAlert aba = getOnly();
         if (aba == null) {
             aba = new ActiveBgAlert();
@@ -133,7 +132,7 @@ public class ActiveBgAlert extends Model {
     }
 
     public static void ClearData() {
-        Log.e(TAG, "ActiveBgAlert ClearData called");
+        Log.d(TAG, "ActiveBgAlert ClearData called");
         ActiveBgAlert aba = getOnly();
         if (aba != null) {
             aba.delete();
@@ -141,11 +140,11 @@ public class ActiveBgAlert extends Model {
     }
 
     public static void ClearIfSnoozeFinished() {
-        Log.e(TAG, "ActiveBgAlert ClearIfSnoozeFinished called");
+        Log.d(TAG, "ActiveBgAlert ClearIfSnoozeFinished called");
         ActiveBgAlert aba = getOnly();
         if (aba != null) {
             if(new Date().getTime() > aba.next_alert_at) {
-                Log.e(TAG, "ActiveBgAlert ClearIfSnoozeFinished deleting allert");
+                Log.d(TAG, "ActiveBgAlert ClearIfSnoozeFinished deleting allert");
                 aba.delete();
             }
         }

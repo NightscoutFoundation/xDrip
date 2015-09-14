@@ -11,7 +11,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.ShareModels.ShareRest;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
+import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
 import com.eveningoutpost.dexdrip.widgetUpdateService;
 import com.eveningoutpost.dexdrip.xDripWidget;
 
@@ -129,10 +130,12 @@ public class BgSendQueue extends Model {
             }
 
             if (prefs.getBoolean("share_upload", false)) {
-                Log.w("ShareRest", "About to call ShareRest!!");
-                Intent shareIntent = new Intent(context, ShareRest.class);
-                shareIntent.putExtra("BgUuid", bgReading.uuid);
-                context.startService(shareIntent);
+                Log.d("ShareRest", "About to call ShareRest!!");
+                String login = prefs.getString("dexcom_account_name", "");
+                String password = prefs.getString("dexcom_account_password", "");
+                String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
+                BgUploader bgUploader = new BgUploader(login, password, receiverSn, context);
+                bgUploader.upload(bgReading);
             }
             context.startService(new Intent(context, SyncService.class));
 

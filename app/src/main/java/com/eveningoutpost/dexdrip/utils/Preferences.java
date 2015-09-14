@@ -21,7 +21,7 @@ import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.text.InputFilter;
 import android.text.TextUtils;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -269,6 +269,7 @@ public class Preferences extends PreferenceActivity {
             final Preference predictiveBG = findPreference("predictive_bg");
             final Preference interpretRaw = findPreference("interpret_raw");
             final Preference shareKey = findPreference("share_key");
+            final Preference scanShare = findPreference("scan_share2_barcode");
             final EditTextPreference transmitterId = (EditTextPreference) findPreference("dex_txid");
             final Preference pebbleSync = findPreference("broadcast_to_pebble");
             final PreferenceCategory collectionCategory = (PreferenceCategory) findPreference("collection_category");
@@ -279,6 +280,7 @@ public class Preferences extends PreferenceActivity {
             Log.d(TAG, prefs.getString("dex_collection_method", "BluetoothWixel"));
             if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomShare") != 0) {
                 collectionCategory.removePreference(shareKey);
+                collectionCategory.removePreference(scanShare);
                 otherCategory.removePreference(interpretRaw);
                 alertsCategory.addPreference(calibrationAlertsScreen);
             } else {
@@ -320,11 +322,13 @@ public class Preferences extends PreferenceActivity {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     if(((String) newValue).compareTo("DexcomShare") != 0) { // NOT USING SHARE
                         collectionCategory.removePreference(shareKey);
+                        collectionCategory.removePreference(scanShare);
                         otherCategory.removePreference(interpretRaw);
                         otherCategory.addPreference(predictiveBG);
                         alertsCategory.addPreference(calibrationAlertsScreen);
                     } else {
                         collectionCategory.addPreference(shareKey);
+                        collectionCategory.addPreference(scanShare);
                         otherCategory.addPreference(interpretRaw);
                         otherCategory.removePreference(predictiveBG);
                         alertsCategory.removePreference(calibrationAlertsScreen);
