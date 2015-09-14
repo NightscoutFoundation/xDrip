@@ -16,6 +16,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
+import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.eveningoutpost.dexdrip.Sensor;
@@ -26,6 +27,7 @@ public class WixelReader  extends Thread {
 
     private final static String TAG = WixelReader.class.getName();
     private static WixelReader singleton;
+    private static BgToSpeech bgToSpeech;
 
     public synchronized static WixelReader getInstance(Context ctx) {
         if(singleton == null) {
@@ -47,6 +49,7 @@ public class WixelReader  extends Thread {
         if(sStarted) {
             return;
         }
+        bgToSpeech = BgToSpeech.setupTTS(ctx); //keep reference to not being garbage collected
         WixelReader theWixelReader =  getInstance(ctx);
         theWixelReader.start();
         sStarted = true;
@@ -57,6 +60,7 @@ public class WixelReader  extends Thread {
         if(!sStarted) {
             return;
         }
+        BgToSpeech.tearDownTTS();
         WixelReader theWixelReader =  getInstance(null);
         theWixelReader.Stop();
         try {

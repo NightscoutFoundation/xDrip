@@ -19,6 +19,8 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Services.SyncService;
+import com.eveningoutpost.dexdrip.ShareModels.ShareRest;
+import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
 import com.eveningoutpost.dexdrip.widgetUpdateService;
 import com.eveningoutpost.dexdrip.xDripWidget;
@@ -136,6 +138,12 @@ public class BgSendQueue extends Model {
                 bgUploader.upload(bgReading);
             }
             context.startService(new Intent(context, SyncService.class));
+
+            //Text to speech
+            Log.d("BgToSpeech", "gonna call speak");
+            BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp);
+
+
         } finally {
             wakeLock.release();
         }

@@ -44,6 +44,7 @@ import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
+import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -56,7 +57,7 @@ import java.util.UUID;
 public class DexCollectionService extends Service {
     private final static String TAG = DexCollectionService.class.getSimpleName();
     private SharedPreferences prefs;
-
+    private BgToSpeech bgToSpeech;
     public DexCollectionService dexCollectionService;
 
     private BluetoothAdapter mBluetoothAdapter;
@@ -89,6 +90,7 @@ public class DexCollectionService extends Service {
         dexCollectionService = this;
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         listenForChangeInSettings();
+        bgToSpeech = BgToSpeech.setupTTS(mContext); //keep reference to not being garbage collected
         Log.i(TAG, "onCreate: STARTING SERVICE");
     }
 
@@ -112,9 +114,11 @@ public class DexCollectionService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.w(TAG, "onDestroy entered");
         close();
         foregroundServiceStarter.stop();
         setRetryTimer();
+        BgToSpeech.tearDownTTS();
         Log.i(TAG, "SERVICE STOPPED");
     }
 
