@@ -6,7 +6,6 @@ import android.os.Bundle;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
