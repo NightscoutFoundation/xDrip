@@ -64,7 +64,7 @@ public class NewSensorLocation extends ActivityWithMenu {
         
         locations = new LinkedList<Location>();
         
-        locations.add(new Location("private", PRIVATE_ID));
+        locations.add(new Location("I dont wish to share", PRIVATE_ID));
         locations.add(new Location("Upper arm", 1));
         locations.add(new Location("Thigh", 2));
         locations.add(new Location("Belly (abdomen)", 3));
