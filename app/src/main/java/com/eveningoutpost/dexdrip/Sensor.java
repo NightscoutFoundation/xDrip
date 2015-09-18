@@ -84,6 +84,7 @@ public class Sensor extends Model {
             return;
         }
         sensor.sensor_location = sensor_location;
+        sensor.save();
     }
 }
 
