@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.util.DisplayMetrics;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.view.View;
@@ -129,7 +130,7 @@ public class BgSparklineBuilder {
         // Reset the drawing cache background color to fully transparent
         // for the duration of this operation
         int color = v.getDrawingCacheBackgroundColor();
-        v.setDrawingCacheBackgroundColor(0);
+        v.setDrawingCacheBackgroundColor(Color.TRANSPARENT);
 
         if (color != 0) {
             v.destroyDrawingCache();
