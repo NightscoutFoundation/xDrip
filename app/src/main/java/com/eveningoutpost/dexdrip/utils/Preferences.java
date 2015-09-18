@@ -262,6 +262,8 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("cloud_storage_api_base"));
 
             addPreferencesFromResource(R.xml.pref_advanced_settings);
+            addPreferencesFromResource(R.xml.pref_community_help);
+
             bindTTSListener();
             final Preference collectionMethod = findPreference("dex_collection_method");
             final Preference runInForeground = findPreference("run_service_in_foreground");

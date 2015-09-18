@@ -22,6 +22,7 @@
     <string name="title_activity_calculated_data_table">CalculatedDataTable</string>
     <string name="title_activity_add_calibration">AddCalibration</string>
     <string name="title_activity_start_new_sensor">StartNewSensor</string>
+    <string name="title_activity_new_sensor_location">NewSensorLocation</string>
     <string name="title_activity_stop_sensor">StopSensor</string>
     <string name="title_activity_nav_drawer">NavDrawer</string>
     <string name="title_section1">Home</string>
@@ -42,6 +43,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="no">No</string>
+    <string name="pref_sensor_location_dont_ask_again"> Don\'t ask me that again</string>
 
     <string-array name="menu_options">
         <item>Dex Drip</item>
