@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -453,8 +454,10 @@ public class BluetoothScan extends ListActivityWithMenu {
         dialog.setContentView(R.layout.dialog_single_text_field);
         Button saveButton = (Button) dialog.findViewById(R.id.saveButton);
         Button cancelButton = (Button) dialog.findViewById(R.id.cancelButton);
+        dialog.findViewById(R.id.scannerButton).setVisibility(View.GONE);
         final EditText serialNumberView = (EditText) dialog.findViewById(R.id.editTextField);
         serialNumberView.setHint("00000");
+        serialNumberView.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
         ((TextView) dialog.findViewById(R.id.instructionsTextField)).setText("Enter Your Dexcom Transmitter ID");
 
         saveButton.setOnClickListener(new View.OnClickListener() {
