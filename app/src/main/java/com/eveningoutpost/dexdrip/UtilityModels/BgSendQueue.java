@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
+
+import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.activeandroid.Model;
@@ -111,6 +113,33 @@ public class BgSendQueue extends Model {
                 bundle.putInt(Intents.EXTRA_SENSOR_BATTERY, getBatteryLevel(context));
                 bundle.putLong(Intents.EXTRA_TIMESTAMP, bgReading.timestamp);
 
+                //raw value
+                double slope = 0, intercept = 0, scale = 0, filtered = 0, unfiltered = 0, raw = 0;
+                Calibration cal = Calibration.last();
+                if (cal != null){;
+                    // slope/intercept/scale like uploaded to NightScout (NightScoutUploader.java)
+                    if(cal.check_in) {
+                        slope = cal.first_slope;
+                        intercept= cal.first_intercept;
+                        scale =  cal.first_scale;
+                    } else {
+                        slope = cal.slope * 1000;
+                        intercept=  (cal.intercept * -1000) / (cal.slope * 1000);
+                        scale = 1;
+                    }
+                    unfiltered= bgReading.usedRaw();
+                    filtered = bgReading.ageAdjustedFiltered();
+                }
+                //raw logic from https://github.com/nightscout/cgm-remote-monitor/blob/master/lib/plugins/rawbg.js#L59
+                if (slope != 0 && intercept != 0 && scale != 0) {
+                    if (filtered == 0 || bgReading.calculated_value < 40) {
+                        raw = scale * (unfiltered - intercept) / slope;
+                    } else {
+                        double ratio = scale * (filtered - intercept) / slope / bgReading.calculated_value;
+                        raw = scale * (unfiltered - intercept) / slope / ratio;
+                    }
+                }
+                bundle.putDouble(Intents.EXTRA_RAW, raw);
                 Intent intent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE);
                 intent.putExtras(bundle);
                 intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
