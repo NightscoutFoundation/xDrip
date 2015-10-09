@@ -1,13 +1,12 @@
 package com.eveningoutpost.dexdrip;
 
 import android.provider.BaseColumns;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import android.preference.ListPreference;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue;
 
 import java.util.UUID;
@@ -35,7 +34,7 @@ public class Sensor extends Model {
 //    @Expose
     @Column(name = "uuid", index = true)
     public String uuid;
-    
+
 //  @Expose
   @Column(name = "sensor_location")
   public String sensor_location;
@@ -76,7 +75,7 @@ public class Sensor extends Model {
             return true;
         }
     }
-    
+
     public static void updateSensorLocation(String sensor_location) {
         Sensor sensor = currentSensor();
         if (sensor == null) {

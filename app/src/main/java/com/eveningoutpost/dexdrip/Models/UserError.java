@@ -42,7 +42,6 @@ public class UserError extends Model {
         this.message = message;
         this.timestamp = new Date().getTime();
         this.save();
-        cleanup();
     }
 
     public UserError(String shortError, String message) {

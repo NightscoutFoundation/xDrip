@@ -123,7 +123,7 @@ public class AlertPlayer {
             int timeFromStartPlaying = activeBgAlert.getUpdatePlayTime();
             AlertType alert = AlertType.get_alert(activeBgAlert.alert_uuid);
             if (alert == null) {
-                Log.w(TAG, "ClockTick: The alert was already deleted... will not play");
+                Log.d(TAG, "ClockTick: The alert was already deleted... will not play");
                 ActiveBgAlert.ClearData();
                 return;
             }

@@ -102,7 +102,7 @@ public class AlertType extends Model {
     public static AlertType get_highest_active_alert(Context context, double bg) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
-            Log.w("NOTIFICATIONS", "Notifications are currently disabled!!");
+            Log.d("NOTIFICATIONS", "Notifications are currently disabled!!");
             return null;
         }
 
@@ -119,11 +119,11 @@ public class AlertType extends Model {
 
         AlertType at;
         if (UnclearTime >= UnclearTimeSetting && bg_unclear_readings_alerts ) {
-            Log.w("NOTIFICATIONS", "Readings have been unclear for too long!!");
+            Log.d("NOTIFICATIONS", "Readings have been unclear for too long!!");
             Notifications.bgUnclearAlert(context);
         }
         if ((UnclearTime > 0 ) && bg_unclear_readings_alerts) {
-            Log.w(TAG_ALERT, "We are in an clear state, but not for too long. Alerts are disabled");
+            Log.d(TAG_ALERT, "We are in an clear state, but not for too long. Alerts are disabled");
             return null;
         }
         at = get_highest_active_alert_helper(bg);

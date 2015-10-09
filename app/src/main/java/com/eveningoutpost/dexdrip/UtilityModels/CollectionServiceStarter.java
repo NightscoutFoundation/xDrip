@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,12 +9,14 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Services.DailyIntentService;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 /**
  * Created by stephenblack on 12/22/14.
@@ -91,6 +95,7 @@ public class CollectionServiceStarter {
             startPebbleSyncService();
         }
         startSyncService();
+        startDailyIntentService();
         Log.d(TAG, collection_method);
 
         // Start logging to logcat
@@ -158,6 +163,16 @@ public class CollectionServiceStarter {
     private void startSyncService() {
         Log.d(TAG, "starting Sync service");
         mContext.startService(new Intent(mContext, SyncService.class));
+    }
+    private void startDailyIntentService() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 4);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+
+        PendingIntent pi = PendingIntent.getService(mContext, 0, new Intent(mContext, DailyIntentService.class),PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager am = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+        am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
     }
     private void stopBtShareService() {
         Log.d(TAG, "stopping bt share service");
