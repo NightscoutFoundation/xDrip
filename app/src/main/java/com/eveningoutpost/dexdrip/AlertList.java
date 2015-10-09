@@ -8,7 +8,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -18,6 +17,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.eveningoutpost.dexdrip.Models.AlertType;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
@@ -89,7 +89,7 @@ public class AlertList extends ActivityWithMenu {
                     ListView lv = (ListView) parent;
                     @SuppressWarnings("unchecked")
                     HashMap<String, String> item = (HashMap<String, String>) lv.getItemAtPosition(position);
-                    Log.e(TAG, "Item clicked " + lv.getItemAtPosition(position) + item.get("uuid"));
+                    Log.d(TAG, "Item clicked " + lv.getItemAtPosition(position) + item.get("uuid"));
 
                     //The XML for each item in the list (should you use a custom XML) must have android:longClickable="true"
                     // as well (or you can use the convenience method lv.setLongClickable(true);). This way you can have a list

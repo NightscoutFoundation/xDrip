@@ -49,7 +49,7 @@ public class CalibrationCheckInActivity extends ActivityWithMenu {
                     startActivity(tableIntent);
                     finish();
                 } else {
-                    Log.w("CALIBRATION", "ERROR, sensor not active");
+                    Log.d("CALIBRATION", "ERROR, sensor not active");
                 }
             }
         });

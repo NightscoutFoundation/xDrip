@@ -46,7 +46,7 @@ public class NewSensorLocation extends ActivityWithMenu {
     private EditText sensor_location_other;
     CheckBox DontAskAgain;
     List<Location> locations;
-    
+
     final int PRIVATE_ID = 200;
     final int OTHER_ID = 201;
 
@@ -61,9 +61,9 @@ public class NewSensorLocation extends ActivityWithMenu {
         DontAskAgain = (CheckBox)findViewById(R.id.sensorLocationDontAskAgain);
         radioGroup = (RadioGroup) findViewById(R.id.myRadioGroup);
         addListenerOnButton();
-        
+
         locations = new LinkedList<Location>();
-        
+
         locations.add(new Location("I don't wish to share", PRIVATE_ID));
         locations.add(new Location("Upper arm", 1));
         locations.add(new Location("Thigh", 2));
@@ -71,15 +71,15 @@ public class NewSensorLocation extends ActivityWithMenu {
         locations.add(new Location("Lower back", 4));
         locations.add(new Location("Buttocks", 5));
         locations.add(new Location("Other", OTHER_ID));
-        
+
         for(Location location : locations) {
             AddButton(location.location, location.location_id);
         }
         radioGroup.check(PRIVATE_ID);
-        
+
     }
 
-    
+
     private void AddButton(String text, int id) {
         RadioButton newRadioButton = new RadioButton(this);
         newRadioButton.setText(text);
@@ -90,7 +90,7 @@ public class NewSensorLocation extends ActivityWithMenu {
         radioGroup.addView(newRadioButton);
 
     }
-    
+
     @Override
     public String getMenuName() {
         return menu_name;
@@ -101,10 +101,10 @@ public class NewSensorLocation extends ActivityWithMenu {
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-              
+
                 int selectedId = radioGroup.getCheckedRadioButtonId();
                 String location = new String();
-                
+
                 if (selectedId == OTHER_ID) {
                     location = sensor_location_other.getText().toString();;
                 } else {
@@ -116,34 +116,34 @@ public class NewSensorLocation extends ActivityWithMenu {
                     }
                 }
                 Toast.makeText(getApplicationContext(), "Sensor locaton is " + location, Toast.LENGTH_LONG).show();
-                  
-                  
-                Log.w("NEW SENSOR", "Sensor location is " + location);
+
+
+                Log.d("NEW SENSOR", "Sensor location is " + location);
                 Sensor.updateSensorLocation(location);
-                  
+
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                  
+
                 prefs.edit().putBoolean("store_sensor_location", !DontAskAgain.isChecked()).apply();
-                
+
                 Intent intent = new Intent(getApplicationContext(), Home.class);
                 startActivity(intent);
                 finish();
             }
         });
-        
+
         buttonCancel.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                
+
                 prefs.edit().putBoolean("store_sensor_location", !DontAskAgain.isChecked()).apply();
 
                 Intent intent = new Intent(getApplicationContext(), Home.class);
                 startActivity(intent);
                 finish();
             }
-        });        
-        
+        });
+
         radioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
             @Override
@@ -156,7 +156,7 @@ public class NewSensorLocation extends ActivityWithMenu {
                 }
             }
         });
-        
-        
+
+
     }
 }

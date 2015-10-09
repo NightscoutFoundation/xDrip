@@ -114,7 +114,7 @@ public class DexCollectionService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.w(TAG, "onDestroy entered");
+        Log.d(TAG, "onDestroy entered");
         close();
         foregroundServiceStarter.stop();
         setRetryTimer();

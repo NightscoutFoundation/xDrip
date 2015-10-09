@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareAuthenticationBody;
 import com.eveningoutpost.dexdrip.ShareModels.UserAgentInfo.UserAgent;
 import com.google.gson.Gson;
@@ -105,7 +104,7 @@ public class ShareAuthentication {
                             Log.d(TAG, "Session is active :-)");
                             authSuccess();
                         } else {
-                            Log.w(TAG, "Session is apparently not active :-( " + new String(((TypedByteArray) response.getBody()).getBytes()));
+                            Log.d(TAG, "Session is apparently not active :-( " + new String(((TypedByteArray) response.getBody()).getBytes()));
                             StartRemoteMonitoringSession();
                         }
                     }

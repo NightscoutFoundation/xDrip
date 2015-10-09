@@ -256,7 +256,7 @@ public class Calibration extends Model {
                     calibration.bg = calSubrecord.getCalBGL();
                     calibration.timestamp = calSubrecord.getDateEntered().getTime() + addativeOffset;
                     if (calibration.timestamp > new Date().getTime()) {
-                        Log.w(TAG, "ERROR - Calibration timestamp is from the future, wont save!");
+                        Log.d(TAG, "ERROR - Calibration timestamp is from the future, wont save!");
                         return;
                     }
                     calibration.raw_value = calSubrecord.getCalRaw() / 1000;

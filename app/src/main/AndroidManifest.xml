@@ -110,6 +110,7 @@
             android:enabled="true"
             android:exported="true" >
         </service>
+
         <activity
             android:name=".stats.StatsActivity"
             android:label="Statistics" >
@@ -200,11 +201,9 @@
         <activity
             android:name=".AlertList"
             android:label="@string/title_activity_alert_list" />
-
         <activity
             android:name=".ErrorsActivity"
             android:label="Error List" />
-
         <activity
             android:name=".FollowerManagementActivity"
             android:label="Manage Followers" />
@@ -228,13 +227,13 @@
             android:exported="false" >
         </service>
         <service
-            android:name=".Services.MissedReadingIntentService"
-            android:exported="false" >
-        </service>
-        <service
             android:name=".UtilityModels.PebbleSync"
             android:enabled="true"
             android:exported="true" >
+        </service>
+        <service
+            android:name=".Services.DailyIntentService"
+            android:exported="false" >
         </service>
     </application>
 

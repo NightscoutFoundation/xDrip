@@ -3,17 +3,14 @@ package com.eveningoutpost.dexdrip;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.preference.PreferenceManager;
-import android.support.v4.widget.DrawerLayout;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
@@ -60,7 +57,7 @@ public class StartNewSensor extends ActivityWithMenu {
               long startTime = calendar.getTime().getTime();
 
               Sensor.create(startTime);
-              Log.w("NEW SENSOR", "Sensor started at " + startTime);
+              Log.d("NEW SENSOR", "Sensor started at " + startTime);
 
               Toast.makeText(getApplicationContext(), "NEW SENSOR STARTED", Toast.LENGTH_LONG).show();
               CollectionServiceStarter.newStart(getApplicationContext());
@@ -71,12 +68,12 @@ public class StartNewSensor extends ActivityWithMenu {
               } else {
                   intent = new Intent(getApplicationContext(), Home.class);
               }
-              
+
               startActivity(intent);
               finish();
           }
 
         });
-        
+
     }
 }

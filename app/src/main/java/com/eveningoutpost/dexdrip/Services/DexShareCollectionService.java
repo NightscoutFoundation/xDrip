@@ -158,7 +158,7 @@ public class DexShareCollectionService extends Service {
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             if(key.compareTo("run_service_in_foreground") == 0) {
-                Log.e("FOREGROUND", "run_service_in_foreground changed!");
+                Log.d("FOREGROUND", "run_service_in_foreground changed!");
                 if (prefs.getBoolean("run_service_in_foreground", false)) {
                     foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), service);
                     foregroundServiceStarter.start();
@@ -564,9 +564,9 @@ public class DexShareCollectionService extends Service {
                 } else {
                     setRetryTimer();
                 }
-                Log.w(TAG, "Disconnected from GATT server.");
+                Log.d(TAG, "Disconnected from GATT server.");
             } else {
-                Log.w(TAG, "Gatt callback... strange state.");
+                Log.d(TAG, "Gatt callback... strange state.");
             }
         }
 

@@ -106,7 +106,7 @@ public class ActiveBgAlert extends Model {
 
         AlertType alert = AlertType.get_alert(aba.alert_uuid);
         if(alert == null) {
-            Log.e(TAG, "alertTypegetOnly did not find the active alert as part of existing alerts. returning null");
+            Log.d(TAG, "alertTypegetOnly did not find the active alert as part of existing alerts. returning null");
             // removing the alert to be in a better state.
             ClearData();
             return null;

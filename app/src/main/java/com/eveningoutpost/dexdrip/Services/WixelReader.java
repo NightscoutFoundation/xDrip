@@ -1,27 +1,27 @@
 package com.eveningoutpost.dexdrip.Services;
 
-import java.io.IOException;
-import java.util.Date;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
+import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.TransmitterData;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.utils.BgToSpeech;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-
-import com.eveningoutpost.dexdrip.utils.BgToSpeech;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.eveningoutpost.dexdrip.Sensor;
-import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Models.TransmitterData;
 
 public class WixelReader  extends Thread {
 
@@ -323,7 +323,7 @@ public class WixelReader  extends Thread {
     {
     	Long LastReportedTime = new Date().getTime();
     	TransmitterRawData LastReportedReading = null;
-    	Log.e(TAG, "Starting... LastReportedReading " + LastReportedReading);
+    	Log.d(TAG, "Starting... LastReportedReading " + LastReportedReading);
     	try {
 	        while (!mStop && !interrupted()) {
 	        	// try to read one object...
@@ -343,7 +343,7 @@ public class WixelReader  extends Thread {
 	        		        (!almostEquals(LastReading, LastReportedReading)) &&
 	        		        LastReading.CaptureDateTime < new Date().getTime() + 120000) {
 	        			// We have a real new reading...
-	        			Log.e(TAG, "calling setSerialDataToTransmitterRawData " + LastReading.RawValue +
+	        			Log.d(TAG, "calling setSerialDataToTransmitterRawData " + LastReading.RawValue +
 	        			        " LastReading.CaptureDateTime " + LastReading.CaptureDateTime + " " + LastReading.TransmissionId);
 	        			setSerialDataToTransmitterRawData(LastReading.RawValue,  LastReading.FilteredValue, LastReading.BatteryLife, LastReading.CaptureDateTime);
 	        			LastReportedReading = LastReading;
@@ -378,17 +378,17 @@ public class WixelReader  extends Thread {
                 }
 
                 int fakedRaw = 100000 + i * 3000;
-                Log.e(TAG, "calling setSerialDataToTransmitterRawData " + fakedRaw);
+                Log.d(TAG, "calling setSerialDataToTransmitterRawData " + fakedRaw);
                 setSerialDataToTransmitterRawData(fakedRaw, fakedRaw ,100, new Date().getTime());
-                Log.e(TAG, "returned from setSerialDataToTransmitterRawData " + fakedRaw);
+                Log.d(TAG, "returned from setSerialDataToTransmitterRawData " + fakedRaw);
 
                 Long StartLoop = new Date().getTime();
                 for (int j = 0 ; j < 300; j++) {
                     Thread.sleep(1000);
-                    Log.e(TAG, "looping ...." + i + " " + j + " " + (new Date().getTime() - StartLoop)/1000);
+                    Log.d(TAG, "looping ...." + i + " " + j + " " + (new Date().getTime() - StartLoop)/1000);
                     if(mStop ) {
                     // we were asked to leave, so do it....
-						Log.e(TAG, "EXITING mstop=true" );
+						Log.d(TAG, "EXITING mstop=true" );
                         return;
                     }
                 }
@@ -400,7 +400,7 @@ public class WixelReader  extends Thread {
                    break;
                }
         }
-		Log.e(TAG, "EXITING mstop=true" );
+		Log.d(TAG, "EXITING mstop=true" );
     }
 
     public void Stop()
@@ -418,7 +418,7 @@ public class WixelReader  extends Thread {
                 sensor.latest_battery_level = (sensor.latest_battery_level!=0)?Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level):transmitterData.sensor_battery_level;;
                 sensor.save();
             } else {
-                Log.w(TAG, "No Active Sensor, Data only stored in Transmitter Data");
+                Log.d(TAG, "No Active Sensor, Data only stored in Transmitter Data");
             }
         }
     }
