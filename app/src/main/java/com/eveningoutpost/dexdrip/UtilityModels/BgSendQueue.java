@@ -116,7 +116,7 @@ public class BgSendQueue extends Model {
                 //raw value
                 double slope = 0, intercept = 0, scale = 0, filtered = 0, unfiltered = 0, raw = 0;
                 Calibration cal = Calibration.last();
-                if (cal != null){;
+                if (cal != null){
                     // slope/intercept/scale like uploaded to NightScout (NightScoutUploader.java)
                     if(cal.check_in) {
                         slope = cal.first_slope;
