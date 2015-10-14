@@ -2,9 +2,11 @@ package com.eveningoutpost.dexdrip.Services;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Sensor;
@@ -23,7 +25,9 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-public class WixelReader  extends Thread {
+
+    
+public class WixelReader extends AsyncTask<String, Void, Void > {
 
     private final static String TAG = WixelReader.class.getName();
     private static WixelReader singleton;
@@ -38,42 +42,18 @@ public class WixelReader  extends Thread {
 
     private final Context mContext;
 
-    private volatile boolean mStop = false;
-    private static boolean sStarted = false;
 
     public WixelReader(Context ctx) {
         mContext = ctx.getApplicationContext();
     }
 
-    public static void sStart(Context ctx) {
-        if(sStarted) {
-            return;
-        }
-        bgToSpeech = BgToSpeech.setupTTS(ctx); //keep reference to not being garbage collected
-        WixelReader theWixelReader =  getInstance(ctx);
-        theWixelReader.start();
-        sStarted = true;
 
+    
+    public Void doInBackground(String... urls) {
+        readData();
+        return null;
     }
-
-    public static void sStop() {
-        if(!sStarted) {
-            return;
-        }
-        BgToSpeech.tearDownTTS();
-        WixelReader theWixelReader =  getInstance(null);
-        theWixelReader.Stop();
-        try {
-            theWixelReader.join();
-        } catch (InterruptedException e) {
-            Log.e(TAG, "cought InterruptedException, could not wait for the wixel thread to exit", e);
-        }
-        sStarted = false;
-        // A stopped thread can not start again, so we need to kill it and will start a new one
-        // on demand
-        singleton = null;
-    }
-
+    
     public static boolean IsConfigured(Context ctx) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         String recieversIpAddresses = prefs.getString("wifi_recievers_addresses", "");
@@ -319,46 +299,66 @@ public class WixelReader  extends Thread {
     }
 
 
-    public void run()
+    public void readData()
     {
-    	Long LastReportedTime = new Date().getTime();
+        Long LastReportedTime = 0L;
+    	TransmitterData lastTransmitterData = TransmitterData.last();
+    	if(lastTransmitterData != null) {
+    	    LastReportedTime = lastTransmitterData.timestamp;
+    	}
+    	Long startReadTime = LastReportedTime;
+    	
     	TransmitterRawData LastReportedReading = null;
     	Log.d(TAG, "Starting... LastReportedReading " + LastReportedReading);
-    	try {
-	        while (!mStop && !interrupted()) {
-	        	// try to read one object...
-                TransmitterRawData[] LastReadingArr = null;
-                if(WixelReader.IsConfigured(mContext)) {
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-                    String recieversIpAddresses = prefs.getString("wifi_recievers_addresses", "");
-	        		LastReadingArr = Read(recieversIpAddresses ,1);
-                }
-	        	if (LastReadingArr != null  && LastReadingArr.length  > 0) {
-	        		// Last in the array is the most updated reading we have.
-	        		TransmitterRawData LastReading = LastReadingArr[LastReadingArr.length -1];
-
-	        		//if (LastReading.CaptureDateTime > LastReportedReading + 5000) {
-	        		// Make sure we do not report packets from the far future...
-	        		if ((LastReading.CaptureDateTime > LastReportedTime ) &&
-	        		        (!almostEquals(LastReading, LastReportedReading)) &&
-	        		        LastReading.CaptureDateTime < new Date().getTime() + 120000) {
-	        			// We have a real new reading...
-	        			Log.d(TAG, "calling setSerialDataToTransmitterRawData " + LastReading.RawValue +
-	        			        " LastReading.CaptureDateTime " + LastReading.CaptureDateTime + " " + LastReading.TransmissionId);
-	        			setSerialDataToTransmitterRawData(LastReading.RawValue,  LastReading.FilteredValue, LastReading.BatteryLife, LastReading.CaptureDateTime);
-	        			LastReportedReading = LastReading;
-	        			LastReportedTime = LastReading.CaptureDateTime;
-	        		}
-	        	}
-	        	// let's sleep (right now for 30 seconds)
-	        	Thread.sleep(30000);
-	        }
-    	} catch (InterruptedException e) {
-    	    Log.e(TAG, "cought InterruptedException! ", e);
-            // time to get out...
+    	// try to read one object...
+        TransmitterRawData[] LastReadingArr = null;
+        if(!WixelReader.IsConfigured(mContext)) {
+            return;
         }
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String recieversIpAddresses = prefs.getString("wifi_recievers_addresses", "");
+        
+        // How many packets should we read? we look at the maximum time between last calibration and last reading time
+        // and calculate how much are needed.
+        
+        Calibration lastCalibration = Calibration.last();
+        if(lastCalibration != null) {
+            startReadTime = Math.max(startReadTime, (long)(lastCalibration.timestamp));
+        }
+        Long gapTime = new Date().getTime() - startReadTime + 120000;
+        int packetsToRead = (int) (gapTime / (5 * 60000));
+        packetsToRead = Math.min(packetsToRead, 200); // don't read too much, but always read 1.
+        packetsToRead = Math.max(packetsToRead, 1); 
+        
+        Log.d(TAG,"reading " + packetsToRead + " packets");
+		LastReadingArr = Read(recieversIpAddresses ,packetsToRead);
+		
+		if (LastReadingArr == null || LastReadingArr.length  == 0) {
+		    return;
+		}
+
+		for(TransmitterRawData LastReading : LastReadingArr ) {
+    		// Last in the array is the most updated reading we have.
+    		//TransmitterRawData LastReading = LastReadingArr[LastReadingArr.length -1];
+		    
+
+    		//if (LastReading.CaptureDateTime > LastReportedReading + 5000) {
+    		// Make sure we do not report packets from the far future...
+    		if ((LastReading.CaptureDateTime > LastReportedTime + 120000 ) &&
+    		        (!almostEquals(LastReading, LastReportedReading)) &&
+    		        LastReading.CaptureDateTime < new Date().getTime() + 120000) {
+    			// We have a real new reading...
+    			Log.d(TAG, "calling setSerialDataToTransmitterRawData " + LastReading.RawValue +
+    			        " LastReading.CaptureDateTime " + LastReading.CaptureDateTime + " " + LastReading.TransmissionId);
+    			setSerialDataToTransmitterRawData(LastReading.RawValue,  LastReading.FilteredValue, LastReading.BatteryLife, LastReading.CaptureDateTime);
+    			LastReportedReading = LastReading;
+    			LastReportedTime = LastReading.CaptureDateTime;
+    		}
+    	}
     }
 
+/*
+    
     // this function is only a test function. It is used to set many points fast in order to allow
     // faster testing without real data.
     public void runFake()
@@ -366,7 +366,7 @@ public class WixelReader  extends Thread {
         // let's start by faking numbers....
         int i = 0;
         int added = 5;
-        while (!mStop) {
+//        while (!mStop) {
             try {
 
                 i+=added;
@@ -399,15 +399,11 @@ public class WixelReader  extends Thread {
                    Log.e(TAG, "cought InterruptedException! ", e);
                    break;
                }
-        }
+//        }
 		Log.d(TAG, "EXITING mstop=true" );
     }
-
-    public void Stop()
-    {
-        mStop = true;
-        interrupt();
-    }
+    
+*/
     public void setSerialDataToTransmitterRawData(int raw_data, int filtered_data ,int sensor_battery_leve, Long CaptureTime) {
 
         TransmitterData transmitterData = TransmitterData.create(raw_data, sensor_battery_leve, CaptureTime);

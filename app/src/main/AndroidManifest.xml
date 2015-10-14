@@ -60,6 +60,12 @@
             android:exported="true" >
         </service>
 
+        <service
+            android:name=".Services.WifiCollectionService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+
         <activity
             android:name=".Tables.BgReadingTable"
             android:label="Bg Readings Table" >

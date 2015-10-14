@@ -63,16 +63,6 @@ public class NightscoutUploader {
             enableMongoUpload = prefs.getBoolean("cloud_storage_mongodb_enable", false);
         }
 
-        public boolean upload(BgReading glucoseDataSet, Calibration meterRecord, Calibration calRecord) {
-            List<BgReading> glucoseDataSets = new ArrayList<BgReading>();
-            glucoseDataSets.add(glucoseDataSet);
-            List<Calibration> meterRecords = new ArrayList<Calibration>();
-            meterRecords.add(meterRecord);
-            List<Calibration> calRecords = new ArrayList<Calibration>();
-            calRecords.add(calRecord);
-            return upload(glucoseDataSets, meterRecords, calRecords);
-        }
-
         public boolean upload(List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) {
             boolean mongoStatus = false;
             boolean apiStatus = false;
