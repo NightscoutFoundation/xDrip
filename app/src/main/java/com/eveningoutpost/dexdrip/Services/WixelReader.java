@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.Services;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -30,27 +31,33 @@ import java.util.List;
 public class WixelReader extends AsyncTask<String, Void, Void > {
 
     private final static String TAG = WixelReader.class.getName();
-    private static WixelReader singleton;
     private static BgToSpeech bgToSpeech;
 
-    public synchronized static WixelReader getInstance(Context ctx) {
-        if(singleton == null) {
-           singleton = new WixelReader(ctx);
-        }
-        return singleton;
-    }
-
     private final Context mContext;
+    PowerManager.WakeLock wakeLock; 
+    
+    private static int lockCounter = 0;  
 
 
     public WixelReader(Context ctx) {
         mContext = ctx.getApplicationContext();
+        PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "WifiReader");
+        wakeLock.acquire();
+        lockCounter++;
+        Log.e(TAG,"wakelock acquired " + lockCounter);
     }
 
 
     
     public Void doInBackground(String... urls) {
-        readData();
+        try {
+            readData();
+        } finally {
+            wakeLock.acquire();
+            lockCounter--;
+            Log.e(TAG,"wakelock released " + lockCounter);
+        }
         return null;
     }
     

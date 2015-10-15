@@ -115,7 +115,10 @@ public class WifiCollectionService extends Service {
     }
     
     private void runWixelReader() {
+        // Theoretically can create more than one task. Should not be a problem since android runs them
+        // on the same thread.
         WixelReader task = new WixelReader(getApplicationContext());
+        // Assume here that task will execute, otheirwise we leak a wake lock...
         task.execute();
     }
 }
