@@ -54,7 +54,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         try {
             readData();
         } finally {
-            wakeLock.acquire();
+            wakeLock.release();
             lockCounter--;
             Log.e(TAG,"wakelock released " + lockCounter);
         }
@@ -305,6 +305,40 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         return trd_list;
     }
 
+    static Long timeForNextRead() {
+        final long DEXCOM_PERIOD=300000;
+        TransmitterData lastTransmitterData = TransmitterData.last();
+        if(lastTransmitterData == null) {
+            // We did not receive a packet, well someone hopefully is looking at data, return relatively fast
+            Log.e(TAG, "lastTransmitterData == null returning 60000");
+            return 60*1000L;
+        }
+        Long gapTime = new Date().getTime() - lastTransmitterData.timestamp;
+        Log.e(TAG, "gapTime = " + gapTime);
+        if(gapTime < 0) {
+            // There is some confusion here (clock was readjusted?)
+            Log.e(TAG, "gapTime <= null returning 60000");
+            return 60*1000L;
+        }
+        
+        if(gapTime < DEXCOM_PERIOD) {
+            // We have received the last packet...
+            // 300000 - gaptime is when we expect to have the next packet.
+            return (DEXCOM_PERIOD - gapTime) + 2000;
+        }
+        
+        gapTime = gapTime % DEXCOM_PERIOD;
+        Log.e(TAG, "gapTime = " + gapTime);
+        if(gapTime < 10000) {
+            // A new packet should arrive any second now
+            return 10000L;
+        }
+        if(gapTime < 60000) {
+            // A new packet should arrive but chance is we have missed it...
+            return 30000L;
+        }
+        return (DEXCOM_PERIOD - gapTime) + 2000;
+    }
 
     public void readData()
     {

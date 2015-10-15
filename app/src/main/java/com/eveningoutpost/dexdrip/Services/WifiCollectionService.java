@@ -58,6 +58,7 @@ public class WifiCollectionService extends Service {
         }
         if (CollectionServiceStarter.isWifiWixel(getApplicationContext()) ) {
             runWixelReader();
+            // For simplicity done here, would better happen once we know if we have a packet or not...
             setFailoverTimer();
         } else {
             stopSelf();
@@ -96,7 +97,7 @@ public class WifiCollectionService extends Service {
     public void setFailoverTimer() {
         Log.e(TAG, "build.version.sdk_int " + Build.VERSION.SDK_INT);
         if (CollectionServiceStarter.isWifiWixel(getApplicationContext())) {
-            long retry_in = (1000 * 60 * 1);
+            long retry_in = WixelReader.timeForNextRead();
             Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
