@@ -27,7 +27,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-    
+// Important note, this class is based on the fact that android will always run it one thread, which means it does not
+// need synchronization
+
 public class WixelReader extends AsyncTask<String, Void, Void > {
 
     private final static String TAG = WixelReader.class.getName();
@@ -36,8 +38,11 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
     private final Context mContext;
     PowerManager.WakeLock wakeLock; 
     
-    private static int lockCounter = 0;  
-
+    private static int lockCounter = 0;
+    
+    // This variables are for fake function only
+    static int i = 0;
+    static int added = 5;
 
     public WixelReader(Context ctx) {
         mContext = ctx.getApplicationContext();
@@ -50,16 +55,6 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
 
 
     
-    public Void doInBackground(String... urls) {
-        try {
-            readData();
-        } finally {
-            wakeLock.release();
-            lockCounter--;
-            Log.e(TAG,"wakelock released " + lockCounter);
-        }
-        return null;
-    }
     
     public static boolean IsConfigured(Context ctx) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -340,6 +335,18 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         return (DEXCOM_PERIOD - gapTime) + 2000;
     }
 
+    public Void doInBackground(String... urls) {
+        try {
+            readData();
+        } finally {
+            wakeLock.release();
+            lockCounter--;
+            Log.e(TAG,"wakelock released " + lockCounter);
+        }
+        return null;
+    }
+    
+    
     public void readData()
     {
         Long LastReportedTime = 0L;
@@ -398,53 +405,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
     	}
     }
 
-/*
-    
-    // this function is only a test function. It is used to set many points fast in order to allow
-    // faster testing without real data.
-    public void runFake()
-    {
-        // let's start by faking numbers....
-        int i = 0;
-        int added = 5;
-//        while (!mStop) {
-            try {
 
-                i+=added;
-                if (i==50) {
-                    added = -5;
-                }
-                if (i==0) {
-                    added = 5;
-                }
-
-                int fakedRaw = 100000 + i * 3000;
-                Log.d(TAG, "calling setSerialDataToTransmitterRawData " + fakedRaw);
-                setSerialDataToTransmitterRawData(fakedRaw, fakedRaw ,100, new Date().getTime());
-                Log.d(TAG, "returned from setSerialDataToTransmitterRawData " + fakedRaw);
-
-                Long StartLoop = new Date().getTime();
-                for (int j = 0 ; j < 300; j++) {
-                    Thread.sleep(1000);
-                    Log.d(TAG, "looping ...." + i + " " + j + " " + (new Date().getTime() - StartLoop)/1000);
-                    if(mStop ) {
-                    // we were asked to leave, so do it....
-						Log.d(TAG, "EXITING mstop=true" );
-                        return;
-                    }
-                }
-
-
-               } catch (InterruptedException e) {
-                   // time to get out...
-                   Log.e(TAG, "cought InterruptedException! ", e);
-                   break;
-               }
-//        }
-		Log.d(TAG, "EXITING mstop=true" );
-    }
-    
-*/
     public void setSerialDataToTransmitterRawData(int raw_data, int filtered_data ,int sensor_battery_leve, Long CaptureTime) {
 
         TransmitterData transmitterData = TransmitterData.create(raw_data, sensor_battery_leve, CaptureTime);
@@ -458,5 +419,25 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
                 Log.d(TAG, "No Active Sensor, Data only stored in Transmitter Data");
             }
         }
+    }
+    
+    static Long timeForNextReadFake() {
+        return 10000L;
+    }
+    
+    void readDataFake()
+    {
+        i+=added;
+        if (i==50) {
+            added = -5;
+        }
+        if (i==0) {
+            added = 5;
+        }
+
+        int fakedRaw = 100000 + i * 3000;
+        Log.d(TAG, "calling setSerialDataToTransmitterRawData " + fakedRaw);
+        setSerialDataToTransmitterRawData(fakedRaw, fakedRaw ,215, new Date().getTime());
+        Log.d(TAG, "returned from setSerialDataToTransmitterRawData " + fakedRaw);
     }
 }

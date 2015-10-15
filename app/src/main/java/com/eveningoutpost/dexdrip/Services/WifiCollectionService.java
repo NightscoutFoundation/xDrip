@@ -95,7 +95,6 @@ public class WifiCollectionService extends Service {
 
 
     public void setFailoverTimer() {
-        Log.e(TAG, "build.version.sdk_int " + Build.VERSION.SDK_INT);
         if (CollectionServiceStarter.isWifiWixel(getApplicationContext())) {
             long retry_in = WixelReader.timeForNextRead();
             Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
