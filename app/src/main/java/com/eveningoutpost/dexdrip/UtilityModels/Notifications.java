@@ -44,7 +44,7 @@ import java.util.List;
  * Created by stephenblack on 11/28/14.
  */
 public class Notifications extends IntentService {
-    public static final long[] vibratePattern = {0,1000,300,1000,300,1000};
+    public static final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
     public static boolean bg_notifications;
     public static boolean bg_ongoing;
     public static boolean bg_vibrate;
@@ -130,7 +130,7 @@ public class Notifications extends IntentService {
         Sensor sensor = Sensor.currentSensor();
 
         BgReading bgReading = BgReading.last();
-        if(bgReading == null) {
+        if (bgReading == null) {
             // Sensor is stopped, or there is not enough data
             AlertPlayer.getPlayer().stopAlert(context, true, false);
             return;
@@ -153,7 +153,7 @@ public class Notifications extends IntentService {
             }
 
             AlertType activeBgAlert = ActiveBgAlert.alertTypegetOnly();
-            if(activeBgAlert == null) {
+            if (activeBgAlert == null) {
                 Log.d(TAG, "FileBasedNotifications we have a new alert, starting to play it... " + newAlert.name);
                 // We need to create a new alert  and start playing
                 boolean trendingToAlertEnd = trendingToAlertEnd(context, true, newAlert);
@@ -169,7 +169,7 @@ public class Notifications extends IntentService {
                 AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
                 return;
             }
-           // Currently the ui blocks having two alerts with the same alert value.
+            // Currently the ui blocks having two alerts with the same alert value.
 
             boolean alertSnoozeOver = ActiveBgAlert.alertSnoozeOver();
             if (alertSnoozeOver) {
@@ -187,7 +187,7 @@ public class Notifications extends IntentService {
                 // We should not do anything if we are snoozed for the 80...
                 // If one allert was high and the second one is low however, we alarm in any case (snoozing ignored).
                 boolean opositeDirection = AlertType.OpositeDirection(activeBgAlert, newAlert);
-                AlertType  newHigherAlert = AlertType.HigherAlert(activeBgAlert, newAlert);
+                AlertType newHigherAlert = AlertType.HigherAlert(activeBgAlert, newAlert);
                 if ((newHigherAlert == activeBgAlert) && (!opositeDirection)) {
                     // the existing alert is the higher, we should check if to play it
                     Log.d(TAG, "FileBasedNotifications The existing alert has the same direcotion, checking if to playit newHigherAlert = " + newHigherAlert.name +
@@ -211,12 +211,12 @@ public class Notifications extends IntentService {
     }
 
     boolean trendingToAlertEnd(Context context, Boolean newAlert, AlertType Alert) {
-        if(newAlert && !smart_alerting) {
-        //  User does not want smart alerting at all.
+        if (newAlert && !smart_alerting) {
+            //  User does not want smart alerting at all.
             return false;
         }
-        if((!newAlert) && (!smart_snoozing)) {
-        //  User does not want smart snoozing at all.
+        if ((!newAlert) && (!smart_snoozing)) {
+            //  User does not want smart snoozing at all.
             return false;
         }
         return BgReading.trendingToAlertEnd(context, Alert.above);
@@ -232,7 +232,7 @@ public class Notifications extends IntentService {
         if (bg_ongoing && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)) {
             bgOngoingNotification(bgGraphBuilder);
         }
-        if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
+        if (prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
             Log.d("NOTIFICATIONS", "Notifications are currently disabled!!");
             return;
         }
@@ -244,8 +244,12 @@ public class Notifications extends IntentService {
 
         List<BgReading> bgReadings = BgReading.latest(3);
         List<Calibration> calibrations = Calibration.allForSensorInLastFourDays();
-        if(bgReadings == null || bgReadings.size() < 3) { return; }
-        if(calibrations == null || calibrations.size() < 2) { return; }
+        if (bgReadings == null || bgReadings.size() < 3) {
+            return;
+        }
+        if (calibrations == null || calibrations.size() < 2) {
+            return;
+        }
         BgReading bgReading = bgReadings.get(0);
 
         if (calibration_notifications) {
@@ -253,37 +257,52 @@ public class Notifications extends IntentService {
                 if (calibrations.size() == 0 && (new Date().getTime() - bgReadings.get(2).timestamp <= (60000 * 30)) && sensor != null) {
                     if ((sensor.started_at + (60000 * 60 * 2)) < new Date().getTime()) {
                         doubleCalibrationRequest();
-                    } else { clearDoubleCalibrationRequest(); }
-                } else { clearDoubleCalibrationRequest(); }
-            } else { clearDoubleCalibrationRequest(); }
+                    } else {
+                        clearDoubleCalibrationRequest();
+                    }
+                } else {
+                    clearDoubleCalibrationRequest();
+                }
+            } else {
+                clearDoubleCalibrationRequest();
+            }
             if (CalibrationRequest.shouldRequestCalibration(bgReading) && (new Date().getTime() - bgReadings.get(2).timestamp <= (60000 * 24))) {
                 extraCalibrationRequest();
-            } else { clearExtraCalibrationRequest(); }
-            if (calibrations.size() >= 1 && Math.abs((new Date().getTime() - calibrations.get(0).timestamp))/(1000*60*60) > 12) {
-                Log.d("NOTIFICATIONS", "Calibration difference in hours: " + ((new Date().getTime() - calibrations.get(0).timestamp))/(1000*60*60));
+            } else {
+                clearExtraCalibrationRequest();
+            }
+            if (calibrations.size() >= 1 && Math.abs((new Date().getTime() - calibrations.get(0).timestamp)) / (1000 * 60 * 60) > 12) {
+                Log.d("NOTIFICATIONS", "Calibration difference in hours: " + ((new Date().getTime() - calibrations.get(0).timestamp)) / (1000 * 60 * 60));
                 calibrationRequest();
-            } else { clearCalibrationRequest(); }
+            } else {
+                clearCalibrationRequest();
+            }
 
         } else {
             clearAllCalibrationNotifications();
         }
     }
 
-    private void  ArmTimer() {
+    private void ArmTimer() {
         Log.d(TAG, "ArmTimer called");
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
-        if(activeBgAlert != null ) {
+        if (activeBgAlert != null) {
             AlertType alert = AlertType.get_alert(activeBgAlert.alert_uuid);
-            if(alert != null) {
+            if (alert != null) {
                 int time = alert.minutes_between;
-                if (time < 1) { time = 1; }
+                if (time < 1) {
+                    time = 1;
+                }
                 Calendar calendar = Calendar.getInstance();
                 AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                    alarm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + time * 60000, PendingIntent.getService(this, 0, new Intent(this, Notifications.class), 0));
-                } else {
-                    alarm.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + time * 60000, PendingIntent.getService(this, 0, new Intent(this, Notifications.class), 0));
-                }
+                long wakeTime = calendar.getTimeInMillis() + (time + 60000);
+                PendingIntent serviceIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+                } else
+                    alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
             }
         }
     }

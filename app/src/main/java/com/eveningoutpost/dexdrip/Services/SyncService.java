@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -46,7 +47,13 @@ public class SyncService extends IntentService {
         if (enableRESTUpload || enableMongoUpload) { //Check for any upload type being enabled
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + (1000 * 30 * 5), PendingIntent.getService(this, 0, new Intent(this, SyncService.class), 0));
+            long wakeTime = calendar.getTimeInMillis() + (1000 * 30 * 5);
+            PendingIntent serviceIntent = PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarm.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+            } else {
+                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+            }
         }
     }
 
