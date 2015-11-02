@@ -65,7 +65,7 @@ public class FollowerManagementActivity extends ActivityWithMenu {
     }
 
     private void populateFollowerList() {
-        followerManager = new FollowerManager(login, password, receiverSn, getApplicationContext());
+        /* followerManager = new FollowerManager(login, password, receiverSn, getApplicationContext());
          existingFollowerListener = new Action1<List<ExistingFollower>>() {
             @Override
             public void call(List<ExistingFollower> existingFollowers) {
@@ -84,6 +84,7 @@ public class FollowerManagementActivity extends ActivityWithMenu {
             }
         };
         followerManager.getFollowers(existingFollowerListener);
+        */
     }
 
     private void setInviteListener() {
@@ -113,7 +114,7 @@ public class FollowerManagementActivity extends ActivityWithMenu {
                                     }
                                 }
                             };
-                            followerManager.inviteFollower(followerEmail.getText().toString().trim(), followerName.getText().toString().trim(), followerNicName.getText().toString().trim(), invitedFollowerListener);
+                            //followerManager.inviteFollower(followerEmail.getText().toString().trim(), followerName.getText().toString().trim(), followerNicName.getText().toString().trim(), invitedFollowerListener);
                         }
                         dialog.dismiss();
                     }

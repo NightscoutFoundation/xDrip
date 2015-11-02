@@ -15,16 +15,11 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
-import retrofit.android.AndroidLog;
-import retrofit.client.OkClient;
-import retrofit.converter.GsonConverter;
-
 /**
  * Created by stephenblack on 12/26/14.
  */
 public class ShareRest {
+    /*
     public final static String TAG = ShareRest.class.getSimpleName();
 
     public static Gson gson = new GsonBuilder()
@@ -145,4 +140,5 @@ public class ShareRest {
         map.put("sessionID", sessionId);
         return map;
     }
+    */
 }

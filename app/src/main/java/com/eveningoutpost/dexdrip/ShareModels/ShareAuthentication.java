@@ -21,16 +21,6 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-
-import retrofit.Callback;
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.android.AndroidLog;
-import retrofit.client.OkClient;
-import retrofit.client.Response;
-import retrofit.converter.GsonConverter;
-import retrofit.mime.TypedByteArray;
 import rx.Observable;
 import rx.functions.Action1;
 
@@ -38,7 +28,7 @@ import rx.functions.Action1;
  * Created by stephenblack on 7/31/15.
  */
 public class ShareAuthentication {
-    private final static String TAG = ShareAuthentication.class.getSimpleName();
+/*    private final static String TAG = ShareAuthentication.class.getSimpleName();
     private Context mContext;
     private String login;
     private String password;
@@ -352,4 +342,5 @@ public class ShareAuthentication {
     public static String body(RetrofitError error) {
         return body(error.getResponse());
     }
+    */
 }

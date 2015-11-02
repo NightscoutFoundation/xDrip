@@ -74,7 +74,7 @@ public class FollowerListAdapter extends BaseAdapter {
                         }
                     }
                 };
-                followerManager.deleteFollower(deleteFollowerListener, follower.ContactId);
+                // followerManager.deleteFollower(deleteFollowerListener, follower.ContactId);
             }
         });
         return view;

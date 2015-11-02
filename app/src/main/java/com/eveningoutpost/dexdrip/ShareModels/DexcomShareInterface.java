@@ -5,12 +5,13 @@ import com.eveningoutpost.dexdrip.ShareModels.Models.InvitationPayload;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareAuthenticationBody;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
 import com.eveningoutpost.dexdrip.ShareModels.UserAgentInfo.UserAgent;
+import com.squareup.okhttp.ResponseBody;
 
 import java.util.List;
 import java.util.Map;
 
+import retrofit.Call;
 import retrofit.Callback;
-import retrofit.client.Response;
 import retrofit.http.Body;
 import retrofit.http.POST;
 import retrofit.http.QueryMap;
@@ -19,46 +20,46 @@ import retrofit.http.QueryMap;
  * Created by stephenblack on 3/16/15.
  */
 public interface DexcomShareInterface {
-    @POST("/General/LoginPublisherAccountByName")
-    void getSessionId(@Body ShareAuthenticationBody body, Callback<Response> callback);
+    @POST("General/LoginPublisherAccountByName")
+    Call<ResponseBody> getSessionId(@Body ShareAuthenticationBody body);
     //Since this seems to respond with a string we need a callback that will parse the response body
     //new String(((TypedByteArray) response.getBody()).getBytes());
 
-    @POST("/Publisher/IsRemoteMonitoringSessionActive")
-    void checkSessionActive(@QueryMap Map<String, String> options, Callback<Response> callback);
+    @POST("Publisher/IsRemoteMonitoringSessionActive")
+    Call<ResponseBody> checkSessionActive(@QueryMap Map<String, String> options);
     // needs ?sessionId={YourSessionId}
     // returns true or false
 
-    @POST("/Publisher/StartRemoteMonitoringSession")
-    void StartRemoteMonitoringSession(@QueryMap Map<String, String> options, Callback<Response> callback);
+    @POST("Publisher/StartRemoteMonitoringSession")
+    Call<ResponseBody> StartRemoteMonitoringSession(@QueryMap Map<String, String> options);
     // needs ?sessionId={YourSessionId}&serialNumber={YourdexcomSerialNumber}
     // returns status code
 
-    @POST("/Publisher/PostReceiverEgvRecords")
-    void uploadBGRecords(@QueryMap Map<String, String> options, @Body ShareUploadPayload payload, Callback<Response> callback);
+    @POST("Publisher/PostReceiverEgvRecords")
+    Call<ResponseBody> uploadBGRecords(@QueryMap Map<String, String> options, @Body ShareUploadPayload payload);
     // needs ?sessionId={YourSessionId}
     // body ShareUploadPayload
     // returns status code
 
-    @POST("/General/AuthenticatePublisherAccount")
-    void authenticatePublisherAccount(@Body ShareAuthenticationBody body, @QueryMap Map<String, String> options, Callback<Response> callback);
+    @POST("General/AuthenticatePublisherAccount")
+    Call<ResponseBody> authenticatePublisherAccount(@Body ShareAuthenticationBody body, @QueryMap Map<String, String> options);
     // maybe needs ?sessionId={YourSessionId}&serialNumber={YourdexcomSerialNumber}
     // body ShareUploadPayload
     // returns status code
 
-    @POST("/Publisher/CheckMonitoredReceiverAssignmentStatus")
-    void checkMonitorAssignment(@QueryMap Map<String, String> options, Callback<Response> callback);
+    @POST("Publisher/CheckMonitoredReceiverAssignmentStatus")
+    Call<ResponseBody> checkMonitorAssignment(@QueryMap Map<String, String> options);
     // needs ?sessionId={YourSessionId}&serialNumber={YourdexcomSerialNumber}
     // returns `AssignedToYou` or `NotAssigned`
 
     @POST("/Publisher/ReplacePublisherAccountMonitoredReceiver")
-    void updateMonitorAssignment(@QueryMap Map<String, String> options, Callback<Response> callback);
+    Call<ResponseBody> updateMonitorAssignment(@QueryMap Map<String, String> options);
     // needs ?sessionId={YourSessionId}&serialNumber={YourdexcomSerialNumber}
     // returns status code?
 
 
     @POST("/Publisher/UpdatePublisherAccountRuntimeInfo")
-    void updatePublisherAccountInfo(@Body UserAgent body, Callback<Response> callback);
+    Call<ResponseBody> updatePublisherAccountInfo(@Body UserAgent body);
     //Since this seems to respond with a string we need a callback that will parse the response body
     //new String(((TypedByteArray) response.getBody()).getBytes());
 
@@ -66,7 +67,7 @@ public interface DexcomShareInterface {
 
     //Follower Related
     @POST("/Publisher/ListPublisherAccountSubscriptions")
-   void getContacts(@QueryMap Map<String, String> options, Callback<List<ExistingFollower>> callback);
+   Call<ResponseBody> getContacts(@QueryMap Map<String, String> options, Callback<List<ExistingFollower>> callback);
     // needs ?sessionId={YourSessionId}
     // returns
     // [
@@ -95,24 +96,24 @@ public interface DexcomShareInterface {
     //    }
     //]
 
-    @POST("/Publisher/DoesContactExistByName")
-    void doesContactExist(@QueryMap Map<String, String> options, Callback<Response> callback);
+    @POST("Publisher/DoesContactExistByName")
+    Call<ResponseBody> doesContactExist(@QueryMap Map<String, String> options);
     // needs ?sessionId={YourSessionId}&contactName={newcontactName}
     // returns true or false
 
-    @POST("/Publisher/CreateContact")
-    void createContact(@QueryMap Map<String, String> options, Callback<Response> callback);
+    @POST("Publisher/CreateContact")
+    Call<ResponseBody> createContact(@QueryMap Map<String, String> options);
     // needs ?sessionId={YourSessionId}&contactName={newcontactName}&emailAddress={FollowerEmail}
     // returns a contact id
 
-    @POST("/Publisher/CreateSubscriptionInvitation")
-    void createInvitationForContact(@Body InvitationPayload body, @QueryMap Map<String, String> options, Callback<Response> callback);
+    @POST("Publisher/CreateSubscriptionInvitation")
+    Call<ResponseBody> createInvitationForContact(@Body InvitationPayload body, @QueryMap Map<String, String> options);
     // needs ?sessionId={YourSessionId}&contactId={ContactId}
     // returns a contact id
 
-    @POST("/Publisher/DeleteContact")
-    void deleteContact(@QueryMap Map<String, String> options, Callback<Response> callback);
-    // needs ?sessionId={YourSessionId}&contactId={followersContactId}
+    @POST("Publisher/DeleteContact")
+    Call<ResponseBody> deleteContact(@QueryMap Map<String, String> options);
+    // needs ?sessionId={YourSessionId}&contactId={foll`owersContactId}
     // just a status
 
 }

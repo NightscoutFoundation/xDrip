@@ -3,13 +3,7 @@ package com.eveningoutpost.dexdrip.ShareModels;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
-import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
-
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 import rx.Observable;
 import rx.functions.Action1;
 
@@ -67,11 +61,11 @@ public class BgUploader {
                 }
             }
         };
-        new ShareAuthentication(username, password, serialNumber, context, authListener).authenticate();
+        //new ShareAuthentication(username, password, serialNumber, context, authListener).authenticate();
     }
 
     private void upload() {
-       ShareRest.jsonBodyInterface().uploadBGRecords(ShareRest.querySessionMap(sessionId), new ShareUploadPayload(serialNumber, bg), new Callback<Response>() {
+       /*ShareRest.jsonBodyInterface().uploadBGRecords(ShareRest.querySessionMap(sessionId), new ShareUploadPayload(serialNumber, bg), new Callback<Response>() {
             @Override
             public void success(Response o, Response response) {
                 Log.d(TAG, "Success!! Uploaded!!");
@@ -92,6 +86,6 @@ public class BgUploader {
                     }
                 }
             }
-        });
+        });*/
     }
 }

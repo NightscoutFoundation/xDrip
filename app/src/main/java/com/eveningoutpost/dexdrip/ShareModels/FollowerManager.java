@@ -14,9 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
 import rx.Observable;
 import rx.functions.Action1;
 
@@ -24,6 +21,7 @@ import rx.functions.Action1;
  * Created by stephenblack on 8/10/15.
  */
 public class FollowerManager {
+    /*
     public static String TAG = FollowerManager.class.getSimpleName();
     private String sessionId;
 
@@ -135,6 +133,7 @@ public class FollowerManager {
     }
 
     private void deleteFollower() {
+
         ShareRest.emptyBodyInterface().deleteContact(deleteFollowerPayload(sessionId, contactId), new Callback<Response>() {
             @Override
             public void success(Response o, Response response) {
@@ -153,6 +152,7 @@ public class FollowerManager {
                 }
             }
         });
+
     }
 
     private Map<String, String> deleteFollowerPayload(String sessionId, String contactId) {
@@ -181,6 +181,7 @@ public class FollowerManager {
     }
 
     private void invite() {
+
         ShareRest.emptyBodyInterface().doesContactExist(queryCheckContactExists(), new Callback<Response>() {
             @Override
             public void success(Response o, Response response) {
@@ -268,5 +269,5 @@ public class FollowerManager {
         map.put("sessionID", sessionId);
         map.put("contactId", contactId);
         return map;
-    }
+    }*/
 }
