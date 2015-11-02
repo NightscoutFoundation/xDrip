@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import retrofit.Call;
 import retrofit.Response;
@@ -86,6 +87,9 @@ public class NightscoutUploader {
             mContext = context;
             prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
             client = new OkHttpClient();
+            client.setConnectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
+            client.setWriteTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
+            client.setReadTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
             enableRESTUpload = prefs.getBoolean("cloud_storage_api_enable", false);
             enableMongoUpload = prefs.getBoolean("cloud_storage_mongodb_enable", false);
         }
@@ -149,7 +153,7 @@ public class NightscoutUploader {
                         String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
                         doRESTUploadTo(nightscoutService, hashedSecret, glucoseDataSets, meterRecords, calRecords);
                     } else {
-                        doLegacyRESTUploadTo(nightscoutService, glucoseDataSets, meterRecords, calRecords);
+                        doLegacyRESTUploadTo(nightscoutService, glucoseDataSets);
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Unable to do REST API Upload " + e.getMessage());
@@ -160,7 +164,7 @@ public class NightscoutUploader {
             return true;
         }
 
-        private void doLegacyRESTUploadTo(NightscoutService nightscoutService, List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) throws Exception {
+        private void doLegacyRESTUploadTo(NightscoutService nightscoutService, List<BgReading> glucoseDataSets) throws Exception {
             for (BgReading record : glucoseDataSets) {
                 Response<ResponseBody> r = nightscoutService.upload(populateLegacyAPIEntry(record)).execute();
                 if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
