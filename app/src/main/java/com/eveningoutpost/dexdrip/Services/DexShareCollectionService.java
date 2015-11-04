@@ -267,11 +267,24 @@ public class DexShareCollectionService extends Service {
         }
     }
 
+    public void requestHighPriority() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mBluetoothGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
+        }
+    }
+
+    public void requestLowPriority() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mBluetoothGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_LOW_POWER);
+        }
+    }
+
     public void attemptRead() {
         PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
         final PowerManager.WakeLock wakeLock1 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "ReadingShareData");
         wakeLock1.acquire(60000);
+        requestHighPriority();
         Log.d(TAG, "Attempting to read data");
         final Action1<Long> systemTimeListener = new Action1<Long>() {
             @Override
@@ -298,6 +311,7 @@ public class DexShareCollectionService extends Service {
                                             {
                                                 Log.d(TAG, "Releasing wl in egv");
                                                 if(wakeLock1 != null && wakeLock1.isHeld()) wakeLock1.release();
+                                                requestLowPriority();
                                                 Log.d(TAG, "released");
                                             }
                                             if (shouldDisconnect) {
