@@ -291,14 +291,14 @@ public class DexShareCollectionService extends Service {
             public void call(Long s) {
                 if (s != null) {
                     Log.d(TAG, "Made the full round trip, got " + s + " as the system time");
-                    final long addativeSystemTimeOffset = new Date().getTime() - s;
+                    final long additiveSystemTimeOffset = new Date().getTime() - s;
 
                     final Action1<Long> dislpayTimeListener = new Action1<Long>() {
                         @Override
                         public void call(Long s) {
                             if (s != null) {
                                 Log.d(TAG, "Made the full round trip, got " + s + " as the display time offset");
-                                final long addativeDisplayTimeOffset = addativeSystemTimeOffset - (s * 1000);
+                                final long addativeDisplayTimeOffset = additiveSystemTimeOffset - (s * 1000);
 
                                 Log.d(TAG, "Making " + addativeDisplayTimeOffset + " the the total time offset");
 
@@ -307,7 +307,7 @@ public class DexShareCollectionService extends Service {
                                     public void call(EGVRecord[] egvRecords) {
                                         if (egvRecords != null) {
                                             Log.d(TAG, "Made the full round trip, got " + egvRecords.length + " EVG Records");
-                                            BgReading.create(egvRecords, addativeSystemTimeOffset, getApplicationContext());
+                                            BgReading.create(egvRecords, additiveSystemTimeOffset, getApplicationContext());
                                             {
                                                 Log.d(TAG, "Releasing wl in egv");
                                                 if(wakeLock1 != null && wakeLock1.isHeld()) wakeLock1.release();
@@ -328,7 +328,7 @@ public class DexShareCollectionService extends Service {
                                     public void call(SensorRecord[] sensorRecords) {
                                         if (sensorRecords != null) {
                                             Log.d(TAG, "Made the full round trip, got " + sensorRecords.length + " Sensor Records");
-                                            BgReading.create(sensorRecords, addativeSystemTimeOffset, getApplicationContext());
+                                            BgReading.create(sensorRecords, additiveSystemTimeOffset, getApplicationContext());
                                             readData.getRecentEGVs(evgRecordListener);
                                         }
                                     }
