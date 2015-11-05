@@ -17,7 +17,6 @@ import android.preference.PreferenceManager;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.MongoSendTask;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 
 /**
