@@ -251,7 +251,7 @@ public class Notifications extends IntentService {
         if (calibration_notifications) {
             if (bgReadings.size() >= 3) {
                 if (calibrations.size() == 0 && (new Date().getTime() - bgReadings.get(2).timestamp <= (60000 * 30)) && sensor != null) {
-                    if ((sensor.started_at + (60000 * 60 * 2)) < new Date().getTime()) {
+                    if ((sensor.started_at + (60000 * 5 * 2)) < new Date().getTime()) {
                         doubleCalibrationRequest();
                     } else { clearDoubleCalibrationRequest(); }
                 } else { clearDoubleCalibrationRequest(); }
