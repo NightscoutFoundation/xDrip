@@ -409,7 +409,7 @@ public class NightscoutUploader {
                         DBCollection dsCollection = db.getCollection(dsCollectionName);
                         BasicDBObject devicestatus = new BasicDBObject();
                         devicestatus.put("uploaderBattery", getBatteryLevel());
-                        devicestatus.put("created_at", new Date());
+                        devicestatus.put("created_at", format.format(System.currentTimeMillis()));
                         dsCollection.insert(devicestatus, WriteConcern.UNACKNOWLEDGED);
 
                         client.close();
