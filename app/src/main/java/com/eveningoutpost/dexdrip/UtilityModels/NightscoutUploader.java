@@ -23,6 +23,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.ResponseBody;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URI;
@@ -175,26 +176,30 @@ public class NightscoutUploader {
         }
 
         private void doRESTUploadTo(NightscoutService nightscoutService, String secret, List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) throws Exception {
+            JSONArray array = new JSONArray();
+
             for (BgReading record : glucoseDataSets) {
-                Response<ResponseBody> r = nightscoutService.upload(secret, populateV1APIBGEntry(record)).execute();
-                if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
+                populateV1APIBGEntry(array, record);
             }
             for (Calibration record : meterRecords) {
-                Response<ResponseBody> r = nightscoutService.upload(secret, populateV1APIMeterReadingEntry(record)).execute();
-                if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
+                populateV1APIMeterReadingEntry(array, record);
             }
             for (Calibration record : calRecords) {
-                Response<ResponseBody> r = nightscoutService.upload(secret, populateV1APICalibrationEntry(record)).execute();
-                if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
+                populateV1APICalibrationEntry(array, record);
             }
+
+            RequestBody body = RequestBody.create(MediaType.parse("application/json"), array.toString());
+            Response<ResponseBody> r = nightscoutService.upload(secret, body).execute();
+            if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
+
             postDeviceStatus(nightscoutService, secret);
         }
 
-        private RequestBody populateV1APIBGEntry(BgReading record) throws Exception {
+        private void populateV1APIBGEntry(JSONArray array, BgReading record) throws Exception {
             JSONObject json = new JSONObject();
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
             format.setTimeZone(TimeZone.getDefault());
-            json.put("device", "xDrip-"+prefs.getString("dex_collection_method", "BluetoothWixel"));
+            json.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
             json.put("date", record.timestamp);
             json.put("dateString", format.format(record.timestamp));
             json.put("sgv", (int)record.calculated_value);
@@ -204,7 +209,7 @@ public class NightscoutUploader {
             json.put("unfiltered", record.usedRaw() * 1000);
             json.put("rssi", 100);
             json.put("noise", record.noiseValue());
-            return RequestBody.create(MediaType.parse("application/json"), json.toString());
+            array.put(json);
         }
 
         private RequestBody populateLegacyAPIEntry(BgReading record) throws Exception {
@@ -219,7 +224,7 @@ public class NightscoutUploader {
             return RequestBody.create(MediaType.parse("application/json"), json.toString());
         }
 
-        private RequestBody populateV1APIMeterReadingEntry(Calibration record) throws Exception {
+        private void populateV1APIMeterReadingEntry(JSONArray array, Calibration record) throws Exception {
             JSONObject json = new JSONObject();
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
             format.setTimeZone(TimeZone.getDefault());
@@ -228,10 +233,10 @@ public class NightscoutUploader {
             json.put("date", record.timestamp);
             json.put("dateString", format.format(record.timestamp));
             json.put("mbg", record.bg);
-            return RequestBody.create(MediaType.parse("application/json"), json.toString());
+            array.put(json);
         }
 
-        private RequestBody populateV1APICalibrationEntry(Calibration record) throws Exception {
+        private void populateV1APICalibrationEntry(JSONArray array, Calibration record) throws Exception {
             JSONObject json = new JSONObject();
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
             format.setTimeZone(TimeZone.getDefault());
@@ -248,7 +253,7 @@ public class NightscoutUploader {
                 json.put("intercept", (long) ((record.intercept * -1000) / (record.slope * 1000)));
                 json.put("scale", 1);
             }
-            return RequestBody.create(MediaType.parse("application/json"), json.toString());
+            array.put(json);
         }
 
         private void postDeviceStatus(NightscoutService nightscoutService, String apiSecret) throws Exception {
