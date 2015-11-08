@@ -363,11 +363,13 @@ public class NightscoutUploader {
         }
     public int getBatteryLevel() {
         Intent batteryIntent = mContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-        int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-        if(level == -1 || scale == -1) {
-            return 50;
-        }
-        return (int)(((float)level / (float)scale) * 100.0f);
+        if (batteryIntent != null) {
+            int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            if (level == -1 || scale == -1) {
+                return 50;
+            }
+            return (int) (((float) level / (float) scale) * 100.0f);
+        } else return 50;
     }
 }
