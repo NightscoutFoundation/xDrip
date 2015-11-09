@@ -2,9 +2,12 @@ package com.eveningoutpost.dexdrip.Services;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Sensor;
@@ -23,57 +26,36 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-public class WixelReader  extends Thread {
+
+// Important note, this class is based on the fact that android will always run it one thread, which means it does not
+// need synchronization
+
+public class WixelReader extends AsyncTask<String, Void, Void > {
 
     private final static String TAG = WixelReader.class.getName();
-    private static WixelReader singleton;
     private static BgToSpeech bgToSpeech;
 
-    public synchronized static WixelReader getInstance(Context ctx) {
-        if(singleton == null) {
-           singleton = new WixelReader(ctx);
-        }
-        return singleton;
-    }
-
     private final Context mContext;
-
-    private volatile boolean mStop = false;
-    private static boolean sStarted = false;
+    PowerManager.WakeLock wakeLock; 
+    
+    private static int lockCounter = 0;
+    
+    // This variables are for fake function only
+    static int i = 0;
+    static int added = 5;
 
     public WixelReader(Context ctx) {
         mContext = ctx.getApplicationContext();
+        PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "WifiReader");
+        wakeLock.acquire();
+        lockCounter++;
+        Log.e(TAG,"wakelock acquired " + lockCounter);
     }
 
-    public static void sStart(Context ctx) {
-        if(sStarted) {
-            return;
-        }
-        bgToSpeech = BgToSpeech.setupTTS(ctx); //keep reference to not being garbage collected
-        WixelReader theWixelReader =  getInstance(ctx);
-        theWixelReader.start();
-        sStarted = true;
 
-    }
-
-    public static void sStop() {
-        if(!sStarted) {
-            return;
-        }
-        BgToSpeech.tearDownTTS();
-        WixelReader theWixelReader =  getInstance(null);
-        theWixelReader.Stop();
-        try {
-            theWixelReader.join();
-        } catch (InterruptedException e) {
-            Log.e(TAG, "cought InterruptedException, could not wait for the wixel thread to exit", e);
-        }
-        sStarted = false;
-        // A stopped thread can not start again, so we need to kill it and will start a new one
-        // on demand
-        singleton = null;
-    }
-
+    
+    
     public static boolean IsConfigured(Context ctx) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         String recieversIpAddresses = prefs.getString("wifi_recievers_addresses", "");
@@ -318,96 +300,112 @@ public class WixelReader  extends Thread {
         return trd_list;
     }
 
+    static Long timeForNextRead() {
+        final long DEXCOM_PERIOD=300000;
+        TransmitterData lastTransmitterData = TransmitterData.last();
+        if(lastTransmitterData == null) {
+            // We did not receive a packet, well someone hopefully is looking at data, return relatively fast
+            Log.e(TAG, "lastTransmitterData == null returning 60000");
+            return 60*1000L;
+        }
+        Long gapTime = new Date().getTime() - lastTransmitterData.timestamp;
+        Log.e(TAG, "gapTime = " + gapTime);
+        if(gapTime < 0) {
+            // There is some confusion here (clock was readjusted?)
+            Log.e(TAG, "gapTime <= null returning 60000");
+            return 60*1000L;
+        }
+        
+        if(gapTime < DEXCOM_PERIOD) {
+            // We have received the last packet...
+            // 300000 - gaptime is when we expect to have the next packet.
+            return (DEXCOM_PERIOD - gapTime) + 2000;
+        }
+        
+        gapTime = gapTime % DEXCOM_PERIOD;
+        Log.e(TAG, "gapTime = " + gapTime);
+        if(gapTime < 10000) {
+            // A new packet should arrive any second now
+            return 10000L;
+        }
+        if(gapTime < 60000) {
+            // A new packet should arrive but chance is we have missed it...
+            return 30000L;
+        }
+        return (DEXCOM_PERIOD - gapTime) + 2000;
+    }
 
-    public void run()
+    public Void doInBackground(String... urls) {
+        try {
+            readData();
+        } finally {
+            wakeLock.release();
+            lockCounter--;
+            Log.e(TAG,"wakelock released " + lockCounter);
+        }
+        return null;
+    }
+    
+    
+    public void readData()
     {
-    	Long LastReportedTime = new Date().getTime();
+        Long LastReportedTime = 0L;
+    	TransmitterData lastTransmitterData = TransmitterData.last();
+    	if(lastTransmitterData != null) {
+    	    LastReportedTime = lastTransmitterData.timestamp;
+    	}
+    	Long startReadTime = LastReportedTime;
+    	
     	TransmitterRawData LastReportedReading = null;
     	Log.d(TAG, "Starting... LastReportedReading " + LastReportedReading);
-    	try {
-	        while (!mStop && !interrupted()) {
-	        	// try to read one object...
-                TransmitterRawData[] LastReadingArr = null;
-                if(WixelReader.IsConfigured(mContext)) {
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-                    String recieversIpAddresses = prefs.getString("wifi_recievers_addresses", "");
-	        		LastReadingArr = Read(recieversIpAddresses ,1);
-                }
-	        	if (LastReadingArr != null  && LastReadingArr.length  > 0) {
-	        		// Last in the array is the most updated reading we have.
-	        		TransmitterRawData LastReading = LastReadingArr[LastReadingArr.length -1];
-
-	        		//if (LastReading.CaptureDateTime > LastReportedReading + 5000) {
-	        		// Make sure we do not report packets from the far future...
-	        		if ((LastReading.CaptureDateTime > LastReportedTime ) &&
-	        		        (!almostEquals(LastReading, LastReportedReading)) &&
-	        		        LastReading.CaptureDateTime < new Date().getTime() + 120000) {
-	        			// We have a real new reading...
-	        			Log.d(TAG, "calling setSerialDataToTransmitterRawData " + LastReading.RawValue +
-	        			        " LastReading.CaptureDateTime " + LastReading.CaptureDateTime + " " + LastReading.TransmissionId);
-	        			setSerialDataToTransmitterRawData(LastReading.RawValue,  LastReading.FilteredValue, LastReading.BatteryLife, LastReading.CaptureDateTime);
-	        			LastReportedReading = LastReading;
-	        			LastReportedTime = LastReading.CaptureDateTime;
-	        		}
-	        	}
-	        	// let's sleep (right now for 30 seconds)
-	        	Thread.sleep(30000);
-	        }
-    	} catch (InterruptedException e) {
-    	    Log.e(TAG, "cought InterruptedException! ", e);
-            // time to get out...
+    	// try to read one object...
+        TransmitterRawData[] LastReadingArr = null;
+        if(!WixelReader.IsConfigured(mContext)) {
+            return;
         }
-    }
-
-    // this function is only a test function. It is used to set many points fast in order to allow
-    // faster testing without real data.
-    public void runFake()
-    {
-        // let's start by faking numbers....
-        int i = 0;
-        int added = 5;
-        while (!mStop) {
-            try {
-
-                i+=added;
-                if (i==50) {
-                    added = -5;
-                }
-                if (i==0) {
-                    added = 5;
-                }
-
-                int fakedRaw = 100000 + i * 3000;
-                Log.d(TAG, "calling setSerialDataToTransmitterRawData " + fakedRaw);
-                setSerialDataToTransmitterRawData(fakedRaw, fakedRaw ,100, new Date().getTime());
-                Log.d(TAG, "returned from setSerialDataToTransmitterRawData " + fakedRaw);
-
-                Long StartLoop = new Date().getTime();
-                for (int j = 0 ; j < 300; j++) {
-                    Thread.sleep(1000);
-                    Log.d(TAG, "looping ...." + i + " " + j + " " + (new Date().getTime() - StartLoop)/1000);
-                    if(mStop ) {
-                    // we were asked to leave, so do it....
-						Log.d(TAG, "EXITING mstop=true" );
-                        return;
-                    }
-                }
-
-
-               } catch (InterruptedException e) {
-                   // time to get out...
-                   Log.e(TAG, "cought InterruptedException! ", e);
-                   break;
-               }
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String recieversIpAddresses = prefs.getString("wifi_recievers_addresses", "");
+        
+        // How many packets should we read? we look at the maximum time between last calibration and last reading time
+        // and calculate how much are needed.
+        
+        Calibration lastCalibration = Calibration.last();
+        if(lastCalibration != null) {
+            startReadTime = Math.max(startReadTime, (long)(lastCalibration.timestamp));
         }
-		Log.d(TAG, "EXITING mstop=true" );
+        Long gapTime = new Date().getTime() - startReadTime + 120000;
+        int packetsToRead = (int) (gapTime / (5 * 60000));
+        packetsToRead = Math.min(packetsToRead, 200); // don't read too much, but always read 1.
+        packetsToRead = Math.max(packetsToRead, 1); 
+        
+        Log.d(TAG,"reading " + packetsToRead + " packets");
+		LastReadingArr = Read(recieversIpAddresses ,packetsToRead);
+		
+		if (LastReadingArr == null || LastReadingArr.length  == 0) {
+		    return;
+		}
+
+		for(TransmitterRawData LastReading : LastReadingArr ) {
+    		// Last in the array is the most updated reading we have.
+    		//TransmitterRawData LastReading = LastReadingArr[LastReadingArr.length -1];
+		    
+
+    		//if (LastReading.CaptureDateTime > LastReportedReading + 5000) {
+    		// Make sure we do not report packets from the far future...
+    		if ((LastReading.CaptureDateTime > LastReportedTime + 120000 ) &&
+    		        (!almostEquals(LastReading, LastReportedReading)) &&
+    		        LastReading.CaptureDateTime < new Date().getTime() + 120000) {
+    			// We have a real new reading...
+    			Log.d(TAG, "calling setSerialDataToTransmitterRawData " + LastReading.RawValue +
+    			        " LastReading.CaptureDateTime " + LastReading.CaptureDateTime + " " + LastReading.TransmissionId);
+    			setSerialDataToTransmitterRawData(LastReading.RawValue,  LastReading.FilteredValue, LastReading.BatteryLife, LastReading.CaptureDateTime);
+    			LastReportedReading = LastReading;
+    			LastReportedTime = LastReading.CaptureDateTime;
+    		}
+    	}
     }
 
-    public void Stop()
-    {
-        mStop = true;
-        interrupt();
-    }
+
     public void setSerialDataToTransmitterRawData(int raw_data, int filtered_data ,int sensor_battery_leve, Long CaptureTime) {
 
         TransmitterData transmitterData = TransmitterData.create(raw_data, sensor_battery_leve, CaptureTime);
@@ -421,5 +419,25 @@ public class WixelReader  extends Thread {
                 Log.d(TAG, "No Active Sensor, Data only stored in Transmitter Data");
             }
         }
+    }
+    
+    static Long timeForNextReadFake() {
+        return 10000L;
+    }
+    
+    void readDataFake()
+    {
+        i+=added;
+        if (i==50) {
+            added = -5;
+        }
+        if (i==0) {
+            added = 5;
+        }
+
+        int fakedRaw = 100000 + i * 3000;
+        Log.d(TAG, "calling setSerialDataToTransmitterRawData " + fakedRaw);
+        setSerialDataToTransmitterRawData(fakedRaw, fakedRaw ,215, new Date().getTime());
+        Log.d(TAG, "returned from setSerialDataToTransmitterRawData " + fakedRaw);
     }
 }
