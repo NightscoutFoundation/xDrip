@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.ShareModels;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -156,50 +157,69 @@ public class ShareRest {
     }
 
     public String getSessionId() {
+        // getValidSessionId:
+        // cached session id?
+        // y:  checkSessionActive
+        //        true: exit
+        //        false:  SRMS
+        // n:  getSessionId()
+        //        updatePublisherAccountInfo
+        //
+
+        // SRMS:
+        //    authenticatePublisherAccount
+        //        StartRemoteMonitoringSession
+        //            checkMonitorAssignment
+        //              !AssignedToYou: updateMonitorAssignment
+        //                  getValidSessionId
+
+        if (sessionId == null || "".equals(sessionId)) {
+
+        }
         return sessionId;
     }
 
     public void getContacts(Callback<List<ExistingFollower>> existingFollowerListener) {
-        dexcomShareApi.getContacts(sessionId).enqueue(new AuthenticatingCallback<List<ExistingFollower>>(existingFollowerListener) {
+        dexcomShareApi.getContacts(getSessionId()).enqueue(new AuthenticatingCallback<List<ExistingFollower>>(existingFollowerListener) {
             @Override
             void onRetry() {
-                dexcomShareApi.getContacts(sessionId).enqueue(this);
+                dexcomShareApi.getContacts(getSessionId()).enqueue(this);
             }
         });
     }
 
     public void uploadBGRecords(final ShareUploadPayload bg, Callback<ResponseBody> callback) {
-        dexcomShareApi.uploadBGRecords(sessionId, bg).enqueue(new AuthenticatingCallback<ResponseBody>(callback) {
+        dexcomShareApi.uploadBGRecords(getSessionId(), bg).enqueue(new AuthenticatingCallback<ResponseBody>(callback) {
             @Override
             void onRetry() {
-                dexcomShareApi.uploadBGRecords(sessionId, bg).enqueue(this);
+                dexcomShareApi.uploadBGRecords(getSessionId(), bg).enqueue(this);
             }
         });
     }
 
     public void createContact(final String followerName, final String followerEmail, Callback<String> callback) {
-        dexcomShareApi.createContact(sessionId, followerName, followerEmail).enqueue(new AuthenticatingCallback<String>(callback) {
+        dexcomShareApi.createContact(getSessionId(), followerName, followerEmail).enqueue(new AuthenticatingCallback<String>(callback) {
             @Override
             void onRetry() {
-                dexcomShareApi.createContact(sessionId, followerName, followerEmail).enqueue(this);
+                dexcomShareApi.createContact(getSessionId(), followerName, followerEmail).enqueue(this);
             }
         });
     }
 
     public void createInvitationForContact(final String contactId, final InvitationPayload invitationPayload, Callback<String> callback) {
-        dexcomShareApi.createInvitationForContact(sessionId, contactId, invitationPayload).enqueue(new AuthenticatingCallback<String>(callback) {
+        dexcomShareApi.createInvitationForContact(getSessionId(), contactId, invitationPayload).enqueue(new AuthenticatingCallback<String>(callback) {
             @Override
             void onRetry() {
-                dexcomShareApi.createInvitationForContact(sessionId, contactId, invitationPayload).enqueue(this);
+                dexcomShareApi.createInvitationForContact(getSessionId(), contactId, invitationPayload).enqueue(this);
             }
         });
     }
 
     public void deleteContact(final String contactId, Callback<ResponseBody> deleteFollowerListener) {
-        dexcomShareApi.deleteContact(sessionId, contactId).enqueue(new AuthenticatingCallback<ResponseBody>(deleteFollowerListener) {
+        dexcomShareApi.deleteContact(getSessionId(), contactId).enqueue(new AuthenticatingCallback<ResponseBody>(deleteFollowerListener) {
             @Override
             void onRetry() {
-                dexcomShareApi.deleteContact(sessionId, contactId).enqueue(this);
+                dexcomShareApi.deleteContact(getSessionId(), contactId).enqueue(this);
             }
         });
     }
