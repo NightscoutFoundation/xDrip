@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
@@ -62,10 +62,12 @@ public class BgToSpeech {
             @Override
             public void onInit(int status) {
 
-                Log.d("BgToSpeech", "Calling onInit()");
-                if (status == TextToSpeech.SUCCESS) {
-                    Log.d("BgToSpeech", "status == TextToSpeech.SUCCESS");
+                Log.d("BgToSpeech", "Calling onInit(), tts = " + tts);
+                if (status == TextToSpeech.SUCCESS && tts != null) {
+                    
                     //try local language
+                    Locale loc = Locale.getDefault();
+                    Log.d("BgToSpeech", "status == TextToSpeech.SUCCESS + loc" + loc);
                     int result = tts.setLanguage(Locale.getDefault());
                     if (result == TextToSpeech.LANG_MISSING_DATA
                             || result == TextToSpeech.LANG_NOT_SUPPORTED) {
