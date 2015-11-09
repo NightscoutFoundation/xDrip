@@ -117,7 +117,7 @@ public class DexShareCollectionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(getApplicationContext().POWER_SERVICE);
+        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "DexShareCollectionStart");
         wakeLock.acquire(40000);
         try {
@@ -359,7 +359,7 @@ public class DexShareCollectionService extends Service {
     }
 
     public boolean connect(final String address) {
-        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(getApplicationContext().POWER_SERVICE);
+        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "DexShareCollectionStart");
         wakeLock.acquire(30000);

@@ -21,7 +21,7 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Services.SyncService;
-import com.eveningoutpost.dexdrip.ShareModels.ShareRest;
+import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
 import com.eveningoutpost.dexdrip.widgetUpdateService;
@@ -163,8 +163,8 @@ public class BgSendQueue extends Model {
                 String login = prefs.getString("dexcom_account_name", "");
                 String password = prefs.getString("dexcom_account_password", "");
                 String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
-                BgUploader bgUploader = new BgUploader(login, password, receiverSn, context);
-                bgUploader.upload(bgReading);
+                BgUploader bgUploader = new BgUploader(context);
+                bgUploader.upload(new ShareUploadPayload(receiverSn, bgReading));
             }
             context.startService(new Intent(context, SyncService.class));
 

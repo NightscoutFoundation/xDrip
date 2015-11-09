@@ -4,9 +4,9 @@ package com.eveningoutpost.dexdrip.ShareModels;
  * Created by stephenblack on 8/10/15.
  */
 public interface ShareUploadableBg {
-    public int getMgdlValue();
-    public long getEpochTimestamp(); //in milliseconds
-    public int getSlopeOrdinal();
+    int getMgdlValue();
+    long getEpochTimestamp(); //in milliseconds
+    int getSlopeOrdinal();
 
     //Ordinals:
     //  0 - NONE

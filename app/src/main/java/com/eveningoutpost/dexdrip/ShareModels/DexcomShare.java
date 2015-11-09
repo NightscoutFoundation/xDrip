@@ -11,63 +11,69 @@ import java.util.List;
 import java.util.Map;
 
 import retrofit.Call;
-import retrofit.Callback;
 import retrofit.http.Body;
+import retrofit.http.Headers;
 import retrofit.http.POST;
-import retrofit.http.QueryMap;
+import retrofit.http.Query;
 
 /**
  * Created by stephenblack on 3/16/15.
  */
-public interface DexcomShareInterface {
+public interface DexcomShare {
+
     @POST("General/LoginPublisherAccountByName")
-    Call<ResponseBody> getSessionId(@Body ShareAuthenticationBody body);
-    //Since this seems to respond with a string we need a callback that will parse the response body
+    Call<String> getSessionId(@Body Map<String, String> body);
+    //Since this seems to respond with a string we need a delegate that will parse the response body
     //new String(((TypedByteArray) response.getBody()).getBytes());
 
     @POST("Publisher/IsRemoteMonitoringSessionActive")
-    Call<ResponseBody> checkSessionActive(@QueryMap Map<String, String> options);
+    Call<ResponseBody> checkSessionActive(@Query("sessionId") String sessionId);
     // needs ?sessionId={YourSessionId}
     // returns true or false
 
     @POST("Publisher/StartRemoteMonitoringSession")
-    Call<ResponseBody> StartRemoteMonitoringSession(@QueryMap Map<String, String> options);
+    Call<ResponseBody> StartRemoteMonitoringSession(@Query("sessionId") String sessionId,
+                                                    @Query("serialNumber") String serialNumber);
     // needs ?sessionId={YourSessionId}&serialNumber={YourdexcomSerialNumber}
     // returns status code
 
     @POST("Publisher/PostReceiverEgvRecords")
-    Call<ResponseBody> uploadBGRecords(@QueryMap Map<String, String> options, @Body ShareUploadPayload payload);
+    Call<ResponseBody> uploadBGRecords(@Query("sessionId") String sessionId, @Body ShareUploadPayload payload);
     // needs ?sessionId={YourSessionId}
     // body ShareUploadPayload
     // returns status code
 
     @POST("General/AuthenticatePublisherAccount")
-    Call<ResponseBody> authenticatePublisherAccount(@Body ShareAuthenticationBody body, @QueryMap Map<String, String> options);
+    Call<ResponseBody> authenticatePublisherAccount(@Query("sessionId") String sessionId,
+                                                    @Query("serialNumber") String serialNumber,
+                                                    @Body Map<String, String> body);
     // maybe needs ?sessionId={YourSessionId}&serialNumber={YourdexcomSerialNumber}
     // body ShareUploadPayload
     // returns status code
 
     @POST("Publisher/CheckMonitoredReceiverAssignmentStatus")
-    Call<ResponseBody> checkMonitorAssignment(@QueryMap Map<String, String> options);
+    Call<ResponseBody> checkMonitorAssignment(@Query("sessionId") String sessionId,
+                                              @Query("serialNumber") String serialNumber);
     // needs ?sessionId={YourSessionId}&serialNumber={YourdexcomSerialNumber}
     // returns `AssignedToYou` or `NotAssigned`
 
-    @POST("/Publisher/ReplacePublisherAccountMonitoredReceiver")
-    Call<ResponseBody> updateMonitorAssignment(@QueryMap Map<String, String> options);
+    @POST("Publisher/ReplacePublisherAccountMonitoredReceiver")
+    Call<ResponseBody> updateMonitorAssignment(@Query("sessionId") String sessionId,
+                                               @Query("serialNumber") String serialNumber);
     // needs ?sessionId={YourSessionId}&serialNumber={YourdexcomSerialNumber}
     // returns status code?
 
 
-    @POST("/Publisher/UpdatePublisherAccountRuntimeInfo")
+    @POST("Publisher/UpdatePublisherAccountRuntimeInfo")
     Call<ResponseBody> updatePublisherAccountInfo(@Body UserAgent body);
-    //Since this seems to respond with a string we need a callback that will parse the response body
+    //Since this seems to respond with a string we need a delegate that will parse the response body
     //new String(((TypedByteArray) response.getBody()).getBytes());
 
 
 
     //Follower Related
-    @POST("/Publisher/ListPublisherAccountSubscriptions")
-   Call<ResponseBody> getContacts(@QueryMap Map<String, String> options, Callback<List<ExistingFollower>> callback);
+    @POST("Publisher/ListPublisherAccountSubscriptions")
+    Call<List<ExistingFollower>> getContacts(@Query("sessionId") String sessionId);
     // needs ?sessionId={YourSessionId}
     // returns
     // [
@@ -97,22 +103,31 @@ public interface DexcomShareInterface {
     //]
 
     @POST("Publisher/DoesContactExistByName")
-    Call<ResponseBody> doesContactExist(@QueryMap Map<String, String> options);
+    @Headers({"Content-Length: 0"})
+    Call<ResponseBody> doesContactExist(@Query("sessionId") String sessionId,
+                                        @Query("contactName") String contactName);
     // needs ?sessionId={YourSessionId}&contactName={newcontactName}
     // returns true or false
 
     @POST("Publisher/CreateContact")
-    Call<ResponseBody> createContact(@QueryMap Map<String, String> options);
+    @Headers({"Content-Length: 0"})
+    Call<String> createContact(@Query("sessionId") String sessionId,
+                                     @Query("contactName") String contactName,
+                                     @Query("emailAddress") String emailAddress);
     // needs ?sessionId={YourSessionId}&contactName={newcontactName}&emailAddress={FollowerEmail}
     // returns a contact id
 
     @POST("Publisher/CreateSubscriptionInvitation")
-    Call<ResponseBody> createInvitationForContact(@Body InvitationPayload body, @QueryMap Map<String, String> options);
+    Call<String> createInvitationForContact(@Query("sessionId") String sessionId,
+                                                  @Query("contactId") String contactId,
+                                                  @Body InvitationPayload body);
     // needs ?sessionId={YourSessionId}&contactId={ContactId}
     // returns a contact id
 
     @POST("Publisher/DeleteContact")
-    Call<ResponseBody> deleteContact(@QueryMap Map<String, String> options);
+    @Headers({"Content-Length: 0"})
+    Call<ResponseBody> deleteContact(@Query("sessionId") String sessionId,
+                                     @Query("contactId") String contactId);
     // needs ?sessionId={YourSessionId}&contactId={foll`owersContactId}
     // just a status
 
