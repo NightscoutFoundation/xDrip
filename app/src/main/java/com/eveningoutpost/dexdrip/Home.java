@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip;
 
-import android.*;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -66,13 +65,9 @@ public class Home extends ActivityWithMenu {
     private SharedPreferences prefs;
     private Viewport tempViewport = new Viewport();
     private Viewport holdViewport = new Viewport();
-    private boolean isBTWixel;
-    private boolean isDexbridgeWixel;
     private boolean isBTShare;
-    private boolean isWifiWixel;
     private BroadcastReceiver _broadcastReceiver;
     private BroadcastReceiver newDataReceiver;
-    private NavigationDrawerFragment mNavigationDrawerFragment;
     private LineChartView            chart;
     private PreviewLineChartView     previewChart;
     private TextView                 dexbridgeBattery;
@@ -241,10 +236,10 @@ public class Home extends ActivityWithMenu {
         }
         notificationText.setText("");
         notificationText.setTextColor(Color.RED);
-        isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
-        isDexbridgeWixel = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
+        boolean isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
+        boolean isDexbridgeWixel = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
         isBTShare = CollectionServiceStarter.isBTShare(getApplicationContext());
-        isWifiWixel = CollectionServiceStarter.isWifiWixel(getApplicationContext());
+        boolean isWifiWixel = CollectionServiceStarter.isWifiWixel(getApplicationContext());
         if (isBTShare) {
             updateCurrentBgInfoForBtShare(notificationText);
         }
@@ -257,7 +252,7 @@ public class Home extends ActivityWithMenu {
         if (prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
             notificationText.append("\n ALERTS CURRENTLY DISABLED");
         }
-        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
+        NavigationDrawerFragment mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
     }
 
