@@ -1,10 +1,12 @@
 package com.eveningoutpost.dexdrip;
 
+import android.*;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -14,6 +16,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
 import android.view.Menu;
@@ -446,7 +450,17 @@ public class Home extends ActivityWithMenu {
             new AsyncTask<Void, Void, String>() {
                 @Override
                 protected String doInBackground(Void... params) {
-                    return DatabaseUtil.saveSql(getBaseContext());
+                    int permissionCheck = ContextCompat.checkSelfPermission(Home.this,
+                            android.Manifest.permission.READ_EXTERNAL_STORAGE);
+                    if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(Home.this,
+                                new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                                0);
+                        return null;
+                    } else {
+                        return DatabaseUtil.saveSql(getBaseContext());
+                    }
+
                 }
 
                 @Override

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +11,8 @@ import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -44,9 +47,15 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
     }
 
     private void generateDBGui() {
-        if (findAllDatabases()) {
+        int permissionCheck = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED && findAllDatabases()) {
             sortDatabasesAlphabetically();
             showDatabasesInList();
+        } else if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    0);
         } else {
             postImportDB("\'xdrip\' is not a directory... aborting.");
         }
@@ -80,7 +89,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
     }
 
     private boolean findAllDatabases() {
-        databases = new ArrayList<File>();
+        databases = new ArrayList<>();
 
         File file = new File(FileUtils.getExternalDir());
         if (!FileUtils.makeSureDirectoryExists(file.getAbsolutePath())) {
@@ -97,21 +106,21 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                 return path.isDirectory();
             }
         });
-        for (int i = 0; i < subdirectories.length; i++) {
-            addAllDatabases(subdirectories[i], databases);
+        for (File subdirectory : subdirectories) {
+            addAllDatabases(subdirectory, databases);
         }
         return true;
     }
 
     private void showDatabasesInList() {
-        databaseNames = new ArrayList<String>();
+        databaseNames = new ArrayList<>();
 
         //show found databases in List
         for (File db : databases) {
             databaseNames.add(db.getName());
         }
 
-        final ArrayAdapter adapter = new ArrayAdapter(this,
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, databaseNames);
         setListAdapter(adapter);
 
@@ -124,14 +133,11 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
         File[] files = file.listFiles(new FileFilter() {
             @Override
             public boolean accept(File pathname) {
-                if (pathname.getPath().endsWith(".sqlite")) return true;
-                return false;
+                return pathname.getPath().endsWith(".sqlite");
             }
         });
 
-        for (int i = 0; i < files.length; i++) {
-            databases.add(files[i]);
-        }
+        Collections.addAll(databases, files);
     }
 
     @Override
@@ -168,17 +174,15 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
 
     public int getDBVersion() {
 
-        ApplicationInfo ai = null;
         int version = -1;
         try {
-            ai = getPackageManager().getApplicationInfo(this.getPackageName(), PackageManager.GET_META_DATA);
+            ApplicationInfo ai = getPackageManager().getApplicationInfo(this.getPackageName(), PackageManager.GET_META_DATA);
             Bundle bundle = ai.metaData;
             version = bundle.getInt("AA_DB_VERSION");
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
-        } finally {
-            return version;
         }
+        return version;
     }
 
 
