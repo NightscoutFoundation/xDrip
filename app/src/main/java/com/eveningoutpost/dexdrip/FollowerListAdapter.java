@@ -52,7 +52,7 @@ public class FollowerListAdapter extends BaseAdapter {
         View view = convertView;
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.item_follower, parent);
+            view = inflater.inflate(R.layout.item_follower, null);
         }
         TextView followerName = (TextView) view.findViewById(R.id.follwerName);
         Button deleteButton = (Button) view.findViewById(R.id.deleteFollower);
