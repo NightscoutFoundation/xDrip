@@ -62,12 +62,7 @@ public class widgetUpdateService extends Service {
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
             long wakeTime = calendar.getTimeInMillis() + retry_in;
             PendingIntent serviceIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
-            } else
-                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+            alarm.set(AlarmManager.RTC, wakeTime, serviceIntent);
         } else {
             stopSelf();
         }
