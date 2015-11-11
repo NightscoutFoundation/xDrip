@@ -160,8 +160,6 @@ public class BgSendQueue extends Model {
 
             if (prefs.getBoolean("share_upload", false)) {
                 Log.d("ShareRest", "About to call ShareRest!!");
-                String login = prefs.getString("dexcom_account_name", "");
-                String password = prefs.getString("dexcom_account_password", "");
                 String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
                 BgUploader bgUploader = new BgUploader(context);
                 bgUploader.upload(new ShareUploadPayload(receiverSn, bgReading));

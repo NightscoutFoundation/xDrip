@@ -1,7 +1,6 @@
 package com.eveningoutpost.dexdrip.ShareModels;
 
 import android.content.Context;
-import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
 import com.squareup.okhttp.ResponseBody;
@@ -26,12 +25,13 @@ public class BgUploader {
         shareRest.uploadBGRecords(bg, new Callback<ResponseBody>() {
             @Override
             public void onResponse(Response<ResponseBody> response, Retrofit retrofit) {
-
+                // This should probably be pulled up into BgSendQueue or NightscoutUploader
+                // where errors can be handled properly.
             }
 
             @Override
             public void onFailure(Throwable t) {
-
+                // TODO add error handling in a refactoring pass
             }
         });
     }

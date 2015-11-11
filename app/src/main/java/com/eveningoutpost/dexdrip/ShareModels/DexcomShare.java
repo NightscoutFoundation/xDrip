@@ -2,7 +2,6 @@ package com.eveningoutpost.dexdrip.ShareModels;
 
 import com.eveningoutpost.dexdrip.ShareModels.Models.ExistingFollower;
 import com.eveningoutpost.dexdrip.ShareModels.Models.InvitationPayload;
-import com.eveningoutpost.dexdrip.ShareModels.Models.ShareAuthenticationBody;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
 import com.eveningoutpost.dexdrip.ShareModels.UserAgentInfo.UserAgent;
 import com.squareup.okhttp.ResponseBody;
@@ -27,7 +26,7 @@ public interface DexcomShare {
     //new String(((TypedByteArray) response.getBody()).getBytes());
 
     @POST("Publisher/IsRemoteMonitoringSessionActive")
-    Call<ResponseBody> checkSessionActive(@Query("sessionId") String sessionId);
+    Call<Boolean> checkSessionActive(@Query("sessionId") String sessionId);
     // needs ?sessionId={YourSessionId}
     // returns true or false
 
@@ -44,7 +43,7 @@ public interface DexcomShare {
     // returns status code
 
     @POST("General/AuthenticatePublisherAccount")
-    Call<ResponseBody> authenticatePublisherAccount(@Query("sessionId") String sessionId,
+    Call<String> authenticatePublisherAccount(@Query("sessionId") String sessionId,
                                                     @Query("serialNumber") String serialNumber,
                                                     @Body Map<String, String> body);
     // maybe needs ?sessionId={YourSessionId}&serialNumber={YourdexcomSerialNumber}
@@ -52,7 +51,7 @@ public interface DexcomShare {
     // returns status code
 
     @POST("Publisher/CheckMonitoredReceiverAssignmentStatus")
-    Call<ResponseBody> checkMonitorAssignment(@Query("sessionId") String sessionId,
+    Call<String> checkMonitorAssignment(@Query("sessionId") String sessionId,
                                               @Query("serialNumber") String serialNumber);
     // needs ?sessionId={YourSessionId}&serialNumber={YourdexcomSerialNumber}
     // returns `AssignedToYou` or `NotAssigned`

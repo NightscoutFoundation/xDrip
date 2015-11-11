@@ -27,18 +27,14 @@ import retrofit.Retrofit;
  * Created by stephenblack on 8/11/15.
  */
 public class FollowerManagementActivity extends ActivityWithMenu {
-    public static String menu_name = "Follower Management";
-    static String TAG = Home.class.getName();
-    ListView existingFollowersView;
-    Button addFollowerButton;
-    ShareRest shareRest;
-    Callback<List<ExistingFollower>> existingFollowerListener;
-    List<ExistingFollower> existingFollowerList;
-    FollowerListAdapter followerListAdapter;
-
-    String login;
-    String password;
-    String receiverSn;
+    private static final String menu_name = "Follower Management";
+    private static final String TAG = Home.class.getName();
+    private ListView existingFollowersView;
+    private Button addFollowerButton;
+    private ShareRest shareRest;
+    private Callback<List<ExistingFollower>> existingFollowerListener;
+    private List<ExistingFollower> existingFollowerList;
+    private FollowerListAdapter followerListAdapter;
 
     @Override
     public String getMenuName() {
@@ -58,9 +54,6 @@ public class FollowerManagementActivity extends ActivityWithMenu {
     protected void onResume() {
         super.onResume();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        login = prefs.getString("dexcom_account_name", "");
-        password = prefs.getString("dexcom_account_password", "");
-        receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
 
         populateFollowerList();
         setInviteListener();
@@ -87,7 +80,7 @@ public class FollowerManagementActivity extends ActivityWithMenu {
 
             @Override
             public void onFailure(Throwable t) {
-
+                // If it fails, don't show followers.
             }
         };
 

@@ -22,6 +22,7 @@ import com.squareup.okhttp.ResponseBody;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -48,7 +49,7 @@ public class ShareRest {
     private String serialNumber;
     private DexcomShare dexcomShareApi;
 
-    SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+    private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             if ("dexcom_account_name".equals(key)) {
@@ -152,37 +153,54 @@ public class ShareRest {
 
             return okHttpClient;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error occurred initializing OkHttp: ", e);
         }
     }
 
     public String getSessionId() {
-        // getValidSessionId:
-        // cached session id?
-        // y:  checkSessionActive
-        //        true: exit
-        //        false:  SRMS
-        // n:  getSessionId()
-        //        updatePublisherAccountInfo
-        //
+        AsyncTask<String, Void, String> task = new AsyncTask<String, Void, String>() {
 
-        // SRMS:
-        //    authenticatePublisherAccount
-        //        StartRemoteMonitoringSession
-        //            checkMonitorAssignment
-        //              !AssignedToYou: updateMonitorAssignment
-        //                  getValidSessionId
+            @Override
+            protected String doInBackground(String... params) {
+                try {
+                    Boolean isActive = null;
+                    if (params[0] != null)
+                        isActive = dexcomShareApi.checkSessionActive(params[0]).execute().body();
+                    if (isActive == null || !isActive) {
+                        return updateAuthenticationParams();
+                    } else
+                        return params[0];
+                } catch (IOException e) {
+                    return null;
+                }
+            }
 
-        if (sessionId == null || "".equals(sessionId)) {
+            private String updateAuthenticationParams() throws IOException {
+                sessionId = dexcomShareApi.getSessionId(new ShareAuthenticationBody(password, username).toMap()).execute().body();
+                dexcomShareApi.authenticatePublisherAccount(sessionId, serialNumber, new ShareAuthenticationBody(password, username).toMap()).execute().body();
+                dexcomShareApi.StartRemoteMonitoringSession(sessionId, serialNumber).execute();
+                String assignment = dexcomShareApi.checkMonitorAssignment(sessionId, serialNumber).execute().body();
+                if (!assignment.equals("AssignedToYou")) {
+                    dexcomShareApi.updateMonitorAssignment(sessionId, serialNumber).execute();
+                }
+                return sessionId;
+            }
 
-        }
+        };
+
+        if (sessionId == null || sessionId.equals(""))
+            try {
+                sessionId = task.execute(sessionId).get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
         return sessionId;
     }
 
     public void getContacts(Callback<List<ExistingFollower>> existingFollowerListener) {
         dexcomShareApi.getContacts(getSessionId()).enqueue(new AuthenticatingCallback<List<ExistingFollower>>(existingFollowerListener) {
             @Override
-            void onRetry() {
+            public void onRetry() {
                 dexcomShareApi.getContacts(getSessionId()).enqueue(this);
             }
         });
@@ -191,7 +209,7 @@ public class ShareRest {
     public void uploadBGRecords(final ShareUploadPayload bg, Callback<ResponseBody> callback) {
         dexcomShareApi.uploadBGRecords(getSessionId(), bg).enqueue(new AuthenticatingCallback<ResponseBody>(callback) {
             @Override
-            void onRetry() {
+            public void onRetry() {
                 dexcomShareApi.uploadBGRecords(getSessionId(), bg).enqueue(this);
             }
         });
@@ -200,7 +218,7 @@ public class ShareRest {
     public void createContact(final String followerName, final String followerEmail, Callback<String> callback) {
         dexcomShareApi.createContact(getSessionId(), followerName, followerEmail).enqueue(new AuthenticatingCallback<String>(callback) {
             @Override
-            void onRetry() {
+            public void onRetry() {
                 dexcomShareApi.createContact(getSessionId(), followerName, followerEmail).enqueue(this);
             }
         });
@@ -209,7 +227,7 @@ public class ShareRest {
     public void createInvitationForContact(final String contactId, final InvitationPayload invitationPayload, Callback<String> callback) {
         dexcomShareApi.createInvitationForContact(getSessionId(), contactId, invitationPayload).enqueue(new AuthenticatingCallback<String>(callback) {
             @Override
-            void onRetry() {
+            public void onRetry() {
                 dexcomShareApi.createInvitationForContact(getSessionId(), contactId, invitationPayload).enqueue(this);
             }
         });
@@ -218,7 +236,7 @@ public class ShareRest {
     public void deleteContact(final String contactId, Callback<ResponseBody> deleteFollowerListener) {
         dexcomShareApi.deleteContact(getSessionId(), contactId).enqueue(new AuthenticatingCallback<ResponseBody>(deleteFollowerListener) {
             @Override
-            void onRetry() {
+            public void onRetry() {
                 dexcomShareApi.deleteContact(getSessionId(), contactId).enqueue(this);
             }
         });
@@ -226,13 +244,13 @@ public class ShareRest {
 
     public abstract class AuthenticatingCallback<T> implements Callback<T> {
 
-        int attempts = 0;
-        Callback<T> delegate;
+        private int attempts = 0;
+        private Callback<T> delegate;
         public AuthenticatingCallback (Callback<T> callback) {
             this.delegate = callback;
         }
 
-        abstract void onRetry();
+        public abstract void onRetry();
 
         @Override
         public void onResponse(retrofit.Response<T> response, Retrofit retrofit) {
