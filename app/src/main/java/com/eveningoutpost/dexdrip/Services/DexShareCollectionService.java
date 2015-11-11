@@ -101,6 +101,9 @@ public class DexShareCollectionService extends Service {
     public Service service;
     private BgToSpeech bgToSpeech;
 
+    private long lastHeartbeat = 0;
+    private PendingIntent pendingIntent;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -120,6 +123,7 @@ public class DexShareCollectionService extends Service {
         PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "DexShareCollectionStart");
         wakeLock.acquire(40000);
+        Log.d(TAG, "onStartCommand");
         try {
 
             if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
@@ -187,14 +191,16 @@ public class DexShareCollectionService extends Service {
             Log.d(TAG, "Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+            if (pendingIntent != null)
+                alarm.cancel(pendingIntent);
             long wakeTime = calendar.getTimeInMillis() + retry_in;
-            PendingIntent serviceIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+            pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
             } else
-                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
         }
     }
 
@@ -204,14 +210,16 @@ public class DexShareCollectionService extends Service {
             Log.d(TAG, "Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+            if (pendingIntent != null)
+                alarm.cancel(pendingIntent);
             long wakeTime = calendar.getTimeInMillis() + retry_in;
-            PendingIntent serviceIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+            pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
             } else
-                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
         } else {
             stopSelf();
         }
@@ -637,6 +645,16 @@ public class DexShareCollectionService extends Service {
                 if (value != null) {
                     Observable.just(characteristic.getValue()).subscribe(mDataResponseListener);
                 }
+            } else if (charUuid.compareTo(mHeartBeatCharacteristic.getUuid()) == 0) {
+                long heartbeat = System.currentTimeMillis();
+                Log.d(TAG, "Heartbeat delta: " + (heartbeat - lastHeartbeat));
+                if (heartbeat-lastHeartbeat < 58000) {
+                    Log.d(TAG, "Early heartbeat.  Fetching data.");
+                    AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+                    alarm.cancel(pendingIntent);
+                    attemptConnection();
+                }
+                lastHeartbeat = heartbeat;
             }
         }
 
