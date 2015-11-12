@@ -48,7 +48,7 @@ public class SyncService extends IntentService {
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
             long wakeTime = calendar.getTimeInMillis() + (1000 * 30 * 5);
-            PendingIntent serviceIntent = PendingIntent.getService(this, 0, new Intent(this, DexCollectionService.class), 0);
+            PendingIntent serviceIntent = PendingIntent.getService(this, 0, new Intent(this, SyncService.class), 0);
             alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
         }
     }
