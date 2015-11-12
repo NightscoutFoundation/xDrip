@@ -191,7 +191,7 @@
         </receiver>
 
         <service
-            android:name=".widgetUpdateService"
+            android:name=".WidgetUpdateService"
             android:enabled="true"
             android:exported="true" >
         </service>

@@ -24,7 +24,7 @@ import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
-import com.eveningoutpost.dexdrip.widgetUpdateService;
+import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.xDripWidget;
 
 import java.util.List;
@@ -94,7 +94,7 @@ public class BgSendQueue extends Model {
             context.sendBroadcast(updateIntent);
 
             if(AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, xDripWidget.class)).length > 0){
-                context.startService(new Intent(context, widgetUpdateService.class));
+                context.startService(new Intent(context, WidgetUpdateService.class));
             }
 
             if (prefs.getBoolean("broadcast_data_through_intents", false)) {
