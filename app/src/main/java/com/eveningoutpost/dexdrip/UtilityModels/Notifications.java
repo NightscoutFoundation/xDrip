@@ -63,6 +63,7 @@ public class Notifications extends IntentService {
     private final static String TAG = AlertPlayer.class.getSimpleName();
 
     Context mContext;
+    PendingIntent wakeIntent;
     private static Handler mHandler = new Handler(Looper.getMainLooper());
 
     int currentVolume;
@@ -81,8 +82,6 @@ public class Notifications extends IntentService {
     public static final int missedAlertNotificationId = 010;
     public static final int riseAlertNotificationId = 011;
     public static final int failAlertNotificationId = 012;
-
-    final static int callbackPeriod = 60000 * 1;
 
     SharedPreferences prefs;
 
@@ -203,8 +202,6 @@ public class Notifications extends IntentService {
             AlertPlayer.getPlayer().stopAlert(context, true, false);
             boolean trendingToAlertEnd = trendingToAlertEnd(context, true, newAlert);
             AlertPlayer.getPlayer().startAlert(context, trendingToAlertEnd, newAlert, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
-            return;
-
         } else {
             AlertPlayer.getPlayer().stopAlert(context, true, false);
         }
@@ -295,14 +292,19 @@ public class Notifications extends IntentService {
                 }
                 Calendar calendar = Calendar.getInstance();
                 AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-                long wakeTime = calendar.getTimeInMillis() + (time + 60000);
-                PendingIntent serviceIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+                // sleep longer if the alert is snoozed.
+                long wakeTime = activeBgAlert.is_snoozed ? activeBgAlert.next_alert_at :
+                        calendar.getTimeInMillis() + (time + 60000);
+                Log.d(TAG , "ArmTimer waking at: "+ wakeTime);
+                if (wakeIntent != null)
+                    alarm.cancel(wakeIntent);
+                wakeIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    alarm.setAlarmClock(new AlarmManager.AlarmClockInfo(wakeTime, serviceIntent), serviceIntent);
+                    alarm.setAlarmClock(new AlarmManager.AlarmClockInfo(wakeTime, wakeIntent), wakeIntent);
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+                    alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, wakeIntent);
                 } else
-                    alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+                    alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, wakeIntent);
             }
         }
     }
