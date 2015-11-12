@@ -650,7 +650,7 @@ public class DexShareCollectionService extends Service {
             } else if (charUuid.compareTo(mHeartBeatCharacteristic.getUuid()) == 0) {
                 long heartbeat = System.currentTimeMillis();
                 Log.d(TAG, "Heartbeat delta: " + (heartbeat - lastHeartbeat));
-                if ((heartbeat-lastHeartbeat < 59900) || heartbeatCount > 5) {
+                if ((heartbeat-lastHeartbeat < 59000) || heartbeatCount > 5) {
                     Log.d(TAG, "Early heartbeat.  Fetching data.");
                     AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
                     alarm.cancel(pendingIntent);
