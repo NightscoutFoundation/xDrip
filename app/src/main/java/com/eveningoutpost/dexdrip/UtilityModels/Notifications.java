@@ -297,8 +297,8 @@ public class Notifications extends IntentService {
                 AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
                 long wakeTime = calendar.getTimeInMillis() + (time + 60000);
                 PendingIntent serviceIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    alarm.setAlarmClock(new AlarmManager.AlarmClockInfo(wakeTime, serviceIntent), serviceIntent);
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
                 } else
