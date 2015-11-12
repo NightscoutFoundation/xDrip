@@ -102,6 +102,8 @@ public class DexShareCollectionService extends Service {
     private BgToSpeech bgToSpeech;
 
     private long lastHeartbeat = 0;
+    private int heartbeatCount = 0;
+
     private PendingIntent pendingIntent;
 
     @Override
@@ -648,12 +650,14 @@ public class DexShareCollectionService extends Service {
             } else if (charUuid.compareTo(mHeartBeatCharacteristic.getUuid()) == 0) {
                 long heartbeat = System.currentTimeMillis();
                 Log.d(TAG, "Heartbeat delta: " + (heartbeat - lastHeartbeat));
-                if (heartbeat-lastHeartbeat < 58000) {
+                if ((heartbeat-lastHeartbeat < 59900) || heartbeatCount > 5) {
                     Log.d(TAG, "Early heartbeat.  Fetching data.");
                     AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
                     alarm.cancel(pendingIntent);
+                    heartbeatCount = 0;
                     attemptConnection();
                 }
+                heartbeatCount += 1;
                 lastHeartbeat = heartbeat;
             }
         }
