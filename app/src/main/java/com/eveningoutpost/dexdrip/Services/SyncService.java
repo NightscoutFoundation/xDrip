@@ -34,7 +34,6 @@ public class SyncService extends IntentService {
         prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         enableRESTUpload = prefs.getBoolean("cloud_storage_api_enable", false);
         enableMongoUpload = prefs.getBoolean("cloud_storage_mongodb_enable", false);
-        setRetryTimer();
         attemptSend();
     }
 
@@ -47,8 +46,9 @@ public class SyncService extends IntentService {
         if (enableRESTUpload || enableMongoUpload) { //Check for any upload type being enabled
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            long wakeTime = calendar.getTimeInMillis() + (1000 * 30 * 5);
-            PendingIntent serviceIntent = PendingIntent.getService(this, 0, new Intent(this, SyncService.class), 0);
+            long wakeTime = calendar.getTimeInMillis() + (1000 * 60 * 6);
+            // make it up on the next BG reading or retry if the reading doesn't materialize
+            PendingIntent serviceIntent = PendingIntent.getService(this, 0, new Intent(this, SyncService.class), PendingIntent.FLAG_CANCEL_CURRENT);
             alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
         }
     }
