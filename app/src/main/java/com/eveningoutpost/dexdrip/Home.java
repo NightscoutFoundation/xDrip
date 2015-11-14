@@ -251,8 +251,16 @@ public class Home extends ActivityWithMenu {
             updateCurrentBgInfoForWifiWixel(notificationText);
         }
         if (prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
-            notificationText.append("\n ALERTS CURRENTLY DISABLED");
-        }
+            notificationText.append("\n ALL ALERTS CURRENTLY DISABLED");
+        } else if (prefs.getLong("low_alerts_disabled_until", 0) > new Date().getTime()
+			&&
+			prefs.getLong("high_alerts_disabled_until", 0) > new Date().getTime()) {
+            notificationText.append("\n LOW AND HIGH ALERTS CURRENTLY DISABLED");
+        } else if (prefs.getLong("low_alerts_disabled_until", 0) > new Date().getTime()) {
+            notificationText.append("\n LOW ALERTS CURRENTLY DISABLED");
+        } else if (prefs.getLong("high_alerts_disabled_until", 0) > new Date().getTime()) {
+            notificationText.append("\n HIGH ALERTS CURRENTLY DISABLED");
+        } 
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
     }
@@ -288,8 +296,8 @@ public class Home extends ActivityWithMenu {
         }
 
         final long now = System.currentTimeMillis();
-        if (Sensor.currentSensor().started_at + 60000 * 60 * 2 >= now) {
-            double waitTime = (Sensor.currentSensor().started_at + 60000 * 60 * 2 - now) / 60000.0;
+        if (Sensor.currentSensor().started_at + 60000 * 5 * 2 >= now) {
+            double waitTime = (Sensor.currentSensor().started_at + 60000 * 5 * 2 - now) / 60000.0;
             notificationText.setText("Please wait while sensor warms up! (" + String.format("%.2f", waitTime) + " minutes)");
             return;
         }
