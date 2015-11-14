@@ -296,8 +296,8 @@ public class Home extends ActivityWithMenu {
         }
 
         final long now = System.currentTimeMillis();
-        if (Sensor.currentSensor().started_at + 60000 * 5 * 2 >= now) {
-            double waitTime = (Sensor.currentSensor().started_at + 60000 * 5 * 2 - now) / 60000.0;
+        if (Sensor.currentSensor().started_at + 60000 * 60 * 2 >= now) {
+            double waitTime = (Sensor.currentSensor().started_at + 60000 * 60 * 2 - now) / 60000.0;
             notificationText.setText("Please wait while sensor warms up! (" + String.format("%.2f", waitTime) + " minutes)");
             return;
         }
