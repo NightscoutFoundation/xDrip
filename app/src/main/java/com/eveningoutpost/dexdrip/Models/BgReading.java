@@ -767,10 +767,6 @@ public class BgReading extends Model implements ShareUploadableBg{
             Log.i("NOTIFICATIONS", "checkForRisingAllert: Notifications are currently disabled!!");
             return;
         }
-        if(prefs.getLong("high_alerts_disabled_until", 0) > new Date().getTime()){
-            Log.i("NOTIFICATIONS", "checkForRisingAllert: High alerts are currently disabled!!");
-            return;
-        }
 
         if(IsUnclearTime(context)) {
             Log.d(TAG_ALERT, "checkForRisingAllert we are in an clear time, returning without doing anything");
@@ -803,10 +799,6 @@ public class BgReading extends Model implements ShareUploadableBg{
         }
         if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
             Log.d("NOTIFICATIONS", "checkForDropAllert: Notifications are currently disabled!!");
-            return;
-        }
-        if(prefs.getLong("low_alerts_disabled_until", 0) > new Date().getTime()){
-            Log.d("NOTIFICATIONS", "checkForDropAllert: Low alerts are currently disabled!!");
             return;
         }
 
