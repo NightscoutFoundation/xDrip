@@ -40,6 +40,11 @@
             android:title="Show Datatables"
             android:summary="Show Calibration and BG datatables in the app drawer."
             android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="disable_battery_warning"
+            android:title="Disable Battery Warning"
+            android:summary="Disable the warning for low transmitter battery state on the home screen. (Only relevant for DIY receivers.)"
+            android:defaultValue="false" />
         <Preference
             android:title="View Recent Errors/Warnings"
             android:key="recent_errors">
