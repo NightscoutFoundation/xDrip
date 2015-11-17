@@ -126,7 +126,7 @@ public class AlertType extends Model {
             Log.d(TAG_ALERT, "We are in an clear state, but not for too long. Alerts are disabled");
             return null;
         }
-        at = get_highest_active_alert_helper(bg);
+        at = get_highest_active_alert_helper(bg, prefs);
         if (at != null) {
             Log.d(TAG_ALERT, "get_highest_active_alert_helper returned alert uuid = " + at.uuid + " alert name = " + at.name);
         } else {
@@ -142,34 +142,45 @@ public class AlertType extends Model {
 
 
     // bg_minute is the estimatin of the bg change rate
-    private static AlertType get_highest_active_alert_helper(double bg) {
+    private static AlertType get_highest_active_alert_helper(double bg, SharedPreferences prefs) {
         // Chcek the low alerts
 
-        List<AlertType> lowAlerts  = new Select()
-            .from(AlertType.class)
-            .where("threshold >= ?", bg)
-            .where("above = ?", false)
-            .orderBy("threshold asc")
-            .execute();
+        if(prefs.getLong("low_alerts_disabled_until", 0) > new Date().getTime()){
+            Log.i("NOTIFICATIONS", "get_highest_active_alert_helper: Low alerts are currently disabled!! Skipping low alerts");
+            ;
+        } else {
+            List<AlertType> lowAlerts  = new Select()
+                    .from(AlertType.class)
+                    .where("threshold >= ?", bg)
+                    .where("above = ?", false)
+                    .orderBy("threshold asc")
+                    .execute();
 
-        for (AlertType lowAlert : lowAlerts) {
-            if(lowAlert.should_alarm(bg)) {
-                return lowAlert;
+            for (AlertType lowAlert : lowAlerts) {
+                if(lowAlert.should_alarm(bg)) {
+                    return lowAlert;
+                }
             }
         }
 
-        // If no low alert found, check higher alert.
-        List<AlertType> HighAlerts  = new Select()
-            .from(AlertType.class)
-            .where("threshold <= ?", bg)
-            .where("above = ?", true)
-            .orderBy("threshold desc")
-            .execute();
 
-        for (AlertType HighAlert : HighAlerts) {
-            //Log.e(TAG, "Testing high alert " + HighAlert.toString());
-            if(HighAlert.should_alarm(bg)) {
-                return HighAlert;
+        // If no low alert found or low alerts disabled, check higher alert.
+        if(prefs.getLong("high_alerts_disabled_until", 0) > new Date().getTime()){
+            Log.i("NOTIFICATIONS", "get_highest_active_alert_helper: High alerts are currently disabled!! Skipping high alerts");
+            ;
+        } else {
+            List<AlertType> HighAlerts  = new Select()
+                    .from(AlertType.class)
+                    .where("threshold <= ?", bg)
+                    .where("above = ?", true)
+                    .orderBy("threshold desc")
+                    .execute();
+
+            for (AlertType HighAlert : HighAlerts) {
+                //Log.e(TAG, "Testing high alert " + HighAlert.toString());
+                if(HighAlert.should_alarm(bg)) {
+                    return HighAlert;
+                }
             }
         }
         // no alert found
