@@ -570,6 +570,9 @@ public class Calibration extends Model {
     //COMMON SCOPES!
     public static Calibration last() {
         Sensor sensor = Sensor.currentSensor();
+        if(sensor == null) {
+            return null;
+        }
         return new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())

@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.Services.DailyIntentService;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.Services.SyncService;
+import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 
 import java.io.IOException;
@@ -180,11 +181,13 @@ public class CollectionServiceStarter {
     }
 
     private void startWifWixelThread() {
-        WixelReader.sStart(mContext);
+        Log.d(TAG, "starting wifi wixel service");
+        mContext.startService(new Intent(mContext, WifiCollectionService.class));
     }
 
     private void stopWifWixelThread() {
-        WixelReader.sStop();
+        Log.d(TAG, "stopping wifi wixel service");
+        mContext.stopService(new Intent(mContext, WifiCollectionService.class));
     }
 
 }

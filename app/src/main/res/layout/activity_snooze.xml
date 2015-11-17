@@ -10,7 +10,7 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight=".3"
+            android:layout_weight=".2"
             android:orientation="vertical"
             android:gravity="center_horizontal">
             <Button
@@ -24,7 +24,7 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight=".3"
+            android:layout_weight=".25"
             android:orientation="vertical"
             android:gravity="center_horizontal">
 
@@ -38,7 +38,7 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight=".3"
+            android:layout_weight=".25"
             android:orientation="vertical"
             android:gravity="center_horizontal"
             android:paddingTop="10dp">
@@ -54,9 +54,29 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight=".1"
+            android:layout_weight=".3"
             android:orientation="vertical"
             android:gravity="center_horizontal">
+            <Button
+                android:id="@+id/button_disable_low_alerts"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Disable Low alerts"/>
+            <Button
+                android:id="@+id/enable_low_alerts"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Re-Enable Low Alerts"/>
+            <Button
+                android:id="@+id/button_disable_high_alerts"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Disable High alerts"/>
+            <Button
+                android:id="@+id/enable_high_alerts"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Re-Enable High Alerts"/>
             <Button
                 android:id="@+id/button_disable_alerts"
                 android:layout_width="fill_parent"
@@ -66,7 +86,7 @@
                 android:id="@+id/enable_alerts"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Re-Enable Alerts"/>
+                android:text="Re-Enable All Alerts"/>
         </LinearLayout>
 
 

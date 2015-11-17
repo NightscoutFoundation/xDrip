@@ -268,10 +268,18 @@ public class Home extends ActivityWithMenu {
             updateCurrentBgInfoForWifiWixel(notificationText);
         }
         if (prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
-            notificationText.append("\n ALERTS CURRENTLY DISABLED");
-        }
-        NavigationDrawerFragment mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
+            notificationText.append("\n ALL ALERTS CURRENTLY DISABLED");
+        } else if (prefs.getLong("low_alerts_disabled_until", 0) > new Date().getTime()
+			&&
+			prefs.getLong("high_alerts_disabled_until", 0) > new Date().getTime()) {
+            notificationText.append("\n LOW AND HIGH ALERTS CURRENTLY DISABLED");
+        } else if (prefs.getLong("low_alerts_disabled_until", 0) > new Date().getTime()) {
+            notificationText.append("\n LOW ALERTS CURRENTLY DISABLED");
+        } else if (prefs.getLong("high_alerts_disabled_until", 0) > new Date().getTime()) {
+            notificationText.append("\n HIGH ALERTS CURRENTLY DISABLED");
+        } 
+        NavigationDrawerFragment navigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
+        navigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
     }
 
     private void updateCurrentBgInfoForWifiWixel(TextView notificationText) {
