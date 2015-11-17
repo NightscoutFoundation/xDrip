@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -92,10 +93,14 @@ public class Notifications extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "NotificationsIntent");
+        wl.acquire();
         Log.d("Notifications", "Running Notifications Intent Service");
         ReadPerfs(getApplicationContext());
         notificationSetter(getApplicationContext());
         ArmTimer();
+        wl.release();
     }
 
     public void ReadPerfs(Context context) {
@@ -294,7 +299,7 @@ public class Notifications extends IntentService {
                 AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
                 // sleep longer if the alert is snoozed.
                 long wakeTime = activeBgAlert.is_snoozed ? activeBgAlert.next_alert_at :
-                        calendar.getTimeInMillis() + (time + 60000);
+                        calendar.getTimeInMillis() + (time * 60000);
                 Log.d(TAG , "ArmTimer waking at: "+ wakeTime);
                 if (wakeIntent != null)
                     alarm.cancel(wakeIntent);
