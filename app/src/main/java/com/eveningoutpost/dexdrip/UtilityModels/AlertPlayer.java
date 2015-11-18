@@ -61,7 +61,9 @@ public class AlertPlayer {
         stopAlert(ctx, true, false);
         int alertIn = newAlert.minutes_between;
         if(alertIn < 1) { alertIn = 1; }
-        ActiveBgAlert.Create(newAlert.uuid, false, new Date().getTime() + alertIn * 60000 );
+        ActiveBgAlert aba = ActiveBgAlert.Create(newAlert.uuid, false, new Date().getTime() + alertIn * 60000);
+        aba.last_alerted_at = System.currentTimeMillis();
+        aba.save();
         Vibrate(ctx, newAlert, bgValue, newAlert.override_silent_mode, 0);
     }
 
@@ -121,14 +123,19 @@ public class AlertPlayer {
             stopAlert(ctx, false, false);
 
             int timeFromStartPlaying = activeBgAlert.getUpdatePlayTime();
-            AlertType alert = AlertType.get_alert(activeBgAlert.alert_uuid);
-            if (alert == null) {
+            AlertType alertType = AlertType.get_alert(activeBgAlert.alert_uuid);
+            if (alertType == null) {
                 Log.d(TAG, "ClockTick: The alert was already deleted... will not play");
                 ActiveBgAlert.ClearData();
                 return;
             }
-            Log.d(TAG,"ClockTick: Playing the alert again");
-            Vibrate(ctx, alert, bgValue, alert.override_silent_mode, timeFromStartPlaying);
+            Log.d(TAG, "ClockTick: Playing the alert again");
+            if(System.currentTimeMillis() >=  activeBgAlert.last_alerted_at + alertType.minutes_between*60000 - 30000){
+                // just alert, if the reraise time has passed (or half a minute earlier to not miss one by a few milliseconds)
+                activeBgAlert.last_alerted_at = System.currentTimeMillis();
+                activeBgAlert.save();
+                Vibrate(ctx, alertType, bgValue, alertType.override_silent_mode, timeFromStartPlaying);
+            }
         }
 
     }
