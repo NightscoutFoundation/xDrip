@@ -300,7 +300,7 @@ public class Notifications extends IntentService {
                 // sleep longer if the alert is snoozed.
                 long wakeTime = activeBgAlert.is_snoozed ? activeBgAlert.next_alert_at :
                         calendar.getTimeInMillis() + (time * 60000);
-                Log.d(TAG , "ArmTimer waking at: "+ wakeTime);
+                Log.d(TAG , "ArmTimer waking at: "+ new Date(wakeTime) +" in " +  (wakeTime - calendar.getTimeInMillis())/60000d + " minutes");
                 if (wakeIntent != null)
                     alarm.cancel(wakeIntent);
                 wakeIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
