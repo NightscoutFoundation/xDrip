@@ -164,6 +164,13 @@ public class Notifications extends IntentService {
 
             if (activeBgAlert.uuid.equals(newAlert.uuid)) {
                 // This is the same alert. Might need to play again...
+
+                //if more than two readings missed, don't replay
+                if ((new Date().getTime()) - (60000 * 11) - BgReading.lastNoSenssor().timestamp > 0){
+                    Log.d(TAG, "FileBasedNotifications : active alert found but not replaying it because more than two readings missed :  " + newAlert.name);
+                    return;
+                }
+
                 Log.d(TAG, "FileBasedNotifications we have found an active alert, checking if we need to play it " + newAlert.name);
                 boolean trendingToAlertEnd = trendingToAlertEnd(context, false, newAlert);
                 AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
