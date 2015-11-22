@@ -167,7 +167,7 @@ public class Notifications extends IntentService {
 
                 //if more than three readings missed, don't replay
                 if ((new Date().getTime()) - (60000 * 17) - BgReading.lastNoSenssor().timestamp > 0){
-                    Log.d(TAG, "FileBasedNotifications : active alert found but not replaying it because more than two readings missed :  " + newAlert.name);
+                    Log.d(TAG, "FileBasedNotifications : active alert found but not replaying it because more than three readings missed :  " + newAlert.name);
                     return;
                 }
 
