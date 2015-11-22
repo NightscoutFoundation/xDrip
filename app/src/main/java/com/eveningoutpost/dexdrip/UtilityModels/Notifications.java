@@ -165,10 +165,13 @@ public class Notifications extends IntentService {
             if (activeBgAlert.uuid.equals(newAlert.uuid)) {
                 // This is the same alert. Might need to play again...
 
-                //if more than three readings missed, don't replay
-                if ((new Date().getTime()) - (60000 * 17) - BgReading.lastNoSenssor().timestamp > 0){
-                    Log.d(TAG, "FileBasedNotifications : active alert found but not replaying it because more than three readings missed :  " + newAlert.name);
-                    return;
+                //disable alert on stale data
+                if(prefs.getBoolean("disable_alerts_stale_data", true)) {
+                    int minutes = Integer.parseInt(prefs.getString("disable_alerts_stale_data_minutes", "15")) + 2;
+                    if ((new Date().getTime()) - (60000 * minutes) - BgReading.lastNoSenssor().timestamp > 0) {
+                        Log.d(TAG, "FileBasedNotifications : active alert found but not replaying it because more than three readings missed :  " + newAlert.name);
+                        return;
+                    }
                 }
 
                 Log.d(TAG, "FileBasedNotifications we have found an active alert, checking if we need to play it " + newAlert.name);
