@@ -103,6 +103,22 @@
                     android:summary="Alert if no data receieved in x minutes"
                     android:defaultValue="30" />
             </PreferenceCategory>
+            
+            <PreferenceCategory
+                android:title="Stale Data">
+                <CheckBoxPreference
+                    android:key="disable_alerts_stale_data"
+                    android:title="Disable BG Alerts on Stale Data"
+                    android:summary="Disable BG Alerts on Stale Data"
+                    android:defaultValue="true" />
+                <EditTextPreference
+                    android:dependency="disable_alerts_stale_data"
+                    android:key="disable_alerts_stale_data_minutes"
+                    android:title="Minutes without reading after which to disable alerts"
+                    android:inputType="number"
+                    android:summary="Minutes without reading after which to disable alerts"
+                    android:defaultValue="15" />
+            </PreferenceCategory>
 
             <PreferenceCategory
                 android:title="Falling/Rising BG">
