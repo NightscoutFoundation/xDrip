@@ -38,6 +38,20 @@
                 android:title="Shortcut to Bg Level Alerts"
                 android:summary="Create a shortcut from main navigation to bg level screen"
                 android:defaultValue="false" />
+
+                <CheckBoxPreference
+                    android:key="disable_alerts_stale_data"
+                    android:title="Suppress Snoozed Alerts if missed readings"
+                    android:summary="Suppress snoozed alerts if missed readings for a predefined period"
+                    android:defaultValue="true" />
+                <EditTextPreference
+                    android:dependency="disable_alerts_stale_data"
+                    android:key="disable_alerts_stale_data_minutes"
+                    android:title="Minutes after which to suppress snoozed alerts"
+                    android:inputType="number"
+                    android:summary="How many minutes of missed readings after which to suppress snoozed alerts"
+                    android:defaultValue="15" />
+
         </PreferenceScreen>
 
 
@@ -104,22 +118,6 @@
                     android:defaultValue="30" />
             </PreferenceCategory>
             
-            <PreferenceCategory
-                android:title="Stale Data">
-                <CheckBoxPreference
-                    android:key="disable_alerts_stale_data"
-                    android:title="Disable BG Alerts on Stale Data"
-                    android:summary="Disable BG Alerts on Stale Data"
-                    android:defaultValue="true" />
-                <EditTextPreference
-                    android:dependency="disable_alerts_stale_data"
-                    android:key="disable_alerts_stale_data_minutes"
-                    android:title="Minutes without reading after which to disable alerts"
-                    android:inputType="number"
-                    android:summary="Minutes without reading after which to disable alerts"
-                    android:defaultValue="15" />
-            </PreferenceCategory>
-
             <PreferenceCategory
                 android:title="Falling/Rising BG">
                 <CheckBoxPreference
