@@ -21,6 +21,8 @@ import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.text.InputFilter;
 import android.text.TextUtils;
+import android.widget.Toast;
+
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.R;
@@ -280,6 +282,22 @@ public class Preferences extends PreferenceActivity {
             final PreferenceScreen calibrationAlertsScreen = (PreferenceScreen) findPreference("calibration_alerts_screen");
             final PreferenceCategory alertsCategory = (PreferenceCategory) findPreference("alerts_category");
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            final Preference disableAlertsStaleDataMinutes = findPreference("disable_alerts_stale_data_minutes");
+            disableAlertsStaleDataMinutes.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    if (!isNumeric(newValue.toString())) {
+                        return false;
+                    }
+                    if ((Integer.parseInt(newValue.toString())) < 10 ) {
+                        Toast.makeText(preference.getContext(),
+                                "Value must be at least 10 minutes", Toast.LENGTH_LONG).show();
+                        return false;
+                    }
+                    preference.setSummary(newValue.toString());
+                    return true;
+                }
+            });
             Log.d(TAG, prefs.getString("dex_collection_method", "BluetoothWixel"));
             if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomShare") != 0) {
                 collectionCategory.removePreference(shareKey);

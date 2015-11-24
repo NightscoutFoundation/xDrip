@@ -41,15 +41,15 @@
 
                 <CheckBoxPreference
                     android:key="disable_alerts_stale_data"
-                    android:title="Suppress Snoozed Alerts if missed readings"
-                    android:summary="Suppress snoozed alerts if missed readings for a predefined period"
-                    android:defaultValue="true" />
+                    android:title="Suppress Alerts if missed readings"
+                    android:summary="Suppress snoozed and active alerts after predefined period of missed readings"
+                    android:defaultValue="false" />
                 <EditTextPreference
                     android:dependency="disable_alerts_stale_data"
                     android:key="disable_alerts_stale_data_minutes"
-                    android:title="Minutes after which to suppress snoozed alerts"
+                    android:title="Suppress snoozed and active alerts after .. minutes (minimum 10)"
                     android:inputType="number"
-                    android:summary="How many minutes of missed readings after which to suppress snoozed alerts"
+                    android:summary="Suppress snoozed and active alerts after .. minutes (minimum 10)"
                     android:defaultValue="15" />
 
         </PreferenceScreen>
