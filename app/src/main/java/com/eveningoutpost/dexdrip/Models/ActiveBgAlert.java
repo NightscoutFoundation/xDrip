@@ -162,5 +162,10 @@ public class ActiveBgAlert extends Model {
         Long timeSeconds =  (new Date().getTime() - alert_started_at) / 1000;
         return (int)Math.round(timeSeconds / 60.0);
     }
+
+    public void updateNextAlertAt(long nextAlertTime){
+        next_alert_at = nextAlertTime;
+        save();
+    }
 }
 

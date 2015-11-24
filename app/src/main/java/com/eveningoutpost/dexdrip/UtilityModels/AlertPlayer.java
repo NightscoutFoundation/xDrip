@@ -58,9 +58,9 @@ public class AlertPlayer {
         }
 
         stopAlert(ctx, true, false);
-        int alertIn = newAlert.minutes_between;
-        if(alertIn < 1) { alertIn = 1; }
-        ActiveBgAlert.Create(newAlert.uuid, false, new Date().getTime() + alertIn * 60000 );
+
+        long nextAlertTime = newAlert.getNextAlertTime(ctx);
+        ActiveBgAlert.Create(newAlert.uuid, false, nextAlertTime );
         Vibrate(ctx, newAlert, bgValue, newAlert.override_silent_mode, 0);
     }
 
@@ -127,6 +127,9 @@ public class AlertPlayer {
                 return;
             }
             Log.d(TAG,"ClockTick: Playing the alert again");
+            long nextAlertTime = alert.getNextAlertTime(ctx);
+            activeBgAlert.updateNextAlertAt(nextAlertTime);
+            
             Vibrate(ctx, alert, bgValue, alert.override_silent_mode, timeFromStartPlaying);
         }
 
@@ -206,6 +209,11 @@ public class AlertPlayer {
         Log.wtf(TAG, "getAlertProfile unknown value " + profile + " ALERT_PROFILE_ASCENDING");
         return ALERT_PROFILE_ASCENDING;
 
+    }
+    
+    public static boolean isAscendingMode(Context ctx){
+        Log.d("Adrian", "(getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING): " + (getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING));
+        return getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING;
     }
 
     private void Vibrate(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, int timeFromStartPlaying) {
