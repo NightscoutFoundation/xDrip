@@ -129,7 +129,7 @@ public class Notifications extends IntentService {
  */
 
 
-    public void FileBasedNotifications(Context context) {
+    private void FileBasedNotifications(Context context) {
         ReadPerfs(context);
         Sensor sensor = Sensor.currentSensor();
 
@@ -294,8 +294,7 @@ public class Notifications extends IntentService {
                 Calendar calendar = Calendar.getInstance();
                 AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
                 // sleep longer if the alert is snoozed.
-                long wakeTime = activeBgAlert.is_snoozed ? activeBgAlert.next_alert_at :
-                    alert.getNextAlertTime(ctx);
+                long wakeTime = activeBgAlert.next_alert_at;
                 Log.d(TAG , "ArmTimer waking at: "+ new Date(wakeTime) +" in " +  (wakeTime - calendar.getTimeInMillis())/60000d + " minutes");
                 if (wakeIntent != null)
                     alarm.cancel(wakeIntent);
