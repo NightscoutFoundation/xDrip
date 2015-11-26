@@ -13,12 +13,14 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission-sdk-23 android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.BATTERY_STATS" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
-    <uses-permission android:name="android.permission." />
+
 
     <application
         android:name=".xdrip"
@@ -195,7 +197,7 @@
         </receiver>
 
         <service
-            android:name=".widgetUpdateService"
+            android:name=".WidgetUpdateService"
             android:enabled="true"
             android:exported="true" >
         </service>
@@ -220,11 +222,6 @@
         </service>
         <service
             android:name=".Services.MissedReadingService"
-            android:enabled="true"
-            android:exported="true" >
-        </service>
-        <service
-            android:name=".ShareModels.ShareRest"
             android:enabled="true"
             android:exported="true" >
         </service>

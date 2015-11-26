@@ -12,32 +12,29 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.ShareModels.FollowerManager;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ExistingFollower;
+import com.eveningoutpost.dexdrip.ShareModels.Models.InvitationPayload;
+import com.eveningoutpost.dexdrip.ShareModels.ShareRest;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 import java.util.List;
 
-import rx.functions.Action1;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by stephenblack on 8/11/15.
  */
 public class FollowerManagementActivity extends ActivityWithMenu {
-    static String FollowerManagementActivity = Home.class.getName();
-    public static String menu_name = "Follower Management";
-
-    ListView existingFollowersView;
-    Button addFollowerButton;
-    FollowerManager followerManager;
-    Action1<List<ExistingFollower>> existingFollowerListener;
-    List<ExistingFollower> existingFollowerList;
-    FollowerListAdapter followerListAdapter;
-
-    String login;
-    String password;
-    String receiverSn;
-
+    private static final String menu_name = "Follower Management";
+    private static final String TAG = Home.class.getName();
+    private ListView existingFollowersView;
+    private Button addFollowerButton;
+    private ShareRest shareRest;
+    private Callback<List<ExistingFollower>> existingFollowerListener;
+    private List<ExistingFollower> existingFollowerList;
+    private FollowerListAdapter followerListAdapter;
 
     @Override
     public String getMenuName() {
@@ -50,40 +47,45 @@ public class FollowerManagementActivity extends ActivityWithMenu {
         setContentView(R.layout.activity_follower_management);
         existingFollowersView = (ListView) findViewById(R.id.followerList);
         addFollowerButton = (Button) findViewById(R.id.inviteFollower);
+        shareRest = new ShareRest(this, null);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        login = prefs.getString("dexcom_account_name", "");
-        password = prefs.getString("dexcom_account_password", "");
-        receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
 
         populateFollowerList();
         setInviteListener();
     }
 
     private void populateFollowerList() {
-        followerManager = new FollowerManager(login, password, receiverSn, getApplicationContext());
-         existingFollowerListener = new Action1<List<ExistingFollower>>() {
+        existingFollowerListener = new Callback<List<ExistingFollower>>() {
             @Override
-            public void call(List<ExistingFollower> existingFollowers) {
-                if(followerListAdapter != null) {
+            public void onResponse(Response<List<ExistingFollower>> response, Retrofit retrofit) {
+                List<ExistingFollower> existingFollowers = response.body();
+                if (followerListAdapter != null) {
                     existingFollowerList.clear();
-                    if(existingFollowers != null && existingFollowers.size() > 0)
+                    if (existingFollowers != null && existingFollowers.size() > 0)
                         existingFollowerList.addAll(existingFollowers);
                     followerListAdapter.notifyDataSetChanged();
                 } else {
-                    if(existingFollowers != null && existingFollowers.size() > 0) {
+                    if (existingFollowers != null && existingFollowers.size() > 0) {
                         existingFollowerList = existingFollowers;
-                        followerListAdapter = new FollowerListAdapter(getApplicationContext(), followerManager, existingFollowerList);
+                        followerListAdapter = new FollowerListAdapter(getApplicationContext(), shareRest, existingFollowerList);
                         existingFollowersView.setAdapter(followerListAdapter);
                     }
                 }
             }
+
+            @Override
+            public void onFailure(Throwable t) {
+                // If it fails, don't show followers.
+            }
         };
-        followerManager.getFollowers(existingFollowerListener);
+
+        shareRest.getContacts(existingFollowerListener);
+
     }
 
     private void setInviteListener() {
@@ -102,30 +104,53 @@ public class FollowerManagementActivity extends ActivityWithMenu {
                     @Override
                     public void onClick(View v) {
                         if (!TextUtils.isEmpty(followerName.getText()) && !TextUtils.isEmpty(followerNicName.getText()) && !TextUtils.isEmpty(followerEmail.getText())) {
-                            Action1<Boolean> invitedFollowerListener = new Action1<Boolean>() {
-                                @Override
-                                public void call(Boolean deleted) {
-                                    if (deleted) {
-                                        Toast.makeText(getApplicationContext(), "Follower invite sent succesfully", Toast.LENGTH_LONG).show();
-                                        populateFollowerList();
-                                    } else {
-                                        Toast.makeText(getApplicationContext(), "Failed to invite follower", Toast.LENGTH_LONG).show();
+
+
+                            shareRest.createContact(followerName.getText().toString().trim(), followerEmail.getText().toString().trim(), new Callback<String>() {
+
+                                        @Override
+                                        public void onResponse(Response<String> response, Retrofit retrofit) {
+                                            if (response.isSuccess()) {
+                                                shareRest.createInvitationForContact(response.body(), new InvitationPayload(followerNicName.getText().toString().trim()), new Callback<String>() {
+                                                    @Override
+                                                    public void onResponse(Response<String> response, Retrofit retrofit) {
+                                                        if (response.isSuccess()) {
+                                                            populateFollowerList();
+                                                            Toast.makeText(getApplicationContext(), "Follower invite sent succesfully", Toast.LENGTH_LONG).show();
+                                                        } else {
+                                                            Toast.makeText(getApplicationContext(), "Failed to invite follower", Toast.LENGTH_LONG).show();
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onFailure(Throwable t) {
+                                                        Toast.makeText(getApplicationContext(), "Failed to invite follower", Toast.LENGTH_LONG).show();
+                                                    }
+                                                });
+                                            } else {
+                                                Toast.makeText(getApplicationContext(), "Failed to invite follower", Toast.LENGTH_LONG).show();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Throwable t) {
+                                            Toast.makeText(getApplicationContext(), "Failed to invite follower", Toast.LENGTH_LONG).show();
+                                        }
                                     }
-                                }
-                            };
-                            followerManager.inviteFollower(followerEmail.getText().toString().trim(), followerName.getText().toString().trim(), followerNicName.getText().toString().trim(), invitedFollowerListener);
+                            );
                         }
                         dialog.dismiss();
                     }
                 });
                 cancelButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        dialog.dismiss();
+                                                    }
+                                                });
                 WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-                lp.copyFrom(dialog.getWindow().getAttributes());
+                lp.copyFrom(dialog.getWindow().
+                                getAttributes());
                 lp.width = WindowManager.LayoutParams.MATCH_PARENT;
                 dialog.show();
                 dialog.getWindow().setAttributes(lp);

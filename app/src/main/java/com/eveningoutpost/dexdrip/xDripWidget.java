@@ -40,7 +40,7 @@ public class xDripWidget extends AppWidgetProvider {
     @Override
     public void onEnabled(Context context) {
         Log.d(TAG, "Widget enabled");
-        context.startService(new Intent(context, widgetUpdateService.class));
+        context.startService(new Intent(context, WidgetUpdateService.class));
     }
 
     @Override

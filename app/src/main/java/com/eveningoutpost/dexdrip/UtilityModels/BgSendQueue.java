@@ -21,10 +21,10 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Services.SyncService;
-import com.eveningoutpost.dexdrip.ShareModels.ShareRest;
+import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
-import com.eveningoutpost.dexdrip.widgetUpdateService;
+import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.xDripWidget;
 
 import java.util.List;
@@ -94,7 +94,7 @@ public class BgSendQueue extends Model {
             context.sendBroadcast(updateIntent);
 
             if(AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, xDripWidget.class)).length > 0){
-                context.startService(new Intent(context, widgetUpdateService.class));
+                context.startService(new Intent(context, WidgetUpdateService.class));
             }
 
             if (prefs.getBoolean("broadcast_data_through_intents", false)) {
@@ -160,11 +160,9 @@ public class BgSendQueue extends Model {
 
             if (prefs.getBoolean("share_upload", false)) {
                 Log.d("ShareRest", "About to call ShareRest!!");
-                String login = prefs.getString("dexcom_account_name", "");
-                String password = prefs.getString("dexcom_account_password", "");
                 String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
-                BgUploader bgUploader = new BgUploader(login, password, receiverSn, context);
-                bgUploader.upload(bgReading);
+                BgUploader bgUploader = new BgUploader(context);
+                bgUploader.upload(new ShareUploadPayload(receiverSn, bgReading));
             }
             context.startService(new Intent(context, SyncService.class));
 

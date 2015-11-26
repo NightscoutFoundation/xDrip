@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -17,19 +18,12 @@ import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.WriteConcern;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.ResponseBody;
 
-import net.tribe7.common.base.Charsets;
-
-import org.apache.http.Header;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URI;
@@ -37,7 +31,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
+
+import retrofit.Call;
+import retrofit.Response;
+import retrofit.Retrofit;
+import retrofit.http.Body;
+import retrofit.http.Header;
+import retrofit.http.POST;
 
 /**
  * THIS CLASS WAS BUILT BY THE NIGHTSCOUT GROUP FOR THEIR NIGHTSCOUT ANDROID UPLOADER
@@ -48,6 +51,7 @@ import java.util.TimeZone;
  * -Stephen Black
  */
 public class NightscoutUploader {
+
         private static final String TAG = NightscoutUploader.class.getSimpleName();
         private static final int SOCKET_TIMEOUT = 60000;
         private static final int CONNECTION_TIMEOUT = 30000;
@@ -55,10 +59,39 @@ public class NightscoutUploader {
         private Boolean enableRESTUpload;
         private Boolean enableMongoUpload;
         private SharedPreferences prefs;
+        private OkHttpClient client;
+
+        public interface NightscoutService {
+            @POST("entries")
+            Call<ResponseBody> upload(@Header("api-secret") String secret, @Body RequestBody body);
+
+            @POST("entries")
+            Call<ResponseBody> upload(@Body RequestBody body);
+
+            @POST("devicestatus")
+            Call<ResponseBody> uploadDeviceStatus(@Body RequestBody body);
+
+            @POST("devicestatus")
+            Call<ResponseBody> uploadDeviceStatus(@Header("api-secret") String secret, @Body RequestBody body);
+
+        }
+
+        private class UploaderException extends RuntimeException {
+            int code;
+
+            public UploaderException (String message, int code) {
+                super(message);
+                this.code = code;
+            }
+        }
 
         public NightscoutUploader(Context context) {
             mContext = context;
             prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+            client = new OkHttpClient();
+            client.setConnectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
+            client.setWriteTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
+            client.setReadTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
             enableRESTUpload = prefs.getBoolean("cloud_storage_api_enable", false);
             enableMongoUpload = prefs.getBoolean("cloud_storage_mongodb_enable", false);
         }
@@ -80,7 +113,7 @@ public class NightscoutUploader {
                 Log.i(TAG, String.format("Finished upload of %s record using a Mongo in %s ms", glucoseDataSets.size() + meterRecords.size(), System.currentTimeMillis() - start));
             }
 
-                return apiStatus || mongoStatus;
+            return apiStatus || mongoStatus;
         }
 
         private boolean doRESTUpload(SharedPreferences prefs, List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) {
@@ -100,157 +133,73 @@ public class NightscoutUploader {
 
             for (String baseURI : baseURIs) {
                 try {
-                    doRESTUploadTo(URI.create(baseURI), glucoseDataSets, meterRecords, calRecords);
+                    int apiVersion = 0;
+                    URI uri = new URI(baseURI);
+                    if (uri.getPath().endsWith("/v1/")) apiVersion = 1;
+                    String baseURL;
+                    String secret = uri.getUserInfo();
+                    if ((secret == null || secret.isEmpty()) && apiVersion == 0) {
+                        baseURL = baseURI;
+                    } else if ((secret == null || secret.isEmpty())) {
+                        throw new Exception("Starting with API v1, a pass phase is required");
+                    } else if (apiVersion > 0) {
+                        baseURL = baseURI.replaceFirst("//[^@]+@", "//");
+                    } else {
+                        throw new Exception("Unexpected baseURI");
+                    }
+
+                    Retrofit retrofit = new Retrofit.Builder().baseUrl(baseURL).client(client).build();
+                    NightscoutService nightscoutService = retrofit.create(NightscoutService.class);
+
+                    if (apiVersion == 1) {
+                        String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
+                        doRESTUploadTo(nightscoutService, hashedSecret, glucoseDataSets, meterRecords, calRecords);
+                    } else {
+                        doLegacyRESTUploadTo(nightscoutService, glucoseDataSets);
+                    }
                 } catch (Exception e) {
                     Log.e(TAG, "Unable to do REST API Upload " + e.getMessage());
+                    e.printStackTrace();
                     return false;
                 }
             }
             return true;
         }
 
-        private void doRESTUploadTo(URI baseURI, List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) {
-            try {
-                int apiVersion = 0;
-                if (baseURI.getPath().endsWith("/v1/")) apiVersion = 1;
+        private void doLegacyRESTUploadTo(NightscoutService nightscoutService, List<BgReading> glucoseDataSets) throws Exception {
+            for (BgReading record : glucoseDataSets) {
+                Response<ResponseBody> r = nightscoutService.upload(populateLegacyAPIEntry(record)).execute();
+                if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
 
-                String secret = baseURI.getUserInfo();
-                String baseURL;
-                if ((secret == null || secret.isEmpty()) && apiVersion == 0) {
-                    baseURL = baseURI.toString();
-                } else if ((secret == null || secret.isEmpty()) && apiVersion > 0) {
-                    throw new Exception("Starting with API v1, a pass phase is required");
-                } else if ((secret != null && !secret.isEmpty()) && apiVersion > 0) {
-                    baseURL = baseURI.toString().replaceFirst("//[^@]+@", "//");
-                } else {
-                    throw new Exception("Unexpected baseURI");
-                }
-
-                String postURL = baseURL + "entries";
-                Log.i(TAG, "postURL: " + postURL);
-
-                HttpParams params = new BasicHttpParams();
-                HttpConnectionParams.setSoTimeout(params, SOCKET_TIMEOUT);
-                HttpConnectionParams.setConnectionTimeout(params, CONNECTION_TIMEOUT);
-
-                DefaultHttpClient httpclient = new DefaultHttpClient(params);
-
-                HttpPost post = new HttpPost(postURL);
-
-                Header apiSecretHeader = null;
-
-                if (apiVersion > 0) {
-                    if (secret == null || secret.isEmpty()) {
-                        throw new Exception("Starting with API v1, a pass phase is required");
-                    } else {
-                        String token =  Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
-                        apiSecretHeader = new BasicHeader("api-secret", token);
-                    }
-                }
-
-                if (apiSecretHeader != null) {
-                    post.setHeader(apiSecretHeader);
-                }
-
-                for (BgReading record : glucoseDataSets) {
-                    JSONObject json = new JSONObject();
-
-                    try {
-                        if (apiVersion >= 1)
-                            populateV1APIBGEntry(json, record);
-                        else
-                            populateLegacyAPIEntry(json, record);
-                    } catch (Exception e) {
-                        Log.e(TAG, "Unable to populate entry", e);
-                        continue;
-                    }
-
-                    String jsonString = json.toString();
-
-                    Log.i(TAG, "SGV JSON: " + jsonString);
-
-                    try {
-                        StringEntity se = new StringEntity(jsonString);
-                        post.setEntity(se);
-                        post.setHeader("Accept", "application/json");
-                        post.setHeader("Content-type", "application/json");
-
-                        ResponseHandler responseHandler = new BasicResponseHandler();
-                        httpclient.execute(post, responseHandler);
-                    } catch (Exception e) {
-                        Log.e(TAG, "Unable to populate entry", e);
-                    }
-                }
-
-                if (apiVersion >= 1) {
-                    for (Calibration record : meterRecords) {
-                        JSONObject json = new JSONObject();
-
-                        try {
-                            populateV1APIMeterReadingEntry(json, record);
-                        } catch (Exception e) {
-                            Log.e(TAG, "Unable to populate entry", e);
-                            continue;
-                        }
-
-                        String jsonString = json.toString();
-                        Log.i(TAG, "MBG JSON: " + jsonString);
-
-                        try {
-                            StringEntity se = new StringEntity(jsonString);
-                            post.setEntity(se);
-                            post.setHeader("Accept", "application/json");
-                            post.setHeader("Content-type", "application/json");
-
-                            ResponseHandler responseHandler = new BasicResponseHandler();
-                            httpclient.execute(post, responseHandler);
-                        } catch (Exception e) {
-                            Log.e(TAG, "Unable to post data", e);
-                        }
-                    }
-                }
-
-                if (apiVersion >= 1) {
-                    for (Calibration calRecord : calRecords) {
-
-                        JSONObject json = new JSONObject();
-
-                        try {
-                            populateV1APICalibrationEntry(json, calRecord);
-                        } catch (Exception e) {
-                            Log.e(TAG, "Unable to populate entry", e);
-                            continue;
-                        }
-
-                        String jsonString = json.toString();
-                        Log.i(TAG, "CAL JSON: " + jsonString);
-
-                        try {
-                            StringEntity se = new StringEntity(jsonString);
-                            post.setEntity(se);
-                            post.setHeader("Accept", "application/json");
-                            post.setHeader("Content-type", "application/json");
-
-                            ResponseHandler responseHandler = new BasicResponseHandler();
-                            httpclient.execute(post, responseHandler);
-                        } catch (Exception e) {
-                            Log.e(TAG, "Unable to post data", e);
-                        }
-                    }
-                }
-
-                // TODO: this is a quick port from the original code and needs to be checked before release
-                postDeviceStatus(baseURL, apiSecretHeader, httpclient);
-
-            } catch (Exception e) {
-                Log.e(TAG, "Unable to post data", e);
             }
+            postDeviceStatus(nightscoutService, null);
         }
 
-        private void populateV1APIBGEntry(JSONObject json, BgReading record) throws Exception {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        private void doRESTUploadTo(NightscoutService nightscoutService, String secret, List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) throws Exception {
+            JSONArray array = new JSONArray();
+
+            for (BgReading record : glucoseDataSets) {
+                populateV1APIBGEntry(array, record);
+            }
+            for (Calibration record : meterRecords) {
+                populateV1APIMeterReadingEntry(array, record);
+            }
+            for (Calibration record : calRecords) {
+                populateV1APICalibrationEntry(array, record);
+            }
+
+            RequestBody body = RequestBody.create(MediaType.parse("application/json"), array.toString());
+            Response<ResponseBody> r = nightscoutService.upload(secret, body).execute();
+            if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
+
+            postDeviceStatus(nightscoutService, secret);
+        }
+
+        private void populateV1APIBGEntry(JSONArray array, BgReading record) throws Exception {
+            JSONObject json = new JSONObject();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
             format.setTimeZone(TimeZone.getDefault());
-            json.put("device", "xDrip-"+prefs.getString("dex_collection_method", "BluetoothWixel"));
+            json.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
             json.put("date", record.timestamp);
             json.put("dateString", format.format(record.timestamp));
             json.put("sgv", (int)record.calculated_value);
@@ -260,30 +209,36 @@ public class NightscoutUploader {
             json.put("unfiltered", record.usedRaw() * 1000);
             json.put("rssi", 100);
             json.put("noise", record.noiseValue());
+            array.put(json);
         }
 
-        private void populateLegacyAPIEntry(JSONObject json, BgReading record) throws Exception {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        private RequestBody populateLegacyAPIEntry(BgReading record) throws Exception {
+            JSONObject json = new JSONObject();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
             format.setTimeZone(TimeZone.getDefault());
             json.put("device", "xDrip-"+prefs.getString("dex_collection_method", "BluetoothWixel"));
             json.put("date", record.timestamp);
             json.put("dateString", format.format(record.timestamp));
             json.put("sgv", (int)record.calculated_value);
             json.put("direction", record.slopeName());
+            return RequestBody.create(MediaType.parse("application/json"), json.toString());
         }
 
-        private void populateV1APIMeterReadingEntry(JSONObject json, Calibration record) throws Exception {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        private void populateV1APIMeterReadingEntry(JSONArray array, Calibration record) throws Exception {
+            JSONObject json = new JSONObject();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
             format.setTimeZone(TimeZone.getDefault());
-            json.put("device", "xDrip-"+prefs.getString("dex_collection_method", "BluetoothWixel"));
+            json.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
             json.put("type", "mbg");
             json.put("date", record.timestamp);
             json.put("dateString", format.format(record.timestamp));
             json.put("mbg", record.bg);
+            array.put(json);
         }
 
-        private void populateV1APICalibrationEntry(JSONObject json, Calibration record) throws Exception {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        private void populateV1APICalibrationEntry(JSONArray array, Calibration record) throws Exception {
+            JSONObject json = new JSONObject();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
             format.setTimeZone(TimeZone.getDefault());
             json.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
             json.put("type", "cal");
@@ -298,35 +253,24 @@ public class NightscoutUploader {
                 json.put("intercept", (long) ((record.intercept * -1000) / (record.slope * 1000)));
                 json.put("scale", 1);
             }
+            array.put(json);
         }
 
-        // TODO: this is a quick port from original code and needs to be refactored before release
-        private void postDeviceStatus(String baseURL, Header apiSecretHeader, DefaultHttpClient httpclient) throws Exception {
-            String devicestatusURL = baseURL + "devicestatus";
-            Log.i(TAG, "devicestatusURL: " + devicestatusURL);
-
+        private void postDeviceStatus(NightscoutService nightscoutService, String apiSecret) throws Exception {
             JSONObject json = new JSONObject();
             json.put("uploaderBattery", getBatteryLevel());
-            String jsonString = json.toString();
-
-            HttpPost post = new HttpPost(devicestatusURL);
-
-            if (apiSecretHeader != null) {
-                post.setHeader(apiSecretHeader);
-            }
-
-            StringEntity se = new StringEntity(jsonString);
-            post.setEntity(se);
-            post.setHeader("Accept", "application/json");
-            post.setHeader("Content-type", "application/json");
-
-            ResponseHandler responseHandler = new BasicResponseHandler();
-            httpclient.execute(post, responseHandler);
+            RequestBody body = RequestBody.create(MediaType.parse("application/json"), json.toString());
+            Response<ResponseBody> r;
+            if (apiSecret != null) {
+                r = nightscoutService.uploadDeviceStatus(apiSecret, body).execute();
+            } else
+                r = nightscoutService.uploadDeviceStatus(body).execute();
+            if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
         }
 
         private boolean doMongoUpload(SharedPreferences prefs, List<BgReading> glucoseDataSets,
                                       List<Calibration> meterRecords,  List<Calibration> calRecords) {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
             format.setTimeZone(TimeZone.getDefault());
 
             String dbURI = prefs.getString("cloud_storage_mongodb_uri", null);
@@ -419,11 +363,13 @@ public class NightscoutUploader {
         }
     public int getBatteryLevel() {
         Intent batteryIntent = mContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-        int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-        if(level == -1 || scale == -1) {
-            return 50;
-        }
-        return (int)(((float)level / (float)scale) * 100.0f);
+        if (batteryIntent != null) {
+            int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            if (level == -1 || scale == -1) {
+                return 50;
+            }
+            return (int) (((float) level / (float) scale) * 100.0f);
+        } else return 50;
     }
 }

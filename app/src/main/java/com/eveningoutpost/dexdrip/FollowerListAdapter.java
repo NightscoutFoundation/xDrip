@@ -6,16 +6,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.ShareModels.FollowerManager;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ExistingFollower;
+import com.eveningoutpost.dexdrip.ShareModels.ShareRest;
+import com.squareup.okhttp.ResponseBody;
 
 import java.util.List;
 
-import rx.functions.Action1;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by stephenblack on 8/11/15.
@@ -23,12 +25,11 @@ import rx.functions.Action1;
 public class FollowerListAdapter extends BaseAdapter {
     private List<ExistingFollower> list;
     private Context context;
-    private FollowerManager followerManager;
-
-    public FollowerListAdapter(Context context, FollowerManager followerManager, List<ExistingFollower> list) {
+    private ShareRest shareRest;
+    public FollowerListAdapter(Context context, ShareRest shareRest, List<ExistingFollower> list) {
         this.context = context;
         this.list = list;
-        this.followerManager = followerManager;
+        this.shareRest = shareRest;
     }
 
     @Override
@@ -62,10 +63,10 @@ public class FollowerListAdapter extends BaseAdapter {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Action1<Boolean> deleteFollowerListener = new Action1<Boolean>() {
+                Callback<ResponseBody> deleteFollowerListener = new Callback<ResponseBody>() {
                     @Override
-                    public void call(Boolean deleted) {
-                        if (deleted) {
+                    public void onResponse(Response<ResponseBody> response, Retrofit retrofit) {
+                        if (response.isSuccess()) {
                             Toast.makeText(context, "Follower deleted succesfully", Toast.LENGTH_LONG).show();
                             list.remove(position);
                             notifyDataSetChanged();
@@ -73,8 +74,13 @@ public class FollowerListAdapter extends BaseAdapter {
                             Toast.makeText(context, "Failed to delete follower", Toast.LENGTH_LONG).show();
                         }
                     }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        Toast.makeText(context, "Failed to delete follower", Toast.LENGTH_LONG).show();
+                    }
                 };
-                followerManager.deleteFollower(deleteFollowerListener, follower.ContactId);
+                shareRest.deleteContact(follower.ContactId, deleteFollowerListener);
             }
         });
         return view;

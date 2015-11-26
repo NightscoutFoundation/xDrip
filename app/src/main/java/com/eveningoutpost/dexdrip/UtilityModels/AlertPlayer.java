@@ -29,7 +29,6 @@ public class AlertPlayer {
     private MediaPlayer mediaPlayer;
     int volumeBeforeAlert;
     int volumeForThisAlert;
-    Context context;
 
     final static int ALERT_PROFILE_HIGH = 1;
     final static int ALERT_PROFILE_ASCENDING = 2;
@@ -59,9 +58,9 @@ public class AlertPlayer {
         }
 
         stopAlert(ctx, true, false);
-        int alertIn = newAlert.minutes_between;
-        if(alertIn < 1) { alertIn = 1; }
-        ActiveBgAlert.Create(newAlert.uuid, false, new Date().getTime() + alertIn * 60000 );
+
+        long nextAlertTime = newAlert.getNextAlertTime(ctx);
+        ActiveBgAlert.Create(newAlert.uuid, false, nextAlertTime );
         Vibrate(ctx, newAlert, bgValue, newAlert.override_silent_mode, 0);
     }
 
@@ -128,12 +127,15 @@ public class AlertPlayer {
                 return;
             }
             Log.d(TAG,"ClockTick: Playing the alert again");
+            long nextAlertTime = alert.getNextAlertTime(ctx);
+            activeBgAlert.updateNextAlertAt(nextAlertTime);
+            
             Vibrate(ctx, alert, bgValue, alert.override_silent_mode, timeFromStartPlaying);
         }
 
     }
 
-    private void PlayFile(Context ctx, String FileName, float VolumeFrac) {
+    private void PlayFile(final Context ctx, String FileName, float VolumeFrac) {
         Log.i(TAG, "PlayFile: called FileName = " + FileName);
         if(mediaPlayer != null) {
             Log.i(TAG, "ERROR, PlayFile:going to leak a mediaplayer !!!");
@@ -151,13 +153,12 @@ public class AlertPlayer {
             volumeBeforeAlert = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
             volumeForThisAlert = (int)(maxVolume * VolumeFrac);
             manager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeForThisAlert, 0);
-            context = ctx;
 
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     Log.i(TAG, "PlayFile: onCompletion called (finished playing) ");
-                    AudioManager manager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+                    AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
                     int currentVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
                     if(volumeForThisAlert == currentVolume) {
                         // If the user has changed the volume, don't change it again.
@@ -208,6 +209,11 @@ public class AlertPlayer {
         Log.wtf(TAG, "getAlertProfile unknown value " + profile + " ALERT_PROFILE_ASCENDING");
         return ALERT_PROFILE_ASCENDING;
 
+    }
+    
+    public static boolean isAscendingMode(Context ctx){
+        Log.d("Adrian", "(getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING): " + (getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING));
+        return getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING;
     }
 
     private void Vibrate(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, int timeFromStartPlaying) {

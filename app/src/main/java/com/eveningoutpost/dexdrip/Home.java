@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -12,10 +13,16 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -62,13 +69,9 @@ public class Home extends ActivityWithMenu {
     private SharedPreferences prefs;
     private Viewport tempViewport = new Viewport();
     private Viewport holdViewport = new Viewport();
-    private boolean isBTWixel;
-    private boolean isDexbridgeWixel;
     private boolean isBTShare;
-    private boolean isWifiWixel;
     private BroadcastReceiver _broadcastReceiver;
     private BroadcastReceiver newDataReceiver;
-    private NavigationDrawerFragment mNavigationDrawerFragment;
     private LineChartView            chart;
     private PreviewLineChartView     previewChart;
     private TextView                 dexbridgeBattery;
@@ -98,7 +101,21 @@ public class Home extends ActivityWithMenu {
         if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             this.notificationText.setTextSize(40);
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Intent intent = new Intent();
+            String packageName = getPackageName();
+            Log.d(TAG, "Maybe ignoring battery optimization");
+            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            if (!pm.isIgnoringBatteryOptimizations(packageName) &&
+                    !prefs.getBoolean("requested_ignore_battery_optimizations", false)) {
+                Log.d(TAG, "Requesting ignore battery optimization");
 
+                prefs.edit().putBoolean("requested_ignore_battery_optimizations", true).apply();
+                intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                intent.setData(Uri.parse("package:" + packageName));
+                startActivity(intent);
+            }
+        }
     }
 
     @Override
@@ -157,7 +174,7 @@ public class Home extends ActivityWithMenu {
 
         //Transmitter Battery Level
         final Sensor sensor = Sensor.currentSensor();
-        if (sensor != null && sensor.latest_battery_level != 0 && sensor.latest_battery_level <= Constants.TRANSMITTER_BATTERY_LOW) {
+        if (sensor != null && sensor.latest_battery_level != 0 && sensor.latest_battery_level <= Constants.TRANSMITTER_BATTERY_LOW && ! prefs.getBoolean("disable_battery_warning", false)) {
             Drawable background = new Drawable() {
 
                 @Override
@@ -237,10 +254,10 @@ public class Home extends ActivityWithMenu {
         }
         notificationText.setText("");
         notificationText.setTextColor(Color.RED);
-        isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
-        isDexbridgeWixel = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
+        boolean isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
+        boolean isDexbridgeWixel = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
         isBTShare = CollectionServiceStarter.isBTShare(getApplicationContext());
-        isWifiWixel = CollectionServiceStarter.isWifiWixel(getApplicationContext());
+        boolean isWifiWixel = CollectionServiceStarter.isWifiWixel(getApplicationContext());
         if (isBTShare) {
             updateCurrentBgInfoForBtShare(notificationText);
         }
@@ -261,8 +278,8 @@ public class Home extends ActivityWithMenu {
         } else if (prefs.getLong("high_alerts_disabled_until", 0) > new Date().getTime()) {
             notificationText.append("\n HIGH ALERTS CURRENTLY DISABLED");
         } 
-        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
+        NavigationDrawerFragment navigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
+        navigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
     }
 
     private void updateCurrentBgInfoForWifiWixel(TextView notificationText) {
@@ -454,7 +471,17 @@ public class Home extends ActivityWithMenu {
             new AsyncTask<Void, Void, String>() {
                 @Override
                 protected String doInBackground(Void... params) {
-                    return DatabaseUtil.saveSql(getBaseContext());
+                    int permissionCheck = ContextCompat.checkSelfPermission(Home.this,
+                            android.Manifest.permission.READ_EXTERNAL_STORAGE);
+                    if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(Home.this,
+                                new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                                0);
+                        return null;
+                    } else {
+                        return DatabaseUtil.saveSql(getBaseContext());
+                    }
+
                 }
 
                 @Override

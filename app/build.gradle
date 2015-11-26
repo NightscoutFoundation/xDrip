@@ -76,13 +76,13 @@ def generateVersionName = { ->
 
 
 android {
-    compileSdkVersion 22
+    compileSdkVersion 23
     buildToolsVersion "22.0.1"
 
     defaultConfig {
         applicationId "com.eveningoutpost.dexdrip"
         minSdkVersion 17
-        targetSdkVersion 21
+        targetSdkVersion 23
         versionCode 2
         versionName generateVersionName()
     }
@@ -92,12 +92,13 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'com.squareup.okhttp:mockwebserver:2.2.0'
+    testCompile 'com.squareup.okhttp:mockwebserver:2.5.0'
     compile 'com.nispok:snackbar:2.10.8'
-    compile 'com.android.support:appcompat-v7:22.1.1'
-    compile 'com.squareup.okhttp:okhttp:2.2.0'
+    compile 'com.android.support:appcompat-v7:23.1.0'
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
     compile 'com.google.code.gson:gson:2.3'
-    compile 'com.squareup.retrofit:retrofit:1.9.0'
+    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
+    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
     compile 'com.getpebble:pebblekit:3.0.0'
     compile 'io.reactivex:rxjava:1.0.0'
     compile 'com.github.lecho:hellocharts-android:v1.5.5'
