@@ -99,7 +99,7 @@ public class Notifications extends IntentService {
         Log.d("Notifications", "Running Notifications Intent Service");
         ReadPerfs(getApplicationContext());
         notificationSetter(getApplicationContext());
-        ArmTimer();
+        ArmTimer(getApplicationContext());
         wl.release();
     }
 
@@ -129,7 +129,7 @@ public class Notifications extends IntentService {
  */
 
 
-    public void FileBasedNotifications(Context context) {
+    private void FileBasedNotifications(Context context) {
         ReadPerfs(context);
         Sensor sensor = Sensor.currentSensor();
 
@@ -285,22 +285,17 @@ public class Notifications extends IntentService {
         }
     }
 
-    private void ArmTimer() {
+    private void ArmTimer(Context ctx) {
         Log.d(TAG, "ArmTimer called");
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
         if (activeBgAlert != null) {
             AlertType alert = AlertType.get_alert(activeBgAlert.alert_uuid);
             if (alert != null) {
-                int time = alert.minutes_between;
-                if (time < 1) {
-                    time = 1;
-                }
                 Calendar calendar = Calendar.getInstance();
                 AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
                 // sleep longer if the alert is snoozed.
-                long wakeTime = activeBgAlert.is_snoozed ? activeBgAlert.next_alert_at :
-                        calendar.getTimeInMillis() + (time * 60000);
-                Log.d(TAG , "ArmTimer waking at: "+ wakeTime);
+                long wakeTime = activeBgAlert.next_alert_at;
+                Log.d(TAG , "ArmTimer waking at: "+ new Date(wakeTime) +" in " +  (wakeTime - calendar.getTimeInMillis())/60000d + " minutes");
                 if (wakeIntent != null)
                     alarm.cancel(wakeIntent);
                 wakeIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);

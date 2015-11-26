@@ -1,12 +1,12 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
@@ -437,6 +437,15 @@ public class AlertType extends Model {
         }
         return false;
     }
+    
+     public long getNextAlertTime(Context ctx) {
+         int time = minutes_between;
+         if (time < 1 || AlertPlayer.isAscendingMode(ctx)) {
+             time = 1;
+         }
+         Calendar calendar = Calendar.getInstance();
+         return calendar.getTimeInMillis() + (time * 60000);
+     }
 
     public boolean should_alarm(double bg) {
 //        Log.e(TAG, "should_alarm called active =  " + active );
