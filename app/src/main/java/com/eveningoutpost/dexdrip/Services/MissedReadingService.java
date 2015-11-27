@@ -22,6 +22,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 
 import java.util.Calendar;
+import java.util.Date;
 
 public class MissedReadingService extends IntentService {
     SharedPreferences prefs;
@@ -42,7 +43,9 @@ public class MissedReadingService extends IntentService {
         bg_missed_minutes =  Integer.parseInt(prefs.getString("bg_missed_minutes", "30"));
         otherAlertSnooze =  Integer.parseInt(prefs.getString("other_alerts_snooze", "20"));
 
-        if (bg_missed_alerts && BgReading.getTimeSinceLastReading() > (bg_missed_minutes * 1000 * 60)) {
+        if (bg_missed_alerts && BgReading.getTimeSinceLastReading() > (bg_missed_minutes * 1000 * 60)
+                &&
+            prefs.getLong("alerts_disabled_until", 0) < new Date().getTime()) {
             Notifications.bgMissedAlert(mContext);
             checkBackAfterSnoozeTime();
         } else {
