@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.utils;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -89,6 +90,8 @@ public class BgToSpeech {
     }
 
     private void speakInternal(final double value, long timestamp){
+
+        // SHIELDING
         if(timestamp < System.currentTimeMillis()-4*60*1000){
             // don't read old values.
             return;
@@ -98,6 +101,12 @@ public class BgToSpeech {
         if (! prefs.getBoolean("bg_to_speech", false)){
             return;
         }
+
+        if (prefs.getBoolean("bg_to_speech_suppress_activecall", true) && isOngoingCall()){
+            return;
+        }
+
+        // ACTUAL TTS:
 
         int result = tts.speak(calculateText(value, prefs), TextToSpeech.QUEUE_FLUSH, null);
             if(result == TextToSpeech.SUCCESS){
@@ -123,6 +132,10 @@ public class BgToSpeech {
                 df.setMaximumFractionDigits(1);
                 df.setMinimumFractionDigits(1);
                 text =  df.format(value* Constants.MGDL_TO_MMOLL);
+                if(tts.getLanguage().getLanguage().startsWith("en")){
+                    // in case the text has a comma in current locale but TTS defaults to English
+                    text.replace(",", " .");
+                }
             }
         } else if (value > 12) {
             text =  "low";
@@ -140,5 +153,12 @@ public class BgToSpeech {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         ctx.startActivity(intent);
     }
+
+
+    private boolean isOngoingCall(){
+        AudioManager manager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+        return (manager.getMode()==AudioManager.MODE_IN_CALL);
+    }
+
 
 }
