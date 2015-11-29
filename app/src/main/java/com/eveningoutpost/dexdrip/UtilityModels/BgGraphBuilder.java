@@ -421,17 +421,23 @@ public class BgGraphBuilder {
     public class OnValueSelectTooltipListener implements LineChartOnValueSelectListener{
 
         private final Activity activity;
+        private Toast tooltip;
+
 
         OnValueSelectTooltipListener(Activity activity){
             this.activity = activity;
         }
 
         @Override
-        public void onValueSelected(int i, int i1, PointValue pointValue) {
+        public synchronized void onValueSelected(int i, int i1, PointValue pointValue) {
             final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(activity);
             //Won't give the exact time of the reading but the time on the grid: close enough.
             Long time = ((long)pointValue.getX())*FUZZER;
-            Toast.makeText(activity, timeFormat.format(time)+ ": " + Math.round(pointValue.getY()*10)/ 10d , Toast.LENGTH_LONG).show();
+            if(tooltip!= null){
+                tooltip.cancel();
+            }
+            tooltip = Toast.makeText(activity, timeFormat.format(time)+ ": " + Math.round(pointValue.getY()*10)/ 10d , Toast.LENGTH_LONG);
+            tooltip.show();
         }
 
         @Override
