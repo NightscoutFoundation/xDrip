@@ -210,6 +210,7 @@ public class Home extends ActivityWithMenu {
         previewChart.setZoomType(ZoomType.HORIZONTAL);
 
         chart.setLineChartData(bgGraphBuilder.lineData());
+        chart.setOnValueTouchListener(bgGraphBuilder.getOnValueSelectTooltipListener(this));
         previewChart.setLineChartData(bgGraphBuilder.previewLineData());
         updateStuff = true;
 
