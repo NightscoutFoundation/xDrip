@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -9,7 +8,6 @@ import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 
@@ -414,29 +412,23 @@ public class BgGraphBuilder {
 
     }
 
-    public OnValueSelectTooltipListener getOnValueSelectTooltipListener(Activity activity){
-        return new OnValueSelectTooltipListener(activity);
+    public OnValueSelectTooltipListener getOnValueSelectTooltipListener(){
+        return new OnValueSelectTooltipListener();
     }
 
     public class OnValueSelectTooltipListener implements LineChartOnValueSelectListener{
 
-        private final Activity activity;
         private Toast tooltip;
-
-
-        OnValueSelectTooltipListener(Activity activity){
-            this.activity = activity;
-        }
 
         @Override
         public synchronized void onValueSelected(int i, int i1, PointValue pointValue) {
-            final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(activity);
+            final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(context);
             //Won't give the exact time of the reading but the time on the grid: close enough.
             Long time = ((long)pointValue.getX())*FUZZER;
             if(tooltip!= null){
                 tooltip.cancel();
             }
-            tooltip = Toast.makeText(activity, timeFormat.format(time)+ ": " + Math.round(pointValue.getY()*10)/ 10d , Toast.LENGTH_LONG);
+            tooltip = Toast.makeText(context, timeFormat.format(time)+ ": " + Math.round(pointValue.getY()*10)/ 10d , Toast.LENGTH_LONG);
             tooltip.show();
         }
 
