@@ -455,13 +455,6 @@ public class DexCollectionService extends Service {
             if (buffer[0] == 0x11 && buffer[1] == 0x00) {
                 //we have a data packet.  Check to see if the TXID is what we are expecting.
                 Log.i(TAG, "setSerialDataToTransmitterRawData: Received Data packet");
-                //make sure we are not processing a packet we already have
-                if (secondsNow - lastPacketTime < 60000) {
-                    Log.v(TAG, "setSerialDataToTransmitterRawData: Received Duplicate Packet.  Exiting.");
-                    return;
-                } else {
-                    lastPacketTime = secondsNow;
-                }
                 if (len >= 0x11) {
                     //DexSrc starts at Byte 12 of a data packet.
                     DexSrc = tmpBuffer.getInt(12);
@@ -482,6 +475,13 @@ public class DexCollectionService extends Service {
                     ackMessage.put(0, (byte) 0x02);
                     ackMessage.put(1, (byte) 0xF0);
                     sendBtMessage(ackMessage);
+                    //make sure we are not processing a packet we already have
+                    if (secondsNow - lastPacketTime < 60000) {
+                        Log.v(TAG, "setSerialDataToTransmitterRawData: Received Duplicate Packet.  Exiting.");
+                        return;
+                    } else {
+                        lastPacketTime = secondsNow;
+                    }
                     Log.v(TAG, "setSerialDataToTransmitterRawData: Creating TransmitterData at " + timestamp);
                     processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
                 }
