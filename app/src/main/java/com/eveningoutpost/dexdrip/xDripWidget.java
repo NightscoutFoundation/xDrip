@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.widget.RemoteViews;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -40,7 +40,7 @@ public class xDripWidget extends AppWidgetProvider {
     @Override
     public void onEnabled(Context context) {
         Log.d(TAG, "Widget enabled");
-        context.startService(new Intent(context, widgetUpdateService.class));
+        context.startService(new Intent(context, WidgetUpdateService.class));
     }
 
     @Override

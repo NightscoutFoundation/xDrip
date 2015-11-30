@@ -8,7 +8,7 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
@@ -60,7 +60,7 @@ public class PebbleSync extends Service {
             stopSelf();
             return START_NOT_STICKY;
         }
-        Log.w(TAG, "STARTING SERVICE");
+        Log.i(TAG, "STARTING SERVICE");
         sendData();
         return START_STICKY;
     }

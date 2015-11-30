@@ -2,19 +2,15 @@ package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom;
 
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
-import android.hardware.usb.UsbEndpoint;
-import android.hardware.usb.UsbInterface;
-import android.util.Log;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.CdcAcmSerialDriver;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialDriver;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.GenericXMLRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.MeterRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.PageHeader;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialPort;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialDriver;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import org.w3c.dom.Element;
 
@@ -24,7 +20,6 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 public class ReadData {
 
@@ -51,7 +46,7 @@ public class ReadData {
         try {
       mSerialDevice.getPorts().get(0).open(connection);
         } catch(IOException e) {
-            Log.w("FAILED WHILE", "trying to open");
+            Log.d("FAILED WHILE", "trying to open");
         }
 //        }
     }

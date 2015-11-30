@@ -22,6 +22,7 @@
     <string name="title_activity_calculated_data_table">CalculatedDataTable</string>
     <string name="title_activity_add_calibration">AddCalibration</string>
     <string name="title_activity_start_new_sensor">StartNewSensor</string>
+    <string name="title_activity_new_sensor_location">NewSensorLocation</string>
     <string name="title_activity_stop_sensor">StopSensor</string>
     <string name="title_activity_nav_drawer">NavDrawer</string>
     <string name="title_section1">Home</string>
@@ -41,8 +42,8 @@
     <string name="snooze_hint">Snooze alert for x minutes</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
-
-
+    <string name="no">No</string>
+    <string name="pref_sensor_location_dont_ask_again"> Don\'t ask me that again</string>
 
     <string-array name="menu_options">
         <item>Dex Drip</item>
@@ -67,7 +68,7 @@
     <string name="auto_configure_title">Auto configure</string>
     <string name="prefs_auto_config_summary">Auto configure using a barcode. See http://nightscout.github.io/pages/configure/ for more details</string>
     <string name="scan_share2_barcode">Scan Share Barcode</string>
-    <string name="pref_share2_scan_barcode_summary">Scan the barcode on the share receiver</string>
+    <string name="pref_share2_scan_barcode_summary">Or scan the barcode on the share receiver</string>
 
     <!-- MongoDB Settings -->
     <string name="pref_title_mongodb">MongoDB</string>

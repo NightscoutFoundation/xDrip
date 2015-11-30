@@ -8,7 +8,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -18,6 +17,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.eveningoutpost.dexdrip.Models.AlertType;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
@@ -72,7 +72,7 @@ public class AlertList extends ActivityWithMenu {
 
         List<AlertType> alerts = AlertType.getAll(above);
         for (AlertType alert : alerts) {
-            Log.e(TAG, alert.toString());
+            Log.d(TAG, alert.toString());
             feedList.add(createAlertMap(alert));
         }
         return feedList;
@@ -89,7 +89,7 @@ public class AlertList extends ActivityWithMenu {
                     ListView lv = (ListView) parent;
                     @SuppressWarnings("unchecked")
                     HashMap<String, String> item = (HashMap<String, String>) lv.getItemAtPosition(position);
-                    Log.e(TAG, "Item clicked " + lv.getItemAtPosition(position) + item.get("uuid"));
+                    Log.d(TAG, "Item clicked " + lv.getItemAtPosition(position) + item.get("uuid"));
 
                     //The XML for each item in the list (should you use a custom XML) must have android:longClickable="true"
                     // as well (or you can use the convenience method lv.setLongClickable(true);). This way you can have a list
@@ -161,10 +161,10 @@ public class AlertList extends ActivityWithMenu {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e(TAG, "onActivityResult called ");
+        Log.d(TAG, "onActivityResult called ");
         if (requestCode == ADD_ALERT || requestCode == EDIT_ALERT) {
             if(resultCode == RESULT_OK) {
-                Log.e(TAG, "onActivityResult called invalidating...");
+                Log.d(TAG, "onActivityResult called invalidating...");
                 FillLists();
             }
             if (resultCode == RESULT_CANCELED) {

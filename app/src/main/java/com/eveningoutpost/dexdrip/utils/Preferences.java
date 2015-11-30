@@ -1,6 +1,8 @@
 package com.eveningoutpost.dexdrip.utils;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -14,17 +16,17 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceGroup;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.text.InputFilter;
 import android.text.TextUtils;
-import android.util.Log;
+import android.widget.Toast;
+
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.PebbleSync;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -127,9 +129,9 @@ public class Preferences extends PreferenceActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        preferenceFragment = new AllPrefsFragment();
         getFragmentManager().beginTransaction().replace(android.R.id.content,
-                new AllPrefsFragment()).commit();
+                preferenceFragment).commit();
     }
 
     @Override
@@ -228,6 +230,7 @@ public class Preferences extends PreferenceActivity {
                         .getString(preference.getKey(), ""));
     }
 
+
     public static class AllPrefsFragment extends PreferenceFragment {
        @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -244,6 +247,7 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("calibration_snooze"));
             bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("bg_unclear_readings_minutes"));
             bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("bg_missed_minutes"));
+            bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("disable_alerts_stale_data_minutes"));
             bindPreferenceSummaryToValue(findPreference("falling_bg_val"));
             bindPreferenceSummaryToValue(findPreference("rising_bg_val"));
             bindPreferenceSummaryToValue(findPreference("other_alerts_sound"));
@@ -261,13 +265,16 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("cloud_storage_api_base"));
 
             addPreferencesFromResource(R.xml.pref_advanced_settings);
+            addPreferencesFromResource(R.xml.pref_community_help);
 
+            bindTTSListener();
             final Preference collectionMethod = findPreference("dex_collection_method");
             final Preference runInForeground = findPreference("run_service_in_foreground");
             final Preference wifiRecievers = findPreference("wifi_recievers_addresses");
             final Preference predictiveBG = findPreference("predictive_bg");
             final Preference interpretRaw = findPreference("interpret_raw");
             final Preference shareKey = findPreference("share_key");
+            final Preference scanShare = findPreference("scan_share2_barcode");
             final EditTextPreference transmitterId = (EditTextPreference) findPreference("dex_txid");
             final Preference pebbleSync = findPreference("broadcast_to_pebble");
             final PreferenceCategory collectionCategory = (PreferenceCategory) findPreference("collection_category");
@@ -275,19 +282,32 @@ public class Preferences extends PreferenceActivity {
             final PreferenceScreen calibrationAlertsScreen = (PreferenceScreen) findPreference("calibration_alerts_screen");
             final PreferenceCategory alertsCategory = (PreferenceCategory) findPreference("alerts_category");
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            final Preference disableAlertsStaleDataMinutes = findPreference("disable_alerts_stale_data_minutes");
+            disableAlertsStaleDataMinutes.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    if (!isNumeric(newValue.toString())) {
+                        return false;
+                    }
+                    if ((Integer.parseInt(newValue.toString())) < 10 ) {
+                        Toast.makeText(preference.getContext(),
+                                "Value must be at least 10 minutes", Toast.LENGTH_LONG).show();
+                        return false;
+                    }
+                    preference.setSummary(newValue.toString());
+                    return true;
+                }
+            });
             Log.d(TAG, prefs.getString("dex_collection_method", "BluetoothWixel"));
             if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomShare") != 0) {
                 collectionCategory.removePreference(shareKey);
+                collectionCategory.removePreference(scanShare);
                 otherCategory.removePreference(interpretRaw);
                 alertsCategory.addPreference(calibrationAlertsScreen);
             } else {
                 otherCategory.removePreference(predictiveBG);
                 alertsCategory.removePreference(calibrationAlertsScreen);
                 prefs.edit().putBoolean("calibration_notifications", false).apply();
-            }
-
-            if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("BluetoothWixel") != 0 && prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomShare") != 0 && prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexbridgeWixel") != 0) {
-                collectionCategory.removePreference(runInForeground);
             }
 
             if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("WifiWixel") != 0) {
@@ -319,11 +339,13 @@ public class Preferences extends PreferenceActivity {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     if(((String) newValue).compareTo("DexcomShare") != 0) { // NOT USING SHARE
                         collectionCategory.removePreference(shareKey);
+                        collectionCategory.removePreference(scanShare);
                         otherCategory.removePreference(interpretRaw);
                         otherCategory.addPreference(predictiveBG);
                         alertsCategory.addPreference(calibrationAlertsScreen);
                     } else {
                         collectionCategory.addPreference(shareKey);
+                        collectionCategory.addPreference(scanShare);
                         otherCategory.addPreference(interpretRaw);
                         otherCategory.removePreference(predictiveBG);
                         alertsCategory.removePreference(calibrationAlertsScreen);
@@ -405,6 +427,30 @@ public class Preferences extends PreferenceActivity {
             });
         }
 
+        private void bindTTSListener(){
+            findPreference("bg_to_speech").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    if ((Boolean)newValue) {
+                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                        alertDialog.setTitle("Install Text-To-Speech Data?");
+                        alertDialog.setMessage("Install Text-To-Speech Data?\n(After installation of languages you might have to press \"Restart Collector\" in System Status.)");
+                        alertDialog.setCancelable(true);
+                        alertDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                BgToSpeech.installTTSData(getActivity());
+                            }
+                        });
+                        alertDialog.setNegativeButton(R.string.no, null);
+                        AlertDialog alert = alertDialog.create();
+                        alert.show();
+                    }
+                    return true;
+                }
+            });
+        }
+
     }
 
     public static boolean isNumeric(String str) {
@@ -416,3 +462,4 @@ public class Preferences extends PreferenceActivity {
         return true;
     }
 }
+

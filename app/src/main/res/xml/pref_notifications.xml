@@ -38,6 +38,20 @@
                 android:title="Shortcut to Bg Level Alerts"
                 android:summary="Create a shortcut from main navigation to bg level screen"
                 android:defaultValue="false" />
+
+                <CheckBoxPreference
+                    android:key="disable_alerts_stale_data"
+                    android:title="Suppress Alerts if missed readings"
+                    android:summary="Suppress snoozed and active alerts after predefined period of missed readings"
+                    android:defaultValue="false" />
+                <EditTextPreference
+                    android:dependency="disable_alerts_stale_data"
+                    android:key="disable_alerts_stale_data_minutes"
+                    android:title="Suppress snoozed and active alerts after .. minutes (minimum 10)"
+                    android:inputType="number"
+                    android:summary="Suppress snoozed and active alerts after .. minutes (minimum 10)"
+                    android:defaultValue="15" />
+
         </PreferenceScreen>
 
 
@@ -103,7 +117,7 @@
                     android:summary="Alert if no data receieved in x minutes"
                     android:defaultValue="30" />
             </PreferenceCategory>
-
+            
             <PreferenceCategory
                 android:title="Falling/Rising BG">
                 <CheckBoxPreference

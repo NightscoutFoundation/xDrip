@@ -22,7 +22,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.ReadDataShare;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
@@ -36,6 +36,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.DexShareAttributes;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
+import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
@@ -98,6 +99,12 @@ public class DexShareCollectionService extends Service {
     public boolean shouldDisconnect = false;
     public boolean share2 = false;
     public Service service;
+    private BgToSpeech bgToSpeech;
+
+    private long lastHeartbeat = 0;
+    private int heartbeatCount = 0;
+
+    private PendingIntent pendingIntent;
 
     @Override
     public void onCreate() {
@@ -110,14 +117,15 @@ public class DexShareCollectionService extends Service {
         registerReceiver(mPairReceiver, bondintent);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         listenForChangeInSettings();
+        bgToSpeech = BgToSpeech.setupTTS(getApplicationContext()); //keep reference to not being garbage collected
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(getApplicationContext().POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                "DexShareCollectionStart");
+        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "DexShareCollectionStart");
         wakeLock.acquire(40000);
+        Log.d(TAG, "onStartCommand");
         try {
 
             if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
@@ -134,7 +142,7 @@ public class DexShareCollectionService extends Service {
                 setRetryTimer();
                 return START_NOT_STICKY;
             }
-            Log.w(TAG, "STARTING SERVICE");
+            Log.i(TAG, "STARTING SERVICE");
             attemptConnection();
         } finally {
             if(wakeLock != null && wakeLock.isHeld()) wakeLock.release();
@@ -149,20 +157,21 @@ public class DexShareCollectionService extends Service {
         setRetryTimer();
         foregroundServiceStarter.stop();
         unregisterReceiver(mPairReceiver);
-        Log.w(TAG, "SERVICE STOPPED");
+        BgToSpeech.tearDownTTS();
+        Log.i(TAG, "SERVICE STOPPED");
     }
 
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             if(key.compareTo("run_service_in_foreground") == 0) {
-                Log.e("FOREGROUND", "run_service_in_foreground changed!");
+                Log.d("FOREGROUND", "run_service_in_foreground changed!");
                 if (prefs.getBoolean("run_service_in_foreground", false)) {
                     foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), service);
                     foregroundServiceStarter.start();
-                    Log.w(TAG, "Moving to foreground");
+                    Log.i(TAG, "Moving to foreground");
                 } else {
                     service.stopForeground(true);
-                    Log.w(TAG, "Removing from foreground");
+                    Log.i(TAG, "Removing from foreground");
                 }
             }
         }
@@ -184,11 +193,16 @@ public class DexShareCollectionService extends Service {
             Log.d(TAG, "Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                alarm.setExact(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexShareCollectionService.class), 0));
-            } else {
-                alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexShareCollectionService.class), 0));
-            }
+            if (pendingIntent != null)
+                alarm.cancel(pendingIntent);
+            long wakeTime = calendar.getTimeInMillis() + retry_in;
+            pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            } else
+                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
         }
     }
 
@@ -198,7 +212,16 @@ public class DexShareCollectionService extends Service {
             Log.d(TAG, "Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, DexShareCollectionService.class), 0));
+            if (pendingIntent != null)
+                alarm.cancel(pendingIntent);
+            long wakeTime = calendar.getTimeInMillis() + retry_in;
+            pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            } else
+                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
         } else {
             stopSelf();
         }
@@ -220,7 +243,7 @@ public class DexShareCollectionService extends Service {
                     }
                 }
             }
-            Log.w(TAG, "Connection state: " + mConnectionState);
+            Log.i(TAG, "Connection state: " + mConnectionState);
             if (mConnectionState == STATE_DISCONNECTED || mConnectionState == STATE_DISCONNECTING) {
                 ActiveBluetoothDevice btDevice = ActiveBluetoothDevice.first();
                 if (btDevice != null) {
@@ -241,7 +264,7 @@ public class DexShareCollectionService extends Service {
                     return;
                 }
             } else if (mConnectionState == STATE_CONNECTED) {
-                Log.w(TAG, "Looks like we are already connected, going to read!");
+                Log.i(TAG, "Looks like we are already connected, going to read!");
                 attemptRead();
                 return;
             } else {
@@ -254,25 +277,38 @@ public class DexShareCollectionService extends Service {
         }
     }
 
+    public void requestHighPriority() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mBluetoothGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
+        }
+    }
+
+    public void requestLowPriority() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mBluetoothGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_LOW_POWER);
+        }
+    }
+
     public void attemptRead() {
         PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
         final PowerManager.WakeLock wakeLock1 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "ReadingShareData");
         wakeLock1.acquire(60000);
+        requestHighPriority();
         Log.d(TAG, "Attempting to read data");
         final Action1<Long> systemTimeListener = new Action1<Long>() {
             @Override
             public void call(Long s) {
                 if (s != null) {
                     Log.d(TAG, "Made the full round trip, got " + s + " as the system time");
-                    final long addativeSystemTimeOffset = new Date().getTime() - s;
+                    final long additiveSystemTimeOffset = new Date().getTime() - s;
 
                     final Action1<Long> dislpayTimeListener = new Action1<Long>() {
                         @Override
                         public void call(Long s) {
                             if (s != null) {
                                 Log.d(TAG, "Made the full round trip, got " + s + " as the display time offset");
-                                final long addativeDisplayTimeOffset = addativeSystemTimeOffset - (s * 1000);
+                                final long addativeDisplayTimeOffset = additiveSystemTimeOffset - (s * 1000);
 
                                 Log.d(TAG, "Making " + addativeDisplayTimeOffset + " the the total time offset");
 
@@ -281,10 +317,11 @@ public class DexShareCollectionService extends Service {
                                     public void call(EGVRecord[] egvRecords) {
                                         if (egvRecords != null) {
                                             Log.d(TAG, "Made the full round trip, got " + egvRecords.length + " EVG Records");
-                                            BgReading.create(egvRecords, addativeSystemTimeOffset, getApplicationContext());
+                                            BgReading.create(egvRecords, additiveSystemTimeOffset, getApplicationContext());
                                             {
                                                 Log.d(TAG, "Releasing wl in egv");
                                                 if(wakeLock1 != null && wakeLock1.isHeld()) wakeLock1.release();
+                                                requestLowPriority();
                                                 Log.d(TAG, "released");
                                             }
                                             if (shouldDisconnect) {
@@ -301,7 +338,7 @@ public class DexShareCollectionService extends Service {
                                     public void call(SensorRecord[] sensorRecords) {
                                         if (sensorRecords != null) {
                                             Log.d(TAG, "Made the full round trip, got " + sensorRecords.length + " Sensor Records");
-                                            BgReading.create(sensorRecords, addativeSystemTimeOffset, getApplicationContext());
+                                            BgReading.create(sensorRecords, additiveSystemTimeOffset, getApplicationContext());
                                             readData.getRecentEGVs(evgRecordListener);
                                         }
                                     }
@@ -332,17 +369,18 @@ public class DexShareCollectionService extends Service {
     }
 
     public boolean connect(final String address) {
-        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(getApplicationContext().POWER_SERVICE);
+        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "DexShareCollectionStart");
-        wakeLock.acquire(30000);Log.w(TAG, "going to connect to device at address" + address);
+        wakeLock.acquire(30000);
+        Log.i(TAG, "going to connect to device at address" + address);
         if (mBluetoothAdapter == null || address == null) {
             Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
             setRetryTimer();
             return false;
         }
         if (mBluetoothGatt != null) {
-            Log.w(TAG, "BGatt isnt null, Closing.");
+            Log.i(TAG, "BGatt isnt null, Closing.");
             mBluetoothGatt.close();
             mBluetoothGatt = null;
         }
@@ -362,14 +400,14 @@ public class DexShareCollectionService extends Service {
             setRetryTimer();
             return false;
         }
-        Log.w(TAG, "Trying to create a new connection.");
+        Log.i(TAG, "Trying to create a new connection.");
         mBluetoothGatt = device.connectGatt(getApplicationContext(), false, mGattCallback);
         mConnectionState = STATE_CONNECTING;
         return true;
     }
 
     public void authenticateConnection() {
-        Log.w(TAG, "Trying to auth");
+        Log.i(TAG, "Trying to auth");
         String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase() + "000000";
         if(receiverSn.compareTo("SM00000000000000") == 0) { // They havnt set their serial number, dont bond!
             setRetryTimer();
@@ -421,7 +459,7 @@ public class DexShareCollectionService extends Service {
     }
 
     public void setListeners(int listener_number) {
-        Log.w(TAG, "Setting Listener: #" + listener_number);
+        Log.i(TAG, "Setting Listener: #" + listener_number);
         if (listener_number == 1) {
             step = 2;
             setCharacteristicIndication(mReceiveDataCharacteristic);
@@ -440,7 +478,7 @@ public class DexShareCollectionService extends Service {
         setRetryTimer();
         mBluetoothGatt = null;
         mConnectionState = STATE_DISCONNECTED;
-        Log.w(TAG, "bt Disconnected");
+        Log.i(TAG, "bt Disconnected");
     }
 
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic) {
@@ -448,10 +486,10 @@ public class DexShareCollectionService extends Service {
     }
 
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic, boolean enabled) {
-        Log.w(TAG, "Characteristic setting notification");
+        Log.i(TAG, "Characteristic setting notification");
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
         BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
-        Log.w(TAG, "Descriptor found: " + descriptor.getUuid());
+        Log.i(TAG, "Descriptor found: " + descriptor.getUuid());
         descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
         mBluetoothGatt.writeDescriptor(descriptor);
     }
@@ -461,10 +499,10 @@ public class DexShareCollectionService extends Service {
     }
 
     public void setCharacteristicIndication(BluetoothGattCharacteristic characteristic, boolean enabled) {
-        Log.w(TAG, "Characteristic setting indication");
+        Log.i(TAG, "Characteristic setting indication");
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
         BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
-        Log.w(TAG, "Descriptor found: " + descriptor.getUuid());
+        Log.i(TAG, "Descriptor found: " + descriptor.getUuid());
         descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
         mBluetoothGatt.writeDescriptor(descriptor);
     }
@@ -522,12 +560,7 @@ public class DexShareCollectionService extends Service {
             if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
                 final int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
                 if (state == BluetoothDevice.BOND_BONDED) {
-                    Log.d(TAG, "CALLBACK RECIEVED Bonded");
                     authenticateConnection();
-                } else if (state == BluetoothDevice.BOND_NONE) {
-                    Log.d(TAG, "CALLBACK RECIEVED: Not Bonded");
-                } else if (state == BluetoothDevice.BOND_BONDING) {
-                    Log.d(TAG, "CALLBACK RECIEVED: Trying to bond");
                 }
             }
         }
@@ -536,19 +569,18 @@ public class DexShareCollectionService extends Service {
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            Log.w(TAG, "Gatt state change status: " + status + " new state: " + newState);
-            writeStatusConnectionFailures(status);
+            Log.i(TAG, "Gatt state change status: " + status + " new state: " + newState);
             if (status == 133) {
-                Log.e(TAG, "Got the status 133 bug, GROSS!!");
+                Log.e(TAG, "Got the status 133 bug, bad news! Might require devices to forget each other");
             }
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mBluetoothGatt = gatt;
                 device = mBluetoothGatt.getDevice();
                 mConnectionState = STATE_CONNECTED;
                 ActiveBluetoothDevice.connected();
-                Log.w(TAG, "Connected to GATT server.");
+                Log.i(TAG, "Connected to GATT server.");
 
-                Log.w(TAG, "discovering services");
+                Log.i(TAG, "discovering services");
                 currentGattTask = GATT_SETUP;
                 if (!mBluetoothGatt.discoverServices()) {
                     Log.w(TAG, "discovering failed");
@@ -566,9 +598,9 @@ public class DexShareCollectionService extends Service {
                 } else {
                     setRetryTimer();
                 }
-                Log.w(TAG, "Disconnected from GATT server.");
+                Log.d(TAG, "Disconnected from GATT server.");
             } else {
-                Log.w(TAG, "Gatt callback... strange state.");
+                Log.d(TAG, "Gatt callback... strange state.");
             }
         }
 
@@ -615,6 +647,18 @@ public class DexShareCollectionService extends Service {
                 if (value != null) {
                     Observable.just(characteristic.getValue()).subscribe(mDataResponseListener);
                 }
+            } else if (charUuid.compareTo(mHeartBeatCharacteristic.getUuid()) == 0) {
+                long heartbeat = System.currentTimeMillis();
+                Log.d(TAG, "Heartbeat delta: " + (heartbeat - lastHeartbeat));
+                if ((heartbeat-lastHeartbeat < 59000) || heartbeatCount > 5) {
+                    Log.d(TAG, "Early heartbeat.  Fetching data.");
+                    AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+                    alarm.cancel(pendingIntent);
+                    heartbeatCount = 0;
+                    attemptConnection();
+                }
+                heartbeatCount += 1;
+                lastHeartbeat = heartbeat;
             }
         }
 
@@ -639,7 +683,7 @@ public class DexShareCollectionService extends Service {
                     state_authInProgress = true;
                     bondDevice();
                 } else {
-                    Log.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug?");
+                    Log.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug? Have the dexcom forget whatever device it was previously paired to");
                 }
             } else {
                 Log.e(TAG, "Unknown error writing descriptor");
@@ -661,7 +705,7 @@ public class DexShareCollectionService extends Service {
                     state_authInProgress = true;
                     bondDevice();
                 } else {
-                    Log.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug?");
+                    Log.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug? Have the dexcom forget whatever device it was previously paired to");
                 }
             } else {
                 Log.e(TAG, "Unknown error writing Characteristic");
@@ -674,18 +718,5 @@ public class DexShareCollectionService extends Service {
         registerReceiver(mPairReceiver, bondintent);
         if(!share2){ device.setPin("000000".getBytes()); }
         device.createBond();
-    }
-
-    private void writeStatusConnectionFailures(int status) {
-        if(status != 0) {
-            Log.e(TAG, "ERRR: GATT_WRITE_NOT_PERMITTED " + (status & BluetoothGatt.GATT_WRITE_NOT_PERMITTED));
-            Log.e(TAG, "ERRR: GATT_INSUFFICIENT_AUTHENTICATION " + (status & BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION));
-            Log.e(TAG, "ERRR: GATT_REQUEST_NOT_SUPPORTED " + (status & BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED));
-            Log.e(TAG, "ERRR: GATT_INSUFFICIENT_ENCRYPTION " + (status & BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION));
-            Log.e(TAG, "ERRR: GATT_INVALID_OFFSET " + (status & BluetoothGatt.GATT_INVALID_OFFSET));
-            Log.e(TAG, "ERRR: GATT_FAILURE " + (status & BluetoothGatt.GATT_FAILURE));
-            Log.e(TAG, "ERRR: GATT_INVALID_ATTRIBUTE_LENGTH " + (status & BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH));
-            Log.e(TAG, "ERRR: GATT_READ_NOT_PERMITTED" + (status & BluetoothGatt.GATT_READ_NOT_PERMITTED));
-        }
     }
 }

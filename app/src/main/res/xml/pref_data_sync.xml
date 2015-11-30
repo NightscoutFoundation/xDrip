@@ -99,6 +99,15 @@
                 android:key="share_key"
                 android:shouldDisableView="true"
                 android:defaultValue="SM00000000"/>
+            <Preference
+                android:dependency="share_upload"
+                android:title="Manage Followers"
+                android:summary="Manage your existing followers and invite new ones.">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetPackage="com.eveningoutpost.dexdrip"
+                    android:targetClass="com.eveningoutpost.dexdrip.FollowerManagementActivity"/>
+            </Preference>
         </PreferenceScreen>
 
     </PreferenceCategory>

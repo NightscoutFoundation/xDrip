@@ -1,14 +1,13 @@
 package com.eveningoutpost.dexdrip.Models;
 
-import android.util.Log;
 import android.provider.BaseColumns;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
-import com.activeandroid.annotation.Column;
 import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
-import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -107,7 +106,7 @@ public class ActiveBgAlert extends Model {
 
         AlertType alert = AlertType.get_alert(aba.alert_uuid);
         if(alert == null) {
-            Log.e(TAG, "alertTypegetOnly did not find the active alert as part of existing alerts. returning null");
+            Log.d(TAG, "alertTypegetOnly did not find the active alert as part of existing alerts. returning null");
             // removing the alert to be in a better state.
             ClearData();
             return null;
@@ -119,7 +118,7 @@ public class ActiveBgAlert extends Model {
     }
 
     public static void Create(String alert_uuid, boolean is_snoozed, Long next_alert_at) {
-        Log.e(TAG, "ActiveBgAlert Create called");
+        Log.d(TAG, "ActiveBgAlert Create called");
         ActiveBgAlert aba = getOnly();
         if (aba == null) {
             aba = new ActiveBgAlert();
@@ -133,7 +132,7 @@ public class ActiveBgAlert extends Model {
     }
 
     public static void ClearData() {
-        Log.e(TAG, "ActiveBgAlert ClearData called");
+        Log.d(TAG, "ActiveBgAlert ClearData called");
         ActiveBgAlert aba = getOnly();
         if (aba != null) {
             aba.delete();
@@ -141,11 +140,11 @@ public class ActiveBgAlert extends Model {
     }
 
     public static void ClearIfSnoozeFinished() {
-        Log.e(TAG, "ActiveBgAlert ClearIfSnoozeFinished called");
+        Log.d(TAG, "ActiveBgAlert ClearIfSnoozeFinished called");
         ActiveBgAlert aba = getOnly();
         if (aba != null) {
             if(new Date().getTime() > aba.next_alert_at) {
-                Log.e(TAG, "ActiveBgAlert ClearIfSnoozeFinished deleting allert");
+                Log.d(TAG, "ActiveBgAlert ClearIfSnoozeFinished deleting allert");
                 aba.delete();
             }
         }
@@ -162,6 +161,11 @@ public class ActiveBgAlert extends Model {
         }
         Long timeSeconds =  (new Date().getTime() - alert_started_at) / 1000;
         return (int)Math.round(timeSeconds / 60.0);
+    }
+
+    public void updateNextAlertAt(long nextAlertTime){
+        next_alert_at = nextAlertTime;
+        save();
     }
 }
 

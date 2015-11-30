@@ -12,12 +12,15 @@ import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.text.InputFilter;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,6 +35,7 @@ import android.widget.Toast;
 
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.AndroidBarcode;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
@@ -41,7 +45,7 @@ import com.google.zxing.integration.android.IntentResult;
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 
 @TargetApi(android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothScan extends ListActivityWithMenu {
@@ -72,11 +76,23 @@ public class BluetoothScan extends ListActivityWithMenu {
             finish();
             return;
         }
-        if(!bluetooth_manager.getAdapter().isEnabled()) {
+        if (!bluetooth_manager.getAdapter().isEnabled()) {
             Toast.makeText(this, "Bluetooth is turned off on this device currently", Toast.LENGTH_LONG).show();
         } else {
-            if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2){
+            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
                 Toast.makeText(this, "The android version of this device is not compatible with Bluetooth Low Energy", Toast.LENGTH_LONG).show();
+            }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                        0);
+
+
             }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -116,22 +132,26 @@ public class BluetoothScan extends ListActivityWithMenu {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_scan:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    scanLeDeviceLollipop(true);
-                } else
-                    scanLeDevice(true);
                 BluetoothManager bluetooth_manager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
                 Toast.makeText(this, "Scanning", Toast.LENGTH_LONG).show();
                 if(bluetooth_manager == null) {
                     Toast.makeText(this, "This device does not seem to support bluetooth", Toast.LENGTH_LONG).show();
+                    return true;
                 } else {
                     if(!bluetooth_manager.getAdapter().isEnabled()) {
                         Toast.makeText(this, "Bluetooth is turned off on this device currently", Toast.LENGTH_LONG).show();
+                        return true;
                     } else {
                         if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2){
                             Toast.makeText(this, "The android version of this device is not compatible with Bluetooth Low Energy", Toast.LENGTH_LONG).show();
+                            return true;
                         }
                     }
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    scanLeDeviceLollipop(true);
+                } else {
+                    scanLeDevice(true);
                 }
                 return true;
 //            case R.id.menu_stop:
@@ -161,7 +181,9 @@ public class BluetoothScan extends ListActivityWithMenu {
             bluetooth_adapter.startLeScan(mLeScanCallback);
         } else {
             is_scanning = false;
-            bluetooth_adapter.stopLeScan(mLeScanCallback);
+            if(bluetooth_adapter != null && bluetooth_adapter.isEnabled()) {
+                bluetooth_adapter.stopLeScan(mLeScanCallback);
+            }
         }
         invalidateOptionsMenu();
     }
@@ -208,25 +230,36 @@ public class BluetoothScan extends ListActivityWithMenu {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 lollipopScanner = bluetooth_adapter.getBluetoothLeScanner();
             }
-
-            Log.d(TAG, "Starting scanner 21");
-            // Stops scanning after a pre-defined scan period.
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    is_scanning = false;
-                    lollipopScanner.stopScan(mScanCallback);
-                    invalidateOptionsMenu();
+            if(lollipopScanner != null) {
+                Log.d(TAG, "Starting scanner 21");
+                // Stops scanning after a pre-defined scan period.
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        is_scanning = false;
+                        if(bluetooth_adapter != null && bluetooth_adapter.isEnabled()) {
+                            lollipopScanner.stopScan(mScanCallback);
+                        }
+                        invalidateOptionsMenu();
+                    }
+                }, SCAN_PERIOD);
+                ScanSettings settings = new ScanSettings.Builder()
+                        .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                        .build();
+                is_scanning = true;
+                lollipopScanner.startScan(null, settings, mScanCallback);
+            } else {
+                try {
+                    scanLeDevice(true);
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to scan for ble device", e);
                 }
-            }, SCAN_PERIOD);
-            ScanSettings settings = new ScanSettings.Builder()
-                    .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                    .build();
-            is_scanning = true;
-            lollipopScanner.startScan(null, settings, mScanCallback);
+            }
         } else {
             is_scanning = false;
-            lollipopScanner.stopScan(mScanCallback);
+            if(bluetooth_adapter != null && bluetooth_adapter.isEnabled()) {
+                lollipopScanner.stopScan(mScanCallback);
+            }
         }
         invalidateOptionsMenu();
     }
@@ -363,8 +396,8 @@ public class BluetoothScan extends ListActivityWithMenu {
             final String deviceName = device.getName();
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             if(prefs.getString("last_connected_device_address", "").compareTo(device.getAddress()) == 0) {
-                viewHolder.deviceName.setTextColor(Utils.COLOR_BLUE);
-                viewHolder.deviceAddress.setTextColor(Utils.COLOR_BLUE);
+                viewHolder.deviceName.setTextColor(ChartUtils.COLOR_BLUE);
+                viewHolder.deviceAddress.setTextColor(ChartUtils.COLOR_BLUE);
             }
             viewHolder.deviceName.setText(deviceName);
             viewHolder.deviceAddress.setText(device.getAddress());
@@ -436,8 +469,10 @@ public class BluetoothScan extends ListActivityWithMenu {
         dialog.setContentView(R.layout.dialog_single_text_field);
         Button saveButton = (Button) dialog.findViewById(R.id.saveButton);
         Button cancelButton = (Button) dialog.findViewById(R.id.cancelButton);
+        dialog.findViewById(R.id.scannerButton).setVisibility(View.GONE);
         final EditText serialNumberView = (EditText) dialog.findViewById(R.id.editTextField);
         serialNumberView.setHint("00000");
+        serialNumberView.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
         ((TextView) dialog.findViewById(R.id.instructionsTextField)).setText("Enter Your Dexcom Transmitter ID");
 
         saveButton.setOnClickListener(new View.OnClickListener() {

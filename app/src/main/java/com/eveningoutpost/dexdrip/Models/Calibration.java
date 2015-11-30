@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
@@ -238,7 +238,7 @@ public class Calibration extends Model {
     public static void create(CalRecord[] calRecords, Context context) { create(calRecords, context, false, 0); }
     public static void create(CalRecord[] calRecords, Context context, boolean override, long addativeOffset) {
         //TODO: Change calibration.last and other queries to order calibrations by timestamp rather than ID
-        Log.w("CALIBRATION-CHECK-IN: ", "Creating Calibration Record");
+        Log.i("CALIBRATION-CHECK-IN: ", "Creating Calibration Record");
         Sensor sensor = Sensor.currentSensor();
         CalRecord firstCalRecord = calRecords[0];
         CalRecord secondCalRecord = calRecords[0];
@@ -256,7 +256,7 @@ public class Calibration extends Model {
                     calibration.bg = calSubrecord.getCalBGL();
                     calibration.timestamp = calSubrecord.getDateEntered().getTime() + addativeOffset;
                     if (calibration.timestamp > new Date().getTime()) {
-                        Log.e(TAG, "ERROR - Calibration timestamp is from the future, wont save!");
+                        Log.d(TAG, "ERROR - Calibration timestamp is from the future, wont save!");
                         return;
                     }
                     calibration.raw_value = calSubrecord.getCalRaw() / 1000;
@@ -375,7 +375,7 @@ public class Calibration extends Model {
                 Calibration.requestCalibrationIfRangeTooNarrow();
             }
         } else {
-            Log.w("CALIBRATION", "No sensor, cant save!");
+            Log.d("CALIBRATION", "No sensor, cant save!");
         }
         return Calibration.last();
     }
@@ -446,7 +446,7 @@ public class Calibration extends Model {
                 calibration.save();
             }
         } else {
-            Log.w(TAG, "NO Current active sensor found!!");
+            Log.d(TAG, "NO Current active sensor found!!");
         }
     }
 
@@ -494,7 +494,7 @@ public class Calibration extends Model {
         double lastTimeStarted =   Calibration.last().sensor_age_at_time_of_estimation;
         double time_percentage = Math.min(((sensor_age_at_time_of_estimation - firstTimeStarted) / (lastTimeStarted - firstTimeStarted)) / (.85), 1);
         time_percentage = (time_percentage + .01);
-        Log.w(TAG, "CALIBRATIONS TIME PERCENTAGE WEIGHT: " + time_percentage);
+        Log.i(TAG, "CALIBRATIONS TIME PERCENTAGE WEIGHT: " + time_percentage);
         return Math.max((((((slope_confidence + sensor_confidence) * (time_percentage))) / 2) * 100), 1);
     }
     public static void adjustRecentBgReadings() {// This just adjust the last 30 bg readings transition from one calibration point to the next
@@ -570,6 +570,9 @@ public class Calibration extends Model {
     //COMMON SCOPES!
     public static Calibration last() {
         Sensor sensor = Sensor.currentSensor();
+        if(sensor == null) {
+            return null;
+        }
         return new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())
@@ -664,6 +667,15 @@ public class Calibration extends Model {
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
                 .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 4)))
+                .orderBy("timestamp desc")
+                .execute();
+    }
+
+    public static List<Calibration> futureCalibrations() {
+        double timestamp = new Date().getTime();
+        return new Select()
+                .from(Calibration.class)
+                .where("timestamp > " + timestamp)
                 .orderBy("timestamp desc")
                 .execute();
     }

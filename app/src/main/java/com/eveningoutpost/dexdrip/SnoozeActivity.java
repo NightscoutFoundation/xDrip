@@ -13,7 +13,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
@@ -40,6 +40,10 @@ public class SnoozeActivity extends ActivityWithMenu {
     Button buttonSnooze;
     Button disableAlerts;
     Button clearDisabled;
+    Button disableLowAlerts;
+    Button clearLowDisabled;
+    Button disableHighAlerts;
+    Button clearHighDisabled;
     SharedPreferences prefs;
     boolean doMgdl;
 
@@ -125,6 +129,16 @@ public class SnoozeActivity extends ActivityWithMenu {
 
     public void addListenerOnButton() {
         buttonSnooze = (Button)findViewById(R.id.button_snooze);
+		
+		//low alerts
+		disableLowAlerts = (Button)findViewById(R.id.button_disable_low_alerts);
+		clearLowDisabled = (Button)findViewById(R.id.enable_low_alerts);
+        
+		//high alerts
+		disableHighAlerts = (Button)findViewById(R.id.button_disable_high_alerts);
+		clearHighDisabled = (Button)findViewById(R.id.enable_high_alerts);
+
+		//all alerts
         disableAlerts = (Button)findViewById(R.id.button_disable_alerts);
         clearDisabled = (Button)findViewById(R.id.enable_alerts);
         buttonSnooze.setOnClickListener(new View.OnClickListener() {
@@ -141,7 +155,42 @@ public class SnoozeActivity extends ActivityWithMenu {
         });
         showDisableEnableButtons();
 
-        disableAlerts.setOnClickListener(new View.OnClickListener() {
+        setOnClickListenerOnDisableButton(disableAlerts, "alerts_disabled_until");
+        setOnClickListenerOnDisableButton(disableLowAlerts, "low_alerts_disabled_until");
+        setOnClickListenerOnDisableButton(disableHighAlerts, "high_alerts_disabled_until");
+
+        setOnClickListenerOnClearDisabledButton(clearDisabled, "alerts_disabled_until");
+        setOnClickListenerOnClearDisabledButton(clearLowDisabled, "low_alerts_disabled_until");
+        setOnClickListenerOnClearDisabledButton(clearHighDisabled, "high_alerts_disabled_until");
+    }
+
+    /**
+     * Functionality used at least three times moved to a function. Adds an onClickListener that will re-enable the identified alert
+     * @param button to which onclicklistener should be added
+     * @param alert identifies the alert, the text string used in the preferences for example alerts_disabled_until
+     */
+    private void setOnClickListenerOnClearDisabledButton(Button button, String alert) {
+        final String theAlert = alert;
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                prefs.edit().putLong(theAlert, 0).apply();
+                showDisableEnableButtons();
+            }
+        });
+    }
+
+    /**
+     * Functionality used at least three times moved to a function. Adds an onClickListener that will disable the identified alert<br>
+     * Depending on type of disable, also active alarms will be set to inactive<br>
+     * - if alert = "alerts_disabled_until" then the active bg alert will be deleted if any<br>
+     * - if alert = "low_alerts_disabled_until" and if active low bg alert exists then it will be deleted<br>
+     * - if alert = "high_alerts_disabled_until" and if active high bg alert exists then it will be deleted<br>
+     * @param button to which onclicklistener should be added
+     * @param alert identifies the alert, the text string used in the preferences ie alerts_disabled_until, low_alerts_disabled_until or high_alerts_disabled_until
+     */
+    private void setOnClickListenerOnDisableButton(Button button, String alert) {
+        final String disableType = alert;
+        button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 final Dialog d = new Dialog(SnoozeActivity.this);
                 d.setTitle("Default Snooze");
@@ -155,7 +204,28 @@ public class SnoozeActivity extends ActivityWithMenu {
                     @Override
                     public void onClick(View v) {
                         Long disableUntil = new Date().getTime() + (SnoozeActivity.getTimeFromSnoozeValue(snoozeValue.getValue()) * 1000 * 60);
-                        prefs.edit().putLong("alerts_disabled_until", disableUntil).apply();
+                        prefs.edit().putLong(disableType, disableUntil).apply();
+                        //check if active bg alert exists and delete it depending on type of alert
+                        ActiveBgAlert aba = ActiveBgAlert.getOnly();
+                        if (aba != null) {
+                            AlertType activeBgAlert = ActiveBgAlert.alertTypegetOnly();
+                            if (disableType.equalsIgnoreCase("alerts_disabled_until")
+                            || (activeBgAlert.above && disableType.equalsIgnoreCase("high_alerts_disabled_until"))
+                            || (!activeBgAlert.above && disableType.equalsIgnoreCase("low_alerts_disabled_until"))
+                                    ) {
+                                //active bg alert exists which is a type that is being disabled so let's remove it completely from the database
+                                ActiveBgAlert.ClearData();
+                                //also make sure the text in the Activity is changed
+                                displayStatus();
+                            }
+                        }
+
+                        if (disableType.equalsIgnoreCase("alerts_disabled_until")) {
+                            //disabling all , after the Snooze time set, all alarms will be re-enabled, inclusive low and high bg alarms
+                            prefs.edit().putLong("high_alerts_disabled_until", 0).apply();
+                            prefs.edit().putLong("low_alerts_disabled_until", 0).apply();
+                        }
+
                         d.dismiss();
                         showDisableEnableButtons();
                     }
@@ -172,21 +242,34 @@ public class SnoozeActivity extends ActivityWithMenu {
             }
         });
 
-        clearDisabled.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                prefs.edit().putLong("alerts_disabled_until", 0).apply();
-                showDisableEnableButtons();
-            }
-        });
     }
 
     public void showDisableEnableButtons() {
         if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
             disableAlerts.setVisibility(View.GONE);
             clearDisabled.setVisibility(View.VISIBLE);
+            //all alerts are disabled so no need to show the buttons related to disabling/enabling the low and high alerts
+            disableLowAlerts.setVisibility(View.GONE);
+            clearLowDisabled.setVisibility(View.GONE);
+            disableHighAlerts.setVisibility(View.GONE);
+            clearHighDisabled.setVisibility(View.GONE);
         } else {
             clearDisabled.setVisibility(View.GONE);
             disableAlerts.setVisibility(View.VISIBLE);
+            if (prefs.getLong("low_alerts_disabled_until", 0) > new Date().getTime()) {
+                disableLowAlerts.setVisibility(View.GONE);
+                clearLowDisabled.setVisibility(View.VISIBLE);
+            } else {
+                disableLowAlerts.setVisibility(View.VISIBLE);
+                clearLowDisabled.setVisibility(View.GONE);
+            }
+            if (prefs.getLong("high_alerts_disabled_until", 0) > new Date().getTime()) {
+                disableHighAlerts.setVisibility(View.GONE);
+                clearHighDisabled.setVisibility(View.VISIBLE);
+            } else {
+                disableHighAlerts.setVisibility(View.VISIBLE);
+                clearHighDisabled.setVisibility(View.GONE);
+            }
         }
     }
 

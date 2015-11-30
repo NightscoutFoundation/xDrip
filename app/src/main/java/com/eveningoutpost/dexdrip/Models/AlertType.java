@@ -1,28 +1,20 @@
 package com.eveningoutpost.dexdrip.Models;
 
-import android.R.bool;
+import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
-import android.util.Log;
-
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.Expose;
-import com.google.gson.internal.bind.DateTypeAdapter;
 
-import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -110,7 +102,7 @@ public class AlertType extends Model {
     public static AlertType get_highest_active_alert(Context context, double bg) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
-            Log.w("NOTIFICATIONS", "Notifications are currently disabled!!");
+            Log.d("NOTIFICATIONS", "Notifications are currently disabled!!");
             return null;
         }
 
@@ -127,18 +119,18 @@ public class AlertType extends Model {
 
         AlertType at;
         if (UnclearTime >= UnclearTimeSetting && bg_unclear_readings_alerts ) {
-            Log.w("NOTIFICATIONS", "Readings have been unclear for too long!!");
+            Log.d("NOTIFICATIONS", "Readings have been unclear for too long!!");
             Notifications.bgUnclearAlert(context);
         }
         if ((UnclearTime > 0 ) && bg_unclear_readings_alerts) {
-            Log.e(TAG_ALERT, "We are in an clear state, but not for too long. Alerts are disabled");
+            Log.d(TAG_ALERT, "We are in an clear state, but not for too long. Alerts are disabled");
             return null;
         }
-        at = get_highest_active_alert_helper(bg);
+        at = get_highest_active_alert_helper(bg, prefs);
         if (at != null) {
-            Log.e(TAG_ALERT, "get_highest_active_alert_helper returned alert uuid = " + at.uuid + " alert name = " + at.name);
+            Log.d(TAG_ALERT, "get_highest_active_alert_helper returned alert uuid = " + at.uuid + " alert name = " + at.name);
         } else {
-            Log.e(TAG_ALERT, "get_highest_active_alert_helper returned NULL");
+            Log.d(TAG_ALERT, "get_highest_active_alert_helper returned NULL");
         }
         return at;
     }
@@ -150,34 +142,45 @@ public class AlertType extends Model {
 
 
     // bg_minute is the estimatin of the bg change rate
-    private static AlertType get_highest_active_alert_helper(double bg) {
+    private static AlertType get_highest_active_alert_helper(double bg, SharedPreferences prefs) {
         // Chcek the low alerts
 
-        List<AlertType> lowAlerts  = new Select()
-            .from(AlertType.class)
-            .where("threshold >= ?", bg)
-            .where("above = ?", false)
-            .orderBy("threshold asc")
-            .execute();
+        if(prefs.getLong("low_alerts_disabled_until", 0) > new Date().getTime()){
+            Log.i("NOTIFICATIONS", "get_highest_active_alert_helper: Low alerts are currently disabled!! Skipping low alerts");
+            ;
+        } else {
+            List<AlertType> lowAlerts  = new Select()
+                    .from(AlertType.class)
+                    .where("threshold >= ?", bg)
+                    .where("above = ?", false)
+                    .orderBy("threshold asc")
+                    .execute();
 
-        for (AlertType lowAlert : lowAlerts) {
-            if(lowAlert.should_alarm(bg)) {
-                return lowAlert;
+            for (AlertType lowAlert : lowAlerts) {
+                if(lowAlert.should_alarm(bg)) {
+                    return lowAlert;
+                }
             }
         }
 
-        // If no low alert found, check higher alert.
-        List<AlertType> HighAlerts  = new Select()
-            .from(AlertType.class)
-            .where("threshold <= ?", bg)
-            .where("above = ?", true)
-            .orderBy("threshold desc")
-            .execute();
 
-        for (AlertType HighAlert : HighAlerts) {
-            //Log.e(TAG, "Testing high alert " + HighAlert.toString());
-            if(HighAlert.should_alarm(bg)) {
-                return HighAlert;
+        // If no low alert found or low alerts disabled, check higher alert.
+        if(prefs.getLong("high_alerts_disabled_until", 0) > new Date().getTime()){
+            Log.i("NOTIFICATIONS", "get_highest_active_alert_helper: High alerts are currently disabled!! Skipping high alerts");
+            ;
+        } else {
+            List<AlertType> HighAlerts  = new Select()
+                    .from(AlertType.class)
+                    .where("threshold <= ?", bg)
+                    .where("above = ?", true)
+                    .orderBy("threshold desc")
+                    .execute();
+
+            for (AlertType HighAlert : HighAlerts) {
+                //Log.e(TAG, "Testing high alert " + HighAlert.toString());
+                if(HighAlert.should_alarm(bg)) {
+                    return HighAlert;
+                }
             }
         }
         // no alert found
@@ -324,9 +327,9 @@ public class AlertType extends Model {
             .from(AlertType.class)
             .execute();
 
-        Log.e(TAG,"List of all alerts");
+        Log.d(TAG,"List of all alerts");
         for (AlertType alert : Alerts) {
-            Log.e(TAG, alert.toString());
+            Log.d(TAG, alert.toString());
         }
     }
 
@@ -365,28 +368,28 @@ public class AlertType extends Model {
         add_alert(null, "high alert 3", true, 220, true, 10, null, 0, 0, true, 20, true);
         print_all();
         AlertType a1 = get_highest_active_alert(context, 190);
-        Log.e(TAG, "a1 = " + a1.toString());
+        Log.d(TAG, "a1 = " + a1.toString());
         AlertType a2 = get_highest_active_alert(context, 210);
-        Log.e(TAG, "a2 = " + a2.toString());
+        Log.d(TAG, "a2 = " + a2.toString());
 
 
         AlertType a3 = get_alert(a1.uuid);
-        Log.e(TAG, "a1 == a3 ? need to see true " + (a1==a3) + a1 + " " + a3);
+        Log.d(TAG, "a1 == a3 ? need to see true " + (a1==a3) + a1 + " " + a3);
 
         add_alert(null, "low alert 1", false, 80, true, 10, null, 0, 0, true, 20, true);
         add_alert(null, "low alert 2", false, 60, true, 10, null, 0, 0, true, 20, true);
 
         AlertType al1 = get_highest_active_alert(context, 90);
-        Log.e(TAG, "al1 should be null  " + al1);
+        Log.d(TAG, "al1 should be null  " + al1);
         al1 = get_highest_active_alert(context, 80);
-        Log.e(TAG, "al1 = " + al1.toString());
+        Log.d(TAG, "al1 = " + al1.toString());
         AlertType al2 = get_highest_active_alert(context, 50);
-        Log.e(TAG, "al2 = " + al2.toString());
+        Log.d(TAG, "al2 = " + al2.toString());
 
-        Log.e(TAG, "HigherAlert(a1, a2) = a1?" +  (HigherAlert(a1,a2) == a2));
-        Log.e(TAG, "HigherAlert(al1, al2) = al1?" +  (HigherAlert(al1,al2) == al2));
-        Log.e(TAG, "HigherAlert(a1, al1) = al1?" +  (HigherAlert(a1,al1) == al1));
-        Log.e(TAG, "HigherAlert(al1, a2) = al1?" +  (HigherAlert(al1,a2) == al1));
+        Log.d(TAG, "HigherAlert(a1, a2) = a1?" +  (HigherAlert(a1,a2) == a2));
+        Log.d(TAG, "HigherAlert(al1, al2) = al1?" +  (HigherAlert(al1,al2) == al2));
+        Log.d(TAG, "HigherAlert(a1, al1) = al1?" +  (HigherAlert(a1,al1) == al1));
+        Log.d(TAG, "HigherAlert(al1, a2) = al1?" +  (HigherAlert(al1,a2) == al1));
 
         // Make sure we do not influance on real data...
         remove_all();
@@ -402,7 +405,7 @@ public class AlertType extends Model {
         // time_now is the number of minutes that have passed from the start of the day.
         Calendar rightNow = Calendar.getInstance();
         int time_now = toTime(rightNow.get(Calendar.HOUR_OF_DAY), rightNow.get(Calendar.MINUTE));
-        Log.e(TAG, "time_now is " + time_now + " minutes" + " start_time " + start_time_minutes + " end_time " + end_time_minutes);
+        Log.d(TAG, "time_now is " + time_now + " minutes" + " start_time " + start_time_minutes + " end_time " + end_time_minutes);
         if(start_time_minutes < end_time_minutes) {
             if (time_now >= start_time_minutes && time_now <= end_time_minutes) {
                 return true;
@@ -434,6 +437,15 @@ public class AlertType extends Model {
         }
         return false;
     }
+    
+     public long getNextAlertTime(Context ctx) {
+         int time = minutes_between;
+         if (time < 1 || AlertPlayer.isAscendingMode(ctx)) {
+             time = 1;
+         }
+         Calendar calendar = Calendar.getInstance();
+         return calendar.getTimeInMillis() + (time * 60000);
+     }
 
     public boolean should_alarm(double bg) {
 //        Log.e(TAG, "should_alarm called active =  " + active );

@@ -1,27 +1,25 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom;
 
 import android.app.IntentService;
-import android.bluetooth.BluetoothClass;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.util.Log;
-import android.widget.Toast;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.CdcAcmSerialDriver;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.ProbeTable;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialDriver;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialProber;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.GlucoseDataSet;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.MeterRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.CdcAcmSerialDriver;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.ProbeTable;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialDriver;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.driver.UsbSerialProber;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 
 import org.json.JSONArray;
@@ -103,7 +101,7 @@ public class SyncingService extends IntentService {
                 final int param1 = intent.getIntExtra(SYNC_PERIOD, 1);
                 handleActionSync(param1);
             } else if (ACTION_CALIBRATION_CHECKIN.equals(action)) {
-                Log.w("CALIBRATION-CHECK-IN: ", "Beginning check in process");
+                Log.i("CALIBRATION-CHECK-IN: ", "Beginning check in process");
                 performCalibrationCheckin();
             }
         }
@@ -118,14 +116,14 @@ public class SyncingService extends IntentService {
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "NSDownload");
         wl.acquire();
         try {
-            Log.w("CALIBRATION-CHECK-IN: ", "Wake Lock Acquired");
+            Log.i("CALIBRATION-CHECK-IN: ", "Wake Lock Acquired");
             if (acquireSerialDevice()) {
                 try {
                     ReadData readData = new ReadData(mSerialDevice, mConnection, dexcom);
 
 //                ReadData readData = new ReadData(mSerialDevice);
                     CalRecord[] calRecords = readData.getRecentCalRecords();
-                    Log.w("CALIBRATION-CHECK-IN: ", "Found " + calRecords.length + " Records!");
+                    Log.i("CALIBRATION-CHECK-IN: ", "Found " + calRecords.length + " Records!");
                     save_most_recent_cal_record(calRecords);
 
                 } catch (Exception e) {
@@ -257,7 +255,7 @@ public class SyncingService extends IntentService {
                         mSerialDevice = driver;
 
                         mConnection = connection;
-                        Log.w("CALIBRATION-CHECK-IN: ", "CONNECTEDDDD!!");
+                        Log.i("CALIBRATION-CHECK-IN: ", "CONNECTEDDDD!!");
                         return true;
                     }
                 } else {
@@ -274,16 +272,16 @@ public class SyncingService extends IntentService {
     static public boolean isG4Connected(Context c){
         UsbManager manager = (UsbManager) c.getSystemService(Context.USB_SERVICE);
         HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
-        Log.w("USB DEVICES = ", deviceList.toString());
+        Log.i("USB DEVICES = ", deviceList.toString());
         Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
-        Log.w("USB DEVICES = ", String.valueOf(deviceList.size()));
+        Log.i("USB DEVICES = ", String.valueOf(deviceList.size()));
 
         while(deviceIterator.hasNext()){
             UsbDevice device = deviceIterator.next();
             if (device.getVendorId() == 8867 && device.getProductId() == 71
                     && device.getDeviceClass() == 2 && device.getDeviceSubclass() ==0
                     && device.getDeviceProtocol() == 0){
-                Log.w("CALIBRATION-CHECK-IN: ", "Dexcom Found!");
+                Log.i("CALIBRATION-CHECK-IN: ", "Dexcom Found!");
                 return true;
             }
         }
@@ -291,13 +289,13 @@ public class SyncingService extends IntentService {
     }
 
     public UsbDevice findDexcom() {
-        Log.w("CALIBRATION-CHECK-IN: ", "Searching for dexcom");
+        Log.i("CALIBRATION-CHECK-IN: ", "Searching for dexcom");
         mUsbManager = (UsbManager) getApplicationContext().getSystemService(Context.USB_SERVICE);
-        Log.w("USB MANAGER = ", mUsbManager.toString());
+        Log.i("USB MANAGER = ", mUsbManager.toString());
         HashMap<String, UsbDevice> deviceList = mUsbManager.getDeviceList();
-        Log.w("USB DEVICES = ", deviceList.toString());
+        Log.i("USB DEVICES = ", deviceList.toString());
         Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
-        Log.w("USB DEVICES = ", String.valueOf(deviceList.size()));
+        Log.i("USB DEVICES = ", String.valueOf(deviceList.size()));
 
         while(deviceIterator.hasNext()){
             UsbDevice device = deviceIterator.next();
@@ -305,7 +303,7 @@ public class SyncingService extends IntentService {
                     && device.getDeviceClass() == 2 && device.getDeviceSubclass() ==0
                     && device.getDeviceProtocol() == 0){
                 dexcom = device;
-                Log.w("CALIBRATION-CHECK-IN: ", "Dexcom Found!");
+                Log.i("CALIBRATION-CHECK-IN: ", "Dexcom Found!");
                 return device;
             } else {
                 Log.w("CALIBRATION-CHECK-IN: ", "that was not a dexcom (I dont think)");

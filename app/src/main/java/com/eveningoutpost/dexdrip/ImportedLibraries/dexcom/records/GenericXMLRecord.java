@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records;
 
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

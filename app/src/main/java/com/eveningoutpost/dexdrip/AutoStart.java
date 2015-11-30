@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 
@@ -13,7 +13,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 public class AutoStart extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.w("DexDrip", "Service auto starter, starting!");
+        Log.d("DexDrip", "Service auto starter, starting!");
         CollectionServiceStarter.newStart(context);
     }
 }
