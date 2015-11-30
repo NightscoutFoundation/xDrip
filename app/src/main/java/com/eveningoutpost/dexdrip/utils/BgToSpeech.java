@@ -98,11 +98,7 @@ public class BgToSpeech {
         }
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (! prefs.getBoolean("bg_to_speech", false)){
-            return;
-        }
-
-        if (prefs.getBoolean("bg_to_speech_suppress_activecall", true) && isOngoingCall()){
+        if (! prefs.getBoolean("bg_to_speech", false) || isOngoingCall()){
             return;
         }
 
