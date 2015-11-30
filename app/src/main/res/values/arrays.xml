@@ -4,6 +4,7 @@
         <item>Bluetooth Wixel</item>
         <item>xBridge Wixel</item>
         <item>Wifi Wixel</item>
+        <item>Wifi Wixel + BT Wixel</item>
         <item>DexcomShare</item>
     </string-array>
 
@@ -11,6 +12,7 @@
         <item>BluetoothWixel</item>
         <item>DexbridgeWixel</item>
         <item>WifiWixel</item>
+        <item>WifiBlueToothWixel</item>
         <item>DexcomShare</item>
     </string-array>
 

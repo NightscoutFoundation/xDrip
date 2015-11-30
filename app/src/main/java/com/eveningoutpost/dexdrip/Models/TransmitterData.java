@@ -58,7 +58,7 @@ public class TransmitterData extends Model {
 
             randomDelay(100, 1000);
             TransmitterData lastTransmitterData = TransmitterData.last();
-            if (lastTransmitterData != null && lastTransmitterData.raw_data == Integer.parseInt(data[0]) && Math.abs(lastTransmitterData.timestamp - timestamp) < (10000)) { //Stop allowing duplicate data, its bad!
+            if (lastTransmitterData != null && lastTransmitterData.raw_data == Integer.parseInt(data[0]) && Math.abs(lastTransmitterData.timestamp - timestamp) < (100000)) { //Stop allowing duplicate data, its bad! // jamorham: increased to 100 seconds for additional safety with multiple collection modes operating at the same time
                 return null;
             }
             if (data.length > 1) { transmitterData.sensor_battery_level = Integer.parseInt(data[1]); }

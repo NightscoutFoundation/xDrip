@@ -310,8 +310,15 @@ public class Preferences extends PreferenceActivity {
                 prefs.edit().putBoolean("calibration_notifications", false).apply();
             }
 
-            if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("WifiWixel") != 0) {
-                collectionCategory.removePreference(wifiRecievers);
+            if ((prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("WifiWixel") != 0)
+                   && (prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("WifiBlueToothWixel") != 0)) {
+               String receiversIpAddresses;
+               receiversIpAddresses = prefs.getString("wifi_recievers_addresses", "");
+		// only hide if non wifi wixel mode and value not previously set to cope with
+		// dynamic mode changes. jamorham
+               if (receiversIpAddresses == null || receiversIpAddresses.equals("")) {
+                   collectionCategory.removePreference(wifiRecievers);
+		}
             }
 
             if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexbridgeWixel") != 0) {
@@ -352,14 +359,24 @@ public class Preferences extends PreferenceActivity {
                         prefs.edit().putBoolean("calibration_notifications", false).apply();
                     }
 
-                    if(((String) newValue).compareTo("BluetoothWixel") != 0 && ((String) newValue).compareTo("DexcomShare") != 0 && ((String) newValue).compareTo("DexbridgeWixel") != 0) {
+                    if(((String) newValue).compareTo("BluetoothWixel") != 0 && ((String) newValue).compareTo("DexcomShare") != 0 && ((String) newValue).compareTo("DexbridgeWixel") != 0 && ((String) newValue).compareTo("WifiBlueToothWixel") != 0) {
+                 collectionCategory.removePreference(runInForeground);
+
                         collectionCategory.removePreference(runInForeground);
                     } else {
                         collectionCategory.addPreference(runInForeground);
                     }
 
-                    if(((String) newValue).compareTo("WifiWixel") != 0) {
-                        collectionCategory.removePreference(wifiRecievers);
+                    // jamorham always show wifi receivers option if populated as we may switch modes dynamically
+                    if((((String) newValue).compareTo("WifiWixel") != 0)
+                            && (((String) newValue).compareTo("WifiBlueToothWixel") != 0)) {
+                        String receiversIpAddresses;
+                        receiversIpAddresses = prefs.getString("wifi_recievers_addresses", "");
+                        if(receiversIpAddresses == null || receiversIpAddresses.equals("") ) {
+                            collectionCategory.removePreference(wifiRecievers);
+                        } else {
+                            collectionCategory.addPreference(wifiRecievers);
+                        }
                     } else {
                         collectionCategory.addPreference(wifiRecievers);
                     }
