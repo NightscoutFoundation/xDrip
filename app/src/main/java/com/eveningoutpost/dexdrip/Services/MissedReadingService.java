@@ -49,7 +49,7 @@ public class MissedReadingService extends IntentService {
             Notifications.bgMissedAlert(mContext);
             checkBackAfterSnoozeTime();
         } else  {
-            long alarmIn = (prefs.getLong("alerts_disabled_until", 0) - new Date().getTime()) * 1000 * 60;
+            long alarmIn = (prefs.getLong("alerts_disabled_until", 0) - new Date().getTime());
             if (alarmIn <= 0) {
                 alarmIn = Long.parseLong(prefs.getString("bg_missed_minutes", "30"));
             }
