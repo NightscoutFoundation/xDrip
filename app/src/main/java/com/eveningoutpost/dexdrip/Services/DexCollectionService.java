@@ -149,7 +149,12 @@ public class DexCollectionService extends Service {
 
     public void setRetryTimer() {
         if (CollectionServiceStarter.isBTWixel(getApplicationContext()) || CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
-            long retry_in = (1000 * 65);
+            long retry_in;
+            if(CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
+                retry_in = (1000 * 25);
+            }else {
+                retry_in = (1000*65);
+            }
             Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in / 1000) + " seconds");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -310,16 +315,7 @@ public class DexCollectionService extends Service {
             try {
                 Log.i(TAG, "onCharacteristicChanged entered");
                 final byte[] data = characteristic.getValue();
-                if (lastdata != null && data != null && data.length > 0) {
-                    if (!Arrays.equals(lastdata, data)) {
-                        Log.v(TAG, "broadcastUpdate: new data.");
-                        setSerialDataToTransmitterRawData(data, data.length);
-                    } else if (Arrays.equals(lastdata, data)) {
-                        Log.v(TAG, "broadcastUpdate: duplicate data, ignoring");
-                    }
-                } else if (data != null && data.length > 0) {
-                    setSerialDataToTransmitterRawData(data, data.length);
-                }
+                setSerialDataToTransmitterRawData(data, data.length);
                 lastdata = data;
             } finally {
                 wakeLock1.release();
