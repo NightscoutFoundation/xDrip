@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
+import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import lecho.lib.hellocharts.listener.LineChartOnValueSelectListener;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Line;
@@ -396,6 +398,7 @@ public class BgGraphBuilder {
         }
     }
 
+
     public static double mmolConvert(double mgdl) {
         return mgdl * Constants.MGDL_TO_MMOLL;
     }
@@ -407,5 +410,31 @@ public class BgGraphBuilder {
             return "mmol";
         }
 
+    }
+
+    public OnValueSelectTooltipListener getOnValueSelectTooltipListener(){
+        return new OnValueSelectTooltipListener();
+    }
+
+    public class OnValueSelectTooltipListener implements LineChartOnValueSelectListener{
+
+        private Toast tooltip;
+
+        @Override
+        public synchronized void onValueSelected(int i, int i1, PointValue pointValue) {
+            final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(context);
+            //Won't give the exact time of the reading but the time on the grid: close enough.
+            Long time = ((long)pointValue.getX())*FUZZER;
+            if(tooltip!= null){
+                tooltip.cancel();
+            }
+            tooltip = Toast.makeText(context, timeFormat.format(time)+ ": " + Math.round(pointValue.getY()*10)/ 10d , Toast.LENGTH_LONG);
+            tooltip.show();
+        }
+
+        @Override
+        public void onValueDeselected() {
+            // do nothing
+        }
     }
 }
