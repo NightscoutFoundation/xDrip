@@ -359,12 +359,10 @@ public class Preferences extends PreferenceActivity {
                         prefs.edit().putBoolean("calibration_notifications", false).apply();
                     }
 
-                    if(((String) newValue).compareTo("BluetoothWixel") != 0
+                    if (((String) newValue).compareTo("BluetoothWixel") != 0
                             && ((String) newValue).compareTo("DexcomShare") != 0
                             && ((String) newValue).compareTo("DexbridgeWixel") != 0
                             && ((String) newValue).compareTo("WifiBlueToothWixel") != 0) {
-                        collectionCategory.removePreference(runInForeground);
-
                         collectionCategory.removePreference(runInForeground);
                     } else {
                         collectionCategory.addPreference(runInForeground);
