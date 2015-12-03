@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
+import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
@@ -174,6 +175,11 @@ public class SnoozeActivity extends ActivityWithMenu {
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 prefs.edit().putLong(theAlert, 0).apply();
+                if (theAlert.equalsIgnoreCase("alerts_disabled_until")) {
+                    //this is needed to make sure that the missedreading alert will be rechecked, it might have to be raised
+                    //and if not (ie no missed readings for long enough) then the alarm should be reset because it might have to recheck the missedreading status sooner
+                    getApplicationContext().startService(new Intent(getApplicationContext(), MissedReadingService.class));
+                }
                 showDisableEnableButtons();
             }
         });
