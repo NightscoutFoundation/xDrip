@@ -100,7 +100,8 @@ public class DexCollectionService extends Service {
             stopSelf();
             return START_NOT_STICKY;
         }
-        if (CollectionServiceStarter.isBTWixel(getApplicationContext()) || CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())
+        if (CollectionServiceStarter.isBTWixel(getApplicationContext())
+                || CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())
                 || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())) {
             setFailoverTimer();
         } else {
@@ -173,7 +174,8 @@ public class DexCollectionService extends Service {
     }
 
     public void setFailoverTimer() {
-        if (CollectionServiceStarter.isBTWixel(getApplicationContext()) || CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())
+        if (CollectionServiceStarter.isBTWixel(getApplicationContext())
+                || CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())
                 || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())) {
 
             long retry_in = (1000 * 60 * 6);
