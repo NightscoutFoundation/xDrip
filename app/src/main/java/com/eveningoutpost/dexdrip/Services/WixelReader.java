@@ -14,6 +14,9 @@ import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,6 +28,7 @@ import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 // Important note, this class is based on the fact that android will always run it one thread, which means it does not
@@ -165,7 +169,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
 
     public static List<TransmitterRawData> ReadFromMongo(String dbury, int numberOfRecords)
     {
-        Log.i(TAG,"Reading From " + dbury);
+        Log.i(TAG, "Reading From " + dbury);
     	List<TransmitterRawData> tmpList;
     	// format is dburi/db/collection. We need to find the collection and strip it from the dburi.
     	int indexOfSlash = dbury.lastIndexOf('/');
@@ -192,6 +196,75 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
     	return mt.ReadFromMongo(numberOfRecords);
     }
 
+    private static OkHttpClient httpClient = null;
+
+
+    // read from http source like cloud hosted parakeet receiver.cgi / json.get
+    public static List<TransmitterRawData> ReadHttpJson(String url, int numberOfRecords) {
+        List<TransmitterRawData> trd_list = new LinkedList<TransmitterRawData>();
+
+        try {
+
+            if (httpClient == null) {
+                httpClient = new OkHttpClient();
+                // suitable for GPRS
+                httpClient.setConnectTimeout(30, TimeUnit.SECONDS);
+                httpClient.setReadTimeout(60, TimeUnit.SECONDS);
+                httpClient.setWriteTimeout(20, TimeUnit.SECONDS);
+            }
+
+            Gson gson = new GsonBuilder().create();
+
+            // simple HTTP GET request
+            // n=numberOfRecords for backfilling
+            // r=sequence number to avoid any cache
+            // expecting json reply like the standard json server in dexterity / python pi usb / parakeet
+            Request request = new Request.Builder()
+
+                    // Mozilla header facilitates compression
+                    .header("User-Agent", "Mozilla/5.0")
+                    .header("Connection","close")
+                    .url(url + "?n=" + Integer.toString(numberOfRecords)
+                            + "&r=" + Long.toString((System.currentTimeMillis() / 1000) % 9999999))
+                    .build();
+
+            Response response = httpClient.newCall(request).execute();
+            // if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+            if (response.isSuccessful()) {
+
+                String lines[] = response.body().string().split("\\r?\\n");
+
+                for (String data : lines) {
+
+                    if (data == null) {
+                        System.out.println("received null exiting");
+                        continue;
+                    }
+                    if (data.equals("")) {
+                        System.out.println("received \"\" exiting");
+                        continue;
+                    }
+
+                    TransmitterRawData trd = gson.fromJson(data, TransmitterRawData.class);
+                    trd.CaptureDateTime = System.currentTimeMillis() - trd.RelativeTime;
+
+                    trd_list.add(0, trd);
+                    //  System.out.println( trd.toTableString());
+                    if (trd_list.size() == numberOfRecords) {
+                        // We have the data we want, let's get out
+                        break;
+                    }
+                }
+
+                Log.i(TAG, "Success getting http json with end size: " + Integer.toString(trd_list.size()));
+            }
+
+        } catch (Exception e) {
+            Log.e(TAG, "caught HTTPException! " + e.toString());
+        }
+        return trd_list;
+    }
+
     // format of string is ip1:port1,ip2:port2;
     public static TransmitterRawData[] Read(String hostsNames, int numberOfRecords)
     {
@@ -208,6 +281,9 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
             List<TransmitterRawData> tmpList;
             if (host.startsWith("mongodb://")) {
             	tmpList = ReadFromMongo(host ,numberOfRecords);
+            } else if ((host.startsWith("http://") || host.startsWith("https://"))
+                    && host.contains("/json.get")) {
+                tmpList = ReadHttpJson(host,numberOfRecords);
             } else {
             	tmpList = ReadHost(host, numberOfRecords);
             }
@@ -317,13 +393,13 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
             Log.e(TAG, "gapTime <= null returning 60000");
             return 60*1000L;
         }
-        
+
         if(gapTime < DEXCOM_PERIOD) {
             // We have received the last packet...
             // 300000 - gaptime is when we expect to have the next packet.
             return (DEXCOM_PERIOD - gapTime) + 2000;
         }
-        
+
         gapTime = gapTime % DEXCOM_PERIOD;
         Log.e(TAG, "gapTime = " + gapTime);
         if(gapTime < 10000) {
@@ -334,7 +410,13 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
             // A new packet should arrive but chance is we have missed it...
             return 30000L;
         }
-        return (DEXCOM_PERIOD - gapTime) + 2000;
+
+        if (httpClient == null) {
+            return (DEXCOM_PERIOD - gapTime) + 2000;
+        } else {
+            // compensate for parakeet gprs lag
+            return (DEXCOM_PERIOD - gapTime) + 12000;
+        }
     }
 
     public Void doInBackground(String... urls) {
