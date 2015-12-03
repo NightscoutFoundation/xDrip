@@ -58,7 +58,7 @@ public class TransmitterData extends Model {
 
             randomDelay(100, 1000);
             TransmitterData lastTransmitterData = TransmitterData.last();
-            if (lastTransmitterData != null && lastTransmitterData.raw_data == Integer.parseInt(data[0]) && Math.abs(lastTransmitterData.timestamp - timestamp) < (100000)) { //Stop allowing duplicate data, its bad! // jamorham: increased to 100 seconds for additional safety with multiple collection modes operating at the same time
+            if (lastTransmitterData != null && lastTransmitterData.raw_data == Integer.parseInt(data[0]) && Math.abs(lastTransmitterData.timestamp - timestamp) < (120000)) { //Stop allowing duplicate data, its bad! // jamorham: increased to 120 seconds for additional safety with multiple collection modes operating at the same time
                 return null;
             }
             if (data.length > 1) { transmitterData.sensor_battery_level = Integer.parseInt(data[1]); }
@@ -72,9 +72,9 @@ public class TransmitterData extends Model {
     }
 
     public static TransmitterData create(int raw_data ,int sensor_battery_level, long timestamp) {
-        randomDelay(100, 1000);
+        //randomDelay(100, 1000);
         TransmitterData lastTransmitterData = TransmitterData.last();
-        if (lastTransmitterData != null && lastTransmitterData.raw_data == raw_data && Math.abs(lastTransmitterData.timestamp - new Date().getTime()) < (10000)) { //Stop allowing duplicate data, its bad!
+        if (lastTransmitterData != null && lastTransmitterData.raw_data == raw_data && Math.abs(lastTransmitterData.timestamp - new Date().getTime()) < (120000)) { //Stop allowing duplicate data, its bad!
             return null;
         }
 
