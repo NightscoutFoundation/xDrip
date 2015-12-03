@@ -149,7 +149,9 @@ public class DexCollectionService extends Service {
     }
 
     public void setRetryTimer() {
-        if (CollectionServiceStarter.isBTWixel(getApplicationContext()) || CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
+        if (CollectionServiceStarter.isBTWixel(getApplicationContext())
+                || CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())
+                || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())) {
             long retry_in;
             if(CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
                 retry_in = (1000 * 25);
