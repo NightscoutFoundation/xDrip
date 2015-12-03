@@ -72,7 +72,6 @@ public class TransmitterData extends Model {
     }
 
     public static TransmitterData create(int raw_data ,int sensor_battery_level, long timestamp) {
-        //randomDelay(100, 1000);
         TransmitterData lastTransmitterData = TransmitterData.last();
         if (lastTransmitterData != null && lastTransmitterData.raw_data == raw_data && Math.abs(lastTransmitterData.timestamp - new Date().getTime()) < (120000)) { //Stop allowing duplicate data, its bad!
             return null;
