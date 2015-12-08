@@ -39,7 +39,7 @@ public class Calibration extends Model {
 
     @Expose
     @Column(name = "timestamp", index = true)
-    public double timestamp;
+    public long timestamp;
 
     @Expose
     @Column(name = "sensor_age_at_time_of_estimation")
@@ -74,7 +74,7 @@ public class Calibration extends Model {
 
     @Expose
     @Column(name = "raw_timestamp")
-    public double raw_timestamp;
+    public long raw_timestamp;
 
     @Expose
     @Column(name = "slope")
