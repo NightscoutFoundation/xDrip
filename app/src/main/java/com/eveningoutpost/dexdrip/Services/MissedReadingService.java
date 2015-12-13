@@ -9,10 +9,10 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 
 import java.util.Calendar;
@@ -20,7 +20,7 @@ import java.util.Date;
 
 public class MissedReadingService extends IntentService {
     int otherAlertSnooze;
-    private final static String TAG = AlertPlayer.class.getSimpleName();
+    private final static String TAG = MissedReadingService.class.getSimpleName();
 
     public MissedReadingService() {
         super("MissedReadingService");
@@ -40,18 +40,23 @@ public class MissedReadingService extends IntentService {
         bg_missed_minutes =  readPerfsInt(prefs, "bg_missed_minutes", 30);
         otherAlertSnooze =  readPerfsInt(prefs, "other_alerts_snooze", 20);
         long now = new Date().getTime();
+        Log.d(TAG, "MissedReadingService onHandleIntent");
+        if (!bg_missed_alerts) {
+        	// we should not do anything in this case. if the ui, changes will be called again
+        	return;
+        }
 
         if (BgReading.getTimeSinceLastReading() >= (bg_missed_minutes * 1000 * 60) &&
                 prefs.getLong("alerts_disabled_until", 0) <= now &&
                 inTimeFrame(prefs)) {
             Notifications.bgMissedAlert(context);
-            checkBackAfterSnoozeTime();
+            checkBackAfterSnoozeTime(now);
         } else  {
-            long alarmIn = prefs.getLong("alerts_disabled_until", 0) - now;
-            if (alarmIn <= 0) {
-                alarmIn = Long.parseLong(prefs.getString("bg_missed_minutes", "30"))* 1000 * 60 - BgReading.getTimeSinceLastReading();
-            }
-            Log.d(TAG, "Setting timer to  " + alarmIn / 60000 + " minutes from now" );
+            
+            long disabletime = prefs.getLong("alerts_disabled_until", 0) - now;
+            
+            long missedTime = bg_missed_minutes* 1000 * 60 - BgReading.getTimeSinceLastReading();
+            long alarmIn = Math.max(disabletime, missedTime);
             checkBackAfterMissedTime(alarmIn);
         }
     }
@@ -65,8 +70,15 @@ public class MissedReadingService extends IntentService {
         return AlertType.s_in_time_frame(allDay, startMinutes, endMinutes);
     }
 
-    public void checkBackAfterSnoozeTime() {
-        setAlarm(otherAlertSnooze * 1000 * 60);
+    public void checkBackAfterSnoozeTime(long now) {
+    	// This is not 100% acurate, need to take in account also the time of when this alert was snoozed.
+        UserNotification userNotification = UserNotification.GetNotificationByType("bg_missed_alerts");
+        if(userNotification == null) {
+            setAlarm(otherAlertSnooze * 1000 * 60);
+        } else {
+            // we have an alert that is snoozed until userNotification.timestamp
+            setAlarm((long)userNotification.timestamp - now + otherAlertSnooze * 1000 * 60);
+        }
     }
 
     public void checkBackAfterMissedTime(long alarmIn) {
