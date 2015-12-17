@@ -239,6 +239,10 @@ public class NightscoutUploader {
         }
 
         private void populateV1APICalibrationEntry(JSONArray array, Calibration record) throws Exception {
+
+            //do not upload undefined slopes
+            if(record.slope == 0d) return;
+
             JSONObject json = new JSONObject();
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
             format.setTimeZone(TimeZone.getDefault());
@@ -247,12 +251,12 @@ public class NightscoutUploader {
             json.put("date", record.timestamp);
             json.put("dateString", format.format(record.timestamp));
             if(record.check_in) {
-                json.put("slope", (long) (record.first_slope));
-                json.put("intercept", (long) ((record.first_intercept)));
+                json.put("slope", (record.first_slope));
+                json.put("intercept", ((record.first_intercept)));
                 json.put("scale", record.first_scale);
             } else {
-                json.put("slope", (long) (record.slope * 1000));
-                json.put("intercept", (long) ((record.intercept * -1000) / (record.slope * 1000)));
+                json.put("slope", (1000/record.slope));
+                json.put("intercept", ((record.intercept * -1000) / (record.slope)));
                 json.put("scale", 1);
             }
             array.put(json);
@@ -323,18 +327,20 @@ public class NightscoutUploader {
                         }
 
                         for (Calibration calRecord : calRecords) {
+                            //do not upload undefined slopes
+                            if(calRecord.slope == 0d) break;
                             // make db object
                             BasicDBObject testData = new BasicDBObject();
                             testData.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
                             testData.put("date", calRecord.timestamp);
                             testData.put("dateString", format.format(calRecord.timestamp));
                             if (calRecord.check_in) {
-                                testData.put("slope", (long) (calRecord.first_slope));
-                                testData.put("intercept", (long) ((calRecord.first_intercept)));
+                                testData.put("slope", (calRecord.first_slope));
+                                testData.put("intercept", ((calRecord.first_intercept)));
                                 testData.put("scale", calRecord.first_scale);
                             } else {
-                                testData.put("slope", (long) (calRecord.slope * 1000));
-                                testData.put("intercept", (long) ((calRecord.intercept * -1000) / (calRecord.slope * 1000)));
+                                testData.put("slope",  (1000/calRecord.slope));
+                                testData.put("intercept", ((calRecord.intercept * -1000) / (calRecord.slope)));
                                 testData.put("scale", 1);
                             }
                             testData.put("type", "cal");

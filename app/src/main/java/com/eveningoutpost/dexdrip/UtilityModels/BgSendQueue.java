@@ -128,12 +128,12 @@ public class BgSendQueue extends Model {
                         intercept= cal.first_intercept;
                         scale =  cal.first_scale;
                     } else {
-                        slope = cal.slope * 1000;
-                        intercept=  (cal.intercept * -1000) / (cal.slope * 1000);
+                        slope = 1000/cal.slope;
+                        intercept=  (cal.intercept * -1000) / (cal.slope);
                         scale = 1;
                     }
-                    unfiltered= bgReading.usedRaw();
-                    filtered = bgReading.ageAdjustedFiltered();
+                    unfiltered= bgReading.usedRaw()*1000;
+                    filtered = bgReading.ageAdjustedFiltered()*1000;
                 }
                 //raw logic from https://github.com/nightscout/cgm-remote-monitor/blob/master/lib/plugins/rawbg.js#L59
                 if (slope != 0 && intercept != 0 && scale != 0) {
