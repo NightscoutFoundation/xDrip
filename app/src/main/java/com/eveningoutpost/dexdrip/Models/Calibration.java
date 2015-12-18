@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
+import android.widget.Toast;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.activeandroid.Model;
@@ -22,6 +23,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.internal.bind.DateTypeAdapter;
+
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -326,7 +328,14 @@ public class Calibration extends Model {
                 .executeSingle();
     }
 
-    public static Calibration create(double bg, Context context) {
+    // without timeoffset
+    public static Calibration create(double bg,  Context context) {
+        return create(bg, 0, context);
+
+    }
+
+
+    public static Calibration create(double bg, long timeoffset, Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String unit = prefs.getString("units", "mgdl");
 
@@ -339,12 +348,18 @@ public class Calibration extends Model {
         Sensor sensor = Sensor.currentSensor();
 
         if (sensor != null) {
-            BgReading bgReading = BgReading.last();
+            BgReading bgReading = null;
+            if (timeoffset == 0) {
+                bgReading = BgReading.last();
+            } else {
+                // get closest bg reading we can find with a cut off at 15 minutes max time
+                bgReading = BgReading.getForPreciseTimestamp(new Date().getTime() - (timeoffset * 1000), (15 * 60 * 1000));
+            }
             if (bgReading != null) {
                 calibration.sensor = sensor;
                 calibration.bg = bg;
                 calibration.check_in = false;
-                calibration.timestamp = new Date().getTime();
+                calibration.timestamp = new Date().getTime() -(timeoffset*1000); //  potential historical bg readings
                 calibration.raw_value = bgReading.raw_data;
                 calibration.adjusted_raw_value = bgReading.age_adjusted_raw_value;
                 calibration.sensor_uuid = sensor.uuid;
@@ -373,6 +388,9 @@ public class Calibration extends Model {
                 CalibrationSendQueue.addToQueue(calibration, context);
                 context.startService(new Intent(context, Notifications.class));
                 Calibration.requestCalibrationIfRangeTooNarrow();
+            } else {
+                // we couldn't get a reading close enough to the calibration timestamp
+                Toast.makeText(context, "No close enough reading for Calib (15 min)", Toast.LENGTH_LONG).show();
             }
         } else {
             Log.d("CALIBRATION", "No sensor, cant save!");
