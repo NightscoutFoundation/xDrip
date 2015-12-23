@@ -34,8 +34,10 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.CalibrationRequest;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
+import com.eveningoutpost.dexdrip.Services.MissedReadingService;
+
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.Models.Sensor;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -97,9 +99,11 @@ public class Notifications extends IntentService {
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "NotificationsIntent");
         wl.acquire();
         Log.d("Notifications", "Running Notifications Intent Service");
-        ReadPerfs(getApplicationContext());
-        notificationSetter(getApplicationContext());
-        ArmTimer(getApplicationContext());
+        Context context =getApplicationContext(); 
+        ReadPerfs(context);
+        notificationSetter(context);
+        ArmTimer(context);
+        context.startService(new Intent(context, MissedReadingService.class));
         wl.release();
     }
 
@@ -237,8 +241,7 @@ public class Notifications extends IntentService {
  * *****************************************************************************************************************
  */
 
-    // only function that is really called from outside...
-    public void notificationSetter(Context context) {
+    private void notificationSetter(Context context) {
         ReadPerfs(context);
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
         if (bg_ongoing && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)) {
@@ -295,27 +298,71 @@ public class Notifications extends IntentService {
         }
     }
 
+    private long calcuatleArmTime(Context ctx, long now) {
+
+      Long wakeTime = Long.MAX_VALUE; // This is the absalute time, not time from now.
+      ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
+      if (activeBgAlert != null) {
+          AlertType alert = AlertType.get_alert(activeBgAlert.alert_uuid);
+          if (alert != null) {
+              wakeTime = activeBgAlert.next_alert_at ;
+              Log.d(TAG , "ArmTimer waking at: "+ new Date(wakeTime) +" in " +  (wakeTime - now)/60000d + " minutes");
+          }
+      }
+      
+      // check snooze ending values
+      long alerts_disabled_until = prefs.getLong("alerts_disabled_until", 0);
+      if (alerts_disabled_until != 0) {
+        wakeTime = Math.min(wakeTime, alerts_disabled_until);
+      }
+      long high_alerts_disabled_until = prefs.getLong("high_alerts_disabled_until", 0);
+      if (high_alerts_disabled_until != 0) {
+        wakeTime = Math.min(wakeTime, high_alerts_disabled_until);
+      }
+
+      long low_alerts_disabled_until = prefs.getLong("low_alerts_disabled_until", 0);
+      if (low_alerts_disabled_until != 0) {
+        wakeTime = Math.min(wakeTime, low_alerts_disabled_until);
+      }
+      
+      // All this requires listeners on snooze changes...
+
+      // check when the first alert should be fired. take care of that ???
+      
+      Log.d("Notifications" , "calcuatleArmTime returning: "+ new Date(wakeTime) +" in " +  (wakeTime - now)/60000d + " minutes");
+      return wakeTime;
+    }
+    
     private void ArmTimer(Context ctx) {
-        Log.d(TAG, "ArmTimer called");
-        ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
-        if (activeBgAlert != null) {
-            AlertType alert = AlertType.get_alert(activeBgAlert.alert_uuid);
-            if (alert != null) {
-                Calendar calendar = Calendar.getInstance();
-                AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-                // sleep longer if the alert is snoozed.
-                long wakeTime = activeBgAlert.next_alert_at;
-                Log.d(TAG , "ArmTimer waking at: "+ new Date(wakeTime) +" in " +  (wakeTime - calendar.getTimeInMillis())/60000d + " minutes");
-                if (wakeIntent != null)
-                    alarm.cancel(wakeIntent);
-                wakeIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    alarm.setAlarmClock(new AlarmManager.AlarmClockInfo(wakeTime, wakeIntent), wakeIntent);
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, wakeIntent);
-                } else
-                    alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, wakeIntent);
-            }
+        Calendar calendar = Calendar.getInstance();
+        final long now = calendar.getTimeInMillis();
+        Log.d("Notifications", "ArmTimer called");
+
+        long wakeTime = calcuatleArmTime(ctx, now);
+        if(wakeTime == Long.MAX_VALUE) {
+          Log.d("Notifications" , "ArmTimer timer will not br armed");
+          return;
+        }
+        
+        if(wakeTime < now ) {
+          Log.e("Notifications" , "ArmTimer recieved a negative time, will fire in 6 minutes");
+          wakeTime = now + 6 * 60000;
+        }
+        
+        AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        
+        Log.d("Notifications" , "ArmTimer waking at: "+ new Date(wakeTime ) +" in " +
+            (wakeTime - now) /60000d + " minutes");
+        if (wakeIntent != null)
+            alarm.cancel(wakeIntent);
+        wakeIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            alarm.setAlarmClock(new AlarmManager.AlarmClockInfo(wakeTime, wakeIntent), wakeIntent);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, wakeIntent);
+        } else {
+            alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, wakeIntent);
         }
     }
 

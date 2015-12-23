@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 
@@ -177,11 +179,9 @@ public class SnoozeActivity extends ActivityWithMenu {
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 prefs.edit().putLong(theAlert, 0).apply();
-                if (theAlert.equalsIgnoreCase("alerts_disabled_until")) {
-                    //this is needed to make sure that the missedreading alert will be rechecked, it might have to be raised
-                    //and if not (ie no missed readings for long enough) then the alarm should be reset because it might have to recheck the missedreading status sooner
-                    getApplicationContext().startService(new Intent(getApplicationContext(), MissedReadingService.class));
-                }
+                //this is needed to make sure that the missedreading alert will be rechecked, it might have to be raised
+                //and if not (ie no missed readings for long enough) then the alarm should be reset because it might have to recheck the missedreading status sooner
+                recheckAlerts();
                 //also make sure the text in the Activity is changed
                 displayStatus();
                 showDisableEnableButtons();
@@ -252,6 +252,7 @@ public class SnoozeActivity extends ActivityWithMenu {
                         //also make sure the text in the Activity is changed
                         displayStatus();
                         showDisableEnableButtons();
+                        recheckAlerts();
                     }
                 });
                 b2.setOnClickListener(new View.OnClickListener() {
@@ -266,6 +267,12 @@ public class SnoozeActivity extends ActivityWithMenu {
             }
         });
 
+    }
+    
+    public void recheckAlerts() {
+      Context context = getApplicationContext();
+      context.startService(new Intent(context, Notifications.class));
+      context.startService(new Intent(context, MissedReadingService.class));
     }
 
     public void showDisableEnableButtons() {
