@@ -671,7 +671,7 @@ public class Calibration extends Model {
     public static List<Calibration> latestForGraph(int number, long startTime) {
         return new Select()
                 .from(Calibration.class)
-                .where("timestamp >= " + startTime)
+                .where("timestamp >= " + Math.max(startTime, 0))
                 .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
