@@ -668,12 +668,10 @@ public class Calibration extends Model {
                 .execute();
     }
 
-    public static List<Calibration> latestForGraph(int number, double startTime) {
-        DecimalFormat df = new DecimalFormat("#");
-        df.setMaximumFractionDigits(1);
+    public static List<Calibration> latestForGraph(int number, long startTime) {
         return new Select()
                 .from(Calibration.class)
-                .where("timestamp >= " + df.format(startTime))
+                .where("timestamp >= " + startTime)
                 .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
