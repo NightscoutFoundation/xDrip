@@ -35,9 +35,9 @@ public class DatabaseUtil {
 
     private static final String TAG = DatabaseUtil.class.getSimpleName();
     private static final int BUFFER_SIZE =  2048;
+    private static final Handler handler = new Handler(Looper.getMainLooper());
 
     private static void toastText(final Context context, final String text) {
-        Handler handler = new Handler(Looper.getMainLooper());
         handler.post(new Runnable() {
             @Override
             public void run() {
