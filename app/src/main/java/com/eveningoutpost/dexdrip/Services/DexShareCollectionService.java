@@ -278,13 +278,13 @@ public class DexShareCollectionService extends Service {
     }
 
     public void requestHighPriority() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mBluetoothGatt != null) {
             mBluetoothGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
         }
     }
 
     public void requestLowPriority() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mBluetoothGatt != null) {
             mBluetoothGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_LOW_POWER);
         }
     }
@@ -487,11 +487,13 @@ public class DexShareCollectionService extends Service {
 
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic, boolean enabled) {
         Log.i(TAG, "Characteristic setting notification");
-        mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-        BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
-        Log.i(TAG, "Descriptor found: " + descriptor.getUuid());
-        descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-        mBluetoothGatt.writeDescriptor(descriptor);
+        if (mBluetoothGatt != null) {
+            mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
+            Log.i(TAG, "Descriptor found: " + descriptor.getUuid());
+            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            mBluetoothGatt.writeDescriptor(descriptor);
+        }
     }
 
     public void setCharacteristicIndication(BluetoothGattCharacteristic characteristic) {
@@ -500,11 +502,13 @@ public class DexShareCollectionService extends Service {
 
     public void setCharacteristicIndication(BluetoothGattCharacteristic characteristic, boolean enabled) {
         Log.i(TAG, "Characteristic setting indication");
-        mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-        BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
-        Log.i(TAG, "Descriptor found: " + descriptor.getUuid());
-        descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
-        mBluetoothGatt.writeDescriptor(descriptor);
+        if (mBluetoothGatt != null) {
+            mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
+            Log.i(TAG, "Descriptor found: " + descriptor.getUuid());
+            descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+            mBluetoothGatt.writeDescriptor(descriptor);
+        }
     }
 
     public void writeCommand(List<byte[]> packets, int aRecordType, Action1<byte[]> dataResponseListener) {
@@ -535,7 +539,7 @@ public class DexShareCollectionService extends Service {
             Log.d(TAG, "Writing: " + writePackets.get(index) + " index: " + index);
             if(mSendDataCharacteristic != null && writePackets != null) {
                 mSendDataCharacteristic.setValue(writePackets.get(index));
-                if (mBluetoothGatt.writeCharacteristic(mSendDataCharacteristic)) {
+                if (mBluetoothGatt != null && mBluetoothGatt.writeCharacteristic(mSendDataCharacteristic)) {
                     Log.d(TAG, "Wrote Successfully");
                 }
             }
@@ -582,7 +586,7 @@ public class DexShareCollectionService extends Service {
 
                 Log.i(TAG, "discovering services");
                 currentGattTask = GATT_SETUP;
-                if (!mBluetoothGatt.discoverServices()) {
+                if (mBluetoothGatt == null || !mBluetoothGatt.discoverServices()) {
                     Log.w(TAG, "discovering failed");
                     if(shouldDisconnect) {
                         stopSelf();
@@ -607,7 +611,7 @@ public class DexShareCollectionService extends Service {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             Log.d(TAG, "services discovered " + status);
-           if (status == BluetoothGatt.GATT_SUCCESS) {
+           if (status == BluetoothGatt.GATT_SUCCESS && mBluetoothGatt != null) {
                mShareService = mBluetoothGatt.getService(DexShareAttributes.CradleService);
                if(mShareService == null) {
                    mShareService = mBluetoothGatt.getService(DexShareAttributes.CradleService2);
@@ -631,7 +635,7 @@ public class DexShareCollectionService extends Service {
                     Log.v(TAG, "Characteristic Read " + characteristic.getUuid() + " " + characteristic.getValue());
                     setCharacteristicNotification(mHeartBeatCharacteristic);
                 }
-                mBluetoothGatt.readCharacteristic(mHeartBeatCharacteristic);
+                gatt.readCharacteristic(mHeartBeatCharacteristic);
             } else {
                 Log.e(TAG, "Characteristic failed to read");
             }
@@ -697,7 +701,7 @@ public class DexShareCollectionService extends Service {
                 Log.d(TAG, "Wrote a characteristic successfully " + characteristic.getUuid());
                 if (mAuthenticationCharacteristic.getUuid().equals(characteristic.getUuid())) {
                     state_authSucess = true;
-                    mBluetoothGatt.readCharacteristic(mHeartBeatCharacteristic);
+                    gatt.readCharacteristic(mHeartBeatCharacteristic);
                 }
             } else if ((status & BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION) != 0 || (status & BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION) != 0) {
                 if (gatt.getDevice().getBondState() == BluetoothDevice.BOND_NONE) {
