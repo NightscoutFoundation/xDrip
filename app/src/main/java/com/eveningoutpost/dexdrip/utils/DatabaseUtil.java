@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.format.DateFormat;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.widget.Toast;
@@ -31,9 +33,18 @@ import static com.eveningoutpost.dexdrip.utils.FileUtils.*;
  */
 public class DatabaseUtil {
 
-    public static final String TAG = DatabaseUtil.class.getSimpleName();
-    public static final int BUFFER_SIZE =  2048;
+    private static final String TAG = DatabaseUtil.class.getSimpleName();
+    private static final int BUFFER_SIZE =  2048;
 
+    private static void toastText(final Context context, final String text) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 
     public static String saveSql(Context context) {
 
@@ -75,17 +86,17 @@ public class DatabaseUtil {
                         zipOutputStream.write(buffer, 0, count);
                     }
                 } else {
-                    Toast.makeText(context, "Problem: No current DB found!", Toast.LENGTH_LONG).show();
+                    toastText(context, "Problem: No current DB found!");
                     Log.d(TAG, "Problem: No current DB found");
                 }
             } else {
-                Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG).show();
+                toastText(context, "SD card not writable!");
                 Log.d(TAG, "SD card not writable!");
                 zipFilename = null;
             }
 
         } catch (IOException e) {
-            Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG).show();
+            toastText(context, "SD card not writable!");
             Log.e(TAG, "Exception while writing DB", e);
             zipFilename = null;
         } finally {
@@ -102,7 +113,6 @@ public class DatabaseUtil {
         }
         return zipFilename;
     }
-
 
     public static String saveSqlUnzipped(Context context) {
 
@@ -137,16 +147,16 @@ public class DatabaseUtil {
                     dst = destStream.getChannel();
                     dst.transferFrom(src, 0, src.size());
                 } else {
-                    Toast.makeText(context, "Problem: No current DB found!", Toast.LENGTH_LONG).show();
+                    toastText(context, "Problem: No current DB found!");
                     Log.d(TAG, "Problem: No current DB found");
                 }
             } else {
-                Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG).show();
+                toastText(context, "SD card not writable!");
                 Log.d(TAG, "SD card not writable!");
             }
 
         } catch (IOException e) {
-            Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG).show();
+            toastText(context, "SD card not writable!");
             Log.e(TAG, "Exception while writing DB", e);
         } finally {
             if (src != null) try {
@@ -237,12 +247,12 @@ public class DatabaseUtil {
 
 
             } else {
-                Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG).show();
+                toastText(context, "SD card not writable!");
                 Log.d(TAG, "SD card not writable!");
             }
 
         } catch (IOException e) {
-            Toast.makeText(context, "SD card not writable!", Toast.LENGTH_LONG).show();
+            toastText(context, "SD card not writable!");
             Log.e(TAG, "Exception while writing DB", e);
         } finally {
             if (printStream != null) {
