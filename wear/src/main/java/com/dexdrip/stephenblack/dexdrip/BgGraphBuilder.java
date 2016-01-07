@@ -1,4 +1,4 @@
-package com.dexdrip.stephenblack.nightwatch;
+package com.dexdrip.stephenblack.dexdrip;
 
 import android.content.Context;
 import android.text.format.DateFormat;

@@ -1,4 +1,4 @@
-package com.dexdrip.stephenblack.nightwatch;
+package com.dexdrip.stephenblack.dexdrip;
 
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -26,7 +26,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 

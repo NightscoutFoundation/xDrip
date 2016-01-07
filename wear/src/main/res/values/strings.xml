@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">NightW. Prefs.</string>
+    <string name="app_name">xDrip Prefs.</string>
 
     <string-array name="chart_timeframe">
         <item>1 hour</item>

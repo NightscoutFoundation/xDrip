@@ -1,4 +1,4 @@
-package com.dexdrip.stephenblack.nightwatch;
+package com.dexdrip.stephenblack.dexdrip;
 
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
