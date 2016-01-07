@@ -7,6 +7,9 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataMap;
@@ -92,7 +95,6 @@ public class WatchUpdaterService extends WearableListenerService implements
 
         if (wear_integration) {
             if (googleApiClient.isConnected()) {
-                //TODO Adrian: ACTION_OPEN_MENU?
                 if (ACTION_RESEND.equals(action)) {
                     resendData();
                 } else if (ACTION_OPEN_SETTINGS.equals(action)) {
@@ -170,25 +172,60 @@ public class WatchUpdaterService extends WearableListenerService implements
         Double highMark = Double.parseDouble(sPrefs.getString("highValue", "170"));
         Double lowMark = Double.parseDouble(sPrefs.getString("lowValue", "70"));
         DataMap dataMap = new DataMap();
-        //TODO Add data
-        /*
-        dataMap.putString("sgvString", unitized_string());
-        dataMap.putString("slopeArrow", slopeArrow());
-        dataMap.putDouble("timestamp", datetime);
-        dataMap.putString("delta", unitizedDeltaString());
-        dataMap.putString("battery", battery);
-        dataMap.putLong("sgvLevel", sgvLevel(prefs));
-        dataMap.putInt("batteryLevel", batteryLevel());
-        dataMap.putDouble("sgvDouble", sgv_double());
-        dataMap.putDouble("high", inMgdl(highMark));
-        dataMap.putDouble("low", inMgdl(lowMark));
-        */
+
+        BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(getApplicationContext());
+
+        int battery = BgSendQueue.getBatteryLevel(getApplicationContext());
+
+        dataMap.putString("sgvString", bgGraphBuilder.unitized_string(bg.calculated_value));
+        dataMap.putString("slopeArrow", bg.slopeArrow());
+        dataMap.putDouble("timestamp", bg.timestamp); //TODO: change that to long (was like that in NW)
+        dataMap.putString("delta", bgGraphBuilder.unitizedDeltaString(true, true));
+        dataMap.putString("battery", "" + battery);
+        dataMap.putLong("sgvLevel", sgvLevel(bg.calculated_value, sPrefs, bgGraphBuilder));
+        dataMap.putInt("batteryLevel", (battery>=30)?1:0);
+        dataMap.putDouble("sgvDouble", bg.calculated_value);
+        dataMap.putDouble("high", inMgdl(highMark, sPrefs));
+        dataMap.putDouble("low", inMgdl(lowMark, sPrefs));
         //TODO: Add raw again
         //dataMap.putString("rawString", threeRaw((prefs.getString("units", "mgdl").equals("mgdl"))));
         return dataMap;
     }
 
 
+    // TODO: Integrate these helper methods into BGGraphBuilder.
+    // TODO: clean them up  (no "if(boolean){return true; else return false;").
+    // TODO: Make the needed methods in BgGraphBuilder static.
+
+    public long sgvLevel(double sgv_double, SharedPreferences prefs, BgGraphBuilder bgGB) {
+        Double highMark = Double.parseDouble(prefs.getString("highValue", "170"));
+        Double lowMark = Double.parseDouble(prefs.getString("lowValue", "70"));
+        if(bgGB.unitized(sgv_double) >= highMark) {
+            return 1;
+        } else if (bgGB.unitized(sgv_double) >= lowMark) {
+            return 0;
+        } else {
+            return -1;
+        }
+    }
+
+    public double inMgdl(double value, SharedPreferences sPrefs) {
+        if (!doMgdl(sPrefs)) {
+            return value * Constants.MMOLL_TO_MGDL;
+        } else {
+            return value;
+        }
+
+    }
+
+    public boolean doMgdl(SharedPreferences sPrefs) {
+        String unit = sPrefs.getString("units", "mgdl");
+        if (unit.compareTo("mgdl") == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 
 
