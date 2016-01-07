@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="NightWatch Settings"
+        android:key="category"
+        android:selectable="false">
+
+    <CheckBoxPreference android:title="Dark"
+        android:defaultValue="true"
+        android:summary="Dark theme"
+        android:key="dark" />
+
+        <CheckBoxPreference android:title="Show Raw"
+            android:defaultValue="false"
+            android:summary="Show Raw."
+            android:key="showRaw" />
+
+        <CheckBoxPreference android:title="Show Raw on ???"
+            android:defaultValue="true"
+            android:summary="Show Raw on ???."
+            android:key="showRawNoise" />
+
+        <ListPreference
+            android:key="chart_timeframe"
+            android:title="Chart Timeframe"
+            android:summary="Chart Timeframe"
+            android:entries="@array/chart_timeframe"
+            android:entryValues="@array/chart_timeframe_values"
+            android:defaultValue="5" />
+
+        <CheckBoxPreference android:title="Show Ago"
+            android:defaultValue="true"
+            android:summary="Minutes since last reading. (Circle WF)"
+            android:key="showAgo" />
+
+        <CheckBoxPreference android:title="Show Delta"
+            android:defaultValue="true"
+            android:summary="Show delta. (Circle WF)"
+            android:key="showDelta" />
+
+        <CheckBoxPreference android:title="Show BG"
+            android:defaultValue="true"
+            android:summary="Show BG. (Circle WF)"
+            android:key="showBG" />
+
+        <CheckBoxPreference android:title="Show Big Numbers"
+            android:defaultValue="false"
+            android:summary="Big numbers. (Circle WF)"
+            android:key="showBigNumbers" />
+
+        <CheckBoxPreference android:title="Show Ring History"
+            android:defaultValue="false"
+            android:summary="Graphical history. (Circle WF)"
+            android:key="showRingHistory" />
+
+        <CheckBoxPreference android:title="Light Ring History"
+            android:defaultValue="true"
+            android:summary="Less eyecandy. (Circle WF)"
+            android:key="softRingHistory" />
+
+
+        <CheckBoxPreference android:title="Show Animations"
+            android:defaultValue="true"
+            android:summary="Animations. (Circle WF)"
+            android:key="animation" />
+
+    </PreferenceCategory>
+</PreferenceScreen>

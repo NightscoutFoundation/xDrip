@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" tools:context=".Home" tools:deviceIds="wear_square"
+    android:background="@color/black"
+    android:id="@+id/main_layout">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:weightSum="1">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:paddingTop="5dp"
+            android:weightSum="1"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="-5dp"
+            android:gravity="center_horizontal">
+
+
+            <TextView
+                android:id="@+id/delta"
+                android:textSize="30sp"
+                android:text="--- mg/dl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:layout_gravity="bottom"
+                android:gravity="center_horizontal|bottom"
+                android:layout_marginRight="5dp" />
+
+            <TextView
+                android:id="@+id/sgv"
+                android:textSize="41sp"
+                android:text="---"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal" />
+
+        </LinearLayout>
+
+         <lecho.lib.hellocharts.view.LineChartView
+            android:id="@+id/chart"
+            android:layout_width="match_parent"
+            android:layout_height="77dp"
+            android:layout_gravity="bottom"
+            android:gravity="center_horizontal|top" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:textAlignment="center"
+            android:gravity="center_horizontal"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/watch_time"
+                android:textSize="35sp"
+                android:text="12:00"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:textColor="#FFFFFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:layout_marginRight="6dp"
+                android:layout_gravity="center_horizontal|top" />
+
+            <TextView
+                android:id="@+id/timestamp"
+                android:textSize="26sp"
+                android:text="-- '"
+                android:layout_width="wrap_content"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:layout_gravity="top"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

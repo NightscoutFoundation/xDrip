@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.dexdrip.stephenblack.nightwatch" >
+
+    <uses-feature android:name="android.hardware.type.watch" />
+    <uses-permission android:name="com.google.android.permission.PROVIDE_BACKGROUND" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_icon"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.DeviceDefault" >
+        <meta-data
+                android:name="com.google.android.gms.version"
+                android:value="@integer/google_play_services_version" />
+        <service
+            android:name=".Home"
+            android:allowEmbedded="true"
+            android:label="NightWatch"
+            android:permission="android.permission.BIND_WALLPAPER">
+            <meta-data android:name="android.service.wallpaper"
+                       android:resource="@xml/watch_face"/>
+            <meta-data android:name="com.google.android.wearable.watchface.preview" android:resource="@drawable/watchface_graph" />
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+                <category android:name="com.google.android.wearable.watchface.category.WATCH_FACE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".LargeHome"
+            android:allowEmbedded="true"
+            android:label="NightWatch(Large)"
+            android:permission="android.permission.BIND_WALLPAPER">
+            <meta-data android:name="android.service.wallpaper"
+                       android:resource="@xml/watch_face"/>
+            <meta-data android:name="com.google.android.wearable.watchface.preview" android:resource="@drawable/watchface_dark" />
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+                <category android:name="com.google.android.wearable.watchface.category.WATCH_FACE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".BIGChart"
+            android:allowEmbedded="true"
+            android:label="NightWatch(BigChart)"
+            android:permission="android.permission.BIND_WALLPAPER">
+            <meta-data android:name="android.service.wallpaper"
+                android:resource="@xml/watch_face"/>
+            <meta-data android:name="com.google.android.wearable.watchface.preview" android:resource="@drawable/watchface_bigchart" />
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+                <category android:name="com.google.android.wearable.watchface.category.WATCH_FACE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".CircleWatchface"
+            android:allowEmbedded="true"
+            android:label="NightWatch(Circle)"
+            android:permission="android.permission.BIND_WALLPAPER">
+            <meta-data android:name="android.service.wallpaper"
+                android:resource="@xml/watch_face"/>
+            <meta-data android:name="com.google.android.wearable.watchface.preview" android:resource="@drawable/watchface_circle" />
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+                <category android:name="com.google.android.wearable.watchface.category.WATCH_FACE" />
+            </intent-filter>
+        </service>
+
+
+        <service android:name=".ListenerService">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
+            </intent-filter>
+        </service>
+        <activity
+            android:name=".alerts.AlertList"
+            android:label="Alert List" />
+
+        <activity
+            android:name=".alerts.ErrorsActivity"
+            android:label="Error List" />
+        <activity
+            android:name=".alerts.SnoozeActivity"
+            android:label="Alert Snooze" >
+        </activity>
+        <activity
+            android:name=".alerts.EditAlertActivity"
+            android:label="Edit Alert" >
+        </activity>
+        <service
+            android:name=".alerts.Notifications"
+            android:exported="false" >
+        </service>
+        <service
+            android:name=".alerts.PebbleSync"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+
+        <activity
+            android:name=".NWPreferences"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>
