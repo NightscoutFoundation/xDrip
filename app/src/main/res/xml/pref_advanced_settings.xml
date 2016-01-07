@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="Watch Integration"
+        android:key="watch_integration">
+        <CheckBoxPreference
+            android:key="wear_sync"
+            android:title="Android Wear Integration"
+            android:summary="Send data to Android Wear Watchface."
+            android:defaultValue="false" />
+        <SwitchPreference
+            android:title="Send to Pebble"
+            android:key="broadcast_to_pebble"
+            android:summary="If you have a pebble watch you can send bg data straight to it"
+            android:defaultValue="false">
+        </SwitchPreference>
+    </PreferenceCategory>
+
     <PreferenceCategory
         android:key="other_category"
         android:title="Other Settings">
@@ -7,12 +24,8 @@
             android:defaultValue="false"
             android:key="broadcast_data_through_intents"
             android:summary="@string/pref_summary_broadcast_enabled"
-            android:title="@string/pref_title_broadcast_enabled"></SwitchPreference>
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="broadcast_to_pebble"
-            android:summary="If you have a pebble watch you can send bg data straight to it"
-            android:title="Send to Pebble"></SwitchPreference>
+            android:title="@string/pref_title_broadcast_enabled">
+        </SwitchPreference>
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_less_common_settings"
             android:summary="Debug and other misc options"
@@ -118,6 +131,56 @@
                     android:title="Store sensor locaton to help algorithm improvment" />
             </PreferenceCategory>
         </PreferenceScreen>
+
+        <CheckBoxPreference
+            android:key="predictive_bg"
+            android:title="Display Predictive Values"
+            android:summary="Not Recommended. xDrip will attempt to predict readings each minute based on the past few values."
+            android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="interpret_raw"
+            android:title="Interpret Raw Values"
+            android:summary="If using Share, DexDrip will show values when they are normally hidden on the receiver."
+            android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="bg_to_speech"
+            android:title="Speak Readings"
+            android:summary="If the phone has text-to-speech capabilities it will read new readings out loud."
+            android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="bg_to_speech_shortcut"
+            android:title="Speak Readings Shortcut"
+            android:summary="Show a shortcut in the \u2630 menu to toggle Speak Readings"
+            android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="store_logs"
+            android:title="Store logs for troubleshooting"
+            android:summary="Only enable if you are having trouble with the app."
+            android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="show_data_tables"
+            android:title="Show Datatables"
+            android:summary="Show Calibration and BG datatables in the app drawer."
+            android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="disable_battery_warning"
+            android:title="Disable Battery Warning"
+            android:summary="Disable the warning for low transmitter battery state on the home screen. (Only relevant for DIY receivers.)"
+            android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="xDripViewer_upload_mode"
+            android:title="xDripViewer upload mode"
+            android:summary="Upload more fields needed for optimum xDripViewer functioning"
+            android:defaultValue="false" />
+        <Preference
+            android:title="View Recent Errors/Warnings"
+            android:key="recent_errors">
+            <intent
+                android:action="android.intent.action.MAIN"
+                android:targetPackage="com.eveningoutpost.dexdrip"
+                android:targetClass="com.eveningoutpost.dexdrip.ErrorsActivity"/>
+        </Preference>
+
     </PreferenceCategory>
 </PreferenceScreen>
 

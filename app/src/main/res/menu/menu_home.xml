@@ -13,7 +13,6 @@
         android:orderInCategory="1">
 
         <menu>
-
     <item android:id="@+id/action_export_database"
         android:title="@string/menu_export_database"
         android:checkable="false"
@@ -56,6 +55,17 @@
         android:visible="true"
         android:orderInCategory="1"
         android:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_resend_last_bg"
+        android:orderInCategory="100"
+        android:title="@string/action_resend_to_watch"
+        android:showAsAction="never" />
+    <item
+        android:id="@+id/action_open_watch_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_open_watch_setting"
+        android:showAsAction="never" />
 
 
     <item android:id="@+id/deleteAllBG"
