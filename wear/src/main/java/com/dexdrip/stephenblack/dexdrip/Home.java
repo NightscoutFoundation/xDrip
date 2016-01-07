@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 
+import com.eveningoutpost.dexdrip.R;
 import com.ustwo.clockwise.WatchMode;
 
 import lecho.lib.hellocharts.util.Utils;

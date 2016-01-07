@@ -29,6 +29,7 @@ import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.R;
 import com.google.android.gms.wearable.DataMap;
 import com.ustwo.clockwise.WatchFace;
 import com.ustwo.clockwise.WatchFaceTime;
