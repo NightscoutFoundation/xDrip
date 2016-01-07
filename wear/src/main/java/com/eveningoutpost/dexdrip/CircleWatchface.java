@@ -1,4 +1,4 @@
-package com.dexdrip.stephenblack.dexdrip;
+package com.eveningoutpost.dexdrip;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,7 +24,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import com.eveningoutpost.dexdrip.R;
 import com.google.android.gms.wearable.DataMap;
 import com.ustwo.clockwise.WatchFace;
 import com.ustwo.clockwise.WatchFaceTime;

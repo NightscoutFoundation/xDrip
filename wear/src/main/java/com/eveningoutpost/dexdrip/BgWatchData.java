@@ -1,4 +1,4 @@
-package com.dexdrip.stephenblack.dexdrip;
+package com.eveningoutpost.dexdrip;
 
 /**
  * Created by stephenblack on 1/7/15.

@@ -1,10 +1,8 @@
-package com.dexdrip.stephenblack.dexdrip;
+package com.eveningoutpost.dexdrip;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 
-import com.eveningoutpost.dexdrip.R;
 import com.ustwo.clockwise.WatchMode;
 
 import lecho.lib.hellocharts.util.Utils;
@@ -14,7 +12,7 @@ public class Home extends BaseWatchFace {
     @Override
     public void onCreate() {
         super.onCreate();
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         layoutView = inflater.inflate(R.layout.activity_home, null);
         performViewSetup();
     }

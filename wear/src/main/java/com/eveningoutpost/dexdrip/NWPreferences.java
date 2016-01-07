@@ -1,4 +1,4 @@
-package com.dexdrip.stephenblack.dexdrip;
+package com.eveningoutpost.dexdrip;
 
 
 import android.os.Bundle;

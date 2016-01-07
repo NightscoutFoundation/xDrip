@@ -1,4 +1,4 @@
-package com.dexdrip.stephenblack.dexdrip;
+package com.eveningoutpost.dexdrip;
 
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -8,9 +8,12 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.Shader;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
@@ -19,33 +22,34 @@ import android.support.wearable.view.WatchViewStub;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.eveningoutpost.dexdrip.R;
 import com.google.android.gms.wearable.DataMap;
 import com.ustwo.clockwise.WatchFace;
 import com.ustwo.clockwise.WatchFaceTime;
+import com.ustwo.clockwise.WatchMode;
 import com.ustwo.clockwise.WatchShape;
 
 import java.util.ArrayList;
 import java.util.Date;
 
+import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.LineChartView;
 
 /**
  * Created by stephenblack on 12/29/14.
  */
-public  abstract class BaseWatchFace extends WatchFace implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPreferenceChangeListener {
     public final static IntentFilter INTENT_FILTER;
     public static final long[] vibratePattern = {0,400,300,400,300,400};
-    public TextView mTime, mSgv, mDirection, mTimestamp, mUploaderBattery, mDelta, mRaw;
+    public TextView mTime, mSgv, mTimestamp, mDelta;
     public RelativeLayout mRelativeLayout;
-    public LinearLayout mLinearLayout;
+    //public LinearLayout mLinearLayout;
     public long sgvLevel = 0;
     public int batteryLevel = 1;
     public int ageLevel = 1;
@@ -65,6 +69,8 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public View layoutView;
     private final Point displaySize = new Point();
     private int specW, specH;
+    private int animationAngle = 0;
+    private boolean isAnimated = false;
 
     private LocalBroadcastManager localBroadcastManager;
     private MessageReceiver messageReceiver;
@@ -89,6 +95,9 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(this);
         sharedPrefs.registerOnSharedPreferenceChangeListener(this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        layoutView = inflater.inflate(R.layout.activity_bigchart, null);
+        performViewSetup();
     }
 
     @Override
@@ -110,13 +119,9 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             public void onLayoutInflated(WatchViewStub stub) {
                 mTime = (TextView) stub.findViewById(R.id.watch_time);
                 mSgv = (TextView) stub.findViewById(R.id.sgv);
-                mDirection = (TextView) stub.findViewById(R.id.direction);
                 mTimestamp = (TextView) stub.findViewById(R.id.timestamp);
-                mRaw = (TextView) stub.findViewById(R.id.raw);
-                mUploaderBattery = (TextView) stub.findViewById(R.id.uploader_battery);
                 mDelta = (TextView) stub.findViewById(R.id.delta);
                 mRelativeLayout = (RelativeLayout) stub.findViewById(R.id.main_layout);
-                mLinearLayout = (LinearLayout) stub.findViewById(R.id.secondary_layout);
                 chart = (LineChartView) stub.findViewById(R.id.chart);
                 layoutSet = true;
                 showAgoRawBatt();
@@ -179,7 +184,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     protected void onTimeChanged(WatchFaceTime oldTime, WatchFaceTime newTime) {
         if (layoutSet && (newTime.hasHourChanged(oldTime) || newTime.hasMinuteChanged(oldTime))) {
             wakeLock.acquire(50);
-            final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BaseWatchFace.this);
+            final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BIGChart.this);
             mTime.setText(timeFormat.format(System.currentTimeMillis()));
             showAgoRawBatt();
 
@@ -216,13 +221,18 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                     mSgv.setPaintFlags(mSgv.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
                 }
 
-                final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BaseWatchFace.this);
+                final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BIGChart.this);
                 mTime.setText(timeFormat.format(System.currentTimeMillis()));
 
                 showAgoRawBatt();
 
-                mDirection.setText(dataMap.getString("slopeArrow"));
-                mDelta.setText(dataMap.getString("delta"));
+                String delta = dataMap.getString("delta");
+
+                if (delta.endsWith(" mg/dl")) {
+                    mDelta.setText(delta.substring(0, delta.length() - 6));
+                } else if (delta.endsWith(" mmol")) {
+                    mDelta.setText(delta.substring(0, delta.length() - 5));
+                }
 
                 if (chart != null) {
                     addToWatchSet(dataMap);
@@ -232,31 +242,27 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                         mRelativeLayout.getMeasuredHeight());
                 invalidate();
+                setColor();
+
+                //start animation?
+                // dataMap.getDataMapArrayList("entries") == null -> not on "resend data".
+                if (sharedPrefs.getBoolean("animation", false) && dataMap.getDataMapArrayList("entries") == null && (sgvString.equals("100") || sgvString.equals("5.5") || sgvString.equals("5,5"))) {
+                    startAnimation();
+                }
+
+
             } else {
                 Log.d("ERROR: ", "DATA IS NOT YET SET");
             }
-            setColor();
         }
     }
 
     private void showAgoRawBatt() {
 
-        if(mRaw == null || mTimestamp == null || mUploaderBattery == null){
+        if( mTimestamp == null){
             return;
         }
-
-        if (sharedPrefs.getBoolean("showRaw", false)||
-                (sharedPrefs.getBoolean("showRawNoise", true) && sgvString.equals("???"))
-                ) {
-            mRaw.setVisibility(View.VISIBLE);
-            mRaw.setText("R: " + rawString);
-            mTimestamp.setText(readingAge(true));
-            mUploaderBattery.setText("U: " + batteryString + "%");
-        } else {
-            mRaw.setVisibility(View.GONE);
-            mTimestamp.setText(readingAge(false));
-            mUploaderBattery.setText("Uploader: " + batteryString + "%");
-        }
+        mTimestamp.setText(readingAge(true));
     }
 
     public void setColor() {
@@ -268,7 +274,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
 
     }
 
-    
+
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key){
@@ -281,16 +287,160 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         }
         invalidate();
     }
-protected abstract void setColorDark();
-    protected abstract void setColorBright();
+
+    protected void updateRainbow() {
+        animationAngle = (animationAngle + 1) % 360;
+        //Animation matrix:
+        int[] rainbow = {Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE
+                , Color.CYAN};
+        Shader shader = new LinearGradient(0, 0, 0, 20, rainbow,
+                null, Shader.TileMode.MIRROR);
+        Matrix matrix = new Matrix();
+        matrix.setRotate(animationAngle);
+        shader.setLocalMatrix(matrix);
+        mSgv.getPaint().setShader(shader);
+        invalidate();
+    }
+
+    private synchronized boolean isAnimated() {
+        return isAnimated;
+    }
+
+    private synchronized void setIsAnimated(boolean isAnimated) {
+        this.isAnimated = isAnimated;
+    }
+
+    void startAnimation() {
+        Log.d("CircleWatchface", "start startAnimation");
+
+        Thread animator = new Thread() {
+
+
+            public void run() {
+                //TODO:Wakelock?
+                setIsAnimated(true);
+                for (int i = 0; i <= 8 * 1000 / 40; i++) {
+                    updateRainbow();
+                    try {
+                        Thread.sleep(40);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                mSgv.getPaint().setShader(null);
+                setIsAnimated(false);
+                invalidate();
+                setColor();
+
+                System.gc();
+            }
+        };
+
+        animator.start();
+    }
+
+
+    protected void setColorDark() {
+        mTime.setTextColor(Color.WHITE);
+        mRelativeLayout.setBackgroundColor(Color.BLACK);
+        if (sgvLevel == 1) {
+            mSgv.setTextColor(Color.YELLOW);
+            mDelta.setTextColor(Color.YELLOW);
+        } else if (sgvLevel == 0) {
+            mSgv.setTextColor(Color.WHITE);
+            mDelta.setTextColor(Color.WHITE);
+        } else if (sgvLevel == -1) {
+            mSgv.setTextColor(Color.RED);
+            mDelta.setTextColor(Color.RED);
+        }
+
+
+        if (ageLevel == 1) {
+            mTimestamp.setTextColor(Color.WHITE);
+        } else {
+            mTimestamp.setTextColor(Color.RED);
+        }
+
+        if (batteryLevel == 1) {
+        } else {
+        }
+        if (chart != null) {
+            highColor = Color.YELLOW;
+            lowColor = Color.RED;
+            midColor = Color.WHITE;
+            singleLine = false;
+            pointSize = 2;
+            setupCharts();
+        }
+
+    }
+
+
+    protected void setColorBright() {
+
+        if (getCurrentWatchMode() == WatchMode.INTERACTIVE) {
+            mRelativeLayout.setBackgroundColor(Color.WHITE);
+            if (sgvLevel == 1) {
+                mSgv.setTextColor(Utils.COLOR_ORANGE);
+                mDelta.setTextColor(Utils.COLOR_ORANGE);
+            } else if (sgvLevel == 0) {
+                mSgv.setTextColor(Color.BLACK);
+                mDelta.setTextColor(Color.BLACK);
+            } else if (sgvLevel == -1) {
+                mSgv.setTextColor(Color.RED);
+                mDelta.setTextColor(Color.RED);
+            }
+
+            if (ageLevel == 1) {
+                mTimestamp.setTextColor(Color.BLACK);
+            } else {
+                mTimestamp.setTextColor(Color.RED);
+            }
+
+
+            mTime.setTextColor(Color.BLACK);
+            if (chart != null) {
+                highColor = Utils.COLOR_ORANGE;
+                midColor = Color.BLUE;
+                lowColor = Color.RED;
+                singleLine = false;
+                pointSize = 2;
+                setupCharts();
+            }
+        } else {
+            mRelativeLayout.setBackgroundColor(Color.BLACK);
+            if (sgvLevel == 1) {
+                mSgv.setTextColor(Color.YELLOW);
+                mDelta.setTextColor(Color.YELLOW);
+            } else if (sgvLevel == 0) {
+                mSgv.setTextColor(Color.WHITE);
+                mDelta.setTextColor(Color.WHITE);
+            } else if (sgvLevel == -1) {
+                mSgv.setTextColor(Color.RED);
+                mDelta.setTextColor(Color.RED);
+            }
+            mTimestamp.setTextColor(Color.WHITE);
+
+            mTime.setTextColor(Color.WHITE);
+            if (chart != null) {
+                highColor = Color.YELLOW;
+                midColor = Color.WHITE;
+                lowColor = Color.RED;
+                singleLine = true;
+                pointSize = 2;
+                setupCharts();
+            }
+        }
+
+    }
 
 
     public void missedReadingAlert() {
         int minutes_since   = (int) Math.floor(timeSince()/(1000*60));
         if(minutes_since >= 16 && ((minutes_since - 16) % 5) == 0) {
             NotificationCompat.Builder notification = new NotificationCompat.Builder(getApplicationContext())
-                        .setContentTitle("Missed BG Readings")
-                        .setVibrate(vibratePattern);
+                    .setContentTitle("Missed BG Readings")
+                    .setVibrate(vibratePattern);
             NotificationManager mNotifyMgr = (NotificationManager) getApplicationContext().getSystemService(getApplicationContext().NOTIFICATION_SERVICE);
             mNotifyMgr.notify(missed_readings_alert_id, notification.build());
             ListenerService.requestData(this); // attempt to recover missing data
