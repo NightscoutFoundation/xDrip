@@ -10,6 +10,7 @@
         android:summary="Dark theme"
         android:key="dark" />
 
+        <!-- TODO: reenable raw
         <CheckBoxPreference android:title="Show Raw"
             android:defaultValue="false"
             android:summary="Show Raw."
@@ -19,6 +20,7 @@
             android:defaultValue="true"
             android:summary="Show Raw on ???."
             android:key="showRawNoise" />
+         -->
 
         <ListPreference
             android:key="chart_timeframe"
