@@ -264,6 +264,10 @@ public class AlertPlayer {
         }
         if (profile != ALERT_PROFILE_SILENT && alert.vibrate) {
             builder.setVibrate(Notifications.vibratePattern);
+        } else {
+            // In order to still show on all android wear watches, either a sound or a vibrate pattern
+            // seems to be needed. This pattern basically does not vibrate:
+            builder.setVibrate(new long[]{alert.getNextAlertTime(ctx) + 60000, 1});
         }
         NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(Notifications.exportAlertNotificationId);
