@@ -18,4 +18,28 @@
         android:orderInCategory="1"
         android:showAsAction="never"/>
 
+    <item android:id="@+id/importsettings"
+        android:title="Import Settings"
+        android:checkable="false"
+        android:orderInCategory="1"
+        android:showAsAction="never"/>
+
+    <item android:id="@+id/exportsettings"
+        android:title="Export Settings (warning!)"
+        android:checkable="false"
+        android:orderInCategory="1"
+        android:showAsAction="never"/>
+
+    <item android:id="@+id/synctreatments"
+        android:title="Sync Treatments"
+        android:checkable="false"
+        android:orderInCategory="1"
+        android:showAsAction="never"/>
+
+    <item android:id="@+id/action_toggle_speakreadings"
+        android:title="@string/menu_toggle_speakreadings"
+        android:checkable="true"
+        android:orderInCategory="2"
+        android:visible="false"
+        android:showAsAction="never"/>
 </menu>
