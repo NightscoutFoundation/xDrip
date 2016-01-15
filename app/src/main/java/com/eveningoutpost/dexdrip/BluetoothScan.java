@@ -12,13 +12,10 @@ import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -39,6 +36,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.AndroidBarcode;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
+import com.eveningoutpost.dexdrip.utils.LocationHelper;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -83,18 +81,8 @@ public class BluetoothScan extends ListActivityWithMenu {
                 Toast.makeText(this, "The android version of this device is not compatible with Bluetooth Low Energy", Toast.LENGTH_LONG).show();
             }
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
-                        0);
-
-
-            }
-        }
+        // Will request that GPS be enabled for devices running Marshmallow or newer.
+        LocationHelper.requestLocationForBluetooth(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             initializeScannerCallback();
 
@@ -318,8 +306,12 @@ public class BluetoothScan extends ListActivityWithMenu {
             } else returnToHome();
 
         } else if(device.getName().toLowerCase().contains("drip")) {
-            if (!CollectionServiceStarter.isBTWixel(getApplicationContext()))
+            if (!
+                    (CollectionServiceStarter.isBTWixel(getApplicationContext())
+                            || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())
+                    )) {
                 prefs.edit().putString("dex_collection_method", "BluetoothWixel").apply();
+            }
             returnToHome();
         } else {
             returnToHome();

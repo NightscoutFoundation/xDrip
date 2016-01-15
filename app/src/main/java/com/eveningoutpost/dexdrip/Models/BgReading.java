@@ -73,6 +73,10 @@ public class BgReading extends Model implements ShareUploadableBg{
     public double calculated_value;
 
     @Expose
+    @Column(name = "filtered_calculated_value")
+    public double filtered_calculated_value;
+
+    @Expose
     @Column(name = "calculated_value_slope")
     public double calculated_value_slope;
 
@@ -253,7 +257,7 @@ public class BgReading extends Model implements ShareUploadableBg{
             bgReading.find_new_curve();
             bgReading.find_new_raw_curve();
             context.startService(new Intent(context, Notifications.class));
-            BgSendQueue.addToQueue(bgReading, "create", context);
+            BgSendQueue.handleNewBgReading(bgReading, "create", context);
         }
     }
 
@@ -370,6 +374,7 @@ public class BgReading extends Model implements ShareUploadableBg{
                     }
                 }
                 bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
+                bgReading.filtered_calculated_value = ((calibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept);
             }
             if (bgReading.calculated_value < 10) {
                 bgReading.calculated_value = 9;
@@ -379,10 +384,12 @@ public class BgReading extends Model implements ShareUploadableBg{
             }
             Log.i(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
 
+
+
             bgReading.save();
             bgReading.perform_calculations();
             context.startService(new Intent(context, Notifications.class));
-            BgSendQueue.addToQueue(bgReading, "create", context);
+            BgSendQueue.handleNewBgReading(bgReading, "create", context);
         }
 
         Log.i("BG GSON: ",bgReading.toS());

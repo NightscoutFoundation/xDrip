@@ -36,7 +36,7 @@ public class TransmitterData extends Model {
     @Column(name = "uuid", index = true)
     public String uuid;
 
-    public static TransmitterData create(byte[] buffer, int len, Long timestamp) {
+    public static synchronized TransmitterData create(byte[] buffer, int len, Long timestamp) {
         if (len < 6) { return null; }
         TransmitterData transmitterData = new TransmitterData();
         if (buffer[0] == 0x11 && buffer[1] == 0x00) {
@@ -56,22 +56,25 @@ public class TransmitterData extends Model {
             for (int i = 0; i < len; ++i) { data_string.append((char) buffer[i]); }
             String[] data = data_string.toString().split("\\s+");
 
-            randomDelay(100, 1000);
-            TransmitterData lastTransmitterData = TransmitterData.last();
-            if (lastTransmitterData != null && lastTransmitterData.raw_data == Integer.parseInt(data[0]) && Math.abs(lastTransmitterData.timestamp - timestamp) < (120000)) { //Stop allowing duplicate data, its bad! // jamorham: increased to 120 seconds for additional safety with multiple collection modes operating at the same time
-                return null;
+            if (data.length > 1) { 
+                transmitterData.sensor_battery_level = Integer.parseInt(data[1]); 
             }
-            if (data.length > 1) { transmitterData.sensor_battery_level = Integer.parseInt(data[1]); }
             transmitterData.raw_data = Integer.parseInt(data[0]);
             transmitterData.filtered_data = Integer.parseInt(data[0]);
         }
+        //Stop allowing duplicate data, its bad!
+        TransmitterData lastTransmitterData = TransmitterData.last();
+        if (lastTransmitterData != null && lastTransmitterData.raw_data == transmitterData.raw_data && Math.abs(lastTransmitterData.timestamp - timestamp) < (120000)) {
+            return null;
+        }
+
         transmitterData.timestamp = timestamp;
         transmitterData.uuid = UUID.randomUUID().toString();
         transmitterData.save();
         return transmitterData;
     }
 
-    public static TransmitterData create(int raw_data ,int sensor_battery_level, long timestamp) {
+    public static synchronized TransmitterData create(int raw_data, int filtered_data, int sensor_battery_level, long timestamp) {
         TransmitterData lastTransmitterData = TransmitterData.last();
         if (lastTransmitterData != null && lastTransmitterData.raw_data == raw_data && Math.abs(lastTransmitterData.timestamp - new Date().getTime()) < (120000)) { //Stop allowing duplicate data, its bad!
             return null;
@@ -79,7 +82,8 @@ public class TransmitterData extends Model {
 
         TransmitterData transmitterData = new TransmitterData();
         transmitterData.sensor_battery_level = sensor_battery_level;
-        transmitterData.raw_data = raw_data ;
+        transmitterData.raw_data = raw_data;
+        transmitterData.filtered_data = filtered_data;
         transmitterData.timestamp = timestamp;
         transmitterData.uuid = UUID.randomUUID().toString();
         transmitterData.save();
@@ -93,13 +97,4 @@ public class TransmitterData extends Model {
                 .executeSingle();
     }
 
-    public static void randomDelay(float min, float max){
-        int random = (int)(max * Math.random() + min);
-        try {
-            Log.d(TAG, "randomDelay: Sleeping for " + random + "ms");
-            Thread.sleep(random);
-        } catch (InterruptedException e) {
-            Log.e(TAG, "randomDelay: INTERUPTED");
-        }
-    }
 }

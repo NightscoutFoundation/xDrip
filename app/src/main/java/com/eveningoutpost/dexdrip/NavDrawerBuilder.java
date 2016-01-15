@@ -84,7 +84,10 @@ public class NavDrawerBuilder {
         }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            if(CollectionServiceStarter.isBTWixel(context) || CollectionServiceStarter.isDexbridgeWixel(context)|| CollectionServiceStarter.isBTShare(context)) {
+            if (CollectionServiceStarter.isBTWixel(context) ||
+                    CollectionServiceStarter.isDexbridgeWixel(context) ||
+                    CollectionServiceStarter.isBTShare(context) ||
+                    CollectionServiceStarter.isWifiandBTWixel(context)) {
                 this.nav_drawer_options.add(BluetoothScan.menu_name);
                 this.nav_drawer_intents.add(new Intent(context, BluetoothScan.class));
             }

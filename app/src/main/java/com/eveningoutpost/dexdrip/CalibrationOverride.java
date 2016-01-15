@@ -58,6 +58,7 @@ public class CalibrationOverride extends ActivityWithMenu {
 
                          Intent tableIntent = new Intent(v.getContext(), Home.class);
                          startActivity(tableIntent);
+                         GcmActivity.pushCalibration(string_value, "0");
                          finish();
                     } else {
                         value.setError("Calibration Can Not be blank");

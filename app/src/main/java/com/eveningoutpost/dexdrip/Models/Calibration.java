@@ -381,7 +381,7 @@ public class Calibration extends Model {
                 bgReading.calibration = calibration;
                 bgReading.calibration_flag = true;
                 bgReading.save();
-                BgSendQueue.addToQueue(bgReading, "update", context);
+                BgSendQueue.handleNewBgReading(bgReading, "update", context);
 
                 calculate_w_l_s();
                 adjustRecentBgReadings();
@@ -411,7 +411,7 @@ public class Calibration extends Model {
                 .execute();
     }
 
-    public static void calculate_w_l_s() {
+    private static void calculate_w_l_s() {
         if (Sensor.isActive()) {
             double l = 0;
             double m = 0;
@@ -420,11 +420,12 @@ public class Calibration extends Model {
             double q = 0;
             double w;
             List<Calibration> calibrations = allForSensorInLastFourDays(); //5 days was a bit much, dropped this to 4
-            if (calibrations.size() == 1) {
+            if (calibrations.size() <= 1) {
                 Calibration calibration = Calibration.last();
                 calibration.slope = 1;
                 calibration.intercept = calibration.bg - (calibration.raw_value * calibration.slope);
                 calibration.save();
+                CalibrationRequest.createOffset(calibration.bg, 25);
             } else {
                 for (Calibration calibration : calibrations) {
                     w = calibration.calculateWeight();

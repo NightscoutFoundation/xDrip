@@ -1,30 +1,21 @@
 package com.eveningoutpost.dexdrip;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+
 import android.util.TypedValue;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.NumberPicker;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
@@ -36,6 +27,8 @@ import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 public class SnoozeActivity extends ActivityWithMenu {
     public static String menu_name = "Snooze Alert";
+    private static String status;
+
 
     TextView alertStatus;
     Button buttonSnooze;
@@ -50,6 +43,7 @@ public class SnoozeActivity extends ActivityWithMenu {
 
     NumberPicker snoozeValue;
 
+    static final int infiniteSnoozeValueInMinutes = 5256000;//10 years
     static final int snoozeValues[] = new int []{5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 75, 90, 105, 120, 150, 180, 240, 300, 360, 420, 480, 540, 600};
 
     static int getSnoozeLocatoin(int time) {
@@ -120,9 +114,17 @@ public class SnoozeActivity extends ActivityWithMenu {
             alertStatus.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             buttonSnooze.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
         }
-
         displayStatus();
     }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus){
+            displayStatus();
+        }
+    }
+
     @Override
     public String getMenuName() {
         return menu_name;
@@ -130,16 +132,16 @@ public class SnoozeActivity extends ActivityWithMenu {
 
     public void addListenerOnButton() {
         buttonSnooze = (Button)findViewById(R.id.button_snooze);
-		
-		//low alerts
-		disableLowAlerts = (Button)findViewById(R.id.button_disable_low_alerts);
-		clearLowDisabled = (Button)findViewById(R.id.enable_low_alerts);
-        
-		//high alerts
-		disableHighAlerts = (Button)findViewById(R.id.button_disable_high_alerts);
-		clearHighDisabled = (Button)findViewById(R.id.enable_high_alerts);
 
-		//all alerts
+        //low alerts
+        disableLowAlerts = (Button)findViewById(R.id.button_disable_low_alerts);
+        clearLowDisabled = (Button)findViewById(R.id.enable_low_alerts);
+
+        //high alerts
+        disableHighAlerts = (Button)findViewById(R.id.button_disable_high_alerts);
+        clearHighDisabled = (Button)findViewById(R.id.enable_high_alerts);
+
+        //all alerts
         disableAlerts = (Button)findViewById(R.id.button_disable_alerts);
         clearDisabled = (Button)findViewById(R.id.enable_alerts);
         buttonSnooze.setOnClickListener(new View.OnClickListener() {
@@ -180,6 +182,8 @@ public class SnoozeActivity extends ActivityWithMenu {
                     //and if not (ie no missed readings for long enough) then the alarm should be reset because it might have to recheck the missedreading status sooner
                     getApplicationContext().startService(new Intent(getApplicationContext(), MissedReadingService.class));
                 }
+                //also make sure the text in the Activity is changed
+                displayStatus();
                 showDisableEnableButtons();
             }
         });
@@ -205,24 +209,36 @@ public class SnoozeActivity extends ActivityWithMenu {
                 Button b2 = (Button) d.findViewById(R.id.button2);
                 final NumberPicker snoozeValue = (NumberPicker) d.findViewById(R.id.numberPicker1);
 
-                SnoozeActivity.SetSnoozePickerValues(snoozeValue, false, 60);
+                //don't use SetSnoozePickerValues because an additional value must be added
+                String[] values = new String[snoozeValues.length + 1];//adding place for "until you re-enable"
+                for (int i = 0;i < values.length - 1;i++)
+                    values[i] = getNameFromTime(snoozeValues[i]);
+                values[values.length - 1] = "Until you re-enable";
+                snoozeValue.setMaxValue(values.length - 1);
+                snoozeValue.setMinValue(0);
+                snoozeValue.setDisplayedValues(values);
+                snoozeValue.setWrapSelectorWheel(false);
+                snoozeValue.setValue(getSnoozeLocatoin(60));
+
                 b1.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Long disableUntil = new Date().getTime() + (SnoozeActivity.getTimeFromSnoozeValue(snoozeValue.getValue()) * 1000 * 60);
+                        Long disableUntil = new Date().getTime() +
+                                (snoozeValue.getValue() == snoozeValue.getMaxValue() ?
+                                infiniteSnoozeValueInMinutes
+                                :
+                                 + (SnoozeActivity.getTimeFromSnoozeValue(snoozeValue.getValue()))) * 1000 * 60;
                         prefs.edit().putLong(disableType, disableUntil).apply();
                         //check if active bg alert exists and delete it depending on type of alert
                         ActiveBgAlert aba = ActiveBgAlert.getOnly();
                         if (aba != null) {
                             AlertType activeBgAlert = ActiveBgAlert.alertTypegetOnly();
                             if (disableType.equalsIgnoreCase("alerts_disabled_until")
-                            || (activeBgAlert.above && disableType.equalsIgnoreCase("high_alerts_disabled_until"))
-                            || (!activeBgAlert.above && disableType.equalsIgnoreCase("low_alerts_disabled_until"))
+                                    || (activeBgAlert.above && disableType.equalsIgnoreCase("high_alerts_disabled_until"))
+                                    || (!activeBgAlert.above && disableType.equalsIgnoreCase("low_alerts_disabled_until"))
                                     ) {
                                 //active bg alert exists which is a type that is being disabled so let's remove it completely from the database
                                 ActiveBgAlert.ClearData();
-                                //also make sure the text in the Activity is changed
-                                displayStatus();
                             }
                         }
 
@@ -233,6 +249,8 @@ public class SnoozeActivity extends ActivityWithMenu {
                         }
 
                         d.dismiss();
+                        //also make sure the text in the Activity is changed
+                        displayStatus();
                         showDisableEnableButtons();
                     }
                 });
@@ -293,23 +311,57 @@ public class SnoozeActivity extends ActivityWithMenu {
             Log.wtf(TAG, "ERRRO displayStatus: aba != null, but activeBgAlert == null exiting...");
             return;
         }
-        String status;
+        long now = new Date().getTime();
         if(activeBgAlert == null ) {
-            status = "No active alert exists";
-            alertStatus.setText(status);
+
+            if (prefs.getLong("alerts_disabled_until", 0) > now
+                    ||
+                    (prefs.getLong("low_alerts_disabled_until", 0) > now
+                            && prefs.getLong("high_alerts_disabled_until", 0) > now)
+                    ) {
+                //not useful to show now that there's no active alert because either all alerts are disabled or high and low alerts are disabled
+                //there can not be any active alert
+                status = "";
+            }
+            else {
+                status = "No active alert exists";
+            }
             buttonSnooze.setVisibility(View.GONE);
             snoozeValue.setVisibility(View.GONE);
         } else {
             if(!aba.ready_to_alarm()) {
-                status = "Active alert exists named \"" + activeBgAlert.name + "\" Alert snoozed until " +
-                    DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date(aba.next_alert_at)) +
-                    " (" + (aba.next_alert_at - new Date().getTime()) / 60000 + " minutes left)";
+                status = "Active alert exists named \"" + activeBgAlert.name
+                        + (aba.is_snoozed?"\" Alert snoozed until ":"\" Alert will rerise at ")
+                        + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date(aba.next_alert_at)) +
+                        " (" + (aba.next_alert_at - now) / 60000 + " minutes left)";
             } else {
                 status = "Active alert exists named \"" + activeBgAlert.name + "\" (not snoozed)";
             }
             SetSnoozePickerValues(snoozeValue, activeBgAlert.above, activeBgAlert.default_snooze);
-            alertStatus.setText(status);
         }
+
+        //check if there are disabled alerts and if yes add warning
+        if (prefs.getLong("alerts_disabled_until", 0) > now) {
+            String textToAdd = (prefs.getLong("alerts_disabled_until", 0) > now + (infiniteSnoozeValueInMinutes - 365 * 24 * 60) * 60 * 1000)
+                    //if alerts would have been disabled "until you re-enable", and this test is done less than 365 * 24 * 60 minutes later, then this test will give true
+                    ? "you re-enable":DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date(prefs.getLong("alerts_disabled_until", 0)));
+            status = "All alerts disabled until " + textToAdd;
+        } else {
+            if (prefs.getLong("low_alerts_disabled_until", 0) > now) {
+                String textToAdd = (prefs.getLong("low_alerts_disabled_until", 0) > now + (infiniteSnoozeValueInMinutes - 365 * 24 * 60) * 60 * 1000)
+                        //if low alerts would have been disabled "until you re-enable", and this test is done less than 365 * 24 * 60 minutes later, then this test will give true
+                        ? "you re-enable":DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date(prefs.getLong("low_alerts_disabled_until", 0)));
+                status += "\n\nLow alerts disabled until " + textToAdd;
+            }
+            if (prefs.getLong("high_alerts_disabled_until", 0) > now) {
+                String textToAdd = (prefs.getLong("high_alerts_disabled_until", 0) > now + (infiniteSnoozeValueInMinutes - 365 * 24 * 60) * 60 * 1000)
+                        //if high alerts would have been disabled "until you re-enable", and this test is done less than 365 * 24 * 60 minutes later, then this test will give true
+                        ? "you re-enable":DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date(prefs.getLong("high_alerts_disabled_until", 0)));
+                status += "\n\nHigh alerts disabled until " + textToAdd;
+            }
+        }
+
+        alertStatus.setText(status);
 
     }
 
