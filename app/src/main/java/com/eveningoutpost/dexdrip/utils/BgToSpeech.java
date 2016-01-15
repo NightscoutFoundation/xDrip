@@ -53,8 +53,10 @@ public class BgToSpeech {
     }
 
     private void tearDown() {
-        tts.shutdown();
-        tts = null;
+        if (tts != null) {
+            tts.shutdown();
+            tts = null;
+        }
     }
 
     private BgToSpeech(Context context){
