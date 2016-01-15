@@ -1,10 +1,11 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import java.text.DecimalFormat;
+import java.util.Date;
 
 /**
  * Created by jamorham on 06/01/16.
- *
+ * <p/>
  * lazy helper class for utilities
  */
 public class JoH {
@@ -20,6 +21,10 @@ public class JoH {
         df.setMaximumFractionDigits(digits);
         df.setMinimumIntegerDigits(1);
         return df.format(x);
+    }
+
+    public static double ts() {
+        return new Date().getTime();
     }
 
     public static String bytesToHex(byte[] bytes) {
