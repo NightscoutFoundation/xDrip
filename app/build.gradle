@@ -3,12 +3,12 @@ buildscript {
         maven { url 'https://maven.fabric.io/public' }
     }
 
-    dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
-    }
+    // dependencies {
+    //    classpath 'io.fabric.tools:gradle:1.+'
+    // }
 }
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+//apply plugin: 'io.fabric'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -30,7 +30,7 @@ def generateVersionName = { ->
             commandLine 'git', 'describe', '--always'
             standardOutput = stdout
         }
-        String commitObject =  stdout.toString().trim()
+        String commitObject = stdout.toString().trim()
         try {
             stdout = new ByteArrayOutputStream()
             exec {
@@ -46,20 +46,20 @@ def generateVersionName = { ->
         stringBuilder.append(commitObject)
         stdout = new ByteArrayOutputStream()
         exec {
-           commandLine 'git', 'rev-parse', '--show-toplevel'
+            commandLine 'git', 'rev-parse', '--show-toplevel'
             standardOutput = stdout
         }
-        if(stdout.toString().trim().contains("xDrip-Experimental")) {
+        if (stdout.toString().trim().contains("xDrip-Experimental")) {
             stringBuilder.append("-experimental")
         }
 
         stdout = new ByteArrayOutputStream()
         exec {
-            commandLine 'git',  'rev-parse', '--abbrev-ref', 'HEAD'
+            commandLine 'git', 'rev-parse', '--abbrev-ref', 'HEAD'
             standardOutput = stdout
         }
         String branch = stdout.toString().trim()
-        if(!branch.equals("master")) {
+        if (!branch.equals("master")) {
             stringBuilder.append('-')
             stringBuilder.append(branch)
         }
@@ -77,7 +77,7 @@ def generateVersionName = { ->
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "22.0.1"
+    buildToolsVersion '23.0.2'
 
     defaultConfig {
         applicationId "com.eveningoutpost.dexdrip"
@@ -87,24 +87,38 @@ android {
         versionName generateVersionName()
     }
     buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+                    'proguard-rules.pro'
+        }
     }
 }
 
+// jamorham auto test rig
+task jamorhamAutoInstall(type: Exec) {
+    commandLine "bash","$projectDir/autoinstallviausb"
+}
+assembleRelease.doLast {
+    jamorhamAutoInstall.execute()
+}
+
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'com.squareup.okhttp:mockwebserver:2.5.0'
     compile 'com.nispok:snackbar:2.10.8'
     compile 'com.android.support:appcompat-v7:23.1.0'
+    compile 'com.google.android.gms:play-services-drive:8.4.0'
+    compile 'com.google.android.gms:play-services-gcm:8.4.0'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
     compile 'com.google.code.gson:gson:2.3'
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
     compile 'com.getpebble:pebblekit:3.0.0'
     compile 'io.reactivex:rxjava:1.0.0'
-    compile 'com.github.lecho:hellocharts-android:v1.5.5'
-
+    compile 'com.github.lecho:hellocharts-android:v1.5.8'
     compile 'com.google.guava:guava:18.0'
-
     compile('com.github.nightscout:android-uploader:CORE_FOR_XDRIP') {
         transitive = false;
     }
@@ -118,7 +132,7 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.7'
     /* end relevant android-uploader dependencies */
 
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.0@aar') {
-        transitive = true;
-    }
+    compile project(':localeapi')
 }
+
+apply plugin: 'com.google.gms.google-services'

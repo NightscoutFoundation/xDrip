@@ -14,28 +14,21 @@ import java.util.List;
 /**
  * Created by stephenblack on 12/19/14.
  */
-public class MongoSendTask extends AsyncTask<String, Void, SyncService> {
+public class MongoSendTask extends AsyncTask<String, Void, Void> {
         private Context context;
         public List<BgSendQueue> bgsQueue = new ArrayList<BgSendQueue>();
         public List<CalibrationSendQueue> calibrationsQueue = new ArrayList<CalibrationSendQueue>();
 
         private Exception exception;
+        private static final String TAG = MongoSendTask.class.getSimpleName();
 
-        public MongoSendTask(Context pContext, BgSendQueue bgSendQueue) {
-            bgsQueue.add(bgSendQueue);
-            context = pContext;
-        }
-        public MongoSendTask(Context pContext, CalibrationSendQueue calibrationSendQueue) {
-            calibrationsQueue.add(calibrationSendQueue);
-            context = pContext;
-        }
         public MongoSendTask(Context pContext) {
             calibrationsQueue = CalibrationSendQueue.mongoQueue();
             bgsQueue = BgSendQueue.mongoQueue();
             context = pContext;
         }
 
-        public SyncService doInBackground(String... urls) {
+        public Void doInBackground(String... urls) {
             try {
                 List<BgReading> bgReadings = new ArrayList<BgReading>();
                 List<Calibration> calibrations = new ArrayList<Calibration>();
@@ -47,6 +40,7 @@ public class MongoSendTask extends AsyncTask<String, Void, SyncService> {
                 }
 
                 if(bgReadings.size() + calibrations.size() > 0) {
+                	Log.i(TAG, "uoader.upload called " + bgReadings.size());
                     NightscoutUploader uploader = new NightscoutUploader(context);
                     boolean uploadStatus = uploader.upload(bgReadings, calibrations, calibrations);
                     if (uploadStatus) {
@@ -59,10 +53,11 @@ public class MongoSendTask extends AsyncTask<String, Void, SyncService> {
                     }
                 }
             } catch (Exception e) {
+            	Log.e(TAG, "caught exception", e);
                 this.exception = e;
                 return null;
             }
-            return new SyncService();
+            return null;
         }
 
 //        protected void onPostExecute(RSSFeed feed) {

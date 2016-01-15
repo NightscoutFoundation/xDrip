@@ -30,7 +30,7 @@ public class IdempotentMigrations {
 
     private void migrateBGAlerts() {
         // Migrate away from old style notifications to Tzachis new Alert system
-        AlertType.CreateStaticAlerts();
+       // AlertType.CreateStaticAlerts(); // jamorham weird problem auto-calibrations
         if(prefs.getBoolean("bg_notifications", true)){
             double highMark = Double.parseDouble(prefs.getString("highValue", "170"));
             double lowMark = Double.parseDouble(prefs.getString("lowValue", "70"));
@@ -89,8 +89,12 @@ public class IdempotentMigrations {
             if (i.hasNext())
                 newUris.append(" ");
         }
-
-        prefs.edit().putString("cloud_storage_api_base", newUris.toString()).apply();
+        if (newUris.length() != 0) {
+            prefs.edit().putString("cloud_storage_api_base", newUris.toString()).apply();
+        } else {
+            // instead of an empty string: delete the setting to show (but later not read) default string
+            prefs.edit().remove("cloud_storage_api_base").apply();
+        }
     }
 
 }

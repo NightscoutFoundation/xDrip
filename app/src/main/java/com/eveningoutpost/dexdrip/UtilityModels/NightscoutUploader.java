@@ -26,6 +26,7 @@ import com.squareup.okhttp.ResponseBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -195,22 +196,23 @@ public class NightscoutUploader {
             postDeviceStatus(nightscoutService, secret);
         }
 
-        private void populateV1APIBGEntry(JSONArray array, BgReading record) throws Exception {
-            JSONObject json = new JSONObject();
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
-            format.setTimeZone(TimeZone.getDefault());
-            json.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
-            json.put("date", record.timestamp);
-            json.put("dateString", format.format(record.timestamp));
-            json.put("sgv", (int)record.calculated_value);
-            json.put("direction", record.slopeName());
-            json.put("type", "sgv");
-            json.put("filtered", record.ageAdjustedFiltered() * 1000);
-            json.put("unfiltered", record.usedRaw() * 1000);
-            json.put("rssi", 100);
-            json.put("noise", record.noiseValue());
-            array.put(json);
-        }
+    private void populateV1APIBGEntry(JSONArray array, BgReading record) throws Exception {
+        JSONObject json = new JSONObject();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
+        format.setTimeZone(TimeZone.getDefault());
+        json.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
+        json.put("date", record.timestamp);
+        json.put("dateString", format.format(record.timestamp));
+        json.put("sgv", (int) record.calculated_value);
+        json.put("direction", record.slopeName());
+        json.put("type", "sgv");
+        json.put("filtered", record.ageAdjustedFiltered() * 1000);
+        json.put("unfiltered", record.usedRaw() * 1000);
+        json.put("rssi", 100);
+        json.put("noise", record.noiseValue());
+        json.put("delta", new BigDecimal(record.currentSlope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP)); // jamorham for automation
+        array.put(json);
+    }
 
         private RequestBody populateLegacyAPIEntry(BgReading record) throws Exception {
             JSONObject json = new JSONObject();

@@ -28,16 +28,7 @@ public class CalibrationSendQueue extends Model {
     @Column(name = "mongo_success", index = true)
     public boolean mongo_success;
 
-    public static CalibrationSendQueue nextCalibrationJob() {
-        CalibrationSendQueue job = new Select()
-                .from(CalibrationSendQueue.class)
-                .where("success = ?", false)
-                .orderBy("_ID desc")
-                .limit(1)
-                .executeSingle();
-        return job;
-    }
-
+    /*
     public static List<CalibrationSendQueue> queue() {
         return new Select()
                 .from(CalibrationSendQueue.class)
@@ -45,6 +36,7 @@ public class CalibrationSendQueue extends Model {
                 .orderBy("_ID asc")
                 .execute();
     }
+    */
     public static List<CalibrationSendQueue> mongoQueue() {
         return new Select()
                 .from(CalibrationSendQueue.class)

@@ -31,6 +31,11 @@
             android:summary="If the phone has text-to-speech capabilities it will read new readings out loud."
             android:defaultValue="false" />
         <CheckBoxPreference
+            android:key="bg_to_speech_shortcut"
+            android:title="Speak Readings Shortcut"
+            android:summary="Show a shortcut in the \u2630 menu to toggle Speak Readings"
+            android:defaultValue="false" />
+        <CheckBoxPreference
             android:key="store_logs"
             android:title="Store logs for troubleshooting"
             android:summary="Only enable if you are having trouble with the app."

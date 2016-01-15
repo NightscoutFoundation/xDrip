@@ -2,8 +2,8 @@
 <resources>
 
     <string name="pref_I_understand_title"> I UNDERSTAND AND AGREE</string>
-    <string name="pref_I_understand_summery">xDrip MUST NOT BE USED TO MAKE MEDICAL DECISIONS. THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION. </string>
-    <string name="app_name">xDrip</string>
+    <string name="pref_I_understand_summery">xDrip+ MUST NOT BE USED TO MAKE MEDICAL DECISIONS. IT IS A RESEARCH TOOL ONLY AND IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.</string>
+    <string name="app_name">xDrip+</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_bluetooth_scan">BluetoothScan</string>
@@ -14,6 +14,7 @@
     <string name="menu_refresh">Refresh</string>
     <string name="menu_export_database">Export database</string>
     <string name="menu_export_csv_sidiary">Export CSV (SiDiary format)</string>
+    <string name="menu_toggle_speakreadings">Speak-Readings</string>
     <string name="menu_import_db">Import database</string>
     <string name="error_bluetooth_not_supported">Error: Bluetooth not supported by this device</string>
     <string name="unknown_device">Unrecognized Device</string>
@@ -99,6 +100,12 @@
     <string name="wifi_recievers_dialog_message">Comma separated list of ip:port (for example 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
     <string name="wifi_recievers_dialog_title">Enter ip addresses and ports of receivers (including mongodb addresses if needed)</string>
 
+    <!-- Location Settings -->
+    <string name="location_not_found_title">Location Is Not Enabled</string>
+    <string name="location_not_found_message">For Bluetooth discovery to work on newer devices, location must be enabled. xDrip does not track your location and it can be disabled after pairing is successful.</string>
+    <string name="location_yes">Enable</string>
+    <string name="location_no">No</string>
+
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Broadcast locally</string>
     <string name="pref_summary_broadcast_enabled">Enable local broadcast of data so other apps (eg. NightWatch) can listen on new values</string>
@@ -129,4 +136,5 @@
         The database verions number may change with xDrip updates.
         It is best to import the database with the same version of the xDrip app it was exported and then update xDrip.
     </string>
+    <string name="speaktreatment">Speak treatment</string>
 </resources>

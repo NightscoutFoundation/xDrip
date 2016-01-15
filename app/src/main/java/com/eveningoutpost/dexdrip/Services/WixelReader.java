@@ -39,6 +39,8 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
     private final static String TAG = WixelReader.class.getName();
     private static BgToSpeech bgToSpeech;
 
+    private static OkHttpClient httpClient = null;
+
     private final Context mContext;
     PowerManager.WakeLock wakeLock;
 
@@ -196,11 +198,11 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
     	return mt.ReadFromMongo(numberOfRecords);
     }
 
-    private static OkHttpClient httpClient = null;
+
 
 
     // read from http source like cloud hosted parakeet receiver.cgi / json.get
-    public static List<TransmitterRawData> ReadHttpJson(String url, int numberOfRecords) {
+    public static List<TransmitterRawData> readHttpJson(String url, int numberOfRecords) {
         List<TransmitterRawData> trd_list = new LinkedList<TransmitterRawData>();
 
         try {
@@ -237,11 +239,11 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
                 for (String data : lines) {
 
                     if (data == null) {
-                        System.out.println("received null exiting");
+                        System.out.println("received null continuing");
                         continue;
                     }
                     if (data.equals("")) {
-                        System.out.println("received \"\" exiting");
+                        System.out.println("received \"\" continuing");
                         continue;
                     }
 
@@ -260,7 +262,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
             }
 
         } catch (Exception e) {
-            Log.e(TAG, "caught HTTPException! " + e.toString());
+            Log.e(TAG, "caught Exception in reading http json data " + e.toString());
         }
         return trd_list;
     }
@@ -283,7 +285,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
             	tmpList = ReadFromMongo(host ,numberOfRecords);
             } else if ((host.startsWith("http://") || host.startsWith("https://"))
                     && host.contains("/json.get")) {
-                tmpList = ReadHttpJson(host,numberOfRecords);
+                tmpList = readHttpJson(host, numberOfRecords);
             } else {
             	tmpList = ReadHost(host, numberOfRecords);
             }
@@ -304,10 +306,10 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         TransmitterRawData []trd_array = new TransmitterRawData[retSize];
         mergedData.subList(mergedData.size() - retSize, mergedData.size()).toArray(trd_array);
 
-        System.out.println("Final Results========================================================================");
-        for (int i= 0; i < trd_array.length; i++) {
+  //      System.out.println("Final Results========================================================================");
+ //       for (int i= 0; i < trd_array.length; i++) {
  //           System.out.println( trd_array[i].toTableString());
-        }
+  //      }
         return trd_array;
 
     }
@@ -493,6 +495,13 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
     			setSerialDataToTransmitterRawData(LastReading.RawValue,  LastReading.FilteredValue, LastReading.BatteryLife, LastReading.CaptureDateTime);
     			LastReportedReading = LastReading;
     			LastReportedTime = LastReading.CaptureDateTime;
+
+
+                if (LastReading.UploaderBatteryLife > 0)
+                {
+                    PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt("parakeet_battery", LastReading.UploaderBatteryLife).apply();
+                }
+
     		}
     	}
     }
@@ -500,11 +509,12 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
 
     public void setSerialDataToTransmitterRawData(int raw_data, int filtered_data ,int sensor_battery_leve, Long CaptureTime) {
 
-        TransmitterData transmitterData = TransmitterData.create(raw_data, sensor_battery_leve, CaptureTime);
+        TransmitterData transmitterData = TransmitterData.create(raw_data, filtered_data, sensor_battery_leve, CaptureTime);
         if (transmitterData != null) {
             Sensor sensor = Sensor.currentSensor();
             if (sensor != null) {
                 BgReading bgReading = BgReading.create(transmitterData.raw_data, filtered_data, mContext, CaptureTime);
+
                 sensor.latest_battery_level = (sensor.latest_battery_level!=0)?Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level):transmitterData.sensor_battery_level;;
                 sensor.save();
             } else {
