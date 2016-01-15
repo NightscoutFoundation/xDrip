@@ -20,3 +20,26 @@
 -keep class retrofit.** { *; }
 -keepattributes Signature
 -keepattributes Exceptions
+
+
+-dontobfuscate
+
+-dontwarn com.nightscout.**
+-dontwarn com.squareup.**
+-dontwarn net.tribe7.**
+-dontwarn com.mongodb.**
+-dontwarn com.google.common.**
+-dontwarn okio.**
+-dontwarn org.bson.**
+-dontwarn org.slf4j.**
+-dontwarn rx.internal.util.**
+
+-keep class com.nightscout.** { *; }
+-keep class com.squareup.** { *; }
+-keep class net.tribe7.** { *; }
+-keep class com.mongodb.** { *; }
+-keep class com.google.common.** { *; }
+-keep class okay.** { *; }
+-keep class org.bson.** { *; }
+-keep class org.slf4j.** { *; }
+-keep class rx.internal.util.** { *; }
