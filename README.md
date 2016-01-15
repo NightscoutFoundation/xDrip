@@ -1,46 +1,29 @@
-xDrip
-=======
-##### ** Please note this is __NOT__ a product created by or backed by Dexcom, you can check them out [here](http://dexcom.com/) **
+# Jamorham xDrip+
+> My enhanced personal research version of xDrip
 
-### Wirelessly with a Dexcom Share Receiver -- or -- Wireless xDrip bridge (No receiver!)
+##Features
+* Natural language voice and text input of Treatments (Insulin/Carbs)
+* Tasker plugin support including remote calibrations
+* Instant data synchronization between phones and tablets
+* Visualization of Insulin and Carb action curves.
+* Forward prediction with live "Bolus Wizard"
+<img align="middle" src="https://jamorham.github.io/images/jamorham-natural-language-treatments-two-web.png">
 
+##Ethos
+* Developed using Rapid Prototyping methodology
+* Immediate results favoured to prove concepts
+* Designed to support my personal research goals
+* Community testing and collaboration appreciated!
 
+##Roadmap
+* Code clean up
+* Extensible Profile configuration
+* Increase automation and data backup and sync options
+* More Nightscout integration
 
+##Collaboration
+I am very happy if people want to collaborate on this project. There is significant room for improvement in the code and in an ideal world changes could be cherry picked back to xDrip mainline. Please contact me if you want to get involved.
 
-#### Access your Glucose levels from anywhere!
-xDrip is ready to upload your glucose data to any [Nightscout](http://nightscout.github.io/) server for remote monitoring on just about any internet connected device!!
+##Thanks
+None of this would be possible without all the hard work of the xDrip and Nightscout communities who have developed such excellent software and allowed me to build upon it.
 
-
-#### Want to learn more?? 
-Jump on over to the [Wiki](https://github.com/StephenBlackWasAlreadyTaken/xDrip/wiki) for instructions and downloads!!
-
-
-#### Stay Up to Date!
-Follow me on twitter `@StephenIsTaken`, I will let everyone know when updates happen that you should definitely download! Updates will be rolling out fairly frequently as there is lots to do!!!
-
-
-#### Want to help out?
-AWESOME, let me know, put up some PRS, lets make it awesome!
-
-
-#### Awesome Contributors:
-(in no particular order, because they are all awesome)
-* [@tzachi-dar](https://github.com/tzachi-dar) 
-* [@jstevensog](https://github.com/jstevensog) 
-* [@bhandfast](https://github.com/bhandfast) 
-* [@LorelaiL](https://github.com/LorelaiL)
-* [@syntaxerr66](https://github.com/syntaxerr66)
-* [@saercnap](https://github.com/saercnap) 
-* [@ktind](https://github.com/ktind)
-* [Ly](http://youtu.be/YuxCUeJ9xAU)
-* [Kev](http://circles-of-blue.winchcombe.org/)
-* [NightScout](https://github.com/nightscout)
-* Whoever else is supporting this and helping people out!!
-
-***
-
-<a href="http://i.imgur.com/7b18gLs.jpg"><img src="http://i.imgur.com/7b18gLs.jpg" align="center" width="600" ></a>
-
-<a href="http://imgur.com/lFwKzRr.jpg"><img src="http://imgur.com/lFwKzRr.jpg" align="center" width="600" ></a>
-
-***
