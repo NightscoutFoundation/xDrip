@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.twofortyfouram.locale.api" >
+
+    <uses-sdk
+        android:minSdkVersion="3"
+        android:targetSdkVersion="17" />
+
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+</manifest>
