@@ -9,6 +9,7 @@ package com.eveningoutpost.dexdrip.Models;
 
 // TODO Proper support for MG/DL
 
+
 public class Profile {
 
     private final static String TAG = "jamorham pred";
@@ -22,11 +23,11 @@ public class Profile {
     }
 
     static double getCarbAbsorptionRate(double when) {
-        return 30; // carbs per hour
+        return 35; // carbs per hour
     }
 
     static double maxLiverImpactRatio(double when) {
-        return 0.9; // how much can the liver block carbs going in to blood stream?
+        return 0.8; // how much can the liver block carbs going in to blood stream?
     }
 
     static double getCarbRatio(double when) {

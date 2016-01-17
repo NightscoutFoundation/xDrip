@@ -1,11 +1,15 @@
 package com.eveningoutpost.dexdrip;
 
+import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -18,15 +22,20 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.speech.RecognizerIntent;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,23 +43,34 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
+import com.google.gson.Gson;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.enums.SnackbarType;
 import com.nispok.snackbar.listeners.ActionClickListener;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.listener.ViewportChangeListener;
@@ -59,9 +79,13 @@ import lecho.lib.hellocharts.view.LineChartView;
 import lecho.lib.hellocharts.view.PreviewLineChartView;
 
 
+
+
 public class Home extends ActivityWithMenu {
-    static String TAG = Home.class.getName();
+    static String TAG = "jamorham: " + Home.class.getName();
     public static String menu_name = "xDrip";
+    public static boolean activityVisible = false;
+    private static Context staticContext;
     private boolean updateStuff;
     private boolean updatingPreviewViewport = false;
     private boolean updatingChartViewport = false;
@@ -73,33 +97,55 @@ public class Home extends ActivityWithMenu {
     private BroadcastReceiver _broadcastReceiver;
     private BroadcastReceiver newDataReceiver;
     private LineChartView            chart;
-    private PreviewLineChartView     previewChart;
-    private TextView                 dexbridgeBattery;
-    private TextView                 currentBgValueText;
-    private TextView                 notificationText;
-    private boolean                  alreadyDisplayedBgInfoCommon = false;
+    private ImageButton btnSpeak;
+    private ImageButton btnApprove;
+    private ImageButton btnCancel;
+    private ImageButton btnCarbohydrates;
+    private ImageButton btnBloodGlucose;
+    private ImageButton btnInsulinDose;
+    private ImageButton btnTime;
+    private TextView voiceRecognitionText;
+    private TextView textCarbohydrates;
+    private TextView textBloodGlucose;
+    private TextView textInsulinDose;
+    private TextView textTime;
+    private final int REQ_CODE_SPEECH_INPUT = 1994;
+    private PreviewLineChartView previewChart;
+    private TextView dexbridgeBattery;
+    private TextView currentBgValueText;
+    private TextView notificationText;
+    private boolean alreadyDisplayedBgInfoCommon = false;
+    private boolean recognitionRunning = false;
+    double thisnumber = -1;
+    double thisglucosenumber = 0;
+    double thiscarbsnumber = 0;
+    double thisinsulinnumber = 0;
+    double thistimeoffset = 0;
+    String thisword = "";
+    boolean carbsset = false;
+    boolean insulinset = false;
+    boolean glucoseset = false;
+    boolean timeset = false;
+    private wordDataWrapper searchWords = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(getApplicationContext());
-        collectionServiceStarter.start(getApplicationContext());
-        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
-        PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
-        PreferenceManager.setDefaultValues(this, R.xml.pref_notifications, false);
-        PreferenceManager.setDefaultValues(this, R.xml.pref_data_source, false);
+
+        staticContext = getApplicationContext();
+
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         checkEula();
-        new IdempotentMigrations(getApplicationContext()).performAll();
         setContentView(R.layout.activity_home);
 
         this.dexbridgeBattery = (TextView) findViewById(R.id.textBridgeBattery);
         this.currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
-        if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+        if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             this.currentBgValueText.setTextSize(100);
         }
         this.notificationText = (TextView) findViewById(R.id.notices);
-        if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+        if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             this.notificationText.setTextSize(40);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -117,19 +163,531 @@ public class Home extends ActivityWithMenu {
                 startActivity(intent);
             }
         }
+
+
+        // jamorham voice input
+        this.voiceRecognitionText = (TextView) findViewById(R.id.treatmentTextView);
+        this.textBloodGlucose = (TextView) findViewById(R.id.textBloodGlucose);
+        this.textCarbohydrates = (TextView) findViewById(R.id.textCarbohydrate);
+        this.textInsulinDose = (TextView) findViewById(R.id.textInsulinUnits);
+        this.textTime = (TextView) findViewById(R.id.textTimeButton);
+        this.btnBloodGlucose = (ImageButton) findViewById(R.id.bloodTestButton);
+        this.btnCarbohydrates = (ImageButton) findViewById(R.id.buttonCarbs);
+        this.btnInsulinDose = (ImageButton) findViewById(R.id.buttonInsulin);
+        this.btnCancel = (ImageButton) findViewById(R.id.cancelTreatment);
+        this.btnApprove = (ImageButton) findViewById(R.id.approveTreatment);
+        this.btnTime = (ImageButton) findViewById(R.id.timeButton);
+
+        hideAllTreatmentButtons();
+
+        if (searchWords == null) {
+            initializeSearchWords("");
+        }
+
+        this.btnSpeak = (ImageButton) findViewById(R.id.btnSpeak);
+        btnSpeak.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                promptSpeechInput();
+            }
+        });
+        btnSpeak.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                promptTextInput();
+                return true;
+            }
+        });
+
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                hideAllTreatmentButtons();
+            }
+        });
+
+        btnApprove.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // proccess and approve all treatments
+                // TODO Handle BG Tests here also
+                Treatments.create(thiscarbsnumber, thisinsulinnumber, Treatments.getTimeStampWithOffset(thistimeoffset));
+                hideAllTreatmentButtons();
+                if (hideTreatmentButtonsIfAllDone()) {
+                    updateCurrentBgInfo("approve button");
+                }
+            }
+        });
+
+        btnInsulinDose.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // proccess and approve treatment
+                textInsulinDose.setVisibility(View.INVISIBLE);
+                btnInsulinDose.setVisibility(View.INVISIBLE);
+                Treatments.create(0, thisinsulinnumber, Treatments.getTimeStampWithOffset(thistimeoffset));
+                if (hideTreatmentButtonsIfAllDone()) {
+                    updateCurrentBgInfo("insulin button");
+                }
+            }
+        });
+        btnCarbohydrates.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // proccess and approve treatment
+                textCarbohydrates.setVisibility(View.INVISIBLE);
+                btnCarbohydrates.setVisibility(View.INVISIBLE);
+                Treatments.create(thiscarbsnumber, 0, Treatments.getTimeStampWithOffset(thistimeoffset));
+                if (hideTreatmentButtonsIfAllDone()) {
+                    updateCurrentBgInfo("carbs button");
+                }
+            }
+        });
+
+        btnBloodGlucose.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                // TODO BG Tests to be possible without being calibrations
+                // TODO Offer Choice? Reject calibrations under various circumstances
+                // This should be wrapped up in a generic method
+                Intent calintent = new Intent();
+                calintent.setClassName("com.eveningoutpost.dexdrip", "com.eveningoutpost.dexdrip.AddCalibration");
+                calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                calintent.putExtra("bg_string", JoH.qs(thisglucosenumber));
+                calintent.putExtra("bg_age", "0");
+                getApplicationContext().startActivity(calintent);
+
+                textBloodGlucose.setVisibility(View.INVISIBLE);
+                btnBloodGlucose.setVisibility(View.INVISIBLE);
+                if (hideTreatmentButtonsIfAllDone()) {
+                    updateCurrentBgInfo("bg button");
+                }
+            }
+        });
+
+        btnTime.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // clears time if clicked
+                textTime.setVisibility(View.INVISIBLE);
+                btnTime.setVisibility(View.INVISIBLE);
+                if (hideTreatmentButtonsIfAllDone()) {
+                    updateCurrentBgInfo("time button");
+                }
+            }
+        });
+
+        activityVisible = true;
+        PlusSyncService.startSyncService(getApplicationContext());
     }
+
+    private boolean hideTreatmentButtonsIfAllDone() {
+        if ((btnBloodGlucose.getVisibility() == View.INVISIBLE) &&
+                (btnCarbohydrates.getVisibility() == View.INVISIBLE) &&
+                (btnInsulinDose.getVisibility() == View.INVISIBLE)) {
+            hideAllTreatmentButtons(); // we clear values here also
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void hideAllTreatmentButtons() {
+        textBloodGlucose.setVisibility(View.INVISIBLE);
+        textCarbohydrates.setVisibility(View.INVISIBLE);
+        btnApprove.setVisibility(View.INVISIBLE);
+        btnCancel.setVisibility(View.INVISIBLE);
+        btnCarbohydrates.setVisibility(View.INVISIBLE);
+        textInsulinDose.setVisibility(View.INVISIBLE);
+        btnInsulinDose.setVisibility(View.INVISIBLE);
+        btnBloodGlucose.setVisibility(View.INVISIBLE);
+        voiceRecognitionText.setVisibility(View.INVISIBLE);
+        textTime.setVisibility(View.INVISIBLE);
+        btnTime.setVisibility(View.INVISIBLE);
+
+        thiscarbsnumber = 0;
+        thisinsulinnumber = 0;
+        thistimeoffset = 0;
+        if (chart != null) {
+            chart.setAlpha((float) 1);
+        }
+    }
+    // jamorham voiceinput methods
+
+    public String readTextFile(InputStream inputStream) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        byte buf[] = new byte[1024];
+        int len;
+        try {
+            while ((len = inputStream.read(buf)) != -1) {
+                outputStream.write(buf, 0, len);
+            }
+            outputStream.close();
+            inputStream.close();
+        } catch (IOException e) {
+
+        }
+        return outputStream.toString();
+    }
+
+    private void initializeSearchWords(String jstring) {
+        Log.d(TAG, "Initialize Search words");
+        wordDataWrapper lcs = new wordDataWrapper();
+        try {
+
+            Resources res = getResources();
+            InputStream in_s = res.openRawResource(R.raw.initiallexicon);
+
+            String input = readTextFile(in_s);
+
+            Gson gson = new Gson();
+            lcs = gson.fromJson(input, wordDataWrapper.class);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            Log.d(TAG, "Got exception during search word load: " + e.toString());
+            Toast.makeText(getApplicationContext(),
+                    "Problem loading speech lexicon!",
+                    Toast.LENGTH_LONG).show();
+        }
+        Log.d(TAG, "Loaded Words: " + Integer.toString(lcs.entries.size()));
+        searchWords = lcs;
+    }
+
+    private void promptTextInput() {
+
+        if (recognitionRunning) return;
+        recognitionRunning = true;
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Type treatment\neg: units x.x");
+// Set up the input
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+// Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                voiceRecognitionText.setText(input.getText().toString());
+                voiceRecognitionText.setVisibility(View.VISIBLE);
+                naturalLanguageRecognition(input.getText().toString());
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        final AlertDialog dialog = builder.create();
+        input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    if (dialog != null)
+                        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                }
+            }
+        });
+        dialog.show();
+        recognitionRunning = false;
+    }
+
+    /**
+     * Showing google speech input dialog
+     */
+    private void promptSpeechInput() {
+
+
+        if (recognitionRunning) return;
+        recognitionRunning = true;
+
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        // intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US"); // debug voice
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                "Speak your treatment eg:\nx.x units insulin / xx grams carbs");
+
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+            Toast.makeText(getApplicationContext(),
+                    "Speech recognition is not supported",
+                    Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    private String classifyWord(String word) {
+        // convert fuzzy recognised word to our keyword from lexicon
+        for (wordData thislex : searchWords.entries) {
+            if (thislex.matchWords.contains(word)) {
+                Log.d(TAG, "Matched spoken word: " + word + " => " + thislex.lexicon);
+                return thislex.lexicon;
+            }
+        }
+        Log.d(TAG, "Could not match spoken word: " + word);
+        return null; // if cannot match
+    }
+
+    private void naturalLanguageRecognition(String allWords) {
+        if (searchWords == null) {
+
+            Toast.makeText(getApplicationContext(),
+                    "Word lexicon not loaded!",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        allWords = allWords.replaceAll(":", "."); // fix real times
+        allWords = allWords.replaceAll("(\\d)([a-zA-Z])", "$1 $2"); // fix like 22mm
+        allWords = allWords.replaceAll("([0-9].[0-9])([0-9][0-9])", "$1 $2"); // fix multi number order like blood 3.622 grams
+        allWords = allWords.toLowerCase();
+
+        Log.d(TAG, "Processing speech input: " + allWords);
+
+        if (allWords.contentEquals("delete last treatment")
+                || allWords.contentEquals("cancel last treatment")
+                || allWords.contentEquals("erase last treatment")) {
+            Treatments.delete_last(true);
+            updateCurrentBgInfo("delete last treatment");
+        }
+
+        if ((allWords.contentEquals("delete all treatments"))
+                || (allWords.contentEquals("delete all treatment"))) {
+            Treatments.delete_all(true);
+            updateCurrentBgInfo("delete all treatment");
+        }
+
+        // reset parameters for new speech
+        glucoseset = false;
+        insulinset = false;
+        carbsset = false;
+        timeset = false;
+        thisnumber = -1;
+        thistimeoffset = 0;
+        thisword = "";
+
+        String[] wordsArray = allWords.split(" ");
+        for (int i = 0; i < wordsArray.length; i++) {
+            // per word in input stream
+            try {
+                double thisdouble = Double.parseDouble(wordsArray[i]);
+                thisnumber = thisdouble; // if no exception
+                handleWordPair();
+            } catch (NumberFormatException nfe) {
+                // detection of number or not
+                String result = classifyWord(wordsArray[i]);
+                if (result != null)
+                    thisword = result;
+                handleWordPair();
+            }
+        }
+    }
+
+    private void handleWordPair() {
+        boolean preserve = false;
+        if ((thisnumber == -1) || (thisword == "")) return;
+
+        Log.d(TAG, "GOT WORD PAIR: " + thisnumber + " = " + thisword);
+
+        switch (thisword) {
+
+            case "rapid":
+                if ((insulinset == false) && (thisnumber > 0)) {
+                    thisinsulinnumber = thisnumber;
+                    textInsulinDose.setText(Double.toString(thisnumber) + " units");
+                    Log.d(TAG, "Rapid dose: " + Double.toString(thisnumber));
+                    insulinset = true;
+                    btnInsulinDose.setVisibility(View.VISIBLE);
+                    textInsulinDose.setVisibility(View.VISIBLE);
+                } else {
+                    Log.d(TAG, "Rapid dose already set");
+                    preserve = true;
+                }
+                break;
+
+            case "carbs":
+                if ((carbsset == false) && (thisnumber > 0)) {
+                    thiscarbsnumber = thisnumber;
+                    textCarbohydrates.setText(Integer.toString((int) thisnumber) + " carbs");
+                    carbsset = true;
+                    Log.d(TAG, "Carbs eaten: " + Double.toString(thisnumber));
+                    btnCarbohydrates.setVisibility(View.VISIBLE);
+                    textCarbohydrates.setVisibility(View.VISIBLE);
+                } else {
+                    Log.d(TAG, "Carbs already set");
+                    preserve = true;
+                }
+                break;
+
+            case "blood":
+                if ((glucoseset == false) && (thisnumber > 0)) {
+                    thisglucosenumber = thisnumber;
+                    if (bgGraphBuilder.doMgdl) {
+                        textBloodGlucose.setText(Double.toString(thisnumber) + " mg/dl");
+                    } else {
+                        textBloodGlucose.setText(Double.toString(thisnumber) + " mmol/l");
+                    }
+
+                    Log.d(TAG, "Blood test: " + Double.toString(thisnumber));
+                    glucoseset = true;
+                    btnBloodGlucose.setVisibility(View.VISIBLE);
+                    textBloodGlucose.setVisibility(View.VISIBLE);
+
+                } else {
+                    Log.d(TAG, "Blood glucose already set");
+                    preserve = true;
+                }
+                break;
+
+            case "time":
+                Log.d(TAG, "processing time keyword");
+                if ((timeset == false) && (thisnumber > 0)) {
+
+                    DecimalFormat df = new DecimalFormat("#");
+                    df.setMinimumIntegerDigits(2);
+                    df.setMinimumFractionDigits(2);
+                    df.setMaximumFractionDigits(2);
+                    df.setMaximumIntegerDigits(2);
+
+                    Calendar c = Calendar.getInstance();
+
+                    SimpleDateFormat simpleDateFormat1 =
+                            new SimpleDateFormat("dd/M/yyyy ");
+                    SimpleDateFormat simpleDateFormat2 =
+                            new SimpleDateFormat("dd/M/yyyy hh.mm"); // TODO double check 24 hour 12.00 etc
+                    String datenew = simpleDateFormat1.format(c.getTime()) + df.format(thisnumber);
+
+                    Log.d(TAG, "Time Timing data datenew: " + datenew);
+
+                    Date datethen;
+                    Date datenow = new Date();
+
+                    try {
+                        datethen = simpleDateFormat2.parse(datenew);
+                        double difference = datenow.getTime() - datethen.getTime();
+                        // is it more than 1 hour in the future? If so it must be yesterday
+                        if (difference < -(1000 * 60 * 60)) {
+                            difference = difference + (86400 * 1000);
+                        } else {
+                            // - midnight feast pre-bolus nom nom
+                            if (difference > (60 * 60 * 23 * 1000))
+                                difference = difference - (86400 * 1000);
+                        }
+
+                        Log.d(TAG, "Time Timing data: " + df.format(thisnumber) + " = difference ms: " + JoH.qs(difference));
+                        textTime.setText(df.format(thisnumber));
+                        timeset = true;
+                        thistimeoffset = difference;
+                        btnTime.setVisibility(View.VISIBLE);
+                        textTime.setVisibility(View.VISIBLE);
+                    } catch (ParseException e) {
+                        // toast to explain?
+                        Log.d(TAG, "Got exception parsing date time");
+                    }
+                } else {
+                    Log.d(TAG, "Time data already set");
+                    preserve = true;
+                }
+                break;
+        } // end switch
+
+        if (preserve == false) {
+            Log.d(TAG, "Clearing speech values");
+            thisnumber = -1;
+            thisword = "";
+        } else {
+            Log.d(TAG, "Preserving speech values");
+        }
+
+        // don't show approve/cancel if we only have time
+        if (insulinset || glucoseset || carbsset) {
+            btnApprove.setVisibility(View.VISIBLE);
+            btnCancel.setVisibility(View.VISIBLE);
+        }
+
+        if (insulinset || glucoseset || carbsset || timeset) {
+            if (chart != null) {
+                chart.setAlpha((float) 0.10);
+            }
+        }
+
+    }
+
+    /**
+     * Receiving speech input
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && null != data) {
+                    ArrayList<String> result = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    voiceRecognitionText.setText(result.get(0));
+                    voiceRecognitionText.setVisibility(View.VISIBLE);
+                    naturalLanguageRecognition(result.get(0));
+                }
+                recognitionRunning = false;
+                break;
+            }
+
+        }
+    }
+
+    class wordDataWrapper {
+        public ArrayList<wordData> entries;
+
+        wordDataWrapper() {
+            entries = new ArrayList<wordData>();
+
+        }
+    }
+
+    class wordData {
+        public String lexicon;
+        public ArrayList<String> matchWords;
+    }
+
+    /// jamorham end voiceinput methods
 
     @Override
     public String getMenuName() {
         return menu_name;
     }
 
-    public void checkEula() {
+    private void checkEula() {
         boolean IUnderstand = prefs.getBoolean("I_understand", false);
         if (!IUnderstand) {
             Intent intent = new Intent(getApplicationContext(), LicenseAgreementActivity.class);
             startActivity(intent);
             finish();
+        }
+    }
+
+    public static void staticRefreshBGCharts() {
+        if (activityVisible) {
+            Intent updateIntent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA);
+            staticContext.sendBroadcast(updateIntent);
         }
     }
 
@@ -141,7 +699,7 @@ public class Home extends ActivityWithMenu {
             @Override
             public void onReceive(Context ctx, Intent intent) {
                 if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
-                    updateCurrentBgInfo();
+                    updateCurrentBgInfo("time tick");
                 }
             }
         };
@@ -149,18 +707,19 @@ public class Home extends ActivityWithMenu {
             @Override
             public void onReceive(Context ctx, Intent intent) {
                 holdViewport.set(0, 0, 0, 0);
-                setupCharts();
-                updateCurrentBgInfo();
+                updateCurrentBgInfo("new data");
             }
         };
         registerReceiver(_broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         registerReceiver(newDataReceiver, new IntentFilter(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA));
         holdViewport.set(0, 0, 0, 0);
-        setupCharts();
-        updateCurrentBgInfo();
+
+        voiceRecognitionText.setVisibility(View.INVISIBLE);
+        updateCurrentBgInfo("generic on resume");
+        activityVisible = true;
     }
 
-    public void setupCharts() {
+    private void setupCharts() {
         bgGraphBuilder = new BgGraphBuilder(this);
         updateStuff = false;
         chart = (LineChartView) findViewById(R.id.chart);
@@ -232,6 +791,7 @@ public class Home extends ActivityWithMenu {
 
     @Override
     public void onPause() {
+        activityVisible = false;
         super.onPause();
         if (_broadcastReceiver != null ) {
             try {
@@ -249,7 +809,9 @@ public class Home extends ActivityWithMenu {
         }
     }
 
-    public void updateCurrentBgInfo() {
+    private void updateCurrentBgInfo(String source) {
+        Log.d(TAG,"updateCurrentBgInfo from: "+source);
+        setupCharts();
         final TextView notificationText = (TextView) findViewById(R.id.notices);
         if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             notificationText.setTextSize(40);
@@ -378,14 +940,15 @@ public class Home extends ActivityWithMenu {
         displayCurrentInfo();
     }
 
-    public void displayCurrentInfo() {
+    private void displayCurrentInfo() {
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(0);
 
         boolean isDexbridge = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
-        int bridgeBattery = prefs.getInt("bridge_battery", 0);
-
+        boolean isWifiWixel = CollectionServiceStarter.isWifiandBTWixel(getApplicationContext()) | CollectionServiceStarter.isWifiWixel(getApplicationContext());
         if (isDexbridge) {
+            int bridgeBattery = prefs.getInt("bridge_battery", 0);
+
             if (bridgeBattery == 0) {
                 dexbridgeBattery.setText("Waiting for packet");
             } else {
@@ -395,6 +958,27 @@ public class Home extends ActivityWithMenu {
             if (bridgeBattery < 25) dexbridgeBattery.setTextColor(Color.RED);
             else dexbridgeBattery.setTextColor(Color.GREEN);
             dexbridgeBattery.setVisibility(View.VISIBLE);
+        } else if (CollectionServiceStarter.isWifiWixel(getApplicationContext())
+                || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())) {
+            int bridgeBattery = prefs.getInt("parakeet_battery", 0);
+            if (bridgeBattery > 0) {
+                // reuse dexbridge battery text. If we end up running dexbridge and parakeet then this will need a rethink
+              // only show it when it gets low
+                if (bridgeBattery < 50) {
+                    dexbridgeBattery.setText("Parakeet Battery: " + bridgeBattery + "%");
+
+                    if (bridgeBattery < 40) {
+                        dexbridgeBattery.setTextColor(Color.RED);
+                    } else {
+                        dexbridgeBattery.setTextColor(Color.YELLOW);
+                    }
+                    dexbridgeBattery.setVisibility(View.VISIBLE);
+                } else {
+                   dexbridgeBattery.setVisibility(View.INVISIBLE);
+                }
+
+
+            }
         } else {
             dexbridgeBattery.setVisibility(View.INVISIBLE);
         }
@@ -411,7 +995,6 @@ public class Home extends ActivityWithMenu {
         if (lastBgReading != null) {
             displayCurrentInfoFromReading(lastBgReading, predictive);
         }
-        setupCharts();
     }
 
     private void displayCurrentInfoFromReading(BgReading lastBgReading, boolean predictive) {
@@ -469,6 +1052,17 @@ public class Home extends ActivityWithMenu {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_home, menu);
+        MenuItem menuItem =  menu.findItem(R.id.action_toggle_speakreadings);
+        if(prefs.getBoolean("bg_to_speech_shortcut", false)){
+            menuItem.setVisible(true);
+            if(prefs.getBoolean("bg_to_speech", false)){
+                menuItem.setChecked(true);
+            } else {
+                menuItem.setChecked(false);
+            }
+        } else {
+            menuItem.setVisible(false);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -517,6 +1111,13 @@ public class Home extends ActivityWithMenu {
             return true;
         }
 
+        // jamorham additions
+        if (item.getItemId() == R.id.synctreatments) {
+            startActivity(new Intent(this,GoogleDriveInterface.class));
+            return true;
+
+        }
+        ///
 
 
         if (item.getItemId() == R.id.action_export_csv_sidiary) {
@@ -547,6 +1148,11 @@ public class Home extends ActivityWithMenu {
             return true;
         }
 
+        if (item.getItemId() == R.id.action_toggle_speakreadings) {
+            prefs.edit().putBoolean("bg_to_speech", !prefs.getBoolean("bg_to_speech", false)).commit();
+            invalidateOptionsMenu();
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }

@@ -1,0 +1,132 @@
+package com.eveningoutpost.dexdrip.Services;
+
+import android.app.Service;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.util.Log;
+
+import com.eveningoutpost.dexdrip.GcmActivity;
+import com.eveningoutpost.dexdrip.GoogleDriveInterface;
+
+import java.lang.ref.WeakReference;
+
+
+public class PlusSyncService extends Service {
+    private final static String TAG = "jamorham plussync";
+    public static long sleepcounter = 5000;
+    private static boolean keeprunning;
+    final MyHandler mHandler = new MyHandler(this);
+    Context context;
+
+    public PlusSyncService() {
+    }
+
+    public static void startSyncService(Context context) {
+        if (GcmActivity.token != null) return;
+        Log.d(TAG, "Starting jamorham xDrip-Plus sync service");
+        context.startService(new Intent(context, PlusSyncService.class));
+    }
+
+    public static void backoff() {
+        if (sleepcounter < 20000) sleepcounter = 20000;
+    }
+
+    public static void speedup() {
+        sleepcounter = 3000;
+    }
+
+    @Override
+    public void onCreate() {
+        context = this;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i(TAG, "jamorham xDrip-Plus sync service onStart command called");
+
+        keeprunning = true;
+        sleepcounter = 5000;
+        new Thread(new Runnable() {
+            public void run() {
+
+                while (keeprunning) {
+                    try {
+                        Thread.sleep(sleepcounter);
+                        mHandler.sendEmptyMessage(0);
+                        if (sleepcounter < 600000) {
+                            sleepcounter = sleepcounter + 500;
+                        }
+
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        }).start();
+        Log.i(TAG, "jamorham xDrip-Plus sync service onStart command complete");
+        return Service.START_NOT_STICKY;
+    }
+
+    @Override
+    public void onLowMemory() {
+        Log.e(TAG, "Low memory trigger!");
+        keeprunning = false;
+    }
+
+    @Override
+    public void onDestroy() {
+        keeprunning = false;
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        // TODO: Return the communication channel to the service.
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    private class MyHandler extends Handler {
+        private final WeakReference<PlusSyncService> mActivity;
+
+        public MyHandler(PlusSyncService activity) {
+            mActivity = new WeakReference<PlusSyncService>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            PlusSyncService activity = mActivity.get();
+            if (activity != null) {
+                if (GoogleDriveInterface.getDriveIdentityString() == null) {
+                    if (GoogleDriveInterface.isRunning) {
+                        Log.d(TAG, "Drive interface is running");
+                    } else {
+                        Log.d(TAG, "Calling Google Drive Interface");
+                        Intent dialogIntent = new Intent(context, GoogleDriveInterface.class);
+                        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        dialogIntent.addFlags(Intent.FLAG_FROM_BACKGROUND);
+                        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NO_USER_ACTION);
+                        startActivity(dialogIntent);
+                    }
+                } else if (GcmActivity.token == null) {
+                    // also needs isrunning here
+                    Log.d(TAG, "Calling Google Cloud Interface");
+                    Intent dialogIntent = new Intent(context, GcmActivity.class);
+                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                    startActivity(dialogIntent);
+                } else {
+                    Log.d(TAG, "Got our token - stopping polling");
+                    keeprunning = false;
+                }
+            }
+        }
+    }
+
+}
