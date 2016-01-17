@@ -137,4 +137,7 @@
         It is best to import the database with the same version of the xDrip app it was exported and then update xDrip.
     </string>
     <string name="speaktreatment">Speak treatment</string>
+    <string name="gcmtpc">/topics/</string>
+    <string name="gcmtpcs">/topics/</string>
+    <string name="gcmstpcs">/topics/</string>
 </resources>
