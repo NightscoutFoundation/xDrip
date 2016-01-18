@@ -7,6 +7,8 @@ package com.eveningoutpost.dexdrip.utils;
 import android.util.Base64;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.GoogleDriveInterface;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
@@ -84,10 +86,22 @@ public class CipherUtils {
         }
     }
 
+    public static String getMD5(String mykey) {
+        try {
+            MessageDigest digest = java.security.MessageDigest
+                    .getInstance("MD5");
+            digest.update(mykey.getBytes(Charset.forName("UTF-8")));
+            return bytesToHex(digest.digest()).toLowerCase();
+        } catch (NoSuchAlgorithmException e) {
+            Log.e(TAG, "MD5 hash exception: " + e.toString());
+            return null;
+        }
+    }
+
     public static byte[] encryptBytes(byte[] plainText) {
         byte[] ivBytes = new byte[16];
 
-        byte[] keyBytes = getKeyBytes(key);
+        byte[] keyBytes = getKeyBytes(key + GoogleDriveInterface.getDriveKeyString());
         if (keyBytes.length != 16) {
             Log.e(TAG, "Invalid Keybytes length!");
             return errorbyte;
@@ -104,7 +118,7 @@ public class CipherUtils {
     public static byte[] decryptBytes(byte[] cipherData) {
         byte[] ivBytes = new byte[16];
         if (cipherData.length < ivBytes.length) return errorbyte;
-        byte[] keyBytes = getKeyBytes(key);
+        byte[] keyBytes = getKeyBytes(key + GoogleDriveInterface.getDriveKeyString());
         if (keyBytes.length != 16) {
             Log.e(TAG, "Invalid Keybytes length!");
             return errorbyte;
@@ -131,3 +145,4 @@ public class CipherUtils {
     }
 
 }
+

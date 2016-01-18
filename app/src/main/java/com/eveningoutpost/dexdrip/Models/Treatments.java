@@ -115,20 +115,30 @@ public class Treatments extends Model {
     }
 
     public static Treatments fromJSON(String json) {
-        return new Gson().fromJson(json, Treatments.class);
+        try {
+            return new Gson().fromJson(json, Treatments.class);
+        } catch (Exception e) {
+            Log.d(TAG, "Got exception parsing treatment json: " + e.toString());
+            Home.toaststatic("Error on treatment, probably decryption key mismatch");
+            return null;
+        }
     }
 
     public static boolean pushTreatmentFromJson(String json) {
         Log.d(TAG, "converting treatment from json: ");
         Treatments mytreatment = fromJSON(json);
-        Log.d(TAG, "Saving pushed treatment: " + mytreatment.uuid);
-        mytreatment.enteredBy = "sync";
-        mytreatment.eventType = "<none>"; // should have a default
-        mytreatment.save();
-        long x = mytreatment.save();
-        Log.d(TAG, "Saving treatment result: " + x);
-        Home.staticRefreshBGCharts();
-        return true;
+        if (mytreatment != null) {
+            Log.d(TAG, "Saving pushed treatment: " + mytreatment.uuid);
+            mytreatment.enteredBy = "sync";
+            mytreatment.eventType = "<none>"; // should have a default
+            mytreatment.save();
+            long x = mytreatment.save();
+            Log.d(TAG, "Saving treatment result: " + x);
+            Home.staticRefreshBGCharts();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static List<Treatments> latestForGraph(int number, double startTime) {

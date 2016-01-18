@@ -3,9 +3,11 @@ package com.eveningoutpost.dexdrip.Services;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
@@ -17,14 +19,21 @@ import java.lang.ref.WeakReference;
 public class PlusSyncService extends Service {
     private final static String TAG = "jamorham plussync";
     public static long sleepcounter = 5000;
+    public static boolean created = false;
     private static boolean keeprunning;
+    private static boolean skipnext = false;
     final MyHandler mHandler = new MyHandler(this);
     Context context;
+    private SharedPreferences prefs;
 
     public PlusSyncService() {
     }
 
     public static void startSyncService(Context context) {
+        if (created) {
+            Log.d(TAG, "Already created");
+            return;
+        }
         if (GcmActivity.token != null) return;
         Log.d(TAG, "Starting jamorham xDrip-Plus sync service");
         context.startService(new Intent(context, PlusSyncService.class));
@@ -32,21 +41,28 @@ public class PlusSyncService extends Service {
 
     public static void backoff() {
         if (sleepcounter < 20000) sleepcounter = 20000;
+        skipnext=true;
+    }
+    public static void backoff_a_lot() {
+        if (sleepcounter < 60000) sleepcounter = 60000;
+        skipnext=true;
     }
 
     public static void speedup() {
         sleepcounter = 3000;
+        skipnext=false;
     }
 
     @Override
     public void onCreate() {
         context = this;
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        created=true;
         Log.i(TAG, "jamorham xDrip-Plus sync service onStart command called");
-
         keeprunning = true;
         sleepcounter = 5000;
         new Thread(new Runnable() {
@@ -55,7 +71,11 @@ public class PlusSyncService extends Service {
                 while (keeprunning) {
                     try {
                         Thread.sleep(sleepcounter);
-                        mHandler.sendEmptyMessage(0);
+                        if (!skipnext) {
+                            mHandler.sendEmptyMessage(0);
+                        } else {
+                            skipnext=false;
+                        }
                         if (sleepcounter < 600000) {
                             sleepcounter = sleepcounter + 500;
                         }
@@ -66,6 +86,7 @@ public class PlusSyncService extends Service {
                     }
 
                 }
+                created=false;
             }
         }).start();
         Log.i(TAG, "jamorham xDrip-Plus sync service onStart command complete");
@@ -81,6 +102,7 @@ public class PlusSyncService extends Service {
     @Override
     public void onDestroy() {
         keeprunning = false;
+        created = false;
     }
 
     @Override
@@ -101,8 +123,9 @@ public class PlusSyncService extends Service {
             PlusSyncService activity = mActivity.get();
             if (activity != null) {
                 if (GoogleDriveInterface.getDriveIdentityString() == null) {
-                    if (GoogleDriveInterface.isRunning) {
-                        Log.d(TAG, "Drive interface is running");
+                    boolean iunderstand = prefs.getBoolean("I_understand", false);
+                    if ((GoogleDriveInterface.isRunning) || (iunderstand == false)) {
+                        Log.d(TAG, "Drive interface is running or blocked");
                     } else {
                         Log.d(TAG, "Calling Google Drive Interface");
                         Intent dialogIntent = new Intent(context, GoogleDriveInterface.class);
@@ -124,6 +147,7 @@ public class PlusSyncService extends Service {
                 } else {
                     Log.d(TAG, "Got our token - stopping polling");
                     keeprunning = false;
+                    skipnext = true;
                 }
             }
         }

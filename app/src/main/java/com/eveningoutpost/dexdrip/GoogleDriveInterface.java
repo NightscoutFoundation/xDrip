@@ -62,6 +62,7 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
     private static DriveId ourFolderID = null;
     private static String ourFolderResourceID = null;
     private static String ourFolderResourceIDHash = null;
+    private static String ourFolderResourceKeyHash = null;
     private final String my_folder_name = "jamorham-xDrip+sync";
     private final boolean use_app_folder = true;
     private final double max_sync_file_age = 1000 * 60 * 60 * 24;
@@ -287,6 +288,19 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
         }
         return ourFolderResourceIDHash;
     }
+    public static String getDriveKeyString() {
+        if (ourFolderID == null) {
+            return "";
+        }
+        if (ourFolderResourceID == null) {
+            return "";
+        }
+        if (ourFolderResourceKeyHash == null) {
+            Log.d(TAG, "Using Key ResourceID String: " + ourFolderResourceID);
+            ourFolderResourceKeyHash = CipherUtils.getMD5(ourFolderResourceID);
+        }
+        return ourFolderResourceKeyHash;
+    }
 
     @Override
     protected void onCreate(Bundle b) {
@@ -383,13 +397,17 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
     public void onConnectionFailed(ConnectionResult result) {
         // Called whenever the API client fails to connect.
         Log.i(TAG, "GoogleApiClient connection failed: " + result.toString());
+        PlusSyncService.backoff();
         if (!result.hasResolution()) {
             // show the localized error dialog.
             GoogleApiAvailability.getInstance().getErrorDialog(this, result.getErrorCode(), 0).show();
             return;
         }
         try {
-            PlusSyncService.backoff();
+            if (result.getErrorCode() == ConnectionResult.SIGN_IN_REQUIRED)
+            {
+                PlusSyncService.backoff_a_lot();
+            }
             result.startResolutionForResult(this, REQUEST_CODE_RESOLUTION);
         } catch (SendIntentException e) {
             Log.e(TAG, "Exception while starting resolution activity", e);
@@ -400,6 +418,7 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
     public void onConnected(Bundle connectionHint) {
         Log.i(TAG, "API client connected. starting query thread");
         Drive.DriveApi.requestSync(getGoogleApiClient()).setResultCallback(syncCallback);
+        PlusSyncService.speedup();
     }
 
     @Override

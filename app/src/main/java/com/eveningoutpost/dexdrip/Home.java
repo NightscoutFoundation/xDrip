@@ -110,6 +110,7 @@ public class Home extends ActivityWithMenu {
     private TextView textInsulinDose;
     private TextView textTime;
     private final int REQ_CODE_SPEECH_INPUT = 1994;
+    private static double last_speech_time = 0;
     private PreviewLineChartView previewChart;
     private TextView dexbridgeBattery;
     private TextView currentBgValueText;
@@ -122,6 +123,7 @@ public class Home extends ActivityWithMenu {
     double thisinsulinnumber = 0;
     double thistimeoffset = 0;
     String thisword = "";
+    private static String nexttoast;
     boolean carbsset = false;
     boolean insulinset = false;
     boolean glucoseset = false;
@@ -382,6 +384,7 @@ public class Home extends ActivityWithMenu {
             public void onClick(DialogInterface dialog, int which) {
                 voiceRecognitionText.setText(input.getText().toString());
                 voiceRecognitionText.setVisibility(View.VISIBLE);
+                last_speech_time = JoH.ts();
                 naturalLanguageRecognition(input.getText().toString());
 
             }
@@ -631,6 +634,26 @@ public class Home extends ActivityWithMenu {
 
     }
 
+    public static void toaststatic(String msg)
+    {
+        nexttoast=msg;
+        staticRefreshBGCharts();
+    }
+
+    public void toast(final String msg) {
+        try {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(staticContext, msg, Toast.LENGTH_LONG).show();
+                }
+            });
+            Log.d(TAG, "toast: " + msg);
+        } catch (Exception e) {
+            Log.d(TAG, "Couldn't display toast: " + msg + " / " + e.toString());
+        }
+    }
+
     /**
      * Receiving speech input
      */
@@ -645,6 +668,7 @@ public class Home extends ActivityWithMenu {
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     voiceRecognitionText.setText(result.get(0));
                     voiceRecognitionText.setVisibility(View.VISIBLE);
+                    last_speech_time = JoH.ts();
                     naturalLanguageRecognition(result.get(0));
                 }
                 recognitionRunning = false;
@@ -714,7 +738,6 @@ public class Home extends ActivityWithMenu {
         registerReceiver(newDataReceiver, new IntentFilter(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA));
         holdViewport.set(0, 0, 0, 0);
 
-        voiceRecognitionText.setVisibility(View.INVISIBLE);
         updateCurrentBgInfo("generic on resume");
         activityVisible = true;
     }
@@ -846,6 +869,19 @@ public class Home extends ActivityWithMenu {
         } 
         NavigationDrawerFragment navigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         navigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
+
+        if (nexttoast!=null)
+        {
+            toast(nexttoast);
+            nexttoast=null;
+        }
+
+        // hide the treatment recognition text after some seconds
+        if ((last_speech_time >0)&&((JoH.ts()- last_speech_time)>20000))
+        {
+            voiceRecognitionText.setVisibility(View.INVISIBLE);
+            last_speech_time =0;
+        }
     }
 
     private void updateCurrentBgInfoForWifiWixel(TextView notificationText) {
