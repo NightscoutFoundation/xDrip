@@ -76,7 +76,7 @@ public class UpdateActivity extends Activity {
                                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                         context.startActivity(intent);
                                     } else {
-                                        Log.i(TAG, "Our current version is the most recent: " + versionnumber);
+                                        Log.i(TAG, "Our current version is the most recent: " + versionnumber + " vs " + newversion);
                                     }
                                 } catch (Exception e) {
                                     Log.e(TAG, "Got exception parsing update version: " + e.toString());
@@ -86,7 +86,7 @@ public class UpdateActivity extends Activity {
                             }
                             Log.i(TAG, "Success getting latest software version");
                         } else {
-                            Log.d(TAG, "Failure getting update URL data");
+                            Log.d(TAG, "Failure getting update URL data: code: "+response.code());
                         }
                     } catch (Exception e) {
                         UserError.Log.e(TAG, "Exception in reading http update version " + e.toString());
