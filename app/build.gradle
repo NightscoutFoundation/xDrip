@@ -21,6 +21,12 @@ repositories {
     maven { url "https://oss.sonatype.org/content/groups/public/" }
 }
 
+def generateVersionNumber = { ->
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append((new Date()).format('yyMMddHHmm'))
+    return Integer.parseInt(stringBuilder.toString());
+}
+
 def generateVersionName = { ->
 
     StringBuilder stringBuilder = new StringBuilder();
@@ -83,7 +89,7 @@ android {
         applicationId "com.eveningoutpost.dexdrip"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode 2
+        versionCode generateVersionNumber()
         versionName generateVersionName()
     }
     buildTypes {

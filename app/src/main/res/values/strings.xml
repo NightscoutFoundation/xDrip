@@ -140,4 +140,5 @@
     <string name="gcmtpc">/topics/</string>
     <string name="gcmtpcs">/topics/</string>
     <string name="gcmstpcs">/topics/</string>
+    <string name="title_activity_update">xDrip+ Update Available</string>
 </resources>

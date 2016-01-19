@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.GoogleDriveInterface;
+import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 
 import java.lang.ref.WeakReference;
 
@@ -41,16 +42,17 @@ public class PlusSyncService extends Service {
 
     public static void backoff() {
         if (sleepcounter < 20000) sleepcounter = 20000;
-        skipnext=true;
+        skipnext = true;
     }
+
     public static void backoff_a_lot() {
         if (sleepcounter < 60000) sleepcounter = 60000;
-        skipnext=true;
+        skipnext = true;
     }
 
     public static void speedup() {
         sleepcounter = 3000;
-        skipnext=false;
+        skipnext = false;
     }
 
     @Override
@@ -61,7 +63,7 @@ public class PlusSyncService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        created=true;
+        created = true;
         Log.i(TAG, "jamorham xDrip-Plus sync service onStart command called");
         keeprunning = true;
         sleepcounter = 5000;
@@ -74,7 +76,7 @@ public class PlusSyncService extends Service {
                         if (!skipnext) {
                             mHandler.sendEmptyMessage(0);
                         } else {
-                            skipnext=false;
+                            skipnext = false;
                         }
                         if (sleepcounter < 600000) {
                             sleepcounter = sleepcounter + 500;
@@ -86,7 +88,7 @@ public class PlusSyncService extends Service {
                     }
 
                 }
-                created=false;
+                created = false;
             }
         }).start();
         Log.i(TAG, "jamorham xDrip-Plus sync service onStart command complete");
@@ -148,6 +150,7 @@ public class PlusSyncService extends Service {
                     Log.d(TAG, "Got our token - stopping polling");
                     keeprunning = false;
                     skipnext = true;
+                    UpdateActivity.checkForAnUpdate(context);
                 }
             }
         }
