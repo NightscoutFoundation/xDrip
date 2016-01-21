@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 
@@ -54,6 +55,10 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                 String decrypted_payload = CipherUtils.decryptString(payload);
                 if (decrypted_payload.length() > 0) {
                     payload = decrypted_payload;
+                } else {
+                    Log.e(TAG, "Couldn't decrypt payload!");
+                    payload = "";
+                    Home.toaststaticnext("Having problems decrypting incoming data - check keys");
                 }
             }
 
@@ -92,8 +97,14 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                 }
             } else if (action.equals("p")) {
                 GcmActivity.send_ping_reply();
+            } else if (action.equals("bgs")) {
+                Log.i(TAG, "Received Backfill packet");
+                String bgs[] = payload.split("\\^");
+                for (String bgr : bgs) {
+                    BgReading.bgReadingInsertFromJson(bgr);
+                }
+                Home.staticRefreshBGCharts();
             }
-
         } else {
             // direct downstream message.
             Log.i(TAG, "Received downstream message: " + message);

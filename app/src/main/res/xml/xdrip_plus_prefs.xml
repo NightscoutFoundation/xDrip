@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="xdrip_plus_category"
+        android:title="xDrip+ extra settings">
+        <CheckBoxPreference
+            android:key="use_custom_sync_key"
+            android:title="Sync using custom security key"
+            android:summary="Key is used instead of Google account"
+            android:defaultValue="false" />
+        <EditTextPreference
+            android:key="custom_sync_key"
+            android:title="Handset Group Security Sync Key"
+            android:summary="Handset sync grouping key"
+            android:defaultValue="" />
+    </PreferenceCategory>
+</PreferenceScreen>

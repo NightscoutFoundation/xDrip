@@ -5,14 +5,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.activeandroid.util.SQLiteUtils;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.ShareModels.ShareUploadableBg;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
@@ -22,6 +24,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.internal.bind.DateTypeAdapter;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.Date;
@@ -595,6 +600,63 @@ public class BgReading extends Model implements ShareUploadableBg{
         Log.i(TAG, "ESTIMATE RAW BG" + estimate);
         return estimate;
     }
+
+    public static void bgReadingInsertFromJson(String json) {
+        BgReading bgr = fromJSON(json);
+        if (bgr != null) {
+            try {
+                bgr.save();
+            } catch (Exception e) {
+                Log.d(TAG, "Could not save BGR: " + e.toString());
+            }
+        }
+    }
+
+    public static BgReading fromJSON(String json) {
+        try {
+            Log.d(TAG, "Processing incoming json: " + json);
+            return new Gson().fromJson(json, BgReading.class);
+        } catch (Exception e) {
+            Log.d(TAG, "Got exception parsing BgReading json: " + e.toString());
+            Home.toaststaticnext("Error on BGReading sync, probably decryption key mismatch");
+            return null;
+        }
+    }
+
+    public String toJSON() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("uuid", uuid);
+            jsonObject.put("a", a); // how much of this do we actually need?
+            jsonObject.put("b", b);
+            jsonObject.put("c", c);
+            jsonObject.put("timestamp", timestamp);
+            jsonObject.put("age_adjusted_raw_value", age_adjusted_raw_value);
+            jsonObject.put("calculated_value", calculated_value);
+            // jsonObject.put("filtered_calculated_value", calculated_value);
+            jsonObject.put("calibration_flag", calibration_flag);
+            jsonObject.put("filtered_data", filtered_data);
+            jsonObject.put("raw_calculated", raw_calculated);
+            jsonObject.put("raw_data", raw_data);
+            //   jsonObject.put("sensor", sensor);
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public static void deleteALL() {
+        try {
+            SQLiteUtils.execSql("delete from BgSendQueue");
+            SQLiteUtils.execSql("delete from BgReadings");
+            Log.d(TAG, "Deleting all BGReadings");
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception running deleteALL " + e.toString());
+        }
+    }
+
 
     //*******INSTANCE METHODS***********//
     public void perform_calculations() {

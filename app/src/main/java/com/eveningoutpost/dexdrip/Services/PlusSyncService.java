@@ -30,6 +30,14 @@ public class PlusSyncService extends Service {
     public PlusSyncService() {
     }
 
+    public static void clearandRestartSyncService(Context context)
+    {
+    // TODO invalidate any cache
+        GcmActivity.token = null; // invalidate
+        speedup();
+        startSyncService(context);
+    }
+
     public static void startSyncService(Context context) {
         if (created) {
             Log.d(TAG, "Already created");

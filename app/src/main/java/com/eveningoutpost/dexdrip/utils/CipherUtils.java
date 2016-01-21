@@ -144,5 +144,11 @@ public class CipherUtils {
         return Base64.encodeToString(encryptBytes(inbytes), Base64.NO_WRAP);
     }
 
+    public static String getRandomHexKey() {
+        byte[] keybytes = new byte[16];
+        SecureRandom sr = new SecureRandom();
+        sr.nextBytes(keybytes);
+        return bytesToHex(keybytes);
+    }
 }
 

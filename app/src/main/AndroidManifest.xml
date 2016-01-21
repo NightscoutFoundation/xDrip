@@ -41,7 +41,7 @@
             android:value="DexDrip.db" />
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="40" />
+            android:value="41" />
 
         <provider
             android:name="com.activeandroid.content.ContentProvider"
@@ -283,7 +283,10 @@
 
         <activity
             android:name=".UtilityModels.UpdateActivity"
-            android:label="@string/title_activity_update"></activity>
+            android:label="@string/title_activity_update" />
+        <activity
+            android:name=".utils.DisplayQRCode"
+            android:label="@string/title_activity_display_qrcode"></activity>
     </application>
 
 </manifest>

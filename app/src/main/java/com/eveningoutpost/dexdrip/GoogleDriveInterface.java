@@ -7,7 +7,9 @@ package com.eveningoutpost.dexdrip;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -53,7 +55,6 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
 
     public static final Charset my_charset = Charset.forName("ISO-8859-1");
     private static final String TAG = "jamorham drive";
-    private static final int REQUEST_CODE_CAPTURE_IMAGE = 1;
     private static final int REQUEST_CODE_CREATOR = 2;
     private static final int REQUEST_CODE_RESOLUTION = 3;
     public static boolean staticGetFolderFileList = false;
@@ -63,6 +64,7 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
     private static String ourFolderResourceID = null;
     private static String ourFolderResourceIDHash = null;
     private static String ourFolderResourceKeyHash = null;
+    private static SharedPreferences prefs;
     private final String my_folder_name = "jamorham-xDrip+sync";
     private final boolean use_app_folder = true;
     private final double max_sync_file_age = 1000 * 60 * 60 * 24;
@@ -275,7 +277,27 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
         }
     };
 
+    private static String getCustomSyncKey() {
+        if ((prefs != null) && (prefs.getBoolean("use_custom_sync_key", false))) {
+            String mykey = prefs.getString("custom_sync_key", "");
+            if ((mykey.length() > 16)) {
+                return mykey;
+            } else {
+                Home.toaststaticnext("Custom sync key is too short - make it >16 characters");
+            }
+        }
+        return null;
+    }
+
     public static String getDriveIdentityString() {
+
+        // we should cache and detect preference change and invalidate a flag for optimization
+        String customkey = getCustomSyncKey();
+        if (customkey != null) {
+            ourFolderResourceIDHash = CipherUtils.getSHA256(customkey).substring(0, 32);
+            return ourFolderResourceIDHash;
+        }
+
         if (ourFolderID == null) {
             return null;
         }
@@ -288,7 +310,16 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
         }
         return ourFolderResourceIDHash;
     }
+
     public static String getDriveKeyString() {
+
+        // we should cache and detect preference change and invalidate a flag for optimization
+        String customkey = getCustomSyncKey();
+        if (customkey != null) {
+            ourFolderResourceKeyHash = CipherUtils.getMD5(customkey);
+            return ourFolderResourceKeyHash;
+        }
+
         if (ourFolderID == null) {
             return "";
         }
@@ -305,6 +336,7 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     }
 
     /**
@@ -366,7 +398,11 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
     protected void onResume() {
         super.onResume();
         isRunning = true;
-        connectGoogleAPI();
+        if (!prefs.getBoolean("use_custom_sync_key", false)) {
+            connectGoogleAPI();
+        } else {
+            Log.d(TAG, "Using custom sync key");
+        }
     }
 
     @Override
@@ -400,12 +436,15 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
         PlusSyncService.backoff();
         if (!result.hasResolution()) {
             // show the localized error dialog.
-            GoogleApiAvailability.getInstance().getErrorDialog(this, result.getErrorCode(), 0).show();
+            try {
+                GoogleApiAvailability.getInstance().getErrorDialog(this, result.getErrorCode(), 0).show();
+            } catch (Exception e) {
+                Log.e(TAG, "Ouch could not display the error dialog from play services: " + e.toString());
+            }
             return;
         }
         try {
-            if (result.getErrorCode() == ConnectionResult.SIGN_IN_REQUIRED)
-            {
+            if (result.getErrorCode() == ConnectionResult.SIGN_IN_REQUIRED) {
                 PlusSyncService.backoff_a_lot();
             }
             result.startResolutionForResult(this, REQUEST_CODE_RESOLUTION);
@@ -597,6 +636,7 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
                     .addScope(Drive.SCOPE_APPFOLDER)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
+                            //                  .useDefaultAccount()
                     .build();
         }
         mGoogleApiClient.connect();

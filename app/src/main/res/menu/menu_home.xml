@@ -30,11 +30,33 @@
         android:orderInCategory="1"
         android:showAsAction="never"/>
 
+    <item android:id="@+id/deleteAllBG"
+        android:title="Delete All BG readings"
+        android:checkable="false"
+        android:orderInCategory="1"
+        android:onClick="deleteAllBG"
+        android:showAsAction="never"/>
+
     <item android:id="@+id/synctreatments"
         android:title="Sync Treatments"
         android:checkable="false"
         android:orderInCategory="1"
         android:showAsAction="never"/>
+
+    <item android:id="@+id/sharemyconfig"
+        android:title="Share config via QR code"
+        android:checkable="false"
+        android:orderInCategory="1"
+        android:onClick="shareMyConfig"
+        android:showAsAction="never"/>
+
+    <item android:id="@+id/sendbackfill"
+        android:title="Send BG readings to backfill"
+        android:checkable="false"
+        android:orderInCategory="1"
+        android:onClick="doBackFillBroadcast"
+        android:showAsAction="never"/>
+
 
     <item android:id="@+id/action_toggle_speakreadings"
         android:title="@string/menu_toggle_speakreadings"

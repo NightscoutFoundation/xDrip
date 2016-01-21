@@ -24,8 +24,8 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.PebbleSync;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -36,6 +36,7 @@ import net.tribe7.common.base.Joiner;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -59,6 +60,40 @@ public class Preferences extends PreferenceActivity {
                 preferenceFragment).commit();
     }
 
+    private void installxDripPlusPreferencesFromQRCode(SharedPreferences prefs,String data)
+    {
+        try {
+            Map<String, String> prefsmap = DisplayQRCode.decodeString(data);
+            if (prefsmap != null) {
+                Log.i(TAG,"Processing prefsmap :"+prefsmap.size());
+                SharedPreferences.Editor editor = prefs.edit();
+                int changes = 0;
+                for (Map.Entry<String, String> entry : prefsmap.entrySet()) {
+                    String key = entry.getKey();
+                    String value = entry.getValue();
+        //            Log.d(TAG, "Saving preferences: " + key + " = " + value);
+                    if (value.equals("true")||(value.equals("false")))
+                    {
+                        editor.putBoolean(key, Boolean.parseBoolean(value));
+                        changes++;
+                    } else if (!value.equals("null")) {
+                        editor.putString(key, value);
+                        changes++;
+                    }
+                }
+                editor.apply();
+                refreshFragments();
+                Toast.makeText(getApplicationContext(), "Loaded "+Integer.toString(changes)+" preferences from QR code", Toast.LENGTH_LONG).show();
+            } else {
+                android.util.Log.e(TAG, "Got null prefsmap during decode");
+            }
+        } catch (Exception e)
+        {
+            Log.e(TAG,"Got exception installing preferences");
+        }
+
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
@@ -67,7 +102,13 @@ public class Preferences extends PreferenceActivity {
             return;
         }
         if (scanResult.getFormatName().equals("QR_CODE")) {
-            NSBarcodeConfig barcode = new NSBarcodeConfig(scanResult.getContents());
+
+            String scanresults = scanResult.getContents();
+            if (scanresults.startsWith(DisplayQRCode.qrmarker)){
+               installxDripPlusPreferencesFromQRCode(prefs,scanresults);
+              }
+
+            NSBarcodeConfig barcode = new NSBarcodeConfig(scanresults);
             if (barcode.hasMongoConfig()) {
                 if (barcode.getMongoUri().isPresent()) {
                     SharedPreferences.Editor editor = prefs.edit();
@@ -216,12 +257,17 @@ public class Preferences extends PreferenceActivity {
     };
 
     private static void bindPreferenceSummaryToValue(Preference preference) {
-        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
-    }
+        try {
+            preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+            sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
+                    PreferenceManager
+                            .getDefaultSharedPreferences(preference.getContext())
+                            .getString(preference.getKey(), ""));
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception binding preference summary: " + e.toString());
+        }
+        }
+
     private static void bindPreferenceSummaryToValueAndEnsureNumeric(Preference preference) {
         preference.setOnPreferenceChangeListener(sBindNumericPreferenceSummaryToValueListener);
         sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
@@ -255,7 +301,6 @@ public class Preferences extends PreferenceActivity {
 
             addPreferencesFromResource(R.xml.pref_data_source);
 
-
             addPreferencesFromResource(R.xml.pref_data_sync);
             setupBarcodeConfigScanner();
             setupBarcodeShareScanner();
@@ -266,6 +311,9 @@ public class Preferences extends PreferenceActivity {
 
             addPreferencesFromResource(R.xml.pref_advanced_settings);
             addPreferencesFromResource(R.xml.pref_community_help);
+            addPreferencesFromResource(R.xml.xdrip_plus_prefs);
+
+
 
             bindTTSListener();
             final Preference collectionMethod = findPreference("dex_collection_method");
@@ -277,6 +325,8 @@ public class Preferences extends PreferenceActivity {
             final Preference scanShare = findPreference("scan_share2_barcode");
             final EditTextPreference transmitterId = (EditTextPreference) findPreference("dex_txid");
             final Preference pebbleSync = findPreference("broadcast_to_pebble");
+            final Preference useCustomSyncKey = findPreference("use_custom_sync_key");
+            final Preference CustomSyncKey = findPreference("custom_sync_key");
             final PreferenceCategory collectionCategory = (PreferenceCategory) findPreference("collection_category");
             final PreferenceCategory otherCategory = (PreferenceCategory) findPreference("other_category");
             final PreferenceScreen calibrationAlertsScreen = (PreferenceScreen) findPreference("calibration_alerts_screen");
@@ -298,6 +348,31 @@ public class Preferences extends PreferenceActivity {
                     return true;
                 }
             });
+
+            // jamorham xDrip+ prefs
+            if (prefs.getString("custom_sync_key", "").equals("")) {
+                prefs.edit().putString("custom_sync_key", CipherUtils.getRandomHexKey()).apply();
+            }
+            bindPreferenceSummaryToValue(findPreference("custom_sync_key")); // still needed?
+
+            useCustomSyncKey.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    Context context = preference.getContext();
+                    PlusSyncService.clearandRestartSyncService(context);
+                    return true;
+                }
+            });
+            CustomSyncKey.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    preference.setSummary(newValue.toString());
+                    Context context = preference.getContext();
+                    PlusSyncService.clearandRestartSyncService(context);
+                    return true;
+                }
+            });
+
             Log.d(TAG, prefs.getString("dex_collection_method", "BluetoothWixel"));
             if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomShare") != 0) {
                 collectionCategory.removePreference(shareKey);

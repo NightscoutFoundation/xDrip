@@ -229,7 +229,7 @@ public class BgGraphBuilder {
 
     // auto split a line - jump thresh in minutes
     public ArrayList<Line> autoSplitLine(Line macroline, float jumpthresh) {
-        Log.d(TAG, "Enter autoSplit Line");
+       // Log.d(TAG, "Enter autoSplit Line");
         ArrayList<Line> linearray = new ArrayList<Line>();
         float lastx = -999999;
 
@@ -258,7 +258,7 @@ public class BgGraphBuilder {
                 thesepoints.add(thispoint); // grow current line list
             }
         }
-        Log.d(TAG, "Exit autoSplit Line");
+     //   Log.d(TAG, "Exit autoSplit Line");
         return linearray;
     }
 

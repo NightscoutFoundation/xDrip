@@ -53,6 +53,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
+import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.google.gson.Gson;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
@@ -639,6 +640,10 @@ public class Home extends ActivityWithMenu {
         nexttoast=msg;
         staticRefreshBGCharts();
     }
+    public static void toaststaticnext(String msg)
+    {
+        nexttoast=msg;
+    }
 
     public void toast(final String msg) {
         try {
@@ -1100,6 +1105,22 @@ public class Home extends ActivityWithMenu {
             menuItem.setVisible(false);
         }
         return super.onCreateOptionsMenu(menu);
+    }
+
+    public void shareMyConfig(MenuItem myitem) {
+        Intent intent = new Intent(getApplicationContext(), DisplayQRCode.class);
+        startActivity(intent);
+    }
+
+    public void doBackFillBroadcast(MenuItem myitem) {
+        GcmActivity.syncBGTable();
+        toast("Starting sync to other devices");
+    }
+
+    public void deleteAllBG(MenuItem myitem) {
+        BgReading.deleteALL();
+        toast("Deleting ALL BG readings!");
+        staticRefreshBGCharts();
     }
 
     @Override

@@ -12,6 +12,8 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.google.android.gms.common.ConnectionResult;
@@ -20,6 +22,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -33,6 +36,7 @@ public class GcmActivity extends Activity {
     public static String token = null;
     public static String senderid = null;
     public static Context mContext;
+    private static boolean runningBGSync = false;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     public static void setContext(Context xmContext) {
@@ -49,6 +53,46 @@ public class GcmActivity extends Activity {
         return "sent async";
     }
 
+
+    public static void syncBGTable() {
+        if (runningBGSync) {
+            Log.i(TAG, "Already syncing BG");
+            Home.toaststatic("Already running a background sync");
+            return;
+        }
+        new Thread() {
+            @Override
+            public void run() {
+                runningBGSync = true;
+                try {
+                    final List<BgReading> bgReadings = BgReading.latestForGraph(300, JoH.ts() - (24 * 60 * 60 * 1000));
+                    String mypacket = "";
+                    int maxrecords = bgReadings.size();
+                    int counter = 1;
+                    int delay = 3000;
+                    for (BgReading bgReading : bgReadings) {
+                        counter++;
+                        String myrecord = bgReading.toJSON();
+                        if (mypacket.length() > 0) {
+                            mypacket = mypacket + "^";
+                        }
+                        mypacket = mypacket + myrecord;
+                        if ((mypacket.length() > 800) || (counter > maxrecords)) {
+                            Log.d(TAG, "Outbound BG sync record: size: " + mypacket.length() + " / " + mypacket);
+                            sendMessage(myIdentity(), "bgs", mypacket);
+                            mypacket = "";
+                            Thread.sleep(delay);
+                            delay = delay + 300;
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Got exception during Sync bg table thread: " + e.toString());
+                } finally {
+                    runningBGSync = false;
+                }
+            }
+        }.start();
+    }
 
     public static void pushTreatmentAsync(final Treatments thistreatment) {
         new Thread() {

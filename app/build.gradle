@@ -130,7 +130,7 @@ dependencies {
     }
     /* begin relevant android-uploader dependencies */
     compile 'com.embarkmobile:zxing-android-minimal:2.0.0@aar'
-    compile 'com.embarkmobile:zxing-android-legacy:2.0.0@aar'
+    //compile 'com.embarkmobile:zxing-android-legacy:2.0.0@aar'
     compile 'com.embarkmobile:zxing-android-integration:2.0.0@aar'
     compile 'com.google.zxing:core:3.1.0'
     compile 'net.tribe7.seeds:seeds-functional:16.0.1'

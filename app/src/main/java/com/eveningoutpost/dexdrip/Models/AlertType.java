@@ -277,10 +277,10 @@ public class AlertType extends Model {
             int snooze,
             boolean vibrate) {
 
-        if(uuid.equals(LOW_ALERT_55)) {
+/*        if(uuid.equals(LOW_ALERT_55)) {
             // This alert can not be removed/updated
             return;
-        }
+        }*/
 
         AlertType at = get_alert(uuid);
         at.name = name;
@@ -299,10 +299,10 @@ public class AlertType extends Model {
         at.save();
     }
     public static void remove_alert(String uuid) {
-        if(uuid.equals(LOW_ALERT_55)) {
+  /*      if(uuid.equals(LOW_ALERT_55)) {
             // This alert can not be removed/updated
             return;
-        }
+        }*/
         AlertType alert = get_alert(uuid);
 		if(alert != null) {
 	        alert.delete();
@@ -355,7 +355,7 @@ public class AlertType extends Model {
     // This alert will not be editable/removable.
     public static void CreateStaticAlerts() {
         if(get_alert(LOW_ALERT_55) == null) {
-            add_alert(LOW_ALERT_55, "low alert (unchangable)", false, 55, true, 1, null, 0, 0, true, 20, true);
+            add_alert(LOW_ALERT_55, "low alert ", false, 55, true, 1, null, 0, 0, true, 20, true);
         }
     }
 
