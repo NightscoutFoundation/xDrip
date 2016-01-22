@@ -13,5 +13,18 @@
             android:title="Handset Group Security Sync Key"
             android:summary="Handset sync grouping key"
             android:defaultValue="" />
+        <CheckBoxPreference
+            android:key="auto_update_download"
+            android:title="Automatically check for updates"
+            android:summary="Get notified of new apk releases"
+            android:defaultValue="true" />
+        <Preference
+            android:title="Show Settings QR codes"
+            android:key="show_qr_codes">
+            <intent
+                android:action="android.intent.action.MAIN"
+                android:targetPackage="com.eveningoutpost.dexdrip"
+                android:targetClass="com.eveningoutpost.dexdrip.utils.DisplayQRCode"/>
+        </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

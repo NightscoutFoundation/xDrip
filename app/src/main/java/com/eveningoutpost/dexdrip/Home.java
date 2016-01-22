@@ -51,6 +51,8 @@ import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
+import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
+import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
@@ -871,7 +873,7 @@ public class Home extends ActivityWithMenu {
             notificationText.append("\n LOW ALERTS CURRENTLY DISABLED");
         } else if (prefs.getLong("high_alerts_disabled_until", 0) > new Date().getTime()) {
             notificationText.append("\n HIGH ALERTS CURRENTLY DISABLED");
-        } 
+        }
         NavigationDrawerFragment navigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         navigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
 
@@ -1122,6 +1124,18 @@ public class Home extends ActivityWithMenu {
         toast("Deleting ALL BG readings!");
         staticRefreshBGCharts();
     }
+
+    public void checkForUpdate(MenuItem myitem)
+    {
+        toast("Checking for update..");
+        UpdateActivity.checkForAnUpdate(getApplicationContext());
+    }
+
+    public void sendFeedback(MenuItem myitem)
+    {
+        startActivity(new Intent(getApplicationContext(), SendFeedBack.class));
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

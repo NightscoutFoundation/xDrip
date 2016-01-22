@@ -21,6 +21,7 @@
     <item android:id="@+id/importsettings"
         android:title="Import Settings"
         android:checkable="false"
+        android:visible="false"
         android:orderInCategory="1"
         android:showAsAction="never"/>
 
@@ -28,6 +29,7 @@
         android:title="Export Settings (warning!)"
         android:checkable="false"
         android:orderInCategory="1"
+        android:visible="false"
         android:showAsAction="never"/>
 
     <item android:id="@+id/deleteAllBG"
@@ -57,6 +59,19 @@
         android:onClick="doBackFillBroadcast"
         android:showAsAction="never"/>
 
+    <item android:id="@+id/checkforupdate"
+        android:title="Check for updated version"
+        android:checkable="false"
+        android:orderInCategory="1"
+        android:onClick="checkForUpdate"
+        android:showAsAction="never"/>
+
+    <item android:id="@+id/sendfeedback"
+        android:title="Send Feedback to developer"
+        android:checkable="false"
+        android:orderInCategory="1"
+        android:onClick="sendFeedback"
+        android:showAsAction="never"/>
 
     <item android:id="@+id/action_toggle_speakreadings"
         android:title="@string/menu_toggle_speakreadings"
