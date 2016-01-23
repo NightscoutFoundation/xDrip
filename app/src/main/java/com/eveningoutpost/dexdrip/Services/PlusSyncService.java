@@ -33,6 +33,7 @@ public class PlusSyncService extends Service {
     public static void clearandRestartSyncService(Context context)
     {
     // TODO invalidate any cache
+        GoogleDriveInterface.invalidate();
         GcmActivity.token = null; // invalidate
         speedup();
         startSyncService(context);

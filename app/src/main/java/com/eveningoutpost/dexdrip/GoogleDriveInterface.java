@@ -289,6 +289,13 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
         return null;
     }
 
+    public static void invalidate() {
+        ourFolderID = null;
+        ourFolderResourceID = null;
+        ourFolderResourceIDHash = null;
+        ourFolderResourceKeyHash = null;
+    }
+
     public static String getDriveIdentityString() {
 
         // we should cache and detect preference change and invalidate a flag for optimization
@@ -337,6 +344,7 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        startup();
     }
 
     /**
@@ -394,24 +402,40 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
                 });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    void startup() {
         isRunning = true;
         if (!prefs.getBoolean("use_custom_sync_key", false)) {
             connectGoogleAPI();
         } else {
             Log.d(TAG, "Using custom sync key");
+            shutdown();
+        }
+    }
+
+    void shutdown() {
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.disconnect();
+            Log.i(TAG, "DISCONNECTED GOOGLE DRIVE API");
+        } else {
+            Log.i(TAG, "No drive instance to shutdown");
+        }
+        mGoogleApiClient = null;
+        isRunning = false;
+        try {
+            finish();
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception doing finish in shutdown");
         }
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        finish();
+    }
+
+    @Override
     protected void onPause() {
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.disconnect();
-            Log.i(TAG, "DISCONNECTED GOOGLE DRIVE API");
-        }
-        isRunning = false;
         super.onPause();
     }
 
@@ -451,6 +475,7 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
         } catch (SendIntentException e) {
             Log.e(TAG, "Exception while starting resolution activity", e);
         }
+        shutdown();
     }
 
     @Override
@@ -468,7 +493,8 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
     void getFolderFileList(DriveId driveId) {
         if (!staticGetFolderFileList) {
             try {
-                finish();
+                Log.d(TAG, "Calling shutdown");
+                shutdown();
             } catch (Exception e) {
             }
             return;
@@ -625,7 +651,7 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
     }
 
     public void connectGoogleAPI() {
-        if (mGoogleApiClient == null) {
+        if (mGoogleApiClient == null || !mGoogleApiClient.isConnecting()) {
             // Create the API client and bind it to an instance variable.
             // We use this instance as the callback for connection and connection
             // failures.
@@ -636,7 +662,7 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
                     .addScope(Drive.SCOPE_APPFOLDER)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
-                            //                  .useDefaultAccount()
+                            // .useDefaultAccount()
                     .build();
         }
         mGoogleApiClient.connect();

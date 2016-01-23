@@ -82,7 +82,9 @@ public class GcmActivity extends Activity {
                             sendMessage(myIdentity(), "bgs", mypacket);
                             mypacket = "";
                             Thread.sleep(delay);
-                            delay = delay + 300;
+                            if (delay < 60000) {
+                                delay = delay + 300;
+                            }
                         }
                     }
                 } catch (Exception e) {
