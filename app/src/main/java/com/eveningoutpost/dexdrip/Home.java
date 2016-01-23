@@ -26,6 +26,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -58,6 +59,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
+import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
@@ -1112,6 +1114,79 @@ public class Home extends ActivityWithMenu {
         if (lastBgReading != null) {
             displayCurrentInfoFromReading(lastBgReading, predictive);
         }
+
+        if(prefs.getBoolean("extra_status_line", false)) {
+        //    extraStatusLineText.setText(extraStatusLine());
+        //    extraStatusLineText.setVisibility(View.VISIBLE);
+        } else {
+        //    extraStatusLineText.setText("");
+        //    extraStatusLineText.setVisibility(View.GONE);
+        }
+    }
+
+    @NonNull
+    private String extraStatusLine() {
+        StringBuilder extraline = new StringBuilder();
+        Calibration lastCalibration = Calibration.last();
+        if (prefs.getBoolean("status_line_calibration_long", true) && lastCalibration != null){
+            if(extraline.length()!=0) extraline.append(' ');
+            extraline.append("slope = ");
+            extraline.append(String.format("%.2f",lastCalibration.slope));
+            extraline.append(' ');
+            extraline.append("inter = ");
+            extraline.append(String.format("%.2f",lastCalibration.intercept));
+        }
+
+        if(prefs.getBoolean("status_line_calibration_short", false) && lastCalibration != null) {
+            if(extraline.length()!=0) extraline.append(' ');
+            extraline.append("s:");
+            extraline.append(String.format("%.2f",lastCalibration.slope));
+            extraline.append(' ');
+            extraline.append("i:");
+            extraline.append(String.format("%.2f",lastCalibration.intercept));
+        }
+
+        if(prefs.getBoolean("status_line_avg", false)
+                || prefs.getBoolean("status_line_a1c_dcct", false)
+                || prefs.getBoolean("status_line_a1c_ifcc", false
+                || prefs.getBoolean("status_line_in", false))
+                || prefs.getBoolean("status_line_high", false)
+                || prefs.getBoolean("status_line_low", false)){
+
+            StatsResult statsResult = new StatsResult(prefs);
+
+            if(prefs.getBoolean("status_line_avg", false)) {
+                if(extraline.length()!=0) extraline.append(' ');
+                extraline.append(statsResult.getAverageUnitised());
+            }
+            if(prefs.getBoolean("status_line_a1c_dcct", false)) {
+                if(extraline.length()!=0) extraline.append(' ');
+                extraline.append(statsResult.getA1cDCCT());
+            }
+            if(prefs.getBoolean("status_line_a1c_ifcc", false)) {
+                if(extraline.length()!=0) extraline.append(' ');
+                extraline.append(statsResult.getA1cIFCC());
+            }
+            if(prefs.getBoolean("status_line_in", false)) {
+                if(extraline.length()!=0) extraline.append(' ');
+                extraline.append(statsResult.getInPercentage());
+            }
+            if(prefs.getBoolean("status_line_high", false)) {
+                if(extraline.length()!=0) extraline.append(' ');
+                extraline.append(statsResult.getHighPercentage());
+            }
+            if(prefs.getBoolean("status_line_low", false)) {
+                if(extraline.length()!=0) extraline.append(' ');
+                extraline.append(statsResult.getLowPercentage());
+            }
+        }
+        if(prefs.getBoolean("status_line_time", false)) {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            if(extraline.length()!=0) extraline.append(' ');
+            extraline.append(sdf.format(new Date()));
+        }
+        return extraline.toString();
+
     }
 
     private void displayCurrentInfoFromReading(BgReading lastBgReading, boolean predictive) {

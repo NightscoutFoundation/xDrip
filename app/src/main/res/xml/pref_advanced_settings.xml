@@ -52,6 +52,54 @@
                 android:key="disable_battery_warning"
                 android:summary="Disable the warning for low transmitter battery state on the home screen. (Only relevant for DIY receivers.)"
                 android:title="Disable Battery Warning" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="extra_status_line"
+                android:summary="Additional text status"
+                android:title="Extra Status Line" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="extra_status_line"
+                android:key="status_line_avg"
+                android:summary="Today's average value."
+                android:title="Average" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="extra_status_line"
+                android:key="status_line_a1c_dcct"
+                android:summary="A1c estimation in DCCT format (%)"
+                android:title="A1c DCCT" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="extra_status_line"
+                android:key="status_line_a1c_ifcc"
+                android:summary="A1c estimation in IFCC format (mmol/mol)"
+                android:title="A1c IFCC" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="extra_status_line"
+                android:key="status_line_in"
+                android:summary="Percentage of values in range."
+                android:title="In Percentage" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="extra_status_line"
+                android:key="status_line_high"
+                android:summary="Percentage of values above range."
+                android:title="High Percentage" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="extra_status_line"
+                android:key="status_line_low"
+                android:summary="Percentage of values below range."
+                android:title="Low Percentage" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="extra_status_line"
+                android:key="status_line_time"
+                android:summary="The current time."
+                android:title="Time" />
+
             <Preference
                 android:key="recent_errors"
                 android:title="View Recent Errors/Warnings">

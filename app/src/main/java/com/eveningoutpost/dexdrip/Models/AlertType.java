@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
+
+import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
@@ -85,6 +87,28 @@ public class AlertType extends Model {
     public final static String LOW_ALERT_55 = "c5f1999c-4ec5-449e-adad-3980b172b920";
     private final static String TAG = Notifications.class.getSimpleName();
     private final static String TAG_ALERT = "AlertBg";
+    private static boolean patched = false;
+
+    // This shouldn't be needed but it seems it is
+    private static void fixUpTable() {
+        if (patched) return;
+        String[] patchup = {
+                "ALTER TABLE AlertType ADD COLUMN volume INTEGER;",
+                "ALTER TABLE AlertType ADD COLUMN time_until_threshold_crossed REAL;"
+              };
+
+        for (String patch : patchup) {
+            try {
+                SQLiteUtils.execSql(patch);
+                Log.e(TAG, "Processed patch should not have succeeded!!: " + patch);
+            } catch (Exception e) {
+                // Log.d(TAG, "Patch: " + patch + " generated exception as it should: " + e.toString());
+            }
+        }
+        patched = true;
+    }
+
+
 
     public static AlertType get_alert(String uuid) {
 
@@ -281,6 +305,8 @@ public class AlertType extends Model {
             // This alert can not be removed/updated
             return;
         }*/
+
+        fixUpTable();
 
         AlertType at = get_alert(uuid);
         at.name = name;
