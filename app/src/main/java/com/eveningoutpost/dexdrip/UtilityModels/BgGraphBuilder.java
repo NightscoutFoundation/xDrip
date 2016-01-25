@@ -72,8 +72,7 @@ public class BgGraphBuilder {
     public double predictive_end_time;
     public double start_time = end_time - ((60000 * 60 * 24)) / FUZZER;
     private final static double timeshift = 500000;
-    private final List<BgReading> bgReadings = BgReading.latestForGraph(numValues, (start_time * FUZZER));
-    private final List<Calibration> calibrations = Calibration.latestForGraph(numValues, ((long)start_time * FUZZER));
+
     private final List<Treatments> treatments = Treatments.latestForGraph(numValues, (start_time * FUZZER));
 
     public Context context;
@@ -91,6 +90,10 @@ public class BgGraphBuilder {
     private static double avg1startfuzzed = 0;
     private static int avg2counter = 0;
     private double endHour;
+
+    //private final int numValues =(60/5)*24;
+    private final List<BgReading> bgReadings;
+    private final List<Calibration> calibrations;
     private List<PointValue> inRangeValues = new ArrayList<PointValue>();
     private List<PointValue> highValues = new ArrayList<PointValue>();
     private List<PointValue> lowValues = new ArrayList<PointValue>();
@@ -108,7 +111,20 @@ public class BgGraphBuilder {
     public static double best_bg_estimate = -99999;
     public static double last_bg_estimate = -99999;
 
-    public BgGraphBuilder(Context context) {
+
+    public BgGraphBuilder(Context context){
+        this(context,new Date().getTime() + (60000 * 10));
+    }
+
+    public BgGraphBuilder(Context context, long end){
+        this(context, end - (60000 * 60 * 24), end);
+    }
+
+    public BgGraphBuilder(Context context, long start, long end){
+        end_time = start / FUZZER;
+        start_time = end / FUZZER;
+        bgReadings = BgReading.latestForGraph( numValues, start, end);
+        calibrations = Calibration.latestForGraph( numValues, start, end);
         this.context = context;
         this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
         this.highMark = Double.parseDouble(prefs.getString("highValue", "170"));

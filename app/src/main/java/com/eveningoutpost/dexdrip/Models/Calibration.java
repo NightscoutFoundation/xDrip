@@ -692,10 +692,11 @@ public class Calibration extends Model {
                 .execute();
     }
 
-    public static List<Calibration> latestForGraph(int number, long startTime) {
+    public static List<Calibration> latestForGraph(int number, long startTime, long endTime) {
         return new Select()
                 .from(Calibration.class)
                 .where("timestamp >= " + Math.max(startTime, 0))
+                .where("timestamp <= " + endTime)
                 .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
