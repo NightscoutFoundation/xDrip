@@ -736,6 +736,8 @@ public class Preferences extends PreferenceActivity {
             final PreferenceScreen calibrationAlertsScreen = (PreferenceScreen) findPreference("calibration_alerts_screen");
             final PreferenceCategory alertsCategory = (PreferenceCategory) findPreference("alerts_category");
             final Preference disableAlertsStaleDataMinutes = findPreference("disable_alerts_stale_data_minutes");
+            final Preference widgetRangeLines = findPreference("widget_range_lines");
+
             disableAlertsStaleDataMinutes.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -1047,6 +1049,7 @@ public class Preferences extends PreferenceActivity {
                 }
             });
 
+
             // Pebble Trend (just major change)
             pebbleSync2.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -1191,6 +1194,18 @@ public class Preferences extends PreferenceActivity {
             // Pebble Trend -- END
 
             //bindWidgetUpdater();
+
+
+            widgetRangeLines.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    Context context = preference.getContext();
+                    if(AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, xDripWidget.class)).length > 0){
+                        context.startService(new Intent(context, WidgetUpdateService.class));
+                    }
+                    return true;
+                }
+            });
 
 
             bindPreferenceSummaryToValue(transmitterId);

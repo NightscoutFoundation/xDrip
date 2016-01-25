@@ -75,6 +75,9 @@ public class xDripWidget extends AppWidgetProvider {
     private static void displayCurrentInfo(AppWidgetManager appWidgetManager, int appWidgetId, Context context, RemoteViews views) {
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
         BgReading lastBgreading = BgReading.lastNoSenssor();
+
+        final boolean showLines = Home.getPreferencesBoolean("widget_range_lines", false);
+
         if (lastBgreading != null) {
             double estimate = 0;
             double estimated_delta = -9999;
@@ -85,7 +88,7 @@ public class xDripWidget extends AppWidgetProvider {
                         .setBgGraphBuilder(bgGraphBuilder)
                         //.setShowFiltered(Home.getPreferencesBooleanDefaultFalse("show_filtered_curve"))
                         .setBackgroundColor(ColorCache.getCol(ColorCache.X.color_widget_chart_background))
-                        .setHeight(height).setWidth(width).build());
+                        .setHeight(height).setWidth(width).showHighLine(showLines).showLowLine(showLines).build());
 
                 estimate = lastBgreading.calculated_value;
                 String extrastring = "";
