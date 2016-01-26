@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.eveningoutpost.dexdrip.utils.SdcardImportExport">
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/closebutton"
+        android:onClick="closeButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignEnd="@+id/warningtext"
+        android:src="@android:drawable/ic_delete" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save all Settings to SDcard"
+        android:id="@+id/saveallsettings"
+        android:onClick="savePreferencesToSD"
+        android:layout_marginTop="35dp"
+        android:layout_below="@+id/warningtext"
+        android:layout_toStartOf="@+id/closebutton" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Here you can save the settings to the external storage (sdcard).\n\nOnce saved to the external storage it is potentially possible for any app to read the settings which might contain sensitive information.\n\nYou are advised to delete the settings once you have imported them again if you are concerned about this."
+        android:id="@+id/warningtext"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Load all Settings from SDcard"
+        android:id="@+id/buttonload"
+        android:onClick="loadPreferencesToSD"
+        android:layout_below="@+id/saveallsettings"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="36dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete any settings on SDcard"
+        android:id="@+id/buttondelete"
+        android:onClick="deletePreferencesOnSD"
+        android:layout_below="@+id/buttonload"
+        android:layout_alignStart="@+id/buttonload"
+        android:layout_marginTop="35dp" />
+</RelativeLayout>
