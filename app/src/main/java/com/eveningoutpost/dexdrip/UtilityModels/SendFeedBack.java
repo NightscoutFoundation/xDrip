@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RatingBar;
+import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
@@ -15,11 +16,13 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import java.util.concurrent.TimeUnit;
+
 public class SendFeedBack extends Activity {
 
     private final String send_url = "https://xdrip-plus-updates.appspot.com/joh-feedback";
     private final String TAG = "jamorham feedback";
-
+    private static String error = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +39,16 @@ public class SendFeedBack extends Activity {
         final EditText yourtext = (EditText) findViewById(R.id.yourText);
         final RatingBar myrating = (RatingBar) findViewById(R.id.ratingBar);
         final OkHttpClient client = new OkHttpClient();
+
+        client.setConnectTimeout(10, TimeUnit.SECONDS);
+        client.setReadTimeout(20, TimeUnit.SECONDS);
+        client.setWriteTimeout(20, TimeUnit.SECONDS);
+
+        if (yourtext.length() == 0) {
+            toast("No text entered - cannot send blank");
+            return;
+        }
+        toast("Sending..");
 
         try {
             final RequestBody formBody = new FormEncodingBuilder()
@@ -56,16 +69,32 @@ public class SendFeedBack extends Activity {
                             Home.toaststatic("Feedback sent successfully");
                             finish();
                         } else {
-                            Home.toaststatic("Error sending feedback: " + response.message().toString());
+                            toast("Error sending feedback: " + response.message().toString());
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "Got exception in execute: " + e.toString());
-
+                       toast("Error with network connection");
                     }
                 }
             }).start();
         } catch (Exception e) {
+            toast(e.getMessage());
             Log.e(TAG, "General exception: " + e.toString());
+        }
+
+    }
+
+    private void toast(final String msg) {
+        try {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                }
+            });
+            Log.d(TAG, "Toast msg: " + msg);
+        } catch (Exception e) {
+            Log.e(TAG, "Couldn't display toast: " + msg);
         }
     }
 

@@ -9,50 +9,57 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.eveningoutpost.dexdrip.utils.DisplayQRCode">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Use QR codes to transfer settings using Settings->Auto Configure feature"
-        android:id="@+id/title"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Use QR codes to transfer settings using Settings->Auto Configure feature"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="28dp"
+            android:layout_weight="1"
+            android:onClick="xdripPlusSyncSettings"
+            android:text="xDrip Plus Security Key Settings only" />
+
+        <Button
+            android:id="@+id/buttonalarms"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="28dp"
+            android:layout_weight="1"
+            android:onClick="alarmSettings"
+            android:text="Show Alarm Settings" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="28dp"
+            android:layout_weight="1"
+            android:onClick="connectionSettings"
+
+            android:text="Show General and Collection Settings" />
+
+    </LinearLayout>
 
     <ImageButton
+        android:id="@+id/imageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageButton"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:layout_gravity="end"
         android:onClick="closeNow"
         android:src="@android:drawable/ic_delete" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Show General and Collection Settings"
-        android:id="@+id/buttongeneral"
-        android:layout_marginTop="112dp"
-        android:layout_below="@+id/title"
-        android:onClick="connectionSettings"
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Show Alarm Settings"
-        android:id="@+id/buttonalarms"
-        android:onClick="alarmSettings"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="xDrip Plus Security Key Settings only"
-        android:id="@+id/buttonsecurity"
-        android:onClick="xdripPlusSyncSettings"
-        android:layout_below="@+id/buttonalarms"
-        android:layout_alignEnd="@+id/buttongeneral"
-        android:layout_marginTop="53dp" />
 </RelativeLayout>
