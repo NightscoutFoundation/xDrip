@@ -27,6 +27,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PebbleSync;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -278,6 +279,21 @@ public class Preferences extends PreferenceActivity {
 
 
     public static class AllPrefsFragment extends PreferenceFragment {
+
+        SharedPreferences prefs;
+
+        private void setSummary(String pref_name) {
+            try {
+                // is there a cleaner way to bind these values when setting programatically?
+                final String pref_val = prefs.getString(pref_name, "");
+                findPreference(pref_name).setSummary(pref_val);
+                EditTextPreference thispref = (EditTextPreference) findPreference(pref_name);
+                thispref.setText(pref_val);
+            } catch (Exception e) {
+                Log.e(TAG,"Exception during setSummary: "+e.toString());
+            }
+        }
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -331,7 +347,7 @@ public class Preferences extends PreferenceActivity {
             final PreferenceCategory otherCategory = (PreferenceCategory) findPreference("other_category");
             final PreferenceScreen calibrationAlertsScreen = (PreferenceScreen) findPreference("calibration_alerts_screen");
             final PreferenceCategory alertsCategory = (PreferenceCategory) findPreference("alerts_category");
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
             final Preference disableAlertsStaleDataMinutes = findPreference("disable_alerts_stale_data_minutes");
             disableAlertsStaleDataMinutes.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -339,12 +355,47 @@ public class Preferences extends PreferenceActivity {
                     if (!isNumeric(newValue.toString())) {
                         return false;
                     }
-                    if ((Integer.parseInt(newValue.toString())) < 10 ) {
+                    if ((Integer.parseInt(newValue.toString())) < 10) {
                         Toast.makeText(preference.getContext(),
                                 "Value must be at least 10 minutes", Toast.LENGTH_LONG).show();
                         return false;
                     }
                     preference.setSummary(newValue.toString());
+                    return true;
+                }
+            });
+
+            final Preference units_pref = findPreference("units");
+            units_pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                    try {
+                        Double highVal = Double.parseDouble(prefs.getString("highValue", "0"));
+                        Double lowVal = Double.parseDouble(prefs.getString("lowValue", "0"));
+                        if (newValue.toString().equals("mgdl")) {
+                            if (highVal < 36) {
+                                prefs.edit().putString("highValue", Long.toString(Math.round(highVal * Constants.MMOLL_TO_MGDL))).apply();
+                            }
+                            if (lowVal < 36) {
+                                prefs.edit().putString("lowValue", Long.toString(Math.round(lowVal * Constants.MMOLL_TO_MGDL))).apply();
+                            }
+
+                        } else {
+                            if (highVal > 35) {
+                                prefs.edit().putString("highValue", Long.toString(Math.round(highVal * Constants.MGDL_TO_MMOLL))).apply();
+                            }
+                            if (lowVal > 35) {
+                                prefs.edit().putString("lowValue", Long.toString(Math.round(lowVal * Constants.MGDL_TO_MMOLL))).apply();
+                            }
+                        }
+                        preference.setSummary(newValue.toString());
+                        setSummary("highValue");
+                        setSummary("lowValue");
+
+                    } catch (Exception e) {
+                        Log.e(TAG, "Got excepting processing high/low value preferences: " + e.toString());
+                    }
                     return true;
                 }
             });

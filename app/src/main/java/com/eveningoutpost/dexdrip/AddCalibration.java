@@ -52,6 +52,7 @@ public class AddCalibration extends Activity implements NavigationDrawerFragment
         if (extras != null) {
             String string_value = extras.getString("bg_string");
             String bg_age = extras.getString("bg_age");
+            String from_external = extras.getString("from_external","false");
 
             if (Sensor.isActive()) {
 
@@ -72,7 +73,11 @@ public class AddCalibration extends Activity implements NavigationDrawerFragment
 
                         Calibration calibration = Calibration.create(calValue, bgAgeNumber, getApplicationContext());
 
-                    } else {
+                       if (from_external.equals("true")) {
+                           Log.d("jamorham calib","Relaying tasker pushed calibration");
+                           GcmActivity.pushCalibration(string_value, bg_age);
+                       }
+                       } else {
                         Log.w("CALLERROR","ERROR during automated calibration - no valid bg age");
                     }
                 } else {

@@ -108,6 +108,7 @@ public final class FireReceiver extends BroadcastReceiver {
 
                         calintent.putExtra("bg_string", message_array[1]);
                         calintent.putExtra("bg_age", message_array[2]);
+                        calintent.putExtra("from_external","true");
                         context.startActivity(calintent);
 
                         break;
