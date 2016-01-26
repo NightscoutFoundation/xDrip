@@ -1,6 +1,9 @@
 # IntelliJ app file
 app/app.iml
 
+# debug tools
+app/autoinstallviausb
+
 # Built application files
 *.apk
 *.ap_
@@ -40,3 +43,4 @@ proguard/
 *.ds_store
 *.DS_Store
 *.swp
+*.orig

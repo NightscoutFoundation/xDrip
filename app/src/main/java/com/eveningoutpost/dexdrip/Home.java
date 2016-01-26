@@ -56,6 +56,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
+import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 import com.google.gson.Gson;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
@@ -1112,6 +1113,11 @@ public class Home extends ActivityWithMenu {
     public void shareMyConfig(MenuItem myitem) {
         Intent intent = new Intent(getApplicationContext(), DisplayQRCode.class);
         startActivity(intent);
+    }
+
+    public void settingsSDcardExport(MenuItem myitem)
+    {
+        startActivity(new Intent(getApplicationContext(), SdcardImportExport.class));
     }
 
     public void doBackFillBroadcast(MenuItem myitem) {

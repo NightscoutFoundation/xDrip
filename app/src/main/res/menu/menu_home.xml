@@ -19,30 +19,27 @@
         android:showAsAction="never"/>
 
     <item android:id="@+id/importsettings"
-        android:title="Import Settings"
+        android:title="Settings to external storage"
         android:checkable="false"
-        android:visible="false"
+        android:onClick="settingsSDcardExport"
+        android:visible="true"
         android:orderInCategory="1"
         android:showAsAction="never"/>
 
-    <item android:id="@+id/exportsettings"
-        android:title="Export Settings (warning!)"
-        android:checkable="false"
-        android:orderInCategory="1"
-        android:visible="false"
-        android:showAsAction="never"/>
 
     <item android:id="@+id/deleteAllBG"
         android:title="Delete All BG readings"
         android:checkable="false"
         android:orderInCategory="1"
         android:onClick="deleteAllBG"
+        android:visible="false"
         android:showAsAction="never"/>
 
     <item android:id="@+id/synctreatments"
         android:title="Sync Treatments"
         android:checkable="false"
         android:orderInCategory="1"
+        android:visible="false"
         android:showAsAction="never"/>
 
     <item android:id="@+id/sharemyconfig"

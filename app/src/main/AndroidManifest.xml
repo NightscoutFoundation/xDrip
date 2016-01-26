@@ -289,7 +289,10 @@
             android:label="@string/title_activity_display_qrcode" />
         <activity
             android:name=".UtilityModels.SendFeedBack"
-            android:label="@string/title_activity_send_feed_back"></activity>
+            android:label="@string/title_activity_send_feed_back" />
+        <activity
+            android:name=".utils.SdcardImportExport"
+            android:label="Settings on external storage"></activity>
     </application>
 
 </manifest>
