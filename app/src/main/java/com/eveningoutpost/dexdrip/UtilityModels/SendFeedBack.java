@@ -22,7 +22,6 @@ public class SendFeedBack extends Activity {
 
     private final String send_url = "https://xdrip-plus-updates.appspot.com/joh-feedback";
     private final String TAG = "jamorham feedback";
-    private static String error = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -99,6 +99,12 @@ public class BgGraphBuilder {
         hoursPreviewStep = isXLargeTablet(context) ? 2 : 1;
     }
 
+    private double bgScale() {
+        if (doMgdl)
+            return Constants.MMOLL_TO_MGDL;
+        else
+            return 1;
+    }
     private static Object cloneObject(Object obj) {
         try {
             Object clone = obj.getClass().newInstance();
@@ -405,6 +411,7 @@ public class BgGraphBuilder {
         lowValues.clear();
         inRangeValues.clear();
         calibrationValues.clear();
+        final double bgScale = bgScale();
         for (BgReading bgReading : bgReadings) {
             // jamorham special
             if (bgReading.filtered_calculated_value != 0) {
@@ -438,11 +445,11 @@ public class BgGraphBuilder {
             // display treatment blobs and annotations
             for (Treatments treatment : treatments) {
 
-                double height = 6;
+                double height = 6 * bgScale;
                 if (treatment.insulin > 0)
                     height = treatment.insulin; // some scaling needed I think
-                if (height > 15) height = 15;
-                if (height < 4) height = 4;
+                if (height > highMark) height = highMark;
+                if (height < lowMark) height = lowMark;
 
                 PointValue pv = new PointValue((float) (treatment.timestamp / FUZZER), (float) height);
                 String mylabel = "";
@@ -478,16 +485,21 @@ public class BgGraphBuilder {
             Log.e(TAG, "Exception doing treatment values in bggraphbuilder: " + e.toString());
         }
         try {
-            double iobscale = 1;
-            double cobscale = 0.2;
+
+            final double iobscale = 1 * bgScale;
+            final double cobscale = 0.2 * bgScale;
             // we need to check we actually have sufficient data for this
             double predictedbg = 0;
             BgReading mylastbg = bgReadings.get(0);
             double lasttimestamp = 0;
             try {
                 if (mylastbg != null) {
-                    predictedbg = mylastbg.calculated_value_mmol();
-                    Log.d(TAG, "Starting prediction with bg of: " + Double.toString(predictedbg));
+                    if (doMgdl) {
+                        predictedbg = mylastbg.calculated_value;
+                    } else {
+                        predictedbg = mylastbg.calculated_value_mmol();
+                    }
+                    Log.d(TAG, "Starting prediction with bg of: " + JoH.qs(predictedbg));
                     lasttimestamp = mylastbg.timestamp / FUZZER;
                 } else {
                     Log.d(TAG, "COULD NOT GET LAST BG READING FOR PREDICTION!!!");
@@ -507,7 +519,7 @@ public class BgGraphBuilder {
                         if (height > highMark) height = highMark;
                         PointValue pv = new PointValue((float) fuzzed_timestamp, (float) height);
                         iobValues.add(pv);
-                        double activityheight = iob.jActivity * 3;
+                        double activityheight = iob.jActivity * 3; // currently scaled by profile
                         if (activityheight > highMark) activityheight = highMark;
                         PointValue av = new PointValue((float) fuzzed_timestamp, (float) activityheight);
                         activityValues.add(av);
@@ -537,9 +549,9 @@ public class BgGraphBuilder {
                     } else {
                         if ((fuzzed_timestamp == end_time - 4) && (iob.iob > 0)) {
                             // show current iob
-                            double position = 12.4; // this is for mmol - needs generic for mg/dl
-                            if (Math.abs(predictedbg - position) < 2) {
-                                position = 7.0;
+                            double position = 12.4 * bgScale; // this is for mmol - needs generic for mg/dl
+                            if (Math.abs(predictedbg - position) < (2 * bgScale)) {
+                                position = 7.0 * bgScale;
                             }
 
                             PointValue iv = new PointValue((float) fuzzed_timestamp, (float) position);
@@ -558,15 +570,25 @@ public class BgGraphBuilder {
                     + " Predicted end game change: " + JoH.qs(predictedbg - mylastbg.calculated_value_mmol())
                     + " Start bg: " + JoH.qs(mylastbg.calculated_value_mmol()) + " Predicted: " + JoH.qs(predictedbg));
             // calculate bolus or carb adjustment - these should have granularity for injection / pump and thresholds
-            double[] evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
-            Log.d(TAG, "Predictive Bolus Wizard suggestion: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
+            double[] evaluation;
+            if (doMgdl)
+            {
+                // These routines need to understand how the profile is defined to use native instead of scaled
+                Profile.scale_factor = Constants.MMOLL_TO_MGDL;
+                evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
+            } else {
+                Profile.scale_factor = 1;
+                evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
+
+            }
+                Log.d(TAG, "Predictive Bolus Wizard suggestion: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
             if (evaluation[0] > Profile.minimum_carb_recommendation) {
-                PointValue iv = new PointValue((float) fuzzed_timestamp, (float) 10);
+                PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));
                 iv.setLabel("Eat Carbs: " + JoH.qs(evaluation[0], 1));
                 annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
             }
             if (evaluation[1] > Profile.minimum_insulin_recommendation) {
-                PointValue iv = new PointValue((float) fuzzed_timestamp, (float) 11);
+                PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (11 * bgScale));
                 iv.setLabel("Take Insulin: " + JoH.qs(evaluation[1], 1));
                 annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
             }

@@ -17,9 +17,10 @@ public class Profile {
     public static double minimum_shown_cob = 0.01;
     public static double minimum_insulin_recommendation = 0.1;
     public static double minimum_carb_recommendation = 1;
+    public static double scale_factor = 1;
 
     static double getSensitivity(double when) {
-        return 3; //
+        return (3 * scale_factor); // currently expressed in mmol lowering effect of 1U
     }
 
     static double getCarbAbsorptionRate(double when) {
@@ -70,7 +71,7 @@ public class Profile {
     public static double[] evaluateEndGameMmol(double mmol, double endGameTime, double timeNow) {
         double addcarbs = 0;
         double addinsulin = 0;
-        double target_mmol = getTargetRangeInMmol(endGameTime);
+        double target_mmol = getTargetRangeInMmol(endGameTime) * scale_factor;
         double diff_mmol = target_mmol - mmol;
         if (diff_mmol > 0) {
             addcarbs = getCarbsToRaiseByMmolBetweenTwoTimes(diff_mmol, timeNow, endGameTime);
