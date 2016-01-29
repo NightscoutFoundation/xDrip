@@ -3,28 +3,79 @@
     <PreferenceCategory
         android:key="xdrip_plus_category"
         android:title="xDrip+ extra settings">
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:key="xdrip_plus_display_settings"
+            android:summary="Display customisations"
+            android:title="xDrip+ Display Settings">
+
+            <PreferenceCategory
+                android:key="xdrip_plus_display_category"
+                android:title="xDrip+ Display Settings">
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="show_graph_grid_time"
+                    android:summary="Grid time lines visible"
+                    android:title="Show Graph grid time lines" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="show_graph_grid_glucose"
+                    android:summary="Grid glucose lines visible"
+                    android:title="Show Graph grid glucose lines" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="show_filtered_curve"
+                    android:title="Display filtered plot"
+                    android:summary="Useful for noise and missed readings" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="show_target_line"
+                    android:summary="Display ideal glucose target line"
+                    android:title="Show Graph target line" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="show_recent_average_line"
+                    android:summary="Display 8 hour average line"
+                    android:title="Show Graph recent average" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="show_full_average_line"
+                    android:summary="Display 24 hour average line"
+                    android:title="Show Graph total average" />
+            </PreferenceCategory>
+        </PreferenceScreen>
+
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="use_custom_sync_key"
-            android:title="Sync using custom security key"
             android:summary="Key is used instead of Google account"
-            android:defaultValue="false" />
+            android:title="Sync using custom security key" />
         <EditTextPreference
+            android:defaultValue=""
             android:key="custom_sync_key"
-            android:title="Handset Group Security Sync Key"
             android:summary="Handset sync grouping key"
-            android:defaultValue="" />
+            android:title="Handset Group Security Sync Key" />
         <CheckBoxPreference
+            android:defaultValue="true"
             android:key="auto_update_download"
-            android:title="Automatically check for updates"
             android:summary="Get notified of new apk releases"
-            android:defaultValue="true" />
+            android:title="Automatic update check" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="plus_extra_features"
+            android:summary="Show alpha test features"
+            android:title="Extra test features" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="plus_follow_master"
+            android:summary="This device will send data to followers"
+            android:title="Be master for followers" />
         <Preference
-            android:title="Show Settings QR codes"
-            android:key="show_qr_codes">
+            android:key="show_qr_codes"
+            android:title="Show Settings QR codes">
             <intent
                 android:action="android.intent.action.MAIN"
-                android:targetPackage="com.eveningoutpost.dexdrip"
-                android:targetClass="com.eveningoutpost.dexdrip.utils.DisplayQRCode"/>
+                android:targetClass="com.eveningoutpost.dexdrip.utils.DisplayQRCode"
+                android:targetPackage="com.eveningoutpost.dexdrip" />
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

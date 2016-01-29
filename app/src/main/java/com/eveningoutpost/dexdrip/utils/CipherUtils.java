@@ -74,6 +74,20 @@ public class CipherUtils {
         return new String(hexChars);
     }
 
+    public static byte[] hexToBytes(String hex) {
+       try {
+           int length = hex.length();
+           byte[] bytes = new byte[length / 2];
+           for (int i = 0; i < length; i += 2) {
+               bytes[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4) + Character.digit(hex.charAt(i + 1), 16));
+           }
+           return bytes;
+       } catch (Exception e){
+            Log.e(TAG,"Got Exception: "+e.toString());
+           return new byte[0];
+        }
+    }
+
     public static String getSHA256(String mykey) {
         try {
             MessageDigest digest = java.security.MessageDigest
@@ -99,10 +113,14 @@ public class CipherUtils {
     }
 
     public static byte[] encryptBytes(byte[] plainText) {
+        byte[] keyBytes = getKeyBytes(key + GoogleDriveInterface.getDriveKeyString());
+        return encryptBytes(plainText, keyBytes);
+    }
+
+    public static byte[] encryptBytes(byte[] plainText, byte[] keyBytes) {
         byte[] ivBytes = new byte[16];
 
-        byte[] keyBytes = getKeyBytes(key + GoogleDriveInterface.getDriveKeyString());
-        if (keyBytes.length != 16) {
+        if ((keyBytes == null) || (keyBytes.length != 16)) {
             Log.e(TAG, "Invalid Keybytes length!");
             return errorbyte;
         }
@@ -114,12 +132,14 @@ public class CipherUtils {
         System.arraycopy(cipherData, 0, destination, ivBytes.length, cipherData.length);
         return destination;
     }
-
     public static byte[] decryptBytes(byte[] cipherData) {
+        byte[] keyBytes = getKeyBytes(key + GoogleDriveInterface.getDriveKeyString());
+        return decryptBytes(cipherData,keyBytes);
+    }
+    public static byte[] decryptBytes(byte[] cipherData,byte[] keyBytes) {
         byte[] ivBytes = new byte[16];
         if (cipherData.length < ivBytes.length) return errorbyte;
-        byte[] keyBytes = getKeyBytes(key + GoogleDriveInterface.getDriveKeyString());
-        if (keyBytes.length != 16) {
+        if ((keyBytes==null) || (keyBytes.length != 16)) {
             Log.e(TAG, "Invalid Keybytes length!");
             return errorbyte;
         }
@@ -144,11 +164,15 @@ public class CipherUtils {
         return Base64.encodeToString(encryptBytes(inbytes), Base64.NO_WRAP);
     }
 
-    public static String getRandomHexKey() {
+    public static byte[] getRandomKey() {
         byte[] keybytes = new byte[16];
         SecureRandom sr = new SecureRandom();
         sr.nextBytes(keybytes);
-        return bytesToHex(keybytes);
+        return keybytes;
+    }
+
+    public static String getRandomHexKey() {
+        return bytesToHex(getRandomKey());
     }
 }
 

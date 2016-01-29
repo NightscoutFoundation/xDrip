@@ -3,10 +3,14 @@ package com.eveningoutpost.dexdrip.Models;
 import android.util.Base64;
 import android.util.Log;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.zip.Deflater;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import java.util.zip.Inflater;
 
 /**
@@ -60,6 +64,58 @@ public class JoH {
             return null;
         }
     }
+
+    public static byte[] compressStringToBytes(String string) {
+        try {
+            ByteArrayOutputStream output = new ByteArrayOutputStream(string.length());
+            GZIPOutputStream gzipped_data = new GZIPOutputStream(output);
+            gzipped_data.write(string.getBytes(Charset.forName("UTF-8")));
+            gzipped_data.close();
+            byte[] compressed = output.toByteArray();
+            output.close();
+            return compressed;
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in compress: " + e.toString());
+            return new byte[0];
+        }
+    }
+
+    public static byte[] compressBytesToBytes(byte[] bytes) {
+        try {
+            ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length);
+            GZIPOutputStream gzipped_data = new GZIPOutputStream(output);
+            gzipped_data.write(bytes);
+            gzipped_data.close();
+            byte[] compressed = output.toByteArray();
+            output.close();
+            return compressed;
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in compress: " + e.toString());
+            return new byte[0];
+        }
+    }
+
+    public static byte[] decompressBytesToBytes(byte[] bytes) {
+        try {
+            Log.d(TAG, "Decompressing  bytes size: " + bytes.length);
+            byte[] buffer = new byte[8192];
+            int bytes_read;
+            ByteArrayInputStream input = new ByteArrayInputStream(bytes);
+            ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length);
+            GZIPInputStream gzipped_data = new GZIPInputStream(input, buffer.length);
+            while ((bytes_read = gzipped_data.read(buffer)) != -1) {
+                output.write(buffer, 0, bytes_read);
+            }
+            gzipped_data.close();
+            input.close();
+            // output.close();
+            return output.toByteArray();
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in decompress: " + e.toString());
+            return new byte[0];
+        }
+    }
+
 
     public static String uncompressString(String input) {
         try {

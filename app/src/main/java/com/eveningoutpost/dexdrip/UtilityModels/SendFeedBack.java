@@ -20,12 +20,13 @@ import java.util.concurrent.TimeUnit;
 
 public class SendFeedBack extends Activity {
 
-    private final String send_url = "https://xdrip-plus-updates.appspot.com/joh-feedback";
+    private  String send_url;
     private final String TAG = "jamorham feedback";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_feed_back);
+        send_url = getString(R.string.wserviceurl)+"/joh-feedback";
     }
 
     public void closeActivity(View myview) {

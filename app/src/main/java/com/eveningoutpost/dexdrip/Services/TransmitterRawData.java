@@ -23,6 +23,7 @@ public class TransmitterRawData {
     // When sending set this value to the relative time...
     // The time between the capture and now...
     public long RelativeTime;
+    public String GeoLocation;
 
     public int getTransmissionId() {
         return TransmissionId;

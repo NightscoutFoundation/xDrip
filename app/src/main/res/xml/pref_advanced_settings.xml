@@ -4,60 +4,72 @@
         android:key="other_category"
         android:title="Other Settings">
         <SwitchPreference
-            android:title="@string/pref_title_broadcast_enabled"
+            android:defaultValue="false"
             android:key="broadcast_data_through_intents"
             android:summary="@string/pref_summary_broadcast_enabled"
-            android:defaultValue="false" >
-        </SwitchPreference>
+            android:title="@string/pref_title_broadcast_enabled"></SwitchPreference>
         <SwitchPreference
-            android:title="Send to Pebble"
+            android:defaultValue="false"
             android:key="broadcast_to_pebble"
             android:summary="If you have a pebble watch you can send bg data straight to it"
-            android:defaultValue="false">
-        </SwitchPreference>
-        <CheckBoxPreference
-            android:key="predictive_bg"
-            android:title="Display Predictive Values"
-            android:summary="Not Recommended. xDrip will attempt to predict readings each minute based on the past few values."
-            android:defaultValue="false" />
-        <CheckBoxPreference
-            android:key="interpret_raw"
-            android:title="Interpret Raw Values"
-            android:summary="If using Share, DexDrip will show values when they are normally hidden on the receiver."
-            android:defaultValue="false" />
-        <CheckBoxPreference
-            android:key="bg_to_speech"
-            android:title="Speak Readings"
-            android:summary="If the phone has text-to-speech capabilities it will read new readings out loud."
-            android:defaultValue="false" />
-        <CheckBoxPreference
-            android:key="bg_to_speech_shortcut"
-            android:title="Speak Readings Shortcut"
-            android:summary="Show a shortcut in the \u2630 menu to toggle Speak Readings"
-            android:defaultValue="false" />
-        <CheckBoxPreference
-            android:key="store_logs"
-            android:title="Store logs for troubleshooting"
-            android:summary="Only enable if you are having trouble with the app."
-            android:defaultValue="false" />
-        <CheckBoxPreference
-            android:key="show_data_tables"
-            android:title="Show Datatables"
-            android:summary="Show Calibration and BG datatables in the app drawer."
-            android:defaultValue="false" />
-        <CheckBoxPreference
-            android:key="disable_battery_warning"
-            android:title="Disable Battery Warning"
-            android:summary="Disable the warning for low transmitter battery state on the home screen. (Only relevant for DIY receivers.)"
-            android:defaultValue="false" />
-        <Preference
-            android:title="View Recent Errors/Warnings"
-            android:key="recent_errors">
-            <intent
-                android:action="android.intent.action.MAIN"
-                android:targetPackage="com.eveningoutpost.dexdrip"
-                android:targetClass="com.eveningoutpost.dexdrip.ErrorsActivity"/>
-        </Preference>
+            android:title="Send to Pebble"></SwitchPreference>
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:key="xdrip_less_common_settings"
+            android:summary="Debug and other misc options"
+            android:title="Less common settings">
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="predictive_bg"
+                android:summary="Not Recommended. xDrip will attempt to predict readings each minute based on the past few values."
+                android:title="Display Predictive Values" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="interpret_raw"
+                android:summary="If using Share, DexDrip will show values when they are normally hidden on the receiver."
+                android:title="Interpret Raw Values" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="bg_to_speech"
+                android:summary="If the phone has text-to-speech capabilities it will read new readings out loud."
+                android:title="Speak Readings" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="bg_to_speech_shortcut"
+                android:summary="Show a shortcut in the \u2630 menu to toggle Speak Readings"
+                android:title="Speak Readings Shortcut" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="store_logs"
+                android:summary="Only enable if you are having trouble with the app."
+                android:title="Store logs for troubleshooting" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="show_data_tables"
+                android:summary="Show Calibration and BG datatables in the app drawer."
+                android:title="Show Datatables" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="disable_battery_warning"
+                android:summary="Disable the warning for low transmitter battery state on the home screen. (Only relevant for DIY receivers.)"
+                android:title="Disable Battery Warning" />
+            <Preference
+                android:key="recent_errors"
+                android:title="View Recent Errors/Warnings">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.eveningoutpost.dexdrip.ErrorsActivity"
+                    android:targetPackage="com.eveningoutpost.dexdrip" />
+            </Preference>
+            <PreferenceCategory
+                android:key="community_help_category"
+                android:title="Help the community">
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="store_sensor_location"
+                    android:summary="Help the developers improve the xDrip algorithm."
+                    android:title="Store sensor locaton to help algorithm improvment" />
+            </PreferenceCategory>
+        </PreferenceScreen>
     </PreferenceCategory>
 </PreferenceScreen>
 

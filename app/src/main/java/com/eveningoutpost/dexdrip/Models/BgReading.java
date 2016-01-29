@@ -109,7 +109,7 @@ public class BgReading extends Model implements ShareUploadableBg{
     @Column(name = "rc")
     public double rc;
     @Expose
-    @Column(name = "uuid", index = true)
+    @Column(name = "uuid", unique = true , onUniqueConflicts = Column.ConflictAction.IGNORE)
     public String uuid;
 
     @Expose
@@ -120,15 +120,19 @@ public class BgReading extends Model implements ShareUploadableBg{
     @Column(name = "sensor_uuid", index = true)
     public String sensor_uuid;
 
+    @Expose
     @Column(name = "snyced")
     public boolean synced;
 
+    @Expose
     @Column(name = "raw_calculated")
     public double raw_calculated;
 
+    @Expose
     @Column(name = "hide_slope")
     public boolean hide_slope;
 
+    @Expose
     @Column(name = "noise")
     public String noise;
 
@@ -550,6 +554,19 @@ public class BgReading extends Model implements ShareUploadableBg{
                 .execute();
     }
 
+    public static BgReading readingNearTimeStamp(double startTime) {
+        final double margin = (4*60*1000);
+        DecimalFormat df = new DecimalFormat("#");
+        df.setMaximumFractionDigits(1);
+        return new Select()
+                .from(BgReading.class)
+                .where("timestamp >= " + df.format(startTime-margin))
+                .where("timestamp <= " + df.format(startTime + margin))
+                .where("calculated_value != 0")
+                .where("raw_data != 0")
+                .executeSingle();
+    }
+
     public static List<BgReading> last30Minutes() {
         double timestamp = (new Date().getTime()) - (60000 * 30);
         return new Select()
@@ -605,17 +622,26 @@ public class BgReading extends Model implements ShareUploadableBg{
         BgReading bgr = fromJSON(json);
         if (bgr != null) {
             try {
-                bgr.save();
-            } catch (Exception e) {
+               if (readingNearTimeStamp(bgr.timestamp)==null) {
+                   bgr.save();
+               } else {
+                   Log.d(TAG,"Ignoring duplicate bgr record due to timestamp: "+json);
+               }
+               } catch (Exception e) {
                 Log.d(TAG, "Could not save BGR: " + e.toString());
             }
         }
     }
 
     public static BgReading fromJSON(String json) {
+        if (json.length()==0)
+        {
+            Log.d(TAG,"Empty json received in bgreading fromJson");
+            return null;
+        }
         try {
             Log.d(TAG, "Processing incoming json: " + json);
-            return new Gson().fromJson(json, BgReading.class);
+           return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(json,BgReading.class);
         } catch (Exception e) {
             Log.d(TAG, "Got exception parsing BgReading json: " + e.toString());
             Home.toaststaticnext("Error on BGReading sync, probably decryption key mismatch");

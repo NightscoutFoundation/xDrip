@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.MapsActivity;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
@@ -250,6 +251,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
                     TransmitterRawData trd = gson.fromJson(data, TransmitterRawData.class);
                     trd.CaptureDateTime = System.currentTimeMillis() - trd.RelativeTime;
 
+                    MapsActivity.newMapLocation(trd.GeoLocation,trd.CaptureDateTime);
                     trd_list.add(0, trd);
                     //  System.out.println( trd.toTableString());
                     if (trd_list.size() == numberOfRecords) {
@@ -359,6 +361,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
                 //System.out.println( "data size " +data.length() + " data = "+ data);
                 TransmitterRawData trd = gson.fromJson(data, TransmitterRawData.class);
                 trd.CaptureDateTime = System.currentTimeMillis() - trd.RelativeTime;
+                MapsActivity.newMapLocation(trd.GeoLocation,trd.CaptureDateTime);
 
                 trd_list.add(0,trd);
                 //  System.out.println( trd.toTableString());
@@ -375,7 +378,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
             Log.e(TAG, "Socket timed out! ", s);
         }
         catch(IOException e) {
-            Log.e(TAG, "cought IOException! ", e);
+            Log.e(TAG, "cought IOException! "+ e.toString());
         }
         return trd_list;
     }

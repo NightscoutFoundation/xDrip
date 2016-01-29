@@ -206,7 +206,8 @@
             android:label="@string/title_activity_system_status" />
         <activity
             android:name=".utils.Preferences"
-            android:label="@string/title_activity_preferences" />
+            android:label="@string/title_activity_preferences"
+             />
 
         <receiver android:name=".xDripWidget">
             <intent-filter>
@@ -286,13 +287,32 @@
             android:label="@string/title_activity_update" />
         <activity
             android:name=".utils.DisplayQRCode"
-            android:label="@string/title_activity_display_qrcode" />
+            android:label="@string/title_activity_display_qrcode"
+            android:noHistory="true" />
         <activity
             android:name=".UtilityModels.SendFeedBack"
-            android:label="@string/title_activity_send_feed_back" />
+            android:label="@string/title_activity_send_feed_back"
+            android:noHistory="true" />
         <activity
             android:name=".utils.SdcardImportExport"
-            android:label="Settings on external storage"></activity>
+            android:label="Settings on external storage"
+            android:noHistory="true" />
+        <!--
+             The API key for Google Maps-based APIs is defined as a string resource.
+             (See the file "res/values/google_maps_api.xml").
+             Note that the API key is linked to the encryption key used to sign the APK.
+             You need a different API key for each encryption key, including the release key that is used to
+             sign the APK for publishing.
+             You can define the keys for the debug and release targets in src/debug/ and src/release/. 
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <activity
+            android:name=".MapsActivity"
+            android:label="@string/title_activity_maps"
+            android:noHistory="true" />
     </application>
 
 </manifest>

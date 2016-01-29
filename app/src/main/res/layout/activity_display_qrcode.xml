@@ -32,15 +32,6 @@
             android:text="xDrip Plus Security Key Settings only" />
 
         <Button
-            android:id="@+id/buttonalarms"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="28dp"
-            android:layout_weight="1"
-            android:onClick="alarmSettings"
-            android:text="Show Alarm Settings" />
-
-        <Button
             android:id="@+id/button"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -49,6 +40,15 @@
             android:onClick="connectionSettings"
 
             android:text="Show General and Collection Settings" />
+
+        <Button
+            android:id="@+id/buttonallsettings"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="28dp"
+            android:layout_weight="1"
+            android:onClick="allSettings"
+            android:text="Copy all Settings" />
 
     </LinearLayout>
 

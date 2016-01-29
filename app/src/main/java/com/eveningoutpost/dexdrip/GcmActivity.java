@@ -54,6 +54,11 @@ public class GcmActivity extends Activity {
     }
 
 
+    public static void syncBGReading(BgReading bgReading)
+    {
+        GcmActivity.sendMessage(GcmActivity.myIdentity(), "bgs",bgReading.toJSON());
+    }
+
     public static void syncBGTable() {
         if (runningBGSync) {
             Log.i(TAG, "Already syncing BG");

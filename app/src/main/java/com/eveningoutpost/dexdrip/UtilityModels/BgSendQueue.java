@@ -12,6 +12,7 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
@@ -153,6 +154,11 @@ public class BgSendQueue extends Model {
 
             if(prefs.getBoolean("broadcast_to_pebble", false)) {
                 context.startService(new Intent(context, PebbleSync.class));
+            }
+
+            if (prefs.getBoolean("plus_follow_master",false))
+            {
+                GcmActivity.syncBGReading(bgReading);
             }
 
             if (prefs.getBoolean("share_upload", false)) {

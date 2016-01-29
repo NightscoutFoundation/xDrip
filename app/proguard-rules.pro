@@ -20,6 +20,7 @@
 -keep class retrofit.** { *; }
 -keepattributes Signature
 -keepattributes Exceptions
+-keepattributes InnerClasses
 
 
 -dontobfuscate

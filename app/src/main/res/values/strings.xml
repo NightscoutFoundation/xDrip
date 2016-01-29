@@ -143,4 +143,10 @@
     <string name="title_activity_update">xDrip+ Update Available</string>
     <string name="title_activity_display_qrcode">Share Settings Via QR code</string>
     <string name="title_activity_send_feed_back">Send Feedback to Jamorham</string>
+    <string name="title_activity_maps">Parakeet Map</string>
+    <string name="title_activity_display_preferences">DisplayPreferencesActivity</string>
+    <string name="wserviceurl">https://xdrip-plus-updates.appspot.com</string>
+    <string name="all_settings_wizard">all_settings_wizard</string>
+    <string name="wizard_uuid">wizard_uuid</string>
+    <string name="wizard_key">wizard_key</string>
 </resources>

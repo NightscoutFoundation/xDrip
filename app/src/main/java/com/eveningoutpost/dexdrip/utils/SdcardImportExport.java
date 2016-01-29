@@ -1,10 +1,9 @@
 package com.eveningoutpost.dexdrip.utils;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -57,6 +56,8 @@ public class SdcardImportExport extends Activity {
 
         if (savePreferencesToSD()) {
             toast("Preferences saved in sdcard Downloads");
+        } else {
+            toast("Couldn't write to sdcard - check permissions?");
         }
     }
 
@@ -66,7 +67,16 @@ public class SdcardImportExport extends Activity {
             // shared preferences are cached so we need a hard restart
             android.os.Process.killProcess(android.os.Process.myPid());
         } else {
-            toast("Could not load preferences");
+            toast("Could not load preferences - check permissions or file?");
+        }
+    }
+
+    public static void storePreferencesFromBytes(byte[] bytes, Context context) {
+        if (dataFromBytes(bytes, PREFERENCES_FILE, context)) {
+            Log.i(TAG, "Restarting as new preferences loaded from bytes");
+            android.os.Process.killProcess(android.os.Process.myPid());
+        } else {
+            Log.e(TAG, "Failed to write preferences from bytes");
         }
     }
 
@@ -80,6 +90,10 @@ public class SdcardImportExport extends Activity {
         } else {
             toast("Deletion problem");
         }
+    }
+
+    public static byte[] getPreferencesFileAsBytes(Context context) {
+        return dataToBytes(PREFERENCES_FILE, context);
     }
 
     public boolean savePreferencesToSD() {
@@ -111,6 +125,16 @@ public class SdcardImportExport extends Activity {
     private String getCustomSDcardpath() {
         return Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS) + "/xDrip-export";
+    }
+
+    private static byte[] dataToBytes(String filename, Context context) {
+        File source_file = new File(context.getFilesDir().getParent() + "/" + filename);
+        try {
+            return directReadFile(source_file);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception in datatoBytes: " + e.toString());
+            return null;
+        }
     }
 
     private boolean dataToSDcopy(String filename) {
@@ -171,6 +195,41 @@ public class SdcardImportExport extends Activity {
         }
         return false;
     }
+
+    private static byte[] directReadFile(File source_filename) {
+        Log.i(TAG, "Attempt to read: " + source_filename.toString());
+        InputStream in;
+        try {
+            in = new FileInputStream(source_filename);
+            byte[] buffer = new byte[(int) source_filename.length()];
+            in.read(buffer);
+            in.close();
+            Log.d(TAG, "Read file size: " + buffer.length);
+            return buffer;
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+        return null;
+    }
+
+    private static boolean dataFromBytes(byte[] bytes, String filename, Context context) {
+        if ((bytes == null) || (bytes.length == 0)) {
+            Log.e(TAG, "Got zero bytes in datafrom bytes");
+            return false;
+        }
+        File dest_file = new File(context.getFilesDir().getParent() + "/" + filename);
+        try {
+            // dest_file.mkdirs();
+            FileOutputStream out = new FileOutputStream(dest_file);
+            out.write(bytes);
+            out.close();
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Error writing file: " + dest_file.toString() + " " + e.toString());
+            return false;
+        }
+    }
+
 
     private void toast(String msg) {
         try {

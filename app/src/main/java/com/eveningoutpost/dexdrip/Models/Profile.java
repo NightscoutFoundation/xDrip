@@ -43,6 +43,8 @@ public class Profile {
         return 5.5;
     }
 
+    public static double getTargetRangeInUnits(double when) { return getTargetRangeInMmol(when) * scale_factor; }
+
     static double getCarbSensitivity(double when) {
         return getCarbRatio(when) / getSensitivity(when);
     }

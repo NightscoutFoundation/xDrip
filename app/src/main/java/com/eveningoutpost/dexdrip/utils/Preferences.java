@@ -23,6 +23,8 @@ import android.text.InputFilter;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
@@ -51,7 +53,8 @@ import java.util.Map;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class Preferences extends PreferenceActivity {
-    private static final String TAG = "PREFS";
+    private static final String TAG = "jamorham PREFS";
+    private static byte[] staticKey;
     private AllPrefsFragment preferenceFragment;
 
 
@@ -61,20 +64,71 @@ public class Preferences extends PreferenceActivity {
                 preferenceFragment).commit();
     }
 
-    private void installxDripPlusPreferencesFromQRCode(SharedPreferences prefs,String data)
-    {
+
+    public interface OnServiceTaskCompleted {
+        void onTaskCompleted(byte[] result);
+    }
+
+    public class ServiceCallback implements OnServiceTaskCompleted {
+        @Override
+        public void onTaskCompleted(byte[] result) {
+            if (result.length > 0) {
+                if ((staticKey == null) || (staticKey.length != 16)) {
+                    toast("Error processing security key");
+                } else {
+                    byte[] plainbytes = JoH.decompressBytesToBytes(CipherUtils.decryptBytes(result, staticKey));
+                    Log.d(TAG, "Plain bytes size: " + plainbytes.length);
+                    if (plainbytes.length > 0) {
+                        SdcardImportExport.storePreferencesFromBytes(plainbytes, getApplicationContext());
+                    } else {
+                        toast("Error processing data - empty");
+                    }
+                }
+            } else {
+                toast("Error processing settings - no data - try again?");
+            }
+        }
+    }
+
+
+    private void toast(final String msg) {
+        try {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                }
+            });
+            android.util.Log.d(TAG, "Toast msg: " + msg);
+        } catch (Exception e) {
+            android.util.Log.e(TAG, "Couldn't display toast: " + msg);
+        }
+    }
+
+    private void installxDripPlusPreferencesFromQRCode(SharedPreferences prefs, String data) {
+        Log.d(TAG, "installing preferences from QRcode");
         try {
             Map<String, String> prefsmap = DisplayQRCode.decodeString(data);
             if (prefsmap != null) {
-                Log.i(TAG,"Processing prefsmap :"+prefsmap.size());
+                if (prefsmap.containsKey(getString(R.string.all_settings_wizard))) {
+                    if (prefsmap.containsKey(getString(R.string.wizard_key))
+                            && prefsmap.containsKey(getString(R.string.wizard_uuid))) {
+                        staticKey = CipherUtils.hexToBytes(prefsmap.get(getString(R.string.wizard_key)));
+
+                        new WebAppHelper(new ServiceCallback()).execute(getString(R.string.wserviceurl) + "/joh-getsw/" + prefsmap.get(getString(R.string.wizard_uuid)));
+                    } else {
+                        Log.d(TAG, "Incorrectly formatted wizard pref");
+                    }
+                    return;
+                }
+
                 SharedPreferences.Editor editor = prefs.edit();
                 int changes = 0;
                 for (Map.Entry<String, String> entry : prefsmap.entrySet()) {
                     String key = entry.getKey();
                     String value = entry.getValue();
-        //            Log.d(TAG, "Saving preferences: " + key + " = " + value);
-                    if (value.equals("true")||(value.equals("false")))
-                    {
+                    //            Log.d(TAG, "Saving preferences: " + key + " = " + value);
+                    if (value.equals("true") || (value.equals("false"))) {
                         editor.putBoolean(key, Boolean.parseBoolean(value));
                         changes++;
                     } else if (!value.equals("null")) {
@@ -84,13 +138,12 @@ public class Preferences extends PreferenceActivity {
                 }
                 editor.apply();
                 refreshFragments();
-                Toast.makeText(getApplicationContext(), "Loaded "+Integer.toString(changes)+" preferences from QR code", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Loaded " + Integer.toString(changes) + " preferences from QR code", Toast.LENGTH_LONG).show();
             } else {
                 android.util.Log.e(TAG, "Got null prefsmap during decode");
             }
-        } catch (Exception e)
-        {
-            Log.e(TAG,"Got exception installing preferences");
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception installing preferences");
         }
 
     }
@@ -105,9 +158,9 @@ public class Preferences extends PreferenceActivity {
         if (scanResult.getFormatName().equals("QR_CODE")) {
 
             String scanresults = scanResult.getContents();
-            if (scanresults.startsWith(DisplayQRCode.qrmarker)){
-               installxDripPlusPreferencesFromQRCode(prefs,scanresults);
-              }
+            if (scanresults.startsWith(DisplayQRCode.qrmarker)) {
+                installxDripPlusPreferencesFromQRCode(prefs, scanresults);
+            }
 
             NSBarcodeConfig barcode = new NSBarcodeConfig(scanresults);
             if (barcode.hasMongoConfig()) {
@@ -185,7 +238,9 @@ public class Preferences extends PreferenceActivity {
 
     @Override
     protected boolean isValidFragment(String fragmentName) {
-        if (AllPrefsFragment.class.getName().equals(fragmentName)){ return true; }
+        if (AllPrefsFragment.class.getName().equals(fragmentName)) {
+            return true;
+        }
         return false;
     }
 
@@ -193,6 +248,7 @@ public class Preferences extends PreferenceActivity {
     public boolean onIsMultiPane() {
         return isXLargeTablet(this);
     }
+
     private static boolean isXLargeTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout
                 & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
@@ -267,7 +323,7 @@ public class Preferences extends PreferenceActivity {
         } catch (Exception e) {
             Log.e(TAG, "Got exception binding preference summary: " + e.toString());
         }
-        }
+    }
 
     private static void bindPreferenceSummaryToValueAndEnsureNumeric(Preference preference) {
         preference.setOnPreferenceChangeListener(sBindNumericPreferenceSummaryToValueListener);
@@ -290,7 +346,7 @@ public class Preferences extends PreferenceActivity {
                 EditTextPreference thispref = (EditTextPreference) findPreference(pref_name);
                 thispref.setText(pref_val);
             } catch (Exception e) {
-                Log.e(TAG,"Exception during setSummary: "+e.toString());
+                Log.e(TAG, "Exception during setSummary: " + e.toString());
             }
         }
 
@@ -326,9 +382,19 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("cloud_storage_api_base"));
 
             addPreferencesFromResource(R.xml.pref_advanced_settings);
-            addPreferencesFromResource(R.xml.pref_community_help);
             addPreferencesFromResource(R.xml.xdrip_plus_prefs);
 
+
+            refresh_extra_items();
+            findPreference("plus_extra_features").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    Home.invalidateMenu = true; // force redraw
+                    refresh_extra_items();
+
+                    return true;
+                }
+            });
 
 
             bindTTSListener();
@@ -425,7 +491,7 @@ public class Preferences extends PreferenceActivity {
             });
 
             Log.d(TAG, prefs.getString("dex_collection_method", "BluetoothWixel"));
-            if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomShare") != 0) {
+            if (prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomShare") != 0) {
                 collectionCategory.removePreference(shareKey);
                 collectionCategory.removePreference(scanShare);
                 otherCategory.removePreference(interpretRaw);
@@ -447,7 +513,7 @@ public class Preferences extends PreferenceActivity {
                 }
             }
 
-            if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexbridgeWixel") != 0) {
+            if (prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexbridgeWixel") != 0) {
                 collectionCategory.removePreference(transmitterId);
             }
             pebbleSync.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -470,7 +536,7 @@ public class Preferences extends PreferenceActivity {
             collectionMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if(((String) newValue).compareTo("DexcomShare") != 0) { // NOT USING SHARE
+                    if (((String) newValue).compareTo("DexcomShare") != 0) { // NOT USING SHARE
                         collectionCategory.removePreference(shareKey);
                         collectionCategory.removePreference(scanShare);
                         otherCategory.removePreference(interpretRaw);
@@ -495,11 +561,11 @@ public class Preferences extends PreferenceActivity {
                     }
 
                     // jamorham always show wifi receivers option if populated as we may switch modes dynamically
-                    if((((String) newValue).compareTo("WifiWixel") != 0)
+                    if ((((String) newValue).compareTo("WifiWixel") != 0)
                             && (((String) newValue).compareTo("WifiBlueToothWixel") != 0)) {
                         String receiversIpAddresses;
                         receiversIpAddresses = prefs.getString("wifi_recievers_addresses", "");
-                        if(receiversIpAddresses == null || receiversIpAddresses.equals("") ) {
+                        if (receiversIpAddresses == null || receiversIpAddresses.equals("")) {
                             collectionCategory.removePreference(wifiRecievers);
                         } else {
                             collectionCategory.addPreference(wifiRecievers);
@@ -508,7 +574,7 @@ public class Preferences extends PreferenceActivity {
                         collectionCategory.addPreference(wifiRecievers);
                     }
 
-                    if(((String) newValue).compareTo("DexbridgeWixel") != 0) {
+                    if (((String) newValue).compareTo("DexbridgeWixel") != 0) {
                         collectionCategory.removePreference(transmitterId);
                     } else {
                         collectionCategory.addPreference(transmitterId);
@@ -540,7 +606,7 @@ public class Preferences extends PreferenceActivity {
                     } else {
                         preference.setSummary(stringValue);
                     }
-                    if(preference.getKey().equals("dex_collection_method")) {
+                    if (preference.getKey().equals("dex_collection_method")) {
                         CollectionServiceStarter.restartCollectionService(preference.getContext(), (String) newValue);
                     } else {
                         CollectionServiceStarter.restartCollectionService(preference.getContext());
@@ -571,11 +637,24 @@ public class Preferences extends PreferenceActivity {
             });
         }
 
-        private void bindTTSListener(){
+        private void refresh_extra_items() {
+            try {
+                if (prefs == null) return;
+                if (!prefs.getBoolean("plus_extra_features", false)) {
+                    getPreferenceScreen().removePreference(findPreference("plus_follow_master"));
+                } else {
+                    getPreferenceScreen().addPreference(findPreference("plus_follow_master"));
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Got exception in refresh extra: " + e.toString());
+            }
+        }
+
+        private void bindTTSListener() {
             findPreference("bg_to_speech").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if ((Boolean)newValue) {
+                    if ((Boolean) newValue) {
                         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
                         alertDialog.setTitle("Install Text-To-Speech Data?");
                         alertDialog.setMessage("Install Text-To-Speech Data?\n(After installation of languages you might have to press \"Restart Collector\" in System Status.)");
@@ -600,7 +679,7 @@ public class Preferences extends PreferenceActivity {
     public static boolean isNumeric(String str) {
         try {
             Double.parseDouble(str);
-        } catch(NumberFormatException nfe) {
+        } catch (NumberFormatException nfe) {
             return false;
         }
         return true;

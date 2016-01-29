@@ -71,9 +71,11 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
             } else if (action.equals("dat")) {
                 Log.i(TAG, "Attempting GCM delete all treatments");
                 Treatments.delete_all();
-
+            } else if (action.equals("dt")) {
+                Log.i(TAG, "Attempting GCM delete specific treatment");
+                Treatments.delete_by_uuid(filter(payload));
             } else if (action.equals("cal")) {
-                String[] message_array = payload.split("\\s+");
+                String[] message_array = filter(payload).split("\\s+");
                 if ((message_array.length == 3) && (message_array[0].length() > 0)
                         && (message_array[1].length() > 0) && (message_array[2].length() > 0)) {
                     // [0]=timestamp [1]=bg_String [2]=bgAge
@@ -130,6 +132,12 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+    }
+
+    private String filter(String source)
+    {
+        if (source == null) return null;
+        return source.replaceAll("[^a-zA-Z0-9 _.-]","");
     }
 
 }

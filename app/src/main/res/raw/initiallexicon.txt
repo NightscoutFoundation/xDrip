@@ -46,6 +46,8 @@
         "grams",
         "gram",
         "carb",
+        "cars",
+        "car",
         "g",
         "gee"
     ]},

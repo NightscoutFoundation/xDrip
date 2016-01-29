@@ -110,7 +110,7 @@ android {
 
 // jamorham auto test rig
 task jamorhamAutoInstall(type: Exec) {
-    commandLine "bash","$projectDir/autoinstallviausb"
+    commandLine "bash", "$projectDir/autoinstallviausb"
 }
 assembleRelease.doLast {
     jamorhamAutoInstall.execute()
@@ -119,32 +119,32 @@ assembleRelease.doLast {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'com.squareup.okhttp:mockwebserver:2.5.0'
+    compile('com.github.nightscout:android-uploader:CORE_FOR_XDRIP') {
+        transitive = false;
+    }
+
+    compile project(':localeapi')
     compile 'com.nispok:snackbar:2.10.8'
-    compile 'com.android.support:appcompat-v7:23.1.0'
+    compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.google.android.gms:play-services-drive:8.4.0'
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
+    compile 'com.google.android.gms:play-services-maps:8.4.0'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
-    compile 'com.google.code.gson:gson:2.3'
+    compile 'com.google.code.gson:gson:2.4'
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
     compile 'com.getpebble:pebblekit:3.0.0'
     compile 'io.reactivex:rxjava:1.0.0'
     compile 'com.github.lecho:hellocharts-android:v1.5.8'
     compile 'com.google.guava:guava:18.0'
-    compile('com.github.nightscout:android-uploader:CORE_FOR_XDRIP') {
-        transitive = false;
-    }
-    /* begin relevant android-uploader dependencies */
     compile 'com.embarkmobile:zxing-android-minimal:2.0.0@aar'
-    //compile 'com.embarkmobile:zxing-android-legacy:2.0.0@aar'
     compile 'com.embarkmobile:zxing-android-integration:2.0.0@aar'
+    //compile 'com.embarkmobile:zxing-android-legacy:2.0.0@aar'
     compile 'com.google.zxing:core:3.1.0'
     compile 'net.tribe7.seeds:seeds-functional:16.0.1'
     compile 'net.tribe7.seeds:seeds-primitives:16.0.1'
     compile 'org.slf4j:slf4j-api:1.7.7'
-    /* end relevant android-uploader dependencies */
 
-    compile project(':localeapi')
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -15,7 +15,8 @@ import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.GoogleDriveInterface;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,20 +37,28 @@ public class Treatments extends Model {
     private final static String TAG = "jamorham " + Treatments.class.getSimpleName();
     public static double activityMultipler = 8.4; // somewhere between 8.2 and 8.8
     private static Treatments lastCarbs;
+    @Expose
     @Column(name = "timestamp", index = true)
     public long timestamp;
+    @Expose
     @Column(name = "eventType")
     public String eventType;
+    @Expose
     @Column(name = "enteredBy")
     public String enteredBy;
+    @Expose
     @Column(name = "notes")
     public String notes;
-    @Column(name = "uuid", index = true)
+    @Expose
+    @Column(name = "uuid", unique = true, onUniqueConflicts = Column.ConflictAction.IGNORE)
     public String uuid;
+    @Expose
     @Column(name = "carbs")
     public double carbs;
+    @Expose
     @Column(name = "insulin")
     public double insulin;
+    @Expose
     @Column(name = "created_at")
     public String created_at;
 
@@ -83,6 +92,14 @@ public class Treatments extends Model {
                 .executeSingle();
     }
 
+    public static Treatments byuuid(String uuid) {
+        return new Select()
+                .from(Treatments.class)
+                .where("uuid = ?", uuid)
+                .orderBy("_ID desc")
+                .executeSingle();
+    }
+
     public static void delete_all() {
         delete_all(false);
     }
@@ -98,6 +115,13 @@ public class Treatments extends Model {
 
     public static Treatments delete_last() {
         return delete_last(false);
+    }
+
+    public static void delete_by_uuid(String uuid) {
+        Treatments thistreat = byuuid(uuid);
+        if (thistreat != null) {
+            thistreat.delete();
+        }
     }
 
     public static Treatments delete_last(boolean from_interactive) {
@@ -116,7 +140,7 @@ public class Treatments extends Model {
 
     public static Treatments fromJSON(String json) {
         try {
-            return new Gson().fromJson(json, Treatments.class);
+            return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(json,Treatments.class);
         } catch (Exception e) {
             Log.d(TAG, "Got exception parsing treatment json: " + e.toString());
             Home.toaststatic("Error on treatment, probably decryption key mismatch");

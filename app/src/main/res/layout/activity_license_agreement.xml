@@ -53,7 +53,28 @@
                     android:id="@+id/saveButton"
                     android:layout_marginTop="20dp" />
 
+                <Button
+                    style="?android:attr/buttonStyleSmall"
+                    android:background="@android:color/transparent"
+                    android:layout_marginTop="40dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="view Google licenses"
+                    android:id="@+id/googlelicenses"
+                    android:onClick="viewGoogleLicenses"
+                    android:layout_gravity="right" />
+
             </LinearLayout>
+
+            <WebView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/webView"
+                android:visibility="invisible"
+                android:background="@android:color/transparent"
+                android:layout_alignParentBottom="true"
+                android:layout_alignEnd="@+id/scrollView2"
+                android:layout_alignParentStart="true" />
 
         </LinearLayout>
     </ScrollView>

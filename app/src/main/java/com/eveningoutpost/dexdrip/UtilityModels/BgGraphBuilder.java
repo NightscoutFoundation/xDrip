@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -72,6 +73,11 @@ public class BgGraphBuilder {
     public boolean doMgdl;
     public Viewport viewport;
     private int predictivehours = 0;
+    private static double avg1value = 0;
+    private static double avg2value = 0;
+    private static int avg1counter = 0;
+    private static double avg1startfuzzed = 0;
+    private static int avg2counter = 0;
     private double endHour;
     private List<PointValue> inRangeValues = new ArrayList<PointValue>();
     private List<PointValue> highValues = new ArrayList<PointValue>();
@@ -165,11 +171,22 @@ public class BgGraphBuilder {
                 lines.add(subLine); // iob line
             }
 
+            predictive_end_time = (new Date().getTime() + (60000 * 10) + (1000 * 60 * 60 * predictivehours)) / FUZZER; // used first in ideal/highline
+
+            if (prefs.getBoolean("show_full_average_line", false)) {
+                if (avg2value > 0) lines.add(avg2Line());
+            }
+            if (prefs.getBoolean("show_recent_average_line", true)) {
+                if (avg1value > 0) lines.add(avg1Line());
+            }
+            if (prefs.getBoolean("show_target_line", false)) {
+                lines.add(idealLine());
+            }
+
             lines.add(treatments[3]); // activity
             lines.add(treatments[5]); // predictive
             lines.add(treatments[6]); // cob
 
-            predictive_end_time = (new Date().getTime() + (60000 * 10) + (1000 * 60 * 60 * predictivehours)) / FUZZER; // used first in highline
 
             lines.add(minShowLine());
             lines.add(maxShowLine());
@@ -178,10 +195,13 @@ public class BgGraphBuilder {
             lines.add(lowLine());
             lines.add(predictiveLowLine());
 
-            ArrayList<Line> rawlines = rawInterpretedLines();
+            if (prefs.getBoolean("show_filtered_curve", true)) {
+                // use autosplit here too
+                ArrayList<Line> rawlines = rawInterpretedLines();
 
-            for (Line thisline : rawlines) {
-                lines.add(thisline);
+                for (Line thisline : rawlines) {
+                    lines.add(thisline);
+                }
             }
 
             lines.add(inRangeValuesLine());
@@ -412,6 +432,14 @@ public class BgGraphBuilder {
         inRangeValues.clear();
         calibrationValues.clear();
         final double bgScale = bgScale();
+
+        final double avg1start = JoH.ts()-(1000*60*60*8); // 8 hours
+        avg1startfuzzed=avg1start / FUZZER;
+        avg1value = 0;
+        avg1counter = 0;
+        avg2value = 0;
+        avg2counter = 0;
+
         for (BgReading bgReading : bgReadings) {
             // jamorham special
             if (bgReading.filtered_calculated_value != 0) {
@@ -431,9 +459,21 @@ public class BgGraphBuilder {
             } else if (bgReading.calculated_value > 13) {
                 lowValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(40)));
             }
-        }
 
-        UserError.Log.i(TAG, "ADD BG READINGS END");
+            avg2counter++;
+            avg2value +=bgReading.calculated_value;
+            if (bgReading.timestamp > avg1start)
+            {
+                 avg1counter++;
+                 avg1value +=bgReading.calculated_value;
+            }
+        }
+        if (avg1counter>0) { avg1value = avg1value / avg1counter; };
+        if (avg2counter>0) { avg2value = avg2value / avg2counter; };
+
+        //Log.i(TAG,"Average1 value: "+unitized(avg1value));
+        //Log.i(TAG,"Average2 value: "+unitized(avg2value));
+
         try {
             for (Calibration calibration : calibrations) {
                 calibrationValues.add(new PointValue((float) (calibration.timestamp / FUZZER), (float) unitized(calibration.bg)));
@@ -598,6 +638,45 @@ public class BgGraphBuilder {
         }
     }
 
+    public Line avg1Line() {
+        List<PointValue> myLineValues = new ArrayList<PointValue>();
+        myLineValues.add(new PointValue((float) avg1startfuzzed, (float) unitized(avg1value)));
+        myLineValues.add(new PointValue((float) end_time, (float) unitized(avg1value)));
+        Line myLine = new Line(myLineValues);
+        myLine.setHasPoints(false);
+        myLine.setStrokeWidth(1);
+        myLine.setColor(Color.parseColor("#558800"));
+        myLine.setPathEffect(new DashPathEffect(new float[]{10.0f, 10.0f},0));
+        myLine.setAreaTransparency(50);
+        return myLine;
+    }
+    public Line avg2Line() {
+        List<PointValue> myLineValues = new ArrayList<PointValue>();
+        myLineValues.add(new PointValue((float) start_time, (float) unitized(avg2value)));
+        myLineValues.add(new PointValue((float) end_time, (float) unitized(avg2value)));
+        Line myLine = new Line(myLineValues);
+        myLine.setHasPoints(false);
+        myLine.setStrokeWidth(1);
+        myLine.setColor(Color.parseColor("#c56f9d"));
+        myLine.setPathEffect(new DashPathEffect(new float[]{30.0f, 10.0f},0));
+        myLine.setAreaTransparency(50);
+        return myLine;
+    }
+
+    public Line idealLine() {
+        // if profile has more than 1 target bg value then we need to iterate those and plot them for completeness
+        List<PointValue> myLineValues = new ArrayList<PointValue>();
+        myLineValues.add(new PointValue((float) start_time, (float)  Profile.getTargetRangeInUnits(start_time)));
+        myLineValues.add(new PointValue((float) predictive_end_time, (float) Profile.getTargetRangeInUnits(predictive_end_time)));
+        Line myLine = new Line(myLineValues);
+        myLine.setHasPoints(false);
+        myLine.setStrokeWidth(1);
+        myLine.setColor(Color.parseColor("#a4a409"));
+        myLine.setPathEffect(new DashPathEffect(new float[]{5f, 5f}, 0));
+        myLine.setAreaTransparency(50);
+        return myLine;
+    }
+
     public Line highLine() {
         List<PointValue> highLineValues = new ArrayList<PointValue>();
         highLineValues.add(new PointValue((float) start_time, (float) highMark));
@@ -680,10 +759,11 @@ public class BgGraphBuilder {
             }
         }
         yAxis.setValues(axisValues);
-        yAxis.setHasLines(true);
+       // yAxis.setHasLines(true);
         yAxis.setMaxLabelChars(5);
         yAxis.setInside(true);
         yAxis.setTextSize(axisTextSize);
+        yAxis.setHasLines(prefs.getBoolean("show_graph_grid_glucose",true));
         return yAxis;
     }
 
@@ -710,7 +790,7 @@ public class BgGraphBuilder {
             xAxisValues.add(new AxisValue((long) (timestamp / FUZZER), (timeFormat.format(timestamp)).toCharArray()));
         }
         xAxis.setValues(xAxisValues);
-        xAxis.setHasLines(true);
+        xAxis.setHasLines(prefs.getBoolean("show_graph_grid_time", true));
         xAxis.setTextSize(axisTextSize);
         return xAxis;
     }

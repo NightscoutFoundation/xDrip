@@ -89,6 +89,7 @@ public class Home extends ActivityWithMenu {
     static String TAG = "jamorham: " + Home.class.getName();
     public static String menu_name = "xDrip";
     public static boolean activityVisible = false;
+    public static boolean invalidateMenu = false;
     private static Context staticContext;
     private boolean updateStuff;
     private boolean updatingPreviewViewport = false;
@@ -746,6 +747,12 @@ public class Home extends ActivityWithMenu {
         registerReceiver(newDataReceiver, new IntentFilter(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA));
         holdViewport.set(0, 0, 0, 0);
 
+        if (invalidateMenu)
+        {
+            invalidateOptionsMenu();
+            invalidateMenu=false;
+        }
+
         updateCurrentBgInfo("generic on resume");
         activityVisible = true;
     }
@@ -1107,17 +1114,23 @@ public class Home extends ActivityWithMenu {
         } else {
             menuItem.setVisible(false);
         }
+
+        menu.findItem(R.id.showmap).setVisible(prefs.getBoolean("plus_extra_features", false));
         return super.onCreateOptionsMenu(menu);
     }
 
     public void shareMyConfig(MenuItem myitem) {
-        Intent intent = new Intent(getApplicationContext(), DisplayQRCode.class);
-        startActivity(intent);
+        startActivity( new Intent(getApplicationContext(), DisplayQRCode.class));
     }
 
     public void settingsSDcardExport(MenuItem myitem)
     {
         startActivity(new Intent(getApplicationContext(), SdcardImportExport.class));
+    }
+
+    public void showMapFromMenu(MenuItem myitem)
+    {
+        startActivity(new Intent(getApplicationContext(), MapsActivity.class));
     }
 
     public void doBackFillBroadcast(MenuItem myitem) {
