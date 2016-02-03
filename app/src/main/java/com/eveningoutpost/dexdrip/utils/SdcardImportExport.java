@@ -1,14 +1,20 @@
 package com.eveningoutpost.dexdrip.utils;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.R;
+import com.google.zxing.integration.android.IntentIntegrator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,9 +25,9 @@ import java.io.OutputStream;
 public class SdcardImportExport extends Activity {
 
     private final static String TAG = "jamorham sdcard";
-
+    private final static int MY_PERMISSIONS_REQUEST_STORAGE = 1004;
     private final static String PREFERENCES_FILE = "shared_prefs/com.eveningoutpost.dexdrip_preferences.xml";
-
+    private static Activity activity;
     public static boolean deleteFolder(File path, boolean recursion) {
         try {
             Log.d(TAG, "deleteFolder called with: " + path.toString());
@@ -50,6 +56,23 @@ public class SdcardImportExport extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sdcard_import_export);
+        activity = this;
+    }
+
+    private boolean checkPermissions()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_STORAGE);
+                    return false;
+            }
+        }
+        return true;
     }
 
     public void savePreferencesToSD(View myview) {
@@ -116,10 +139,8 @@ public class SdcardImportExport extends Activity {
 
     private boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
+        checkPermissions();
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     private String getCustomSDcardpath() {

@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -26,22 +27,29 @@ import java.util.concurrent.TimeUnit;
 
 public class UpdateActivity extends Activity {
 
-    private static final String DOWNLOAD_URL = "https://jamorham.github.io/apk/xdrip-plus-latest.apk";
-    private static final String CHECK_URL = "https://jamorham.github.io/apk/xdrip-plus-version.txt";
     private static final String autoUpdatePrefsName = "auto_update_download";
     private static final String TAG = "jamorham update";
     private static OkHttpClient httpClient = null;
     private static double last_check_time = 0;
     private static SharedPreferences prefs;
     private static int versionnumber = 0;
+    private static int newversion = 0;
 
+    private static String DOWNLOAD_URL = "";
 
     public static void checkForAnUpdate(final Context context) {
         if (prefs == null) prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (!prefs.getBoolean(autoUpdatePrefsName, true)) return;
         if ((JoH.ts() - last_check_time) > 86400000) {
             last_check_time = JoH.ts();
-            Log.i(TAG, "Checking for a software update");
+
+            String channel = prefs.getString("update_channel", "beta");
+            Log.i(TAG, "Checking for a software update, channel: " + channel);
+
+            final String CHECK_URL = context.getString(R.string.wserviceurl) + "/update-check/" + channel;
+            DOWNLOAD_URL = "";
+            newversion = 0;
+
             new Thread(new Runnable() {
                 public void run() {
                     try {
@@ -67,14 +75,20 @@ public class UpdateActivity extends Activity {
 
                             String lines[] = response.body().string().split("\\r?\\n");
 
-                            if (lines.length > 0) {
+                            if (lines.length > 1) {
                                 try {
-                                    int newversion = Integer.parseInt(lines[0]);
+                                    newversion = Integer.parseInt(lines[0]);
                                     if (newversion > versionnumber) {
-                                        Log.i(TAG, "Notifying user of new update available our version: " + versionnumber + " new: " + newversion);
-                                        Intent intent = new Intent(context, UpdateActivity.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        context.startActivity(intent);
+                                        if (lines[1].startsWith("http")) {
+                                            Log.i(TAG, "Notifying user of new update available our version: " + versionnumber + " new: " + newversion);
+                                            DOWNLOAD_URL = lines[1];
+                                            Intent intent = new Intent(context, UpdateActivity.class);
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            context.startActivity(intent);
+
+                                        } else {
+                                            Log.e(TAG, "Error parsing second line of update reply");
+                                        }
                                     } else {
                                         Log.i(TAG, "Our current version is the most recent: " + versionnumber + " vs " + newversion);
                                     }
@@ -86,7 +100,7 @@ public class UpdateActivity extends Activity {
                             }
                             Log.i(TAG, "Success getting latest software version");
                         } else {
-                            Log.d(TAG, "Failure getting update URL data: code: "+response.code());
+                            Log.d(TAG, "Failure getting update URL data: code: " + response.code());
                         }
                     } catch (Exception e) {
                         UserError.Log.e(TAG, "Exception in reading http update version " + e.toString());
@@ -122,6 +136,11 @@ public class UpdateActivity extends Activity {
                 Log.d(TAG, "Auto Updates IsChecked:" + isChecked);
             }
         });
+
+        TextView detail = (TextView) findViewById(R.id.updatedetail);
+        detail.setText("Version date: " + Integer.toString(newversion));
+        TextView channel = (TextView) findViewById(R.id.update_channel);
+        channel.setText("Update Channel: " + JoH.ucFirst(prefs.getString("update_channel", "beta")));
     }
 
     public void closeActivity(View myview) {
@@ -129,8 +148,12 @@ public class UpdateActivity extends Activity {
     }
 
     public void downloadNow(View myview) {
-        Intent downloadActivity = new Intent(Intent.ACTION_VIEW, Uri.parse(DOWNLOAD_URL + "?" + JoH.qs(JoH.ts())));
-        startActivity(downloadActivity);
-        finish();
+        if (DOWNLOAD_URL.length() > 0) {
+            Intent downloadActivity = new Intent(Intent.ACTION_VIEW, Uri.parse(DOWNLOAD_URL + "&rr=" + JoH.qs(JoH.ts())));
+            startActivity(downloadActivity);
+            finish();
+        } else {
+            Log.e(TAG, "Download button pressed but no download URL");
+        }
     }
 }

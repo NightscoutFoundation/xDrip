@@ -6,6 +6,7 @@
         <item>Wifi Wixel</item>
         <item>Wifi Wixel + BT Wixel</item>
         <item>DexcomShare</item>
+        <item>xDrip+ Sync Follower</item>
     </string-array>
 
     <string-array name="DexCollectionMethodValues">
@@ -14,10 +15,20 @@
         <item>WifiWixel</item>
         <item>WifiBlueToothWixel</item>
         <item>DexcomShare</item>
+        <item>Follower</item>
     </string-array>
 
+    <string-array name="UpdateChannel">
+        <item>stable</item>
+        <item>beta</item>
+        <item>alpha</item>
+    </string-array>
 
-
+    <string-array name="UpdateChannelDetail">
+        <item>Stable - tried and tested versions</item>
+        <item>Beta - new features but not fully tested </item>
+        <item>Alpha - nightlies, raw latest versions</item>
+    </string-array>
 
     <string-array name="bgUnitEntries">
         <item>mgdl</item>
@@ -29,7 +40,7 @@
         <item>mmol</item>
     </string-array>
 
-<!--     make sure to keep this values in sync with AlertPlayer.getAlertProfile -->
+    <!--     make sure to keep this values in sync with AlertPlayer.getAlertProfile -->
     <string-array name="BgAlertProfileEntries">
         <item>High</item>
         <item>Ascending (disables reraise)</item>

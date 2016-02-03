@@ -5,8 +5,12 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.R;
 
@@ -14,6 +18,8 @@ import com.eveningoutpost.dexdrip.R;
  * Helper for checking if location services are enabled on the device.
  */
 public class LocationHelper {
+
+    static final String TAG = "dexdrip LocationHelper";
     /**
      * Determine if GPS is currently enabled.
      *
@@ -61,7 +67,30 @@ public class LocationHelper {
     public static void requestLocationForBluetooth(Activity activity) {
         // Location needs to be enabled for Bluetooth discovery on Marshmallow.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            if (ContextCompat.checkSelfPermission(activity,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                toast(activity,"Without Location permission android bluetooth scan doesn't work");
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                        0);
+            }
+
             LocationHelper.requestLocation(activity);
+        }
+    }
+    private static void toast(final Activity activity,final String msg) {
+        try {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(activity.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                }
+            });
+            android.util.Log.d(TAG, "Toast msg: " + msg);
+        } catch (Exception e) {
+            android.util.Log.e(TAG, "Couldn't display toast: " + msg);
         }
     }
 }

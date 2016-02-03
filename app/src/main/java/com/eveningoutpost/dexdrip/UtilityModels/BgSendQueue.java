@@ -21,6 +21,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
@@ -158,6 +159,10 @@ public class BgSendQueue extends Model {
 
             if (prefs.getBoolean("plus_follow_master",false))
             {
+                if (GcmActivity.mContext == null)
+                {
+                    PlusSyncService.startSyncService(context);
+                }
                 GcmActivity.syncBGReading(bgReading);
             }
 

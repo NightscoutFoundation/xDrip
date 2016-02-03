@@ -870,6 +870,9 @@ public class Home extends ActivityWithMenu {
         }
         if (isWifiWixel || isWifiBluetoothWixel) {
             updateCurrentBgInfoForWifiWixel(notificationText);
+        } else if (prefs.getString("dex_collection_method","").equals("Follower"))
+        {
+            displayCurrentInfo();
         }
         if (prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
             notificationText.append("\n ALL ALERTS CURRENTLY DISABLED");
@@ -1064,11 +1067,17 @@ public class Home extends ActivityWithMenu {
             if (notificationText.getText().length()==0){
                 notificationText.setTextColor(Color.WHITE);
             }
+            final boolean bg_from_filtered = prefs.getBoolean("bg_from_filtered",false);
             if (!predictive) {
-                estimate = lastBgReading.calculated_value;
-                String stringEstimate = bgGraphBuilder.unitized_string(estimate);
+                if (bg_from_filtered) {
+                    currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                    estimate = lastBgReading.filtered_calculated_value;
+                } else {
+                    estimate = lastBgReading.calculated_value;
+                }
+                    String stringEstimate = bgGraphBuilder.unitized_string(estimate);
                 String slope_arrow = lastBgReading.slopeArrow();
-                if (lastBgReading.hide_slope) {
+                if ((lastBgReading.hide_slope)||(bg_from_filtered)) {
                     slope_arrow = "";
                 }
                 currentBgValueText.setText(stringEstimate + " " + slope_arrow);
@@ -1134,7 +1143,7 @@ public class Home extends ActivityWithMenu {
     }
 
     public void doBackFillBroadcast(MenuItem myitem) {
-        GcmActivity.syncBGTable();
+        GcmActivity.syncBGTable2();
         toast("Starting sync to other devices");
     }
 

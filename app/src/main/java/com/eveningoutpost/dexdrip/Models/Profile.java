@@ -1,5 +1,10 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import android.content.SharedPreferences;
+import android.util.Log;
+
+import com.eveningoutpost.dexdrip.Home;
+
 /**
  * Created by jamorham on 04/01/16.
  */
@@ -18,13 +23,26 @@ public class Profile {
     public static double minimum_insulin_recommendation = 0.1;
     public static double minimum_carb_recommendation = 1;
     public static double scale_factor = 1;
+    private static double the_carb_ratio = 10;
+    private static double stored_default_sensitivity = 3;
+    private static double stored_default_absorption_rate = 35;
 
     static double getSensitivity(double when) {
-        return (3 * scale_factor); // currently expressed in mmol lowering effect of 1U
+        return stored_default_sensitivity; // expressed in native units lowering effect of 1U
+    }
+
+    public static void setSensitivityDefault(double value) {
+        // sanity check goes here
+        stored_default_sensitivity = value;
     }
 
     static double getCarbAbsorptionRate(double when) {
-        return 35; // carbs per hour
+        return stored_default_absorption_rate; // carbs per hour
+    }
+
+    public static void setCarbAbsorptionDefault(double value) {
+        // sanity check goes here
+        stored_default_absorption_rate = value;
     }
 
     static double maxLiverImpactRatio(double when) {
@@ -32,7 +50,15 @@ public class Profile {
     }
 
     static double getCarbRatio(double when) {
-        return 10; // g per unit
+        return the_carb_ratio; // g per unit
+    }
+
+    static public void setDefaultCarbRatio(Double value) {
+        if (value <= 0) {
+            Log.e(TAG, "Invalid default carb ratio: " + value);
+            return;
+        }
+        the_carb_ratio = value; // g per unit
     }
 
     static double getLiverSensRatio(double when) {
@@ -43,7 +69,9 @@ public class Profile {
         return 5.5;
     }
 
-    public static double getTargetRangeInUnits(double when) { return getTargetRangeInMmol(when) * scale_factor; }
+    public static double getTargetRangeInUnits(double when) {
+        return getTargetRangeInMmol(when) * scale_factor;
+    }
 
     static double getCarbSensitivity(double when) {
         return getCarbRatio(when) / getSensitivity(when);
@@ -83,5 +111,23 @@ public class Profile {
             addinsulin = getInsulinToLowerByMmolBetweenTwoTimes(diff_mmol * -1, timeNow, endGameTime);
         }
         return new double[]{addcarbs, addinsulin};
+    }
+
+    public static void reloadPreferences(SharedPreferences prefs) {
+        try {
+            Profile.setSensitivityDefault(Double.parseDouble(prefs.getString("profile_insulin_sensitivity_default", "0")));
+        } catch (Exception e) {
+            Home.toaststatic("Invalid insulin sensitivity");
+        }
+        try {
+            Profile.setDefaultCarbRatio(Double.parseDouble(prefs.getString("profile_carb_ratio_default", "0")));
+        } catch (Exception e) {
+            Home.toaststatic("Invalid default carb ratio!");
+        }
+        try {
+            Profile.setCarbAbsorptionDefault(Double.parseDouble(prefs.getString("profile_carb_absorption_default", "0")));
+        } catch (Exception e) {
+            Home.toaststatic("Invalid carb absorption rate");
+        }
     }
 }

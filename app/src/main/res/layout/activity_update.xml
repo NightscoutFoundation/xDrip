@@ -9,54 +9,74 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="A new version is available"
-        android:id="@+id/anewversionisavailable"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="67dp" />
-
-    <Switch
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Automatically check for updates"
-        android:id="@+id/autoupdate"
-        android:layout_centerVertical="true"
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:checked="true" />
+        android:id="@+id/linearLayout2">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Download Now"
-        android:id="@+id/downloadbutton"
-        android:layout_below="@+id/autoupdate"
-        android:layout_centerHorizontal="true"
-        android:onClick="downloadNow"
-        android:layout_marginTop="53dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Update Channel: "
+            android:id="@+id/update_channel"
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text=""
-        android:id="@+id/detail"
-        android:layout_below="@+id/anewversionisavailable"
-        android:layout_above="@+id/autoupdate"
-        android:layout_alignEnd="@+id/anewversionisavailable"
-        android:layout_alignStart="@+id/anewversionisavailable" />
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="A new version is available"
+            android:id="@+id/anewversionisavailable"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="37dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Version details"
+            android:layout_marginTop="15dp"
+            android:id="@+id/updatedetail"
+            android:layout_gravity="center_horizontal"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Download Now"
+            android:id="@+id/downloadbutton"
+            android:layout_below="@+id/autoupdate"
+
+            android:onClick="downloadNow"
+            android:layout_marginTop="53dp"
+            android:layout_gravity="center_horizontal" />
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Automatically check for updates"
+            android:id="@+id/autoupdate"
+            android:layout_marginTop="28dp"
+            android:layout_gravity="center_horizontal"
+
+            android:checked="true" />
+
+    </LinearLayout>
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/closeButton"
+        android:id="@+id/imageButton2"
         android:onClick="closeActivity"
         android:src="@android:drawable/ic_delete"
         android:layout_alignParentBottom="true"
-        android:layout_alignEnd="@+id/autoupdate" />
+        android:layout_alignEnd="@+id/linearLayout2" />
 
 
 </RelativeLayout>

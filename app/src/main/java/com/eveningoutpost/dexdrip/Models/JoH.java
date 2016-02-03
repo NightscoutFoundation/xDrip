@@ -133,6 +133,9 @@ public class JoH {
             Log.e(TAG, "Got exception uncompressing string");
             return null;
         }
+    }
 
+    public static String ucFirst(String input) {
+        return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
     }
 }

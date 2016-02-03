@@ -21,6 +21,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,11 +37,54 @@ public class GcmActivity extends Activity {
     public static String token = null;
     public static String senderid = null;
     public static Context mContext;
+    public static List<GCM_data> gcm_queue = new ArrayList<>();
     private static boolean runningBGSync = false;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     public static void setContext(Context xmContext) {
         mContext = xmContext;
+    }
+
+    public static synchronized void queueAction(String reference) {
+        Log.d(TAG, "Received ACK, Queue Size: " + GcmActivity.gcm_queue.size() + " " + reference);
+        for (GCM_data datum : gcm_queue) {
+            String thisref = datum.bundle.getString("action") + datum.bundle.getString("payload");
+            if (thisref.equals(reference)) {
+                gcm_queue.remove(gcm_queue.indexOf(datum));
+                Log.d(TAG, "Removing acked queue item: " + reference);
+                break;
+            }
+        }
+        queueCheckOld();
+    }
+
+    public static synchronized void queueCheckOld() {
+
+        if (mContext == null) {
+            Log.e(TAG, "Can't process old queue as null context");
+            return;
+        }
+
+        final double MAX_QUEUE_AGE = (5 * 60 * 60 * 1000); // 5 hours
+        final double MIN_QUEUE_AGE = (60 * 1000); // 1 minute
+        final double MAX_RESENT = 10;
+        Double timenow = JoH.ts();
+        for (GCM_data datum : gcm_queue) {
+            if ((timenow - datum.timestamp) > MAX_QUEUE_AGE
+                    || datum.resent > MAX_RESENT) {
+                gcm_queue.remove(gcm_queue.indexOf(datum));
+                Log.i(TAG, "Removing old unacknowledged queue item: resent: " + datum.resent);
+            } else if (timenow - datum.timestamp > MIN_QUEUE_AGE) {
+                try {
+                    Log.i(TAG, "Resending unacknowledged queue item: " + datum.bundle.getString("action") + datum.bundle.getString("payload"));
+                    datum.resent++;
+                    GoogleCloudMessaging.getInstance(mContext).send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), datum.bundle);
+                } catch (Exception e) {
+                    Log.e(TAG, "Got exception during resend: " + e.toString());
+                }
+                break;
+            }
+        }
     }
 
     private static String sendMessage(final String identity, final String action, final String payload) {
@@ -53,10 +97,28 @@ public class GcmActivity extends Activity {
         return "sent async";
     }
 
+    public static void syncBGReading(BgReading bgReading) {
+        GcmActivity.sendMessage(GcmActivity.myIdentity(), "bgs", bgReading.toJSON());
+    }
 
-    public static void syncBGReading(BgReading bgReading)
-    {
-        GcmActivity.sendMessage(GcmActivity.myIdentity(), "bgs",bgReading.toJSON());
+    public static void syncBGTable2() {
+        new Thread() {
+            @Override
+            public void run() {
+
+                final List<BgReading> bgReadings = BgReading.latestForGraph(300, JoH.ts() - (24 * 60 * 60 * 1000));
+                String mypacket = "";
+
+                for (BgReading bgReading : bgReadings) {
+                    String myrecord = bgReading.toJSON();
+                    if (mypacket.length() > 0) {
+                        mypacket = mypacket + "^";
+                    }
+                    mypacket = mypacket + myrecord;
+                }
+                Log.d(TAG, "Total BGreading sync packet size: " + mypacket.length());
+            }
+        }.start();
     }
 
     public static void syncBGTable() {
@@ -127,7 +189,7 @@ public class GcmActivity extends Activity {
 
     public static void push_delete_treatment(Treatments treatment) {
         Log.i(TAG, "Sending push for specific treatment");
-        sendMessage(myIdentity(), "dt", treatment.uuid.toString());
+        sendMessage(myIdentity(), "dt", treatment.uuid);
     }
 
     public static String myIdentity() {
@@ -160,7 +222,7 @@ public class GcmActivity extends Activity {
             return "";
         }
         final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(mContext);
-        String msg = "";
+        String msg;
         if (token == null) {
             Log.e(TAG, "GCM token is null - cannot sendMessage");
             return "";
@@ -171,8 +233,9 @@ public class GcmActivity extends Activity {
             data.putString("identity", identity);
             // TODO queue backlog handling
             data.putString("payload", CipherUtils.encryptString(payload));
-            String id = Integer.toString(msgId.incrementAndGet());
-            gcm.send(senderid + "@gcm.googleapis.com", id, data);
+
+            gcm_queue.add(new GCM_data(data));
+            gcm.send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), data);
 
             msg = "Sent message OK";
         } catch (IOException ex) {
@@ -251,6 +314,18 @@ public class GcmActivity extends Activity {
             return false;
         }
         return true;
+    }
+
+    private static class GCM_data {
+        public Bundle bundle;
+        public Double timestamp;
+        public int resent;
+
+        public GCM_data(Bundle data) {
+            bundle = data;
+            timestamp = JoH.ts();
+            resent = 0;
+        }
     }
 }
 

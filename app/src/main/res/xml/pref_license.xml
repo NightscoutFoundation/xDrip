@@ -3,6 +3,7 @@
         android:title="EULA"
         android:key="title_I_understand">
         <Preference android:title="End User License Agreement"
+            android:summary="Not for medical decisions - research only"
             android:key="I_understand" >
             <intent
                 android:action="android.intent.action.MAIN"

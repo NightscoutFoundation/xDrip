@@ -42,23 +42,33 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
         if (from.startsWith(getString(R.string.gcmtpc))) {
 
             String xfrom = data.getString("xfrom");
-
-            if (xfrom.equals(GcmActivity.token)) {
-                // TODO remove from queued list once we have this ack
-                return;
-            }
-
             String payload = data.getString("datum");
             String action = data.getString("action");
 
+            if (xfrom.equals(GcmActivity.token)) {
+                GcmActivity.queueAction(action + payload);
+                return;
+            }
+
+            String[] tpca = from.split("/");
+            if ((tpca[2] != null) && (tpca[2].length() > 30) && (!tpca[2].equals(GcmActivity.myIdentity()))) {
+                Log.e(TAG, "Received invalid channel: " + from);
+                return;
+            }
+
             if (payload.length() > 16) {
-                String decrypted_payload = CipherUtils.decryptString(payload);
-                if (decrypted_payload.length() > 0) {
-                    payload = decrypted_payload;
+                if (GoogleDriveInterface.keyInitialized()) {
+                    String decrypted_payload = CipherUtils.decryptString(payload);
+                    if (decrypted_payload.length() > 0) {
+                        payload = decrypted_payload;
+                    } else {
+                        Log.e(TAG, "Couldn't decrypt payload!");
+                        payload = "";
+                        Home.toaststaticnext("Having problems decrypting incoming data - check keys");
+                    }
                 } else {
-                    Log.e(TAG, "Couldn't decrypt payload!");
+                    Log.e(TAG, "Couldn't decrypt as key not initialized");
                     payload = "";
-                    Home.toaststaticnext("Having problems decrypting incoming data - check keys");
                 }
             }
 
@@ -134,10 +144,9 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
 
-    private String filter(String source)
-    {
+    private String filter(String source) {
         if (source == null) return null;
-        return source.replaceAll("[^a-zA-Z0-9 _.-]","");
+        return source.replaceAll("[^a-zA-Z0-9 _.-]", "");
     }
 
 }

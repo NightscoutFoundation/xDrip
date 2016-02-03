@@ -11,6 +11,12 @@
             <PreferenceCategory
                 android:key="xdrip_plus_display_category"
                 android:title="xDrip+ Display Settings">
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="bg_from_filtered"
+                    android:summary="Delayed but more stable when noisy"
+                    android:title="Glucose number from Filtered" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="show_graph_grid_time"
@@ -24,8 +30,13 @@
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="show_filtered_curve"
-                    android:title="Display filtered plot"
-                    android:summary="Useful for noise and missed readings" />
+                    android:summary="Useful for noise and missed readings"
+                    android:title="Display filtered plot" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="show_raw_plot"
+                    android:summary="The standard xDrip calculated values"
+                    android:title="Display raw data plot" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="show_target_line"
@@ -41,6 +52,53 @@
                     android:key="show_full_average_line"
                     android:summary="Display 24 hour average line"
                     android:title="Show Graph total average" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="always_show_bwp"
+                    android:summary="Display Insulin/Carb calculations at all times"
+                    android:title="Always show Bolus Wizard Preview" />
+            </PreferenceCategory>
+        </PreferenceScreen>
+
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:dependency="I_understand"
+            android:key="xdrip_plus_profile_settings"
+            android:summary="Insulin, Carb ratios etc for models"
+            android:title="xDrip+ Predictive Simulation settings">
+
+
+            <PreferenceCategory
+                android:key="xdrip_plus_profile_category"
+                android:title="xDrip+ Predictive Simulation settings">
+
+                <EditTextPreference
+                    android:defaultValue="10"
+                    android:key="profile_carb_ratio_default"
+                    android:summary="Grams of Carbohydrate 1 Unit covers"
+                    android:title="Carb Ratio" />
+                <EditTextPreference
+                    android:defaultValue="3"
+                    android:key="profile_insulin_sensitivity_default"
+                    android:summary="Glucose drop for 1 Unit"
+                    android:title="Insulin Sensitivity" />
+                <EditTextPreference
+                    android:defaultValue="35"
+                    android:key="profile_carb_absorption_default"
+                    android:summary="Linear model carbs absorbed per hour"
+                    android:title="Carb Absorption rate" />
+            </PreferenceCategory>
+            <PreferenceCategory
+                android:key="title_I_understandb"
+                android:title="EULA">
+                <Preference
+                    android:key="I_understandb"
+                    android:summary="Not for medical decisions - research only"
+                    android:title="End User License Agreement">
+                    <intent
+                        android:action="android.intent.action.MAIN"
+                        android:targetClass="com.eveningoutpost.dexdrip.LicenseAgreementActivity"
+                        android:targetPackage="com.eveningoutpost.dexdrip" />
+                </Preference>
             </PreferenceCategory>
         </PreferenceScreen>
 
@@ -59,6 +117,15 @@
             android:key="auto_update_download"
             android:summary="Get notified of new apk releases"
             android:title="Automatic update check" />
+        <ListPreference
+            android:defaultValue="beta"
+            android:dependency="auto_update_download"
+            android:entries="@array/UpdateChannelDetail"
+            android:entryValues="@array/UpdateChannel"
+            android:key="update_channel"
+            android:shouldDisableView="true"
+            android:summary="Choose Stable, Beta or Alpha releases"
+            android:title="Update Channel" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="plus_extra_features"
@@ -68,6 +135,7 @@
             android:defaultValue="false"
             android:key="plus_follow_master"
             android:summary="This device will send data to followers"
+            android:dependency="plus_extra_features"
             android:title="Be master for followers" />
         <Preference
             android:key="show_qr_codes"
@@ -75,6 +143,14 @@
             <intent
                 android:action="android.intent.action.MAIN"
                 android:targetClass="com.eveningoutpost.dexdrip.utils.DisplayQRCode"
+                android:targetPackage="com.eveningoutpost.dexdrip" />
+        </Preference>
+        <Preference
+            android:key="show_external_save"
+            android:title="Load / Save settings to SDcard">
+            <intent
+                android:action="android.intent.action.MAIN"
+                android:targetClass="com.eveningoutpost.dexdrip.utils.SdcardImportExport"
                 android:targetPackage="com.eveningoutpost.dexdrip" />
         </Preference>
     </PreferenceCategory>

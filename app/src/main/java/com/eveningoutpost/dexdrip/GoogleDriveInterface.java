@@ -277,7 +277,15 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
         }
     };
 
+    public static boolean keyInitialized() {
+        if (getDriveIdentityString() != null) return true;
+        return false;
+    }
+
     private static String getCustomSyncKey() {
+        if ((prefs == null) && (GcmActivity.mContext != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(GcmActivity.mContext);
+        }
         if ((prefs != null) && (prefs.getBoolean("use_custom_sync_key", false))) {
             String mykey = prefs.getString("custom_sync_key", "");
             if ((mykey.length() > 16)) {

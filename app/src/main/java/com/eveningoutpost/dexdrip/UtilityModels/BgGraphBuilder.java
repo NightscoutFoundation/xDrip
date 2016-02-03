@@ -442,10 +442,10 @@ public class BgGraphBuilder {
 
         for (BgReading bgReading : bgReadings) {
             // jamorham special
-            if (bgReading.filtered_calculated_value != 0) {
+            if (bgReading.filtered_calculated_value > 0) {
                 rawInterpretedValues.add(new PointValue((float) ((bgReading.timestamp - 500000) / FUZZER), (float) unitized(bgReading.filtered_calculated_value)));
             }
-            if (bgReading.raw_calculated != 0 && prefs.getBoolean("interpret_raw", false)) {
+            if (bgReading.raw_calculated > 0 && prefs.getBoolean("interpret_raw", false)) {
 
                 rawInterpretedValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.raw_calculated)));
             } else if (bgReading.calculated_value >= 400) {
@@ -532,6 +532,10 @@ public class BgGraphBuilder {
             double predictedbg = 0;
             BgReading mylastbg = bgReadings.get(0);
             double lasttimestamp = 0;
+
+            // this can be optimised to oncreate and onchange
+            Profile.reloadPreferences(prefs);
+
             try {
                 if (mylastbg != null) {
                     if (doMgdl) {

@@ -659,7 +659,7 @@ public class BgReading extends Model implements ShareUploadableBg{
             jsonObject.put("timestamp", timestamp);
             jsonObject.put("age_adjusted_raw_value", age_adjusted_raw_value);
             jsonObject.put("calculated_value", calculated_value);
-            // jsonObject.put("filtered_calculated_value", calculated_value);
+            jsonObject.put("filtered_calculated_value", filtered_calculated_value);
             jsonObject.put("calibration_flag", calibration_flag);
             jsonObject.put("filtered_data", filtered_data);
             jsonObject.put("raw_calculated", raw_calculated);
