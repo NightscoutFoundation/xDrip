@@ -32,7 +32,7 @@ public class IdempotentMigrations {
         // Migrate away from old style notifications to Tzachis new Alert system
        // AlertType.CreateStaticAlerts(); // jamorham weird problem auto-calibrations
         if(prefs.getBoolean("bg_notifications", true)){
-            double highMark = Double.parseDouble(prefs.getString("highValue", "170"));
+            double highMark = Double.parseDouble(prefs.getString("highValue", "170"))+54; // make default alert not too fatiguing
             double lowMark = Double.parseDouble(prefs.getString("lowValue", "70"));
 
             boolean doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);

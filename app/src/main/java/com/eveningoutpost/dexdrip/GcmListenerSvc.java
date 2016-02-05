@@ -8,15 +8,21 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
+import com.eveningoutpost.dexdrip.utils.Preferences;
+import com.eveningoutpost.dexdrip.utils.WebAppHelper;
 
 import java.util.Date;
 
@@ -24,6 +30,8 @@ import java.util.Date;
 public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerService {
 
     private static final String TAG = "jamorham GCMlis";
+    private static SharedPreferences prefs;
+    private static byte[] staticKey;
 
     @Override
     public void onMessageReceived(String from, Bundle data) {
@@ -31,7 +39,7 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
         String message = data.getString("message");
 
         Log.d(TAG, "From: " + from);
-        Log.d(TAG, "Message: " + message);
+        if (message != null) Log.d(TAG, "Message: " + message);
 
         Bundle notification = data.getBundle("notification");
         if (notification != null) {
@@ -52,7 +60,7 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
 
             String[] tpca = from.split("/");
             if ((tpca[2] != null) && (tpca[2].length() > 30) && (!tpca[2].equals(GcmActivity.myIdentity()))) {
-                Log.e(TAG, "Received invalid channel: " + from);
+                Log.e(TAG, "Received invalid channel: " + from + " instead of: " + GcmActivity.myIdentity());
                 return;
             }
 
@@ -116,10 +124,60 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                     BgReading.bgReadingInsertFromJson(bgr);
                 }
                 Home.staticRefreshBGCharts();
+            } else if (action.equals("bfb")) {
+                initprefs();
+                String bfb[] = payload.split("\\^");
+                if (prefs.getString("dex_collection_method", "").equals("Follower")) {
+                    Log.i(TAG, "Processing backfill location packet as we are a follower");
+                    staticKey = CipherUtils.hexToBytes(bfb[1]);
+                    new WebAppHelper(new GcmListenerSvc.ServiceCallback()).execute(getString(R.string.wserviceurl) + "/joh-getsw/" + bfb[0]);
+                } else {
+                    Log.i(TAG, "Ignoring backfill location packet as we are not follower");
+                }
+            } else if (action.equals("bfr")) {
+                initprefs();
+                if (prefs.getBoolean("plus_follow_master", false)) {
+                    Log.i(TAG, "Processing backfill location request as we are master");
+                    GcmActivity.syncBGTable2();
+                }
+            } else {
+                Log.e(TAG, "Received message action we don't know about: " + action);
             }
         } else {
             // direct downstream message.
             Log.i(TAG, "Received downstream message: " + message);
+        }
+    }
+
+    public class ServiceCallback implements Preferences.OnServiceTaskCompleted {
+        @Override
+        public void onTaskCompleted(byte[] result) {
+            try {
+                if (result.length > 0) {
+                    if ((staticKey == null) || (staticKey.length != 16)) {
+                        Log.e(TAG, "Error processing security key");
+                    } else {
+                        byte[] plainbytes = JoH.decompressBytesToBytes(CipherUtils.decryptBytes(result, staticKey));
+                        staticKey = null;
+                        UserError.Log.d(TAG, "Plain bytes size: " + plainbytes.length);
+                        if (plainbytes.length > 0) {
+                            GcmActivity.processBFPbundle(new String(plainbytes, 0, plainbytes.length, "UTF-8"));
+                        } else {
+                            Log.e(TAG, "Error processing data - empty");
+                        }
+                    }
+                } else {
+                    Log.e(TAG, "Error processing - no data - try again?");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Got error in BFP callback: " + e.toString());
+            }
+        }
+    }
+
+    private void initprefs() {
+        if (prefs == null) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         }
     }
 

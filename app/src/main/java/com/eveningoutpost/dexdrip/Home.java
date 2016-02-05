@@ -90,7 +90,7 @@ public class Home extends ActivityWithMenu {
     public static String menu_name = "xDrip";
     public static boolean activityVisible = false;
     public static boolean invalidateMenu = false;
-    private static Context staticContext;
+    public static Context staticContext;
     private boolean updateStuff;
     private boolean updatingPreviewViewport = false;
     private boolean updatingChartViewport = false;
@@ -1143,6 +1143,7 @@ public class Home extends ActivityWithMenu {
     }
 
     public void doBackFillBroadcast(MenuItem myitem) {
+        DisplayQRCode.mContext = getApplicationContext();
         GcmActivity.syncBGTable2();
         toast("Starting sync to other devices");
     }

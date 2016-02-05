@@ -44,7 +44,7 @@ public class PlusSyncService extends Service {
             Log.d(TAG, "Already created");
             return;
         }
-        if (GcmActivity.token != null) return;
+        if ((GcmActivity.token != null) && (GcmActivity.mContext != null)) return;
         Log.d(TAG, "Starting jamorham xDrip-Plus sync service");
         context.startService(new Intent(context, PlusSyncService.class));
     }

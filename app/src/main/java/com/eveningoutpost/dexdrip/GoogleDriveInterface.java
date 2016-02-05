@@ -412,7 +412,7 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
 
     void startup() {
         isRunning = true;
-        if (!prefs.getBoolean("use_custom_sync_key", false)) {
+        if (!prefs.getBoolean("use_custom_sync_key", true)) {
             connectGoogleAPI();
         } else {
             Log.d(TAG, "Using custom sync key");

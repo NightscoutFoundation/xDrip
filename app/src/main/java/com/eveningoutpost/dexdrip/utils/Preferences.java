@@ -23,6 +23,7 @@ import android.text.InputFilter;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Profile;
@@ -32,6 +33,7 @@ import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PebbleSync;
+import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.nightscout.core.barcode.NSBarcodeConfig;
@@ -81,6 +83,7 @@ public class Preferences extends PreferenceActivity {
                     toast("Error processing security key");
                 } else {
                     byte[] plainbytes = JoH.decompressBytesToBytes(CipherUtils.decryptBytes(result, staticKey));
+                    staticKey=null;
                     Log.d(TAG, "Plain bytes size: " + plainbytes.length);
                     if (plainbytes.length > 0) {
                         SdcardImportExport.storePreferencesFromBytes(plainbytes, getApplicationContext());
@@ -143,6 +146,11 @@ public class Preferences extends PreferenceActivity {
                 editor.apply();
                 refreshFragments();
                 Toast.makeText(getApplicationContext(), "Loaded " + Integer.toString(changes) + " preferences from QR code", Toast.LENGTH_LONG).show();
+                PlusSyncService.clearandRestartSyncService(getApplicationContext());
+                if (prefs.getString("dex_collection_method", "").equals("Follower")) {
+                    PlusSyncService.clearandRestartSyncService(getApplicationContext());
+                    GcmActivity.requestBGsync();
+                }
             } else {
                 android.util.Log.e(TAG, "Got null prefsmap during decode");
             }
@@ -316,10 +324,22 @@ public class Preferences extends PreferenceActivity {
             return false;
         }
     };
-    private static Preference.OnPreferenceChangeListener sBindPreferenceTitleAppendToValueListener = new Preference.OnPreferenceChangeListener() {
+    private static Preference.OnPreferenceChangeListener sBindPreferenceTitleAppendToValueListenerUpdateChannel = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
+
+            boolean do_update = false;
+            // detect not first run
+            if (preference.getTitle().toString().contains("("))
+            {
+                do_update=true;
+            }
+
             preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z]+\\)$", "") + "  (" + value.toString() + ")");
+            if (do_update) {
+                UpdateActivity.last_check_time = 0;
+                UpdateActivity.checkForAnUpdate(preference.getContext());
+            }
             return true;
         }
     };
@@ -342,7 +362,7 @@ public class Preferences extends PreferenceActivity {
 
     private static void do_format_insulin_sensitivity(Preference preference, SharedPreferences prefs, boolean from_change, String newValue) {
         if (newValue == null) {
-            newValue = prefs.getString("profile_insulin_sensitivity_default", "3");
+            newValue = prefs.getString("profile_insulin_sensitivity_default", "54");
         }
         try {
             Profile.setSensitivityDefault(Double.parseDouble(newValue));
@@ -372,10 +392,10 @@ public class Preferences extends PreferenceActivity {
         }
     }
 
-    private static void bindPreferenceTitleAppendToValue(Preference preference) {
+    private static void bindPreferenceTitleAppendToValueUpdateChannel(Preference preference) {
         try {
-            preference.setOnPreferenceChangeListener(sBindPreferenceTitleAppendToValueListener);
-            sBindPreferenceTitleAppendToValueListener.onPreferenceChange(preference,
+            preference.setOnPreferenceChangeListener(sBindPreferenceTitleAppendToValueListenerUpdateChannel);
+            sBindPreferenceTitleAppendToValueListenerUpdateChannel.onPreferenceChange(preference,
                     PreferenceManager
                             .getDefaultSharedPreferences(preference.getContext())
                             .getString(preference.getKey(), ""));
@@ -449,7 +469,7 @@ public class Preferences extends PreferenceActivity {
             addPreferencesFromResource(R.xml.xdrip_plus_prefs);
 
 
-            bindPreferenceTitleAppendToValue(findPreference("update_channel"));
+            bindPreferenceTitleAppendToValueUpdateChannel(findPreference("update_channel"));
 
             final Preference profile_carb_ratio_default = findPreference("profile_carb_ratio_default");
             profile_carb_ratio_default.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -555,7 +575,7 @@ public class Preferences extends PreferenceActivity {
                     try {
                         Double highVal = Double.parseDouble(prefs.getString("highValue", "0"));
                         Double lowVal = Double.parseDouble(prefs.getString("lowValue", "0"));
-                        Double default_insulin_sensitivity = Double.parseDouble(prefs.getString("profile_insulin_sensitivity_default", "3"));
+                        Double default_insulin_sensitivity = Double.parseDouble(prefs.getString("profile_insulin_sensitivity_default", "54"));
                         static_units = newValue.toString();
                         if (newValue.toString().equals("mgdl")) {
                             if (highVal < 36) {
@@ -736,6 +756,10 @@ public class Preferences extends PreferenceActivity {
                     }
                     if (preference.getKey().equals("dex_collection_method")) {
                         CollectionServiceStarter.restartCollectionService(preference.getContext(), (String) newValue);
+                        if (newValue.equals("Follower"))
+                        {
+                            GcmActivity.requestBGsync();
+                        }
                     } else {
                         CollectionServiceStarter.restartCollectionService(preference.getContext());
                     }

@@ -30,7 +30,7 @@ public class UpdateActivity extends Activity {
     private static final String autoUpdatePrefsName = "auto_update_download";
     private static final String TAG = "jamorham update";
     private static OkHttpClient httpClient = null;
-    private static double last_check_time = 0;
+    public static double last_check_time = 0;
     private static SharedPreferences prefs;
     private static int versionnumber = 0;
     private static int newversion = 0;

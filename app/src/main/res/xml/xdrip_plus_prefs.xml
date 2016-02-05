@@ -77,7 +77,7 @@
                     android:summary="Grams of Carbohydrate 1 Unit covers"
                     android:title="Carb Ratio" />
                 <EditTextPreference
-                    android:defaultValue="3"
+                    android:defaultValue="54"
                     android:key="profile_insulin_sensitivity_default"
                     android:summary="Glucose drop for 1 Unit"
                     android:title="Insulin Sensitivity" />
@@ -103,7 +103,7 @@
         </PreferenceScreen>
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="use_custom_sync_key"
             android:summary="Key is used instead of Google account"
             android:title="Sync using custom security key" />

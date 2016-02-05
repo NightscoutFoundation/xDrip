@@ -11,8 +11,12 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.Services.PlusSyncService;
+import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.gcm.PeriodicTask;
+import com.google.android.gms.gcm.Task;
 import com.google.android.gms.iid.InstanceID;
 
 import java.io.IOException;
@@ -47,7 +51,24 @@ public class RegistrationIntentService extends IntentService {
     }
 
     private void sendRegistrationToServer(String token) {
-    }
+        try {
+            Log.d(TAG, "Scheduling tasks");
+            PeriodicTask task = new PeriodicTask.Builder()
+                    .setService(TaskService.class)
+                    .setTag(GcmActivity.TASK_TAG_UNMETERED)
+                    .setRequiredNetwork(Task.NETWORK_STATE_UNMETERED)
+                    .setPeriod(7200L)
+                    .build();
+
+            GcmNetworkManager.getInstance(this).cancelAllTasks(TaskService.class);
+            GcmNetworkManager.getInstance(this).schedule(task);
+            PlusSyncService.startSyncService(getApplicationContext());
+            GcmActivity.queueCheckOld(getApplicationContext());
+        } catch (Exception e)
+        {
+            Log.e(TAG,"Exception in sendRegistration: "+e.toString());
+        }
+        }
 
     private void subscribeTpcs(String token) throws IOException {
         GcmPubSub pubSub = GcmPubSub.getInstance(this);

@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -9,6 +10,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.GcmActivity;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.google.gson.Gson;
@@ -30,8 +33,10 @@ public class DisplayQRCode extends Activity {
 
     public static final String qrmarker = "xdpref:";
     private static final String TAG = "jamorham qr";
-    private String send_url;
+    private static String send_url;
     private SharedPreferences prefs;
+    public static Context mContext;
+    private static DisplayQRCode mInstance;
     private Map<String, String> prefsMap = new HashMap<String, String>();
 
     public static Map<String, String> decodeString(String data) {
@@ -40,7 +45,7 @@ public class DisplayQRCode extends Activity {
                 data = data.substring(qrmarker.length());
                 Log.d(TAG, "String to uncompress: " + data);
                 data = JoH.uncompressString(data);
-                Log.d(TAG, "Json after decompression: " + data);
+                //Log.d(TAG, "Json after decompression: " + data);
                 Map<String, String> mymap = new Gson().fromJson(data, new TypeToken<HashMap<String, String>>() {
                 }.getType());
                 return mymap;
@@ -59,8 +64,15 @@ public class DisplayQRCode extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        send_url = getString(R.string.wserviceurl) + "/joh-setsw";
+        mContext = getApplicationContext();
+        mInstance = this;
         setContentView(R.layout.activity_display_qrcode);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mInstance = null; // GC?
+        super.onDestroy();
     }
 
     public void xdripPlusSyncSettings(View view) {
@@ -94,9 +106,8 @@ public class DisplayQRCode extends Activity {
         showQRCode();
     }
 
-    public void allSettings(View view) {
-        prefsMap.clear();
-        byte[] result = SdcardImportExport.getPreferencesFileAsBytes(getApplicationContext());
+    public static void uploadBytes(byte[] result, final int callback_option) {
+
         if ((result != null) && (result.length > 0)) {
             final byte[] mykey = CipherUtils.getRandomKey();
 
@@ -113,6 +124,7 @@ public class DisplayQRCode extends Activity {
                 toast("Preparing");
 
                 try {
+                    send_url = mContext.getString(R.string.wserviceurl) + "/joh-setsw";
                     final String bbody = Base64.encodeToString(crypted_data, Base64.NO_WRAP);
                     Log.d(TAG, "Upload Body size: " + bbody.length());
                     final RequestBody formBody = new FormEncodingBuilder()
@@ -127,13 +139,29 @@ public class DisplayQRCode extends Activity {
                                         .url(send_url)
                                         .post(formBody)
                                         .build();
-                                Log.i(TAG, "Uploading preference data");
+                                Log.i(TAG, "Uploading data");
                                 Response response = client.newCall(request).execute();
                                 if (response.isSuccessful()) {
                                     final String reply = response.body().string();
                                     Log.d(TAG, "Got success response length: " + reply.length() + " " + reply);
                                     if ((reply.length() == 35) && (reply.startsWith("ID:"))) {
-                                        display_final_all_settings_qr_code(reply.substring(3, 35), mykey);
+                                        switch (callback_option) {
+                                            case 1: {
+                                                if (mInstance != null) {
+                                                    mInstance.display_final_all_settings_qr_code(reply.substring(3, 35), mykey);
+                                                } else {
+                                                    Log.e(TAG, "mInstance null");
+                                                }
+                                                break;
+                                            }
+                                            case 2: {
+                                                GcmActivity.backfillLink(reply.substring(3, 35), JoH.bytesToHex(mykey));
+                                                break;
+                                            }
+                                            default: {
+                                                toast("Invalid callback option on upload");
+                                            }
+                                        }
                                     } else {
                                         toast(reply);
                                     }
@@ -154,6 +182,16 @@ public class DisplayQRCode extends Activity {
             } else {
                 toast("Something went wrong preparing the settings");
             }
+        } else {
+            toast("Could not read data somewhere");
+        }
+    }
+
+    public void allSettings(View view) {
+        prefsMap.clear();
+        byte[] result = SdcardImportExport.getPreferencesFileAsBytes(getApplicationContext());
+        if ((result != null) && (result.length > 0)) {
+            uploadBytes(result, 1);
         } else {
             toast("Could not read preferences file");
         }
@@ -188,23 +226,36 @@ public class DisplayQRCode extends Activity {
 
     public void closeNow(View view) {
         try {
+            mInstance = null;
             finish();
         } catch (Exception e) {
             Log.d(TAG, "Error finishing " + e.toString());
         }
     }
 
-    private void toast(final String msg) {
+    public static void static_toast(final Context context, final String msg) {
         try {
-            runOnUiThread(new Runnable() {
+            Activity activity = (Activity) context;
+            activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
                 }
             });
             Log.d(TAG, "Toast msg: " + msg);
         } catch (Exception e) {
             Log.e(TAG, "Couldn't display toast: " + msg);
+        }
+    }
+
+    private static void toast(final String msg) {
+        {
+            if (mContext != null) {
+                static_toast(mContext, msg);
+            } else {
+                Log.e(TAG, "mContext is null");
+                Home.toaststatic(msg); // fallback
+            }
         }
     }
 

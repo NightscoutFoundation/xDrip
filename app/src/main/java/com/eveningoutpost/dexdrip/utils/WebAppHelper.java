@@ -15,6 +15,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class WebAppHelper extends AsyncTask<String, Integer, Integer> {
 
+    // TODO probably migrate uploader here as well
+
     private final String TAG = "jamorham webapphelper";
     private final OkHttpClient client = new OkHttpClient();
     private Preferences.OnServiceTaskCompleted listener;

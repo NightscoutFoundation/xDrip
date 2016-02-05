@@ -16,11 +16,13 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
+import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +34,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class GcmActivity extends Activity {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    public static final String TASK_TAG_CHARGING = "charging";
+    public static final String TASK_TAG_UNMETERED = "unmetered";
     private static final String TAG = "jamorham gcmactivity";
     public static AtomicInteger msgId = new AtomicInteger(1);
     public static String token = null;
@@ -55,18 +59,18 @@ public class GcmActivity extends Activity {
                 break;
             }
         }
-        queueCheckOld();
+        queueCheckOld(mContext);
     }
 
-    public static synchronized void queueCheckOld() {
+    public static synchronized void queueCheckOld(Context context) {
 
-        if (mContext == null) {
+        if (context == null) {
             Log.e(TAG, "Can't process old queue as null context");
             return;
         }
 
         final double MAX_QUEUE_AGE = (5 * 60 * 60 * 1000); // 5 hours
-        final double MIN_QUEUE_AGE = (60 * 1000); // 1 minute
+        final double MIN_QUEUE_AGE = (0 * 60 * 1000); // minutes
         final double MAX_RESENT = 10;
         Double timenow = JoH.ts();
         for (GCM_data datum : gcm_queue) {
@@ -78,13 +82,17 @@ public class GcmActivity extends Activity {
                 try {
                     Log.i(TAG, "Resending unacknowledged queue item: " + datum.bundle.getString("action") + datum.bundle.getString("payload"));
                     datum.resent++;
-                    GoogleCloudMessaging.getInstance(mContext).send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), datum.bundle);
+                    GoogleCloudMessaging.getInstance(context).send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), datum.bundle);
                 } catch (Exception e) {
                     Log.e(TAG, "Got exception during resend: " + e.toString());
                 }
                 break;
             }
         }
+    }
+
+    private static String sendMessage(final String action, final String payload) {
+        return sendMessage(myIdentity(), action, payload);
     }
 
     private static String sendMessage(final String identity, final String action, final String payload) {
@@ -99,6 +107,10 @@ public class GcmActivity extends Activity {
 
     public static void syncBGReading(BgReading bgReading) {
         GcmActivity.sendMessage(GcmActivity.myIdentity(), "bgs", bgReading.toJSON());
+    }
+
+    public static void requestBGsync() {
+        GcmActivity.sendMessage("bfr", "");
     }
 
     public static void syncBGTable2() {
@@ -117,50 +129,24 @@ public class GcmActivity extends Activity {
                     mypacket = mypacket + myrecord;
                 }
                 Log.d(TAG, "Total BGreading sync packet size: " + mypacket.length());
+                if (DisplayQRCode.mContext == null) DisplayQRCode.mContext = mContext;
+                DisplayQRCode.uploadBytes(mypacket.getBytes(Charset.forName("UTF-8")), 2);
             }
         }.start();
     }
 
-    public static void syncBGTable() {
-        if (runningBGSync) {
-            Log.i(TAG, "Already syncing BG");
-            Home.toaststatic("Already running a background sync");
-            return;
+    // callback function
+    public static void backfillLink(String id, String key) {
+        sendMessage("bfb", id + "^" + key);
+        DisplayQRCode.mContext = null;
+    }
+
+    public static void processBFPbundle(String bundle) {
+        String[] bundlea = bundle.split("\\^");
+        for (String bgr : bundlea) {
+            BgReading.bgReadingInsertFromJson(bgr);
         }
-        new Thread() {
-            @Override
-            public void run() {
-                runningBGSync = true;
-                try {
-                    final List<BgReading> bgReadings = BgReading.latestForGraph(300, JoH.ts() - (24 * 60 * 60 * 1000));
-                    String mypacket = "";
-                    int maxrecords = bgReadings.size();
-                    int counter = 1;
-                    int delay = 3000;
-                    for (BgReading bgReading : bgReadings) {
-                        counter++;
-                        String myrecord = bgReading.toJSON();
-                        if (mypacket.length() > 0) {
-                            mypacket = mypacket + "^";
-                        }
-                        mypacket = mypacket + myrecord;
-                        if ((mypacket.length() > 800) || (counter > maxrecords)) {
-                            Log.d(TAG, "Outbound BG sync record: size: " + mypacket.length() + " / " + mypacket);
-                            sendMessage(myIdentity(), "bgs", mypacket);
-                            mypacket = "";
-                            Thread.sleep(delay);
-                            if (delay < 60000) {
-                                delay = delay + 300;
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "Got exception during Sync bg table thread: " + e.toString());
-                } finally {
-                    runningBGSync = false;
-                }
-            }
-        }.start();
+        Home.staticRefreshBGCharts();
     }
 
     public static void pushTreatmentAsync(final Treatments thistreatment) {
@@ -213,28 +199,28 @@ public class GcmActivity extends Activity {
     private static String sendMessageNow(String identity, String action, String payload) {
 
         Log.i(TAG, "Sendmessage called: " + identity + " " + action + " " + payload);
-        if (mContext == null) {
-            Log.e(TAG, "mContext is null cannot sendMessage");
-            return "";
-        }
-        if (identity == null) {
-            Log.e(TAG, "identity is null cannot sendMessage");
-            return "";
-        }
-        final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(mContext);
         String msg;
-        if (token == null) {
-            Log.e(TAG, "GCM token is null - cannot sendMessage");
-            return "";
-        }
         try {
             Bundle data = new Bundle();
             data.putString("action", action);
             data.putString("identity", identity);
-            // TODO queue backlog handling
             data.putString("payload", CipherUtils.encryptString(payload));
 
+
+            if (mContext == null) {
+                Log.e(TAG, "mContext is null cannot sendMessage");
+                return "";
+            }
+            if (identity == null) {
+                Log.e(TAG, "identity is null cannot sendMessage");
+                return "";
+            }
             gcm_queue.add(new GCM_data(data));
+            final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(mContext);
+            if (token == null) {
+                Log.e(TAG, "GCM token is null - cannot sendMessage");
+                return "";
+            }
             gcm.send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), data);
 
             msg = "Sent message OK";

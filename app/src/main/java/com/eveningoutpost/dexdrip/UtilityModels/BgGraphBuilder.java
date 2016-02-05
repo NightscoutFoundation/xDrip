@@ -419,7 +419,7 @@ public class BgGraphBuilder {
     }
 
     private void addBgReadingValues() {
-        UserError.Log.i(TAG, "ADD BG READINGS START");
+       //UserError.Log.i(TAG, "ADD BG READINGS START");
         rawInterpretedValues.clear();
         iobValues.clear();
         activityValues.clear();
@@ -553,67 +553,71 @@ public class BgGraphBuilder {
             }
             long fuzzed_timestamp = (long) end_time; // initial value in case there are no iob records
 
-            for (Iob iob : iobinfo) {
+            if (iobinfo != null) {
+                for (Iob iob : iobinfo) {
 
-                double activity = iob.activity;
-                if ((iob.iob > 0) || (iob.cob > 0)) {
-                    fuzzed_timestamp = iob.timestamp / FUZZER;
-                    if (iob.iob > Profile.minimum_shown_iob) {
-                        double height = iob.iob * iobscale;
-                        if (height > highMark) height = highMark;
-                        PointValue pv = new PointValue((float) fuzzed_timestamp, (float) height);
-                        iobValues.add(pv);
-                        double activityheight = iob.jActivity * 3; // currently scaled by profile
-                        if (activityheight > highMark) activityheight = highMark;
-                        PointValue av = new PointValue((float) fuzzed_timestamp, (float) activityheight);
-                        activityValues.add(av);
-                    }
-
-                    if (iob.cob > 0) {
-                        double height = iob.cob * cobscale;
-                        if (height > highMark) height = highMark;
-                        PointValue pv = new PointValue((float) fuzzed_timestamp, (float) height);
-                        Log.d(TAG, "Cob total record: " + JoH.qs(height) + " " + JoH.qs(iob.cob) + " " + Float.toString(pv.getY()) + " @ timestamp: " + Long.toString(iob.timestamp));
-                        cobValues.add(pv); // warning should not be hardcoded
-                    }
-
-                    // do we actually need to calculate this within the loop - can we use only the last datum?
-                    if (fuzzed_timestamp > (lasttimestamp)) {
-                        Log.d(TAG, "Processing prediction: before: " + JoH.qs(predictedbg) + " activity: " + JoH.qs(activity) + " jcarbimpact: " + JoH.qs(iob.jCarbImpact));
-                        predictedbg -= iob.jActivity; // lower bg by current insulin activity
-                        predictedbg += iob.jCarbImpact;
-                        // we should pull in actual graph upper and lower limits here
-                        if ((predictedbg < highMark) && (predictedbg > 0)) {
-                            PointValue zv = new PointValue((float) fuzzed_timestamp, (float) predictedbg);
-                            predictedBgValues.add(zv);
+                    double activity = iob.activity;
+                    if ((iob.iob > 0) || (iob.cob > 0)) {
+                        fuzzed_timestamp = iob.timestamp / FUZZER;
+                        if (iob.iob > Profile.minimum_shown_iob) {
+                            double height = iob.iob * iobscale;
+                            if (height > highMark) height = highMark;
+                            PointValue pv = new PointValue((float) fuzzed_timestamp, (float) height);
+                            iobValues.add(pv);
+                            double activityheight = iob.jActivity * 3; // currently scaled by profile
+                            if (activityheight > highMark) activityheight = highMark;
+                            PointValue av = new PointValue((float) fuzzed_timestamp, (float) activityheight);
+                            activityValues.add(av);
                         }
-                    }
-                    if (fuzzed_timestamp > end_time) {
-                        predictivehours = (int) (((fuzzed_timestamp - end_time) * FUZZER) / (1000 * 60 * 60)) + 1; // round up to nearest future hour - timestamps in minutes here
-                    } else {
-                        if ((fuzzed_timestamp == end_time - 4) && (iob.iob > 0)) {
-                            // show current iob
-                            double position = 12.4 * bgScale; // this is for mmol - needs generic for mg/dl
-                            if (Math.abs(predictedbg - position) < (2 * bgScale)) {
-                                position = 7.0 * bgScale;
+
+                        if (iob.cob > 0) {
+                            double height = iob.cob * cobscale;
+                            if (height > highMark) height = highMark;
+                            PointValue pv = new PointValue((float) fuzzed_timestamp, (float) height);
+                            Log.d(TAG, "Cob total record: " + JoH.qs(height) + " " + JoH.qs(iob.cob) + " " + Float.toString(pv.getY()) + " @ timestamp: " + Long.toString(iob.timestamp));
+                            cobValues.add(pv); // warning should not be hardcoded
+                        }
+
+                        // do we actually need to calculate this within the loop - can we use only the last datum?
+                        if (fuzzed_timestamp > (lasttimestamp)) {
+                            Log.d(TAG, "Processing prediction: before: " + JoH.qs(predictedbg) + " activity: " + JoH.qs(activity) + " jcarbimpact: " + JoH.qs(iob.jCarbImpact));
+                            predictedbg -= iob.jActivity; // lower bg by current insulin activity
+                            predictedbg += iob.jCarbImpact;
+                            // we should pull in actual graph upper and lower limits here
+                            if ((predictedbg < highMark) && (predictedbg > 0)) {
+                                PointValue zv = new PointValue((float) fuzzed_timestamp, (float) predictedbg);
+                                predictedBgValues.add(zv);
                             }
-
-                            PointValue iv = new PointValue((float) fuzzed_timestamp, (float) position);
-                            DecimalFormat df = new DecimalFormat("#");
-                            df.setMaximumFractionDigits(2);
-                            df.setMinimumIntegerDigits(1);
-                            iv.setLabel("IoB: " + df.format(iob.iob));
-                            annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
                         }
+                        if (fuzzed_timestamp > end_time) {
+                            predictivehours = (int) (((fuzzed_timestamp - end_time) * FUZZER) / (1000 * 60 * 60)) + 1; // round up to nearest future hour - timestamps in minutes here
+                        } else {
+                            if ((fuzzed_timestamp == end_time - 4) && (iob.iob > 0)) {
+                                // show current iob
+                                double position = 12.4 * bgScale; // this is for mmol - needs generic for mg/dl
+                                if (Math.abs(predictedbg - position) < (2 * bgScale)) {
+                                    position = 7.0 * bgScale;
+                                }
+
+                                PointValue iv = new PointValue((float) fuzzed_timestamp, (float) position);
+                                DecimalFormat df = new DecimalFormat("#");
+                                df.setMaximumFractionDigits(2);
+                                df.setMinimumIntegerDigits(1);
+                                iv.setLabel("IoB: " + df.format(iob.iob));
+                                annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
+                            }
+                        }
+
                     }
-
                 }
-
+                Log.d(TAG, "Size of iob: " + Integer.toString(iobinfo.size()) + " Predictive hours: " + Integer.toString(predictivehours)
+                        + " Predicted end game change: " + JoH.qs(predictedbg - mylastbg.calculated_value_mmol())
+                        + " Start bg: " + JoH.qs(mylastbg.calculated_value_mmol()) + " Predicted: " + JoH.qs(predictedbg));
+                // calculate bolus or carb adjustment - these should have granularity for injection / pump and thresholds
+            } else {
+                Log.d(TAG, "iobinfo was null");
             }
-            Log.d(TAG, "Size of iob: " + Integer.toString(iobinfo.size()) + " Predictive hours: " + Integer.toString(predictivehours)
-                    + " Predicted end game change: " + JoH.qs(predictedbg - mylastbg.calculated_value_mmol())
-                    + " Start bg: " + JoH.qs(mylastbg.calculated_value_mmol()) + " Predicted: " + JoH.qs(predictedbg));
-            // calculate bolus or carb adjustment - these should have granularity for injection / pump and thresholds
+
             double[] evaluation;
             if (doMgdl)
             {
