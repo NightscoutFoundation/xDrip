@@ -12,21 +12,19 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 
-import com.eveningoutpost.dexdrip.GcmActivity;
-import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Services.PlusSyncService;
+import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.SyncService;
-import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
-import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
+import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
+import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.xDripWidget;
 
 import java.util.List;
@@ -159,10 +157,6 @@ public class BgSendQueue extends Model {
 
             if (prefs.getBoolean("plus_follow_master",false))
             {
-                if (GcmActivity.mContext == null)
-                {
-                    PlusSyncService.startSyncService(context);
-                }
                 GcmActivity.syncBGReading(bgReading);
             }
 

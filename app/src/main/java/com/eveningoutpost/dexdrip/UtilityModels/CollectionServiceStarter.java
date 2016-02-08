@@ -12,6 +12,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.DailyIntentService;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
+import com.eveningoutpost.dexdrip.Services.DoNothingService;
 import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
@@ -27,6 +28,9 @@ public class CollectionServiceStarter {
 
     private final static String TAG = CollectionServiceStarter.class.getSimpleName();
 
+    public static boolean isFollower(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getString("dex_collection_method", "").equals("Follower");
+    }
 
     public static boolean isWifiandBTWixel(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -77,6 +81,8 @@ public class CollectionServiceStarter {
     }
     public static boolean isWifiWixel(String collection_method) { return collection_method.equals("WifiWixel"); }
 
+    public static boolean isFollower(String collection_method) { return collection_method.equals("Follower"); }
+
     public static void newStart(Context context) {
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
         collectionServiceStarter.start(context);
@@ -86,24 +92,28 @@ public class CollectionServiceStarter {
         mContext = context;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
 
-        if(isBTWixel(collection_method)||isDexbridgeWixel(collection_method)) {
+        if (isBTWixel(collection_method) || isDexbridgeWixel(collection_method)) {
             Log.d("DexDrip", "Starting bt wixel collector");
             stopWifWixelThread();
             stopBtShareService();
+            stopFollowerThread();
             startBtWixelService();
-        } else if(isWifiWixel(collection_method)){
+        } else if (isWifiWixel(collection_method)) {
             Log.d("DexDrip", "Starting wifi wixel collector");
             stopBtWixelService();
+            stopFollowerThread();
             stopBtShareService();
             startWifWixelThread();
-        } else if(isBTShare(collection_method)) {
+        } else if (isBTShare(collection_method)) {
             Log.d("DexDrip", "Starting bt share collector");
             stopBtWixelService();
+            stopFollowerThread();
             stopWifWixelThread();
             startBtShareService();
         } else if (isWifiandBTWixel(context)) {
             Log.d("DexDrip", "Starting wifi and bt wixel collector");
             stopBtWixelService();
+            stopFollowerThread();
             stopWifWixelThread();
             stopBtShareService();
             // start both
@@ -112,8 +122,13 @@ public class CollectionServiceStarter {
             Log.d("DexDrip", "Starting bt wixel collector second");
             startBtWixelService();
             Log.d("DexDrip", "Started wifi and bt wixel collector");
+        } else if (isFollower(collection_method)) {
+            stopWifWixelThread();
+            stopBtShareService();
+            stopBtWixelService();
+            startFollowerThread();
         }
-        if(prefs.getBoolean("broadcast_to_pebble", false)){
+        if (prefs.getBoolean("broadcast_to_pebble", false)) {
             startPebbleSyncService();
         }
         startSyncService();
@@ -150,14 +165,17 @@ public class CollectionServiceStarter {
         collectionServiceStarter.stopBtShareService();
         collectionServiceStarter.stopBtWixelService();
         collectionServiceStarter.stopWifWixelThread();
+        collectionServiceStarter.stopFollowerThread();
         collectionServiceStarter.start(context);
     }
 
     public static void restartCollectionService(Context context, String collection_method) {
+        Log.d(TAG,"restartCollectionService: "+collection_method);
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
         collectionServiceStarter.stopBtShareService();
         collectionServiceStarter.stopBtWixelService();
         collectionServiceStarter.stopWifWixelThread();
+        collectionServiceStarter.stopFollowerThread();
         collectionServiceStarter.start(context, collection_method);
     }
 
@@ -209,6 +227,16 @@ public class CollectionServiceStarter {
     private void stopWifWixelThread() {
         Log.d(TAG, "stopping wifi wixel service");
         mContext.stopService(new Intent(mContext, WifiCollectionService.class));
+    }
+
+    private void startFollowerThread() {
+        Log.d(TAG, "starting follower service");
+        mContext.startService(new Intent(mContext, DoNothingService.class));
+    }
+
+    private void stopFollowerThread() {
+        Log.d(TAG, "stopping follower service");
+        mContext.stopService(new Intent(mContext, DoNothingService.class));
     }
 
 }

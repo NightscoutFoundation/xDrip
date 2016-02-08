@@ -352,7 +352,7 @@ public class Notifications extends IntentService {
         mContext = context;
         ReadPerfs(mContext);
         Intent intent = new Intent(mContext, Home.class);
-        List<BgReading> lastReadings = BgReading.latest(2);
+        List<BgReading> lastReadings = BgReading.latest(2,true); // ok for notification to show reading from any last sensor
         BgReading lastReading = null;
         if (lastReadings != null && lastReadings.size() >= 2) {
             lastReading = lastReadings.get(0);
@@ -377,7 +377,7 @@ public class Notifications extends IntentService {
                 .setUsesChronometer(false);
         if (lastReading != null) {
             b.setWhen(lastReading.timestamp);
-            String deltaString = "Delta: " + bgGraphBuilder.unitizedDeltaString(true, true);
+            String deltaString = "Delta: " + bgGraphBuilder.unitizedDeltaString(true, true, true); // permissive mode always for follower
             b.setContentText(deltaString);
             iconBitmap = new BgSparklineBuilder(mContext)
                     .setHeight(64)

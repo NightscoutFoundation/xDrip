@@ -347,10 +347,17 @@ public class Calibration extends Model {
         Calibration calibration = new Calibration();
         Sensor sensor = Sensor.currentSensor();
 
+        boolean is_follower = prefs.getString("dex_collection_method", "").equals("Follower");
+        if ((sensor == null)
+                && (is_follower)) {
+            Sensor.create(Math.round(JoH.ts())); // no sensor? no problem, create virtual one for follower
+            sensor = Sensor.currentSensor();
+        }
+
         if (sensor != null) {
             BgReading bgReading = null;
             if (timeoffset == 0) {
-                bgReading = BgReading.last();
+                bgReading = BgReading.last(is_follower);
             } else {
                 // get closest bg reading we can find with a cut off at 15 minutes max time
                 bgReading = BgReading.getForPreciseTimestamp(new Date().getTime() - (timeoffset * 1000), (15 * 60 * 1000));
@@ -359,11 +366,11 @@ public class Calibration extends Model {
                 calibration.sensor = sensor;
                 calibration.bg = bg;
                 calibration.check_in = false;
-                calibration.timestamp = new Date().getTime() -(timeoffset*1000); //  potential historical bg readings
+                calibration.timestamp = new Date().getTime() - (timeoffset * 1000); //  potential historical bg readings
                 calibration.raw_value = bgReading.raw_data;
                 calibration.adjusted_raw_value = bgReading.age_adjusted_raw_value;
                 calibration.sensor_uuid = sensor.uuid;
-                calibration.slope_confidence = Math.min(Math.max(((4 - Math.abs((bgReading.calculated_value_slope) * 60000))/4), 0), 1);
+                calibration.slope_confidence = Math.min(Math.max(((4 - Math.abs((bgReading.calculated_value_slope) * 60000)) / 4), 0), 1);
 
                 double estimated_raw_bg = BgReading.estimated_raw_bg(new Date().getTime());
                 calibration.raw_timestamp = bgReading.timestamp;
@@ -381,13 +388,18 @@ public class Calibration extends Model {
                 bgReading.calibration = calibration;
                 bgReading.calibration_flag = true;
                 bgReading.save();
-                BgSendQueue.handleNewBgReading(bgReading, "update", context);
 
-                calculate_w_l_s();
-                adjustRecentBgReadings();
-                CalibrationSendQueue.addToQueue(calibration, context);
-                context.startService(new Intent(context, Notifications.class));
-                Calibration.requestCalibrationIfRangeTooNarrow();
+                if (!is_follower) {
+                    BgSendQueue.handleNewBgReading(bgReading, "update", context);
+
+                    calculate_w_l_s();
+                    adjustRecentBgReadings();
+                    CalibrationSendQueue.addToQueue(calibration, context);
+                    context.startService(new Intent(context, Notifications.class));
+                    Calibration.requestCalibrationIfRangeTooNarrow();
+                } else {
+                    Log.d(TAG,"Follower so not processing calibration deeply");
+                }
             } else {
                 // we couldn't get a reading close enough to the calibration timestamp
                 Toast.makeText(context, "No close enough reading for Calib (15 min)", Toast.LENGTH_LONG).show();

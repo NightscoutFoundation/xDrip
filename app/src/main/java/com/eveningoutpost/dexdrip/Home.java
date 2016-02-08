@@ -51,6 +51,7 @@ import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
+import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
@@ -86,7 +87,7 @@ import lecho.lib.hellocharts.view.PreviewLineChartView;
 
 
 public class Home extends ActivityWithMenu {
-    static String TAG = "jamorham: " + Home.class.getName();
+    static String TAG = "jamorham: " + Home.class.getSimpleName();
     public static String menu_name = "xDrip";
     public static boolean activityVisible = false;
     public static boolean invalidateMenu = false;
@@ -294,7 +295,7 @@ public class Home extends ActivityWithMenu {
         });
 
         activityVisible = true;
-        PlusSyncService.startSyncService(getApplicationContext());
+        PlusSyncService.startSyncService(getApplicationContext(),"HomeOnCreate");
     }
 
     private boolean hideTreatmentButtonsIfAllDone() {
@@ -721,7 +722,14 @@ public class Home extends ActivityWithMenu {
         if (activityVisible) {
             Intent updateIntent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA);
             staticContext.sendBroadcast(updateIntent);
+        } else {
+            //Log.d(TAG,"Activity invisible so no static refresh");
+            if (PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).getString("dex_collection_method", "").equals("Follower"))
+            {
+                xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class));
+            }
         }
+
     }
 
     @Override
@@ -752,9 +760,9 @@ public class Home extends ActivityWithMenu {
             invalidateOptionsMenu();
             invalidateMenu=false;
         }
-
-        updateCurrentBgInfo("generic on resume");
         activityVisible = true;
+        updateCurrentBgInfo("generic on resume");
+
     }
 
     private void setupCharts() {
@@ -849,6 +857,11 @@ public class Home extends ActivityWithMenu {
 
     private void updateCurrentBgInfo(String source) {
         Log.d(TAG,"updateCurrentBgInfo from: "+source);
+        if (!activityVisible)
+        {
+            Log.d(TAG,"Display not visible - not updating chart");
+            return;
+        }
         setupCharts();
         final TextView notificationText = (TextView) findViewById(R.id.notices);
         if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
@@ -873,6 +886,7 @@ public class Home extends ActivityWithMenu {
         } else if (prefs.getString("dex_collection_method","").equals("Follower"))
         {
             displayCurrentInfo();
+            getApplicationContext().startService(new Intent(getApplicationContext(), Notifications.class));
         }
         if (prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
             notificationText.append("\n ALL ALERTS CURRENTLY DISABLED");
@@ -1064,10 +1078,10 @@ public class Home extends ActivityWithMenu {
             currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
-            if (notificationText.getText().length()==0){
+            if (notificationText.getText().length() == 0) {
                 notificationText.setTextColor(Color.WHITE);
             }
-            final boolean bg_from_filtered = prefs.getBoolean("bg_from_filtered",false);
+            final boolean bg_from_filtered = prefs.getBoolean("bg_from_filtered", false);
             if (!predictive) {
                 if (bg_from_filtered) {
                     currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -1075,9 +1089,9 @@ public class Home extends ActivityWithMenu {
                 } else {
                     estimate = lastBgReading.calculated_value;
                 }
-                    String stringEstimate = bgGraphBuilder.unitized_string(estimate);
+                String stringEstimate = bgGraphBuilder.unitized_string(estimate);
                 String slope_arrow = lastBgReading.slopeArrow();
-                if ((lastBgReading.hide_slope)||(bg_from_filtered)) {
+                if ((lastBgReading.hide_slope) || (bg_from_filtered)) {
                     slope_arrow = "";
                 }
                 currentBgValueText.setText(stringEstimate + " " + slope_arrow);
@@ -1087,20 +1101,25 @@ public class Home extends ActivityWithMenu {
                 currentBgValueText.setText(stringEstimate + " " + BgReading.activeSlopeArrow());
             }
         }
-        int minutes = (int)(System.currentTimeMillis() - lastBgReading.timestamp) / (60 * 1000);
-        notificationText.append("\n" + minutes + ((minutes==1)?" Minute ago":" Minutes ago"));
-        List<BgReading> bgReadingList = BgReading.latest(2);
-        if(bgReadingList != null && bgReadingList.size() == 2) {
+        int minutes = (int) (System.currentTimeMillis() - lastBgReading.timestamp) / (60 * 1000);
+        notificationText.append("\n" + minutes + ((minutes == 1) ? " Minute ago" : " Minutes ago"));
+
+        boolean is_follower = prefs.getString("dex_collection_method", "").equals("Follower");
+
+        // do we actually need to do this query here if we again do it in unitizedDeltaString
+        List<BgReading> bgReadingList = BgReading.latest(2, is_follower);
+        if (bgReadingList != null && bgReadingList.size() == 2) {
             // same logic as in xDripWidget (refactor that to BGReadings to avoid redundancy / later inconsistencies)?
-            if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+            if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
                 notificationText.append("  ");
             } else {
                 notificationText.append("\n");
             }
+
             notificationText.append(
-                    bgGraphBuilder.unitizedDeltaString(true, true));
+                    bgGraphBuilder.unitizedDeltaString(true, true, is_follower));
         }
-        if(bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
+        if (bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
             currentBgValueText.setTextColor(Color.parseColor("#C30909"));
         } else if (bgGraphBuilder.unitized(estimate) >= bgGraphBuilder.highMark) {
             currentBgValueText.setTextColor(Color.parseColor("#FFBB33"));

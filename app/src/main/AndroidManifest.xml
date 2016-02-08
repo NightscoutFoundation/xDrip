@@ -208,8 +208,7 @@
             android:label="@string/title_activity_system_status" />
         <activity
             android:name=".utils.Preferences"
-            android:label="@string/title_activity_preferences"
-             />
+            android:label="@string/title_activity_preferences" />
 
         <receiver android:name=".xDripWidget">
             <intent-filter>
@@ -322,6 +321,11 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
             android:noHistory="true" />
+
+        <service
+            android:name=".Services.DoNothingService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

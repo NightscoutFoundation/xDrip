@@ -283,8 +283,8 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
     }
 
     private static String getCustomSyncKey() {
-        if ((prefs == null) && (GcmActivity.mContext != null)) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(GcmActivity.mContext);
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         }
         if ((prefs != null) && (prefs.getBoolean("use_custom_sync_key", false))) {
             String mykey = prefs.getString("custom_sync_key", "");

@@ -195,14 +195,17 @@ public class BgReading extends Model implements ShareUploadableBg{
         }
     }
 
-    public static double currentSlope(){
-        List<BgReading> last_2 = BgReading.latest(2);
-        if (last_2.size() == 2) {
+    public static double currentSlope() {
+        return currentSlope(false);
+    }
+
+    public static double currentSlope(boolean is_follower) {
+        List<BgReading> last_2 = BgReading.latest(2, is_follower);
+        if ((last_2 != null) && (last_2.size() == 2)) {
             return calculateSlope(last_2.get(0), last_2.get(1));
-        } else{
+        } else {
             return 0d;
         }
-
     }
 
 
@@ -304,7 +307,7 @@ public class BgReading extends Model implements ShareUploadableBg{
                 return bgReading;
             }
         }
-        Log.w(TAG, "getForPreciseTimestamp: No luck finding a BG timestamp match");
+        Log.w(TAG, "getForPreciseTimestamp: No luck finding a BG timestamp match: " + timestamp + " " + precision);
         return null;
     }
 
@@ -316,7 +319,7 @@ public class BgReading extends Model implements ShareUploadableBg{
             BgReading bgReading = new Select()
                     .from(BgReading.class)
                     .where("Sensor = ? ", sensor.getId())
-                    .where("timestamp <= ?",  (timestamp + (60*1000))) // 1 minute padding (should never be that far off, but why not)
+                    .where("timestamp <= ?", (timestamp + (60 * 1000))) // 1 minute padding (should never be that far off, but why not)
                     .orderBy("timestamp desc")
                     .executeSingle();
             if(bgReading != null && Math.abs(bgReading.timestamp - timestamp) < (3*60*1000)) { //cool, so was it actually within 4 minutes of that bg reading?
@@ -401,7 +404,7 @@ public class BgReading extends Model implements ShareUploadableBg{
             BgSendQueue.handleNewBgReading(bgReading, "create", context);
         }
 
-        Log.i("BG GSON: ",bgReading.toS());
+        Log.i("BG GSON: ", bgReading.toS());
 
         return bgReading;
     }
@@ -483,16 +486,30 @@ public class BgReading extends Model implements ShareUploadableBg{
         return slope_by_minute /60000;
     }
 
-    public static BgReading last() {
-        Sensor sensor = Sensor.currentSensor();
-        if (sensor != null) {
+    public static BgReading last()
+    {
+        return BgReading.last(false);
+    }
+
+    public static BgReading last(boolean is_follower) {
+        if (is_follower) {
             return new Select()
                     .from(BgReading.class)
-                    .where("Sensor = ? ", sensor.getId())
                     .where("calculated_value != 0")
                     .where("raw_data != 0")
                     .orderBy("timestamp desc")
                     .executeSingle();
+        } else {
+            Sensor sensor = Sensor.currentSensor();
+            if (sensor != null) {
+                return new Select()
+                        .from(BgReading.class)
+                        .where("Sensor = ? ", sensor.getId())
+                        .where("calculated_value != 0")
+                        .where("raw_data != 0")
+                        .orderBy("timestamp desc")
+                        .executeSingle();
+            }
         }
         return null;
     }
@@ -517,16 +534,33 @@ public class BgReading extends Model implements ShareUploadableBg{
     }
 
     public static List<BgReading> latest(int number) {
-        Sensor sensor = Sensor.currentSensor();
-        if (sensor == null) { return null; }
-        return new Select()
-                .from(BgReading.class)
-                .where("Sensor = ? ", sensor.getId())
-                .where("calculated_value != 0")
-                .where("raw_data != 0")
-                .orderBy("timestamp desc")
-                .limit(number)
-                .execute();
+        return latest(number, false);
+    }
+
+    public static List<BgReading> latest(int number, boolean is_follower) {
+        if (is_follower) {
+            // exclude sensor information when working as a follower
+            return new Select()
+                    .from(BgReading.class)
+                    .where("calculated_value != 0")
+                    .where("raw_data != 0")
+                    .orderBy("timestamp desc")
+                    .limit(number)
+                    .execute();
+        } else {
+            Sensor sensor = Sensor.currentSensor();
+            if (sensor == null) {
+                return null;
+            }
+            return new Select()
+                    .from(BgReading.class)
+                    .where("Sensor = ? ", sensor.getId())
+                    .where("calculated_value != 0")
+                    .where("raw_data != 0")
+                    .orderBy("timestamp desc")
+                    .limit(number)
+                    .execute();
+        }
     }
 
     public static List<BgReading> latestUnCalculated(int number) {
@@ -664,6 +698,7 @@ public class BgReading extends Model implements ShareUploadableBg{
             jsonObject.put("filtered_data", filtered_data);
             jsonObject.put("raw_calculated", raw_calculated);
             jsonObject.put("raw_data", raw_data);
+            jsonObject.put("calculated_value_slope", calculated_value_slope);
             //   jsonObject.put("sensor", sensor);
             return jsonObject.toString();
         } catch (JSONException e) {

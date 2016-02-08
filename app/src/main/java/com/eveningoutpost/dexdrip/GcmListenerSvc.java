@@ -23,6 +23,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.WebAppHelper;
+import com.google.android.gms.gcm.GcmPubSub;
 
 import java.util.Date;
 
@@ -61,6 +62,13 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
             String[] tpca = from.split("/");
             if ((tpca[2] != null) && (tpca[2].length() > 30) && (!tpca[2].equals(GcmActivity.myIdentity()))) {
                 Log.e(TAG, "Received invalid channel: " + from + " instead of: " + GcmActivity.myIdentity());
+                if ((GcmActivity.myIdentity() != null) && (GcmActivity.myIdentity().length() > 30)) {
+                    try {
+                        GcmPubSub.getInstance(this).unsubscribe(GcmActivity.token, from);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Exception unsubscribing: " + e.toString());
+                    }
+                }
                 return;
             }
 

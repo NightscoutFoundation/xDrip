@@ -62,7 +62,7 @@ public class RegistrationIntentService extends IntentService {
 
             GcmNetworkManager.getInstance(this).cancelAllTasks(TaskService.class);
             GcmNetworkManager.getInstance(this).schedule(task);
-            PlusSyncService.startSyncService(getApplicationContext());
+            PlusSyncService.startSyncService(getApplicationContext(),"RegistrationToServer");
             GcmActivity.queueCheckOld(getApplicationContext());
         } catch (Exception e)
         {

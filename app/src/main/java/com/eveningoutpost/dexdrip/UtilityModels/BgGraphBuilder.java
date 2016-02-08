@@ -319,7 +319,7 @@ public class BgGraphBuilder {
         } else {
             UserError.Log.i(TAG, "Raw points size is zero");
         }
-        UserError.Log.i(TAG, "Returning linearray: " + Integer.toString(linearray.size()));
+        //UserError.Log.i(TAG, "Returning linearray: " + Integer.toString(linearray.size()));
         return linearray;
     }
 
@@ -632,7 +632,7 @@ public class BgGraphBuilder {
                 Log.d(TAG, "Predictive Bolus Wizard suggestion: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
             if (evaluation[0] > Profile.minimum_carb_recommendation) {
                 PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));
-                iv.setLabel("Eat Carbs: " + JoH.qs(evaluation[0], 1));
+                iv.setLabel("Eat Carbs: " + JoH.qs(evaluation[0], 0));
                 annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
             }
             if (evaluation[1] > Profile.minimum_insulin_recommendation) {
@@ -880,14 +880,17 @@ public class BgGraphBuilder {
     }
 
     public String unitizedDeltaString(boolean showUnit, boolean highGranularity) {
+    return unitizedDeltaString( showUnit, highGranularity, false);
+    }
+    public String unitizedDeltaString(boolean showUnit, boolean highGranularity, boolean is_follower) {
 
-        List<BgReading> last2 = BgReading.latest(2);
+        List<BgReading> last2 = BgReading.latest(2,is_follower);
         if (last2.size() < 2 || last2.get(0).timestamp - last2.get(1).timestamp > 20 * 60 * 1000) {
             // don't show delta if there are not enough values or the values are more than 20 mintes apart
             return "???";
         }
 
-        double value = BgReading.currentSlope() * 5 * 60 * 1000;
+        double value = BgReading.currentSlope(is_follower) * 5 * 60 * 1000;
 
         if (Math.abs(value) > 100) {
             // a delta > 100 will not happen with real BG values -> problematic sensor data

@@ -40,14 +40,8 @@ public class GcmActivity extends Activity {
     public static AtomicInteger msgId = new AtomicInteger(1);
     public static String token = null;
     public static String senderid = null;
-    public static Context mContext;
     public static List<GCM_data> gcm_queue = new ArrayList<>();
-    private static boolean runningBGSync = false;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
-
-    public static void setContext(Context xmContext) {
-        mContext = xmContext;
-    }
 
     public static synchronized void queueAction(String reference) {
         Log.d(TAG, "Received ACK, Queue Size: " + GcmActivity.gcm_queue.size() + " " + reference);
@@ -59,7 +53,7 @@ public class GcmActivity extends Activity {
                 break;
             }
         }
-        queueCheckOld(mContext);
+        queueCheckOld(xdrip.getAppContext());
     }
 
     public static synchronized void queueCheckOld(Context context) {
@@ -129,7 +123,7 @@ public class GcmActivity extends Activity {
                     mypacket = mypacket + myrecord;
                 }
                 Log.d(TAG, "Total BGreading sync packet size: " + mypacket.length());
-                if (DisplayQRCode.mContext == null) DisplayQRCode.mContext = mContext;
+                if (DisplayQRCode.mContext == null) DisplayQRCode.mContext = xdrip.getAppContext();
                 DisplayQRCode.uploadBytes(mypacket.getBytes(Charset.forName("UTF-8")), 2);
             }
         }.start();
@@ -204,10 +198,14 @@ public class GcmActivity extends Activity {
             Bundle data = new Bundle();
             data.putString("action", action);
             data.putString("identity", identity);
-            data.putString("payload", CipherUtils.encryptString(payload));
 
+            if (payload.length()>0) {
+                data.putString("payload", CipherUtils.encryptString(payload));
+            } else {
+                data.putString("payload","");
+            }
 
-            if (mContext == null) {
+            if (xdrip.getAppContext() == null) {
                 Log.e(TAG, "mContext is null cannot sendMessage");
                 return "";
             }
@@ -216,7 +214,7 @@ public class GcmActivity extends Activity {
                 return "";
             }
             gcm_queue.add(new GCM_data(data));
-            final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(mContext);
+            final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(xdrip.getAppContext());
             if (token == null) {
                 Log.e(TAG, "GCM token is null - cannot sendMessage");
                 return "";
@@ -260,7 +258,6 @@ public class GcmActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate");
-        mContext = this;
         tryGCMcreate();
         try {
             finish();

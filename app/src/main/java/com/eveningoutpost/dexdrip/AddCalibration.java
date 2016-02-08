@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.view.View;
@@ -54,7 +55,8 @@ public class AddCalibration extends Activity implements NavigationDrawerFragment
             String bg_age = extras.getString("bg_age");
             String from_external = extras.getString("from_external","false");
 
-            if (Sensor.isActive()) {
+            if ((Sensor.isActive()
+            || PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("dex_collection_method", "").equals("Follower"))) {
 
                 if (!TextUtils.isEmpty(string_value)) {
                     if (!TextUtils.isEmpty(bg_age)) {
@@ -100,26 +102,27 @@ public class AddCalibration extends Activity implements NavigationDrawerFragment
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                if (Sensor.isActive()) {
-                    EditText value = (EditText) findViewById(R.id.bg_value);
-                    String string_value = value.getText().toString();
-                    if (!TextUtils.isEmpty(string_value)){
-                        double calValue = Double.parseDouble(string_value);
-                        // sanity check the number?
+                    if ((Sensor.isActive()
+                            || PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("dex_collection_method", "").equals("Follower"))) {
+                        EditText value = (EditText) findViewById(R.id.bg_value);
+                        String string_value = value.getText().toString();
+                        if (!TextUtils.isEmpty(string_value)) {
+                            double calValue = Double.parseDouble(string_value);
+                            // sanity check the number?
 
-                        Calibration calibration = Calibration.create(calValue, getApplicationContext());
+                            Calibration calibration = Calibration.create(calValue, getApplicationContext());
 
-                        Intent tableIntent = new Intent(v.getContext(), Home.class);
-                        startActivity(tableIntent);
-                        GcmActivity.pushCalibration(string_value,"0");
-                        finish();
+                            Intent tableIntent = new Intent(v.getContext(), Home.class);
+                            startActivity(tableIntent);
+                            GcmActivity.pushCalibration(string_value, "0");
+                            finish();
+                        } else {
+                            value.setError("Calibration Can Not be blank");
+                        }
                     } else {
-                        value.setError("Calibration Can Not be blank");
+                        Log.w("CALERROR", "Sensor is not active, cannot calibrate");
                     }
-                } else {
-                    Log.w("CALERROR", "Sensor is not active, cannot calibrate");
                 }
-            }
         });
 
     }

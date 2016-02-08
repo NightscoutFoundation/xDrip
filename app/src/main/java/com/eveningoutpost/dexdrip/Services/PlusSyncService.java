@@ -13,6 +13,7 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.GoogleDriveInterface;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.lang.ref.WeakReference;
 
@@ -32,20 +33,19 @@ public class PlusSyncService extends Service {
 
     public static void clearandRestartSyncService(Context context)
     {
-    // TODO invalidate any cache
         GoogleDriveInterface.invalidate();
         GcmActivity.token = null; // invalidate
         speedup();
-        startSyncService(context);
+        startSyncService(context,"clearAndRestart");
     }
 
-    public static void startSyncService(Context context) {
+    public static void startSyncService(Context context,String source) {
         if (created) {
             Log.d(TAG, "Already created");
             return;
         }
-        if ((GcmActivity.token != null) && (GcmActivity.mContext != null)) return;
-        Log.d(TAG, "Starting jamorham xDrip-Plus sync service");
+        if ((GcmActivity.token != null) && (xdrip.getAppContext() != null)) return;
+        Log.d(TAG, "Starting jamorham xDrip-Plus sync service: "+source);
         context.startService(new Intent(context, PlusSyncService.class));
     }
 
@@ -160,6 +160,13 @@ public class PlusSyncService extends Service {
                     keeprunning = false;
                     skipnext = true;
                     UpdateActivity.checkForAnUpdate(context);
+                    try {
+                        Log.d(TAG,"Shutting down");
+                        stopSelf();
+                    } catch (Exception e)
+                    {
+                        Log.e(TAG,"Exception with stop self");
+                    }
                 }
             }
         }

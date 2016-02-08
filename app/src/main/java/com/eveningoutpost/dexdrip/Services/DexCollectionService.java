@@ -100,9 +100,11 @@ public class DexCollectionService extends Service {
             stopSelf();
             return START_NOT_STICKY;
         }
-        if (CollectionServiceStarter.isBTWixel(getApplicationContext())
-                || CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())
-                || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())) {
+        Context context = getApplicationContext();
+        if (CollectionServiceStarter.isBTWixel(context)
+                || CollectionServiceStarter.isDexbridgeWixel(context)
+                || CollectionServiceStarter.isWifiandBTWixel(context)
+                || CollectionServiceStarter.isFollower(context)) {
             setFailoverTimer();
         } else {
             stopSelf();
@@ -176,7 +178,8 @@ public class DexCollectionService extends Service {
     public void setFailoverTimer() {
         if (CollectionServiceStarter.isBTWixel(getApplicationContext())
                 || CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())
-                || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())) {
+                || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())
+                || CollectionServiceStarter.isFollower(getApplicationContext())) {
 
             long retry_in = (1000 * 60 * 6);
             Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
