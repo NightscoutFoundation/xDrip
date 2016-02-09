@@ -10,6 +10,8 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.GcmActivity;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.Iob;
@@ -318,6 +320,10 @@ public class BgGraphBuilder {
             }
         } else {
             UserError.Log.i(TAG, "Raw points size is zero");
+        }
+
+        if ((Home.is_follower) && (rawInterpretedValues.size() < 3)) {
+            GcmActivity.requestBGsync();
         }
         //UserError.Log.i(TAG, "Returning linearray: " + Integer.toString(linearray.size()));
         return linearray;

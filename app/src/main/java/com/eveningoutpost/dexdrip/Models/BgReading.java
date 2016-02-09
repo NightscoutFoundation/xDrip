@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.ShareModels.ShareUploadableBg;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -652,16 +653,23 @@ public class BgReading extends Model implements ShareUploadableBg{
         return estimate;
     }
 
-    public static void bgReadingInsertFromJson(String json) {
+    public static void bgReadingInsertFromJson(String json)
+    {
+        bgReadingInsertFromJson(json,true);
+    }
+
+    public static void bgReadingInsertFromJson(String json, boolean do_notification) {
         BgReading bgr = fromJSON(json);
         if (bgr != null) {
             try {
-               if (readingNearTimeStamp(bgr.timestamp)==null) {
-                   bgr.save();
-               } else {
-                   Log.d(TAG,"Ignoring duplicate bgr record due to timestamp: "+json);
-               }
-               } catch (Exception e) {
+                if (readingNearTimeStamp(bgr.timestamp) == null) {
+                    bgr.save();
+                    if (do_notification)
+                        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
+                } else {
+                    Log.d(TAG, "Ignoring duplicate bgr record due to timestamp: " + json);
+                }
+            } catch (Exception e) {
                 Log.d(TAG, "Could not save BGR: " + e.toString());
             }
         }

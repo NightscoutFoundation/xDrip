@@ -126,7 +126,7 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
             } else if (action.equals("p")) {
                 GcmActivity.send_ping_reply();
             } else if (action.equals("bgs")) {
-                Log.i(TAG, "Received Backfill packet");
+                Log.i(TAG, "Received BG packet(s)");
                 String bgs[] = payload.split("\\^");
                 for (String bgr : bgs) {
                     BgReading.bgReadingInsertFromJson(bgr);

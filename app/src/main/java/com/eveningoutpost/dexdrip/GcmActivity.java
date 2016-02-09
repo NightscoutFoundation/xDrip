@@ -37,6 +37,7 @@ public class GcmActivity extends Activity {
     public static final String TASK_TAG_CHARGING = "charging";
     public static final String TASK_TAG_UNMETERED = "unmetered";
     private static final String TAG = "jamorham gcmactivity";
+    public static double last_sync_request = 0;
     public static AtomicInteger msgId = new AtomicInteger(1);
     public static String token = null;
     public static String senderid = null;
@@ -104,7 +105,16 @@ public class GcmActivity extends Activity {
     }
 
     public static void requestBGsync() {
-        GcmActivity.sendMessage("bfr", "");
+        if (token != null) {
+            if ((JoH.ts() - last_sync_request) > (60 * 1000 * 5)) {
+                last_sync_request = JoH.ts();
+                GcmActivity.sendMessage("bfr", "");
+            } else {
+                Log.d(TAG, "Already requested BGsync recently");
+            }
+        } else {
+            Log.d(TAG,"No token for BGSync");
+        }
     }
 
     public static void syncBGTable2() {
@@ -112,19 +122,26 @@ public class GcmActivity extends Activity {
             @Override
             public void run() {
 
-                final List<BgReading> bgReadings = BgReading.latestForGraph(300, JoH.ts() - (24 * 60 * 60 * 1000));
-                String mypacket = "";
+                if ((JoH.ts() - last_sync_request) > (60 * 1000 * 5)) {
+                    last_sync_request = JoH.ts();
 
-                for (BgReading bgReading : bgReadings) {
-                    String myrecord = bgReading.toJSON();
-                    if (mypacket.length() > 0) {
-                        mypacket = mypacket + "^";
+                    final List<BgReading> bgReadings = BgReading.latestForGraph(300, JoH.ts() - (24 * 60 * 60 * 1000));
+                    String mypacket = "";
+
+                    for (BgReading bgReading : bgReadings) {
+                        String myrecord = bgReading.toJSON();
+                        if (mypacket.length() > 0) {
+                            mypacket = mypacket + "^";
+                        }
+                        mypacket = mypacket + myrecord;
                     }
-                    mypacket = mypacket + myrecord;
+                    Log.d(TAG, "Total BGreading sync packet size: " + mypacket.length());
+                    if (DisplayQRCode.mContext == null)
+                        DisplayQRCode.mContext = xdrip.getAppContext();
+                    DisplayQRCode.uploadBytes(mypacket.getBytes(Charset.forName("UTF-8")), 2);
+                } else {
+                    Log.d(TAG, "Ignoring recent sync request");
                 }
-                Log.d(TAG, "Total BGreading sync packet size: " + mypacket.length());
-                if (DisplayQRCode.mContext == null) DisplayQRCode.mContext = xdrip.getAppContext();
-                DisplayQRCode.uploadBytes(mypacket.getBytes(Charset.forName("UTF-8")), 2);
             }
         }.start();
     }
@@ -138,7 +155,7 @@ public class GcmActivity extends Activity {
     public static void processBFPbundle(String bundle) {
         String[] bundlea = bundle.split("\\^");
         for (String bgr : bundlea) {
-            BgReading.bgReadingInsertFromJson(bgr);
+            BgReading.bgReadingInsertFromJson(bgr,false);
         }
         Home.staticRefreshBGCharts();
     }

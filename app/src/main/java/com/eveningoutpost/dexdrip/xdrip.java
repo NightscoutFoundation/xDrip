@@ -32,6 +32,7 @@ public class xdrip extends Application {
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_source, false);
         PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_prefs, false);
         new IdempotentMigrations(getApplicationContext()).performAll();
+        Home.set_is_follower();
         PlusSyncService.startSyncService(context, "xdrip.java");
     }
 

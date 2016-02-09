@@ -92,6 +92,7 @@ public class Home extends ActivityWithMenu {
     public static boolean activityVisible = false;
     public static boolean invalidateMenu = false;
     public static Context staticContext;
+    public static boolean is_follower = false;
     private boolean updateStuff;
     private boolean updatingPreviewViewport = false;
     private boolean updatingChartViewport = false;
@@ -142,6 +143,7 @@ public class Home extends ActivityWithMenu {
         super.onCreate(savedInstanceState);
 
         staticContext = getApplicationContext();
+        set_is_follower();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         checkEula();
@@ -722,20 +724,14 @@ public class Home extends ActivityWithMenu {
         if (activityVisible) {
             Intent updateIntent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA);
             staticContext.sendBroadcast(updateIntent);
-        } else {
-            //Log.d(TAG,"Activity invisible so no static refresh");
-            if (PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).getString("dex_collection_method", "").equals("Follower"))
-            {
-                xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class));
-            }
         }
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         checkEula();
+        set_is_follower();
         _broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context ctx, Intent intent) {
@@ -855,6 +851,11 @@ public class Home extends ActivityWithMenu {
         }
     }
 
+    public static void set_is_follower()
+    {
+        is_follower = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).getString("dex_collection_method", "").equals("Follower");
+    }
+
     private void updateCurrentBgInfo(String source) {
         Log.d(TAG,"updateCurrentBgInfo from: "+source);
         if (!activityVisible)
@@ -883,7 +884,7 @@ public class Home extends ActivityWithMenu {
         }
         if (isWifiWixel || isWifiBluetoothWixel) {
             updateCurrentBgInfoForWifiWixel(notificationText);
-        } else if (prefs.getString("dex_collection_method","").equals("Follower"))
+        } else if (is_follower)
         {
             displayCurrentInfo();
             getApplicationContext().startService(new Intent(getApplicationContext(), Notifications.class));
@@ -1103,8 +1104,6 @@ public class Home extends ActivityWithMenu {
         }
         int minutes = (int) (System.currentTimeMillis() - lastBgReading.timestamp) / (60 * 1000);
         notificationText.append("\n" + minutes + ((minutes == 1) ? " Minute ago" : " Minutes ago"));
-
-        boolean is_follower = prefs.getString("dex_collection_method", "").equals("Follower");
 
         // do we actually need to do this query here if we again do it in unitizedDeltaString
         List<BgReading> bgReadingList = BgReading.latest(2, is_follower);

@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.R;
 import com.google.zxing.integration.android.IntentIntegrator;
 
@@ -84,11 +85,16 @@ public class SdcardImportExport extends Activity {
         }
     }
 
+    private static void hardReset() {
+        // shared preferences are cached so we need a hard restart
+        GcmActivity.last_sync_request = 0;
+        android.os.Process.killProcess(android.os.Process.myPid());
+    }
+
     public void loadPreferencesToSD(View myview) {
         if (loadPreferencesFromSD()) {
             toast("Loaded Preferences! - Restarting");
-            // shared preferences are cached so we need a hard restart
-            android.os.Process.killProcess(android.os.Process.myPid());
+            hardReset();
         } else {
             toast("Could not load preferences - check permissions or file?");
         }
@@ -97,7 +103,7 @@ public class SdcardImportExport extends Activity {
     public static void storePreferencesFromBytes(byte[] bytes, Context context) {
         if (dataFromBytes(bytes, PREFERENCES_FILE, context)) {
             Log.i(TAG, "Restarting as new preferences loaded from bytes");
-            android.os.Process.killProcess(android.os.Process.myPid());
+            hardReset();
         } else {
             Log.e(TAG, "Failed to write preferences from bytes");
         }
