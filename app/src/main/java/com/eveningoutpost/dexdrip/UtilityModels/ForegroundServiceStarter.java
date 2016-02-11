@@ -8,6 +8,8 @@ import android.os.Looper;
 import android.preference.PreferenceManager;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
+import java.util.Date;
+
 /**
  * Created by stephenblack on 12/25/14.
  */
@@ -32,7 +34,9 @@ public class ForegroundServiceStarter {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mService.startForeground(new Notifications().ongoingNotificationId, new Notifications().createOngoingNotification(new BgGraphBuilder(mContext), mContext));
+                    long end = System.currentTimeMillis() + (60000 * 5);
+                    long start = end - (60000 * 60*3) -  (60000 * 10);
+                    mService.startForeground(new Notifications().ongoingNotificationId, new Notifications().createOngoingNotification(new BgGraphBuilder(mContext, start, end), mContext));
                 }
             });
         }
