@@ -7,6 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
@@ -28,7 +29,9 @@ public class JoH {
     }
 
     public static String qs(double x, int digits) {
-        DecimalFormat df = new DecimalFormat("#");
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator('.');
+        DecimalFormat df = new DecimalFormat("#",symbols);
         df.setMaximumFractionDigits(digits);
         df.setMinimumIntegerDigits(1);
         return df.format(x);
