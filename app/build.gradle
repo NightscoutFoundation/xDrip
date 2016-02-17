@@ -3,9 +3,9 @@ buildscript {
         maven { url 'https://maven.fabric.io/public' }
     }
 
-    // dependencies {
-    //    classpath 'io.fabric.tools:gradle:1.+'
-    // }
+     dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+     }
 }
 apply plugin: 'com.android.application'
 //apply plugin: 'io.fabric'
@@ -104,6 +104,7 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro'
+            ext.enableCrashlytics = false
         }
     }
 }
@@ -144,6 +145,10 @@ dependencies {
     compile 'net.tribe7.seeds:seeds-functional:16.0.1'
     compile 'net.tribe7.seeds:seeds-primitives:16.0.1'
     compile 'org.slf4j:slf4j-api:1.7.7'
+    compile 'org.apache.commons:commons-math3:3.6'
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
+        transitive = true;
+    }
 
 }
 

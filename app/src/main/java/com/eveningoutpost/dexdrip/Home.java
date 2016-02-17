@@ -298,6 +298,7 @@ public class Home extends ActivityWithMenu {
 
         activityVisible = true;
         PlusSyncService.startSyncService(getApplicationContext(),"HomeOnCreate");
+        ParakeetHelper.notifyOnNextCheckin();
     }
 
     private boolean hideTreatmentButtonsIfAllDone() {
@@ -1143,11 +1144,12 @@ public class Home extends ActivityWithMenu {
         }
 
         menu.findItem(R.id.showmap).setVisible(prefs.getBoolean("plus_extra_features", false));
+        menu.findItem(R.id.parakeetsetup).setVisible(prefs.getBoolean("plus_extra_features", false));
         return super.onCreateOptionsMenu(menu);
     }
 
     public void shareMyConfig(MenuItem myitem) {
-        startActivity( new Intent(getApplicationContext(), DisplayQRCode.class));
+        startActivity(new Intent(getApplicationContext(), DisplayQRCode.class));
     }
 
     public void settingsSDcardExport(MenuItem myitem)
@@ -1158,6 +1160,11 @@ public class Home extends ActivityWithMenu {
     public void showMapFromMenu(MenuItem myitem)
     {
         startActivity(new Intent(getApplicationContext(), MapsActivity.class));
+    }
+
+    public void parakeetSetupMode(MenuItem myitem)
+    {
+       ParakeetHelper.parakeetSetupMode(getApplicationContext());
     }
 
     public void doBackFillBroadcast(MenuItem myitem) {

@@ -533,6 +533,15 @@ public class Preferences extends PreferenceActivity {
                 }
             });
 
+            final Preference crash_reports = findPreference("enable_crashlytics");
+            crash_reports.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    Toast.makeText(preference.getContext(),
+                            "Crash Setting takes effect on next restart", Toast.LENGTH_LONG).show();
+                    return true;
+                }
+            });
 
             bindTTSListener();
             final Preference collectionMethod = findPreference("dex_collection_method");

@@ -128,9 +128,14 @@
             android:title="Update Channel" />
         <CheckBoxPreference
             android:defaultValue="true"
+            android:key="enable_crashlytics"
+            android:summary="Send crash errors to developer"
+            android:title="Automatic Crash Reporting" />
+        <CheckBoxPreference
+            android:defaultValue="true"
             android:key="plus_extra_features"
-            android:summary="Show alpha test features"
-            android:title="Extra test features" />
+            android:summary="Show extra and alpha test features"
+            android:title="Parakeet and Extra test features" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="plus_follow_master"

@@ -34,6 +34,13 @@
         android:orderInCategory="1"
         android:showAsAction="never"/>
 
+    <item android:id="@+id/parakeetsetup"
+        android:title="Switch Parakeet to Setup mode"
+        android:checkable="false"
+        android:onClick="parakeetSetupMode"
+        android:visible="true"
+        android:orderInCategory="1"
+        android:showAsAction="never"/>
 
 
     <item android:id="@+id/deleteAllBG"
@@ -41,7 +48,7 @@
         android:checkable="false"
         android:orderInCategory="1"
         android:onClick="deleteAllBG"
-        android:visible="false"
+        android:visible="true"
         android:showAsAction="never"/>
 
     <item android:id="@+id/synctreatments"
@@ -63,7 +70,7 @@
         android:checkable="false"
         android:orderInCategory="1"
         android:onClick="doBackFillBroadcast"
-        android:visible="false"
+        android:visible="true"
         android:showAsAction="never"/>
 
     <item android:id="@+id/checkforupdate"

@@ -34,6 +34,7 @@
 -dontwarn org.bson.**
 -dontwarn org.slf4j.**
 -dontwarn rx.internal.util.**
+-dontwarn org.apache.commons.**
 
 -keep class com.nightscout.** { *; }
 -keep class com.squareup.** { *; }

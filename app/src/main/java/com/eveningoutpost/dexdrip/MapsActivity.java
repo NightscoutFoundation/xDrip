@@ -2,6 +2,8 @@ package com.eveningoutpost.dexdrip;
 
 // jamorham
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -29,6 +31,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static List<Double> lats = new ArrayList<Double>();
     private static boolean active = false;
     private static GoogleMap mMap;
+    private static Activity static_activity;
 
     // receive updates from elsewhere
     public static void newMapLocation(String location, long when) {
@@ -54,7 +57,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     }
                 }
-                if (active) redrawmap();
+                if (active) {
+                    static_activity.startActivity(new Intent(xdrip.getAppContext(), MapsActivity.class));
+                }
             }
         } catch (Exception e) {
             Log.e(TAG, "Got exception in newmaplocation: " + e.toString());
@@ -62,6 +67,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private static void redrawmap() {
+        Log.d(TAG, "Attempting to redraw map: " + lastGeoLocation);
         if (mMap == null) return;
         mMap.clear();
 
@@ -107,6 +113,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        static_activity = this;
         active = true;
 
         super.onCreate(savedInstanceState);
@@ -119,6 +126,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        static_activity = this;
         active = true;
         redrawmap();
     }
@@ -126,6 +134,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onPause() {
         active = false;
+        static_activity = null;
         super.onPause();
     }
 }

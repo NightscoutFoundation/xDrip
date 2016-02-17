@@ -11,6 +11,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.google.gson.Gson;
@@ -250,9 +251,14 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
 
                     TransmitterRawData trd = gson.fromJson(data, TransmitterRawData.class);
                     trd.CaptureDateTime = System.currentTimeMillis() - trd.RelativeTime;
+                    ParakeetHelper.checkParakeetNotifications(trd.CaptureDateTime);
 
-                    MapsActivity.newMapLocation(trd.GeoLocation,trd.CaptureDateTime);
-                    trd_list.add(0, trd);
+                    try {
+                        MapsActivity.newMapLocation(trd.GeoLocation, trd.CaptureDateTime);
+                    } catch (Exception e) {
+                        Log.e(TAG,"Exception with maps activity: "+e.toString());
+                    }
+                        trd_list.add(0, trd);
                     //  System.out.println( trd.toTableString());
                     if (trd_list.size() == numberOfRecords) {
                         // We have the data we want, let's get out

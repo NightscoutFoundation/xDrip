@@ -16,8 +16,6 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.text.InputType;
 import android.text.format.DateFormat;
-import android.text.method.DigitsKeyListener;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -33,6 +31,8 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.AlertType;
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -180,9 +180,10 @@ public class EditAlertActivity extends ActivityWithMenu {
         doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
 
         if(!doMgdl) {
-            alertThreshold.setInputType(InputType.TYPE_CLASS_NUMBER);
+            alertThreshold.setInputType(InputType.TYPE_CLASS_NUMBER); // ignored
             alertThreshold.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
-            alertThreshold.setKeyListener(DigitsKeyListener.getInstance(false,true));
+            JoH.DecimalKeyListener mmolListener = new JoH.DecimalKeyListener();
+            alertThreshold.setKeyListener(mmolListener);
         }
 
         uuid = getExtra(savedInstanceState, "uuid");

@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import android.text.InputType;
+import android.text.method.DigitsKeyListener;
 import android.util.Base64;
 import android.util.Log;
 
@@ -140,5 +142,21 @@ public class JoH {
 
     public static String ucFirst(String input) {
         return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+    }
+
+    public static class DecimalKeyListener extends DigitsKeyListener {
+        private final char[] acceptedCharacters =
+                new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                        new DecimalFormat().getDecimalFormatSymbols().getDecimalSeparator()};
+
+        @Override
+        protected char[] getAcceptedChars() {
+            return acceptedCharacters;
+        }
+
+        public int getInputType() {
+            return InputType.TYPE_CLASS_NUMBER;
+        }
+
     }
 }

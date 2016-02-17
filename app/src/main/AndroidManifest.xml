@@ -227,7 +227,7 @@
 
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="193dbc121e25e5f3e71bb98164ec074378e339df" />
+            android:value="913d7bd9c0b910d315c3bc0e057056daf73b698e" />
 
         <activity
             android:name=".AlertList"
