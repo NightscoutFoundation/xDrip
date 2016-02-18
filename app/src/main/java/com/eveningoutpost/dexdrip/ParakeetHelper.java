@@ -63,14 +63,20 @@ public class ParakeetHelper {
                 sendNotification("The parakeet has connected to the web service.",
                         "Parakeet has connected!");
                 waiting_for_parakeet = false;
+                if (!PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).getBoolean("parakeet_first_run_done", false))
+                {
+                    PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).edit().putBoolean("parakeet_first_run_done", true).apply();
+                }
             }
         }
     }
 
-    public static void notifyOnNextCheckin() {
-        waiting_for_parakeet = true;
-        wait_timestamp = System.currentTimeMillis();
-    }
+    public static void notifyOnNextCheckin(boolean always) {
+        if ((always) || (!PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).getBoolean("parakeet_first_run_done", false))) {
+            waiting_for_parakeet = true;
+            wait_timestamp = System.currentTimeMillis();
+        }
+        }
 
     public static void toast(Context context, final String msg) {
         try {
@@ -108,7 +114,7 @@ public class ParakeetHelper {
             try {
                 String string_result = new String(result, "UTF-8");
                 if (string_result.startsWith("OK")) {
-                    notifyOnNextCheckin();
+                    notifyOnNextCheckin(true);
                     String[] results = string_result.split(" ");
                     if (results[1].contains("0")) {
                         toast(xdrip.getAppContext(), "Parakeet code sent! Now waiting..");

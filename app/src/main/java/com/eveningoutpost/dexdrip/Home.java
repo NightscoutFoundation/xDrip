@@ -298,7 +298,7 @@ public class Home extends ActivityWithMenu {
 
         activityVisible = true;
         PlusSyncService.startSyncService(getApplicationContext(),"HomeOnCreate");
-        ParakeetHelper.notifyOnNextCheckin();
+        ParakeetHelper.notifyOnNextCheckin(false);
     }
 
     private boolean hideTreatmentButtonsIfAllDone() {

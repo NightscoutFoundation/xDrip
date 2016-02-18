@@ -28,6 +28,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -471,7 +472,6 @@ public class Preferences extends PreferenceActivity {
 
 
             bindPreferenceTitleAppendToValueUpdateChannel(findPreference("update_channel"));
-
             final Preference profile_carb_ratio_default = findPreference("profile_carb_ratio_default");
             profile_carb_ratio_default.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -688,7 +688,17 @@ public class Preferences extends PreferenceActivity {
             });
             bindPreferenceSummaryToValue(collectionMethod);
             bindPreferenceSummaryToValue(shareKey);
-            bindPreferenceSummaryToValue(wifiRecievers);
+//            bindPreferenceSummaryToValue(wifiRecievers);
+
+            wifiRecievers.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    preference.setSummary(newValue.toString());
+                    ParakeetHelper.notifyOnNextCheckin(true);
+                    return true;
+                }
+            });
+
             bindPreferenceSummaryToValue(transmitterId);
             transmitterId.getEditText().setFilters(new InputFilter[]{new InputFilter.AllCaps()});
             collectionMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
