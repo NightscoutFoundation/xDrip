@@ -92,7 +92,7 @@
                 android:title="EULA">
                 <Preference
                     android:key="I_understandb"
-                    android:summary="Not for medical decisions - research only"
+                    android:summary="Not for medical use - research tool only"
                     android:title="End User License Agreement">
                     <intent
                         android:action="android.intent.action.MAIN"
@@ -102,16 +102,36 @@
             </PreferenceCategory>
         </PreferenceScreen>
 
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="use_custom_sync_key"
-            android:summary="Key is used instead of Google account"
-            android:title="Sync using custom security key" />
-        <EditTextPreference
-            android:defaultValue=""
-            android:key="custom_sync_key"
-            android:summary="Handset sync grouping key"
-            android:title="Handset Group Security Sync Key" />
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:dependency="I_understand"
+            android:key="xdrip_plus_sync_settings"
+            android:summary="Settings for syncing between handsets"
+            android:title="xDrip+ Sync settings">
+
+
+            <PreferenceCategory
+                android:key="xdrip_plus_sync_category"
+                android:title="xDrip+ Sync settings">
+
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="use_custom_sync_key"
+                    android:summary="Key is used instead of Google account"
+                    android:title="Sync using custom security key" />
+                <EditTextPreference
+                    android:defaultValue=""
+                    android:key="custom_sync_key"
+                    android:summary="Handset sync grouping key"
+                    android:title="Handset Group Security Sync Key" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="plus_extra_features"
+                    android:key="plus_follow_master"
+                    android:summary="This device will send data to followers"
+                    android:title="Be master for followers" />
+            </PreferenceCategory>
+        </PreferenceScreen>
+
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="auto_update_download"
@@ -136,12 +156,7 @@
             android:key="plus_extra_features"
             android:summary="Show extra and alpha test features"
             android:title="Parakeet and Extra test features" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="plus_follow_master"
-            android:summary="This device will send data to followers"
-            android:dependency="plus_extra_features"
-            android:title="Be master for followers" />
+
         <Preference
             android:key="show_qr_codes"
             android:title="Show Settings QR codes">
