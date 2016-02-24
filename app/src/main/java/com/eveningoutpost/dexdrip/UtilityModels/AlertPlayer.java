@@ -63,7 +63,7 @@ class MediaPlayerCreaterHelper {
         
         try {
             synchronized(lock1_) {
-                while(mplayerCreated_ = false) {
+                while(mplayerCreated_ == false) {
                    
                         lock1_.wait();
                 }
