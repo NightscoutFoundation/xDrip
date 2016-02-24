@@ -479,7 +479,7 @@ public class BgGraphBuilder {
         calibrationValues.clear();
         final double bgScale = bgScale();
 
-        final double trendstart = JoH.ts()-(1000*60*15); // 15 minutes // TODO MAKE PREFERENCE
+        final double trendstart = JoH.ts()-(1000*60*10); // 15 minutes // TODO MAKE PREFERENCE
 
         TrendLine[] polys = new TrendLine[5];
 
@@ -666,22 +666,13 @@ public class BgGraphBuilder {
             final double iobscale = 1 * bgScale;
             final double cobscale = 0.2 * bgScale;
             // we need to check we actually have sufficient data for this
-            double predictedbg = 0;
+            double predictedbg = -1000;
             BgReading mylastbg = bgReadings.get(0);
             double lasttimestamp = 0;
 
             // this can be optimised to oncreate and onchange
             Profile.reloadPreferences(prefs);
 
-            double[] evaluation;
-            if (doMgdl)
-            {
-                // These routines need to understand how the profile is defined to use native instead of scaled
-                evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
-            } else {
-                evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
-
-            }
 
             try {
                 if (mylastbg != null) {
@@ -792,17 +783,25 @@ public class BgGraphBuilder {
                 Log.d(TAG, "iobinfo was null");
             }
 
+            double[] evaluation;
+            if (doMgdl)
+            {
+                // These routines need to understand how the profile is defined to use native instead of scaled
+                evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
+            } else {
+                evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
 
+            }
 
                 Log.d(TAG, "Predictive Bolus Wizard suggestion: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
             if (evaluation[0] > Profile.minimum_carb_recommendation) {
                 PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));
-                iv.setLabel("Eat Carbs: " + JoH.qs(evaluation[0], 0));
+                iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));
                 annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
             }
             if (evaluation[1] > Profile.minimum_insulin_recommendation) {
                 PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (11 * bgScale));
-                iv.setLabel("Take Insulin: " + JoH.qs(evaluation[1], 1));
+                iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
                 annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
             }
 
