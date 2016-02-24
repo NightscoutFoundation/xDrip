@@ -17,6 +17,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.GcmActivity;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -76,19 +77,25 @@ public class BgSendQueue extends Model {
         bgSendQueue.save();
         Log.d("BGQueue", "New value added to queue!");
     }
-    
+
     public static void handleNewBgReading(BgReading bgReading, String operation_type, Context context) {
+        handleNewBgReading(bgReading, operation_type, context,false);
+    }
+
+    public static void handleNewBgReading(BgReading bgReading, String operation_type, Context context, boolean is_follower) {
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "sendQueue");
         wakeLock.acquire();
         try {
-            addToQueue(bgReading, operation_type);
+           if (!is_follower) addToQueue(bgReading, operation_type);
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-            Intent updateIntent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA);
-            context.sendBroadcast(updateIntent);
+            if (Home.activityVisible) {
+                Intent updateIntent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA);
+                context.sendBroadcast(updateIntent);
+            }
 
             if(AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, xDripWidget.class)).length > 0){
                 context.startService(new Intent(context, WidgetUpdateService.class));
@@ -155,12 +162,12 @@ public class BgSendQueue extends Model {
                 context.startService(new Intent(context, PebbleSync.class));
             }
 
-            if (prefs.getBoolean("plus_follow_master",false))
+            if ((!is_follower) && (prefs.getBoolean("plus_follow_master",false)))
             {
                 GcmActivity.syncBGReading(bgReading);
             }
 
-            if (prefs.getBoolean("share_upload", false)) {
+            if ((!is_follower) && (prefs.getBoolean("share_upload", false))) {
                 Log.d("ShareRest", "About to call ShareRest!!");
                 String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
                 BgUploader bgUploader = new BgUploader(context);
@@ -169,7 +176,7 @@ public class BgSendQueue extends Model {
             context.startService(new Intent(context, SyncService.class));
 
             //Text to speech
-            Log.d("BgToSpeech", "gonna call speak");
+            //Log.d("BgToSpeech", "gonna call speak");
             BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp);
 
 

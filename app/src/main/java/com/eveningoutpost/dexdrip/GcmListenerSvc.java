@@ -131,7 +131,7 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                 for (String bgr : bgs) {
                     BgReading.bgReadingInsertFromJson(bgr);
                 }
-                Home.staticRefreshBGCharts();
+               // Home.staticRefreshBGCharts();
             } else if (action.equals("bfb")) {
                 initprefs();
                 String bfb[] = payload.split("\\^");

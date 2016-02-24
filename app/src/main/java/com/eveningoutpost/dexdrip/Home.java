@@ -814,7 +814,7 @@ public class Home extends ActivityWithMenu {
 
         chart.setLineChartData(bgGraphBuilder.lineData());
         chart.setOnValueTouchListener(bgGraphBuilder.getOnValueSelectTooltipListener());
-        previewChart.setLineChartData(bgGraphBuilder.previewLineData());
+        previewChart.setLineChartData(bgGraphBuilder.previewLineData(chart.getLineChartData()));
         updateStuff = true;
 
         previewChart.setViewportCalculationEnabled(true);

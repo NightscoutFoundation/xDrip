@@ -16,4 +16,17 @@ public interface Intents {
 
 
     String ACTION_NEW_BG_ESTIMATE_NO_DATA = "com.eveningoutpost.dexdrip.BgEstimateNoData";
+
+    // From NS Android Client
+    // send
+    String ACTION_NEW_TREATMENT = "info.nightscout.client.NEW_TREATMENT";
+    String ACTION_CHANGED_TREATMENT = "info.nightscout.client.CHANGED_TREATMENT";
+    String ACTION_REMOVED_TREATMENT = "info.nightscout.client.REMOVED_TREATMENT";
+    String ACTION_NEW_PROFILE = "info.nightscout.client.NEW_PROFILE";
+    String ACTION_NEW_SGV = "info.nightscout.client.NEW_SGV";
+
+
+    // Listen on
+    String ACTION_DATABASE = "info.nightscout.client.DBACCESS";
+
 }

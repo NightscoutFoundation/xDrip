@@ -14,6 +14,7 @@ import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.Forecast;
 import com.eveningoutpost.dexdrip.Models.Iob;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Profile;
@@ -44,6 +45,10 @@ import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
+
+import com.eveningoutpost.dexdrip.Models.Forecast.TrendLine;
+import com.eveningoutpost.dexdrip.Models.Forecast.PolyTrendLine;
+import com.rits.cloning.Cloner;
 
 /**
  * Created by stephenblack on 11/15/14.
@@ -90,6 +95,7 @@ public class BgGraphBuilder {
     private List<PointValue> iobValues = new ArrayList<PointValue>();
     private List<PointValue> cobValues = new ArrayList<PointValue>();
     private List<PointValue> predictedBgValues = new ArrayList<PointValue>();
+    private List<PointValue> polyBgValues = new ArrayList<PointValue>();
     private List<PointValue> activityValues = new ArrayList<PointValue>();
     private List<PointValue> annotationValues = new ArrayList<PointValue>();
 
@@ -135,14 +141,34 @@ public class BgGraphBuilder {
     }
 
     public LineChartData lineData() {
+       // Log.d(TAG, "START lineData from: " + JoH.backTrace());
+       JoH.benchmark(null);
         LineChartData lineData = new LineChartData(defaultLines());
+        JoH.benchmark("Default lines create - bggraph builder");
         lineData.setAxisYLeft(yAxis());
         lineData.setAxisXBottom(xAxis());
         return lineData;
     }
 
-    public LineChartData previewLineData() {
-        LineChartData previewLineData = new LineChartData(lineData());
+    public LineChartData previewLineData(LineChartData hint) {
+
+        LineChartData previewLineData;
+        if (hint == null) {
+            previewLineData = new LineChartData(lineData());
+        } else {
+            JoH.benchmark(null);
+            Cloner cloner = new Cloner();
+           // cloner.setDumpClonedClasses(true);
+            cloner.dontClone(
+                    lecho.lib.hellocharts.model.PointValue.class,
+                    lecho.lib.hellocharts.formatter.SimpleLineChartValueFormatter.class,
+                    lecho.lib.hellocharts.model.Axis.class,
+                    android.graphics.DashPathEffect.class);
+            previewLineData = cloner.deepClone(hint);
+            JoH.benchmark("Clone preview data");
+            Log.d(TAG,"Cloned preview chart data");
+        }
+
         previewLineData.setAxisYLeft(yAxis());
         previewLineData.setAxisXBottom(previewXAxis());
 
@@ -188,6 +214,7 @@ public class BgGraphBuilder {
             lines.add(treatments[3]); // activity
             lines.add(treatments[5]); // predictive
             lines.add(treatments[6]); // cob
+            lines.add(treatments[7]); // poly predict
 
 
             lines.add(minShowLine());
@@ -345,7 +372,7 @@ public class BgGraphBuilder {
     }
 
     public Line[] treatmentValuesLine() {
-        Line[] lines = new Line[8];
+        Line[] lines = new Line[9];
         try {
 
             lines[0] = new Line(treatmentValues);
@@ -418,6 +445,18 @@ public class BgGraphBuilder {
             lines[6].setPointRadius(1);
             lines[6].setHasPoints(true);
             lines[6].setHasLabels(false);
+
+            lines[7] = new Line(polyBgValues);
+            lines[7].setColor(ChartUtils.COLOR_RED);
+            lines[7].setHasLines(false);
+            lines[7].setCubic(false);
+            lines[7].setStrokeWidth(1);
+            lines[7].setFilled(false);
+            lines[7].setPointRadius(1);
+            lines[7].setHasPoints(true);
+            lines[7].setHasLabels(false);
+
+
         } catch (Exception e) {
             Log.d(TAG, "Exception making treatment lines: " + e.toString());
         }
@@ -431,6 +470,7 @@ public class BgGraphBuilder {
         activityValues.clear();
         cobValues.clear();
         predictedBgValues.clear();
+        polyBgValues.clear();
         annotationValues.clear();
         treatmentValues.clear();
         highValues.clear();
@@ -439,12 +479,49 @@ public class BgGraphBuilder {
         calibrationValues.clear();
         final double bgScale = bgScale();
 
+        final double trendstart = JoH.ts()-(1000*60*15); // 15 minutes // TODO MAKE PREFERENCE
+
+        TrendLine[] polys = new TrendLine[5];
+
+        polys[0] = new PolyTrendLine(1);
+        polys[1] = new PolyTrendLine(2);
+        polys[2] = new Forecast.LogTrendLine();
+        polys[3] = new Forecast.ExpTrendLine();
+        polys[4] = new Forecast.PowerTrendLine();
+        TrendLine poly = null;
+
+        List<Double> polyxList = new ArrayList<Double>();
+        List<Double> polyyList = new ArrayList<Double>();
+
         final double avg1start = JoH.ts()-(1000*60*60*8); // 8 hours
+        final double momentum_illustration_start = JoH.ts()-(1000*60*60*2); // 8 hours
         avg1startfuzzed=avg1start / FUZZER;
         avg1value = 0;
         avg1counter = 0;
         avg2value = 0;
         avg2counter = 0;
+
+        double last_calibration = 0;
+
+        if (doMgdl)
+        {
+            Profile.scale_factor = Constants.MMOLL_TO_MGDL;
+        } else {
+            Profile.scale_factor = 1;
+        }
+
+        // enumerate calibrations
+        try {
+            for (Calibration calibration : calibrations) {
+                calibrationValues.add(new PointValue((float) (calibration.timestamp / FUZZER), (float) unitized(calibration.bg)));
+           if (calibration.timestamp > last_calibration)
+           {
+               last_calibration = calibration.timestamp;
+           }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Exception doing calibration values in bggraphbuilder: " + e.toString());
+        }
 
         for (BgReading bgReading : bgReadings) {
             // jamorham special
@@ -473,20 +550,74 @@ public class BgGraphBuilder {
                  avg1counter++;
                  avg1value +=bgReading.calculated_value;
             }
+
+            if ((bgReading.timestamp > trendstart) && (bgReading.timestamp > last_calibration))
+             {
+                 if (bgReading.filtered_calculated_value>0) {
+                     polyxList.add((double) bgReading.timestamp - 500000);
+                     polyyList.add(unitized(bgReading.filtered_calculated_value));
+                 }
+                 if (bgReading.calculated_value>0) {
+                     polyxList.add((double) bgReading.timestamp);
+                     polyyList.add(unitized(bgReading.calculated_value));
+                 }
+                Log.d(TAG,"poly Added: "+JoH.qs(polyxList.get(polyxList.size()-1))+" / "+JoH.qs(polyyList.get(polyyList.size() - 1), 2));
+            }
+
         }
         if (avg1counter>0) { avg1value = avg1value / avg1counter; };
         if (avg2counter>0) { avg2value = avg2value / avg2counter; };
 
+        try {
+            Log.d(TAG, "Poly list size: " + polyxList.size());
+            double[] polyys = PolyTrendLine.toPrimitiveFromList(polyyList);
+            double[] polyxs = PolyTrendLine.toPrimitiveFromList(polyxList);
+
+            // set and evaluate poly curve models and select first best
+            double min_errors = 9999999;
+            for (TrendLine this_poly : polys) {
+                if (this_poly != null) {
+                    if (poly == null) poly = this_poly;
+                    this_poly.setValues(polyys, polyxs);
+                    if (this_poly.errorVarience() < min_errors) {
+                        min_errors = this_poly.errorVarience();
+                        poly = this_poly;
+                        //Log.d(TAG, "set forecast best model to: " + poly.getClass().getSimpleName() + " with varience of: " + JoH.qs(poly.errorVarience(),14));
+                    }
+
+                }
+            }
+            Log.d(TAG, "set forecast best model to: " + poly.getClass().getSimpleName() + " with varience of: " + JoH.qs(poly.errorVarience(),4));
+
+
+        } catch (Exception e)
+        {
+            Log.e(TAG," Error with poly trend: "+e.toString());
+        }
+
+        try {
+            // show trend for whole bg reading area
+            if (prefs.getBoolean("show_momentum_working_line",false)) {
+                for (BgReading bgReading : bgReadings) {
+                    // only show working curve for last x hours to a
+                    if (bgReading.timestamp > momentum_illustration_start) {
+                        double polyPredicty = poly.predict(bgReading.timestamp);
+                        //Log.d(TAG, "Poly predict: "+JoH.qs(polyPredict)+" @ "+JoH.qs(iob.timestamp));
+                        if ((polyPredicty < highMark) && (polyPredicty > 0)) {
+                            PointValue zv = new PointValue((float) (bgReading.timestamp / FUZZER), (float) polyPredicty);
+                            polyBgValues.add(zv);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG,"Error creating back trend: "+e.toString());
+        }
+
         //Log.i(TAG,"Average1 value: "+unitized(avg1value));
         //Log.i(TAG,"Average2 value: "+unitized(avg2value));
 
-        try {
-            for (Calibration calibration : calibrations) {
-                calibrationValues.add(new PointValue((float) (calibration.timestamp / FUZZER), (float) unitized(calibration.bg)));
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Exception doing calibration values in bggraphbuilder: " + e.toString());
-        }
+
         try {
             // display treatment blobs and annotations
             for (Treatments treatment : treatments) {
@@ -542,6 +673,16 @@ public class BgGraphBuilder {
             // this can be optimised to oncreate and onchange
             Profile.reloadPreferences(prefs);
 
+            double[] evaluation;
+            if (doMgdl)
+            {
+                // These routines need to understand how the profile is defined to use native instead of scaled
+                evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
+            } else {
+                evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
+
+            }
+
             try {
                 if (mylastbg != null) {
                     if (doMgdl) {
@@ -560,6 +701,9 @@ public class BgGraphBuilder {
             long fuzzed_timestamp = (long) end_time; // initial value in case there are no iob records
 
             if (iobinfo != null) {
+
+                double predict_weight = 0.1;
+
                 for (Iob iob : iobinfo) {
 
                     double activity = iob.activity;
@@ -586,12 +730,36 @@ public class BgGraphBuilder {
 
                         // do we actually need to calculate this within the loop - can we use only the last datum?
                         if (fuzzed_timestamp > (lasttimestamp)) {
+                            double polyPredict = 0;
+                            try {
+                                polyPredict = poly.predict(iob.timestamp);
+                                Log.d(TAG, "Poly predict: " + JoH.qs(polyPredict) + " @ " + JoH.qs(iob.timestamp));
+                                if (prefs.getBoolean("show_momentum_working_line",false)) {
+                                    if ((polyPredict < highMark) && (polyPredict > 0)) {
+                                        PointValue zv = new PointValue((float) fuzzed_timestamp, (float) polyPredict);
+                                        polyBgValues.add(zv);
+                                    }
+                                }
+                            } catch (Exception e)
+                            {
+                                Log.e(TAG,"Got exception with poly predict: "+e.toString());
+                            }
                             Log.d(TAG, "Processing prediction: before: " + JoH.qs(predictedbg) + " activity: " + JoH.qs(activity) + " jcarbimpact: " + JoH.qs(iob.jCarbImpact));
                             predictedbg -= iob.jActivity; // lower bg by current insulin activity
                             predictedbg += iob.jCarbImpact;
+                            boolean merge_smoothing = true;
+                            double predictedbg_final = predictedbg;
+                            if (polyPredict>0)
+                            {
+                                predictedbg_final = ((predictedbg * predict_weight) + polyPredict )/(predict_weight+1);
+                                if (merge_smoothing) predictedbg = predictedbg_final;
+
+                            Log.d(TAG,"forecast predict_weight: "+JoH.qs(predict_weight));
+                            }
+                            predict_weight = predict_weight * 2.5; // from 0-infinity - // TODO account for step!!!
                             // we should pull in actual graph upper and lower limits here
-                            if ((predictedbg < highMark) && (predictedbg > 0)) {
-                                PointValue zv = new PointValue((float) fuzzed_timestamp, (float) predictedbg);
+                            if ((predictedbg_final < highMark) && (predictedbg_final > 0)) {
+                                PointValue zv = new PointValue((float) fuzzed_timestamp, (float) predictedbg_final);
                                 predictedBgValues.add(zv);
                             }
                         }
@@ -624,17 +792,8 @@ public class BgGraphBuilder {
                 Log.d(TAG, "iobinfo was null");
             }
 
-            double[] evaluation;
-            if (doMgdl)
-            {
-                // These routines need to understand how the profile is defined to use native instead of scaled
-                Profile.scale_factor = Constants.MMOLL_TO_MGDL;
-                evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
-            } else {
-                Profile.scale_factor = 1;
-                evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
 
-            }
+
                 Log.d(TAG, "Predictive Bolus Wizard suggestion: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
             if (evaluation[0] > Profile.minimum_carb_recommendation) {
                 PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));

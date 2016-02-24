@@ -79,9 +79,11 @@ public class Treatments extends Model {
         Treatment.carbs = carbs;
         Treatment.insulin = insulin;
         Treatment.timestamp = timestamp;
+        Treatment.created_at = DateUtil.toISOString(timestamp);
         Treatment.uuid = UUID.randomUUID().toString();
         Treatment.save();
         GcmActivity.pushTreatmentAsync(Treatment);
+        NSClientChat.pushTreatmentAsync(Treatment);
         return Treatment;
     }
 
@@ -96,6 +98,14 @@ public class Treatments extends Model {
         return new Select()
                 .from(Treatments.class)
                 .where("uuid = ?", uuid)
+                .orderBy("_ID desc")
+                .executeSingle();
+    }
+
+    public static Treatments byTimestamp(long timestamp) {
+        return new Select()
+                .from(Treatments.class)
+                .where("timestamp <= ? and timestamp >= ?", (timestamp + 1500), (timestamp - 1500)) // 3 second window
                 .orderBy("_ID desc")
                 .executeSingle();
     }
@@ -152,10 +162,22 @@ public class Treatments extends Model {
         Log.d(TAG, "converting treatment from json: ");
         Treatments mytreatment = fromJSON(json);
         if (mytreatment != null) {
+            Treatments dupe_treatment = byTimestamp(mytreatment.timestamp);
+            if (dupe_treatment !=null)
+            {
+                Log.i(TAG,"Duplicate treatment for: "+mytreatment.timestamp);
+                return false;
+            }
             Log.d(TAG, "Saving pushed treatment: " + mytreatment.uuid);
-            mytreatment.enteredBy = "sync";
-            mytreatment.eventType = "<none>"; // should have a default
-            mytreatment.save();
+            if ((mytreatment.enteredBy == null) || (mytreatment.enteredBy.equals("")))
+            {
+                mytreatment.enteredBy = "sync";
+            }
+            if ((mytreatment.eventType == null ) || (mytreatment.eventType.equals("")))
+            {
+                mytreatment.eventType = "<none>"; // should have a default
+            }
+                mytreatment.save();
             long x = mytreatment.save();
             Log.d(TAG, "Saving treatment result: " + x);
             Home.staticRefreshBGCharts();
@@ -260,6 +282,164 @@ public class Treatments extends Model {
         response.activity = activityContrib;
         return response;
     }
+
+
+    public static List<Iob> ioBForGraph_new(int number, double startTime) {
+
+        Log.d(TAG, "Processing iobforgraph: main  ");
+        // get all treatments from 24 hours earlier than our current time
+        List<Treatments> theTreatments = latestForGraph(2000, startTime - 86400000);
+        Map<String, Boolean> carbsEaten = new HashMap<String, Boolean>();
+        // this could be much more optimized with linear array instead of loops
+
+        final double dontLookThisFar = 10 * 60 * 60 * 1000; // 10 hours max look
+
+        double stomachCarbs = 0;
+
+        final double step_minutes = 10;
+        final double stepms = step_minutes * 60 * 1000; // 600s = 10 mins
+
+        if (theTreatments.size() == 0) return null;
+
+        Map ioblookup = new HashMap<Double, Double>(); // store for iob total vs time
+
+        List<Iob> responses = new ArrayList<Iob>();
+        Iob calcreply;
+
+        double mytime = startTime;
+        double lastmytime = mytime;
+        double max_look_time = startTime + (30 * 60 * 60 * 1000);
+        int counter = 0;
+        // 30 hours max look at
+        while ((responses.size() < number) && (mytime < max_look_time)) {
+
+            double lastDecayedBy = 0, isDecaying = 0, delayMinutes = 0; // reset per time slot
+            double totalIOB = 0, totalCOB = 0, totalActivity = 0;
+            // per treatment per timeblock
+            for (Treatments thisTreatment : theTreatments) {
+                // early optimisation exclusion
+                if ((thisTreatment.timestamp <= mytime) && (mytime - thisTreatment.timestamp) < dontLookThisFar) {
+                    calcreply = calcTreatment(thisTreatment, mytime, lastDecayedBy); // was last decayed by but that offset wrongly??
+                    totalIOB += calcreply.iob;
+                    //totalCOB += calcreply.cob;
+                    totalActivity += calcreply.activity;
+                } // endif excluding a treatment
+            } // per treatment
+
+            //
+            ioblookup.put(mytime, totalIOB);
+            if (ioblookup.containsKey(lastmytime)) {
+                double iobdiff = (double) ioblookup.get(lastmytime) - totalIOB;
+                if (iobdiff < 0) iobdiff = 0;
+                if ((iobdiff != 0) || (totalActivity != 0)) {
+                    Log.d(TAG, "New IOB diffi @: " + JoH.qs(mytime) + " = " + JoH.qs(iobdiff) + " old activity: " + JoH.qs(totalActivity));
+                }
+                totalActivity = iobdiff; // WARNING OVERRIDE
+            }
+
+            double stomachDiff = ((Profile.getCarbAbsorptionRate(mytime) * stepms) / (60 * 60 * 1000));
+            double newdelayedCarbs = (totalActivity * Profile.getLiverSensRatio(mytime) / Profile.getSensitivity(mytime)) * Profile.getCarbRatio(mytime);
+
+            // calculate carbs
+            for (Treatments thisTreatment : theTreatments) {
+                // early optimisation exclusion
+                if ((thisTreatment.timestamp <= mytime) && (mytime - thisTreatment.timestamp) < dontLookThisFar) {
+                    if ((thisTreatment.carbs > 0) && (thisTreatment.timestamp < mytime)) {
+                        // factor carbs delay in above when complete
+                        if (!carbsEaten.containsKey(thisTreatment.uuid)) {
+                            carbsEaten.put(thisTreatment.uuid, true);
+                            stomachCarbs = stomachCarbs + thisTreatment.carbs;
+                            stomachCarbs = stomachCarbs + stomachDiff; // offset first subtraction
+                            // pre-subtract for granularity or just reduce granularity
+                            Log.d(TAG, "newcarbs: " + thisTreatment.carbs + " " + thisTreatment.uuid + " @ " + thisTreatment.timestamp + " mytime: " + JoH.qs(mytime) + " diff: " + JoH.qs((thisTreatment.timestamp - mytime) / 1000) + " stomach: " + JoH.qs(stomachCarbs));
+                        }
+                        lastCarbs = thisTreatment;
+                        CobCalc cCalc = cobCalc(thisTreatment, lastDecayedBy, mytime); // need to handle last decayedby shunting
+                        double decaysin_hr = (cCalc.decayedBy - mytime) / 1000 / 60 / 60;
+                        if (decaysin_hr > -10) {
+                            // units: BG
+                            double avgActivity = totalActivity;
+                            // units:  g     =       BG      *      scalar     /          BG / U                           *     g / U
+                            double delayedCarbs = (avgActivity * Profile.getLiverSensRatio(mytime) / Profile.getSensitivity(mytime)) * Profile.getCarbRatio(mytime);
+
+                            delayMinutes = Math.round(delayedCarbs / (Profile.getCarbAbsorptionRate(mytime) / 60));
+                            Log.d(TAG, "Avg activity: " + JoH.qs(avgActivity) + " Decaysin_hr: " + JoH.qs(decaysin_hr) + " delay minutes: " + JoH.qs(delayMinutes) + " delayed carbs: " + JoH.qs(delayedCarbs));
+                            if (delayMinutes > 0) {
+                                Log.d(TAG, "Delayed Carbs: " + JoH.qs(delayedCarbs) + " Delay minutes: " + JoH.qs(delayMinutes) + " Average activity: " + JoH.qs(avgActivity));
+                                cCalc.decayedBy += delayMinutes * 60 * 1000;
+                                decaysin_hr = (cCalc.decayedBy - mytime) / 1000 / 60 / 60;
+                            }
+                        }
+
+                        lastDecayedBy = cCalc.decayedBy;
+
+                        if (decaysin_hr > 0) {
+                            Log.d(TAG, "cob: Adding " + JoH.qs(delayMinutes) + " minutes to decay of " + JoH.qs(thisTreatment.carbs) + "g bolus at " + JoH.qs(thisTreatment.timestamp));
+                            totalCOB += Math.min(thisTreatment.carbs, decaysin_hr * Profile.getCarbAbsorptionRate(thisTreatment.timestamp));
+                            Log.d(TAG, "cob: " + JoH.qs(Math.min(cCalc.initialCarbs, decaysin_hr * Profile.getCarbAbsorptionRate(thisTreatment.timestamp)))
+                                    + " inital carbs:" + JoH.qs(cCalc.initialCarbs) + " decaysin_hr:" + JoH.qs(decaysin_hr) + " absorbrate:" + JoH.qs(Profile.getCarbAbsorptionRate(thisTreatment.timestamp)));
+                            isDecaying = cCalc.isDecaying;
+                        } else {
+                            //    totalCOB = 0; //nix this?
+                        }
+                    } // if this treatment has carbs
+                } // end if processing this treatment
+            } // per carb treatment
+
+            if (stomachCarbs > 0) {
+
+                Log.d(TAG, "newcarbs Stomach Diff: " + JoH.qs(stomachDiff) + " Old total: " + JoH.qs(stomachCarbs) + " Delayed carbs: " + JoH.qs(newdelayedCarbs));
+
+                stomachCarbs = stomachCarbs - stomachDiff;
+                if (newdelayedCarbs > 0) {
+                    double maximpact = stomachDiff * Profile.maxLiverImpactRatio(mytime);
+                    if (newdelayedCarbs > maximpact) newdelayedCarbs = maximpact;
+                    stomachCarbs = stomachCarbs + newdelayedCarbs; // add back on liverfactor ones
+                }
+                if (stomachCarbs < 0) stomachCarbs = 0;
+            }
+
+            if ((totalIOB > Profile.minimum_shown_iob) || (totalCOB > Profile.minimum_shown_cob) || (stomachCarbs > Profile.minimum_shown_cob)) {
+                Iob thisrecord = new Iob();
+
+                thisrecord.timestamp = (long) mytime;
+                thisrecord.iob = totalIOB;
+                thisrecord.activity = totalActivity; // hacky cruft
+                thisrecord.cob = stomachCarbs;
+                thisrecord.jCarbImpact = 0; // calculated below
+                thisrecord.rawCarbImpact = (isDecaying * Profile.getSensitivity(mytime)) / Profile.getCarbRatio(mytime) * Profile.getCarbAbsorptionRate(mytime) / 60;
+
+                // don't get confused with cob totals from previous treatments
+                if ((responses.size() > 0) && (Math.abs(responses.get(responses.size() - 1).timestamp - thisrecord.timestamp) <= stepms)) {
+                    double cobdiff = responses.get(responses.size() - 1).cob - thisrecord.cob;
+                    if (cobdiff > 0) {
+                        thisrecord.jCarbImpact = (cobdiff / Profile.getCarbRatio(mytime)) * Profile.getSensitivity(mytime);
+                    }
+
+                    double iobdiff = responses.get(responses.size() - 1).iob - totalIOB;
+                    if (iobdiff > 0) {
+                        thisrecord.jActivity = (iobdiff * Profile.getSensitivity(mytime));
+                    }
+                }
+
+                Log.d(TAG, "added record: cob raw impact: " + Double.toString(thisrecord.rawCarbImpact) + " Isdecaying: "
+                        + JoH.qs(isDecaying) + " jCarbImpact: " + JoH.qs(thisrecord.jCarbImpact) +
+                        " jActivity: " + JoH.qs(thisrecord.jActivity) + " old activity: " + JoH.qs(thisrecord.activity));
+
+                responses.add(thisrecord);
+            }
+            lastmytime = mytime;
+            mytime = mytime + stepms;
+            counter++;
+        } // while time period in range
+
+        Log.d(TAG, "Finished Processing iobforgraph: main - processed:  " + Integer.toString(counter) + " Timeslot records");
+        return responses;
+    }
+
+
+
+    /// OLD ONE BELOW
 
 
     public static List<Iob> ioBForGraph(int number, double startTime) {

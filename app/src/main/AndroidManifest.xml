@@ -268,6 +268,23 @@
                 <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
             </intent-filter>
         </activity>
+        <receiver android:name=".NSClientReceiver">
+            <intent-filter>
+                <action android:name="info.nightscout.client.NEW_SGV"></action>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="info.nightscout.client.NEW_TREATMENT"></action>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="info.nightscout.client.CHANGED_TREATMENT"></action>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="info.nightscout.client.REMOVED_TREATMENT"></action>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="info.nightscout.client.NEW_PROFILE"></action>
+            </intent-filter>
+        </receiver>
 
         <receiver
             android:name=".localeTasker.receiver.FireReceiver"

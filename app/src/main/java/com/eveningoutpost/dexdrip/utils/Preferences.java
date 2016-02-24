@@ -778,6 +778,7 @@ public class Preferences extends PreferenceActivity {
                         CollectionServiceStarter.restartCollectionService(preference.getContext(), (String) newValue);
                         if (newValue.equals("Follower"))
                         {
+                            prefs.edit().putBoolean("plus_follow_master", false).apply();
                             GcmActivity.requestBGsync();
                         }
                     } else {

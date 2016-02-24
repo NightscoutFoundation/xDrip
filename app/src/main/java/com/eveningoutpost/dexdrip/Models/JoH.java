@@ -5,12 +5,16 @@ import android.text.method.DigitsKeyListener;
 import android.util.Base64;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -18,12 +22,14 @@ import java.util.zip.Inflater;
 
 /**
  * Created by jamorham on 06/01/16.
- * <p/>
+ * <p>
  * lazy helper class for utilities
  */
 public class JoH {
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
     private final static String TAG = "jamorham JoH";
+
+    private static double benchmark_time = 0;
 
     // qs = quick string conversion of double for printing
     public static String qs(double x) {
@@ -33,7 +39,7 @@ public class JoH {
     public static String qs(double x, int digits) {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setDecimalSeparator('.');
-        DecimalFormat df = new DecimalFormat("#",symbols);
+        DecimalFormat df = new DecimalFormat("#", symbols);
         df.setMaximumFractionDigits(digits);
         df.setMinimumIntegerDigits(1);
         return df.format(x);
@@ -158,5 +164,38 @@ public class JoH {
             return InputType.TYPE_CLASS_NUMBER;
         }
 
+    }
+
+    public static String backTrace() {
+        try {
+            StackTraceElement stack = new Exception().getStackTrace()[2];
+            StackTraceElement stackb = new Exception().getStackTrace()[3];
+            return stackb.getClassName() + "::" + stackb.getMethodName() + " -> " + stack.getClassName() + "::" + stack.getMethodName();
+        } catch (Exception e) {
+            return "unknown backtrace";
+        }
+    }
+
+    public static void benchmark(String name) {
+        if (name == null) {
+            if (benchmark_time == 0) {
+                benchmark_time = ts();
+            } else {
+                Log.e(TAG, "Cannot start a benchmark as one is already running - cancelling");
+                benchmark_time = 0;
+            }
+        } else {
+            if (benchmark_time == 0) {
+                Log.e(TAG, "Benchmark: " + name + " no benchmark set!");
+            } else {
+                Log.i(TAG, "Benchmark: " + name + " " + (ts() - benchmark_time) + " ms");
+                benchmark_time = 0;
+            }
+        }
+    }
+
+    public static HashMap<String, Object> JsonStringtoMap(String json) {
+        return new Gson().fromJson(json, new TypeToken<HashMap<String, Object>>() {
+        }.getType());
     }
 }

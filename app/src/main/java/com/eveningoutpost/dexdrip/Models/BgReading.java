@@ -203,7 +203,8 @@ public class BgReading extends Model implements ShareUploadableBg{
     public static double currentSlope(boolean is_follower) {
         List<BgReading> last_2 = BgReading.latest(2, is_follower);
         if ((last_2 != null) && (last_2.size() == 2)) {
-            return calculateSlope(last_2.get(0), last_2.get(1));
+            double slope = calculateSlope(last_2.get(0), last_2.get(1));
+            return slope;
         } else {
             return 0d;
         }
@@ -461,7 +462,7 @@ public class BgReading extends Model implements ShareUploadableBg{
         return arrow;
     }
 
-    public double slopefromName(String slope_name) {
+    public static double slopefromName(String slope_name) {
         double slope_by_minute = 0;
         if (slope_name.compareTo("DoubleDown") == 0) {
             slope_by_minute = -3.5;
@@ -477,14 +478,22 @@ public class BgReading extends Model implements ShareUploadableBg{
             slope_by_minute = 3.5;
         } else if (slope_name.compareTo("DoubleUp") == 0) {
             slope_by_minute = 4;
-        } else if (slope_name.compareTo("NOT_COMPUTABLE") == 0 ||
-                   slope_name.compareTo("NOT COMPUTABLE") == 0 ||
-                   slope_name.compareTo("OUT_OF_RANGE")   == 0 ||
-                   slope_name.compareTo("OUT OF RANGE")   == 0 ||
-                   slope_name.compareTo("NONE") == 0) {
+        } else if (isSlopeNameInvalid(slope_name)) {
             slope_by_minute = 0;
         }
         return slope_by_minute /60000;
+    }
+
+    public static boolean isSlopeNameInvalid(String slope_name) {
+        if (slope_name.compareTo("NOT_COMPUTABLE") == 0 ||
+                slope_name.compareTo("NOT COMPUTABLE") == 0 ||
+                slope_name.compareTo("OUT_OF_RANGE") == 0 ||
+                slope_name.compareTo("OUT OF RANGE") == 0 ||
+                slope_name.compareTo("NONE") == 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static BgReading last()
@@ -664,8 +673,10 @@ public class BgReading extends Model implements ShareUploadableBg{
             try {
                 if (readingNearTimeStamp(bgr.timestamp) == null) {
                     bgr.save();
-                    if (do_notification)
+                    if (do_notification) {
                         xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
+                        BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), true); // pebble and widget
+                    }
                 } else {
                     Log.d(TAG, "Ignoring duplicate bgr record due to timestamp: " + json);
                 }

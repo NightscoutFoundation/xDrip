@@ -58,8 +58,10 @@ public class ParakeetHelper {
     }
 
     public static void checkParakeetNotifications(long timestamp) {
+        Log.d(TAG,"checkParakeetNotifications:"+waiting_for_parakeet+" "+timestamp+ " vs "+wait_timestamp);
         if (waiting_for_parakeet) {
             if (timestamp > wait_timestamp) {
+                Log.d(TAG,"sending notification");
                 sendNotification("The parakeet has connected to the web service.",
                         "Parakeet has connected!");
                 waiting_for_parakeet = false;

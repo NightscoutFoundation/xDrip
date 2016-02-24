@@ -54,6 +54,11 @@
                     android:title="Show Graph total average" />
                 <CheckBoxPreference
                     android:defaultValue="false"
+                    android:key="show_momentum_working_line"
+                    android:summary="Predictive model inner workings"
+                    android:title="Show Momentum working curve" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
                     android:key="always_show_bwp"
                     android:summary="Display Insulin/Carb calculations at all times"
                     android:title="Always show Bolus Wizard Preview" />
@@ -129,6 +134,12 @@
                     android:key="plus_follow_master"
                     android:summary="This device will send data to followers"
                     android:title="Be master for followers" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:dependency="plus_follow_master"
+                    android:key="plus_follow_geolocation"
+                    android:summary="Send Parakeet map location to followers"
+                    android:title="Sync Parakeet GeoLocation" />
             </PreferenceCategory>
         </PreferenceScreen>
 
