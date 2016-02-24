@@ -35,6 +35,11 @@
 -dontwarn org.slf4j.**
 -dontwarn rx.internal.util.**
 -dontwarn org.apache.commons.**
+-dontwarn uk.com.robust-it.**
+-dontwarn com.rits.cloning.**
+-dontwarn obj.objenesis.instantiator.sun.**
+-dontwarn obj.objenesis.instantiator.sun.UnsafeFactoryInstantiator
+-dontwarn sun.misc.Unsafe
 
 -keep class com.nightscout.** { *; }
 -keep class com.squareup.** { *; }
