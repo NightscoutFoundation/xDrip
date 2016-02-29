@@ -1,3 +1,5 @@
+<!--                        android:targetPackage="@string/target_package" -->
+
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
         android:title="Alerts and Notifications"
@@ -116,6 +118,24 @@
                     android:inputType="number"
                     android:summary="Alert if no data receieved in x minutes"
                     android:defaultValue="30" />
+                
+                 <EditTextPreference
+                    android:dependency="bg_missed_alerts"
+                    android:key="bg_missed_minutes_summery"
+                    android:title="alert config \n 30 minutes before alerting \n from 07:00 to 09:00"
+                    android:inputType="text"
+                    android:summary="30 minutes before alerting \n from 07:00 to 09:00"
+                    android:enabled="false"
+                    android:defaultValue="90" />
+                 <Preference
+                    android:title="configure Missed readings alert"
+                    android:key="bg_missed_minutes_config">
+                        <intent
+                            android:action="android.intent.action.MAIN"
+                            android:targetPackage = "com.eveningoutpost.dexdrip"
+                            android:targetClass="com.eveningoutpost.dexdrip.MissedReadingActivity"/>
+                 </Preference>
+                
             </PreferenceCategory>
             
             <PreferenceCategory

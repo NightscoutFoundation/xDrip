@@ -250,6 +250,9 @@
             android:name=".ErrorsActivity"
             android:label="Error List" />
         <activity
+            android:name=".MissedReadingActivity"
+            android:label="Configure Missed Readings" />
+        <activity
             android:name=".FollowerManagementActivity"
             android:label="Manage Followers" />
 
