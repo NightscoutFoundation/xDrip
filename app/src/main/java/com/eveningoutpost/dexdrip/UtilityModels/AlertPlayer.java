@@ -50,7 +50,7 @@ class MediaPlayerCreaterHelper {
                 synchronized(lock1_) {
                     try {
                         mediaPlayer_ = new MediaPlayer();
-                        Log.e(TAG, "media player created");
+                        Log.i(TAG, "media player created");
                     } finally {
                         mplayerCreated_ = true;
                         lock1_.notifyAll();
@@ -275,9 +275,7 @@ public class AlertPlayer {
             volumeBeforeAlert = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
             volumeForThisAlert = (int)(maxVolume * VolumeFrac);
             
-            volumeForThisAlert = 1;//?????????????????????
-            
-            Log.e("VOLUME", "before playing volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert);
+            Log.i(TAG, "before playing volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert);
             manager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeForThisAlert, 0);
 
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -286,7 +284,7 @@ public class AlertPlayer {
                     Log.i(TAG, "PlayFile: onCompletion called (finished playing) ");
                     AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
                     int currentVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
-                    Log.e("VOLUME", "After playing volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert
+                    Log.i(TAG, "After playing volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert
                             + " currentVolume " + currentVolume);
                     if(volumeForThisAlert == currentVolume) {
                         // If the user has changed the volume, don't change it again.
