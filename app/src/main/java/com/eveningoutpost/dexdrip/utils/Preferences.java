@@ -236,6 +236,11 @@ public class Preferences extends PreferenceActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        try {
+            setTheme(R.style.OldAppTheme);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to set theme");
+        }
         super.onCreate(savedInstanceState);
         preferenceFragment = new AllPrefsFragment();
         getFragmentManager().beginTransaction().replace(android.R.id.content,
@@ -629,6 +634,12 @@ public class Preferences extends PreferenceActivity {
                 prefs.edit().putString("custom_sync_key", CipherUtils.getRandomHexKey()).apply();
             }
             bindPreferenceSummaryToValue(findPreference("custom_sync_key")); // still needed?
+
+            bindPreferenceSummaryToValue(findPreference("xplus_insulin_dia"));
+            bindPreferenceSummaryToValue(findPreference("xplus_liver_sensitivity"));
+            bindPreferenceSummaryToValue(findPreference("xplus_liver_maximpact"));
+
+
 
             useCustomSyncKey.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override

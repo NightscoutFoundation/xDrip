@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -18,7 +18,7 @@ import com.squareup.okhttp.Response;
 
 import java.util.concurrent.TimeUnit;
 
-public class SendFeedBack extends Activity {
+public class SendFeedBack extends AppCompatActivity {
 
     private  String send_url;
     private final String TAG = "jamorham feedback";

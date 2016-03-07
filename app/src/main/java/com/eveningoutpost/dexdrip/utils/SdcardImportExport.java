@@ -9,13 +9,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
-import com.google.zxing.integration.android.IntentIntegrator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,7 +24,10 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class SdcardImportExport extends Activity {
+import static com.eveningoutpost.dexdrip.utils.FileUtils.getExternalDir;
+
+
+public class SdcardImportExport extends AppCompatActivity {
 
     private final static String TAG = "jamorham sdcard";
     private final static int MY_PERMISSIONS_REQUEST_STORAGE = 1004;
@@ -55,9 +59,14 @@ public class SdcardImportExport extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        activity = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sdcard_import_export);
-        activity = this;
+        JoH.fixActionBar(this);
+
+        // SUPER DATABASE DEBUG COPY FOR NON ROOTED
+        //directCopyFile(new File("/data/data/com.eveningoutpost.dexdrip/databases/DexDrip.db"),new File("/sdcard/DexDrip-debug.db"));
+
     }
 
     private boolean checkPermissions()
@@ -154,6 +163,10 @@ public class SdcardImportExport extends Activity {
                 Environment.DIRECTORY_DOWNLOADS) + "/xDrip-export";
     }
 
+    private String getxDripCustomSDcardpath() {
+        return getExternalDir() + "/settingsExport";
+    }
+
     private static byte[] dataToBytes(String filename, Context context) {
         File source_file = new File(context.getFilesDir().getParent() + "/" + filename);
         try {
@@ -186,6 +199,18 @@ public class SdcardImportExport extends Activity {
     private boolean dataFromSDcopy(String filename) {
         File dest_file = new File(getFilesDir().getParent() + "/" + filename);
         File source_file = new File(getCustomSDcardpath() + "/" + dest_file.getName());
+        File source_file_xdrip = new File(getxDripCustomSDcardpath() + "/" + dest_file.getName());
+
+        if (source_file.exists() && source_file_xdrip.exists())
+        {
+            toast("Warning settings from xDrip and xDrip+ exist - loading xDrip+");
+        } else {
+            if (source_file_xdrip.exists())
+            {
+                source_file = source_file_xdrip;
+                toast("Loading settings from xDrip mainline");
+            }
+        }
         try {
             dest_file.mkdirs();
             if (directCopyFile(source_file, dest_file)) {

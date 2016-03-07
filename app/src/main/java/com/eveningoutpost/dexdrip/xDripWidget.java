@@ -91,10 +91,15 @@ public class xDripWidget extends AppWidgetProvider {
                 views.setTextViewText(R.id.widgetArrow, slope_arrow);
                 views.setInt(R.id.widgetBg, "setPaintFlags", 0);
             }
-            List<BgReading> bgReadingList =  BgReading.latest(2);
+
+            if (!Home.is_follower_set) Home.set_is_follower();
+
+            // is it really necessary to read this data once here and again in unitizedDeltaString?
+            // couldn't we just use the unitizedDeltaString to detect the error condition?
+            List<BgReading> bgReadingList =  BgReading.latest(2,Home.is_follower);
             if(bgReadingList != null && bgReadingList.size() == 2) {
 
-                views.setTextViewText(R.id.widgetDelta, bgGraphBuilder.unitizedDeltaString(true, true));
+                views.setTextViewText(R.id.widgetDelta, bgGraphBuilder.unitizedDeltaString(true, true, Home.is_follower));
             } else {
                 views.setTextViewText(R.id.widgetDelta, "--");
             }

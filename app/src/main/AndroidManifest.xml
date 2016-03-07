@@ -53,7 +53,7 @@
         <activity
             android:name=".Home"
             android:label="@string/app_name"
-            android:launchMode="standard">
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -268,24 +268,24 @@
                 <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
             </intent-filter>
         </activity>
+
         <receiver android:name=".NSClientReceiver">
             <intent-filter>
-                <action android:name="info.nightscout.client.NEW_SGV"></action>
+                <action android:name="info.nightscout.client.NEW_SGV" />
             </intent-filter>
             <intent-filter>
-                <action android:name="info.nightscout.client.NEW_TREATMENT"></action>
+                <action android:name="info.nightscout.client.NEW_TREATMENT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="info.nightscout.client.CHANGED_TREATMENT"></action>
+                <action android:name="info.nightscout.client.CHANGED_TREATMENT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="info.nightscout.client.REMOVED_TREATMENT"></action>
+                <action android:name="info.nightscout.client.REMOVED_TREATMENT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="info.nightscout.client.NEW_PROFILE"></action>
+                <action android:name="info.nightscout.client.NEW_PROFILE" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".localeTasker.receiver.FireReceiver"
             android:exported="true"
@@ -294,6 +294,7 @@
                 <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
             </intent-filter>
         </receiver>
+
         <service
             android:name=".TaskService"
             android:exported="true"
@@ -342,7 +343,10 @@
         <service
             android:name=".Services.DoNothingService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".HelpActivity" />
+        <activity android:name=".Agreement"></activity>
     </application>
 
 </manifest>

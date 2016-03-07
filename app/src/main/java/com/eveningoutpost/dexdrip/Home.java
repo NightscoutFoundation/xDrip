@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -14,6 +15,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -23,9 +25,11 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
+import android.support.annotation.IdRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -58,6 +62,9 @@ import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.Target;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.gson.Gson;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
@@ -93,6 +100,8 @@ public class Home extends ActivityWithMenu {
     public static boolean invalidateMenu = false;
     public static Context staticContext;
     public static boolean is_follower = false;
+    public static boolean is_follower_set = false;
+    private static boolean reset_viewport = false;
     private boolean updateStuff;
     private boolean updatingPreviewViewport = false;
     private boolean updatingChartViewport = false;
@@ -103,7 +112,7 @@ public class Home extends ActivityWithMenu {
     private boolean isBTShare;
     private BroadcastReceiver _broadcastReceiver;
     private BroadcastReceiver newDataReceiver;
-    private LineChartView            chart;
+    private LineChartView chart;
     private ImageButton btnSpeak;
     private ImageButton btnApprove;
     private ImageButton btnCancel;
@@ -137,17 +146,25 @@ public class Home extends ActivityWithMenu {
     boolean timeset = false;
     private wordDataWrapper searchWords = null;
 
+    static boolean oneshot = false;
+    private static ShowcaseView myShowcase;
+    public Activity mActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+        mActivity = this;
         staticContext = getApplicationContext();
+        super.onCreate(savedInstanceState);
+        setTheme(R.style.AppThemeToolBarLite); // for toolbar mode
+
         set_is_follower();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         checkEula();
         setContentView(R.layout.activity_home);
+
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(mToolbar);
 
         this.dexbridgeBattery = (TextView) findViewById(R.id.textBridgeBattery);
         this.currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
@@ -296,8 +313,9 @@ public class Home extends ActivityWithMenu {
             }
         });
 
+        JoH.fixActionBar(this);
         activityVisible = true;
-        PlusSyncService.startSyncService(getApplicationContext(),"HomeOnCreate");
+        PlusSyncService.startSyncService(getApplicationContext(), "HomeOnCreate");
         ParakeetHelper.notifyOnNextCheckin(false);
     }
 
@@ -643,14 +661,13 @@ public class Home extends ActivityWithMenu {
 
     }
 
-    public static void toaststatic(String msg)
-    {
-        nexttoast=msg;
+    public static void toaststatic(String msg) {
+        nexttoast = msg;
         staticRefreshBGCharts();
     }
-    public static void toaststaticnext(String msg)
-    {
-        nexttoast=msg;
+
+    public static void toaststaticnext(String msg) {
+        nexttoast = msg;
     }
 
     public void toast(final String msg) {
@@ -713,15 +730,24 @@ public class Home extends ActivityWithMenu {
     }
 
     private void checkEula() {
-        boolean IUnderstand = prefs.getBoolean("I_understand", false);
-        if (!IUnderstand) {
-            Intent intent = new Intent(getApplicationContext(), LicenseAgreementActivity.class);
-            startActivity(intent);
+
+        boolean warning_agreed_to = prefs.getBoolean("warning_agreed_to", false);
+        if (!warning_agreed_to)
+        {
+            startActivity(new Intent(getApplicationContext(), Agreement.class));
             finish();
+        } else {
+            boolean IUnderstand = prefs.getBoolean("I_understand", false);
+            if (!IUnderstand) {
+                Intent intent = new Intent(getApplicationContext(), LicenseAgreementActivity.class);
+                startActivity(intent);
+                finish();
+            }
         }
     }
 
     public static void staticRefreshBGCharts() {
+        reset_viewport = true;
         if (activityVisible) {
             Intent updateIntent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA);
             staticContext.sendBroadcast(updateIntent);
@@ -752,10 +778,9 @@ public class Home extends ActivityWithMenu {
         registerReceiver(newDataReceiver, new IntentFilter(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA));
         holdViewport.set(0, 0, 0, 0);
 
-        if (invalidateMenu)
-        {
+        if (invalidateMenu) {
             invalidateOptionsMenu();
-            invalidateMenu=false;
+            invalidateMenu = false;
         }
         activityVisible = true;
         updateCurrentBgInfo("generic on resume");
@@ -767,7 +792,7 @@ public class Home extends ActivityWithMenu {
         updateStuff = false;
         chart = (LineChartView) findViewById(R.id.chart);
 
-        if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+        if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) chart.getLayoutParams();
             params.topMargin = 130;
             chart.setLayoutParams(params);
@@ -777,7 +802,7 @@ public class Home extends ActivityWithMenu {
 
         //Transmitter Battery Level
         final Sensor sensor = Sensor.currentSensor();
-        if (sensor != null && sensor.latest_battery_level != 0 && sensor.latest_battery_level <= Constants.TRANSMITTER_BATTERY_LOW && ! prefs.getBoolean("disable_battery_warning", false)) {
+        if (sensor != null && sensor.latest_battery_level != 0 && sensor.latest_battery_level <= Constants.TRANSMITTER_BATTERY_LOW && !prefs.getBoolean("disable_battery_warning", false)) {
             Drawable background = new Drawable() {
 
                 @Override
@@ -792,8 +817,8 @@ public class Home extends ActivityWithMenu {
                     paint.setStyle(Paint.Style.STROKE);
                     paint.setAlpha(100);
                     canvas.drawText("transmitter battery", 10, chart.getHeight() / 3 - (int) (1.2 * px), paint);
-                    if(sensor.latest_battery_level <= Constants.TRANSMITTER_BATTERY_EMPTY){
-                        paint.setTextSize((int)(px*1.5));
+                    if (sensor.latest_battery_level <= Constants.TRANSMITTER_BATTERY_EMPTY) {
+                        paint.setTextSize((int) (px * 1.5));
                         canvas.drawText("VERY LOW", 10, chart.getHeight() / 3, paint);
                     } else {
                         canvas.drawText("low", 10, chart.getHeight() / 3, paint);
@@ -801,11 +826,17 @@ public class Home extends ActivityWithMenu {
                 }
 
                 @Override
-                public void setAlpha(int alpha) {}
+                public void setAlpha(int alpha) {
+                }
+
                 @Override
-                public void setColorFilter(ColorFilter cf) {}
+                public void setColorFilter(ColorFilter cf) {
+                }
+
                 @Override
-                public int getOpacity() {return 0;}
+                public int getOpacity() {
+                    return 0;
+                }
             };
             chart.setBackground(background);
         }
@@ -836,7 +867,7 @@ public class Home extends ActivityWithMenu {
     public void onPause() {
         activityVisible = false;
         super.onPause();
-        if (_broadcastReceiver != null ) {
+        if (_broadcastReceiver != null) {
             try {
                 unregisterReceiver(_broadcastReceiver);
             } catch (IllegalArgumentException e) {
@@ -852,21 +883,24 @@ public class Home extends ActivityWithMenu {
         }
     }
 
-    public static void set_is_follower()
-    {
+    public static void set_is_follower() {
         is_follower = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).getString("dex_collection_method", "").equals("Follower");
+        is_follower_set = true;
     }
 
     private void updateCurrentBgInfo(String source) {
-        Log.d(TAG,"updateCurrentBgInfo from: "+source);
-        if (!activityVisible)
-        {
-            Log.d(TAG,"Display not visible - not updating chart");
+        Log.d(TAG, "updateCurrentBgInfo from: " + source);
+        if (!activityVisible) {
+            Log.d(TAG, "Display not visible - not updating chart");
             return;
+        }
+        if (reset_viewport) {
+            reset_viewport = false;
+            holdViewport.set(0, 0, 0, 0);
         }
         setupCharts();
         final TextView notificationText = (TextView) findViewById(R.id.notices);
-        if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+        if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             notificationText.setTextSize(40);
         }
         notificationText.setText("");
@@ -880,21 +914,20 @@ public class Home extends ActivityWithMenu {
         if (isBTShare) {
             updateCurrentBgInfoForBtShare(notificationText);
         }
-        if (isBTWixel || isDexbridgeWixel ||  isWifiBluetoothWixel) {
+        if (isBTWixel || isDexbridgeWixel || isWifiBluetoothWixel) {
             updateCurrentBgInfoForBtBasedWixel(notificationText);
         }
         if (isWifiWixel || isWifiBluetoothWixel) {
             updateCurrentBgInfoForWifiWixel(notificationText);
-        } else if (is_follower)
-        {
+        } else if (is_follower) {
             displayCurrentInfo();
             getApplicationContext().startService(new Intent(getApplicationContext(), Notifications.class));
         }
         if (prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
             notificationText.append("\n ALL ALERTS CURRENTLY DISABLED");
         } else if (prefs.getLong("low_alerts_disabled_until", 0) > new Date().getTime()
-			&&
-			prefs.getLong("high_alerts_disabled_until", 0) > new Date().getTime()) {
+                &&
+                prefs.getLong("high_alerts_disabled_until", 0) > new Date().getTime()) {
             notificationText.append("\n LOW AND HIGH ALERTS CURRENTLY DISABLED");
         } else if (prefs.getLong("low_alerts_disabled_until", 0) > new Date().getTime()) {
             notificationText.append("\n LOW ALERTS CURRENTLY DISABLED");
@@ -902,20 +935,28 @@ public class Home extends ActivityWithMenu {
             notificationText.append("\n HIGH ALERTS CURRENTLY DISABLED");
         }
         NavigationDrawerFragment navigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        navigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
 
-        if (nexttoast!=null)
-        {
+
+        if (navigationDrawerFragment == null) Log.e("Runtime", "navigationdrawerfragment is null");
+
+        try {
+            navigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
+        } catch (Exception e) {
+            Log.e("Runtime", "Exception with navigrationdrawerfragment: " + e.toString());
+        }
+        if (nexttoast != null) {
             toast(nexttoast);
-            nexttoast=null;
+            nexttoast = null;
         }
 
         // hide the treatment recognition text after some seconds
-        if ((last_speech_time >0)&&((JoH.ts()- last_speech_time)>20000))
-        {
+        if ((last_speech_time > 0) && ((JoH.ts() - last_speech_time) > 20000)) {
             voiceRecognitionText.setVisibility(View.INVISIBLE);
-            last_speech_time =0;
+            last_speech_time = 0;
         }
+
+        //showcasemenu(1); // 3 dot menu
+
     }
 
     private void updateCurrentBgInfoForWifiWixel(TextView notificationText) {
@@ -946,7 +987,7 @@ public class Home extends ActivityWithMenu {
         alreadyDisplayedBgInfoCommon = true;
 
         final boolean isSensorActive = Sensor.isActive();
-        if(!isSensorActive){
+        if (!isSensorActive) {
             notificationText.setText("Now start your sensor");
             return;
         }
@@ -1033,7 +1074,7 @@ public class Home extends ActivityWithMenu {
             int bridgeBattery = prefs.getInt("parakeet_battery", 0);
             if (bridgeBattery > 0) {
                 // reuse dexbridge battery text. If we end up running dexbridge and parakeet then this will need a rethink
-              // only show it when it gets low
+                // only show it when it gets low
                 if (bridgeBattery < 50) {
                     dexbridgeBattery.setText("Parakeet Battery: " + bridgeBattery + "%");
 
@@ -1044,7 +1085,7 @@ public class Home extends ActivityWithMenu {
                     }
                     dexbridgeBattery.setVisibility(View.VISIBLE);
                 } else {
-                   dexbridgeBattery.setVisibility(View.INVISIBLE);
+                    dexbridgeBattery.setVisibility(View.INVISIBLE);
                 }
 
 
@@ -1131,10 +1172,10 @@ public class Home extends ActivityWithMenu {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_home, menu);
-        MenuItem menuItem =  menu.findItem(R.id.action_toggle_speakreadings);
-        if(prefs.getBoolean("bg_to_speech_shortcut", false)){
+        MenuItem menuItem = menu.findItem(R.id.action_toggle_speakreadings);
+        if (prefs.getBoolean("bg_to_speech_shortcut", false)) {
             menuItem.setVisible(true);
-            if(prefs.getBoolean("bg_to_speech", false)){
+            if (prefs.getBoolean("bg_to_speech", false)) {
                 menuItem.setChecked(true);
             } else {
                 menuItem.setChecked(false);
@@ -1145,26 +1186,93 @@ public class Home extends ActivityWithMenu {
 
         menu.findItem(R.id.showmap).setVisible(prefs.getBoolean("plus_extra_features", false));
         menu.findItem(R.id.parakeetsetup).setVisible(prefs.getBoolean("plus_extra_features", false));
-        return super.onCreateOptionsMenu(menu);
+
+        boolean result = super.onCreateOptionsMenu(menu);
+
+
+        return result;
+    }
+
+
+    private synchronized void showcasemenu(int option) {
+
+        if ((myShowcase != null) && (myShowcase.isShowing())) return;
+        //  if (showcaseblocked) return;
+        try {
+            ViewTarget target = null;
+
+            if (oneshot == false) {
+
+                switch (option) {
+                    case 3:
+                        target = new ViewTarget(R.id.btnSpeak, this);
+                        break;
+
+                    case 1:
+                        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+
+                        List<View> views = toolbar.getTouchables();
+
+                        Log.d("xxy", Integer.toString(views.size()));
+                        for (View view : views) {
+                            Log.d("jamhorham showcase", view.getClass().getSimpleName());
+
+                            if (view.getClass().getSimpleName().equals("OverflowMenuButton")) {
+                                target = new ViewTarget(view);
+                                break;
+                            }
+
+                        }
+                        break;
+                }
+
+
+                if (target != null) {
+                    //showcaseblocked = true;
+                    myShowcase = new ShowcaseView.Builder(this)
+
+                           /* .setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    showcaseblocked=false;
+                                    myShowcase.hide();
+                                }
+                            })*/
+                            .setTarget(target)
+
+                            .setStyle(R.style.CustomShowcaseTheme2)
+                            .setContentTitle("Access the Menu")
+                            .setContentText("Overflow menu has even more options!")
+                                    //  .blockAllTouches()
+                            .build();
+                    myShowcase.show();
+
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in showcase: " + e.toString());
+        }
     }
 
     public void shareMyConfig(MenuItem myitem) {
         startActivity(new Intent(getApplicationContext(), DisplayQRCode.class));
     }
 
-    public void settingsSDcardExport(MenuItem myitem)
-    {
+    public void settingsSDcardExport(MenuItem myitem) {
         startActivity(new Intent(getApplicationContext(), SdcardImportExport.class));
     }
 
-    public void showMapFromMenu(MenuItem myitem)
-    {
+    public void showMapFromMenu(MenuItem myitem) {
         startActivity(new Intent(getApplicationContext(), MapsActivity.class));
     }
 
-    public void parakeetSetupMode(MenuItem myitem)
-    {
-       ParakeetHelper.parakeetSetupMode(getApplicationContext());
+    public void showHelpFromMenu(MenuItem myitem) {
+        startActivity(new Intent(getApplicationContext(), HelpActivity.class));
+    }
+
+
+    public void parakeetSetupMode(MenuItem myitem) {
+        ParakeetHelper.parakeetSetupMode(getApplicationContext());
     }
 
     public void doBackFillBroadcast(MenuItem myitem) {
@@ -1179,14 +1287,12 @@ public class Home extends ActivityWithMenu {
         staticRefreshBGCharts();
     }
 
-    public void checkForUpdate(MenuItem myitem)
-    {
+    public void checkForUpdate(MenuItem myitem) {
         toast("Checking for update..");
         UpdateActivity.checkForAnUpdate(getApplicationContext());
     }
 
-    public void sendFeedback(MenuItem myitem)
-    {
+    public void sendFeedback(MenuItem myitem) {
         startActivity(new Intent(getApplicationContext(), SendFeedBack.class));
     }
 
@@ -1238,7 +1344,7 @@ public class Home extends ActivityWithMenu {
 
         // jamorham additions
         if (item.getItemId() == R.id.synctreatments) {
-            startActivity(new Intent(this,GoogleDriveInterface.class));
+            startActivity(new Intent(this, GoogleDriveInterface.class));
             return true;
 
         }
@@ -1246,7 +1352,7 @@ public class Home extends ActivityWithMenu {
 
 
         if (item.getItemId() == R.id.action_export_csv_sidiary) {
-          new AsyncTask<Void, Void, String>() {
+            new AsyncTask<Void, Void, String>() {
                 @Override
                 protected String doInBackground(Void... params) {
                     return DatabaseUtil.saveCSV(getBaseContext());
@@ -1327,4 +1433,54 @@ public class Home extends ActivityWithMenu {
             startActivity(Intent.createChooser(shareIntent, "Share database..."));
         }
     }
+
+
+    class MyActionItemTarget implements Target {
+
+        //private final Toolbar toolbar;
+        // private final int menuItemId;
+        private final View mView;
+        private final int xoffset;
+        private final int yoffset;
+
+        public MyActionItemTarget(View mView, int xoffset, int yoffset) {
+            // this.toolbar = toolbar;
+            //this.menuItemId = itemId;
+            this.mView = mView;
+            // get dp yada
+            this.xoffset = xoffset;
+            this.yoffset = yoffset;
+        }
+
+        @Override
+        public Point getPoint() {
+            int[] location = new int[2];
+            mView.getLocationInWindow(location);
+            int x = location[0] + mView.getWidth() / 2;
+            int y = location[1] + mView.getHeight() / 2;
+            return new Point(x + xoffset, y + yoffset);
+        }
+
+    }
+
+    class ToolbarActionItemTarget implements Target {
+
+        private final Toolbar toolbar;
+        private final int menuItemId;
+
+        public ToolbarActionItemTarget(Toolbar toolbar, @IdRes int itemId) {
+            this.toolbar = toolbar;
+            this.menuItemId = itemId;
+        }
+
+        @Override
+        public Point getPoint() {
+            return new ViewTarget(toolbar.findViewById(menuItemId)).getPoint();
+        }
+
+    }
+
 }
+
+
+

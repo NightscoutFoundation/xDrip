@@ -37,28 +37,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static void newMapLocation(String location, long when) {
         try {
             if (location != null) {
-                lastGeoLocation = location;
-                String[] splits = lastGeoLocation.split(",");
-                if (splits.length == 2) {
-                    Double thislat = Double.parseDouble(splits[0]);
-                    Double thislong = Double.parseDouble(splits[1]);
-                    if ((thislat != 0) && (thislong != 0)) {
-                        if (longs.size() > 0) {
-                            if ((longs.get(longs.size() - 1).equals(thislong))
-                                    && (lats.get(lats.size() - 1).equals(thislat))) {
-                                return; // dupe
+                Log.d(TAG,"New location: "+location);
+                try {
+                    lastGeoLocation = location;
+                    String[] splits = lastGeoLocation.split(",");
+                    if (splits.length == 2) {
+                        Double thislat = Double.parseDouble(splits[0]);
+                        Double thislong = Double.parseDouble(splits[1]);
+                        if ((thislat != 0) && (thislong != 0)) {
+                            if (longs.size() > 0) {
+                                if ((longs.get(longs.size() - 1).equals(thislong))
+                                        && (lats.get(lats.size() - 1).equals(thislat))) {
+                                    return; // dupe
+                                }
+                            }
+                            longs.add(thislong);
+                            lats.add(thislat);
+                            if (longs.size() > 20) {
+                                longs.remove(0);
+                                lats.remove(0);
                             }
                         }
-                        longs.add(thislong);
-                        lats.add(thislat);
-                        if (longs.size() > 20) {
-                            longs.remove(0);
-                            lats.remove(0);
-                        }
                     }
-                }
-                if (active) {
-                    static_activity.startActivity(new Intent(xdrip.getAppContext(), MapsActivity.class));
+                    if (active) {
+                        static_activity.startActivity(new Intent(xdrip.getAppContext(), MapsActivity.class));
+                    }
+                } catch (Exception e)
+                {
+                    Log.e(TAG,"Got exception with new map location: "+e.toString());
                 }
             }
         } catch (Exception e) {

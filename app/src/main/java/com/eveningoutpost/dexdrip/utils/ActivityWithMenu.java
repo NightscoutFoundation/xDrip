@@ -2,8 +2,8 @@ package com.eveningoutpost.dexdrip.utils;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.NavDrawerBuilder;
@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by stephenblack on 6/8/15.
  */
-public abstract class ActivityWithMenu extends FragmentActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public abstract class ActivityWithMenu extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     private int menu_position;
     private String menu_name;
     private NavigationDrawerFragment mNavigationDrawerFragment;
@@ -33,8 +33,8 @@ public abstract class ActivityWithMenu extends FragmentActivity implements Navig
         List<String> menu_option_list = navDrawerBuilder.nav_drawer_options;
         menu_position = menu_option_list.indexOf(menu_name);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
+      mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
+      mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
     }
 
     @Override

@@ -1,10 +1,12 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
 import android.util.Base64;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.R;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -15,6 +17,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -22,7 +25,7 @@ import java.util.zip.Inflater;
 
 /**
  * Created by jamorham on 06/01/16.
- * <p>
+ * <p/>
  * lazy helper class for utilities
  */
 public class JoH {
@@ -30,6 +33,7 @@ public class JoH {
     private final static String TAG = "jamorham JoH";
 
     private static double benchmark_time = 0;
+    private static Map<String, Double> benchmarks = new HashMap<String, Double>();
 
     // qs = quick string conversion of double for printing
     public static String qs(double x) {
@@ -167,12 +171,20 @@ public class JoH {
     }
 
     public static String backTrace() {
+        return backTrace(1);
+    }
+
+    public static String backTrace(int depth) {
         try {
-            StackTraceElement stack = new Exception().getStackTrace()[2];
-            StackTraceElement stackb = new Exception().getStackTrace()[3];
-            return stackb.getClassName() + "::" + stackb.getMethodName() + " -> " + stack.getClassName() + "::" + stack.getMethodName();
+            StackTraceElement stack = new Exception().getStackTrace()[2 + depth];
+            StackTraceElement stackb = new Exception().getStackTrace()[3 + depth];
+            String[] stackclassa = stack.getClassName().split("\\.");
+            String[] stackbclassa = stackb.getClassName().split("\\.");
+
+            return stackbclassa[stackbclassa.length - 1] + "::" + stackb.getMethodName()
+                    + " -> " + stackclassa[stackclassa.length - 1] + "::" + stack.getMethodName();
         } catch (Exception e) {
-            return "unknown backtrace";
+            return "unknown backtrace: " + e.toString();
         }
     }
 
@@ -191,6 +203,31 @@ public class JoH {
                 Log.i(TAG, "Benchmark: " + name + " " + (ts() - benchmark_time) + " ms");
                 benchmark_time = 0;
             }
+        }
+    }
+
+    public static void benchmark_method_start() {
+        benchmarks.put(backTrace(0), ts());
+    }
+
+    public static void benchmark_method_end() {
+        String name = backTrace(0);
+        try {
+
+            double timing = ts() - benchmarks.get(name);
+            Log.i(TAG, "Benchmark: " + name + " " + timing + "ms");
+        } catch (Exception e) {
+            Log.e(TAG, "Benchmark: " + name + " no benchmark set!");
+        }
+    }
+
+    public static void fixActionBar(AppCompatActivity context) {
+        try {
+            context.getSupportActionBar().setDisplayShowHomeEnabled(true);
+            context.getSupportActionBar().setIcon(R.drawable.ic_launcher);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception with supportactionbar: " + e.toString());
+
         }
     }
 

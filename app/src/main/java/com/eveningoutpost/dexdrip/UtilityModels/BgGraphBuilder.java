@@ -70,7 +70,7 @@ public class BgGraphBuilder {
     private final List<BgReading> bgReadings = BgReading.latestForGraph(numValues, (start_time * FUZZER));
     private final List<Calibration> calibrations = Calibration.latestForGraph(numValues, (start_time * FUZZER));
     private final List<Treatments> treatments = Treatments.latestForGraph(numValues, (start_time * FUZZER));
-    private final List<Iob> iobinfo = Treatments.ioBForGraph(numValues, (start_time * FUZZER));
+
     public Context context;
     public SharedPreferences prefs;
     public double highMark;
@@ -484,10 +484,10 @@ public class BgGraphBuilder {
         TrendLine[] polys = new TrendLine[5];
 
         polys[0] = new PolyTrendLine(1);
-        polys[1] = new PolyTrendLine(2);
-        polys[2] = new Forecast.LogTrendLine();
-        polys[3] = new Forecast.ExpTrendLine();
-        polys[4] = new Forecast.PowerTrendLine();
+       // polys[1] = new PolyTrendLine(2);
+        polys[1] = new Forecast.LogTrendLine();
+        polys[2] = new Forecast.ExpTrendLine();
+        polys[3] = new Forecast.PowerTrendLine();
         TrendLine poly = null;
 
         List<Double> polyxList = new ArrayList<Double>();
@@ -523,12 +523,17 @@ public class BgGraphBuilder {
             Log.e(TAG, "Exception doing calibration values in bggraphbuilder: " + e.toString());
         }
 
+        final boolean predict_use_momentum = prefs.getBoolean("predict_use_momentum", true);
+        final boolean show_moment_working_line = prefs.getBoolean("show_momentum_working_line",false);
+        final boolean interpret_raw = prefs.getBoolean("interpret_raw", false);
+
+
         for (BgReading bgReading : bgReadings) {
             // jamorham special
             if (bgReading.filtered_calculated_value > 0) {
                 rawInterpretedValues.add(new PointValue((float) ((bgReading.timestamp - 500000) / FUZZER), (float) unitized(bgReading.filtered_calculated_value)));
             }
-            if (bgReading.raw_calculated > 0 && prefs.getBoolean("interpret_raw", false)) {
+            if (bgReading.raw_calculated > 0 && interpret_raw) {
 
                 rawInterpretedValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.raw_calculated)));
             } else if (bgReading.calculated_value >= 400) {
@@ -597,7 +602,7 @@ public class BgGraphBuilder {
 
         try {
             // show trend for whole bg reading area
-            if (prefs.getBoolean("show_momentum_working_line",false)) {
+            if (show_moment_working_line) {
                 for (BgReading bgReading : bgReadings) {
                     // only show working curve for last x hours to a
                     if (bgReading.timestamp > momentum_illustration_start) {
@@ -689,6 +694,9 @@ public class BgGraphBuilder {
             } catch (Exception e) {
                 // could not get a bg reading
             }
+           // final List<Iob> iobinfo_old = Treatments.ioBForGraph(numValues, (start_time * FUZZER));
+            final List<Iob> iobinfo  = Treatments.ioBForGraph_new(numValues, (start_time * FUZZER)); // for test
+
             long fuzzed_timestamp = (long) end_time; // initial value in case there are no iob records
 
             if (iobinfo != null) {
@@ -698,7 +706,7 @@ public class BgGraphBuilder {
                 for (Iob iob : iobinfo) {
 
                     double activity = iob.activity;
-                    if ((iob.iob > 0) || (iob.cob > 0)) {
+                    if ((iob.iob > 0) || (iob.cob > 0) || (iob.jActivity > 0) || (iob.jCarbImpact >0)) {
                         fuzzed_timestamp = iob.timestamp / FUZZER;
                         if (iob.iob > Profile.minimum_shown_iob) {
                             double height = iob.iob * iobscale;
@@ -725,7 +733,7 @@ public class BgGraphBuilder {
                             try {
                                 polyPredict = poly.predict(iob.timestamp);
                                 Log.d(TAG, "Poly predict: " + JoH.qs(polyPredict) + " @ " + JoH.qs(iob.timestamp));
-                                if (prefs.getBoolean("show_momentum_working_line",false)) {
+                                if (show_moment_working_line) {
                                     if ((polyPredict < highMark) && (polyPredict > 0)) {
                                         PointValue zv = new PointValue((float) fuzzed_timestamp, (float) polyPredict);
                                         polyBgValues.add(zv);
@@ -738,12 +746,13 @@ public class BgGraphBuilder {
                             Log.d(TAG, "Processing prediction: before: " + JoH.qs(predictedbg) + " activity: " + JoH.qs(activity) + " jcarbimpact: " + JoH.qs(iob.jCarbImpact));
                             predictedbg -= iob.jActivity; // lower bg by current insulin activity
                             predictedbg += iob.jCarbImpact;
-                            boolean merge_smoothing = true;
+
                             double predictedbg_final = predictedbg;
-                            if (polyPredict>0)
+                            final boolean momentum_smoothing = true;
+                            if ((predict_use_momentum) && (polyPredict>0))
                             {
                                 predictedbg_final = ((predictedbg * predict_weight) + polyPredict )/(predict_weight+1);
-                                if (merge_smoothing) predictedbg = predictedbg_final;
+                                if (momentum_smoothing) predictedbg = predictedbg_final;
 
                             Log.d(TAG,"forecast predict_weight: "+JoH.qs(predict_weight));
                             }

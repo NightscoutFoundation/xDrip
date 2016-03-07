@@ -105,6 +105,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro'
             ext.enableCrashlytics = false
+      //      applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
         }
     }
 }
@@ -150,6 +152,7 @@ dependencies {
         transitive = true;
     }
     compile 'uk.com.robust-it:cloning:1.9.2'
+    compile 'com.github.amlcurran.showcaseview:library:5.4.1'
 
 }
 

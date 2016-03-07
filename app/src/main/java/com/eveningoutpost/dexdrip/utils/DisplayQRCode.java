@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -29,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class DisplayQRCode extends Activity {
+public class DisplayQRCode extends AppCompatActivity {
 
     public static final String qrmarker = "xdpref:";
     private static final String TAG = "jamorham qr";
@@ -67,6 +68,7 @@ public class DisplayQRCode extends Activity {
         mContext = getApplicationContext();
         mInstance = this;
         setContentView(R.layout.activity_display_qrcode);
+        JoH.fixActionBar(this);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
@@ -10,9 +9,11 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -79,15 +80,15 @@ public class NavigationDrawerFragment extends Fragment {
 
         navDrawerBuilder = new NavDrawerBuilder(getActivity());
         List<String> menu_option_list = navDrawerBuilder.nav_drawer_options;
-        String[] menu_options = menu_option_list.toArray(new String[menu_option_list.size()]);
+        // String[] menu_options = menu_option_list.toArray(new String[menu_option_list.size()]);
         intent_list = navDrawerBuilder.nav_drawer_intents;
 
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                menu_options
-                ));
+        // mDrawerListView.setAdapter(new ArrayAdapter<String>(
+        //         getActionBar().getThemedContext(),
+        //         android.R.layout.simple_list_item_activated_1,
+        //         android.R.id.text1,
+        //        menu_options
+        //        ));
         return mDrawerListView;
     }
 
@@ -107,7 +108,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout = drawerLayout;
         mCurrentSelectedPosition = menu_position;
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        // mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -137,7 +138,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerToggle = new ActionBarDrawerToggle(
                 getActivity(),
                 mDrawerLayout,
-                R.drawable.ic_drawer,
+                // R.drawable.ic_drawer,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close
         ) {
@@ -228,7 +229,8 @@ public class NavigationDrawerFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (mDrawerLayout != null && isDrawerOpen()) {
             inflater.inflate(R.menu.global, menu);
-            showGlobalContextActionBar();
+            Log.e("jamorham Runtime", "Call to on-create options menu in Navigation Drawer Fragment");
+            //showGlobalContextActionBar();
         }
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -241,15 +243,15 @@ public class NavigationDrawerFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void showGlobalContextActionBar() {
+/*    private void showGlobalContextActionBar() {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setTitle(R.string.app_name);
-    }
+    }*/
 
     private ActionBar getActionBar() {
-        return getActivity().getActionBar();
+        return ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
     public static interface NavigationDrawerCallbacks {
@@ -260,7 +262,7 @@ public class NavigationDrawerFragment extends Fragment {
         if (position != menu_position) {
             Intent[] intent_array = intent_list.toArray(new Intent[intent_list.size()]);
             startActivity(intent_array[position]);
-            if(menu_position != 0) {
+            if (menu_position != 0) {
                 getActivity().finish();
             }
         }

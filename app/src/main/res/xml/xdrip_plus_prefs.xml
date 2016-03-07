@@ -91,6 +91,11 @@
                     android:key="profile_carb_absorption_default"
                     android:summary="Linear model carbs absorbed per hour"
                     android:title="Carb Absorption rate" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="predict_use_momentum"
+                    android:summary="Calculate including BG trend"
+                    android:title="Use trend momentum" />
             </PreferenceCategory>
             <PreferenceCategory
                 android:key="title_I_understandb"
@@ -105,6 +110,37 @@
                         android:targetPackage="com.eveningoutpost.dexdrip" />
                 </Preference>
             </PreferenceCategory>
+
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:dependency="I_understand"
+            android:key="xdrip_plus_adv_predict"
+            android:summary="Deep settings for algorithms"
+            android:title="Low level prediction values">
+
+
+            <PreferenceCategory
+                android:key="xdrip_plus_adv_predict_cat"
+                android:title="Low level prediction values">
+                <EditTextPreference
+                    android:defaultValue="3.0"
+                    android:key="xplus_insulin_dia"
+                    android:summary=""
+                    android:title="Insulin duration in hours" />
+
+                <EditTextPreference
+                    android:defaultValue="2"
+                    android:key="xplus_liver_sensitivity"
+                    android:summary=""
+                    android:title="Default Liver Sensitivity Ratio" />
+                <EditTextPreference
+                    android:defaultValue="0.8"
+                    android:key="xplus_liver_maximpact"
+                    android:summary=""
+                    android:title="Default Liver Maximum Impact (0-1)" />
+            </PreferenceCategory>
+        </PreferenceScreen>
+
+
         </PreferenceScreen>
 
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"

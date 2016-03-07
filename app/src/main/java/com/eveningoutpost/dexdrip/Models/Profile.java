@@ -26,6 +26,8 @@ public class Profile {
     private static double the_carb_ratio = 10;
     private static double stored_default_sensitivity = 54;
     private static double stored_default_absorption_rate = 35;
+    private static double stored_default_insulin_action_time = 3.0;
+    private static double stored_default_carb_delay_minutes = 15;
 
     static double getSensitivity(double when) {
         return stored_default_sensitivity; // expressed in native units lowering effect of 1U
@@ -36,17 +38,33 @@ public class Profile {
         stored_default_sensitivity = value;
     }
 
+    public static void setInsulinActionTimeDefault(double value) {
+        // sanity check goes here
+        if (value < 0.1) return;
+        if (value > 24) return;
+        stored_default_insulin_action_time = value;
+    }
+
     static double getCarbAbsorptionRate(double when) {
         return stored_default_absorption_rate; // carbs per hour
     }
 
     public static void setCarbAbsorptionDefault(double value) {
         // sanity check goes here
+        if (value < 0.01) return;
         stored_default_absorption_rate = value;
     }
 
+    static double insulinActionTime(double when) {
+        return stored_default_insulin_action_time;
+    }
+
+    static double carbDelayMinutes(double when) {
+        return stored_default_carb_delay_minutes;
+    }
+
     static double maxLiverImpactRatio(double when) {
-        return 0.8; // how much can the liver block carbs going in to blood stream?
+        return 0.3; // how much can the liver block carbs going in to blood stream?
     }
 
     static double getCarbRatio(double when) {
@@ -114,6 +132,7 @@ public class Profile {
     }
 
     public static void reloadPreferences(SharedPreferences prefs) {
+        // TODO HANDLE EURO NUMBER FORMAT
         try {
             Profile.setSensitivityDefault(Double.parseDouble(prefs.getString("profile_insulin_sensitivity_default", "0")));
         } catch (Exception e) {
@@ -129,5 +148,15 @@ public class Profile {
         } catch (Exception e) {
             Home.toaststatic("Invalid carb absorption rate");
         }
+        try {
+            Profile.setInsulinActionTimeDefault(tolerantParseDouble(prefs.getString("xplus_insulin_dia", "3.0")));
+        } catch (Exception e) {
+            Home.toaststatic("Invalid insulin action time");
+        }
+    }
+
+    private static double tolerantParseDouble(String str) throws NumberFormatException {
+        return Double.parseDouble(str.replace(",", "."));
+
     }
 }
