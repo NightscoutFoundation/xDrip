@@ -205,6 +205,7 @@
             android:title="Parakeet and Extra test features" />
 
         <Preference
+            android:icon="@drawable/ic_qrcode_grey600_48dp"
             android:key="show_qr_codes"
             android:title="Show Settings QR codes">
             <intent
@@ -213,6 +214,7 @@
                 android:targetPackage="com.eveningoutpost.dexdrip" />
         </Preference>
         <Preference
+            android:icon="@drawable/ic_content_save_grey600_48dp"
             android:key="show_external_save"
             android:title="Load / Save settings to SDcard">
             <intent

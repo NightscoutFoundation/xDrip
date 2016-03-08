@@ -7,6 +7,7 @@
         android:title="Data Sync"
         android:key="dataSync">
         <PreferenceScreen
+            android:icon="@drawable/ic_scan"
             android:title="@string/auto_configure_title"
             android:key="auto_configure"
             android:summary="@string/prefs_auto_config_summary" />

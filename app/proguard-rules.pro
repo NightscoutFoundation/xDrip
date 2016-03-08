@@ -21,7 +21,7 @@
 -keepattributes Signature
 -keepattributes Exceptions
 -keepattributes InnerClasses
-
+-keepattributes *Annotation*
 
 -dontobfuscate
 
@@ -50,3 +50,5 @@
 -keep class org.bson.** { *; }
 -keep class org.slf4j.** { *; }
 -keep class rx.internal.util.** { *; }
+-keep class sun.misc.Unsafe { *; }
+-keep class com.eveningoutpost.dexdrip.Models.** { *; }
