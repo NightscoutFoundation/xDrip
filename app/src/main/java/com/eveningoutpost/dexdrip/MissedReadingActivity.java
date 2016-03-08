@@ -1,17 +1,26 @@
 package com.eveningoutpost.dexdrip;
 
+import android.app.AlertDialog;
+import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.AlertType;
+import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
@@ -20,96 +29,127 @@ import java.util.Calendar;
 
 public class MissedReadingActivity extends ActivityWithMenu {
     public static String menu_name = "Missed reading";
-/*    private Button button;
-    private DatePicker dp;
-    private TimePicker tp;
+    private Context mContext;
     
-    private int last_hour;*/
+    
+    private CheckBox checkboxAllDay;
+    
+    private LinearLayout layoutTimeBetween;
+    private LinearLayout timeInstructions;
+    private TextView viewTimeStart;
+    private TextView viewTimeEnd;
+    private TextView timeInstructionsStart;
+    private TextView timeInstructionsEnd;
+    
+    
+    private int startHour = 0;
+    private int startMinute = 0;
+    private int endHour = 23;
+    private int endMinute = 59;
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_missed_readings);
-/*        if(Sensor.isActive() == false) {
-            
-            button = (Button)findViewById(R.id.startNewSensor);
-            dp = (DatePicker)findViewById(R.id.datePicker);
-            tp = (TimePicker)findViewById(R.id.timePicker);
-            addListenerOnButton();
-            
-            tp.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+        mContext = this;
+        
+        viewTimeStart = (TextView) findViewById(R.id.missed_reading_time_start);
+        viewTimeEnd = (TextView) findViewById(R.id.missed_reading_time_end);
+        checkboxAllDay = (CheckBox) findViewById(R.id.missed_reading_all_day);
+        
+        layoutTimeBetween = (LinearLayout) findViewById(R.id.missed_reading_time_between);
+        timeInstructions = (LinearLayout) findViewById(R.id.missed_reading_instructions);
+        timeInstructionsStart = (TextView) findViewById(R.id.missed_reading_time_start);
+        timeInstructionsEnd = (TextView) findViewById(R.id.missed_reading_time_end);
+        
 
-                public void onTimeChanged(TimePicker arg0, int arg1, int arg2) {
-                    Log.d("NEW SENSOR", "new time " + arg1  + " " + arg2);
+        // Set the different controls
+        checkboxAllDay.setChecked(true /*at.all_day*/);
+        startHour = AlertType.time2Hours(/*at.start_time_minutes*/ 300);
+        startMinute = AlertType.time2Minutes(/*at.start_time_minutes*/ 300);
+        endHour = AlertType.time2Hours(/*at.end_time_minutes*/ 450);
+        endMinute = AlertType.time2Minutes(/*at.end_time_minutes*/ 450);
+        
+        addListenerOnButtons();
+        
 
-                    if(arg1 == 23 && last_hour == 0) {
-                        Log.d("NEW SENSOR", "decreading day");
-                        addDays(-1);
-
-                    }
-                    if (arg1 == 0 && last_hour == 23) {
-                        Log.d("NEW SENSOR", "increasing day");
-                        addDays(1);
-                    }
-                    last_hour = arg1;
-
-                }
-            });
-
-            last_hour = tp.getCurrentHour();
-            
-        } else {
-            Intent intent = new Intent(this, StopSensor.class);
-            startActivity(intent);
-            finish();
-        }*/
     }
 
     @Override
     public String getMenuName() {
         return menu_name;
     }
-
- /*   public void addListenerOnButton() {
-
-        button = (Button)findViewById(R.id.startNewSensor);
-
-        button.setOnClickListener(new View.OnClickListener() {
-          public void onClick(View v) {
-
-              Calendar calendar = Calendar.getInstance();
-              calendar.set(dp.getYear(), dp.getMonth(), dp.getDayOfMonth(),
-              tp.getCurrentHour(), tp.getCurrentMinute(), 0);
-              long startTime = calendar.getTime().getTime();
-
-              Sensor.create(startTime);
-              Log.d("NEW SENSOR", "Sensor started at " + startTime);
-
-              Toast.makeText(getApplicationContext(), "NEW SENSOR STARTED", Toast.LENGTH_LONG).show();
-              CollectionServiceStarter.newStart(getApplicationContext());
-              SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-              Intent intent;
-              if(prefs.getBoolean("store_sensor_location",true)) {
-                  intent = new Intent(getApplicationContext(), NewSensorLocation.class);
-              } else {
-                  intent = new Intent(getApplicationContext(), Home.class);
-              }
-
-              startActivity(intent);
-              finish();
-          }
-
+    
+    void enableAllDayControls() {
+        boolean allDay = checkboxAllDay.isChecked();
+        if(allDay) {
+            layoutTimeBetween.setVisibility(View.GONE);
+            timeInstructions.setVisibility(View.GONE);
+        } else {
+            setTimeRanges();
+        }
+    }
+    
+    //??? on destroy ???
+    
+    
+    public void addListenerOnButtons() {
+        checkboxAllDay.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            //          @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                enableAllDayControls();
+            }
         });
+        
+        View.OnClickListener startTimeListener = new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                TimePickerDialog mTimePicker = new TimePickerDialog(mContext, AlertDialog.THEME_HOLO_DARK, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        startHour = selectedHour;
+                        startMinute = selectedMinute;
+                        setTimeRanges();
+                    }
+                }, startHour, startMinute, DateFormat.is24HourFormat(mContext));
+                mTimePicker.setTitle("Select Time");
+                mTimePicker.show();
+
+            }
+        } ;
+        
+        View.OnClickListener endTimeListener = new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                TimePickerDialog mTimePicker = new TimePickerDialog(mContext, AlertDialog.THEME_HOLO_DARK, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        endHour = selectedHour;
+                        endMinute = selectedMinute;
+                        setTimeRanges();
+                    }
+                }, endHour, endMinute, DateFormat.is24HourFormat(mContext));
+                mTimePicker.setTitle("Select Time");
+                mTimePicker.show();
+
+            }
+        };
+        
+        viewTimeStart.setOnClickListener(startTimeListener);
+        timeInstructionsStart.setOnClickListener(startTimeListener);
+        viewTimeEnd.setOnClickListener(endTimeListener);
+        timeInstructionsEnd.setOnClickListener(endTimeListener);
 
     }
     
-    void addDays(int numberOfDays) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(dp.getYear(), dp.getMonth(), dp.getDayOfMonth(),
-        tp.getCurrentHour(), tp.getCurrentMinute(), 0);
-        
-        calendar.add(Calendar.DAY_OF_YEAR, numberOfDays);
-        dp.updateDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+    public void setTimeRanges() {
+        timeInstructions.setVisibility(View.VISIBLE);
+        layoutTimeBetween.setVisibility(View.VISIBLE);
+        viewTimeStart.setText(EditAlertActivity.timeFormatString(mContext,startHour, startMinute));
+        viewTimeEnd.setText(EditAlertActivity.timeFormatString(mContext, endHour, endMinute));
     }
-*/
+
 }

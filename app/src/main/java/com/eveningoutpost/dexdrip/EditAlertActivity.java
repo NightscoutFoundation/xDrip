@@ -16,6 +16,8 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.text.InputType;
 import android.text.format.DateFormat;
+import android.text.method.DigitsKeyListener;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -180,10 +182,9 @@ public class EditAlertActivity extends ActivityWithMenu {
         doMgdl = (prefs.getString("units", "mgdl").compareTo("mgdl") == 0);
 
         if(!doMgdl) {
-            alertThreshold.setInputType(InputType.TYPE_CLASS_NUMBER); // ignored
+            alertThreshold.setInputType(InputType.TYPE_CLASS_NUMBER);
             alertThreshold.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
-            JoH.DecimalKeyListener mmolListener = new JoH.DecimalKeyListener();
-            alertThreshold.setKeyListener(mmolListener);
+            alertThreshold.setKeyListener(DigitsKeyListener.getInstance(false,true));
         }
 
         uuid = getExtra(savedInstanceState, "uuid");
@@ -636,10 +637,10 @@ public class EditAlertActivity extends ActivityWithMenu {
         }
     }
 
-    public String timeFormatString(int hour, int minute) {
+    static public String timeFormatString(Context context, int hour, int minute) {
         SimpleDateFormat timeFormat24 = new SimpleDateFormat("HH:mm");
         String selected = hour+":" + ((minute<10)?"0":"") + minute;
-        if (!DateFormat.is24HourFormat(mContext)) {
+        if (!DateFormat.is24HourFormat(context)) {
             try {
                 Date date = timeFormat24.parse(selected);
                 SimpleDateFormat timeFormat12 = new SimpleDateFormat("hh:mm aa");
@@ -654,8 +655,8 @@ public class EditAlertActivity extends ActivityWithMenu {
     public void setTimeRanges() {
         timeInstructions.setVisibility(View.VISIBLE);
         layoutTimeBetween.setVisibility(View.VISIBLE);
-        viewTimeStart.setText(timeFormatString(startHour, startMinute));
-        viewTimeEnd.setText(timeFormatString(endHour, endMinute));
+        viewTimeStart.setText(timeFormatString(mContext, startHour, startMinute));
+        viewTimeEnd.setText(timeFormatString(mContext, endHour, endMinute));
     }
 
     public static boolean isPathRingtone(Context context, String path) {

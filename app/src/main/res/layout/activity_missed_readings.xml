@@ -34,7 +34,7 @@
                             android:paddingRight="10dp" />
 
                         <CheckBox
-                            android:id="@+id/missed_reading__alert_time"
+                            android:id="@+id/missed_reading_all_day"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="all day"
@@ -81,7 +81,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:id="@+id/time_instructions">
+                        android:id="@+id/missed_reading_instructions">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -90,7 +90,7 @@
                             android:text="(tap to change)"
                             android:textSize="15sp"
                             android:paddingRight="25dp"
-                            android:id="@+id/time_instructions_start"/>
+                            android:id="@+id/missed_reading_instructions_start"/>
 
 
                         <TextView
@@ -100,7 +100,7 @@
                             android:text="(tap to change)"
                             android:textSize="15sp"
                             android:paddingLeft="25dp"
-                            android:id="@+id/time_instructions_end"/>
+                            android:id="@+id/missed_reading_instructions_end"/>
 
                     </LinearLayout>
                 
