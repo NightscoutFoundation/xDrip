@@ -39,6 +39,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.OldAppTheme); // or null actionbar
         super.onCreate(savedInstanceState);
         mHandler = new Handler();
         setContentView(R.layout.activity_import_db);

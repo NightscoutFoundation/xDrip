@@ -62,6 +62,7 @@ public class BluetoothScan extends ListActivityWithMenu {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.OldAppTheme); // or null actionbar
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_scan);
         final BluetoothManager bluetooth_manager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);

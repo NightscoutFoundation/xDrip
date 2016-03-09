@@ -111,8 +111,13 @@ public class NavigationDrawerFragment extends Fragment {
         // mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
         ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+        } else {
+            getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActivity().getActionBar().setHomeButtonEnabled(true);
+        }
 
 //        mDrawerListView = (ListView) inflater.inflate(
 //                R.layout.fragment_navigation_drawer, container, false);
@@ -127,13 +132,23 @@ public class NavigationDrawerFragment extends Fragment {
 //        List<String> menu_option_list = navDrawerBuilder.nav_drawer_options();
 //        String[] menu_options = menu_option_list.toArray(new String[menu_option_list.size()]);
 
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                menu_options
-        ));
+        try {
+            mDrawerListView.setAdapter(new ArrayAdapter<String>(
+                    actionBar.getThemedContext(),
+                    android.R.layout.simple_list_item_activated_1,
+                    android.R.id.text1,
+                    menu_options
+            ));
 
+        } catch (NullPointerException e)
+        {
+            mDrawerListView.setAdapter(new ArrayAdapter<String>(
+                    getActivity().getActionBar().getThemedContext(),
+                    android.R.layout.simple_list_item_activated_1,
+                    android.R.id.text1,
+                    menu_options
+            ));
+        }
 
         mDrawerToggle = new ActionBarDrawerToggle(
                 getActivity(),
@@ -251,7 +266,11 @@ public class NavigationDrawerFragment extends Fragment {
     }*/
 
     private ActionBar getActionBar() {
-        return ((AppCompatActivity) getActivity()).getSupportActionBar();
+        try {
+            return ((AppCompatActivity) getActivity()).getSupportActionBar();
+        } catch (ClassCastException e) {
+            return null;
+        }
     }
 
     public static interface NavigationDrawerCallbacks {

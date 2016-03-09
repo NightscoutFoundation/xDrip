@@ -402,8 +402,10 @@ public class Calibration extends Model {
                 }
             } else {
                 // we couldn't get a reading close enough to the calibration timestamp
-                Toast.makeText(context, "No close enough reading for Calib (15 min)", Toast.LENGTH_LONG).show();
-            }
+                if (!is_follower) {
+                    JoH.static_toast(context, "No close enough reading for Calib (15 min)", Toast.LENGTH_LONG);
+                    }
+                }
         } else {
             Log.d("CALIBRATION", "No sensor, cant save!");
         }
@@ -710,5 +712,4 @@ public class Calibration extends Model {
                 .orderBy("timestamp desc")
                 .execute();
     }
-
 }

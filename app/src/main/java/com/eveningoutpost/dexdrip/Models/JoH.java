@@ -1,10 +1,13 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import android.app.Activity;
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.R;
 import com.google.gson.Gson;
@@ -235,4 +238,20 @@ public class JoH {
         return new Gson().fromJson(json, new TypeToken<HashMap<String, Object>>() {
         }.getType());
     }
+
+    public static void static_toast(final Context context, final String msg, final int length) {
+        try {
+            Activity activity = (Activity) context;
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context, msg, length).show();
+                }
+            });
+            Log.d(TAG, "Toast msg: " + msg);
+        } catch (Exception e) {
+            Log.e(TAG, "Couldn't display toast: " + msg);
+        }
+    }
+
 }
