@@ -45,16 +45,18 @@ public class GcmActivity extends Activity {
     private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     public static synchronized void queueAction(String reference) {
-        Log.d(TAG, "Received ACK, Queue Size: " + GcmActivity.gcm_queue.size() + " " + reference);
-        for (GCM_data datum : gcm_queue) {
-            String thisref = datum.bundle.getString("action") + datum.bundle.getString("payload");
-            if (thisref.equals(reference)) {
-                gcm_queue.remove(gcm_queue.indexOf(datum));
-                Log.d(TAG, "Removing acked queue item: " + reference);
-                break;
+        synchronized (gcm_queue) {
+            Log.d(TAG, "Received ACK, Queue Size: " + GcmActivity.gcm_queue.size() + " " + reference);
+            for (GCM_data datum : gcm_queue) {
+                String thisref = datum.bundle.getString("action") + datum.bundle.getString("payload");
+                if (thisref.equals(reference)) {
+                    gcm_queue.remove(gcm_queue.indexOf(datum));
+                    Log.d(TAG, "Removing acked queue item: " + reference);
+                    break;
+                }
             }
+            queueCheckOld(xdrip.getAppContext());
         }
-        queueCheckOld(xdrip.getAppContext());
     }
 
     public static synchronized void queueCheckOld(Context context) {
@@ -68,20 +70,22 @@ public class GcmActivity extends Activity {
         final double MIN_QUEUE_AGE = (0 * 60 * 1000); // minutes
         final double MAX_RESENT = 10;
         Double timenow = JoH.ts();
-        for (GCM_data datum : gcm_queue) {
-            if ((timenow - datum.timestamp) > MAX_QUEUE_AGE
-                    || datum.resent > MAX_RESENT) {
-                gcm_queue.remove(gcm_queue.indexOf(datum));
-                Log.i(TAG, "Removing old unacknowledged queue item: resent: " + datum.resent);
-            } else if (timenow - datum.timestamp > MIN_QUEUE_AGE) {
-                try {
-                    Log.i(TAG, "Resending unacknowledged queue item: " + datum.bundle.getString("action") + datum.bundle.getString("payload"));
-                    datum.resent++;
-                    GoogleCloudMessaging.getInstance(context).send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), datum.bundle);
-                } catch (Exception e) {
-                    Log.e(TAG, "Got exception during resend: " + e.toString());
+        synchronized (gcm_queue) {
+            for (GCM_data datum : gcm_queue) {
+                if ((timenow - datum.timestamp) > MAX_QUEUE_AGE
+                        || datum.resent > MAX_RESENT) {
+                    gcm_queue.remove(gcm_queue.indexOf(datum));
+                    Log.i(TAG, "Removing old unacknowledged queue item: resent: " + datum.resent);
+                } else if (timenow - datum.timestamp > MIN_QUEUE_AGE) {
+                    try {
+                        Log.i(TAG, "Resending unacknowledged queue item: " + datum.bundle.getString("action") + datum.bundle.getString("payload"));
+                        datum.resent++;
+                        GoogleCloudMessaging.getInstance(context).send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), datum.bundle);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Got exception during resend: " + e.toString());
+                    }
+                    break;
                 }
-                break;
             }
         }
     }
@@ -207,7 +211,7 @@ public class GcmActivity extends Activity {
         sendMessage(myIdentity(), "cal", tosend);
     }
 
-    private static String sendMessageNow(String identity, String action, String payload) {
+    private static synchronized String sendMessageNow(String identity, String action, String payload) {
 
         Log.i(TAG, "Sendmessage called: " + identity + " " + action + " " + payload);
         String msg;
