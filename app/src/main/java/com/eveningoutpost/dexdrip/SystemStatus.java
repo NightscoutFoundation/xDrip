@@ -22,6 +22,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -56,6 +57,7 @@ public class SystemStatus extends ActivityWithMenu {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_system_status);
+        JoH.fixActionBar(this);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         version_name_view = (TextView)findViewById(R.id.version_name);
         collection_method = (TextView)findViewById(R.id.collection_method);
@@ -169,6 +171,8 @@ public class SystemStatus extends ActivityWithMenu {
         String versionName;
         try {
             versionName = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA).versionName;
+            int versionNumber = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA).versionCode;
+            versionName += "\nCode: "+BuildConfig.buildVersion + "\nDowngradable to: "+versionNumber;
             version_name_view.setText(versionName);
         } catch (PackageManager.NameNotFoundException e) {
             //e.printStackTrace();

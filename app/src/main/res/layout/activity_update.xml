@@ -9,65 +9,75 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView7"
+        android:layout_above="@+id/imageButton2"
         android:layout_alignParentEnd="true"
-        android:id="@+id/linearLayout2">
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Update Channel: "
-            android:id="@+id/update_channel"
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/linearLayout2">
 
-            android:layout_gravity="center_horizontal" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Update Channel: "
+                android:id="@+id/update_channel"
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="A new version is available"
-            android:id="@+id/anewversionisavailable"
-            android:layout_alignParentTop="true"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="37dp" />
+                android:layout_gravity="center_horizontal" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Version details"
-            android:layout_marginTop="15dp"
-            android:id="@+id/updatedetail"
-            android:layout_gravity="center_horizontal"
-            />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="A new version is available"
+                android:id="@+id/anewversionisavailable"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="37dp" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Download Now"
-            android:id="@+id/downloadbutton"
-            android:layout_below="@+id/autoupdate"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Version details"
+                android:layout_marginTop="15dp"
+                android:id="@+id/updatedetail"
+                android:layout_gravity="center_horizontal"
+                />
 
-            android:onClick="downloadNow"
-            android:layout_marginTop="53dp"
-            android:layout_gravity="center_horizontal" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Download Now"
+                android:id="@+id/downloadbutton"
+                android:layout_below="@+id/autoupdate"
 
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Automatically check for updates"
-            android:id="@+id/autoupdate"
-            android:layout_marginTop="28dp"
-            android:layout_gravity="center_horizontal"
+                android:onClick="downloadNow"
+                android:layout_marginTop="53dp"
+                android:layout_gravity="center_horizontal" />
 
-            android:checked="true" />
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Automatically check for updates"
+                android:id="@+id/autoupdate"
+                android:layout_marginTop="28dp"
+                android:layout_gravity="center_horizontal"
 
-    </LinearLayout>
+                android:checked="true" />
+
+        </LinearLayout>
+    </ScrollView>
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -76,7 +86,7 @@
         android:onClick="closeActivity"
         android:src="@android:drawable/ic_delete"
         android:layout_alignParentBottom="true"
-        android:layout_alignEnd="@+id/linearLayout2" />
+        android:layout_alignEnd="@+id/scrollView7" />
 
 
 </RelativeLayout>

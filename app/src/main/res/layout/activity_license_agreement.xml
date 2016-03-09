@@ -54,12 +54,22 @@
                     android:layout_marginTop="20dp" />
 
                 <Button
-                    style="?android:attr/buttonStyleSmall"
-                    android:background="@android:color/transparent"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginTop="20dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="view Google licenses"
+                    android:background="@android:color/transparent"
+                    android:text="View Important Warning"
+                    android:id="@+id/warningButton4"
+                    android:onClick="viewWarning"
+                    android:layout_gravity="right" />
+
+                <Button
+                    style="?android:attr/buttonStyleSmall"
+                    android:background="@android:color/transparent"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="View Google Licenses"
                     android:id="@+id/googlelicenses"
                     android:onClick="viewGoogleLicenses"
                     android:layout_gravity="right" />

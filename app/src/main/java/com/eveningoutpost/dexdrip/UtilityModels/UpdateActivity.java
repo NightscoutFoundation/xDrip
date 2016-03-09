@@ -10,12 +10,14 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
@@ -25,7 +27,7 @@ import com.squareup.okhttp.Response;
 
 import java.util.concurrent.TimeUnit;
 
-public class UpdateActivity extends Activity {
+public class UpdateActivity extends AppCompatActivity {
 
     private static final String autoUpdatePrefsName = "auto_update_download";
     private static final String TAG = "jamorham update";
@@ -112,13 +114,14 @@ public class UpdateActivity extends Activity {
     }
 
     private static void getVersionInformation(Context context) {
-        try {
-            if (versionnumber == 0) {
-                versionnumber = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_META_DATA).versionCode;
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG, "PackageManager.NameNotFoundException:" + e.getMessage());
+        // try {
+        if (versionnumber == 0) {
+            //versionnumber = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_META_DATA).versionCode;
+            versionnumber = BuildConfig.buildVersion;
         }
+        // } catch (PackageManager.NameNotFoundException e) {
+        //    Log.e(TAG, "PackageManager.NameNotFoundException:" + e.getMessage());
+        // }
     }
 
     @Override
@@ -126,6 +129,7 @@ public class UpdateActivity extends Activity {
         super.onCreate(savedInstanceState);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         setContentView(R.layout.activity_update);
+        JoH.fixActionBar(this);
 
         Switch autoUpdateSwitch = (Switch) findViewById(R.id.autoupdate);
         autoUpdateSwitch.setChecked(prefs.getBoolean(autoUpdatePrefsName, true));
@@ -138,7 +142,7 @@ public class UpdateActivity extends Activity {
         });
 
         TextView detail = (TextView) findViewById(R.id.updatedetail);
-        detail.setText("Version date: " + Integer.toString(newversion));
+        detail.setText("New Version date: " + Integer.toString(newversion) + "\nOld Version date: "+ Integer.toString(versionnumber) );
         TextView channel = (TextView) findViewById(R.id.update_channel);
         channel.setText("Update Channel: " + JoH.ucFirst(prefs.getString("update_channel", "beta")));
     }

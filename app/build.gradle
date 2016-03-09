@@ -27,6 +27,12 @@ def generateVersionNumber = { ->
     return Integer.parseInt(stringBuilder.toString());
 }
 
+def generateVersionNumberString = { ->
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append((new Date()).format('yyMMddHHmm'))
+    return stringBuilder.toString();
+}
+
 def generateVersionName = { ->
 
     StringBuilder stringBuilder = new StringBuilder();
@@ -89,8 +95,11 @@ android {
         applicationId "com.eveningoutpost.dexdrip"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode generateVersionNumber()
+        // change versionCode only when downgrade should be prevented
+        // eg, when data structures are incompatible
+        versionCode 1603091400
         versionName generateVersionName()
+        buildConfigField "int", "buildVersion", generateVersionNumberString()
     }
     buildTypes {
         release {
