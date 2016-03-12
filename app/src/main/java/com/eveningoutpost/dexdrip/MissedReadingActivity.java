@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
@@ -31,7 +33,7 @@ public class MissedReadingActivity extends ActivityWithMenu {
     public static String menu_name = "Missed reading";
     private Context mContext;
     
-    
+    private CheckBox checkboxEnableAlert;
     private CheckBox checkboxAllDay;
     
     private LinearLayout layoutTimeBetween;
@@ -40,12 +42,17 @@ public class MissedReadingActivity extends ActivityWithMenu {
     private TextView viewTimeEnd;
     private TextView timeInstructionsStart;
     private TextView timeInstructionsEnd;
+    private EditText bgMissedMinutes;
+    
+    private TextView viewAlertTime;
+    private TextView vieSelectTime;
     
     
     private int startHour = 0;
     private int startMinute = 0;
     private int endHour = 23;
     private int endMinute = 59;
+    private int missedMinutes = 59;
     
 
     @Override
@@ -57,23 +64,49 @@ public class MissedReadingActivity extends ActivityWithMenu {
         viewTimeStart = (TextView) findViewById(R.id.missed_reading_time_start);
         viewTimeEnd = (TextView) findViewById(R.id.missed_reading_time_end);
         checkboxAllDay = (CheckBox) findViewById(R.id.missed_reading_all_day);
+        checkboxEnableAlert = (CheckBox) findViewById(R.id.missed_reading_enable_alert);
         
         layoutTimeBetween = (LinearLayout) findViewById(R.id.missed_reading_time_between);
         timeInstructions = (LinearLayout) findViewById(R.id.missed_reading_instructions);
         timeInstructionsStart = (TextView) findViewById(R.id.missed_reading_time_start);
         timeInstructionsEnd = (TextView) findViewById(R.id.missed_reading_time_end);
+        bgMissedMinutes = (EditText) findViewById(R.id.missed_reading_bg_minutes);
+        viewAlertTime = (TextView) findViewById(R.id.missed_reading_text_alert_time);
+        vieSelectTime = (TextView) findViewById(R.id.missed_reading_text_select_time);
         
-
         // Set the different controls
-        checkboxAllDay.setChecked(true /*at.all_day*/);
-        startHour = AlertType.time2Hours(/*at.start_time_minutes*/ 300);
-        startMinute = AlertType.time2Minutes(/*at.start_time_minutes*/ 300);
-        endHour = AlertType.time2Hours(/*at.end_time_minutes*/ 450);
-        endMinute = AlertType.time2Minutes(/*at.end_time_minutes*/ 450);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        int startMinutes = prefs.getInt("missed_readings_start", 0);
+        int endMinutes = prefs.getInt("missed_readings_end", 0);
+        boolean enableAlert = prefs.getBoolean("bg_missed_alerts",false);
+        boolean allDay = prefs.getBoolean("missed_readings_all_day",true);
+        
+        checkboxEnableAlert.setChecked(enableAlert);
+        checkboxAllDay.setChecked(allDay);
+        
+        startHour = AlertType.time2Hours(startMinutes);
+        startMinute = AlertType.time2Minutes(startMinutes);
+        endHour = AlertType.time2Hours(endMinutes);
+        endMinute = AlertType.time2Minutes(endMinutes);
+        bgMissedMinutes.setText(prefs.getString("bg_missed_minutes", "30"));
         
         addListenerOnButtons();
-        
+        enableAllControls();
+    }
+    
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Context context = getApplicationContext();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putInt("missed_readings_start", AlertType.toTime(startHour, startMinute)).apply();
+        prefs.edit().putInt("missed_readings_end", AlertType.toTime(endHour, endMinute)).apply();
+        prefs.edit().putString("bg_missed_minutes", bgMissedMinutes.getText().toString()).apply();
 
+        prefs.edit().putBoolean("bg_missed_alerts", checkboxEnableAlert.isChecked()).apply();
+        prefs.edit().putBoolean("missed_readings_all_day", checkboxAllDay.isChecked()).apply();
+        
+        context.startService(new Intent(context, MissedReadingService.class));
     }
 
     @Override
@@ -81,7 +114,22 @@ public class MissedReadingActivity extends ActivityWithMenu {
         return menu_name;
     }
     
-    void enableAllDayControls() {
+    void EnableControls(boolean enabled) {
+        layoutTimeBetween.setEnabled(enabled);
+        timeInstructions.setEnabled(enabled);
+        checkboxAllDay.setEnabled(enabled);
+        bgMissedMinutes.setEnabled(enabled);
+        viewAlertTime.setEnabled(enabled);
+        vieSelectTime.setEnabled(enabled);
+    }
+    
+    void enableAllControls() {
+        boolean enableAlert = checkboxEnableAlert.isChecked();
+        if(!enableAlert) {
+            EnableControls(false);
+        } else {
+            EnableControls(true);
+        }
         boolean allDay = checkboxAllDay.isChecked();
         if(allDay) {
             layoutTimeBetween.setVisibility(View.GONE);
@@ -91,17 +139,23 @@ public class MissedReadingActivity extends ActivityWithMenu {
         }
     }
     
-    //??? on destroy ???
+   
     
     
     public void addListenerOnButtons() {
         checkboxAllDay.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             //          @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                enableAllDayControls();
+                enableAllControls();
             }
         });
         
+        checkboxEnableAlert.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            //          @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                enableAllControls();
+            }
+        });
         View.OnClickListener startTimeListener = new View.OnClickListener() {
 
             @Override
@@ -114,7 +168,7 @@ public class MissedReadingActivity extends ActivityWithMenu {
                         setTimeRanges();
                     }
                 }, startHour, startMinute, DateFormat.is24HourFormat(mContext));
-                mTimePicker.setTitle("Select Time");
+                mTimePicker.setTitle("Select start time");
                 mTimePicker.show();
 
             }
@@ -132,7 +186,7 @@ public class MissedReadingActivity extends ActivityWithMenu {
                         setTimeRanges();
                     }
                 }, endHour, endMinute, DateFormat.is24HourFormat(mContext));
-                mTimePicker.setTitle("Select Time");
+                mTimePicker.setTitle("Select end time");
                 mTimePicker.show();
 
             }
