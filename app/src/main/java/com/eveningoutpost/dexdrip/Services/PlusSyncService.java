@@ -31,21 +31,20 @@ public class PlusSyncService extends Service {
     public PlusSyncService() {
     }
 
-    public static void clearandRestartSyncService(Context context)
-    {
+    public static void clearandRestartSyncService(Context context) {
         GoogleDriveInterface.invalidate();
         GcmActivity.token = null; // invalidate
         speedup();
-        startSyncService(context,"clearAndRestart");
+        startSyncService(context, "clearAndRestart");
     }
 
-    public static void startSyncService(Context context,String source) {
+    public static void startSyncService(Context context, String source) {
         if (created) {
             Log.d(TAG, "Already created");
             return;
         }
         if ((GcmActivity.token != null) && (xdrip.getAppContext() != null)) return;
-        Log.d(TAG, "Starting jamorham xDrip-Plus sync service: "+source);
+        Log.d(TAG, "Starting jamorham xDrip-Plus sync service: " + source);
         context.startService(new Intent(context, PlusSyncService.class));
     }
 
@@ -149,25 +148,34 @@ public class PlusSyncService extends Service {
                     }
                 } else if (GcmActivity.token == null) {
                     // also needs isrunning here
-                    Log.d(TAG, "Calling Google Cloud Interface");
-                    Intent dialogIntent = new Intent(context, GcmActivity.class);
-                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                    startActivity(dialogIntent);
+                    if (GcmActivity.cease_all_activity) {
+                        Log.d(TAG, "GCM cease all activity flag set!");
+                        updateCheckThenStop();
+                    } else {
+                        Log.d(TAG, "Calling Google Cloud Interface");
+                        Intent dialogIntent = new Intent(context, GcmActivity.class);
+                        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        startActivity(dialogIntent);
+                    }
                 } else {
                     Log.d(TAG, "Got our token - stopping polling");
-                    keeprunning = false;
-                    skipnext = true;
-                    UpdateActivity.checkForAnUpdate(context);
-                    try {
-                        Log.d(TAG,"Shutting down");
-                        stopSelf();
-                    } catch (Exception e)
-                    {
-                        Log.e(TAG,"Exception with stop self");
-                    }
+
+                    updateCheckThenStop();
                 }
+            }
+        }
+
+        private void updateCheckThenStop() {
+            keeprunning = false;
+            skipnext = true;
+            UpdateActivity.checkForAnUpdate(context);
+            try {
+                Log.d(TAG, "Shutting down");
+                stopSelf();
+            } catch (Exception e) {
+                Log.e(TAG, "Exception with stop self");
             }
         }
     }

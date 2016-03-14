@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -43,6 +44,7 @@ public class GcmActivity extends Activity {
     public static String senderid = null;
     public static List<GCM_data> gcm_queue = new ArrayList<>();
     private BroadcastReceiver mRegistrationBroadcastReceiver;
+    public static boolean cease_all_activity = false;
 
     public static synchronized void queueAction(String reference) {
         synchronized (gcm_queue) {
@@ -272,12 +274,16 @@ public class GcmActivity extends Activity {
         if (checkPlayServices()) {
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
+        } else {
+            cease_all_activity = true;
+            JoH.static_toast(getApplicationContext(), "ERROR: Connecting to Google Services", Toast.LENGTH_LONG);
         }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (cease_all_activity) return;
         Log.d(TAG, "onCreate");
         tryGCMcreate();
         try {
