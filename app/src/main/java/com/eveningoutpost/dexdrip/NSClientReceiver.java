@@ -44,15 +44,16 @@ public class NSClientReceiver extends BroadcastReceiver {
         if ((bundle != null) && (debug)) {
             for (String key : bundle.keySet()) {
                 Object value = bundle.get(key);
-                Log.d(TAG, String.format("%s %s (%s)", key,
-                        value.toString(), value.getClass().getName()));
+                if (value != null) {
+                    Log.d(TAG, String.format("%s %s (%s)", key,
+                            value.toString(), value.getClass().getName()));
+                }
             }
         }
 
         switch (action) {
             case Intents.ACTION_NEW_SGV:
-
-
+                if (bundle==null) break;
                 String sgv_json = bundle.getString("sgv", "");
                 if (sgv_json.length() > 0) {
                     HashMap<String, Object> sgv_map = JoH.JsonStringtoMap(sgv_json);
@@ -66,6 +67,7 @@ public class NSClientReceiver extends BroadcastReceiver {
                 break;
 
             case Intents.ACTION_NEW_TREATMENT:
+                if (bundle==null) break;
                 String treatment_json = bundle.getString("treatment", "");
                 if (treatment_json.length() > 0) {
                     try {

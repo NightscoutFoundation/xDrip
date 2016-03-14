@@ -27,6 +27,7 @@ public class BgReadingTable extends ListActivity implements NavigationDrawerFrag
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.OldAppTheme); // or null actionbar
         super.onCreate(savedInstanceState);
         setContentView(R.layout.raw_data_list);
     }

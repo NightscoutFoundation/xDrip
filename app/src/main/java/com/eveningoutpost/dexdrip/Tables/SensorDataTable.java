@@ -23,6 +23,7 @@ public class SensorDataTable extends ListActivity implements NavigationDrawerFra
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.OldAppTheme); // or null actionbar
         super.onCreate(savedInstanceState);
         setContentView(R.layout.raw_data_list);
     }
