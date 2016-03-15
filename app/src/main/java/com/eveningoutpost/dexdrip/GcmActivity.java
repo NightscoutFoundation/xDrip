@@ -276,7 +276,9 @@ public class GcmActivity extends Activity {
             startService(intent);
         } else {
             cease_all_activity = true;
-            JoH.static_toast(getApplicationContext(), "ERROR: Connecting to Google Services", Toast.LENGTH_LONG);
+            final String msg = "xDrip ERROR: Connecting to Google Services";
+            JoH.static_toast(this, msg, Toast.LENGTH_LONG);
+            Home.toaststatic(msg);
         }
     }
 

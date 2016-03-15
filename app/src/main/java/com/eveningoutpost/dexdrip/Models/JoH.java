@@ -9,6 +9,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -250,7 +251,8 @@ public class JoH {
             });
             Log.d(TAG, "Toast msg: " + msg);
         } catch (Exception e) {
-            Log.e(TAG, "Couldn't display toast: " + msg);
+            Log.e(TAG, "Couldn't display toast: " + msg + " e: "+e.toString());
+            Home.toaststatic(msg);
         }
     }
 
