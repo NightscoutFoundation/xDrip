@@ -15,6 +15,7 @@ import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.ReadDataShare;
+import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
@@ -49,9 +50,9 @@ public class MissedReadingService extends IntentService {
 
         long now = new Date().getTime();
 
-        if (bg_missed_alerts && 
-                BgReading.getTimeSinceLastReading() >= (bg_missed_minutes * 1000 * 60) &&
-                prefs.getLong("alerts_disabled_until", 0) <= now) {
+        if (BgReading.getTimeSinceLastReading() >= (bg_missed_minutes * 1000 * 60) &&
+                prefs.getLong("alerts_disabled_until", 0) <= now &&
+                inTimeFrame(prefs)) {
             Notifications.bgMissedAlert(context);
             checkBackAfterSnoozeTime();
         } else  {
@@ -63,6 +64,15 @@ public class MissedReadingService extends IntentService {
             checkBackAfterMissedTime(alarmIn);
         }
     }
+    
+    private boolean inTimeFrame(SharedPreferences prefs) {
+        
+        int startMinutes = prefs.getInt("missed_readings_start", 0);
+        int endMinutes = prefs.getInt("missed_readings_end", 0);
+        boolean allDay = prefs.getBoolean("missed_readings_all_day", true);
+
+        return AlertType.s_in_time_frame(allDay, startMinutes, endMinutes);
+    }
 
     public void checkBackAfterSnoozeTime() {
         setAlarm(otherAlertSnooze * 1000 * 60);
@@ -73,6 +83,11 @@ public class MissedReadingService extends IntentService {
     }
 
     public void setAlarm(long alarmIn) {
+        if(alarmIn < 5 * 60 * 1000) {
+            // No need to check more than once every 5 minutes
+            alarmIn = 5 * 60 * 1000;
+        }
+    	Log.d(TAG, "Setting timer to  " + alarmIn / 60000 + " minutes from now" );
         Calendar calendar = Calendar.getInstance();
         AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
         long wakeTime = calendar.getTimeInMillis() + alarmIn;

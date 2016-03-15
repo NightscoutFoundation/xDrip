@@ -424,20 +424,24 @@ public class AlertType extends Model {
 
 
     private boolean in_time_frame() {
-        if (all_day) {
+        return s_in_time_frame(all_day, start_time_minutes, end_time_minutes);
+    }
+    
+    static public boolean  s_in_time_frame(boolean s_all_day, int s_start_time_minutes, int s_end_time_minutes) {
+        if (s_all_day) {
             //Log.e(TAG, "in_time_frame returning true " );
             return true;
         }
         // time_now is the number of minutes that have passed from the start of the day.
         Calendar rightNow = Calendar.getInstance();
         int time_now = toTime(rightNow.get(Calendar.HOUR_OF_DAY), rightNow.get(Calendar.MINUTE));
-        Log.d(TAG, "time_now is " + time_now + " minutes" + " start_time " + start_time_minutes + " end_time " + end_time_minutes);
-        if(start_time_minutes < end_time_minutes) {
-            if (time_now >= start_time_minutes && time_now <= end_time_minutes) {
+        Log.d(TAG, "time_now is " + time_now + " minutes" + " start_time " + s_start_time_minutes + " end_time " + s_end_time_minutes);
+        if(s_start_time_minutes < s_end_time_minutes) {
+            if (time_now >= s_start_time_minutes && time_now <= s_end_time_minutes) {
                 return true;
             }
         } else {
-            if (time_now >= start_time_minutes || time_now <= end_time_minutes) {
+            if (time_now >= s_start_time_minutes || time_now <= s_end_time_minutes) {
                 return true;
             }
         }
