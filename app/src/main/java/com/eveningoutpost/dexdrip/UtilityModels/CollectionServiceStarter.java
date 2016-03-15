@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.Services.DailyIntentService;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.Services.DoNothingService;
+import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
@@ -70,6 +71,17 @@ public class CollectionServiceStarter {
         return false;
     }
     public static boolean isBTShare(String collection_method) { return collection_method.equals("DexcomShare"); }
+
+    public static boolean isBTG5(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
+        if(collection_method.compareTo("DexcomG5") == 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isBTG5(String collection_method) { return collection_method.equals("DexcomG5"); }
 
     public static boolean isWifiWixel(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -196,6 +208,14 @@ public class CollectionServiceStarter {
             mContext.startService(new Intent(mContext, DexShareCollectionService.class));
         }
     }
+
+    private void startBtG5Service() {
+        Log.d(TAG, "starting bt share service");
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            mContext.startService(new Intent(mContext, G5CollectionService.class));
+        }
+    }
+
     private void startPebbleSyncService() {
         Log.d(TAG, "starting PebbleSync service");
         mContext.startService(new Intent(mContext, PebbleSync.class));
