@@ -67,6 +67,7 @@ public class BgGraphBuilder {
     public double end_time = (new Date().getTime() + (60000 * 10)) / FUZZER;
     public double predictive_end_time;
     public double start_time = end_time - ((60000 * 60 * 24)) / FUZZER;
+    private final static double timeshift = 500000;
     private final List<BgReading> bgReadings = BgReading.latestForGraph(numValues, (start_time * FUZZER));
     private final List<Calibration> calibrations = Calibration.latestForGraph(numValues, (start_time * FUZZER));
     private final List<Treatments> treatments = Treatments.latestForGraph(numValues, (start_time * FUZZER));
@@ -96,8 +97,10 @@ public class BgGraphBuilder {
     private List<PointValue> cobValues = new ArrayList<PointValue>();
     private List<PointValue> predictedBgValues = new ArrayList<PointValue>();
     private List<PointValue> polyBgValues = new ArrayList<PointValue>();
+    private List<PointValue> noisePolyBgValues = new ArrayList<PointValue>();
     private List<PointValue> activityValues = new ArrayList<PointValue>();
     private List<PointValue> annotationValues = new ArrayList<PointValue>();
+    public static double last_noise = -99999;
 
     public BgGraphBuilder(Context context) {
         this.context = context;
@@ -236,6 +239,9 @@ public class BgGraphBuilder {
             lines.add(inRangeValuesLine());
             lines.add(lowValuesLine());
             lines.add(highValuesLine());
+
+            // check show debug option here - drawn on top of others
+            lines.add(treatments[8]); // noise poly predict
 
             lines.add(calib[0]); // white circle of calib in background
             lines.add(treatments[0]); // white circle of treatment in background
@@ -456,6 +462,16 @@ public class BgGraphBuilder {
             lines[7].setHasPoints(true);
             lines[7].setHasLabels(false);
 
+            lines[8] = new Line(noisePolyBgValues);
+            lines[8].setColor(ChartUtils.COLOR_ORANGE);
+            lines[8].setHasLines(true);
+            lines[8].setCubic(false);
+            lines[8].setStrokeWidth(1);
+            lines[8].setFilled(false);
+            lines[8].setPointRadius(1);
+            lines[8].setHasPoints(true);
+            lines[8].setHasLabels(false);
+
 
         } catch (Exception e) {
             Log.d(TAG, "Exception making treatment lines: " + e.toString());
@@ -471,6 +487,7 @@ public class BgGraphBuilder {
         cobValues.clear();
         predictedBgValues.clear();
         polyBgValues.clear();
+        noisePolyBgValues.clear();
         annotationValues.clear();
         treatmentValues.clear();
         highValues.clear();
@@ -479,10 +496,11 @@ public class BgGraphBuilder {
         calibrationValues.clear();
         final double bgScale = bgScale();
 
-        final double trendstart = JoH.ts()-(1000*60*10); // 15 minutes // TODO MAKE PREFERENCE
-
+        final double trendstart = JoH.ts()-(1000*60*10); // 10 minutes // TODO MAKE PREFERENCE
+        final double noise_trendstart = JoH.ts()-(1000*60*20); // 20 minutes // TODO MAKE PREFERENCE
+        double oldest_noise_timestamp = JoH.ts();
         TrendLine[] polys = new TrendLine[5];
-
+        TrendLine noisePoly = new PolyTrendLine(2);
         polys[0] = new PolyTrendLine(1);
        // polys[1] = new PolyTrendLine(2);
         polys[1] = new Forecast.LogTrendLine();
@@ -492,6 +510,8 @@ public class BgGraphBuilder {
 
         List<Double> polyxList = new ArrayList<Double>();
         List<Double> polyyList = new ArrayList<Double>();
+        List<Double> noise_polyxList = new ArrayList<Double>();
+        List<Double> noise_polyyList = new ArrayList<Double>();
 
         final double avg1start = JoH.ts()-(1000*60*60*8); // 8 hours
         final double momentum_illustration_start = JoH.ts()-(1000*60*60*2); // 8 hours
@@ -530,8 +550,8 @@ public class BgGraphBuilder {
 
         for (BgReading bgReading : bgReadings) {
             // jamorham special
-            if (bgReading.filtered_calculated_value > 0) {
-                rawInterpretedValues.add(new PointValue((float) ((bgReading.timestamp - 500000) / FUZZER), (float) unitized(bgReading.filtered_calculated_value)));
+            if ((bgReading.filtered_calculated_value > 0) &&(bgReading.filtered_calculated_value != bgReading.calculated_value)) {
+                rawInterpretedValues.add(new PointValue((float) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(bgReading.filtered_calculated_value)));
             }
             if (bgReading.raw_calculated > 0 && interpret_raw) {
 
@@ -556,10 +576,34 @@ public class BgGraphBuilder {
                  avg1value +=bgReading.calculated_value;
             }
 
+            // noise calculator
+            if ((bgReading.timestamp > noise_trendstart) && (bgReading.timestamp > last_calibration))
+            {
+                if ((bgReading.filtered_calculated_value>0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
+                    final double shifted_timestamp = bgReading.timestamp - timeshift;
+
+                    if (shifted_timestamp > last_calibration) {
+                        if (shifted_timestamp < oldest_noise_timestamp) oldest_noise_timestamp = shifted_timestamp;
+                        noise_polyxList.add(shifted_timestamp);
+                        noise_polyyList.add((bgReading.filtered_calculated_value));
+                        Log.d(TAG, "flt noise poly Added: " + JoH.qs(noise_polyxList.get(noise_polyxList.size() - 1)) + " / " + JoH.qs(noise_polyyList.get(noise_polyyList.size() - 1), 2));
+                    }
+
+                }
+                if (bgReading.calculated_value>0) {
+                    if (bgReading.timestamp < oldest_noise_timestamp) oldest_noise_timestamp = bgReading.timestamp;
+                    noise_polyxList.add((double) bgReading.timestamp);
+                    noise_polyyList.add((bgReading.calculated_value));
+                    Log.d(TAG, "raw noise poly Added: " + JoH.qs(noise_polyxList.get(noise_polyxList.size() - 1)) + " / " + JoH.qs(noise_polyyList.get(noise_polyyList.size() - 1), 2));
+
+                }
+             }
+
+            // momentum trend
             if ((bgReading.timestamp > trendstart) && (bgReading.timestamp > last_calibration))
              {
-                 if (bgReading.filtered_calculated_value>0) {
-                     polyxList.add((double) bgReading.timestamp - 500000);
+                 if ((bgReading.filtered_calculated_value>0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
+                     polyxList.add((double) bgReading.timestamp - timeshift);
                      polyyList.add(unitized(bgReading.filtered_calculated_value));
                  }
                  if (bgReading.calculated_value>0) {
@@ -573,27 +617,49 @@ public class BgGraphBuilder {
         if (avg1counter>0) { avg1value = avg1value / avg1counter; };
         if (avg2counter>0) { avg2value = avg2value / avg2counter; };
 
+        // noise evaluate
         try {
-            Log.d(TAG, "Poly list size: " + polyxList.size());
-            double[] polyys = PolyTrendLine.toPrimitiveFromList(polyyList);
-            double[] polyxs = PolyTrendLine.toPrimitiveFromList(polyxList);
 
-            // set and evaluate poly curve models and select first best
-            double min_errors = 9999999;
-            for (TrendLine this_poly : polys) {
-                if (this_poly != null) {
-                    if (poly == null) poly = this_poly;
-                    this_poly.setValues(polyys, polyxs);
-                    if (this_poly.errorVarience() < min_errors) {
-                        min_errors = this_poly.errorVarience();
-                        poly = this_poly;
-                        //Log.d(TAG, "set forecast best model to: " + poly.getClass().getSimpleName() + " with varience of: " + JoH.qs(poly.errorVarience(),14));
-                    }
-
-                }
+            Log.d(TAG, "noise Poly list size: " + noise_polyxList.size());
+            if (noise_polyxList.size()>5) {
+                final double[] noise_polyys = PolyTrendLine.toPrimitiveFromList(noise_polyyList);
+                final double[] noise_polyxs = PolyTrendLine.toPrimitiveFromList(noise_polyxList);
+                noisePoly.setValues(noise_polyys, noise_polyxs);
+                last_noise = noisePoly.errorVarience();
+                Log.i(TAG, "Noise Poly Error Varience: " + JoH.qs(last_noise, 5));
+            } else {
+                Log.i(TAG,"Not enough data to get sensible noise value");
+                noisePoly=null;
             }
-            Log.d(TAG, "set forecast best model to: " + poly.getClass().getSimpleName() + " with varience of: " + JoH.qs(poly.errorVarience(),4));
+        } catch (Exception e){
+            Log.e(TAG," Error with noise poly trend: "+e.toString());
+        }
 
+        // momentum
+        try {
+            Log.d(TAG, "moment Poly list size: " + polyxList.size());
+            if (polyxList.size()>1) {
+                final double[] polyys = PolyTrendLine.toPrimitiveFromList(polyyList);
+                final double[] polyxs = PolyTrendLine.toPrimitiveFromList(polyxList);
+
+                // set and evaluate poly curve models and select first best
+                double min_errors = 9999999;
+                for (TrendLine this_poly : polys) {
+                    if (this_poly != null) {
+                        if (poly == null) poly = this_poly;
+                        this_poly.setValues(polyys, polyxs);
+                        if (this_poly.errorVarience() < min_errors) {
+                            min_errors = this_poly.errorVarience();
+                            poly = this_poly;
+                            //Log.d(TAG, "set forecast best model to: " + poly.getClass().getSimpleName() + " with varience of: " + JoH.qs(poly.errorVarience(),14));
+                        }
+
+                    }
+                }
+                Log.d(TAG, "set forecast best model to: " + poly.getClass().getSimpleName() + " with varience of: " + JoH.qs(poly.errorVarience(), 4));
+            } else {
+                Log.d(TAG,"Not enough data for forecast model");
+            }
 
         } catch (Exception e)
         {
@@ -602,7 +668,7 @@ public class BgGraphBuilder {
 
         try {
             // show trend for whole bg reading area
-            if (show_moment_working_line) {
+            if ((show_moment_working_line) && (poly!=null)) {
                 for (BgReading bgReading : bgReadings) {
                     // only show working curve for last x hours to a
                     if (bgReading.timestamp > momentum_illustration_start) {
@@ -617,6 +683,29 @@ public class BgGraphBuilder {
             }
         } catch (Exception e) {
             Log.e(TAG,"Error creating back trend: "+e.toString());
+        }
+
+        final boolean show_noise_working_line = show_moment_working_line;
+        // noise debug
+        try {
+            // overlay noise curve
+            if (show_noise_working_line) {
+                for (BgReading bgReading : bgReadings) {
+                    // only show working curve for last x hours to a
+                    if ((bgReading.timestamp > oldest_noise_timestamp) && (bgReading.timestamp > last_calibration)) {
+                        double polyPredicty = unitized(noisePoly.predict(bgReading.timestamp));
+                        Log.d(TAG, "noise Poly predict: "+JoH.qs(polyPredicty)+" @ "+JoH.qs(bgReading.timestamp));
+                        if ((polyPredicty < highMark) && (polyPredicty > 0)) {
+                            PointValue zv = new PointValue((float) (bgReading.timestamp / FUZZER), (float) polyPredicty);
+                            noisePolyBgValues.add(zv);
+                        }
+                    }
+                }
+            }
+
+
+        } catch (Exception e) {
+            Log.e(TAG,"Error creating noise working trend: "+e.toString());
         }
 
         //Log.i(TAG,"Average1 value: "+unitized(avg1value));

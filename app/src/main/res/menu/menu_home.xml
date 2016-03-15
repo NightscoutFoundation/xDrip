@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/showhelp"
+        android:title="Show Help"
+        android:checkable="false"
+        android:orderInCategory="1"
+        android:visible="false"
+        android:onClick="showHelpFromMenu"
+        android:showAsAction="never"/>
+
+    <item android:id="@+id/export_submenu"
+        android:title="@string/export_submenu"
+        android:orderInCategory="1">
+
+        <menu>
+
     <item android:id="@+id/action_export_database"
         android:title="@string/menu_export_database"
         android:checkable="false"
@@ -19,13 +33,14 @@
         android:showAsAction="never"/>
 
     <item android:id="@+id/importsettings"
-        android:title="Settings to external storage"
+        android:title="Load / Save Settings on sdcard"
         android:checkable="false"
         android:onClick="settingsSDcardExport"
         android:visible="true"
         android:orderInCategory="1"
         android:showAsAction="never"/>
-
+</menu>
+    </item>
     <item android:id="@+id/showmap"
         android:title="Show Parakeet map"
         android:checkable="false"
@@ -60,6 +75,7 @@
 
     <item android:id="@+id/sharemyconfig"
         android:title="Share config via QR code"
+        android:icon="@drawable/ic_qrcode_grey600_48dp"
         android:checkable="false"
         android:orderInCategory="1"
         android:onClick="shareMyConfig"

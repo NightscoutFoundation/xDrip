@@ -936,6 +936,9 @@ public class Home extends ActivityWithMenu {
         }
         NavigationDrawerFragment navigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
 
+        // DEBUG ONLY
+        if ((BgGraphBuilder.last_noise>0) && (prefs.getBoolean("show_momentum_working_line",false))) notificationText.append("\nNoise: "+JoH.qs(bgGraphBuilder.last_noise,2));
+
 
         if (navigationDrawerFragment == null) Log.e("Runtime", "navigationdrawerfragment is null");
 
@@ -1008,6 +1011,8 @@ public class Home extends ActivityWithMenu {
                 displayCurrentInfo();
             } else {
                 notificationText.setText("Please enter two calibrations to get started!");
+                Log.d(TAG, "Asking for calibration A: Uncalculated BG readings: " + BgReading.latest(2).size() + " / Calibrations size: " + calibrations.size());
+
             }
         } else {
             if (BgReading.latestUnCalculated(2).size() < 2) {
@@ -1016,6 +1021,7 @@ public class Home extends ActivityWithMenu {
                 List<Calibration> calibrations = Calibration.latest(2);
                 if (calibrations.size() < 2) {
                     notificationText.setText("Please enter two calibrations to get started!");
+                    Log.d(TAG,"Asking for calibration B: Uncalculated BG readings: "+BgReading.latestUnCalculated(2).size()+" / Calibrations size: "+calibrations.size());
                 }
             }
         }
