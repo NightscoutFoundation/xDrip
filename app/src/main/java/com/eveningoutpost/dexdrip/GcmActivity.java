@@ -43,11 +43,12 @@ public class GcmActivity extends Activity {
     public static String token = null;
     public static String senderid = null;
     public static List<GCM_data> gcm_queue = new ArrayList<>();
+    private static final Object queue_lock = new Object();
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     public static boolean cease_all_activity = false;
 
     public static synchronized void queueAction(String reference) {
-        synchronized (gcm_queue) {
+        synchronized (queue_lock) {
             Log.d(TAG, "Received ACK, Queue Size: " + GcmActivity.gcm_queue.size() + " " + reference);
             for (GCM_data datum : gcm_queue) {
                 String thisref = datum.bundle.getString("action") + datum.bundle.getString("payload");
@@ -72,7 +73,7 @@ public class GcmActivity extends Activity {
         final double MIN_QUEUE_AGE = (0 * 60 * 1000); // minutes
         final double MAX_RESENT = 10;
         Double timenow = JoH.ts();
-        synchronized (gcm_queue) {
+        synchronized (queue_lock) {
             for (GCM_data datum : gcm_queue) {
                 if ((timenow - datum.timestamp) > MAX_QUEUE_AGE
                         || datum.resent > MAX_RESENT) {
