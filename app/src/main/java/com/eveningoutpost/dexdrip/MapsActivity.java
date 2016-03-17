@@ -79,9 +79,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         String[] splits = lastGeoLocation.split(",");
         // sanity check goes here
-
-        LatLng mylocation = new LatLng(Double.parseDouble(splits[0]), Double.parseDouble(splits[1]));
-        CircleOptions circleOptions = new CircleOptions()
+        LatLng mylocation;
+        try {
+           mylocation = new LatLng(Double.parseDouble(splits[0]), Double.parseDouble(splits[1]));
+        } catch (NumberFormatException e)
+        {
+            Log.e(TAG,"Mylocation exception: '"+lastGeoLocation+"'");
+            return;
+        }
+            CircleOptions circleOptions = new CircleOptions()
                 .center(mylocation)
                 .strokeWidth(2)
                 .strokeColor(Color.GRAY)

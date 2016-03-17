@@ -750,10 +750,10 @@ public class BgReading extends Model implements ShareUploadableBg{
 
         assert last_2.get(0)==this : "Invariant condition not fulfilled: calculating slope and current reading wasn't saved before";
 
-        if (last_2.size() == 2) {
+        if ((last_2 != null) && (last_2.size() == 2)) {
             calculated_value_slope = calculateSlope(this, last_2.get(1));
             save();
-        } else if (last_2.size() == 1) {
+        } else if ((last_2 != null) && (last_2.size() == 1)) {
             calculated_value_slope = 0;
             save();
         } else {
@@ -764,7 +764,7 @@ public class BgReading extends Model implements ShareUploadableBg{
 
     public void find_new_curve() {
         List<BgReading> last_3 = BgReading.latest(3);
-        if (last_3.size() == 3) {
+        if ((last_3 != null) && (last_3.size() == 3)) {
             BgReading second_latest = last_3.get(1);
             BgReading third_latest = last_3.get(2);
 
@@ -782,7 +782,7 @@ public class BgReading extends Model implements ShareUploadableBg{
             Log.i(TAG, "find_new_curve: BG PARABOLIC RATES: "+a+"x^2 + "+b+"x + "+c);
 
             save();
-        } else if (last_3.size() == 2) {
+        } else if ((last_3 != null) && (last_3.size() == 2)) {
 
             Log.i(TAG, "find_new_curve: Not enough data to calculate parabolic rates - assume Linear");
                 BgReading latest = last_3.get(0);
@@ -826,7 +826,7 @@ public class BgReading extends Model implements ShareUploadableBg{
 
     public void find_new_raw_curve() {
         List<BgReading> last_3 = BgReading.latest(3);
-        if (last_3.size() == 3) {
+        if ((last_3 != null) && (last_3.size() == 3)) {
             BgReading second_latest = last_3.get(1);
             BgReading third_latest = last_3.get(2);
 
@@ -843,7 +843,7 @@ public class BgReading extends Model implements ShareUploadableBg{
 
             Log.i(TAG, "find_new_raw_curve: RAW PARABOLIC RATES: "+ra+"x^2 + "+rb+"x + "+rc);
             save();
-        } else if (last_3.size() == 2) {
+        } else if ((last_3 != null) && (last_3.size()) == 2) {
             BgReading latest = last_3.get(0);
             BgReading second_latest = last_3.get(1);
 
