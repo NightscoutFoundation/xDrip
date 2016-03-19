@@ -180,7 +180,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         dataMap.putString("sgvString", bgGraphBuilder.unitized_string(bg.calculated_value));
         dataMap.putString("slopeArrow", bg.slopeArrow());
         dataMap.putDouble("timestamp", bg.timestamp); //TODO: change that to long (was like that in NW)
-        dataMap.putString("delta", bgGraphBuilder.unitizedDeltaString(true, true));
+        dataMap.putString("delta", bgGraphBuilder.unitizedDeltaString(true, true, true));
         dataMap.putString("battery", "" + battery);
         dataMap.putLong("sgvLevel", sgvLevel(bg.calculated_value, sPrefs, bgGraphBuilder));
         dataMap.putInt("batteryLevel", (battery>=30)?1:0);
