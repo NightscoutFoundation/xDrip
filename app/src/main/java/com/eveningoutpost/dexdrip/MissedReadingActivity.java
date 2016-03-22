@@ -68,8 +68,8 @@ public class MissedReadingActivity extends ActivityWithMenu {
         
         layoutTimeBetween = (LinearLayout) findViewById(R.id.missed_reading_time_between);
         timeInstructions = (LinearLayout) findViewById(R.id.missed_reading_instructions);
-        timeInstructionsStart = (TextView) findViewById(R.id.missed_reading_time_start);
-        timeInstructionsEnd = (TextView) findViewById(R.id.missed_reading_time_end);
+        timeInstructionsStart = (TextView) findViewById(R.id.missed_reading_instructions_start);
+        timeInstructionsEnd = (TextView) findViewById(R.id.missed_reading_instructions_end);
         bgMissedMinutes = (EditText) findViewById(R.id.missed_reading_bg_minutes);
         viewAlertTime = (TextView) findViewById(R.id.missed_reading_text_alert_time);
         vieSelectTime = (TextView) findViewById(R.id.missed_reading_text_select_time);
