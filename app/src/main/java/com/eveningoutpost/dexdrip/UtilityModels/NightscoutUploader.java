@@ -283,7 +283,7 @@ public class NightscoutUploader {
                 try {
 
                     // connect to db
-                    MongoClientURI uri = new MongoClientURI(dbURI.trim());
+                    MongoClientURI uri = new MongoClientURI(dbURI.trim()+"?socketTimeoutMS=180000");
                     MongoClient client = new MongoClient(uri);
 
                     // get db

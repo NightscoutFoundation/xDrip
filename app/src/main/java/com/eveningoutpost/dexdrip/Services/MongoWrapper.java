@@ -36,7 +36,7 @@ public class MongoWrapper {
 	// Unfortunately, this also throws other exceptions that are not documetned...
     public DBCollection openMongoDb() throws UnknownHostException {
 
-    	MongoClientURI dbUri = new MongoClientURI(dbUriStr_); //?? thros
+    	MongoClientURI dbUri = new MongoClientURI(dbUriStr_+"?socketTimeoutMS=180000");
 	    mongoClient_ = new MongoClient(dbUri);
 
 	    DB db = mongoClient_.getDB( dbName_ );
