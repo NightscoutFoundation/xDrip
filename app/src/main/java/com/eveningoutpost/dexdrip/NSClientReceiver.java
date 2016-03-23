@@ -94,10 +94,16 @@ public class NSClientReceiver extends BroadcastReceiver {
             jsonObject.put("timestamp", sgv_map.get("mills"));
             jsonObject.put("calculated_value", sgv_map.get("mgdl"));
 
-            double myslope = (double) sgv_map.get("unfiltered") / (double) sgv_map.get("mgdl");
-            double filtered_calculated_value = (double) sgv_map.get("filtered") / myslope;
+            try {
+                double myslope = (double) sgv_map.get("unfiltered") / (double) sgv_map.get("mgdl");
+                double filtered_calculated_value = (double) sgv_map.get("filtered") / myslope;
+                jsonObject.put("filtered_calculated_value", filtered_calculated_value);
+            }
+            catch (NullPointerException e) {
+                Log.i(TAG,"Cannot calculate raw slope due to null pointer on unfiltered?");
+                jsonObject.put("filtered_calculated_value", sgv_map.get("mgdl")); // use mgdl
+            }
 
-            jsonObject.put("filtered_calculated_value", filtered_calculated_value);
             //jsonObject.put("calibration_flag", calibration_flag);
             jsonObject.put("filtered_data", sgv_map.get("filtered"));
             //jsonObject.put("raw_calculated", raw_calculated);
