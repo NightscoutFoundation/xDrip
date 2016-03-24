@@ -509,13 +509,13 @@ public class Notifications extends IntentService {
 
     public static void bgUnclearAlert(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        int otherAlertSnooze =  Integer.parseInt(prefs.getString("other_alerts_snooze", "20"));
+        int otherAlertSnooze = MissedReadingService.readPerfsInt(prefs, "other_alerts_snooze", 20);
         OtherAlert(context, "bg_unclear_readings_alert", "Unclear Sensor Readings", uncleanAlertNotificationId,  otherAlertSnooze);
     }
 
     public static void bgMissedAlert(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        int otherAlertSnooze =  Integer.parseInt(prefs.getString("other_alerts_snooze", "20"));
+        int otherAlertSnooze = MissedReadingService.readPerfsInt(prefs, "other_alerts_snooze", 20);
         OtherAlert(context, "bg_missed_alerts", "BG Readings Missed", missedAlertNotificationId, otherAlertSnooze);
     }
 

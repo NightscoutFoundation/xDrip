@@ -45,9 +45,8 @@ public class MissedReadingService extends IntentService {
         context = getApplicationContext();
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         bg_missed_alerts =  prefs.getBoolean("bg_missed_alerts", false);
-        bg_missed_minutes =  Integer.parseInt(prefs.getString("bg_missed_minutes", "30"));
-        otherAlertSnooze =  Integer.parseInt(prefs.getString("other_alerts_snooze", "20"));
-
+        bg_missed_minutes =  readPerfsInt(prefs, "bg_missed_minutes", 30);
+        otherAlertSnooze =  readPerfsInt(prefs, "other_alerts_snooze", 20);
         long now = new Date().getTime();
 
         if (BgReading.getTimeSinceLastReading() >= (bg_missed_minutes * 1000 * 60) &&
@@ -98,5 +97,14 @@ public class MissedReadingService extends IntentService {
             alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
         } else
             alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+    }
+    
+    static public int readPerfsInt(SharedPreferences prefs, String name, int defaultValue) {
+        try {
+            return Integer.parseInt(prefs.getString(name, "" + defaultValue));
+             
+        } catch (Exception e) {
+            return defaultValue;
+        }
     }
 }
