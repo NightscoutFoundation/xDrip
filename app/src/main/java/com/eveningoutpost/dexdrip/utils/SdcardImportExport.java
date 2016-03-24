@@ -30,7 +30,7 @@ import static com.eveningoutpost.dexdrip.utils.FileUtils.getExternalDir;
 public class SdcardImportExport extends AppCompatActivity {
 
     private final static String TAG = "jamorham sdcard";
-    private final static int MY_PERMISSIONS_REQUEST_STORAGE = 1004;
+    private final static int MY_PERMISSIONS_REQUEST_STORAGE = 104;
     private final static String PREFERENCES_FILE = "shared_prefs/com.eveningoutpost.dexdrip_preferences.xml";
     private static Activity activity;
     public static boolean deleteFolder(File path, boolean recursion) {
