@@ -1,6 +1,13 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+import android.util.Log;
+
+import com.eveningoutpost.dexdrip.G5Model.TransmitterMessage;
+
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.UUID;
 
 /**
@@ -11,22 +18,26 @@ public class AuthRequestTxMessage extends TransmitterMessage {
     public byte[] singleUseToken;
     int endByte = 0x2;
 
-    byte[] byteSequence;
-
     public AuthRequestTxMessage() {
-        byte[] uuidBytes = new byte[]{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        // Create the singleUseToken from a random UUID.
+        UUID uuid = UUID.randomUUID();
+        try {
+            byte[] uuidBytes = uuid.toString().getBytes("UTF-8");
 
-        UUID newUUID = UUID.nameUUIDFromBytes(uuidBytes);
-        ByteBuffer bb = ByteBuffer.allocate(16).putLong(newUUID.getLeastSignificantBits()).putLong(newUUID.getMostSignificantBits());
-        singleUseToken = bb.array();
+            ByteBuffer bb = ByteBuffer.allocate(8);
+            bb.put(uuidBytes, 0, 8);
+            singleUseToken = bb.array();
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
         // Create the byteSequence.
-        data = ByteBuffer.wrap(new byte[18]);
+        data = ByteBuffer.allocate(10);
         data.put((byte)opcode);
         data.put(singleUseToken);
         data.put((byte)endByte);
 
         byteSequence = data.array();
-        //Log.i("ByteSequence", Arrays.toString(byteSequence));
     }
 }
