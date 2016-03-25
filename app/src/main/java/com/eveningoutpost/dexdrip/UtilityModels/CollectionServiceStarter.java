@@ -81,7 +81,9 @@ public class CollectionServiceStarter {
         return false;
     }
 
-    public static boolean isBTG5(String collection_method) { return collection_method.equals("DexcomG5"); }
+    public static boolean isBTG5(String collection_method) {
+        return collection_method.equals("DexcomG5");
+    }
 
     public static boolean isWifiWixel(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -109,25 +111,36 @@ public class CollectionServiceStarter {
             stopWifWixelThread();
             stopBtShareService();
             stopFollowerThread();
+            stopG5ShareService();
             startBtWixelService();
         } else if (isWifiWixel(collection_method)) {
             Log.d("DexDrip", "Starting wifi wixel collector");
             stopBtWixelService();
             stopFollowerThread();
             stopBtShareService();
+            stopG5ShareService();
             startWifWixelThread();
         } else if (isBTShare(collection_method)) {
             Log.d("DexDrip", "Starting bt share collector");
             stopBtWixelService();
             stopFollowerThread();
             stopWifWixelThread();
+            stopG5ShareService();
             startBtShareService();
+
+        } else if(isBTG5(collection_method)) {
+            Log.d("DexDrip", "Starting G5 share collector");
+            stopBtWixelService();
+            stopWifWixelThread();
+            stopBtShareService();
+            startBtG5Service();
         } else if (isWifiandBTWixel(context)) {
             Log.d("DexDrip", "Starting wifi and bt wixel collector");
             stopBtWixelService();
             stopFollowerThread();
             stopWifWixelThread();
             stopBtShareService();
+            stopG5ShareService();
             // start both
             Log.d("DexDrip", "Starting wifi wixel collector first");
             startWifWixelThread();
@@ -178,6 +191,7 @@ public class CollectionServiceStarter {
         collectionServiceStarter.stopBtWixelService();
         collectionServiceStarter.stopWifWixelThread();
         collectionServiceStarter.stopFollowerThread();
+        collectionServiceStarter.stopG5ShareService();
         collectionServiceStarter.start(context);
     }
 
@@ -188,6 +202,7 @@ public class CollectionServiceStarter {
         collectionServiceStarter.stopBtWixelService();
         collectionServiceStarter.stopWifWixelThread();
         collectionServiceStarter.stopFollowerThread();
+        collectionServiceStarter.stopG5ShareService();
         collectionServiceStarter.start(context, collection_method);
     }
 
@@ -210,10 +225,10 @@ public class CollectionServiceStarter {
     }
 
     private void startBtG5Service() {
-        Log.d(TAG, "starting bt share service");
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+        Log.d(TAG, "starting G5 share service");
+        //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
             mContext.startService(new Intent(mContext, G5CollectionService.class));
-        }
+        //}
     }
 
     private void startPebbleSyncService() {
@@ -257,6 +272,11 @@ public class CollectionServiceStarter {
     private void stopFollowerThread() {
         Log.d(TAG, "stopping follower service");
         mContext.stopService(new Intent(mContext, DoNothingService.class));
+    }
+
+    private void stopG5ShareService() {
+        Log.d(TAG, "stopping G5  service");
+        mContext.stopService(new Intent(mContext, G5CollectionService.class));
     }
 
 }

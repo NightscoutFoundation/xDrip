@@ -1,20 +1,20 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
-import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 /**
- * Created by jcostik1 on 3/15/16.
+ * Created by joeginley on 3/16/16.
  */
-public class AuthChallengeRxMessage extends TransmitterRxMessage {
-    static byte opcode = 0x3;
-    ByteBuffer tokenHash = null;
-    ByteBuffer challenge = null;
+public class AuthChallengeRxMessage extends TransmitterMessage {
+    int opcode = 0x3;
+    public byte[] tokenHash;
+    public byte[] challenge;
 
-    AuthChallengeRxMessage(ByteBuffer data) {
-        if (data.array().length >= 17) {
-            if (data.array()[0] == opcode + 1 ) {
-                //challenge =
-                //tokenHash =
+    public AuthChallengeRxMessage(byte[] data) {
+        if (data.length >= 17) {
+            if (data[0] == opcode) {
+                tokenHash = Arrays.copyOfRange(data, 1, 9);
+                challenge = Arrays.copyOfRange(data, 9, 17);
             }
         }
     }
