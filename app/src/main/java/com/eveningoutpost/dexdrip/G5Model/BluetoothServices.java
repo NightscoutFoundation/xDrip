@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+import java.util.UUID;
+
 /**
  * Created by joeginley on 3/16/16.
  */
@@ -17,7 +19,10 @@ public class BluetoothServices {
 
     //CGMServiceCharacteristicUUID
     public static final String Communication = "F8083533-849E-531C-C594-30F1F86A4EA5";
-    public static final String Control = "F8083534-849E-531C-C594-30F1F86A4EA5";
+    public static final UUID Control = UUID.fromString("F8083534-849E-531C-C594-30F1F86A4EA5");
+
+
+
     public static final String Authentication = "F8083535-849E-531C-C594-30F1F86A4EA5";
     public static final String ProbablyBackfill = "F8083536-849E-531C-C594-30F1F86A4EA5";
 

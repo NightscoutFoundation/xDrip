@@ -13,6 +13,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
@@ -65,6 +66,9 @@ import javax.crypto.spec.SecretKeySpec;
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class G5CollectionService extends Service{
 
+    protected static final UUID CHARACTERISTIC_UPDATE_NOTIFICATION_DESCRIPTOR_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+
+
     private final static String TAG = G5CollectionService.class.getSimpleName();
     private ForegroundServiceStarter foregroundServiceStarter;
 
@@ -86,6 +90,8 @@ public class G5CollectionService extends Service{
     private BluetoothGattService cgmService;// = gatt.getService(UUID.fromString(BluetoothServices.CGMService));
     private BluetoothGattCharacteristic authCharacteristic;// = cgmService.getCharacteristic(UUID.fromString(BluetoothServices.Authentication));
     private BluetoothGattCharacteristic controlCharacteristic;//
+    private BluetoothGattCharacteristic commCharacteristic;//
+
 
     private BluetoothDevice device;
 
@@ -283,10 +289,8 @@ public class G5CollectionService extends Service{
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             cgmService = gatt.getService(UUID.fromString(BluetoothServices.CGMService));
             authCharacteristic = cgmService.getCharacteristic(UUID.fromString(BluetoothServices.Authentication));
-            controlCharacteristic = cgmService.getCharacteristic(UUID.fromString(BluetoothServices.Control));
-            mGatt.setCharacteristicNotification(authCharacteristic, true);
-            mGatt.setCharacteristicNotification(controlCharacteristic, true);
-
+            controlCharacteristic = cgmService.getCharacteristic(BluetoothServices.Control);
+            commCharacteristic = cgmService.getCharacteristic(UUID.fromString(BluetoothServices.Communication));
 
             if (!mGatt.readCharacteristic(authCharacteristic)) {
                 android.util.Log.e("onCharacteristicRead", "ReadCharacteristicError");
@@ -296,7 +300,14 @@ public class G5CollectionService extends Service{
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             android.util.Log.i("Success Write", String.valueOf(status));
-            mGatt.readCharacteristic(characteristic);
+            android.util.Log.i("Characteristic", String.valueOf(characteristic.getUuid()));
+
+            if (String.valueOf(characteristic.getUuid()) != String.valueOf(controlCharacteristic.getUuid())) {
+                gatt.readCharacteristic(characteristic);
+            } else {
+                android.util.Log.i("control?", String.valueOf(characteristic.getUuid()));
+            }
+
 //            if (status == BluetoothGatt.GATT_SUCCESS) {
 //            }
 
@@ -312,16 +323,13 @@ public class G5CollectionService extends Service{
                 if (characteristic.getValue()[0] == 5 || characteristic.getValue()[0] < 0 ) {
                     authStatus = new AuthStatusRxMessage(characteristic.getValue());
                     if (authStatus.authenticated == 1 && authStatus.bonded == 1) {
-                        mGatt.setCharacteristicNotification(authCharacteristic, false);
-                        android.util.Log.i("Auth", "Transmitter already authenticated");
-                        mGatt.readCharacteristic(controlCharacteristic);
-                        SensorTxMessage sensorMessage = new SensorTxMessage();
-                        android.util.Log.i("sensorMessage",  Arrays.toString(sensorMessage.byteSequence));
-                        controlCharacteristic.setValue(sensorMessage.byteSequence);
-                        mGatt.writeCharacteristic(controlCharacteristic);
+                        mGatt.setCharacteristicNotification(controlCharacteristic, true);
+                        BluetoothGattDescriptor descriptor = controlCharacteristic.getDescriptor(CHARACTERISTIC_UPDATE_NOTIFICATION_DESCRIPTOR_UUID);
+                        descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+                        mGatt.writeDescriptor(descriptor);
                     } else if (authStatus.authenticated == 1) {
                         android.util.Log.i("Auth", "Let's Bond!");
-                        KeepAliveTxMessage keepAlive = new KeepAliveTxMessage(60);
+                        KeepAliveTxMessage keepAlive = new KeepAliveTxMessage(30);
                         characteristic.setValue(keepAlive.byteSequence);
                         mGatt.writeCharacteristic(characteristic);
                         mGatt.readCharacteristic(characteristic);
@@ -330,7 +338,7 @@ public class G5CollectionService extends Service{
                         mGatt.writeCharacteristic(characteristic);
                     } else {
                         android.util.Log.i("Auth", "Transmitter NOT already authenticated");
-                        mGatt.setCharacteristicNotification(characteristic, true);
+                        //mGatt.setCharacteristicNotification(characteristic, true);
                         authRequest = new AuthRequestTxMessage();
                         characteristic.setValue(authRequest.byteSequence);
                         android.util.Log.i("AuthReq", authRequest.byteSequence.toString());
@@ -340,7 +348,6 @@ public class G5CollectionService extends Service{
 
                 if (characteristic.getValue()[0] == 8) {
                     android.util.Log.i("Auth", "Transmitter NOT already authenticated");
-                    mGatt.setCharacteristicNotification(characteristic, true);
                     authRequest = new AuthRequestTxMessage();
                     characteristic.setValue(authRequest.byteSequence);
                     android.util.Log.i("AuthReq", authRequest.byteSequence.toString());
@@ -369,6 +376,23 @@ public class G5CollectionService extends Service{
                     }
            }
 
+        }
+
+        @Override
+        public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+
+                //Check for control characteristic...
+
+                BluetoothGattCharacteristic characteristic = descriptor.getCharacteristic();
+                Log.d(TAG, "Characteristic onDescriptorWrite ch " + characteristic.getUuid());
+                SensorTxMessage sensorMessage = new SensorTxMessage();
+                android.util.Log.i("sensorMessage", Arrays.toString(sensorMessage.byteSequence));
+                controlCharacteristic.setValue(sensorMessage.byteSequence);
+                mGatt.writeCharacteristic(controlCharacteristic);
+            } else {
+                Log.e(TAG, "Unknown error writing descriptor");
+            }
         }
         @Override
         // Characteristic notification
