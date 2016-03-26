@@ -98,6 +98,7 @@ public class G5CollectionService extends Service{
     private BluetoothGattCharacteristic commCharacteristic;//
 
     private BluetoothDevice device;
+    private long lastRead = new Date().getTime() - 60 * 5 * 1000;
 
     private ScanSettings settings;
     private List<ScanFilter> filters;
@@ -408,18 +409,23 @@ public class G5CollectionService extends Service{
 
             byte[] buffer = characteristic.getValue();
 
-            TransmitterData txData = new TransmitterData();
-            ByteBuffer sensorData = ByteBuffer.allocate(buffer.length);
-            sensorData.order(ByteOrder.LITTLE_ENDIAN);
-            sensorData.put(buffer, 0, buffer.length);
-            txData.raw_data = sensorData.getInt(6);
-            txData.filtered_data = sensorData.getInt(10);
-            txData.sensor_battery_level = 216;
-            txData.uuid = UUID.randomUUID().toString();
-            txData.timestamp = new Date().getTime();
+            long timeSince = (new Date().getTime() - lastRead);
+            android.util.Log.i("ms since", Long.toString(timeSince));
+            if (timeSince > 250 * 1000) {
+                TransmitterData txData = new TransmitterData();
+                ByteBuffer sensorData = ByteBuffer.allocate(buffer.length);
+                sensorData.order(ByteOrder.LITTLE_ENDIAN);
+                sensorData.put(buffer, 0, buffer.length);
+                txData.raw_data = sensorData.getInt(6);
+                txData.filtered_data = sensorData.getInt(10);
+                txData.sensor_battery_level = 216;
+                txData.uuid = UUID.randomUUID().toString();
+                txData.timestamp = new Date().getTime();
 
-            processNewTransmitterData(txData, txData.timestamp);
-            Extensions.doSleep(2000);
+                lastRead = txData.timestamp;
+
+                processNewTransmitterData(txData, txData.timestamp);
+            }
         }
 
     };
