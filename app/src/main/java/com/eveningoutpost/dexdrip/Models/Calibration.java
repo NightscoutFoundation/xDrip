@@ -557,6 +557,7 @@ public class Calibration extends Model {
     public static void adjustRecentBgReadings() {// This just adjust the last 30 bg readings transition from one calibration point to the next
         adjustRecentBgReadings(30);
     }
+
     public static void adjustRecentBgReadings(int adjustCount) {
         //TODO: add some handling around calibration overrides as they come out looking a bit funky
         List<Calibration> calibrations = Calibration.latest(3);
@@ -577,6 +578,7 @@ public class Calibration extends Model {
             for (BgReading bgReading : bgReadings) {
                 double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
                 bgReading.calculated_value = newYvalue;
+                BgReading.updateCalculatedValue(bgReading);
                 bgReading.save();
 
             }
