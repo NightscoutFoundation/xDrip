@@ -114,6 +114,7 @@ public class Home extends ActivityWithMenu {
     private Viewport tempViewport = new Viewport();
     private Viewport holdViewport = new Viewport();
     private boolean isBTShare;
+    private boolean isG5Share;
     private BroadcastReceiver _broadcastReceiver;
     private BroadcastReceiver newDataReceiver;
     private LineChartView chart;
@@ -916,10 +917,14 @@ public class Home extends ActivityWithMenu {
         boolean isDexbridgeWixel = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
         boolean isWifiBluetoothWixel = CollectionServiceStarter.isWifiandBTWixel(getApplicationContext());
         isBTShare = CollectionServiceStarter.isBTShare(getApplicationContext());
+        isG5Share = CollectionServiceStarter.isBTG5(getApplicationContext());
         boolean isWifiWixel = CollectionServiceStarter.isWifiWixel(getApplicationContext());
         alreadyDisplayedBgInfoCommon = false; // reset flag
         if (isBTShare) {
             updateCurrentBgInfoForBtShare(notificationText);
+        }
+        if (isG5Share) {
+            updateCurrentBgInfoCommon(notificationText);
         }
         if (isBTWixel || isDexbridgeWixel || isWifiBluetoothWixel) {
             updateCurrentBgInfoForBtBasedWixel(notificationText);
@@ -949,7 +954,7 @@ public class Home extends ActivityWithMenu {
             if ((BgGraphBuilder.best_bg_estimate > 0) && (BgGraphBuilder.last_bg_estimate > 0)) {
                 final double estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
 
-                        notificationText.append("\nBG Original: " + bgGraphBuilder.unitized_string(BgReading.lastNoSenssor().calculated_value)
+                notificationText.append("\nBG Original: " + bgGraphBuilder.unitized_string(BgReading.lastNoSenssor().calculated_value)
                         + " \u0394 " + bgGraphBuilder.unitizedDeltaString(false, true, true)
                         + " " + BgReading.lastNoSenssor().slopeArrow());
 

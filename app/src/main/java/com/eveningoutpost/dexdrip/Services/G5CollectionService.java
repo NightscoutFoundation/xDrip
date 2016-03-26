@@ -42,6 +42,9 @@ import com.eveningoutpost.dexdrip.G5Model.Extensions;
 import com.eveningoutpost.dexdrip.G5Model.KeepAliveTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.SensorTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.TransmitterMessage;
+import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.G5Model.Transmitter;
 
@@ -50,10 +53,12 @@ import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -92,9 +97,7 @@ public class G5CollectionService extends Service{
     private BluetoothGattCharacteristic controlCharacteristic;//
     private BluetoothGattCharacteristic commCharacteristic;//
 
-
     private BluetoothDevice device;
-
 
     private ScanSettings settings;
     private List<ScanFilter> filters;
@@ -390,6 +393,8 @@ public class G5CollectionService extends Service{
                 android.util.Log.i("sensorMessage", Arrays.toString(sensorMessage.byteSequence));
                 controlCharacteristic.setValue(sensorMessage.byteSequence);
                 mGatt.writeCharacteristic(controlCharacteristic);
+
+
             } else {
                 Log.e(TAG, "Unknown error writing descriptor");
             }
@@ -400,10 +405,40 @@ public class G5CollectionService extends Service{
                                             BluetoothGattCharacteristic characteristic) {
             android.util.Log.i("CharBytes-nfy", Arrays.toString(characteristic.getValue()));
             android.util.Log.i("CharHex-nfy", Extensions.bytesToHex(characteristic.getValue()));
+
+            byte[] buffer = characteristic.getValue();
+
+            TransmitterData txData = new TransmitterData();
+            ByteBuffer sensorData = ByteBuffer.allocate(buffer.length);
+            sensorData.order(ByteOrder.LITTLE_ENDIAN);
+            sensorData.put(buffer, 0, buffer.length);
+            txData.raw_data = sensorData.getInt(6);
+            txData.filtered_data = sensorData.getInt(10);
+            txData.sensor_battery_level = 216;
+            txData.uuid = UUID.randomUUID().toString();
+            txData.timestamp = new Date().getTime();
+
+            processNewTransmitterData(txData, txData.timestamp);
+            Extensions.doSleep(2000);
         }
 
     };
 
+
+    private void processNewTransmitterData(TransmitterData transmitterData, long timestamp) {
+        if (transmitterData == null) {
+            return;
+        }
+
+        Sensor sensor = Sensor.currentSensor();
+        if (sensor == null) {
+            Log.i(TAG, "setSerialDataToTransmitterRawData: No Active Sensor, Data only stored in Transmitter Data");
+            return;
+        }
+
+        Sensor.updateBatteryLevel(sensor, transmitterData.sensor_battery_level);
+        BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, timestamp);
+    }
 
     @SuppressLint("GetInstance")
     private byte[] calculateHash(byte[] data) {
