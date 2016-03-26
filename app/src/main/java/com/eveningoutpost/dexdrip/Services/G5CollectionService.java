@@ -36,8 +36,11 @@ import com.eveningoutpost.dexdrip.G5Model.AuthRequestTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.AuthStatusRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.BluetoothServices;
 import com.eveningoutpost.dexdrip.G5Model.BondRequestTxMessage;
+import com.eveningoutpost.dexdrip.G5Model.DisconnectTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.Extensions;
 import com.eveningoutpost.dexdrip.G5Model.KeepAliveTxMessage;
+import com.eveningoutpost.dexdrip.G5Model.SensorTxMessage;
+import com.eveningoutpost.dexdrip.G5Model.TransmitterMessage;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.G5Model.Transmitter;
 
@@ -80,6 +83,13 @@ public class G5CollectionService extends Service{
     public AuthStatusRxMessage authStatus = null;
     public AuthRequestTxMessage authRequest = null;
 
+    private BluetoothGattService cgmService;// = gatt.getService(UUID.fromString(BluetoothServices.CGMService));
+    private BluetoothGattCharacteristic authCharacteristic;// = cgmService.getCharacteristic(UUID.fromString(BluetoothServices.Authentication));
+    private BluetoothGattCharacteristic controlCharacteristic;//
+
+    private BluetoothDevice device;
+
+
     private ScanSettings settings;
     private List<ScanFilter> filters;
 
@@ -108,6 +118,8 @@ public class G5CollectionService extends Service{
 //        wakeLock.acquire(40000);
         Log.d(TAG, "onG5StartCommand");
 
+        //4053HM
+        //4023Q2
         defaultTransmitter = new Transmitter("4023Q2");
 
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -187,9 +199,15 @@ public class G5CollectionService extends Service{
                 String deviceNameLastTwo = Extensions.lastTwoCharactersOfString(btDevice.getName());
 
                 if (transmitterIdLastTwo.equals(deviceNameLastTwo)) {
-                    //They match, connect to the device.
+                    device = btDevice;
                     connectToDevice(btDevice);
                 } else {
+                    if (deviceNameLastTwo == "Q2")
+                    {
+                        defaultTransmitter = new Transmitter("4053HM");
+                    } else {
+                        defaultTransmitter = new Transmitter("4023Q2");
+                    }
                     startScan();
                 }
             }
@@ -236,10 +254,10 @@ public class G5CollectionService extends Service{
             };
 
     private void connectToDevice(BluetoothDevice device) {
-        if (mGatt == null) {
+        //if (mGatt == null) {
             mGatt = device.connectGatt(getApplicationContext(), false, gattCallback);
             stopScan();
-        }
+        //}
     }
 
     private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
@@ -263,139 +281,105 @@ public class G5CollectionService extends Service{
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-            BluetoothGattService cgmService = gatt.getService(UUID.fromString(BluetoothServices.CGMService));
-            android.util.Log.i("onServiceDiscovered", cgmService.getUuid().toString());
+            cgmService = gatt.getService(UUID.fromString(BluetoothServices.CGMService));
+            authCharacteristic = cgmService.getCharacteristic(UUID.fromString(BluetoothServices.Authentication));
+            controlCharacteristic = cgmService.getCharacteristic(UUID.fromString(BluetoothServices.Control));
+            mGatt.setCharacteristicNotification(authCharacteristic, true);
+            mGatt.setCharacteristicNotification(controlCharacteristic, true);
 
-            if (authStatus != null && authStatus.authenticated == 1) {
-                BluetoothGattCharacteristic controlCharacteristic = cgmService.getCharacteristic(UUID.fromString(BluetoothServices.Control));
-                if (!mGatt.readCharacteristic(controlCharacteristic)) {
-                    android.util.Log.e("onCharacteristicRead", "ReadCharacteristicError");
-                }
-            }
-            else {
-                BluetoothGattCharacteristic authCharacteristic = cgmService.getCharacteristic(UUID.fromString(BluetoothServices.Authentication));
-                if (!mGatt.readCharacteristic(authCharacteristic)) {
-                    android.util.Log.e("onCharacteristicRead", "ReadCharacteristicError");
-                }
-            }
+//
+//            if (!mGatt.readCharacteristic(authCharacteristic)) {
+//                android.util.Log.e("onCharacteristicRead", "ReadCharacteristicError");
+//            }
         }
 
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                if (authStatus != null) {
-                    if (authStatus.authenticated != 1) {
-                        BluetoothGattCharacteristic authCharacteristic = mGatt.getService(UUID.fromString(BluetoothServices.CGMService)).getCharacteristic(UUID.fromString(BluetoothServices.Authentication));
+            android.util.Log.i("Success Write", String.valueOf(status));
+            mGatt.readCharacteristic(characteristic);
+//            if (status == BluetoothGatt.GATT_SUCCESS) {
+//            }
 
-                        AuthChallengeRxMessage authChallenge = new AuthChallengeRxMessage(authCharacteristic.getValue());
-                        Log.i("AuthChallenge", Arrays.toString(authChallenge.challenge));
-                        Log.i("AuthChallenge", Arrays.toString(authChallenge.tokenHash));
-                    }
-                    else if (authStatus.bonded == 5) {
-                        Log.i("CharBytes", Arrays.toString(characteristic.getValue()));
-                        Log.i("CharHex", Extensions.bytesToHex(characteristic.getValue()));
-
-
-                    }
-                }
-            }
-
-            mGatt.setCharacteristicNotification(characteristic, false);
+//            mGatt.setCharacteristicNotification(characteristic, false);
         }
-
-//        authTxMessage.data: <0167422e c566804b f802>
-//        AuthChallengeRxMessage Token: <d6d91514 d8271345>
-//        AuthChallengeRxMessage challenge: <2bde4389 f215584c>
-//        challengeHash: <65a53e82 ab481f57>
-//        AuthChallengeTxMessage: <0465a53e 82ab481f 57>
-
-//        authTxMessage.data: <01af6ffb 8ba89047 0102>
-//        AuthChallengeRxMessage Token: <066d66d6 2f3500ee>
-//        AuthChallengeRxMessage challenge: <acfb39af d5b08ab1>
-//        challengeHash: <4198dc37 e5e1ec6a>
-//        AuthChallengeTxMessage: <044198dc 37e5e1ec 6a>
-
 
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                android.util.Log.i("CharBytes", Arrays.toString(characteristic.getValue()));
-                android.util.Log.i("CharHex", Extensions.bytesToHex(characteristic.getValue()));
+                android.util.Log.i("CharBytes-or", Arrays.toString(characteristic.getValue()));
+                android.util.Log.i("CharHex-or", Extensions.bytesToHex(characteristic.getValue()));
 
-                // Request authentication.
-                authStatus = new AuthStatusRxMessage(characteristic.getValue());
-                if (authStatus.authenticated == 1 && authStatus.bonded == 1) {
-                    android.util.Log.i("Auth", "Transmitter already authenticated");
-                }
-                else {
-                    if (authRequest == null) {
-                        mGatt.setCharacteristicNotification(characteristic, true);
-
-                        authRequest = new AuthRequestTxMessage();
-
-                        characteristic.setValue(authRequest.byteSequence);
+                if (characteristic.getValue()[0] == 5 || characteristic.getValue()[0] < 0 ) {
+                    authStatus = new AuthStatusRxMessage(characteristic.getValue());
+                    if (authStatus.authenticated == 1 && authStatus.bonded == 1) {
+                        mGatt.setCharacteristicNotification(authCharacteristic, false);
+                        android.util.Log.i("Auth", "Transmitter already authenticated");
+                        mGatt.readCharacteristic(controlCharacteristic);
+                        SensorTxMessage sensorMessage = new SensorTxMessage();
+                        android.util.Log.i("sensorMessage",  Arrays.toString(sensorMessage.byteSequence));
+                        controlCharacteristic.setValue(sensorMessage.byteSequence);
+                        mGatt.writeCharacteristic(controlCharacteristic);
+                    } else if (authStatus.authenticated == 1) {
+                        android.util.Log.i("Auth", "Let's Bond!");
+                        KeepAliveTxMessage keepAlive = new KeepAliveTxMessage(60);
+                        characteristic.setValue(keepAlive.byteSequence);
                         mGatt.writeCharacteristic(characteristic);
-
-                        //Extensions.doSleep(200);
-
                         mGatt.readCharacteristic(characteristic);
-
-                        return;
+                        BondRequestTxMessage bondRequest = new BondRequestTxMessage();
+                        characteristic.setValue(bondRequest.byteSequence);
+                        mGatt.writeCharacteristic(characteristic);
+                    } else {
+                        android.util.Log.i("Auth", "Transmitter NOT already authenticated");
+                        mGatt.setCharacteristicNotification(characteristic, true);
+                        authRequest = new AuthRequestTxMessage();
+                        characteristic.setValue(authRequest.byteSequence);
+                        android.util.Log.i("AuthReq", authRequest.byteSequence.toString());
+                        mGatt.writeCharacteristic(characteristic);
                     }
+                }
 
-                    // Auth challenge and token have been retrieved.
+                if (characteristic.getValue()[0] == 8) {
+                    android.util.Log.i("Auth", "Transmitter NOT already authenticated");
+                    mGatt.setCharacteristicNotification(characteristic, true);
+                    authRequest = new AuthRequestTxMessage();
+                    characteristic.setValue(authRequest.byteSequence);
+                    android.util.Log.i("AuthReq", authRequest.byteSequence.toString());
+                    mGatt.writeCharacteristic(characteristic);
+                }
+
+//                 Auth challenge and token have been retrieved.
                     if (characteristic.getValue()[0] == 0x3) {
                         AuthChallengeRxMessage authChallenge = new AuthChallengeRxMessage(characteristic.getValue());
-
-                        if (!Arrays.equals(authChallenge.tokenHash, calculateHash(authRequest.singleUseToken))) {
-                            android.util.Log.e("Auth", "Transmitter failed auth challenge");
-                            return;
+                        if (authRequest == null) {
+                            android.util.Log.d("new auth", "hmmmm");
+                            authRequest = new AuthRequestTxMessage();
                         }
+                        android.util.Log.i("tokenHash",  Arrays.toString(authChallenge.tokenHash));
+                        android.util.Log.i("singleUSe", Arrays.toString(calculateHash(authRequest.singleUseToken)));
 
                         byte[] challengeHash = calculateHash(authChallenge.challenge);
+                        android.util.Log.d("challenge hash", Arrays.toString(challengeHash));
                         if (challengeHash != null) {
+                            android.util.Log.d("Auth", "Transmitter try auth challenge");
                             AuthChallengeTxMessage authChallengeTx = new AuthChallengeTxMessage(challengeHash);
-
+                            android.util.Log.i("AuthChallenge",  Arrays.toString(authChallengeTx.byteSequence));
                             characteristic.setValue(authChallengeTx.byteSequence);
                             mGatt.writeCharacteristic(characteristic);
-
-                            //Extensions.doSleep(200);
-
-                            mGatt.readCharacteristic(characteristic);
                         }
                     }
-                    // New auth after completing challenge. We should see pairing here.
-                    else if (characteristic.getValue()[0] == 0x5) {
-                        authStatus = new AuthStatusRxMessage(characteristic.getValue());
+           }
 
-                        if (authStatus.authenticated != 1) {
-                            android.util.Log.e("Auth", "Transmitter rejected auth challenge");
-                        }
-
-                        if (authStatus.bonded != 1) {
-                            KeepAliveTxMessage keepAlive = new KeepAliveTxMessage(25);
-
-                            characteristic.setValue(keepAlive.byteSequence);
-                            mGatt.writeCharacteristic(characteristic);
-
-                            mGatt.readCharacteristic(characteristic);
-
-                            BondRequestTxMessage bondRequest = new BondRequestTxMessage();
-
-                            characteristic.setValue(bondRequest.byteSequence);
-                            mGatt.writeCharacteristic(characteristic);
-
-                            //Extensions.doSleep(200);
-
-                            mGatt.readCharacteristic(characteristic);
-
-                            mGatt.setCharacteristicNotification(characteristic, false);
-                        }
-                    }
-                }
-            }
         }
+        @Override
+        // Characteristic notification
+        public void onCharacteristicChanged(BluetoothGatt gatt,
+                                            BluetoothGattCharacteristic characteristic) {
+            android.util.Log.i("CharBytes-nfy", Arrays.toString(characteristic.getValue()));
+            android.util.Log.i("CharHex-nfy", Extensions.bytesToHex(characteristic.getValue()));
+        }
+
     };
+
 
     @SuppressLint("GetInstance")
     private byte[] calculateHash(byte[] data) {

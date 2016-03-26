@@ -1,5 +1,8 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 /**
  * Created by joeginley on 3/16/16.
  */
