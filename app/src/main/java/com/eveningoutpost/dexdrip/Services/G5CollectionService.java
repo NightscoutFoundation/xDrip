@@ -287,10 +287,10 @@ public class G5CollectionService extends Service{
             mGatt.setCharacteristicNotification(authCharacteristic, true);
             mGatt.setCharacteristicNotification(controlCharacteristic, true);
 
-//
-//            if (!mGatt.readCharacteristic(authCharacteristic)) {
-//                android.util.Log.e("onCharacteristicRead", "ReadCharacteristicError");
-//            }
+
+            if (!mGatt.readCharacteristic(authCharacteristic)) {
+                android.util.Log.e("onCharacteristicRead", "ReadCharacteristicError");
+            }
         }
 
         @Override
