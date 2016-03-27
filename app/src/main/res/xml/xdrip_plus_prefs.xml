@@ -14,6 +14,11 @@
 
                 <CheckBoxPreference
                     android:defaultValue="false"
+                    android:key="bg_compensate_noise"
+                    android:summary="Try to work around noisy readings"
+                    android:title="\u26A0 Compensate for noise" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
                     android:key="bg_from_filtered"
                     android:summary="Delayed but more stable when noisy"
                     android:title="Glucose number from Filtered" />
@@ -53,10 +58,15 @@
                     android:summary="Display 24 hour average line"
                     android:title="Show Graph total average" />
                 <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="show_momentum_working_line"
+                android:summary="Predictive model inner workings"
+                android:title="Show Momentum working curve" />
+                <CheckBoxPreference
                     android:defaultValue="false"
-                    android:key="show_momentum_working_line"
-                    android:summary="Predictive model inner workings"
-                    android:title="Show Momentum working curve" />
+                    android:key="show_noise_workings"
+                    android:summary="Noise model inner workings"
+                    android:title="Show Noise workings" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="always_show_bwp"
@@ -111,34 +121,34 @@
                 </Preference>
             </PreferenceCategory>
 
-        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-            android:dependency="I_understand"
-            android:key="xdrip_plus_adv_predict"
-            android:summary="Deep settings for algorithms"
-            android:title="Low level prediction values">
-
-
-            <PreferenceCategory
-                android:key="xdrip_plus_adv_predict_cat"
+            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                android:dependency="I_understand"
+                android:key="xdrip_plus_adv_predict"
+                android:summary="Deep settings for algorithms"
                 android:title="Low level prediction values">
-                <EditTextPreference
-                    android:defaultValue="3.0"
-                    android:key="xplus_insulin_dia"
-                    android:summary=""
-                    android:title="Insulin duration in hours" />
 
-                <EditTextPreference
-                    android:defaultValue="2"
-                    android:key="xplus_liver_sensitivity"
-                    android:summary=""
-                    android:title="Default Liver Sensitivity Ratio" />
-                <EditTextPreference
-                    android:defaultValue="0.8"
-                    android:key="xplus_liver_maximpact"
-                    android:summary=""
-                    android:title="Default Liver Maximum Impact (0-1)" />
-            </PreferenceCategory>
-        </PreferenceScreen>
+
+                <PreferenceCategory
+                    android:key="xdrip_plus_adv_predict_cat"
+                    android:title="Low level prediction values">
+                    <EditTextPreference
+                        android:defaultValue="3.0"
+                        android:key="xplus_insulin_dia"
+                        android:summary=""
+                        android:title="Insulin duration in hours" />
+
+                    <EditTextPreference
+                        android:defaultValue="2"
+                        android:key="xplus_liver_sensitivity"
+                        android:summary=""
+                        android:title="Default Liver Sensitivity Ratio" />
+                    <EditTextPreference
+                        android:defaultValue="0.8"
+                        android:key="xplus_liver_maximpact"
+                        android:summary=""
+                        android:title="Default Liver Maximum Impact (0-1)" />
+                </PreferenceCategory>
+            </PreferenceScreen>
 
 
         </PreferenceScreen>
@@ -176,6 +186,11 @@
                     android:key="plus_follow_geolocation"
                     android:summary="Send Parakeet map location to followers"
                     android:title="Sync Parakeet GeoLocation" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="disable_all_sync"
+                    android:summary="Temporary work-around option"
+                    android:title="Disable all sync features" />
             </PreferenceCategory>
         </PreferenceScreen>
 

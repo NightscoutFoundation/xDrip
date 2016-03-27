@@ -43,6 +43,13 @@ public class PlusSyncService extends Service {
             Log.d(TAG, "Already created");
             return;
         }
+        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("disable_all_sync", false))
+        {
+            keeprunning=false;
+            GcmActivity.cease_all_activity = true;
+            Log.d(TAG,"Sync services disabled");
+            return;
+        }
         if ((GcmActivity.token != null) && (xdrip.getAppContext() != null)) return;
         Log.d(TAG, "Starting jamorham xDrip-Plus sync service: " + source);
         context.startService(new Intent(context, PlusSyncService.class));

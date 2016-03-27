@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -134,6 +135,7 @@ public class Home extends ActivityWithMenu {
     private TextView dexbridgeBattery;
     private TextView currentBgValueText;
     private TextView notificationText;
+    private TextView extraStatusLineText;
     private boolean alreadyDisplayedBgInfoCommon = false;
     private boolean recognitionRunning = false;
     double thisnumber = -1;
@@ -170,6 +172,7 @@ public class Home extends ActivityWithMenu {
         setSupportActionBar(mToolbar);
 
         this.dexbridgeBattery = (TextView) findViewById(R.id.textBridgeBattery);
+        this.extraStatusLineText = (TextView) findViewById(R.id.extraStatusLine);
         this.currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             this.currentBgValueText.setTextSize(100);
@@ -940,7 +943,21 @@ public class Home extends ActivityWithMenu {
         NavigationDrawerFragment navigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
 
         // DEBUG ONLY
-        if ((BgGraphBuilder.last_noise>0) && (prefs.getBoolean("show_momentum_working_line",false))) notificationText.append("\nNoise: "+JoH.qs(bgGraphBuilder.last_noise,2));
+        if ((BgGraphBuilder.last_noise > 0) && (prefs.getBoolean("show_noise_workings", false))) {
+            notificationText.append("\nSensor Noise: " + JoH.qs(BgGraphBuilder.last_noise, 1));
+            if ((BgGraphBuilder.best_bg_estimate > 0) && (BgGraphBuilder.last_bg_estimate > 0)) {
+                final double estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
+
+                notificationText.append("\nBG Original: " + bgGraphBuilder.unitized_string(BgReading.lastNoSenssor().calculated_value)
+                        + " \u0394 " + bgGraphBuilder.unitizedDeltaString(false, true, true)
+                        + " " + BgReading.lastNoSenssor().slopeArrow());
+
+                notificationText.append("\nBG Estimate: " + bgGraphBuilder.unitized_string(BgGraphBuilder.best_bg_estimate)
+                        + " \u0394 " + bgGraphBuilder.unitizedDeltaStringRaw(false, true, estimated_delta)
+                        + " " + BgReading.slopeToArrowSymbol(estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000)));
+
+            }
+        }
 
 
         if (navigationDrawerFragment == null) Log.e("Runtime", "navigationdrawerfragment is null");
@@ -1117,11 +1134,11 @@ public class Home extends ActivityWithMenu {
         }
 
         if(prefs.getBoolean("extra_status_line", false)) {
-        //    extraStatusLineText.setText(extraStatusLine());
-        //    extraStatusLineText.setVisibility(View.VISIBLE);
+          extraStatusLineText.setText(extraStatusLine());
+            extraStatusLineText.setVisibility(View.VISIBLE);
         } else {
-        //    extraStatusLineText.setText("");
-        //    extraStatusLineText.setVisibility(View.GONE);
+            extraStatusLineText.setText("");
+            extraStatusLineText.setVisibility(View.GONE);
         }
     }
 
@@ -1129,7 +1146,7 @@ public class Home extends ActivityWithMenu {
     private String extraStatusLine() {
         StringBuilder extraline = new StringBuilder();
         Calibration lastCalibration = Calibration.last();
-        if (prefs.getBoolean("status_line_calibration_long", true) && lastCalibration != null){
+        if (prefs.getBoolean("status_line_calibration_long", false) && lastCalibration != null){
             if(extraline.length()!=0) extraline.append(' ');
             extraline.append("slope = ");
             extraline.append(String.format("%.2f",lastCalibration.slope));
@@ -1192,6 +1209,9 @@ public class Home extends ActivityWithMenu {
 
     private void displayCurrentInfoFromReading(BgReading lastBgReading, boolean predictive) {
         double estimate = 0;
+        double estimated_delta = 0;
+        String slope_arrow = lastBgReading.slopeArrow();
+        String extrastring = "";
         if ((new Date().getTime()) - (60000 * 11) - lastBgReading.timestamp > 0) {
             notificationText.setText("Signal Missed");
             if (!predictive) {
@@ -1206,16 +1226,43 @@ public class Home extends ActivityWithMenu {
             if (notificationText.getText().length() == 0) {
                 notificationText.setTextColor(Color.WHITE);
             }
-            final boolean bg_from_filtered = prefs.getBoolean("bg_from_filtered", false);
+            boolean bg_from_filtered = prefs.getBoolean("bg_from_filtered", false);
             if (!predictive) {
+
+                estimate = lastBgReading.calculated_value; // normal
+                currentBgValueText.setTypeface(null, Typeface.NORMAL);
+
+                // if noise has settled down then switch off filtered mode
+                if ((bg_from_filtered) && (BgGraphBuilder.last_noise < BgGraphBuilder.NOISE_FORGIVE) && (prefs.getBoolean("bg_compensate_noise", false)))
+                {
+                    bg_from_filtered = false;
+                    prefs.edit().putBoolean("bg_from_filtered", false).apply();
+
+                }
+
+                if ((BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER)
+                        && (BgGraphBuilder.best_bg_estimate > 0)
+                        && (BgGraphBuilder.last_bg_estimate > 0)
+                        && (prefs.getBoolean("bg_compensate_noise", false))) {
+                    estimate = BgGraphBuilder.best_bg_estimate; // this maybe needs scaling based on noise intensity
+                    estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
+                    slope_arrow = BgReading.slopeToArrowSymbol(estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000)); // delta by minute
+                    currentBgValueText.setTypeface(null, Typeface.ITALIC);
+                    extrastring = "\u26A0 "; // warning symbol !
+                }
+
+                if (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_HIGH)
+                {
+                    bg_from_filtered = true; // force filtered mode
+                }
+
                 if (bg_from_filtered) {
                     currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
                     estimate = lastBgReading.filtered_calculated_value;
                 } else {
-                    estimate = lastBgReading.calculated_value;
+                    currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() & ~Paint.UNDERLINE_TEXT_FLAG);
                 }
                 String stringEstimate = bgGraphBuilder.unitized_string(estimate);
-                String slope_arrow = lastBgReading.slopeArrow();
                 if ((lastBgReading.hide_slope) || (bg_from_filtered)) {
                     slope_arrow = "";
                 }
@@ -1225,6 +1272,7 @@ public class Home extends ActivityWithMenu {
                 String stringEstimate = bgGraphBuilder.unitized_string(estimate);
                 currentBgValueText.setText(stringEstimate + " " + BgReading.activeSlopeArrow());
             }
+            if (extrastring.length()>0) currentBgValueText.setText(extrastring+currentBgValueText.getText());
         }
         int minutes = (int) (System.currentTimeMillis() - lastBgReading.timestamp) / (60 * 1000);
         notificationText.append("\n" + minutes + ((minutes == 1) ? " Minute ago" : " Minutes ago"));

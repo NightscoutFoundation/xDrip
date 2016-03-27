@@ -58,6 +58,10 @@ public class BgGraphBuilder {
     public static final int TREATMENT_COLOR_GREEN = Color.parseColor("#77aa00");
     public static final int TREATMENT_COLOR_DARK_GREEN = Color.parseColor("#334400");
     public static final int PREDICTIVE_COLOR_PURPLE = Color.parseColor("#7700aa");
+    public final static long DEXCOM_PERIOD = 300000;
+    public final static double NOISE_TRIGGER = 10;
+    public final static double NOISE_HIGH = 200;
+    public final static double NOISE_FORGIVE = 100;
     private final static String TAG = "jamorham graph test";
     final int pointSize;
     final int axisTextSize;
@@ -101,6 +105,8 @@ public class BgGraphBuilder {
     private List<PointValue> activityValues = new ArrayList<PointValue>();
     private List<PointValue> annotationValues = new ArrayList<PointValue>();
     public static double last_noise = -99999;
+    public static double best_bg_estimate = -99999;
+    public static double last_bg_estimate = -99999;
 
     public BgGraphBuilder(Context context) {
         this.context = context;
@@ -499,6 +505,7 @@ public class BgGraphBuilder {
         final double trendstart = JoH.ts()-(1000*60*10); // 10 minutes // TODO MAKE PREFERENCE
         final double noise_trendstart = JoH.ts()-(1000*60*20); // 20 minutes // TODO MAKE PREFERENCE
         double oldest_noise_timestamp = JoH.ts();
+        double newest_noise_timestamp = 0;
         TrendLine[] polys = new TrendLine[5];
         TrendLine noisePoly = new PolyTrendLine(2);
         polys[0] = new PolyTrendLine(1);
@@ -586,15 +593,16 @@ public class BgGraphBuilder {
                         if (shifted_timestamp < oldest_noise_timestamp) oldest_noise_timestamp = shifted_timestamp;
                         noise_polyxList.add(shifted_timestamp);
                         noise_polyyList.add((bgReading.filtered_calculated_value));
-                        Log.d(TAG, "flt noise poly Added: " + JoH.qs(noise_polyxList.get(noise_polyxList.size() - 1)) + " / " + JoH.qs(noise_polyyList.get(noise_polyyList.size() - 1), 2));
+                        Log.d(TAG, "flt noise poly Added: " + noise_polyxList.size() + " " + JoH.qs(noise_polyxList.get(noise_polyxList.size() - 1)) + " / " + JoH.qs(noise_polyyList.get(noise_polyyList.size() - 1), 2));
                     }
 
                 }
                 if (bgReading.calculated_value>0) {
                     if (bgReading.timestamp < oldest_noise_timestamp) oldest_noise_timestamp = bgReading.timestamp;
+                    if (bgReading.timestamp > newest_noise_timestamp) newest_noise_timestamp = bgReading.timestamp;
                     noise_polyxList.add((double) bgReading.timestamp);
                     noise_polyyList.add((bgReading.calculated_value));
-                    Log.d(TAG, "raw noise poly Added: " + JoH.qs(noise_polyxList.get(noise_polyxList.size() - 1)) + " / " + JoH.qs(noise_polyyList.get(noise_polyyList.size() - 1), 2));
+                    Log.d(TAG, "raw noise poly Added: " + noise_polyxList.size() + " " + JoH.qs(noise_polyxList.get(noise_polyxList.size() - 1)) + " / " + JoH.qs(noise_polyyList.get(noise_polyyList.size() - 1), 2));
 
                 }
              }
@@ -626,10 +634,21 @@ public class BgGraphBuilder {
                 final double[] noise_polyxs = PolyTrendLine.toPrimitiveFromList(noise_polyxList);
                 noisePoly.setValues(noise_polyys, noise_polyxs);
                 last_noise = noisePoly.errorVarience();
+                if (newest_noise_timestamp > oldest_noise_timestamp)
+                {
+                    best_bg_estimate = noisePoly.predict(newest_noise_timestamp);
+                    last_bg_estimate = noisePoly.predict(newest_noise_timestamp - DEXCOM_PERIOD);
+                } else {
+                    best_bg_estimate = -99;
+                    last_bg_estimate = -99;
+                }
                 Log.i(TAG, "Noise Poly Error Varience: " + JoH.qs(last_noise, 5));
             } else {
                 Log.i(TAG,"Not enough data to get sensible noise value");
                 noisePoly=null;
+                last_noise = -9999;
+                best_bg_estimate = -9999;
+                last_bg_estimate = -9999;
             }
         } catch (Exception e){
             Log.e(TAG," Error with noise poly trend: "+e.toString());
@@ -1153,6 +1172,12 @@ public class BgGraphBuilder {
         }
 
         double value = BgReading.currentSlope(is_follower) * 5 * 60 * 1000;
+
+       return unitizedDeltaStringRaw(showUnit, highGranularity, value);
+    }
+
+    public String unitizedDeltaStringRaw(boolean showUnit, boolean highGranularity,double value) {
+
 
         if (Math.abs(value) > 100) {
             // a delta > 100 will not happen with real BG values -> problematic sensor data

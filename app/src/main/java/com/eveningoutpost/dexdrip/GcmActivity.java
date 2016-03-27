@@ -94,10 +94,12 @@ public class GcmActivity extends Activity {
     }
 
     private static String sendMessage(final String action, final String payload) {
+        if (cease_all_activity) return null;
         return sendMessage(myIdentity(), action, payload);
     }
 
     private static String sendMessage(final String identity, final String action, final String payload) {
+        if (cease_all_activity) return null;
         new Thread() {
             @Override
             public void run() {
@@ -255,7 +257,7 @@ public class GcmActivity extends Activity {
 
     public void tryGCMcreate() {
         Log.d(TAG, "try GCMcreate");
-
+        if (cease_all_activity) return;
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -298,6 +300,7 @@ public class GcmActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (cease_all_activity) return;
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(PreferencesNames.REGISTRATION_COMPLETE));
     }

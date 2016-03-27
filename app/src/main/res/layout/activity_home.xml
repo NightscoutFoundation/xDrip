@@ -70,6 +70,20 @@
                 android:textSize="50dp" />
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/extraStatusLine"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
+                android:gravity="left|top"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/notices"
+                android:text=""
+                android:background="@android:color/transparent"/>
+
+            <TextView
                 android:id="@+id/textBridgeBattery"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

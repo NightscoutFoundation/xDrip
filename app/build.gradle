@@ -122,6 +122,7 @@ android {
 
 // jamorham auto test rig
 task jamorhamAutoInstall(type: Exec) {
+    // just comment out the line below if it causes compile problems
     commandLine "bash", "$projectDir/autoinstallviausb"
 }
 assembleRelease.doLast {
