@@ -24,17 +24,20 @@ import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.ParcelUuid;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.G5Model.AuthChallengeRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.AuthChallengeTxMessage;
 
 import com.eveningoutpost.dexdrip.G5Model.AuthRequestTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.AuthStatusRxMessage;
+import com.eveningoutpost.dexdrip.G5Model.BatteryTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.BluetoothServices;
 import com.eveningoutpost.dexdrip.G5Model.BondRequestTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.DisconnectTxMessage;
@@ -99,9 +102,13 @@ public class G5CollectionService extends Service{
 
     private BluetoothDevice device;
     private long lastRead = new Date().getTime() - 60 * 5 * 1000;
+    private long lastBattery = 220;
+
 
     private ScanSettings settings;
     private List<ScanFilter> filters;
+    private SharedPreferences prefs;
+
 
     private Handler handler;
 
@@ -130,7 +137,7 @@ public class G5CollectionService extends Service{
 
         //4053HM
         //4023Q2
-        defaultTransmitter = new Transmitter("4023Q2");
+
 
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         mBluetoothAdapter = mBluetoothManager.getAdapter();
@@ -200,7 +207,8 @@ public class G5CollectionService extends Service{
         public void onScanResult(int callbackType, ScanResult result) {
             android.util.Log.i("result", result.toString());
             BluetoothDevice btDevice = result.getDevice();
-
+            prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
             // Check if the device has a name, the Dexcom transmitter always should. Match it with the transmitter id that was entered.
             // We get the last 2 characters to connect to the correct transmitter if there is more than 1 active or in the room.
             // If they match, connect to the device.
@@ -212,12 +220,6 @@ public class G5CollectionService extends Service{
                     device = btDevice;
                     connectToDevice(btDevice);
                 } else {
-                    if (deviceNameLastTwo == "Q2")
-                    {
-                        defaultTransmitter = new Transmitter("4053HM");
-                    } else {
-                        defaultTransmitter = new Transmitter("4023Q2");
-                    }
                     startScan();
                 }
             }
@@ -330,6 +332,9 @@ public class G5CollectionService extends Service{
                         mGatt.setCharacteristicNotification(controlCharacteristic, true);
                         BluetoothGattDescriptor descriptor = controlCharacteristic.getDescriptor(CHARACTERISTIC_UPDATE_NOTIFICATION_DESCRIPTOR_UUID);
                         descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+                        SensorTxMessage sensorMessage = new SensorTxMessage();
+                        android.util.Log.i("sensorMessage", Arrays.toString(sensorMessage.byteSequence));
+                        controlCharacteristic.setValue(sensorMessage.byteSequence);
                         mGatt.writeDescriptor(descriptor);
                     } else if (authStatus.authenticated == 1) {
                         android.util.Log.i("Auth", "Let's Bond!");
@@ -340,6 +345,7 @@ public class G5CollectionService extends Service{
                         BondRequestTxMessage bondRequest = new BondRequestTxMessage();
                         characteristic.setValue(bondRequest.byteSequence);
                         mGatt.writeCharacteristic(characteristic);
+                        device.createBond();
                     } else {
                         android.util.Log.i("Auth", "Transmitter NOT already authenticated");
                         //mGatt.setCharacteristicNotification(characteristic, true);
@@ -390,9 +396,6 @@ public class G5CollectionService extends Service{
 
                 BluetoothGattCharacteristic characteristic = descriptor.getCharacteristic();
                 Log.d(TAG, "Characteristic onDescriptorWrite ch " + characteristic.getUuid());
-                SensorTxMessage sensorMessage = new SensorTxMessage();
-                android.util.Log.i("sensorMessage", Arrays.toString(sensorMessage.byteSequence));
-                controlCharacteristic.setValue(sensorMessage.byteSequence);
                 mGatt.writeCharacteristic(controlCharacteristic);
 
 
@@ -409,23 +412,43 @@ public class G5CollectionService extends Service{
 
             byte[] buffer = characteristic.getValue();
 
-            long timeSince = (new Date().getTime() - lastRead);
-            android.util.Log.i("ms since", Long.toString(timeSince));
-            if (timeSince > 250 * 1000) {
-                TransmitterData txData = new TransmitterData();
-                ByteBuffer sensorData = ByteBuffer.allocate(buffer.length);
-                sensorData.order(ByteOrder.LITTLE_ENDIAN);
-                sensorData.put(buffer, 0, buffer.length);
-                txData.raw_data = sensorData.getInt(6);
-                txData.filtered_data = sensorData.getInt(10);
-                txData.sensor_battery_level = 216;
-                txData.uuid = UUID.randomUUID().toString();
-                txData.timestamp = new Date().getTime();
+            if (buffer[0] == (byte)47) {
+                long timeSince = (new Date().getTime() - lastRead);
+                android.util.Log.i("ms since", Long.toString(timeSince));
+                if (timeSince > 250 * 1000) {
+                    TransmitterData txData = new TransmitterData();
+                    ByteBuffer sensorData = ByteBuffer.allocate(buffer.length);
+                    sensorData.order(ByteOrder.LITTLE_ENDIAN);
+                    sensorData.put(buffer, 0, buffer.length);
+                    txData.raw_data = sensorData.getInt(6);
+                    txData.filtered_data = sensorData.getInt(10);
+                    txData.sensor_battery_level = (int)lastBattery;
+                    txData.uuid = UUID.randomUUID().toString();
+                    txData.timestamp = new Date().getTime();
 
-                lastRead = txData.timestamp;
+                    lastRead = txData.timestamp;
 
-                processNewTransmitterData(txData, txData.timestamp);
+                    processNewTransmitterData(txData, txData.timestamp);
+
+                    BatteryTxMessage batteryMessage = new BatteryTxMessage();
+                    android.util.Log.i("batterysensorMessage", Arrays.toString(batteryMessage.byteSequence));
+                    controlCharacteristic.setValue(batteryMessage.byteSequence);
+                    BluetoothGattDescriptor descriptor = controlCharacteristic.getDescriptor(CHARACTERISTIC_UPDATE_NOTIFICATION_DESCRIPTOR_UUID);
+                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+                    mGatt.writeDescriptor(descriptor);
+                }
             }
+
+            if (buffer[0] == (byte)35) {
+                ByteBuffer batteryData = ByteBuffer.allocate(buffer.length);
+                batteryData.order(ByteOrder.LITTLE_ENDIAN);
+                batteryData.put(buffer, 0, buffer.length);
+                lastBattery = batteryData.getLong(2);
+                android.util.Log.i("battery-long", Long.toString(batteryData.getLong(2)));
+                android.util.Log.i("battery-int", Integer.toString((int)lastBattery));
+            }
+
+
         }
 
     };

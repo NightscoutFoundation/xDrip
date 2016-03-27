@@ -691,6 +691,7 @@ public class Preferences extends PreferenceActivity {
                 prefs.edit().putBoolean("calibration_notifications", false).apply();
             }
 
+
             if ((prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("WifiWixel") != 0)
                     && (prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("WifiBlueToothWixel") != 0)) {
                 String receiversIpAddresses;
@@ -704,6 +705,10 @@ public class Preferences extends PreferenceActivity {
 
             if (prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexbridgeWixel") != 0) {
                 collectionCategory.removePreference(transmitterId);
+            }
+
+            if(prefs.getString("dex_collection_method", "BluetoothWixel").compareTo("DexcomG5") == 0) {
+                collectionCategory.addPreference(transmitterId);
             }
             pebbleSync.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -776,6 +781,10 @@ public class Preferences extends PreferenceActivity {
                     if (((String) newValue).compareTo("DexbridgeWixel") != 0) {
                         collectionCategory.removePreference(transmitterId);
                     } else {
+                        collectionCategory.addPreference(transmitterId);
+                    }
+
+                    if(((String) newValue).compareTo("DexcomG5") == 0) {
                         collectionCategory.addPreference(transmitterId);
                     }
 
