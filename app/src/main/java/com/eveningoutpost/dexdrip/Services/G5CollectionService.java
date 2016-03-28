@@ -6,6 +6,7 @@ package com.eveningoutpost.dexdrip.Services;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
@@ -61,6 +62,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -102,8 +104,9 @@ public class G5CollectionService extends Service{
 
     private BluetoothDevice device;
     private long lastRead = new Date().getTime() - 60 * 5 * 1000;
-    private long lastBattery = 220;
+    private int lastBattery = 216;
 
+    private AlarmManager alarm;// = (AlarmManager) getSystemService(ALARM_SERVICE);
 
     private ScanSettings settings;
     private List<ScanFilter> filters;
@@ -134,10 +137,11 @@ public class G5CollectionService extends Service{
 //        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "DexShareCollectionStart");
 //        wakeLock.acquire(40000);
         Log.d(TAG, "onG5StartCommand");
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         //4053HM
         //4023Q2
-
+        setMissedBgTimer();
 
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         mBluetoothAdapter = mBluetoothManager.getAdapter();
@@ -155,6 +159,26 @@ public class G5CollectionService extends Service{
 //        unregisterReceiver(mPairReceiver);
 //        BgToSpeech.tearDownTTS();
         Log.i(TAG, "SERVICE STOPPED");
+    }
+
+    public void setMissedBgTimer() {
+//        if (BgReading.getTimeSinceLastReading() >= (1 * 1000 * 60))
+//        {
+            Log.d(TAG, "Missed BG - CYCLE G5 Service");
+
+            Calendar calendar = Calendar.getInstance();
+            alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+            if (pendingIntent != null)
+                alarm.cancel(pendingIntent);
+            long wakeTime = calendar.getTimeInMillis() + (5 * 1000 * 60);
+            pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            } else
+                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+//        }
     }
 
     @Override
@@ -207,7 +231,6 @@ public class G5CollectionService extends Service{
         public void onScanResult(int callbackType, ScanResult result) {
             android.util.Log.i("result", result.toString());
             BluetoothDevice btDevice = result.getDevice();
-            prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
             // Check if the device has a name, the Dexcom transmitter always should. Match it with the transmitter id that was entered.
             // We get the last 2 characters to connect to the correct transmitter if there is more than 1 active or in the room.
@@ -413,6 +436,8 @@ public class G5CollectionService extends Service{
             byte[] buffer = characteristic.getValue();
 
             if (buffer[0] == (byte)47) {
+                if (pendingIntent != null)
+                    alarm.cancel(pendingIntent);
                 long timeSince = (new Date().getTime() - lastRead);
                 android.util.Log.i("ms since", Long.toString(timeSince));
                 if (timeSince > 250 * 1000) {
@@ -422,7 +447,7 @@ public class G5CollectionService extends Service{
                     sensorData.put(buffer, 0, buffer.length);
                     txData.raw_data = sensorData.getInt(6);
                     txData.filtered_data = sensorData.getInt(10);
-                    txData.sensor_battery_level = (int)lastBattery;
+                    txData.sensor_battery_level = 216;
                     txData.uuid = UUID.randomUUID().toString();
                     txData.timestamp = new Date().getTime();
 
@@ -430,23 +455,33 @@ public class G5CollectionService extends Service{
 
                     processNewTransmitterData(txData, txData.timestamp);
 
-                    BatteryTxMessage batteryMessage = new BatteryTxMessage();
-                    android.util.Log.i("batterysensorMessage", Arrays.toString(batteryMessage.byteSequence));
-                    controlCharacteristic.setValue(batteryMessage.byteSequence);
-                    BluetoothGattDescriptor descriptor = controlCharacteristic.getDescriptor(CHARACTERISTIC_UPDATE_NOTIFICATION_DESCRIPTOR_UUID);
-                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
-                    mGatt.writeDescriptor(descriptor);
+                    setMissedBgTimer();
+
+//                    BatteryTxMessage batteryMessage = new BatteryTxMessage();
+//                    android.util.Log.i("batterysensorMessage", Arrays.toString(batteryMessage.byteSequence));
+//                    controlCharacteristic.setValue(batteryMessage.byteSequence);
+//                    BluetoothGattDescriptor descriptor = controlCharacteristic.getDescriptor(CHARACTERISTIC_UPDATE_NOTIFICATION_DESCRIPTOR_UUID);
+//                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+//                    mGatt.writeDescriptor(descriptor);
                 }
             }
-
-            if (buffer[0] == (byte)35) {
-                ByteBuffer batteryData = ByteBuffer.allocate(buffer.length);
-                batteryData.order(ByteOrder.LITTLE_ENDIAN);
-                batteryData.put(buffer, 0, buffer.length);
-                lastBattery = batteryData.getLong(2);
-                android.util.Log.i("battery-long", Long.toString(batteryData.getLong(2)));
-                android.util.Log.i("battery-int", Integer.toString((int)lastBattery));
-            }
+//
+//            if (buffer[0] == (byte)35) {
+//                ByteBuffer batteryData = ByteBuffer.allocate(buffer.length);
+//                batteryData.order(ByteOrder.LITTLE_ENDIAN);
+//                batteryData.put(buffer, 0, buffer.length);
+//                lastBattery = (int)batteryData.getShort(2);
+//                android.util.Log.i("battery-array", Arrays.toString(characteristic.getValue()));
+//                android.util.Log.i("battery-long", Long.toString(batteryData.getLong(2)));
+//                android.util.Log.i("battery-int", Integer.toString(batteryData.getInt(2)));
+//                android.util.Log.i("battery-int2", Integer.toString(batteryData.getInt(6)));
+//
+//                android.util.Log.i("battery-short1", Short.toString(batteryData.getShort(2)));
+//                android.util.Log.i("battery-short2", Short.toString(batteryData.getShort(4)));
+//                android.util.Log.i("battery-short3", Short.toString(batteryData.getShort(6)));
+//                android.util.Log.i("battery-short4", Short.toString(batteryData.getShort(8)));
+//
+//            }
 
 
         }
@@ -466,7 +501,7 @@ public class G5CollectionService extends Service{
         }
 
         Sensor.updateBatteryLevel(sensor, transmitterData.sensor_battery_level);
-        BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, timestamp);
+        BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, new Date().getTime());
     }
 
     @SuppressLint("GetInstance")
