@@ -428,7 +428,7 @@ public class G5CollectionService extends Service {
                     alarm.cancel(pendingIntent);
                 long timeSince = new Date().getTime() - lastRead;
                 android.util.Log.i("ms since", Long.toString(timeSince));
-                if (timeSince > 4.9 * 60 * 1000) {
+                if (timeSince > 3 * 60 * 1000) {
                     TransmitterData txData = new TransmitterData();
                     ByteBuffer sensorData = ByteBuffer.allocate(buffer.length);
                     sensorData.order(ByteOrder.LITTLE_ENDIAN);
