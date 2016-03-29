@@ -5,14 +5,13 @@ import java.nio.ByteBuffer;
 /**
  * Created by joeginley on 3/16/16.
  */
-public class DisconnectTxMessage extends TransmitterMessage {
-    byte opcode = 0x09;
+public class UnbondRequestTxMessage extends TransmitterMessage {
+    byte opcode = 0x6;
 
-    public DisconnectTxMessage() {
+    public UnbondRequestTxMessage() {
         data = ByteBuffer.allocate(1);
         data.put(opcode);
 
         byteSequence = data.array();
     }
 }
-

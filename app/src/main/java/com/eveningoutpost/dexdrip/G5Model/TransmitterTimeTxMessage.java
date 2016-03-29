@@ -1,16 +1,15 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 /**
- * Created by jcostik1 on 3/26/16.
+ * Created by joeginley on 3/28/16.
  */
-public class SensorTxMessage extends TransmitterMessage {
-    byte opcode = 0x2e;
+public class TransmitterTimeTxMessage extends TransmitterMessage {
+    byte opcode = 0x24;
     byte[] crc = CRC.calculate(opcode);
 
-    public SensorTxMessage() {
+    public TransmitterTimeTxMessage() {
         data = ByteBuffer.allocate(3);
         data.put(opcode);
         data.put(crc);

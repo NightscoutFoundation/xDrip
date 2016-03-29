@@ -38,14 +38,16 @@ import com.eveningoutpost.dexdrip.G5Model.AuthChallengeTxMessage;
 
 import com.eveningoutpost.dexdrip.G5Model.AuthRequestTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.AuthStatusRxMessage;
-import com.eveningoutpost.dexdrip.G5Model.BatteryTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.BluetoothServices;
 import com.eveningoutpost.dexdrip.G5Model.BondRequestTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.DisconnectTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.Extensions;
 import com.eveningoutpost.dexdrip.G5Model.KeepAliveTxMessage;
+import com.eveningoutpost.dexdrip.G5Model.SensorRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.SensorTxMessage;
-import com.eveningoutpost.dexdrip.G5Model.TransmitterMessage;
+import com.eveningoutpost.dexdrip.G5Model.TransmitterStatus;
+import com.eveningoutpost.dexdrip.G5Model.TransmitterTimeRxMessage;
+import com.eveningoutpost.dexdrip.G5Model.TransmitterTimeTxMessage;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
@@ -73,8 +75,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
-@TargetApi(Build.VERSION_CODES.KITKAT)
-public class G5CollectionService extends Service{
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+public class G5CollectionService extends Service {
 
     protected static final UUID CHARACTERISTIC_UPDATE_NOTIFICATION_DESCRIPTOR_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
@@ -84,9 +86,7 @@ public class G5CollectionService extends Service{
 
     public Service service;
     private BgToSpeech bgToSpeech;
-
     private PendingIntent pendingIntent;
-
     private final static int REQUEST_ENABLE_BT = 1;
 
     private android.bluetooth.BluetoothManager mBluetoothManager;
@@ -103,7 +103,7 @@ public class G5CollectionService extends Service{
     private BluetoothGattCharacteristic commCharacteristic;//
 
     private BluetoothDevice device;
-    private long lastRead = new Date().getTime() - 60 * 5 * 1000;
+    private long startTimeInterval = -1;
     private int lastBattery = 216;
 
     private AlarmManager alarm;// = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -111,7 +111,6 @@ public class G5CollectionService extends Service{
     private ScanSettings settings;
     private List<ScanFilter> filters;
     private SharedPreferences prefs;
-
 
     private Handler handler;
 
@@ -133,14 +132,12 @@ public class G5CollectionService extends Service{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
+//        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
 //        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "DexShareCollectionStart");
 //        wakeLock.acquire(40000);
         Log.d(TAG, "onG5StartCommand");
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-        //4053HM
-        //4023Q2
         setMissedBgTimer();
 
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -162,23 +159,20 @@ public class G5CollectionService extends Service{
     }
 
     public void setMissedBgTimer() {
-//        if (BgReading.getTimeSinceLastReading() >= (1 * 1000 * 60))
-//        {
-            Log.d(TAG, "Missed BG - CYCLE G5 Service");
+        Log.d(TAG, "Missed BG - CYCLE G5 Service");
 
-            Calendar calendar = Calendar.getInstance();
-            alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            if (pendingIntent != null)
-                alarm.cancel(pendingIntent);
-            long wakeTime = calendar.getTimeInMillis() + (5 * 1000 * 60);
-            pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
-            } else
-                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
-//        }
+        Calendar calendar = Calendar.getInstance();
+        alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+        if (pendingIntent != null)
+            alarm.cancel(pendingIntent);
+        long wakeTime = calendar.getTimeInMillis() + (5 * 1000 * 60);
+        pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+        } else
+            alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
     }
 
     @Override
@@ -190,8 +184,7 @@ public class G5CollectionService extends Service{
         if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
             //First time using the app or bluetooth was turned off?
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        }
-        else {
+        } else {
             if (Build.VERSION.SDK_INT >= 21) {
                 mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
                 settings = new ScanSettings.Builder()
@@ -209,8 +202,7 @@ public class G5CollectionService extends Service{
         if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
             if (Build.VERSION.SDK_INT < 21) {
                 mBluetoothAdapter.stopLeScan(mLeScanCallback);
-            }
-            else {
+            } else {
                 mLEScanner.stopScan(mScanCallback);
             }
         }
@@ -219,8 +211,7 @@ public class G5CollectionService extends Service{
     public void startScan() {
         if (Build.VERSION.SDK_INT < 21) {
             mBluetoothAdapter.startLeScan(mLeScanCallback);
-        }
-        else {
+        } else {
             Log.d(TAG, "startScan");
             mLEScanner.startScan(filters, settings, mScanCallback);
         }
@@ -279,7 +270,6 @@ public class G5CollectionService extends Service{
                                 String deviceNameLastTwo = Extensions.lastTwoCharactersOfString(device.getName());
 
                                 if (transmitterIdLastTwo.equals(deviceNameLastTwo)) {
-                                    //They match, connect to the device.
                                     connectToDevice(device);
                                 }
                             }
@@ -290,8 +280,8 @@ public class G5CollectionService extends Service{
 
     private void connectToDevice(BluetoothDevice device) {
         //if (mGatt == null) {
-            mGatt = device.connectGatt(getApplicationContext(), false, gattCallback);
-            stopScan();
+        mGatt = device.connectGatt(getApplicationContext(), false, gattCallback);
+        stopScan();
         //}
     }
 
@@ -327,6 +317,16 @@ public class G5CollectionService extends Service{
         }
 
         @Override
+        public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                gatt.writeCharacteristic(descriptor.getCharacteristic());
+            } else {
+                Log.e(TAG, "Unknown error writing descriptor");
+            }
+        }
+
+
+        @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             android.util.Log.i("Success Write", String.valueOf(status));
             android.util.Log.i("Characteristic", String.valueOf(characteristic.getUuid()));
@@ -349,15 +349,15 @@ public class G5CollectionService extends Service{
                 android.util.Log.i("CharBytes-or", Arrays.toString(characteristic.getValue()));
                 android.util.Log.i("CharHex-or", Extensions.bytesToHex(characteristic.getValue()));
 
-                if (characteristic.getValue()[0] == 5 || characteristic.getValue()[0] < 0 ) {
+                if (characteristic.getValue()[0] == 5 || characteristic.getValue()[0] < 0) {
                     authStatus = new AuthStatusRxMessage(characteristic.getValue());
                     if (authStatus.authenticated == 1 && authStatus.bonded == 1) {
                         mGatt.setCharacteristicNotification(controlCharacteristic, true);
                         BluetoothGattDescriptor descriptor = controlCharacteristic.getDescriptor(CHARACTERISTIC_UPDATE_NOTIFICATION_DESCRIPTOR_UUID);
                         descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
-                        SensorTxMessage sensorMessage = new SensorTxMessage();
-                        android.util.Log.i("sensorMessage", Arrays.toString(sensorMessage.byteSequence));
-                        controlCharacteristic.setValue(sensorMessage.byteSequence);
+                        TransmitterTimeTxMessage timeMessage = new TransmitterTimeTxMessage();
+                        android.util.Log.i("timeMessage", Arrays.toString(timeMessage.byteSequence));
+                        controlCharacteristic.setValue(timeMessage.byteSequence);
                         mGatt.writeDescriptor(descriptor);
                     } else if (authStatus.authenticated == 1) {
                         android.util.Log.i("Auth", "Let's Bond!");
@@ -388,103 +388,91 @@ public class G5CollectionService extends Service{
                 }
 
 //                 Auth challenge and token have been retrieved.
-                    if (characteristic.getValue()[0] == 0x3) {
-                        AuthChallengeRxMessage authChallenge = new AuthChallengeRxMessage(characteristic.getValue());
-                        if (authRequest == null) {
-                            android.util.Log.d("new auth", "hmmmm");
-                            authRequest = new AuthRequestTxMessage();
-                        }
-                        android.util.Log.i("tokenHash",  Arrays.toString(authChallenge.tokenHash));
-                        android.util.Log.i("singleUSe", Arrays.toString(calculateHash(authRequest.singleUseToken)));
-
-                        byte[] challengeHash = calculateHash(authChallenge.challenge);
-                        android.util.Log.d("challenge hash", Arrays.toString(challengeHash));
-                        if (challengeHash != null) {
-                            android.util.Log.d("Auth", "Transmitter try auth challenge");
-                            AuthChallengeTxMessage authChallengeTx = new AuthChallengeTxMessage(challengeHash);
-                            android.util.Log.i("AuthChallenge",  Arrays.toString(authChallengeTx.byteSequence));
-                            characteristic.setValue(authChallengeTx.byteSequence);
-                            mGatt.writeCharacteristic(characteristic);
-                        }
+                if (characteristic.getValue()[0] == 0x3) {
+                    AuthChallengeRxMessage authChallenge = new AuthChallengeRxMessage(characteristic.getValue());
+                    if (authRequest == null) {
+                        android.util.Log.d("new auth", "hmmmm");
+                        authRequest = new AuthRequestTxMessage();
                     }
-           }
+                    android.util.Log.i("tokenHash", Arrays.toString(authChallenge.tokenHash));
+                    android.util.Log.i("singleUSe", Arrays.toString(calculateHash(authRequest.singleUseToken)));
 
-        }
-
-        @Override
-        public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-
-                //Check for control characteristic...
-
-                BluetoothGattCharacteristic characteristic = descriptor.getCharacteristic();
-                Log.d(TAG, "Characteristic onDescriptorWrite ch " + characteristic.getUuid());
-                mGatt.writeCharacteristic(controlCharacteristic);
-
-
-            } else {
-                Log.e(TAG, "Unknown error writing descriptor");
+                    byte[] challengeHash = calculateHash(authChallenge.challenge);
+                    android.util.Log.d("challenge hash", Arrays.toString(challengeHash));
+                    if (challengeHash != null) {
+                        android.util.Log.d("Auth", "Transmitter try auth challenge");
+                        AuthChallengeTxMessage authChallengeTx = new AuthChallengeTxMessage(challengeHash);
+                        android.util.Log.i("AuthChallenge", Arrays.toString(authChallengeTx.byteSequence));
+                        characteristic.setValue(authChallengeTx.byteSequence);
+                        mGatt.writeCharacteristic(characteristic);
+                    }
+                }
             }
+
         }
+
         @Override
         // Characteristic notification
-        public void onCharacteristicChanged(BluetoothGatt gatt,
-                                            BluetoothGattCharacteristic characteristic) {
+        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             android.util.Log.i("CharBytes-nfy", Arrays.toString(characteristic.getValue()));
             android.util.Log.i("CharHex-nfy", Extensions.bytesToHex(characteristic.getValue()));
 
-            byte[] buffer = characteristic.getValue();
 
-            if (buffer[0] == (byte)47) {
+            byte[] buffer = characteristic.getValue();
+            byte firstByte = buffer[0];
+
+            if (firstByte == 0x2f) {
+                SensorRxMessage sensorRx = new SensorRxMessage(characteristic.getValue());
                 if (pendingIntent != null)
                     alarm.cancel(pendingIntent);
-                long timeSince = (new Date().getTime() - lastRead);
+                long timeSince = BgReading.getTimeSinceLastReading();
                 android.util.Log.i("ms since", Long.toString(timeSince));
-                if (timeSince > 250 * 1000) {
+                if (timeSince > 4.9 * 60 * 1000) {
                     TransmitterData txData = new TransmitterData();
                     ByteBuffer sensorData = ByteBuffer.allocate(buffer.length);
                     sensorData.order(ByteOrder.LITTLE_ENDIAN);
                     sensorData.put(buffer, 0, buffer.length);
-                    txData.raw_data = sensorData.getInt(6);
-                    txData.filtered_data = sensorData.getInt(10);
-                    txData.sensor_battery_level = 216;
-                    txData.uuid = UUID.randomUUID().toString();
-                    txData.timestamp = new Date().getTime();
+                    txData.raw_data = sensorRx.unfiltered;
+                    txData.filtered_data = sensorRx.filtered;
 
-                    lastRead = txData.timestamp;
+                    if (sensorRx.status == TransmitterStatus.BRICKED) {
+                        //TODO Handle this in UI/Notification
+                    } else if (sensorRx.status == TransmitterStatus.LOW) {
+                        txData.sensor_battery_level = 206;
+                    } else {
+                        txData.sensor_battery_level = 216;
+                    }
+
+                    txData.uuid = UUID.randomUUID().toString();
+                    //txData.timestamp = new Date().getTime();
+                    txData.timestamp = startTimeInterval + sensorRx.timestamp;
+                    android.util.Log.i("timestamp", Long.toString(txData.timestamp));
 
                     processNewTransmitterData(txData, txData.timestamp);
-
                     setMissedBgTimer();
+                    doDisconnectMessage(gatt, characteristic);
 
-//                    BatteryTxMessage batteryMessage = new BatteryTxMessage();
-//                    android.util.Log.i("batterysensorMessage", Arrays.toString(batteryMessage.byteSequence));
-//                    controlCharacteristic.setValue(batteryMessage.byteSequence);
-//                    BluetoothGattDescriptor descriptor = controlCharacteristic.getDescriptor(CHARACTERISTIC_UPDATE_NOTIFICATION_DESCRIPTOR_UUID);
-//                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
-//                    mGatt.writeDescriptor(descriptor);
                 }
             }
-//
-//            if (buffer[0] == (byte)35) {
-//                ByteBuffer batteryData = ByteBuffer.allocate(buffer.length);
-//                batteryData.order(ByteOrder.LITTLE_ENDIAN);
-//                batteryData.put(buffer, 0, buffer.length);
-//                lastBattery = (int)batteryData.getShort(2);
-//                android.util.Log.i("battery-array", Arrays.toString(characteristic.getValue()));
-//                android.util.Log.i("battery-long", Long.toString(batteryData.getLong(2)));
-//                android.util.Log.i("battery-int", Integer.toString(batteryData.getInt(2)));
-//                android.util.Log.i("battery-int2", Integer.toString(batteryData.getInt(6)));
-//
-//                android.util.Log.i("battery-short1", Short.toString(batteryData.getShort(2)));
-//                android.util.Log.i("battery-short2", Short.toString(batteryData.getShort(4)));
-//                android.util.Log.i("battery-short3", Short.toString(batteryData.getShort(6)));
-//                android.util.Log.i("battery-short4", Short.toString(batteryData.getShort(8)));
-//
-//            }
+            // Transmitter Time
+            else if (firstByte == 0x25) {
+                TransmitterTimeRxMessage transmitterTime = new TransmitterTimeRxMessage(characteristic.getValue());
 
+                if (startTimeInterval == -1) {
+                    startTimeInterval = new Date().getTime() - transmitterTime.currentTime;
+                }
+
+                SensorTxMessage sensorTx = new SensorTxMessage();
+                characteristic.setValue(sensorTx.byteSequence);
+                gatt.writeCharacteristic(characteristic);
+
+            } else {
+                doDisconnectMessage(gatt, characteristic);
+            }
 
         }
+
+
 
     };
 
@@ -501,14 +489,23 @@ public class G5CollectionService extends Service{
         }
 
         Sensor.updateBatteryLevel(sensor, transmitterData.sensor_battery_level);
-        BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, new Date().getTime());
+        BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, transmitterData.timestamp);
+    }
+
+    // Sends the disconnect tx message to our bt device.
+    private void doDisconnectMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        gatt.setCharacteristicNotification(controlCharacteristic, false);
+
+        DisconnectTxMessage disconnectTx = new DisconnectTxMessage();
+        characteristic.setValue(disconnectTx.byteSequence);
+        gatt.writeCharacteristic(characteristic);
     }
 
     @SuppressLint("GetInstance")
     private byte[] calculateHash(byte[] data) {
         if (data.length != 8) {
             android.util.Log.e("Decrypt", "Data length should be exactly 8.");
-            return  null;
+            return null;
         }
 
         byte[] key = cryptKey();
@@ -533,8 +530,7 @@ public class G5CollectionService extends Service{
             bb.put(aesBytes, 0, 8);
 
             return bb.array();
-        }
-        catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
             e.printStackTrace();
         }
 
@@ -544,10 +540,10 @@ public class G5CollectionService extends Service{
     private byte[] cryptKey() {
         try {
             return ("00" + defaultTransmitter.transmitterId + "00" + defaultTransmitter.transmitterId).getBytes("UTF-8");
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return null;
     }
+
 }

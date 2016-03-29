@@ -13,13 +13,6 @@ public class AuthChallengeTxMessage extends TransmitterMessage {
 
     public AuthChallengeTxMessage(byte[] challenge) {
         challengeHash = challenge;
-        if (challengeHash[0] < 0) {
-            for (int i = 0; i < challengeHash.length / 2; i++) {
-                byte temp = challenge[i];
-                challengeHash[i] = challenge[challengeHash.length - 1 - i];
-                challengeHash[challengeHash.length - 1 - i] = temp;
-            }
-        }
 
         data = ByteBuffer.allocate(9);
         data.put(opcode);
