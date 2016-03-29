@@ -138,6 +138,7 @@ public class Home extends ActivityWithMenu {
     private TextView extraStatusLineText;
     private boolean alreadyDisplayedBgInfoCommon = false;
     private boolean recognitionRunning = false;
+    private String display_delta = "";
     double thisnumber = -1;
     double thisglucosenumber = 0;
     double thiscarbsnumber = 0;
@@ -948,7 +949,7 @@ public class Home extends ActivityWithMenu {
             if ((BgGraphBuilder.best_bg_estimate > 0) && (BgGraphBuilder.last_bg_estimate > 0)) {
                 final double estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
 
-                notificationText.append("\nBG Original: " + bgGraphBuilder.unitized_string(BgReading.lastNoSenssor().calculated_value)
+                        notificationText.append("\nBG Original: " + bgGraphBuilder.unitized_string(BgReading.lastNoSenssor().calculated_value)
                         + " \u0394 " + bgGraphBuilder.unitizedDeltaString(false, true, true)
                         + " " + BgReading.lastNoSenssor().slopeArrow());
 
@@ -958,7 +959,6 @@ public class Home extends ActivityWithMenu {
 
             }
         }
-
 
         if (navigationDrawerFragment == null) Log.e("Runtime", "navigationdrawerfragment is null");
 
@@ -1131,6 +1131,8 @@ public class Home extends ActivityWithMenu {
         }
         if (lastBgReading != null) {
             displayCurrentInfoFromReading(lastBgReading, predictive);
+        } else {
+            display_delta = "";
         }
 
         if(prefs.getBoolean("extra_status_line", false)) {
@@ -1210,6 +1212,7 @@ public class Home extends ActivityWithMenu {
     private void displayCurrentInfoFromReading(BgReading lastBgReading, boolean predictive) {
         double estimate = 0;
         double estimated_delta = 0;
+
         String slope_arrow = lastBgReading.slopeArrow();
         String extrastring = "";
         if ((new Date().getTime()) - (60000 * 11) - lastBgReading.timestamp > 0) {
@@ -1248,7 +1251,7 @@ public class Home extends ActivityWithMenu {
                     estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
                     slope_arrow = BgReading.slopeToArrowSymbol(estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000)); // delta by minute
                     currentBgValueText.setTypeface(null, Typeface.ITALIC);
-                    extrastring = "\u26A0 "; // warning symbol !
+                    extrastring = "\u26A0"; // warning symbol !
                 }
 
                 if (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_HIGH)
@@ -1281,14 +1284,21 @@ public class Home extends ActivityWithMenu {
         List<BgReading> bgReadingList = BgReading.latest(2, is_follower);
         if (bgReadingList != null && bgReadingList.size() == 2) {
             // same logic as in xDripWidget (refactor that to BGReadings to avoid redundancy / later inconsistencies)?
-            if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
-                notificationText.append("  ");
+
+            display_delta = bgGraphBuilder.unitizedDeltaString(true, true, is_follower);
+
+            // TODO reduce duplication of logic
+            if ((BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER)
+                    && (BgGraphBuilder.best_bg_estimate > 0)
+                    && (BgGraphBuilder.last_bg_estimate > 0)
+                    && (prefs.getBoolean("bg_compensate_noise", false))) {
+                //final double estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
+                display_delta = bgGraphBuilder.unitizedDeltaStringRaw(true, true, estimated_delta);
+                addDisplayDelta();
             } else {
-                notificationText.append("\n");
+                addDisplayDelta();
             }
 
-            notificationText.append(
-                    bgGraphBuilder.unitizedDeltaString(true, true, is_follower));
         }
         if (bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
             currentBgValueText.setTextColor(Color.parseColor("#C30909"));
@@ -1297,6 +1307,16 @@ public class Home extends ActivityWithMenu {
         } else {
             currentBgValueText.setTextColor(Color.WHITE);
         }
+    }
+
+    private void addDisplayDelta()
+    {
+        if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+            notificationText.append("  ");
+        } else {
+            notificationText.append("\n");
+        }
+        notificationText.append(display_delta);
     }
 
     @Override

@@ -114,9 +114,9 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                     final String string_value = value.getText().toString();
                     if (!TextUtils.isEmpty(string_value)) {
 
-                        new Thread() {
-                            @Override
-                            public void run() {
+                        //new Thread() {
+                        //    @Override
+                        //    public void run() {
 
                                 try {
                                     double calValue = Double.parseDouble(string_value);
@@ -131,8 +131,8 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                     Log.e(TAG, "Number format exception ", e);
                                     Home.toaststatic("Got error parsing number in calibration");
                                 }
-                            }
-                        }.start();
+                           // }
+                       // }.start();
                         finish();
                     } else {
                         value.setError("Calibration Can Not be blank");

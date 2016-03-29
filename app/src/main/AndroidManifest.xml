@@ -73,9 +73,12 @@
             android:name=".Services.WifiCollectionService"
             android:enabled="true"
             android:exported="true" />
-
-        <service android:name=".wearintegration.WatchUpdaterService" android:exported="true" >
-            <intent-filter> <action android:name="com.google.android.gms.wearable.BIND_LISTENER" /> </intent-filter>
+        <service
+            android:name=".wearintegration.WatchUpdaterService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
+            </intent-filter>
         </service>
 
         <activity
@@ -351,7 +354,23 @@
             android:exported="true" />
 
         <activity android:name=".HelpActivity" />
-        <activity android:name=".Agreement"></activity>
+        <activity android:name=".Agreement" />
+        <activity
+            android:name=".WearVoiceActivity"
+            android:label="Simulation handheld">
+            <intent-filter>
+                <action android:name="com.google.android.gm.action.AUTO_SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="*/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="com.google.android.voicesearch.SELF_NOTE" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+
+        </activity>
     </application>
 
 </manifest>
