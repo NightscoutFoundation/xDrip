@@ -139,7 +139,7 @@ public class G5CollectionService extends Service {
         Log.d(TAG, "onG5StartCommand");
         Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-
+            defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
         setMissedBgTimer();
 
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -205,7 +205,7 @@ public class G5CollectionService extends Service {
             if (Build.VERSION.SDK_INT < 21) {
                 mBluetoothAdapter.stopLeScan(mLeScanCallback);
             } else {
-                mLEScanner.stopScan(mScanCallback);
+                //mLEScanner.stopScan(mScanCallback);
             }
         }
     }
@@ -224,7 +224,6 @@ public class G5CollectionService extends Service {
         public void onScanResult(int callbackType, ScanResult result) {
             android.util.Log.i("result", result.toString());
             BluetoothDevice btDevice = result.getDevice();
-            defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
             // Check if the device has a name, the Dexcom transmitter always should. Match it with the transmitter id that was entered.
             // We get the last 2 characters to connect to the correct transmitter if there is more than 1 active or in the room.
             // If they match, connect to the device.
@@ -297,6 +296,7 @@ public class G5CollectionService extends Service {
                     break;
                 case BluetoothProfile.STATE_DISCONNECTED:
                     android.util.Log.e("gattCallback", "STATE_DISCONNECTED");
+                    device = null;
                     mGatt.close();
                     mGatt = null;
                     startScan();

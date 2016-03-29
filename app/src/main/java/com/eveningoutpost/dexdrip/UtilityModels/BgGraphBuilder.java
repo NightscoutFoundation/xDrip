@@ -8,6 +8,7 @@ import android.graphics.DashPathEffect;
 import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
@@ -15,11 +16,14 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.Forecast;
+import com.eveningoutpost.dexdrip.Models.Forecast.PolyTrendLine;
+import com.eveningoutpost.dexdrip.Models.Forecast.TrendLine;
 import com.eveningoutpost.dexdrip.Models.Iob;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.rits.cloning.Cloner;
 
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
@@ -45,10 +49,6 @@ import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
-
-import com.eveningoutpost.dexdrip.Models.Forecast.TrendLine;
-import com.eveningoutpost.dexdrip.Models.Forecast.PolyTrendLine;
-import com.rits.cloning.Cloner;
 
 /**
  * Created by stephenblack on 11/15/14.
@@ -935,7 +935,7 @@ public class BgGraphBuilder {
         myLine.setHasPoints(false);
         myLine.setStrokeWidth(1);
         myLine.setColor(Color.parseColor("#558800"));
-        myLine.setPathEffect(new DashPathEffect(new float[]{10.0f, 10.0f},0));
+        myLine.setPathEffect(new DashPathEffect(new float[]{10.0f, 10.0f}, 0));
         myLine.setAreaTransparency(50);
         return myLine;
     }
@@ -947,7 +947,7 @@ public class BgGraphBuilder {
         myLine.setHasPoints(false);
         myLine.setStrokeWidth(1);
         myLine.setColor(Color.parseColor("#c56f9d"));
-        myLine.setPathEffect(new DashPathEffect(new float[]{30.0f, 10.0f},0));
+        myLine.setPathEffect(new DashPathEffect(new float[]{30.0f, 10.0f}, 0));
         myLine.setAreaTransparency(50);
         return myLine;
     }
@@ -1239,6 +1239,8 @@ public class BgGraphBuilder {
                 tooltip.cancel();
             }
             tooltip = Toast.makeText(context, timeFormat.format(time) + ": " + Math.round(pointValue.getY() * 10) / 10d, Toast.LENGTH_LONG);
+            View view = tooltip.getView();
+            view.setBackgroundColor(Color.parseColor("#212121")); // TODO Make this a value string
             tooltip.show();
         }
 
