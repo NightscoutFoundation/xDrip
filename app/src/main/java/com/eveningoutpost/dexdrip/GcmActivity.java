@@ -62,7 +62,7 @@ public class GcmActivity extends Activity {
         }
     }
 
-    public static synchronized void queueCheckOld(Context context) {
+    public static void queueCheckOld(Context context) {
 
         if (context == null) {
             Log.e(TAG, "Can't process old queue as null context");
@@ -73,12 +73,15 @@ public class GcmActivity extends Activity {
         final double MIN_QUEUE_AGE = (0 * 60 * 1000); // minutes
         final double MAX_RESENT = 10;
         Double timenow = JoH.ts();
+        boolean queuechanged = false;
         synchronized (queue_lock) {
             for (GCM_data datum : gcm_queue) {
                 if ((timenow - datum.timestamp) > MAX_QUEUE_AGE
                         || datum.resent > MAX_RESENT) {
-                    gcm_queue.remove(gcm_queue.indexOf(datum));
+                    queuechanged = true;
                     Log.i(TAG, "Removing old unacknowledged queue item: resent: " + datum.resent);
+                    gcm_queue.remove(gcm_queue.indexOf(datum));
+                    break;
                 } else if (timenow - datum.timestamp > MIN_QUEUE_AGE) {
                     try {
                         Log.i(TAG, "Resending unacknowledged queue item: " + datum.bundle.getString("action") + datum.bundle.getString("payload"));
@@ -91,6 +94,7 @@ public class GcmActivity extends Activity {
                 }
             }
         }
+        if (queuechanged)  queueCheckOld(context);
     }
 
     private static String sendMessage(final String action, final String payload) {
