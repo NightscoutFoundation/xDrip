@@ -31,6 +31,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.ParcelUuid;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.G5Model.AuthChallengeRxMessage;
@@ -108,7 +109,7 @@ public class G5CollectionService extends Service {
     private BluetoothDevice device;
     private long startTimeInterval = -1;
     private int lastBattery = 216;
-    private long lastRead = new Date().getTime() - (5 * 60 *1000);
+    private long lastRead = new Date().getTime() - (5 * 60 * 1000);
 
     private static final ScheduledExecutorService worker =
             Executors.newSingleThreadScheduledExecutor();
@@ -170,19 +171,17 @@ public class G5CollectionService extends Service {
 
     public void setMissedBgTimer() {
         Log.d(TAG, "Missed BG - CYCLE G5 Service");
-
-        Calendar calendar = Calendar.getInstance();
         alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
         if (pendingIntent != null)
             alarm.cancel(pendingIntent);
-        long wakeTime = calendar.getTimeInMillis() + (4 * 1000 * 60);
+        long wakeTime = SystemClock.elapsedRealtime() + (4 * 1000 * 60);
         pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            alarm.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, wakeTime, pendingIntent);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            alarm.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, wakeTime, pendingIntent);
         } else
-            alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            alarm.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, wakeTime, pendingIntent);
     }
 
     @Override
@@ -270,6 +269,8 @@ public class G5CollectionService extends Service {
         @Override
         public void onScanFailed(int errorCode) {
             android.util.Log.e("Scan Failed", "Error Code: " + errorCode);
+            stopScan();
+            scanAfterDelay();
         }
     };
 
