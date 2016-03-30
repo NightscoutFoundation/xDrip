@@ -6,8 +6,8 @@
         <item>Wifi Wixel</item>
         <item>Wifi Wixel + BT Wixel</item>
         <item>G4 Share Receiver</item>
-        <item>xDrip+ Sync Follower</item>
         <item>G5 Transmitter</item>
+        <item>xDrip+ Sync Follower</item>
     </string-array>
 
     <string-array name="DexCollectionMethodValues">
@@ -16,8 +16,9 @@
         <item>WifiWixel</item>
         <item>WifiBlueToothWixel</item>
         <item>DexcomShare</item>
-        <item>Follower</item>
         <item>DexcomG5</item>
+        <item>Follower</item>
+
     </string-array>
 
     <string-array name="UpdateChannel">

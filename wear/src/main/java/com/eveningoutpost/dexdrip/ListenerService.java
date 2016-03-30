@@ -71,7 +71,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent.getAction().equals(ACTION_RESEND)) {
+        if (intent != null && ACTION_RESEND.equals(intent.getAction())) {
             googleApiConnect();
             requestData();
         }
