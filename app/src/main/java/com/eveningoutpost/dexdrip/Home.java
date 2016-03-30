@@ -1124,6 +1124,9 @@ public class Home extends ActivityWithMenu {
         } else {
             dexbridgeBattery.setVisibility(View.INVISIBLE);
         }
+        if (!prefs.getBoolean("display_bridge_battery", true)) {
+            dexbridgeBattery.setVisibility(View.INVISIBLE);
+        }
 
         if ((currentBgValueText.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) > 0) {
             currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));

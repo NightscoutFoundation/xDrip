@@ -61,6 +61,11 @@
                 android:summary="Show Calibration and BG datatables in the app drawer."
                 android:title="Show Datatables" />
             <CheckBoxPreference
+                android:key="display_bridge_battery"
+                android:title="Display Bridge Battery"
+                android:summary="Choose to display the bridge battery level"
+                android:defaultValue="true" />
+            <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="disable_battery_warning"
                 android:summary="Disable the warning for low transmitter battery state on the home screen. (Only relevant for DIY receivers.)"

@@ -28,11 +28,7 @@
             android:title="Dexcom Transmitter ID"
             android:summary="ID of your Dexcom Transmitter, eg 12AB3"
             android:defaultValue="ABCDEF" />
-        <CheckBoxPreference
-            android:key="display_bridge_battery"
-            android:title="Display Bridge Battery"
-            android:summary="Choose to display the bridge battery level"
-            android:defaultValue="true" />
+
         <CheckBoxPreference
             android:key="run_service_in_foreground"
             android:title="Run Collection Service in foreground"
