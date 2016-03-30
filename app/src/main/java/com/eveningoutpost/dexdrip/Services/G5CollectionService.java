@@ -65,9 +65,9 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -109,7 +109,8 @@ public class G5CollectionService extends Service {
     private BluetoothDevice device;
     private long startTimeInterval = -1;
     private int lastBattery = 216;
-    private long lastRead = new Date().getTime() - (5 * 60 * 1000);
+    private long lastRead = new Date().getTime() - (5 * 60 *1000);
+    private Boolean isBonded = false;
 
     private static final ScheduledExecutorService worker =
             Executors.newSingleThreadScheduledExecutor();
@@ -141,19 +142,33 @@ public class G5CollectionService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-//        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
-//        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
-//        wakeLock.acquire(4 * 60 * 1000);
-
         Log.d(TAG, "onG5StartCommand");
         Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
-        setMissedBgTimer();
+        keepAlive();
 
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         mBluetoothAdapter = mBluetoothManager.getAdapter();
 
+        isBonded = false;
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+        if (pairedDevices.size() > 0) {
+            for (BluetoothDevice device : pairedDevices) {
+                if (device.getName() != null) {
+
+                    String transmitterIdLastTwo = Extensions.lastTwoCharactersOfString(defaultTransmitter.transmitterId);
+                    String deviceNameLastTwo = Extensions.lastTwoCharactersOfString(device.getName());
+
+                    if (transmitterIdLastTwo.equals(deviceNameLastTwo)) {
+                        isBonded = true;
+                    }
+
+                }
+            }
+            Log.d("Bonded?", isBonded.toString());
+
+        }
         setupBluetooth();
         return START_STICKY;
     }
@@ -169,12 +184,16 @@ public class G5CollectionService extends Service {
         Log.i(TAG, "SERVICE STOPPED");
     }
 
-    public void setMissedBgTimer() {
-        Log.d(TAG, "Missed BG - CYCLE G5 Service");
+    public void keepAlive() {
+        Log.d(TAG, "Wake Lock & Wake Time");
+        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+        wakeLock.acquire(20 * 1000);
+
         alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
         if (pendingIntent != null)
             alarm.cancel(pendingIntent);
-        long wakeTime = SystemClock.elapsedRealtime() + (4 * 1000 * 60);
+        long wakeTime = (long) (SystemClock.elapsedRealtime() + (4.9 * 1000 * 60));
         pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarm.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, wakeTime, pendingIntent);
@@ -357,7 +376,8 @@ public class G5CollectionService extends Service {
             android.util.Log.i("Success Write", String.valueOf(status));
             android.util.Log.i("Characteristic", String.valueOf(characteristic.getUuid()));
 
-            if (String.valueOf(characteristic.getUuid()) != String.valueOf(controlCharacteristic.getUuid())) {
+            if (String.valueOf(characteristic.getUuid()) == String.valueOf(authCharacteristic.getUuid())) {
+                android.util.Log.i("auth?", String.valueOf(characteristic.getUuid()));
                 gatt.readCharacteristic(characteristic);
             } else {
                 android.util.Log.i("control?", String.valueOf(characteristic.getUuid()));
@@ -405,7 +425,7 @@ public class G5CollectionService extends Service {
                     }
                 }
 
-                if (characteristic.getValue()[0] == 8) {
+                if (characteristic.getValue()[0] == 8 || !isBonded) {
                     android.util.Log.i("Auth", "Transmitter NOT already authenticated");
                     authRequest = new AuthRequestTxMessage();
                     characteristic.setValue(authRequest.byteSequence);
@@ -476,7 +496,7 @@ public class G5CollectionService extends Service {
 
                     processNewTransmitterData(txData, txData.timestamp);
                 }
-                setMissedBgTimer();
+                keepAlive();
                 doDisconnectMessage(gatt, characteristic);
             }
             // Transmitter Time
