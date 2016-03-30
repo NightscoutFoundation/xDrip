@@ -68,6 +68,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -107,6 +110,9 @@ public class G5CollectionService extends Service {
     private int lastBattery = 216;
     private long lastRead = new Date().getTime() - (5 * 60 *1000);
 
+    private static final ScheduledExecutorService worker =
+            Executors.newSingleThreadScheduledExecutor();
+
     private AlarmManager alarm;// = (AlarmManager) getSystemService(ALARM_SERVICE);
 
     private ScanSettings settings;
@@ -119,10 +125,6 @@ public class G5CollectionService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            initScanCallback();
-        }
-
 //        readData = new ReadDataShare(this);
         service = this;
         foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), service);
@@ -137,13 +139,15 @@ public class G5CollectionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
 //        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
-//        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "DexShareCollectionStart");
-//        wakeLock.acquire(40000);
+//        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+//        wakeLock.acquire(4 * 60 * 1000);
+
         Log.d(TAG, "onG5StartCommand");
         Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
+        defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
         setMissedBgTimer();
 
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -209,7 +213,8 @@ public class G5CollectionService extends Service {
             if (Build.VERSION.SDK_INT < 21) {
                 mBluetoothAdapter.stopLeScan(mLeScanCallback);
             } else {
-                //mLEScanner.stopScan(mScanCallback);
+                Log.d(TAG, "stopScan");
+                mLEScanner.stopScan(mScanCallback);
             }
         }
     }
@@ -223,44 +228,50 @@ public class G5CollectionService extends Service {
         }
     }
 
-    private ScanCallback mScanCallback;
+    void scanAfterDelay() {
 
-    @TargetApi(21)
-    private void initScanCallback(){
-        mScanCallback = new ScanCallback() {
-            @Override
-            public void onScanResult(int callbackType, ScanResult result) {
-                android.util.Log.i("result", result.toString());
-                BluetoothDevice btDevice = result.getDevice();
-                // Check if the device has a name, the Dexcom transmitter always should. Match it with the transmitter id that was entered.
-                // We get the last 2 characters to connect to the correct transmitter if there is more than 1 active or in the room.
-                // If they match, connect to the device.
-                if (btDevice.getName() != null) {
-                    String transmitterIdLastTwo = Extensions.lastTwoCharactersOfString(defaultTransmitter.transmitterId);
-                    String deviceNameLastTwo = Extensions.lastTwoCharactersOfString(btDevice.getName());
-
-                    if (transmitterIdLastTwo.equals(deviceNameLastTwo)) {
-                        device = btDevice;
-                        connectToDevice(btDevice);
-                    } else {
-                        startScan();
-                    }
-                }
-            }
-
-            @Override
-            public void onBatchScanResults(List<ScanResult> results) {
-                for (ScanResult sr : results) {
-                    android.util.Log.i("ScanResult - Results", sr.toString());
-                }
-            }
-
-            @Override
-            public void onScanFailed(int errorCode) {
-                android.util.Log.e("Scan Failed", "Error Code: " + errorCode);
+        Runnable task = new Runnable() {
+            public void run() {
+                startScan();
             }
         };
+        worker.schedule(task, 12, TimeUnit.SECONDS);
+
     }
+
+    private ScanCallback mScanCallback = new ScanCallback() {
+        @Override
+        public void onScanResult(int callbackType, ScanResult result) {
+            android.util.Log.i("result", result.toString());
+            BluetoothDevice btDevice = result.getDevice();
+            // Check if the device has a name, the Dexcom transmitter always should. Match it with the transmitter id that was entered.
+            // We get the last 2 characters to connect to the correct transmitter if there is more than 1 active or in the room.
+            // If they match, connect to the device.
+            if (btDevice.getName() != null) {
+                String transmitterIdLastTwo = Extensions.lastTwoCharactersOfString(defaultTransmitter.transmitterId);
+                String deviceNameLastTwo = Extensions.lastTwoCharactersOfString(btDevice.getName());
+
+                if (transmitterIdLastTwo.equals(deviceNameLastTwo)) {
+                    device = btDevice;
+                    connectToDevice(btDevice);
+                } else {
+                    startScan();
+                }
+            }
+        }
+
+        @Override
+        public void onBatchScanResults(List<ScanResult> results) {
+            for (ScanResult sr : results) {
+                android.util.Log.i("ScanResult - Results", sr.toString());
+            }
+        }
+
+        @Override
+        public void onScanFailed(int errorCode) {
+            android.util.Log.e("Scan Failed", "Error Code: " + errorCode);
+        }
+    };
 
     private void runOnUiThread(Runnable r) {
         handler.post(r);
@@ -289,10 +300,10 @@ public class G5CollectionService extends Service {
             };
 
     private void connectToDevice(BluetoothDevice device) {
-        //if (mGatt == null) {
-        mGatt = device.connectGatt(getApplicationContext(), false, gattCallback);
-        stopScan();
-        //}
+        if (mGatt == null) {
+            mGatt = device.connectGatt(getApplicationContext(), false, gattCallback);
+            stopScan();
+        }
     }
 
     private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
@@ -305,10 +316,13 @@ public class G5CollectionService extends Service {
                     break;
                 case BluetoothProfile.STATE_DISCONNECTED:
                     android.util.Log.e("gattCallback", "STATE_DISCONNECTED");
-                    device = null;
+                    if (mGatt == null) {
+                        scanAfterDelay();
+                        return;
+                    }
                     mGatt.close();
                     mGatt = null;
-                    startScan();
+                    scanAfterDelay();
                     break;
                 default:
                     android.util.Log.e("gattCallback", "STATE_OTHER");
