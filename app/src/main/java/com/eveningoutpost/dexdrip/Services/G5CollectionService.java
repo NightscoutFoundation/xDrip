@@ -215,43 +215,44 @@ public class G5CollectionService extends Service {
             mBluetoothAdapter.startLeScan(mLeScanCallback);
         } else {
             Log.d(TAG, "startScan");
+
+            ScanCallback mScanCallback = new ScanCallback() {
+                @Override
+                public void onScanResult(int callbackType, ScanResult result) {
+                    android.util.Log.i("result", result.toString());
+                    BluetoothDevice btDevice = result.getDevice();
+                    // Check if the device has a name, the Dexcom transmitter always should. Match it with the transmitter id that was entered.
+                    // We get the last 2 characters to connect to the correct transmitter if there is more than 1 active or in the room.
+                    // If they match, connect to the device.
+                    if (btDevice.getName() != null) {
+                        String transmitterIdLastTwo = Extensions.lastTwoCharactersOfString(defaultTransmitter.transmitterId);
+                        String deviceNameLastTwo = Extensions.lastTwoCharactersOfString(btDevice.getName());
+
+                        if (transmitterIdLastTwo.equals(deviceNameLastTwo)) {
+                            device = btDevice;
+                            connectToDevice(btDevice);
+                        } else {
+                            startScan();
+                        }
+                    }
+                }
+
+                @Override
+                public void onBatchScanResults(List<ScanResult> results) {
+                    for (ScanResult sr : results) {
+                        android.util.Log.i("ScanResult - Results", sr.toString());
+                    }
+                }
+
+                @Override
+                public void onScanFailed(int errorCode) {
+                    android.util.Log.e("Scan Failed", "Error Code: " + errorCode);
+                }
+            };
+
             mLEScanner.startScan(filters, settings, mScanCallback);
         }
     }
-
-    private ScanCallback mScanCallback = new ScanCallback() {
-        @Override
-        public void onScanResult(int callbackType, ScanResult result) {
-            android.util.Log.i("result", result.toString());
-            BluetoothDevice btDevice = result.getDevice();
-            // Check if the device has a name, the Dexcom transmitter always should. Match it with the transmitter id that was entered.
-            // We get the last 2 characters to connect to the correct transmitter if there is more than 1 active or in the room.
-            // If they match, connect to the device.
-            if (btDevice.getName() != null) {
-                String transmitterIdLastTwo = Extensions.lastTwoCharactersOfString(defaultTransmitter.transmitterId);
-                String deviceNameLastTwo = Extensions.lastTwoCharactersOfString(btDevice.getName());
-
-                if (transmitterIdLastTwo.equals(deviceNameLastTwo)) {
-                    device = btDevice;
-                    connectToDevice(btDevice);
-                } else {
-                    startScan();
-                }
-            }
-        }
-
-        @Override
-        public void onBatchScanResults(List<ScanResult> results) {
-            for (ScanResult sr : results) {
-                android.util.Log.i("ScanResult - Results", sr.toString());
-            }
-        }
-
-        @Override
-        public void onScanFailed(int errorCode) {
-            android.util.Log.e("Scan Failed", "Error Code: " + errorCode);
-        }
-    };
 
     private void runOnUiThread(Runnable r) {
         handler.post(r);
