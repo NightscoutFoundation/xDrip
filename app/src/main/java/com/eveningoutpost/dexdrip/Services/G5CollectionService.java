@@ -49,7 +49,7 @@ import com.eveningoutpost.dexdrip.G5Model.TransmitterStatus;
 import com.eveningoutpost.dexdrip.G5Model.TransmitterTimeRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.TransmitterTimeTxMessage;
 import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.G5Model.Transmitter;
@@ -105,6 +105,7 @@ public class G5CollectionService extends Service {
     private BluetoothDevice device;
     private long startTimeInterval = -1;
     private int lastBattery = 216;
+    private long lastRead = new Date().getTime() - (5 * 60 *1000);
 
     private AlarmManager alarm;// = (AlarmManager) getSystemService(ALARM_SERVICE);
 
@@ -136,6 +137,7 @@ public class G5CollectionService extends Service {
 //        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "DexShareCollectionStart");
 //        wakeLock.acquire(40000);
         Log.d(TAG, "onG5StartCommand");
+        Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         setMissedBgTimer();
@@ -165,7 +167,7 @@ public class G5CollectionService extends Service {
         alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
         if (pendingIntent != null)
             alarm.cancel(pendingIntent);
-        long wakeTime = calendar.getTimeInMillis() + (5 * 1000 * 60);
+        long wakeTime = calendar.getTimeInMillis() + (4 * 1000 * 60);
         pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
@@ -349,7 +351,7 @@ public class G5CollectionService extends Service {
                 android.util.Log.i("CharBytes-or", Arrays.toString(characteristic.getValue()));
                 android.util.Log.i("CharHex-or", Extensions.bytesToHex(characteristic.getValue()));
 
-                if (characteristic.getValue()[0] == 5 || characteristic.getValue()[0] < 0) {
+                if (characteristic.getValue()[0] == 5 || characteristic.getValue()[0] <= 0) {
                     authStatus = new AuthStatusRxMessage(characteristic.getValue());
                     if (authStatus.authenticated == 1 && authStatus.bonded == 1) {
                         mGatt.setCharacteristicNotification(controlCharacteristic, true);
@@ -417,7 +419,6 @@ public class G5CollectionService extends Service {
             android.util.Log.i("CharBytes-nfy", Arrays.toString(characteristic.getValue()));
             android.util.Log.i("CharHex-nfy", Extensions.bytesToHex(characteristic.getValue()));
 
-
             byte[] buffer = characteristic.getValue();
             byte firstByte = buffer[0];
 
@@ -425,7 +426,7 @@ public class G5CollectionService extends Service {
                 SensorRxMessage sensorRx = new SensorRxMessage(characteristic.getValue());
                 if (pendingIntent != null)
                     alarm.cancel(pendingIntent);
-                long timeSince = BgReading.getTimeSinceLastReading();
+                long timeSince = new Date().getTime() - lastRead;
                 android.util.Log.i("ms since", Long.toString(timeSince));
                 if (timeSince > 4.9 * 60 * 1000) {
                     TransmitterData txData = new TransmitterData();
@@ -445,22 +446,20 @@ public class G5CollectionService extends Service {
 
                     txData.uuid = UUID.randomUUID().toString();
                     //txData.timestamp = new Date().getTime();
-                    txData.timestamp = startTimeInterval + sensorRx.timestamp;
+                    lastRead = startTimeInterval + sensorRx.timestamp;
+                    txData.timestamp = lastRead;
                     android.util.Log.i("timestamp", Long.toString(txData.timestamp));
 
                     processNewTransmitterData(txData, txData.timestamp);
-                    setMissedBgTimer();
-                    doDisconnectMessage(gatt, characteristic);
-
                 }
+                setMissedBgTimer();
+                doDisconnectMessage(gatt, characteristic);
             }
             // Transmitter Time
             else if (firstByte == 0x25) {
                 TransmitterTimeRxMessage transmitterTime = new TransmitterTimeRxMessage(characteristic.getValue());
 
-                if (startTimeInterval == -1) {
-                    startTimeInterval = new Date().getTime() - transmitterTime.currentTime;
-                }
+                startTimeInterval = new Date().getTime() - transmitterTime.currentTime;
 
                 SensorTxMessage sensorTx = new SensorTxMessage();
                 characteristic.setValue(sensorTx.byteSequence);
@@ -471,9 +470,6 @@ public class G5CollectionService extends Service {
             }
 
         }
-
-
-
     };
 
 
@@ -489,6 +485,8 @@ public class G5CollectionService extends Service {
         }
 
         Sensor.updateBatteryLevel(sensor, transmitterData.sensor_battery_level);
+        android.util.Log.i("timestamp create", Long.toString(transmitterData.timestamp));
+
         BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, transmitterData.timestamp);
     }
 
