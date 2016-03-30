@@ -16,7 +16,7 @@
                     android:defaultValue="true"
                     android:key="bg_compensate_noise"
                     android:summary="Try to work around noisy readings"
-                    android:title="\u26A0 Compensate for noise" />
+                    android:title="\u26A0 Smooth sensor noise" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="bg_from_filtered"

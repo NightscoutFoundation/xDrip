@@ -149,6 +149,12 @@ public class BgGraphBuilder {
         return mgdl * Constants.MGDL_TO_MMOLL;
     }
 
+    public static String noiseString(double thisnoise)
+    {
+        if (thisnoise>NOISE_HIGH) return "Extreme";
+        if (thisnoise>NOISE_TRIGGER) return "High";
+        return "Low";
+    }
     public LineChartData lineData() {
        // Log.d(TAG, "START lineData from: " + JoH.backTrace());
        JoH.benchmark(null);
@@ -704,7 +710,12 @@ public class BgGraphBuilder {
             Log.e(TAG,"Error creating back trend: "+e.toString());
         }
 
-        final boolean show_noise_working_line = show_moment_working_line;
+        final boolean show_noise_working_line;
+        if ((last_noise > NOISE_TRIGGER) && prefs.getBoolean("bg_compensate_noise", false)) {
+            show_noise_working_line = true;
+        } else {
+            show_noise_working_line = prefs.getBoolean("show_noise_workings", false);
+        }
         // noise debug
         try {
             // overlay noise curve

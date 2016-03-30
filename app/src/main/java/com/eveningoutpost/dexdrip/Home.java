@@ -1303,6 +1303,10 @@ public class Home extends ActivityWithMenu {
                 //final double estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
                 display_delta = bgGraphBuilder.unitizedDeltaStringRaw(true, true, estimated_delta);
                 addDisplayDelta();
+                if (!prefs.getBoolean("show_noise_workings", false))
+                {
+                    notificationText.append("\nNoise: "+bgGraphBuilder.noiseString(BgGraphBuilder.last_noise));
+                }
             } else {
                 addDisplayDelta();
             }
