@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -93,4 +94,9 @@ public class LocationHelper {
             android.util.Log.e(TAG, "Couldn't display toast: " + msg);
         }
     }
+
+    public static Boolean locationPermission(ActivityWithMenu act) {
+        return ActivityCompat.checkSelfPermission(act, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
+
 }

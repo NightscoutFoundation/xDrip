@@ -90,6 +90,21 @@ public class TransmitterData extends Model {
         return transmitterData;
     }
 
+    public static synchronized TransmitterData create(int raw_data ,int sensor_battery_level, long timestamp) {
+        TransmitterData lastTransmitterData = TransmitterData.last();
+        if (lastTransmitterData != null && lastTransmitterData.raw_data == raw_data && Math.abs(lastTransmitterData.timestamp - new Date().getTime()) < (120000)) { //Stop allowing duplicate data, its bad!
+            return null;
+        }
+
+        TransmitterData transmitterData = new TransmitterData();
+        transmitterData.sensor_battery_level = sensor_battery_level;
+        transmitterData.raw_data = raw_data ;
+        transmitterData.timestamp = timestamp;
+        transmitterData.uuid = UUID.randomUUID().toString();
+        transmitterData.save();
+        return transmitterData;
+    }
+
     public static TransmitterData last() {
         return new Select()
                 .from(TransmitterData.class)
