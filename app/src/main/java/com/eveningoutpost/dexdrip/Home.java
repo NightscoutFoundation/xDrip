@@ -343,7 +343,7 @@ public class Home extends ActivityWithMenu {
     private void cancelTreatment()
     {
         hideAllTreatmentButtons();
-        WatchUpdaterService.sendWearToast("Treatment cancelled", Toast.LENGTH_LONG);
+        WatchUpdaterService.sendWearToast("Treatment cancelled", Toast.LENGTH_SHORT);
     }
     private void processAndApproveTreatment()
     {
@@ -639,7 +639,7 @@ public class Home extends ActivityWithMenu {
             case "blood":
                 if ((glucoseset == false) && (thisnumber > 0)) {
                     thisglucosenumber = thisnumber;
-                    if (bgGraphBuilder.doMgdl) {
+                    if (prefs.getString("units", "mgdl").equals("mgdl")) {
                         if (textBloodGlucose != null) textBloodGlucose.setText(Double.toString(thisnumber) + " mg/dl");
                     } else {
                         if (textBloodGlucose != null) textBloodGlucose.setText(Double.toString(thisnumber) + " mmol/l");

@@ -225,7 +225,11 @@ public class Simulation extends Activity {
                         btnCancel.setVisibility(View.INVISIBLE);
                     }
 
-                    if (!hascontent) finish();
+                    if (!hascontent) {
+                        finish();
+                    } else {
+                        KeypadInputActivity.resetValues();
+                    }
 
                 } catch (Exception e) {
                     Log.e(TAG, "Got exception processing treatment intent: " + e);

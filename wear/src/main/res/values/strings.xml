@@ -18,8 +18,25 @@
         <item>4</item>
         <item>5</item>
     </string-array>
-    <string name="title_activity_simulation">Treatment</string>
+    <string name="title_activity_simulation">Spoken Treatment</string>
     <string name="hello_round">Hello Round World!</string>
     <string name="hello_square">Hello Square World!</string>
+    <string name="zero">0</string>
+    <string name="one">1</string>
+    <string name="two">2</string>
+    <string name="three">3</string>
+    <string name="four">4</string>
+    <string name="five">5</string>
+    <string name="six">6</string>
+    <string name="seven">7</string>
+    <string name="eight">8</string>
+    <string name="nine">9</string>
+    <string name="star">*</string>
+    <string name="dot">\u2022</string>
+    <string name="hash">#</string>
+    <string name="tick">\u2713</string>
+    <string name="backarrow">\u2190</string>
+    <string name="call">Call</string>
+    <string name="erase">Erase</string>
 
 </resources>
