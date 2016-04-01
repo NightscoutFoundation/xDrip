@@ -101,6 +101,7 @@
             android:name=".Simulation"
             android:exported="true"
             android:launchMode="singleTask"
+            android:icon="@drawable/ic_icon"
             android:label="@string/title_activity_simulation">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -118,6 +119,7 @@
         <activity
             android:name=".KeypadInputActivity"
             android:launchMode="singleTask"
+            android:icon="@drawable/ic_icon"
             android:label="Keypad Treatment">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
