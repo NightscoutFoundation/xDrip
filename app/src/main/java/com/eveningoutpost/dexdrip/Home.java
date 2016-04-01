@@ -240,7 +240,7 @@ public class Home extends ActivityWithMenu {
 
             @Override
             public void onClick(View v) {
-                hideAllTreatmentButtons();
+                cancelTreatment();
             }
         });
 
@@ -248,13 +248,7 @@ public class Home extends ActivityWithMenu {
 
             @Override
             public void onClick(View v) {
-                // proccess and approve all treatments
-                // TODO Handle BG Tests here also
-                Treatments.create(thiscarbsnumber, thisinsulinnumber, Treatments.getTimeStampWithOffset(thistimeoffset));
-                hideAllTreatmentButtons();
-                if (hideTreatmentButtonsIfAllDone()) {
-                    updateCurrentBgInfo("approve button");
-                }
+              processAndApproveTreatment();
             }
         });
 
@@ -289,22 +283,7 @@ public class Home extends ActivityWithMenu {
 
             @Override
             public void onClick(View v) {
-
-                // TODO BG Tests to be possible without being calibrations
-                // TODO Offer Choice? Reject calibrations under various circumstances
-                // This should be wrapped up in a generic method
-                Intent calintent = new Intent();
-                calintent.setClassName("com.eveningoutpost.dexdrip", "com.eveningoutpost.dexdrip.AddCalibration");
-                calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                calintent.putExtra("bg_string", JoH.qs(thisglucosenumber));
-                calintent.putExtra("bg_age", "0");
-                getApplicationContext().startActivity(calintent);
-
-                textBloodGlucose.setVisibility(View.INVISIBLE);
-                btnBloodGlucose.setVisibility(View.INVISIBLE);
-                if (hideTreatmentButtonsIfAllDone()) {
-                    updateCurrentBgInfo("bg button");
-                }
+              processCalibration();
             }
         });
 
@@ -323,8 +302,84 @@ public class Home extends ActivityWithMenu {
 
         JoH.fixActionBar(this);
         activityVisible = true;
+
+        // handle incoming extras
+        Bundle bundle = getIntent().getExtras();
+        processIncomingBundle(bundle);
+
+        // lower priority
         PlusSyncService.startSyncService(getApplicationContext(), "HomeOnCreate");
         ParakeetHelper.notifyOnNextCheckin(false);
+    }
+
+    // handle sending the intent
+    private void processCalibrationNoUI(double glucosenumber) {
+        if (glucosenumber>0) {
+            Intent calintent = new Intent();
+        // TODO fix up class names
+            calintent.setClassName("com.eveningoutpost.dexdrip", "com.eveningoutpost.dexdrip.AddCalibration");
+            calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            calintent.putExtra("bg_string", JoH.qs(glucosenumber));
+            calintent.putExtra("bg_age", "0");
+            getApplicationContext().startActivity(calintent);
+        }
+    }
+
+    private void processCalibration() {
+        // TODO BG Tests to be possible without being calibrations
+        // TODO Offer Choice? Reject calibrations under various circumstances
+        // This should be wrapped up in a generic method
+           processCalibrationNoUI(thisglucosenumber);
+
+            textBloodGlucose.setVisibility(View.INVISIBLE);
+            btnBloodGlucose.setVisibility(View.INVISIBLE);
+            if (hideTreatmentButtonsIfAllDone()) {
+                updateCurrentBgInfo("bg button");
+            }
+
+
+    }
+
+    private void cancelTreatment()
+    {
+        hideAllTreatmentButtons();
+        WatchUpdaterService.sendWearToast("Treatment cancelled", Toast.LENGTH_LONG);
+    }
+    private void processAndApproveTreatment()
+    {
+        final double myglucosenumber = thisglucosenumber;
+        WatchUpdaterService.sendWearToast("Treatment processed", Toast.LENGTH_LONG);
+        // proccess and approve all treatments
+        // TODO Handle BG Tests here also
+        Treatments.create(thiscarbsnumber, thisinsulinnumber, Treatments.getTimeStampWithOffset(thistimeoffset));
+        hideAllTreatmentButtons();
+
+        if (hideTreatmentButtonsIfAllDone()) {
+            updateCurrentBgInfo("approve button");
+        }
+        // TODO Send toast to watch
+        new Thread() {
+            @Override
+            public void run() {
+                // possibly this should have some delay
+                processCalibrationNoUI(myglucosenumber);
+            }
+        }.start();
+    }
+
+    private void processIncomingBundle(Bundle bundle) {
+        Log.d(TAG,"Processing incoming bundle");
+        if (bundle != null) {
+            String receivedText = bundle.getString(WatchUpdaterService.WEARABLE_VOICE_PAYLOAD);
+            if (receivedText != null) {
+                voiceRecognitionText.setText(receivedText);
+                voiceRecognitionText.setVisibility(View.VISIBLE);
+                last_speech_time = JoH.ts();
+                naturalLanguageRecognition(receivedText);
+            }
+            if (bundle.getString(WatchUpdaterService.WEARABLE_APPROVE_TREATMENT)!=null) processAndApproveTreatment();
+            if (bundle.getString(WatchUpdaterService.WEARABLE_CANCEL_TREATMENT)!=null) cancelTreatment();
+        }
     }
 
     private boolean hideTreatmentButtonsIfAllDone() {
@@ -351,9 +406,16 @@ public class Home extends ActivityWithMenu {
         textTime.setVisibility(View.INVISIBLE);
         btnTime.setVisibility(View.INVISIBLE);
 
+        // zeroing code could be functionalized
         thiscarbsnumber = 0;
         thisinsulinnumber = 0;
         thistimeoffset = 0;
+        thisglucosenumber = 0;
+        carbsset = false;
+        insulinset = false;
+        glucoseset = false;
+        timeset = false;
+
         if (chart != null) {
             chart.setAlpha((float) 1);
         }
@@ -519,7 +581,6 @@ public class Home extends ActivityWithMenu {
         carbsset = false;
         timeset = false;
         thisnumber = -1;
-        thistimeoffset = 0;
         thisword = "";
 
         String[] wordsArray = allWords.split(" ");
@@ -579,15 +640,17 @@ public class Home extends ActivityWithMenu {
                 if ((glucoseset == false) && (thisnumber > 0)) {
                     thisglucosenumber = thisnumber;
                     if (bgGraphBuilder.doMgdl) {
-                        textBloodGlucose.setText(Double.toString(thisnumber) + " mg/dl");
+                        if (textBloodGlucose != null) textBloodGlucose.setText(Double.toString(thisnumber) + " mg/dl");
                     } else {
-                        textBloodGlucose.setText(Double.toString(thisnumber) + " mmol/l");
+                        if (textBloodGlucose != null) textBloodGlucose.setText(Double.toString(thisnumber) + " mmol/l");
                     }
 
                     Log.d(TAG, "Blood test: " + Double.toString(thisnumber));
                     glucoseset = true;
-                    btnBloodGlucose.setVisibility(View.VISIBLE);
-                    textBloodGlucose.setVisibility(View.VISIBLE);
+                    if (textBloodGlucose != null) {
+                        btnBloodGlucose.setVisibility(View.VISIBLE);
+                        textBloodGlucose.setVisibility(View.VISIBLE);
+                    }
 
                 } else {
                     Log.d(TAG, "Blood glucose already set");
@@ -665,6 +728,12 @@ public class Home extends ActivityWithMenu {
             if (chart != null) {
                 chart.setAlpha((float) 0.10);
             }
+            WatchUpdaterService.sendTreatment(
+                    thiscarbsnumber,
+                    thisinsulinnumber,
+                    thisglucosenumber,
+                    thistimeoffset,
+                    textTime.getText().toString());
         }
 
     }
@@ -861,6 +930,13 @@ public class Home extends ActivityWithMenu {
         previewChart.setViewportChangeListener(new ViewportListener());
         chart.setViewportChangeListener(new ChartViewPortListener());
         setViewport();
+
+        if (insulinset || glucoseset || carbsset || timeset) {
+            if (chart != null) {
+                chart.setAlpha((float) 0.10);
+            }
+        }
+
     }
 
     public void setViewport() {
@@ -1363,6 +1439,13 @@ public class Home extends ActivityWithMenu {
 
 
         return result;
+    }
+
+    @Override
+    public void onNewIntent(Intent intent)
+    {
+        Bundle bundle = intent.getExtras();
+        processIncomingBundle(bundle);
     }
 
 

@@ -18,7 +18,7 @@
         <item>4</item>
         <item>5</item>
     </string-array>
-    <string name="title_activity_simulation">Simulation watch</string>
+    <string name="title_activity_simulation">Treatment</string>
     <string name="hello_round">Hello Round World!</string>
     <string name="hello_square">Hello Square World!</string>
 

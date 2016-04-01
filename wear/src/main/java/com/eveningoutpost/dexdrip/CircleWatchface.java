@@ -192,8 +192,8 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
                 if (delta.endsWith(" mg/dl")) {
                     textView.setText(getDelta().substring(0, delta.length() - 6));
-                } else if (delta.endsWith(" mmol")) {
-                    textView.setText(getDelta().substring(0, delta.length() - 5));
+                } else if (delta.endsWith(" mmol/l")) {
+                    textView.setText(getDelta().substring(0, delta.length() - 7));
                 }
             } else {
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);

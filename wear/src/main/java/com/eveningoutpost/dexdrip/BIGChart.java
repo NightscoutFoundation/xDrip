@@ -227,11 +227,10 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
                 showAgoRawBatt();
 
                 String delta = dataMap.getString("delta");
-
                 if (delta.endsWith(" mg/dl")) {
                     mDelta.setText(delta.substring(0, delta.length() - 6));
-                } else if (delta.endsWith(" mmol")) {
-                    mDelta.setText(delta.substring(0, delta.length() - 5));
+                } else if (delta.endsWith(" mmol/l")) {
+                    mDelta.setText(delta.substring(0, delta.length() - 7));
                 }
 
                 if (chart != null) {

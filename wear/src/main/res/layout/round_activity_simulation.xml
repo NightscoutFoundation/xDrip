@@ -6,11 +6,143 @@
     tools:context="com.eveningoutpost.dexdrip.Simulation"
     tools:deviceIds="wear_round">
 
+
+    <ImageButton
+            android:id="@+id/btnSpeak"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="50dp"
+        android:layout_marginTop="10dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="Speak treatment"
+            android:gravity="center_horizontal"
+            android:onClick="WatchMic"
+            android:src="@android:drawable/ic_btn_speak_now"
+            android:layout_gravity="right"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
     <TextView
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="@string/hello_round" />
+        android:textSize="12dp"
+
+        android:textColor="@android:color/holo_green_light"
+        android:text="@string/hello_square"
+        android:layout_below="@+id/btnSpeak"
+        android:layout_alignEnd="@+id/btnSpeak" />
+
+    <ImageButton
+            android:id="@+id/approveTreatment"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="26dp"
+            android:onClick="Approve"
+            android:layout_below="@+id/btnSpeak"
+            android:layout_marginStart="18dp"
+            android:contentDescription="Confirm Treatment"
+            android:src="@android:drawable/ic_input_add" />
+
+        <ImageButton
+            android:id="@+id/cancelTreatment"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:scaleType="center"
+            android:onClick="Cancel"
+            android:layout_alignTop="@+id/approveTreatment"
+            android:layout_toEndOf="@+id/approveTreatment"
+            android:src="@android:drawable/ic_delete" />
+
+        <ImageButton
+            android:id="@+id/bloodTestButton"
+            android:layout_width="36dp"
+
+            android:layout_height="36dp"
+            android:scaleType="centerCrop"
+            android:layout_alignBottom="@+id/cancelTreatment"
+            android:layout_marginStart="19dp"
+            android:layout_toEndOf="@+id/cancelTreatment"
+            android:src="@drawable/ic_touch_app_white_48dp" />
+
+        <TextView
+            android:id="@+id/textBloodGlucose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/bloodTestButton"
+            android:layout_marginBottom="12dp"
+            android:layout_toEndOf="@+id/bloodTestButton"
+            android:background="@android:color/transparent"
+            android:text="102 mg/dl"
+            android:textColor="@android:color/holo_green_light"
+            android:textSize="12dp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/buttonCarbs"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:scaleType="centerCrop"
+            android:layout_alignStart="@+id/bloodTestButton"
+            android:layout_below="@+id/bloodTestButton"
+            android:src="@drawable/ic_local_dining_white_48dp" />
+
+        <TextView
+            android:id="@+id/textCarbohydrate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/buttonCarbs"
+            android:layout_marginBottom="12dp"
+            android:layout_toEndOf="@+id/buttonCarbs"
+            android:background="@android:color/transparent"
+            android:text="65 grams"
+            android:textColor="@android:color/holo_green_light"
+            android:textSize="12dp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/buttonInsulin"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:scaleType="centerCrop"
+            android:layout_alignStart="@+id/buttonCarbs"
+            android:layout_below="@+id/buttonCarbs"
+            android:src="@drawable/ic_colorize_white_48dp" />
+
+        <TextView
+            android:id="@+id/textInsulinUnits"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/buttonInsulin"
+            android:layout_marginBottom="12dp"
+            android:layout_toEndOf="@+id/buttonInsulin"
+            android:background="@android:color/transparent"
+            android:text="14 units"
+            android:textColor="@android:color/holo_green_light"
+            android:textSize="12dp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/timeButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:scaleType="centerCrop"
+            android:layout_alignStart="@+id/approveTreatment"
+            android:layout_below="@+id/bloodTestButton"
+            android:src="@drawable/ic_av_timer_white_36dp" />
+
+        <TextView
+            android:id="@+id/textTimeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/timeButton"
+            android:layout_marginBottom="12dp"
+            android:layout_toEndOf="@+id/timeButton"
+            android:background="@android:color/transparent"
+            android:text="00:00"
+            android:textColor="@android:color/holo_green_light"
+            android:textSize="12dp"
+            android:textStyle="bold" />
+
 </RelativeLayout>
