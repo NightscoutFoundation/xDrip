@@ -86,7 +86,7 @@
                 android:defaultValue="20" />
         </PreferenceScreen>
         
-S        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:title="Missed reading Alert"
             android:key="missed_readings_screen">
             <intent
