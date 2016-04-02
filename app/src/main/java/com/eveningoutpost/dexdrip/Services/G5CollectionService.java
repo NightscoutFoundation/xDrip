@@ -30,7 +30,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.ParcelUuid;
-import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.G5Model.AuthChallengeRxMessage;
@@ -49,7 +48,7 @@ import com.eveningoutpost.dexdrip.G5Model.TransmitterStatus;
 import com.eveningoutpost.dexdrip.G5Model.TransmitterTimeRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.TransmitterTimeTxMessage;
 import com.eveningoutpost.dexdrip.Models.BgReading;
-import com.eveningoutpost.dexdrip.Sensor;
+import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.G5Model.Transmitter;

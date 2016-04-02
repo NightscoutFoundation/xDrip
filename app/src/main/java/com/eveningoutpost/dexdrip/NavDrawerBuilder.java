@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Tables.BgReadingTable;
 import com.eveningoutpost.dexdrip.Tables.CalibrationDataTable;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
