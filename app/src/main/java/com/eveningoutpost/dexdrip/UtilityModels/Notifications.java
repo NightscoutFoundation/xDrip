@@ -395,7 +395,7 @@ public class Notifications extends IntentService {
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    public Notification createOngoingNotification(BgGraphBuilder bgGraphBuilder, Context context) {
+    public synchronized Notification createOngoingNotification(BgGraphBuilder bgGraphBuilder, Context context) {
         mContext = context;
         ReadPerfs(mContext);
         Intent intent = new Intent(mContext, Home.class);
@@ -448,19 +448,24 @@ public class Notifications extends IntentService {
         return b.build();
     }
 
-    private void bgOngoingNotification(final BgGraphBuilder bgGraphBuilder) {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                NotificationManagerCompat
-                        .from(mContext)
-                        .notify(ongoingNotificationId, createOngoingNotification(bgGraphBuilder, mContext));
-                if (iconBitmap != null)
-                    iconBitmap.recycle();
-                if (notifiationBitmap != null)
-                    notifiationBitmap.recycle();
-            }
-        });
+    private synchronized void bgOngoingNotification(final BgGraphBuilder bgGraphBuilder) {
+        try {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    NotificationManagerCompat
+                            .from(mContext)
+                            .notify(ongoingNotificationId, createOngoingNotification(bgGraphBuilder, mContext));
+                    if (iconBitmap != null)
+                        iconBitmap.recycle();
+                    if (notifiationBitmap != null)
+                        notifiationBitmap.recycle();
+                }
+            });
+        } catch (RuntimeException e) {
+            Log.e(TAG, "Got runtime exception in bgOngoingNotification: ", e);
+            Home.toaststatic("Problem displaying ongoing notification");
+        }
     }
 
     private void soundAlert(String soundUri) {

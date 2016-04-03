@@ -771,6 +771,24 @@ public class Home extends ActivityWithMenu {
 
         switch (requestCode) {
             case REQ_CODE_SPEECH_INPUT: {
+
+  /*              Intent intent = data; // DEEEBUGGGG
+                if (intent != null)
+                {
+                    final Bundle bundle = intent.getExtras();
+
+
+                    if ((bundle != null) && (true)) {
+                        for (String key : bundle.keySet()) {
+                            Object value = bundle.get(key);
+                            if (value != null) {
+                                Log.d(TAG+" xdebug", String.format("%s %s (%s)", key,
+                                        value.toString(), value.getClass().getName()));
+                            }
+                        }
+                    }
+                }*/
+
                 if (resultCode == RESULT_OK && null != data) {
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
