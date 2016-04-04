@@ -256,6 +256,7 @@ public class Calibration extends Model {
                     Calibration calibration = new Calibration();
                     calibration.bg = calSubrecord.getCalBGL();
                     calibration.timestamp = calSubrecord.getDateEntered().getTime() + addativeOffset;
+                    calibration.raw_timestamp = calibration.timestamp;
                     if (calibration.timestamp > new Date().getTime()) {
                         Log.d(TAG, "ERROR - Calibration timestamp is from the future, wont save!");
                         return;
