@@ -464,7 +464,7 @@ public class Notifications extends IntentService {
             });
         } catch (RuntimeException e) {
             Log.e(TAG, "Got runtime exception in bgOngoingNotification: ", e);
-            Home.toaststatic("Problem displaying ongoing notification");
+            Home.toaststaticnext("Problem displaying ongoing notification");
         }
     }
 

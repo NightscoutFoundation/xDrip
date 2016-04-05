@@ -314,15 +314,21 @@ public class Home extends ActivityWithMenu {
     }
 
     // handle sending the intent
-    private void processCalibrationNoUI(double glucosenumber) {
+    private void processCalibrationNoUI(double glucosenumber,double timeoffset) {
+        if (timeoffset<0)
+        {
+            toaststaticnext("Got calibration in the future - cannot process!");
+            return;
+        }
         if (glucosenumber>0) {
-            Intent calintent = new Intent();
+            Intent calintent = new Intent(getApplicationContext(), AddCalibration.class);
         // TODO fix up class names
-            calintent.setClassName("com.eveningoutpost.dexdrip", "com.eveningoutpost.dexdrip.AddCalibration");
+            //calintent.setClassName("com.eveningoutpost.dexdrip", "com.eveningoutpost.dexdrip.AddCalibration");
             calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             calintent.putExtra("bg_string", JoH.qs(glucosenumber));
-            calintent.putExtra("bg_age", "0");
+            calintent.putExtra("bg_age", Long.toString((long) (glucosenumber / 1000)));
             getApplicationContext().startActivity(calintent);
+            Log.d(TAG,"ProcessCalibrationNoUI number: "+glucosenumber+" offset: "+timeoffset);
         }
     }
 
@@ -330,7 +336,7 @@ public class Home extends ActivityWithMenu {
         // TODO BG Tests to be possible without being calibrations
         // TODO Offer Choice? Reject calibrations under various circumstances
         // This should be wrapped up in a generic method
-           processCalibrationNoUI(thisglucosenumber);
+           processCalibrationNoUI(thisglucosenumber,thistimeoffset);
 
             textBloodGlucose.setVisibility(View.INVISIBLE);
             btnBloodGlucose.setVisibility(View.INVISIBLE);
@@ -348,22 +354,23 @@ public class Home extends ActivityWithMenu {
     }
     private void processAndApproveTreatment()
     {
+        // preserve globals before threading off
         final double myglucosenumber = thisglucosenumber;
+        final double mytimeoffset = thistimeoffset;
         WatchUpdaterService.sendWearToast("Treatment processed", Toast.LENGTH_LONG);
         // proccess and approve all treatments
         // TODO Handle BG Tests here also
-        Treatments.create(thiscarbsnumber, thisinsulinnumber, Treatments.getTimeStampWithOffset(thistimeoffset));
+        Treatments.create(thiscarbsnumber, thisinsulinnumber, Treatments.getTimeStampWithOffset(mytimeoffset));
         hideAllTreatmentButtons();
 
         if (hideTreatmentButtonsIfAllDone()) {
             updateCurrentBgInfo("approve button");
         }
-        // TODO Send toast to watch
         new Thread() {
             @Override
             public void run() {
                 // possibly this should have some delay
-                processCalibrationNoUI(myglucosenumber);
+                processCalibrationNoUI(myglucosenumber,mytimeoffset);
             }
         }.start();
     }

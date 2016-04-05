@@ -73,7 +73,7 @@ public class BgGraphBuilder {
     public double start_time = end_time - ((60000 * 60 * 24)) / FUZZER;
     private final static double timeshift = 500000;
     private final List<BgReading> bgReadings = BgReading.latestForGraph(numValues, (start_time * FUZZER));
-    private final List<Calibration> calibrations = Calibration.latestForGraph(numValues, (start_time * FUZZER));
+    private final List<Calibration> calibrations = Calibration.latestForGraph(numValues, ((long)start_time * FUZZER));
     private final List<Treatments> treatments = Treatments.latestForGraph(numValues, (start_time * FUZZER));
 
     public Context context;

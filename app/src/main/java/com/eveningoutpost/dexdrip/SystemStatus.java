@@ -53,6 +53,7 @@ public class SystemStatus extends ActivityWithMenu {
     private SharedPreferences prefs;
     private BluetoothManager mBluetoothManager;
     private ActiveBluetoothDevice activeBluetoothDevice;
+    private static final String TAG = "SystemStatus";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -210,16 +211,22 @@ public class SystemStatus extends ActivityWithMenu {
     }
 
     private void setNotes() {
-        if(mBluetoothManager == null) {
-            notes.append("\n- This device does not seem to support bluetooth");
-        } else {
-            if(!mBluetoothManager.getAdapter().isEnabled()) {
-                notes.append("\n- Bluetooth seems to be turned off");
+        try {
+            if (mBluetoothManager == null) {
+                notes.append("\n- This device does not seem to support bluetooth");
             } else {
-                if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2){
-                    notes.append("\n- The android version of this device is not compatible with Bluetooth Low Energy");
+                if ((android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
+                        && !mBluetoothManager.getAdapter().isEnabled()) {
+                    notes.append("\n- Bluetooth seems to be turned off");
+                } else {
+                    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        notes.append("\n- The android version of this device is not compatible with Bluetooth Low Energy");
+                    }
                 }
             }
+        } catch (NullPointerException e)
+        {
+            Log.e(TAG,"Got nullpointer exception in setNotes ",e);
         }
     }
 

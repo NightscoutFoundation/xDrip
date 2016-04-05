@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.widget.Toast;
+
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.activeandroid.Model;
@@ -391,8 +393,8 @@ public class Calibration extends Model {
 
                 if (!is_follower) {
                     BgSendQueue.handleNewBgReading(bgReading, "update", context);
-
-                    calculate_w_l_s();
+                    // TODO probably should add a more fine grained prefs option in future
+                    calculate_w_l_s(prefs.getBoolean("plus_extra_features",false));
                     adjustRecentBgReadings();
                     CalibrationSendQueue.addToQueue(calibration, context);
                     context.startService(new Intent(context, Notifications.class));
@@ -426,6 +428,10 @@ public class Calibration extends Model {
     }
 
     private static void calculate_w_l_s() {
+        calculate_w_l_s(false);
+    }
+
+    private static void calculate_w_l_s(boolean extended) {
         if (Sensor.isActive()) {
             double l = 0;
             double m = 0;
@@ -434,6 +440,14 @@ public class Calibration extends Model {
             double q = 0;
             double w;
             List<Calibration> calibrations = allForSensorInLastFourDays(); //5 days was a bit much, dropped this to 4
+
+            // less than 5 calibrations in last 4 days? cast the net wider if in extended mode
+            if ((calibrations.size() < 5) && extended)
+            {
+                calibrations = allForSensorLimited(5);
+                Home.toaststaticnext("Calibrated using data beyond last 4 days");
+            }
+
             if (calibrations.size() <= 1) {
                 Calibration calibration = Calibration.last();
                 calibration.slope = 1;
@@ -476,7 +490,17 @@ public class Calibration extends Model {
                 }
                 Log.d(TAG, "Calculated Calibration Slope: " + calibration.slope);
                 Log.d(TAG, "Calculated Calibration intercept: " + calibration.intercept);
-                calibration.save();
+
+                if ((calibration.slope == 0) && (calibration.intercept == 0))
+                {
+                    calibration.sensor_confidence = 0;
+                    calibration.slope_confidence = 0;
+                    Home.toaststaticnext("Got invalid zero slope calibration");
+                // don't think we should save this as it will get used by calibration.last()
+
+                } else {
+                    calibration.save();
+                }
             }
         } else {
             Log.d(TAG, "NO Current active sensor found!!");
@@ -699,6 +723,20 @@ public class Calibration extends Model {
                 .where("sensor_confidence != 0")
                 .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 4)))
                 .orderBy("timestamp desc")
+                .execute();
+    }
+
+    public static List<Calibration> allForSensorLimited(int limit) {
+        Sensor sensor = Sensor.currentSensor();
+        if (sensor == null) { return null; }
+        return new Select()
+                .from(Calibration.class)
+                .where("Sensor = ? ", sensor.getId())
+                .where("slope_confidence != 0")
+                .where("sensor_confidence != 0")
+                .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 4)))
+                .orderBy("timestamp desc")
+                .limit(limit)
                 .execute();
     }
 
