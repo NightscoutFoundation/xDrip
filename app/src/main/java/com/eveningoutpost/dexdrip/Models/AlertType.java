@@ -22,65 +22,90 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
+import com.google.gson.internal.bind.DateTypeAdapter;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
 /**
  * Created by stephenblack on 1/14/15.
  */
 @Table(name = "AlertType", id = BaseColumns._ID)
 public class AlertType extends Model {
 
+    @Expose
     @Column(name = "name")
     public String name;
 
+    @Expose
     @Column(name = "active")
     public boolean active;
 
+    @Expose
     @Column(name = "volume")
     public int volume;
 
+    @Expose
     @Column(name = "vibrate")
     public boolean vibrate;
 
+    @Expose
     @Column(name = "light")
     public boolean light;
 
+    @Expose
     @Column(name = "override_silent_mode")
     public boolean override_silent_mode;
 
+    @Expose
     @Column(name = "predictive")
     public boolean predictive;
 
+    @Expose
     @Column(name = "time_until_threshold_crossed")
     public double time_until_threshold_crossed;
 
     // If it is not above, then it must be below.
+    @Expose
     @Column(name = "above")
     public boolean above;
 
+    @Expose
     @Column(name = "threshold")
     public double threshold;
 
+    @Expose
     @Column(name = "all_day")
     public boolean all_day;
 
+    @Expose
     @Column(name = "start_time_minutes")
     public int start_time_minutes;  // This have probable be in minutes from start of day. this is not time...
 
+    @Expose
     @Column(name = "end_time_minutes")
     public int end_time_minutes;
 
+    @Expose
     @Column(name = "minutes_between") //??? what is the difference between minutes_between and default_snooze ???
     public int minutes_between; // The idea here was if ignored it will go off again each x minutes, snooze would be if it was aknowledged and dismissed it will go off again in y minutes
     // that said, Im okay with doing away with the minutes between and just doing it at a set 5 mins like dex
 
+    @Expose
     @Column(name = "default_snooze")
     public int default_snooze;
 
+    @Expose
     @Column(name = "text") // ??? what's that? is it different from name?
     public String text; // I figured if we wanted some special text, Its
 
+    @Expose
     @Column(name = "mp3_file")
     public String mp3_file;
 
+    @Expose
     @Column(name = "uuid", index = true)
     public String uuid;
 
@@ -533,4 +558,63 @@ public class AlertType extends Model {
     public static int toTime(int hours, int minutes) {
         return hours * 60 + minutes;
     }
+    
+    // Convert all settings to a string and save it in the references. This is needed to allow it's backup. 
+    public static boolean toSettings(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        List<AlertType> alerts  = new Select()
+            .from(AlertType.class)
+            .execute();
+
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                .serializeSpecialFloatingPointValues()
+                .create();
+        String output =  gson.toJson(alerts);
+        Log.e(TAG, "Created the string " + output);
+        prefs.edit().putString("saved_alerts", output).commit();
+
+        return true;
+
+    }
+    
+    
+    // Read all alerts from preference key and write them to db.
+    public static boolean fromSettings(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String savedAlerts = prefs.getString("saved_alerts", "");
+        if(savedAlerts.isEmpty()) {
+            Log.i(TAG, "read saved_alerts string and it is empty");
+            return true;
+        }
+        Log.i(TAG, "read alerts string " + savedAlerts);
+
+     // Now delete all existing alerts
+        List<AlertType> alerts  = new Select()
+        .from(AlertType.class)
+        .execute();
+        for(AlertType alert : alerts) {
+            alert.delete();
+        }
+        
+        Gson gson = new Gson();
+        
+        AlertType[] newAlerts = gson.fromJson(savedAlerts, AlertType[].class);
+        if (newAlerts == null) {
+            Log.e(TAG, "newAlerts is null");
+            return true;
+        }
+        
+        Log.e(TAG, "read successfuly " + newAlerts.length);
+        for(AlertType alert : newAlerts) {
+            Log.e(TAG, "Saving alert " + alert.name);
+            alert.save();
+        }
+        // Delete the string, so next time we will not load the data
+        prefs.edit().putString("saved_alerts", "").commit();
+        return true;
+
+    }
+    
 }

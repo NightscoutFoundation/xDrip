@@ -7,12 +7,11 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
+import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
 import com.eveningoutpost.dexdrip.UtilityModels.PlusAsyncExecutor;
-
-import java.util.concurrent.Executor;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -47,6 +46,7 @@ public class xdrip extends Application {
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_source, false);
         PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_prefs, false);
         new IdempotentMigrations(getApplicationContext()).performAll();
+        AlertType.fromSettings(getApplicationContext());
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(getApplicationContext());
         collectionServiceStarter.start(getApplicationContext());
         PlusSyncService.startSyncService(context, "xdrip.java");
