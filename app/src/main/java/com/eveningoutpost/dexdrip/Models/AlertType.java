@@ -94,6 +94,8 @@ public class AlertType extends Model {
         if (patched) return;
         String[] patchup = {
                 "ALTER TABLE AlertType ADD COLUMN volume INTEGER;",
+                "ALTER TABLE AlertType ADD COLUMN light INTEGER;",
+                "ALTER TABLE AlertType ADD COLUMN predictive INTEGER;",
                 "ALTER TABLE AlertType ADD COLUMN time_until_threshold_crossed REAL;"
               };
 
