@@ -96,6 +96,7 @@ public class AlertType extends Model {
                 "ALTER TABLE AlertType ADD COLUMN volume INTEGER;",
                 "ALTER TABLE AlertType ADD COLUMN light INTEGER;",
                 "ALTER TABLE AlertType ADD COLUMN predictive INTEGER;",
+                "ALTER TABLE AlertType ADD COLUMN text TEXT;",
                 "ALTER TABLE AlertType ADD COLUMN time_until_threshold_crossed REAL;"
               };
 
