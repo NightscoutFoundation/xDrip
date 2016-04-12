@@ -285,19 +285,21 @@ public class GcmActivity extends Activity {
             cease_all_activity = true;
             final String msg = "xDrip ERROR: Connecting to Google Services";
             JoH.static_toast(this, msg, Toast.LENGTH_LONG);
-            Home.toaststatic(msg);
+            Home.toaststaticnext(msg);
         }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (cease_all_activity) return;
-        Log.d(TAG, "onCreate");
-        tryGCMcreate();
         try {
-            finish();
+            super.onCreate(savedInstanceState);
+            if (cease_all_activity) return;
+            Log.d(TAG, "onCreate");
+            tryGCMcreate();
         } catch (Exception e) {
+            Log.e(TAG, "Got exception in GCMactivity Oncreate: ", e);
+        } finally {
+            finish();
         }
     }
 

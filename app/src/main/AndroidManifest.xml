@@ -96,6 +96,7 @@
             android:theme="@android:style/Theme.NoDisplay" />
         <activity
             android:name=".GcmActivity"
+            android:theme="@android:style/Theme.NoDisplay"
             android:label="GCM connect" />
         <activity
             android:name=".AddCalibration"
