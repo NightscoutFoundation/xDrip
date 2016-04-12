@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.MapsActivity;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -58,14 +59,17 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         mContext = ctx.getApplicationContext();
         PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "WifiReader");
+        Log.d(TAG,"WixelReader init");
+    }
+
+    private void getwakelock()
+    {
         wakeLock.acquire();
         lockCounter++;
         Log.e(TAG,"wakelock acquired " + lockCounter);
+        if (lockCounter>5) Home.toaststaticnext("Wixel Reader WakeLock bug "+lockCounter);
     }
 
-
-    
-    
     public static boolean IsConfigured(Context ctx) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         String recieversIpAddresses = prefs.getString("wifi_recievers_addresses", "");
@@ -432,6 +436,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
 
     public Void doInBackground(String... urls) {
         try {
+            getwakelock();
             readData();
         } finally {
             wakeLock.release();
@@ -440,7 +445,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         }
         return null;
     }
-    
+
     
     public void readData()
     {
