@@ -293,13 +293,20 @@ public class GcmActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
-            if (cease_all_activity) return;
+            if (cease_all_activity) {
+                finish();
+                return;
+            }
             Log.d(TAG, "onCreate");
             tryGCMcreate();
         } catch (Exception e) {
             Log.e(TAG, "Got exception in GCMactivity Oncreate: ", e);
         } finally {
-            finish();
+            try {
+                finish();
+            } catch (Exception e) {
+                Log.e(TAG, "Exception when finishing: " + e);
+            }
         }
     }
 
@@ -313,7 +320,11 @@ public class GcmActivity extends Activity {
 
     @Override
     protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        try {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        } catch (Exception e) {
+            Log.e(TAG, "Exception onPause: ", e);
+        }
         super.onPause();
     }
 
