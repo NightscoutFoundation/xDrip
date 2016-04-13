@@ -6,6 +6,7 @@
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_plus_display_settings"
             android:summary="Display customisations"
+            android:icon="@drawable/ic_chart_areaspline_grey600_48dp"
             android:title="xDrip+ Display Settings">
 
             <PreferenceCategory
@@ -79,6 +80,7 @@
             android:dependency="I_understand"
             android:key="xdrip_plus_profile_settings"
             android:summary="Insulin, Carb ratios etc for models"
+            android:icon="@drawable/ic_auto_fix_grey600_48dp"
             android:title="xDrip+ Predictive Simulation settings">
 
 
@@ -156,6 +158,7 @@
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:dependency="I_understand"
             android:key="xdrip_plus_sync_settings"
+            android:icon="@drawable/ic_google_circles_communities_grey600_48dp"
             android:summary="Settings for syncing between handsets"
             android:title="xDrip+ Sync settings">
 

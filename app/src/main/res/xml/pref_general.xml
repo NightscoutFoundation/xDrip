@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
     <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:key="xdrip_units_settings"
+        android:summary="mmol/l or mg/dl high and low"
+        android:icon="@drawable/ic_ruler_grey600_48dp"
+        android:title="Glucose Units">
         <PreferenceCategory
             android:title="General Settings"
             android:key="bgRange">
@@ -23,3 +28,4 @@
                 android:defaultValue="70" />
         </PreferenceCategory>
     </PreferenceScreen>
+</PreferenceScreen>
