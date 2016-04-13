@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.BatteryManager;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -56,6 +57,7 @@ public class NightscoutUploader {
         private static final String TAG = NightscoutUploader.class.getSimpleName();
         private static final int SOCKET_TIMEOUT = 60000;
         private static final int CONNECTION_TIMEOUT = 30000;
+        private static int failurecount = 0;
         private Context mContext;
         private Boolean enableRESTUpload;
         private Boolean enableMongoUpload;
@@ -355,11 +357,16 @@ public class NightscoutUploader {
                         dsCollection.insert(devicestatus, WriteConcern.UNACKNOWLEDGED);
 
                         client.close();
-
+                        failurecount=0;
                         return true;
 
                     } catch (Exception e) {
                         Log.e(TAG, "Unable to upload data to mongo " + e.getMessage());
+                        failurecount++;
+                        if (failurecount>4)
+                        {
+                            Home.toaststaticnext("Mongo "+failurecount+" up fails: "+e.getMessage().substring(0,51));
+                        }
                     } finally {
                         if(client != null) { client.close(); }
                     }

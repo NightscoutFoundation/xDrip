@@ -746,12 +746,12 @@ public class Home extends ActivityWithMenu {
 
     }
 
-    public static void toaststatic(String msg) {
+    public static void toaststatic(final String msg) {
         nexttoast = msg;
         staticRefreshBGCharts();
     }
 
-    public static void toaststaticnext(String msg) {
+    public static void toaststaticnext(final String msg) {
         nexttoast = msg;
     }
 

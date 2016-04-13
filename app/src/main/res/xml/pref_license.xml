@@ -1,7 +1,4 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory
-        android:title="EULA"
-        android:key="title_I_understand">
         <Preference android:title="End User License Agreement"
             android:summary="Not for medical decisions - research only"
             android:key="I_understand" >
@@ -11,5 +8,4 @@
                 android:targetClass="com.eveningoutpost.dexdrip.LicenseAgreementActivity"
                 />
         </Preference>
-    </PreferenceCategory>
 </PreferenceScreen>
