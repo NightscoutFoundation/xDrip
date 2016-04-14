@@ -270,6 +270,7 @@ public class G5CollectionService extends Service {
         }
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            Log.d(TAG, "start legacy Scan");
             setupLeScanCallback();
 
             mBluetoothAdapter.startLeScan(new UUID[]{ BluetoothServices.Advertisement }, mLeScanCallback);
