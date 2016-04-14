@@ -43,7 +43,7 @@ public class StatsActivity extends ActivityWithMenu {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        setTheme(R.style.OldAppTheme); // or null actionbar broken dialog size
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
         assignButtonNames();

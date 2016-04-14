@@ -103,6 +103,7 @@ public class SnoozeActivity extends ActivityWithMenu {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.OldAppTheme); // or null actionbar broken dialog size
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_snooze);
         alertStatus = (TextView) findViewById(R.id.alert_status);
@@ -225,9 +226,9 @@ public class SnoozeActivity extends ActivityWithMenu {
                     public void onClick(View v) {
                         Long disableUntil = new Date().getTime() +
                                 (snoozeValue.getValue() == snoozeValue.getMaxValue() ?
-                                infiniteSnoozeValueInMinutes
-                                :
-                                 + (SnoozeActivity.getTimeFromSnoozeValue(snoozeValue.getValue()))) * 1000 * 60;
+                                        infiniteSnoozeValueInMinutes
+                                        :
+                                        + (SnoozeActivity.getTimeFromSnoozeValue(snoozeValue.getValue()))) * 1000 * 60;
                         prefs.edit().putLong(disableType, disableUntil).apply();
                         //check if active bg alert exists and delete it depending on type of alert
                         ActiveBgAlert aba = ActiveBgAlert.getOnly();
@@ -268,11 +269,11 @@ public class SnoozeActivity extends ActivityWithMenu {
         });
 
     }
-    
+
     public void recheckAlerts() {
-      Context context = getApplicationContext();
-      context.startService(new Intent(context, Notifications.class));
-      context.startService(new Intent(context, MissedReadingService.class));
+        Context context = getApplicationContext();
+        context.startService(new Intent(context, Notifications.class));
+        context.startService(new Intent(context, MissedReadingService.class));
     }
 
     public void showDisableEnableButtons() {
