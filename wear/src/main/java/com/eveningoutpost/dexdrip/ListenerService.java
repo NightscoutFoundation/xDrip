@@ -36,7 +36,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String TAG = "jamorham listener";
 
     GoogleApiClient googleApiClient;
-    private long lastRequest = 0;
+    private static long lastRequest = 0;
 
     public class DataRequester extends AsyncTask<Void, Void, Void> {
         Context mContext;
@@ -64,9 +64,10 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 } else {
                     Log.d(TAG, "Debounce limit hit - not sending");
                 }
-            } else
+            } else {
                 Log.d(TAG, "Not connected for sending");
-            googleApiClient.connect();
+                googleApiClient.connect();
+            }
             return null;
         }
     }

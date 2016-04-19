@@ -13,7 +13,7 @@
 
     <TextView
         android:id="@+id/dialed_no_textview"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center"
         android:layout_weight="0.18"
@@ -22,6 +22,9 @@
         android:textColor="@android:color/black"
         android:textSize="20sp"
         android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:background="@drawable/tick_thing"
         tools:text="25.5 mmol/l" />
 
     <LinearLayout

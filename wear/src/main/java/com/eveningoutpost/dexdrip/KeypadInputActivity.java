@@ -4,24 +4,13 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.wearable.MessageApi;
-import com.google.android.gms.wearable.MessageEvent;
-import com.google.android.gms.wearable.Node;
-import com.google.android.gms.wearable.NodeApi;
-import com.google.android.gms.wearable.Wearable;
-
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.eveningoutpost.dexdrip.ListenerService.SendData;
@@ -330,6 +319,12 @@ public class KeypadInputActivity extends Activity {
         }
         value = getValue(currenttab);
         mDialTextView.setText(value + append);
+        // show green tick
+        if (value.length() > 0) {
+            mDialTextView.getBackground().setAlpha(255);
+        } else {
+            mDialTextView.getBackground().setAlpha(0);
+        }
     }
 
    /* private void sendMessage(final String message, final byte[] payload) {
