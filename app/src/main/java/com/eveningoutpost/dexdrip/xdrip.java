@@ -10,6 +10,9 @@ import com.crashlytics.android.core.CrashlyticsCore;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
+import com.eveningoutpost.dexdrip.UtilityModels.PlusAsyncExecutor;
+
+import java.util.concurrent.Executor;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -20,6 +23,7 @@ import io.fabric.sdk.android.Fabric;
 public class xdrip extends Application {
 
     private static Context context;
+    public static PlusAsyncExecutor executor;
 
     @Override
     public void onCreate() {
@@ -36,6 +40,7 @@ public class xdrip extends Application {
      {
          Log.e("xdrip.java", e.toString());
      }
+        executor = new PlusAsyncExecutor();
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
         PreferenceManager.setDefaultValues(this, R.xml.pref_notifications, false);

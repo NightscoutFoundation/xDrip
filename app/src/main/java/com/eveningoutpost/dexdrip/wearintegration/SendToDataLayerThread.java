@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.wearintegration;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataMap;
@@ -17,6 +18,8 @@ import com.google.android.gms.wearable.Wearable;
  */
 class SendToDataLayerThread extends AsyncTask<DataMap,Void,Void> {
     private GoogleApiClient googleApiClient;
+    private static int concurrency = 0;
+    private static final String TAG = "jamorham wear";
     String path;
 
     SendToDataLayerThread(String path, GoogleApiClient pGoogleApiClient) {
@@ -25,7 +28,21 @@ class SendToDataLayerThread extends AsyncTask<DataMap,Void,Void> {
     }
 
     @Override
+    protected void onPreExecute()
+    {
+        concurrency++;
+        if (concurrency>2) Home.toaststaticnext("Wear Integration deadlock detected!!");
+        if (concurrency<0) Home.toaststaticnext("Wear Integration impossible concurrency!!");
+        Log.d(TAG,"SendDataToLayerThread pre-execute concurrency: "+concurrency);
+    }
+
+    @Override
     protected Void doInBackground(DataMap... params) {
+       // try {
+       //    Thread.sleep(1000000); // DEEEBBUUGGGG
+       // } catch (Exception e)
+       // {
+       // }
         NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes(googleApiClient).await();
         for (Node node : nodes.getNodes()) {
             for (DataMap dataMap : params) {
@@ -40,7 +57,8 @@ class SendToDataLayerThread extends AsyncTask<DataMap,Void,Void> {
                 }
             }
         }
-
+        concurrency--;
+        Log.d(TAG,"SendDataToLayerThread post-execute concurrency: "+concurrency);
         return null;
     }
 }

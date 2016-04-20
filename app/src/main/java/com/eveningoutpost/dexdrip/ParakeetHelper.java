@@ -54,7 +54,7 @@ public class ParakeetHelper {
             toast(context, "Can't find parakeet app engine URL!");
             return;
         }
-        new WebAppHelper(new ParakeetHelper.ServiceCallback()).execute(url);
+        new WebAppHelper(new ParakeetHelper.ServiceCallback()).executeOnExecutor(xdrip.executor,url);
     }
 
     public static void checkParakeetNotifications(long timestamp) {

@@ -1,8 +1,6 @@
 
 package com.eveningoutpost.dexdrip.Services;
 
-import java.util.Calendar;
-
 import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -18,6 +16,9 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
+import com.eveningoutpost.dexdrip.xdrip;
+
+import java.util.Calendar;
 
 /**
  * Created by tzachi dar on 10/14/15.
@@ -120,6 +121,6 @@ public class WifiCollectionService extends Service {
         // on the same thread.
         WixelReader task = new WixelReader(getApplicationContext());
         // Assume here that task will execute, otheirwise we leak a wake lock...
-        task.execute();
+         task.executeOnExecutor(xdrip.executor);
     }
 }

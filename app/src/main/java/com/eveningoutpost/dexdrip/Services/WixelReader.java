@@ -385,7 +385,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
             MySocket.close();
             return trd_list;
         }catch(SocketTimeoutException s) {
-            Log.e(TAG, "Socket timed out! ", s);
+            Log.e(TAG, "Socket timed out! " + s.toString());
         }
         catch(IOException e) {
             Log.e(TAG, "cought IOException! "+ e.toString());
@@ -416,7 +416,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         }
 
         gapTime = gapTime % DEXCOM_PERIOD;
-        Log.e(TAG, "gapTime = " + gapTime);
+        Log.e(TAG, "modulus gapTime = " + gapTime);
         if(gapTime < 10000) {
             // A new packet should arrive any second now
             return 10000L;

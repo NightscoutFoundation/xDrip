@@ -26,6 +26,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class WatchUpdaterService extends WearableListenerService implements
         GoogleApiClient.ConnectionCallbacks,
@@ -234,7 +236,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                 googleApiConnect();
             }
             if (wear_integration) {
-                new SendToDataLayerThread(WEARABLE_DATA_PATH, googleApiClient).execute(dataMap(bg, mPrefs, new BgGraphBuilder(getApplicationContext())));
+                new SendToDataLayerThread(WEARABLE_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap(bg, mPrefs, new BgGraphBuilder(getApplicationContext())));
             }
         }
     }
@@ -255,7 +257,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             }
             entries.putDataMapArrayList("entries", dataMaps);
 
-            new SendToDataLayerThread(WEARABLE_DATA_PATH, googleApiClient).execute(entries);
+            new SendToDataLayerThread(WEARABLE_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, entries);
         }
     }
 

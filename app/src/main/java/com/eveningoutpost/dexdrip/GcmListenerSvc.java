@@ -138,7 +138,7 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                 if (prefs.getString("dex_collection_method", "").equals("Follower")) {
                     Log.i(TAG, "Processing backfill location packet as we are a follower");
                     staticKey = CipherUtils.hexToBytes(bfb[1]);
-                    new WebAppHelper(new GcmListenerSvc.ServiceCallback()).execute(getString(R.string.wserviceurl) + "/joh-getsw/" + bfb[0]);
+                    new WebAppHelper(new GcmListenerSvc.ServiceCallback()).executeOnExecutor(xdrip.executor,getString(R.string.wserviceurl) + "/joh-getsw/" + bfb[0]);
                 } else {
                     Log.i(TAG, "Ignoring backfill location packet as we are not follower");
                 }

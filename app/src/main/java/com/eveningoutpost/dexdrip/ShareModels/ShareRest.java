@@ -10,6 +10,7 @@ import com.eveningoutpost.dexdrip.ShareModels.Models.ExistingFollower;
 import com.eveningoutpost.dexdrip.ShareModels.Models.InvitationPayload;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareAuthenticationBody;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.Interceptor;
@@ -190,7 +191,7 @@ public class ShareRest {
 
         if (sessionId == null || sessionId.equals(""))
             try {
-                sessionId = task.execute(sessionId).get();
+                sessionId = task.executeOnExecutor(xdrip.executor,sessionId).get();
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }

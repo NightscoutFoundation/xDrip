@@ -40,6 +40,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.PebbleSync;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.xDripWidget;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.nightscout.core.barcode.NSBarcodeConfig;
@@ -128,7 +129,7 @@ public class Preferences extends PreferenceActivity {
                             && prefsmap.containsKey(getString(R.string.wizard_uuid))) {
                         staticKey = CipherUtils.hexToBytes(prefsmap.get(getString(R.string.wizard_key)));
 
-                        new WebAppHelper(new ServiceCallback()).execute(getString(R.string.wserviceurl) + "/joh-getsw/" + prefsmap.get(getString(R.string.wizard_uuid)));
+                        new WebAppHelper(new ServiceCallback()).executeOnExecutor(xdrip.executor,getString(R.string.wserviceurl) + "/joh-getsw/" + prefsmap.get(getString(R.string.wizard_uuid)));
                     } else {
                         Log.d(TAG, "Incorrectly formatted wizard pref");
                     }

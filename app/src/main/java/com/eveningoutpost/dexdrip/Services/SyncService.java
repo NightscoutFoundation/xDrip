@@ -14,6 +14,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.MongoSendTask;
 import com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Calendar;
 
@@ -55,6 +56,6 @@ public class SyncService extends IntentService {
 
     public void syncToMogoDb() {
         MongoSendTask task = new MongoSendTask(getApplicationContext());
-        task.execute();
+        task.executeOnExecutor(xdrip.executor);
     }
 }

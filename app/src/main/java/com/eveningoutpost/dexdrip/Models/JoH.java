@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -192,6 +193,15 @@ public class JoH {
         }
     }
 
+    public static String backTraceShort(int depth) {
+        try {
+            StackTraceElement stackb = new Exception().getStackTrace()[3 + depth];
+            return stackb.getMethodName();
+        } catch (Exception e) {
+            return "unknown backtrace: " + e.toString();
+        }
+    }
+
     public static void benchmark(String name) {
         if (name == null) {
             if (benchmark_time == 0) {
@@ -238,6 +248,12 @@ public class JoH {
     public static HashMap<String, Object> JsonStringtoMap(String json) {
         return new Gson().fromJson(json, new TypeToken<HashMap<String, Object>>() {
         }.getType());
+    }
+
+    public static String hourMinuteString()
+    {
+        Calendar c = Calendar.getInstance();
+        return c.get(Calendar.HOUR)+":"+c.get(Calendar.MINUTE);
     }
 
     public static void static_toast(final Context context, final String msg, final int length) {
