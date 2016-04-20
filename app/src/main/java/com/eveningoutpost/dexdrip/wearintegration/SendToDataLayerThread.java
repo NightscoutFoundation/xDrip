@@ -1,9 +1,9 @@
 package com.eveningoutpost.dexdrip.wearintegration;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataMap;
@@ -13,12 +13,15 @@ import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by stephenblack on 12/26/14.
  */
 class SendToDataLayerThread extends AsyncTask<DataMap,Void,Void> {
     private GoogleApiClient googleApiClient;
     private static int concurrency = 0;
+    private static int state = 0;
     private static final String TAG = "jamorham wear";
     String path;
 
@@ -33,7 +36,7 @@ class SendToDataLayerThread extends AsyncTask<DataMap,Void,Void> {
         concurrency++;
         if (concurrency>2) Home.toaststaticnext("Wear Integration deadlock detected!!");
         if (concurrency<0) Home.toaststaticnext("Wear Integration impossible concurrency!!");
-        Log.d(TAG,"SendDataToLayerThread pre-execute concurrency: "+concurrency);
+        UserError.Log.d(TAG, "SendDataToLayerThread pre-execute concurrency: " + concurrency);
     }
 
     @Override
@@ -43,22 +46,45 @@ class SendToDataLayerThread extends AsyncTask<DataMap,Void,Void> {
        // } catch (Exception e)
        // {
        // }
-        NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes(googleApiClient).await();
-        for (Node node : nodes.getNodes()) {
-            for (DataMap dataMap : params) {
-                PutDataMapRequest putDMR = PutDataMapRequest.create(path);
-                putDMR.getDataMap().putAll(dataMap);
-                PutDataRequest request = putDMR.asPutDataRequest();
-                DataApi.DataItemResult result = Wearable.DataApi.putDataItem(googleApiClient,request).await();
-                if (result.getStatus().isSuccess()) {
-                    Log.d("SendDataThread", "DataMap: " + dataMap + " sent to: " + node.getDisplayName());
-                } else {
-                    Log.d("SendDataThread", "ERROR: failed to send DataMap");
+        sendToWear(params);
+        concurrency--;
+        UserError.Log.d(TAG, "SendDataToLayerThread post-execute concurrency: " + concurrency);
+        return null;
+    }
+
+    // Debug function to expose where it might be locking up
+    private void sendToWear(final DataMap... params) {
+        try {
+            if (state != 0) {
+                UserError.Log.e(TAG, "WEAR STATE ERROR: state=" + state);
+            }
+            state = 1;
+            final NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes(googleApiClient).await(15, TimeUnit.SECONDS);
+
+            state = 2;
+            for (Node node : nodes.getNodes()) {
+                state = 3;
+                for (DataMap dataMap : params) {
+                    state = 4;
+                    PutDataMapRequest putDMR = PutDataMapRequest.create(path);
+                    state = 5;
+                    putDMR.getDataMap().putAll(dataMap);
+                    state = 6;
+                    PutDataRequest request = putDMR.asPutDataRequest();
+                    state = 7;
+                    DataApi.DataItemResult result = Wearable.DataApi.putDataItem(googleApiClient, request).await(15, TimeUnit.SECONDS);
+                    state = 8;
+                    if (result.getStatus().isSuccess()) {
+                        UserError.Log.d(TAG, "DataMap: " + dataMap + " sent to: " + node.getDisplayName());
+                    } else {
+                        UserError.Log.e(TAG, "ERROR: failed to send DataMap");
+                    }
+                    state = 9;
                 }
             }
+            state = 0;
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Got exception in sendToWear: " + e.toString());
         }
-        concurrency--;
-        Log.d(TAG,"SendDataToLayerThread post-execute concurrency: "+concurrency);
-        return null;
     }
 }

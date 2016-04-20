@@ -66,7 +66,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
     {
         wakeLock.acquire();
         lockCounter++;
-        Log.e(TAG,"wakelock acquired " + lockCounter);
+        Log.d(TAG,"wakelock acquired " + lockCounter);
         if (lockCounter>5) Home.toaststaticnext("Wixel Reader WakeLock bug "+lockCounter);
     }
 
@@ -402,7 +402,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
             return 60*1000L;
         }
         Long gapTime = new Date().getTime() - lastTransmitterData.timestamp;
-        Log.e(TAG, "gapTime = " + gapTime);
+        Log.d(TAG, "gapTime = " + gapTime);
         if(gapTime < 0) {
             // There is some confusion here (clock was readjusted?)
             Log.e(TAG, "gapTime <= null returning 60000");
@@ -416,7 +416,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         }
 
         gapTime = gapTime % DEXCOM_PERIOD;
-        Log.e(TAG, "modulus gapTime = " + gapTime);
+        Log.d(TAG, "modulus gapTime = " + gapTime);
         if(gapTime < 10000) {
             // A new packet should arrive any second now
             return 10000L;
@@ -441,7 +441,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         } finally {
             wakeLock.release();
             lockCounter--;
-            Log.e(TAG,"wakelock released " + lockCounter);
+            Log.d(TAG,"wakelock released " + lockCounter);
         }
         return null;
     }
