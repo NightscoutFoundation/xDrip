@@ -54,12 +54,12 @@ public class ParakeetHelper {
             toast(context, "Can't find parakeet app engine URL!");
             return;
         }
-        new WebAppHelper(new ParakeetHelper.ServiceCallback()).executeOnExecutor(xdrip.executor,url);
+        new WebAppHelper(new ParakeetHelper.ServiceCallback()).executeOnExecutor(xdrip.executor, url);
     }
 
     public static void checkParakeetNotifications(long timestamp) {
-        Log.d(TAG,"checkParakeetNotifications:"+waiting_for_parakeet+" "+timestamp+ " vs "+wait_timestamp);
         if (waiting_for_parakeet) {
+            Log.d(TAG,"checkParakeetNotifications:"+waiting_for_parakeet+" "+timestamp+ " vs "+wait_timestamp);
             if (timestamp > wait_timestamp) {
                 Log.d(TAG,"sending notification");
                 sendNotification("The parakeet has connected to the web service.",

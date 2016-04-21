@@ -230,7 +230,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     }
 
     public void sendData() {
-        BgReading bg = BgReading.last(true);
+        BgReading bg = BgReading.last();
         if (bg != null) {
             if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
                 googleApiConnect();
@@ -246,7 +246,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             googleApiConnect();
         }
         long startTime = new Date().getTime() - (60000 * 60 * 24);
-        BgReading last_bg = BgReading.last(true);
+        BgReading last_bg = BgReading.last();
         List<BgReading> graph_bgs = BgReading.latestForGraph(60, startTime);
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(getApplicationContext());
         if (!graph_bgs.isEmpty()) {

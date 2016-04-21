@@ -36,7 +36,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // receive updates from elsewhere
     public static void newMapLocation(String location, long when) {
         try {
-            if (location != null) {
+            if ((location != null) && (location.length()>5)) {
                 Log.d(TAG,"New location: "+location);
                 try {
                     lastGeoLocation = location;

@@ -116,17 +116,16 @@ public class xDripWidget extends AppWidgetProvider {
             }
             views.setTextViewText(R.id.widgetBg, stringEstimate);
             views.setTextViewText(R.id.widgetArrow, slope_arrow);
-            if (!Home.is_follower_set) Home.set_is_follower();
 
             // is it really necessary to read this data once here and again in unitizedDeltaString?
             // couldn't we just use the unitizedDeltaString to detect the error condition?
-            List<BgReading> bgReadingList =  BgReading.latest(2,Home.is_follower);
+            List<BgReading> bgReadingList =  BgReading.latest(2,Home.get_follower());
 
             if (estimated_delta == -9999) {
                 // use original delta
                 if (bgReadingList != null && bgReadingList.size() == 2) {
 
-                    views.setTextViewText(R.id.widgetDelta, bgGraphBuilder.unitizedDeltaString(true, true, Home.is_follower));
+                    views.setTextViewText(R.id.widgetDelta, bgGraphBuilder.unitizedDeltaString(true, true, Home.get_follower()));
                 } else {
                     views.setTextViewText(R.id.widgetDelta, "--");
                 }

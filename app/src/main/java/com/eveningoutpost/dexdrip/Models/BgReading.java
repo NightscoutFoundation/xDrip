@@ -497,7 +497,7 @@ public class BgReading extends Model implements ShareUploadableBg{
 
     public static BgReading last()
     {
-        return BgReading.last(false);
+        return BgReading.last(Home.get_follower());
     }
 
     public static BgReading last(boolean is_follower) {

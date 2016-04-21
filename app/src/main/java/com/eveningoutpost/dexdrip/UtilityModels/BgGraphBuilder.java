@@ -383,7 +383,7 @@ public class BgGraphBuilder {
             UserError.Log.i(TAG, "Raw points size is zero");
         }
 
-        if ((Home.is_follower) && (rawInterpretedValues.size() < 3)) {
+        if ((Home.get_follower()) && (rawInterpretedValues.size() < 3)) {
             GcmActivity.requestBGsync();
         }
         //UserError.Log.i(TAG, "Returning linearray: " + Integer.toString(linearray.size()));

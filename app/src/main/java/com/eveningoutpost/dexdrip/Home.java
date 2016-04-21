@@ -104,8 +104,8 @@ public class Home extends ActivityWithMenu {
     public static boolean activityVisible = false;
     public static boolean invalidateMenu = false;
     public static Context staticContext;
-    public static boolean is_follower = false;
-    public static boolean is_follower_set = false;
+    private static boolean is_follower = false;
+    private static boolean is_follower_set = false;
     private static boolean reset_viewport = false;
     private boolean updateStuff;
     private boolean updatingPreviewViewport = false;
@@ -993,9 +993,15 @@ public class Home extends ActivityWithMenu {
         }
     }
 
-    public static void set_is_follower() {
+    private static void set_is_follower() {
         is_follower = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).getString("dex_collection_method", "").equals("Follower");
         is_follower_set = true;
+    }
+
+    public static boolean get_follower()
+    {
+        if (!is_follower_set) set_is_follower();
+        return Home.is_follower;
     }
 
     private void updateCurrentBgInfo(String source) {

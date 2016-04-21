@@ -137,7 +137,7 @@ public class Notifications extends IntentService {
         ReadPerfs(context);
         Sensor sensor = Sensor.currentSensor();
 
-        BgReading bgReading = BgReading.last(Home.is_follower);
+        BgReading bgReading = BgReading.last(Home.get_follower());
         if (bgReading == null) {
             // Sensor is stopped, or there is not enough data
             AlertPlayer.getPlayer().stopAlert(context, true, false);
@@ -150,7 +150,7 @@ public class Notifications extends IntentService {
         // If the last reading does not have a sensor, or that sensor was stopped.
         // or the sensor was started, but the 2 hours did not still pass? or there is no calibrations.
         // In all this cases, bgReading.calculated_value should be 0.
-        if (((sensor != null) || (Home.is_follower)) && bgReading != null && bgReading.calculated_value != 0) {
+        if (((sensor != null) || (Home.get_follower())) && bgReading != null && bgReading.calculated_value != 0) {
             AlertType newAlert = AlertType.get_highest_active_alert(context, bgReading.calculated_value);
 
             if (newAlert == null) {
