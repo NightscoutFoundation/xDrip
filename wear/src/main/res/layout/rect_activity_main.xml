@@ -22,6 +22,8 @@
         android:textColor="@android:color/black"
         android:textSize="25sp"
         android:background="@drawable/tick_thing"
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="5dp"
         tools:text="25.5 mmol/l" />
 
     <LinearLayout
