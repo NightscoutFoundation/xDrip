@@ -1,16 +1,20 @@
 
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.content.Context;
+import android.os.PowerManager;
 import android.support.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Queue;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * xDrip plus AsyncExecutor
@@ -29,6 +33,7 @@ public class PlusAsyncExecutor implements Executor {
     private static final HashMap<String, Queue<Runnable>> taskQueues = new HashMap<String, Queue<Runnable>>();
     private static final HashMap<String, Runnable> currentTask = new HashMap<String, Runnable>();
 
+    private static AtomicInteger wlocks = new AtomicInteger(0);
 
     public synchronized void execute(@NonNull final Runnable r) {
 
@@ -41,23 +46,37 @@ public class PlusAsyncExecutor implements Executor {
             currentTask.put(queueId, null);
         }
 
-        // enqueue this current runnable to the respective queue
-        taskQueues.get(queueId).offer(new Runnable() {
-            public void run() {
-                try {
-                    r.run();
-                } finally {
-                    // each task will try to call the next when done
-                    next(queueId);
-                }
-            }
-        });
-
         final int qsize = taskQueues.get(queueId).size();
 
         // Log if tasks are backlogged
-        if (qsize > 1) {
+        if (qsize > 0) {
             Log.i(TAG, "Task queue size: " + qsize + " on queue: " + queueId);
+        }
+
+        // if queue isnt broken then add task to it
+        if (qsize < 20) {
+            // enqueue this current runnable to the respective queue
+            taskQueues.get(queueId).offer(new Runnable() {
+                public void run() {
+                    final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);
+                    final PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, queueId);
+                    try {
+                        wl.acquire();
+                        final int locksnow = wlocks.incrementAndGet();
+                        Log.d(TAG, "Acquire Wakelocks total: " + locksnow);
+                        r.run();
+                    } finally {
+                        // each task will try to call the next when done
+                        next(queueId);
+                        wl.release(); // will stack wakelocks
+                        final int locksnow = wlocks.decrementAndGet();
+                        Log.d(TAG, "Release Wakelocks total: " + locksnow);
+                    }
+                }
+            });
+
+        } else {
+            Log.e(TAG,"Queue so backlogged we are not extending! "+queueId);
         }
 
         // if we are not busy then run the queue

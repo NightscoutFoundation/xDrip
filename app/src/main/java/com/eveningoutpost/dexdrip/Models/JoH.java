@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -252,8 +253,9 @@ public class JoH {
 
     public static String hourMinuteString()
     {
-        Calendar c = Calendar.getInstance();
-        return c.get(Calendar.HOUR)+":"+c.get(Calendar.MINUTE);
+        Date date = new Date();
+        SimpleDateFormat sd = new SimpleDateFormat("HH:mm");
+        return sd.format(date);
     }
 
     public static void static_toast(final Context context, final String msg, final int length) {

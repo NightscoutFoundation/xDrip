@@ -23,6 +23,7 @@ class SendToDataLayerThread extends AsyncTask<DataMap,Void,Void> {
     private static int concurrency = 0;
     private static int state = 0;
     private static final String TAG = "jamorham wear";
+    private static final boolean testlockup = false; // always false in production
     String path;
 
     SendToDataLayerThread(String path, GoogleApiClient pGoogleApiClient) {
@@ -41,11 +42,13 @@ class SendToDataLayerThread extends AsyncTask<DataMap,Void,Void> {
 
     @Override
     protected Void doInBackground(DataMap... params) {
-       // try {
-       //    Thread.sleep(1000000); // DEEEBBUUGGGG
-       // } catch (Exception e)
-       // {
-       // }
+        if (testlockup) {
+            try {
+                UserError.Log.e(TAG,"WARNING RUNNING TEST LOCK UP CODE - NEVER FOR PRODUCTION");
+                Thread.sleep(1000000); // DEEEBBUUGGGG
+            } catch (Exception e) {
+            }
+        }
         sendToWear(params);
         concurrency--;
         UserError.Log.d(TAG, "SendDataToLayerThread post-execute concurrency: " + concurrency);
