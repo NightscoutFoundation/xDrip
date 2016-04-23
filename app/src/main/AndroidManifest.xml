@@ -194,6 +194,9 @@
             android:name=".CalibrationCheckInActivity"
             android:label="@string/title_activity_calibration_check_in" />
         <activity
+        android:name=".utils.InstallPebbleWatchFace"
+            android:label="Install Pebble Watchface" />
+        <activity
             android:name=".UsbConnectedActivity"
             android:label="@string/title_activity_usb_connected">
             <intent-filter>

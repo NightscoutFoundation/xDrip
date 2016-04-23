@@ -718,8 +718,31 @@ public class Preferences extends PreferenceActivity {
             pebbleSync.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    Context context = preference.getContext();
+                    final Context context = preference.getContext();
                     if ((Boolean) newValue) {
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+                            builder.setTitle("Pebble Install");
+                            builder.setMessage("Install Pebble Watchface?");
+
+                            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    context.startActivity(new Intent(context, InstallPebbleWatchFace.class));
+                                }
+                            });
+
+                            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+
+                            AlertDialog alert = builder.create();
+                            alert.show();
+
                         context.startService(new Intent(context, PebbleSync.class));
                     } else {
                         context.stopService(new Intent(context, PebbleSync.class));
