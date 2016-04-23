@@ -1188,7 +1188,7 @@ public class BgGraphBuilder {
     }
 
     public String unitizedDeltaString(boolean showUnit, boolean highGranularity) {
-    return unitizedDeltaString( showUnit, highGranularity, false);
+    return unitizedDeltaString( showUnit, highGranularity,Home.get_follower());
     }
     public String unitizedDeltaString(boolean showUnit, boolean highGranularity, boolean is_follower) {
 

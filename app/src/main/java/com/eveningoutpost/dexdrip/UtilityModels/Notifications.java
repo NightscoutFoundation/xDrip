@@ -424,7 +424,7 @@ public class Notifications extends IntentService {
                 .setUsesChronometer(false);
         if (lastReading != null) {
             b.setWhen(lastReading.timestamp);
-            String deltaString = "Delta: " + bgGraphBuilder.unitizedDeltaString(true, true, true); // permissive mode always for follower
+            String deltaString = "Delta: " + bgGraphBuilder.unitizedDeltaString(true, true);
             b.setContentText(deltaString);
             iconBitmap = new BgSparklineBuilder(mContext)
                     .setHeight(64)
