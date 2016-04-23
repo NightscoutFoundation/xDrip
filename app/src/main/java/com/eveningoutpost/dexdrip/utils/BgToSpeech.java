@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -145,13 +146,16 @@ public class BgToSpeech {
     }
 
 
-    public static void installTTSData(Context ctx){
-        Intent intent = new Intent();
-        intent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        ctx.startActivity(intent);
+    public static void installTTSData(Context ctx) {
+        try {
+            Intent intent = new Intent();
+            intent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            ctx.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Log.e("BgToSpeech", "Could not install TTS data: " + e.toString());
+        }
     }
-
 
     private boolean isOngoingCall(){
         AudioManager manager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
