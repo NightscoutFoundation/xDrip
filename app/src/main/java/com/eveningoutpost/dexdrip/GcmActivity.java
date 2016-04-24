@@ -334,15 +334,22 @@ public class GcmActivity extends Activity {
      * the Google Play Store or enable it in the device's system settings.
      */
     private boolean checkPlayServices() {
+        if (cease_all_activity) return false;
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-                        .show();
-            } else {
-                Log.i(TAG, "This device is not supported for play services.");
-                finish();
+            try {
+                if (apiAvailability.isUserResolvableError(resultCode)) {
+                    apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                            .show();
+                } else {
+                    Log.i(TAG, "This device is not supported for play services.");
+                    cease_all_activity = true;
+                    finish();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error resolving google play - probably no google");
+                cease_all_activity = true;
             }
             return false;
         }
