@@ -258,6 +258,11 @@ public class JoH {
         return sd.format(date);
     }
 
+    public static String dateTimeText(long timestamp)
+    {
+        return android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", timestamp).toString();
+    }
+
     public static void static_toast(final Context context, final String msg, final int length) {
         try {
             Activity activity = (Activity) context;

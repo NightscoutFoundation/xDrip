@@ -115,8 +115,12 @@ public class NavigationDrawerFragment extends Fragment {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
         } else {
-            getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
-            getActivity().getActionBar().setHomeButtonEnabled(true);
+            try {
+                getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
+                getActivity().getActionBar().setHomeButtonEnabled(true);
+            } catch (Exception e) {
+                Log.d("NavigationDrawerFrag", "Exception with getActionBar: " + e.toString());
+            }
         }
 
 //        mDrawerListView = (ListView) inflater.inflate(
@@ -140,14 +144,17 @@ public class NavigationDrawerFragment extends Fragment {
                     menu_options
             ));
 
-        } catch (NullPointerException e)
-        {
-            mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                    getActivity().getActionBar().getThemedContext(),
-                    android.R.layout.simple_list_item_activated_1,
-                    android.R.id.text1,
-                    menu_options
-            ));
+        } catch (NullPointerException e) {
+            try {
+                mDrawerListView.setAdapter(new ArrayAdapter<String>(
+                        getActivity().getActionBar().getThemedContext(),
+                        android.R.layout.simple_list_item_activated_1,
+                        android.R.id.text1,
+                        menu_options
+                ));
+            } catch (NullPointerException ex) {
+                Log.d("NavigationDrawerFrag", "Got second null pointer: " + ex.toString());
+            }
         }
 
         mDrawerToggle = new ActionBarDrawerToggle(

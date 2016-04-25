@@ -543,7 +543,7 @@ public class BgReading extends Model implements ShareUploadableBg{
     }
 
     public static List<BgReading> latest(int number) {
-        return latest(number, false);
+        return latest(number, Home.get_follower());
     }
 
     public static List<BgReading> latest(int number, boolean is_follower) {

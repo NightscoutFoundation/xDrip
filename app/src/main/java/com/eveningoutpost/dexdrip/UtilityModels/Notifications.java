@@ -399,7 +399,7 @@ public class Notifications extends IntentService {
         mContext = context;
         ReadPerfs(mContext);
         Intent intent = new Intent(mContext, Home.class);
-        List<BgReading> lastReadings = BgReading.latest(2,true); // ok for notification to show reading from any last sensor
+        List<BgReading> lastReadings = BgReading.latest(2);
         BgReading lastReading = null;
         if (lastReadings != null && lastReadings.size() >= 2) {
             lastReading = lastReadings.get(0);

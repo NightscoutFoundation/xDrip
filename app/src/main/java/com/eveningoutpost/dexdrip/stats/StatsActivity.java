@@ -3,14 +3,12 @@ package com.eveningoutpost.dexdrip.stats;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.LightingColorFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
@@ -43,7 +42,6 @@ public class StatsActivity extends ActivityWithMenu {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.OldAppTheme); // or null actionbar broken dialog size
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
         assignButtonNames();
@@ -62,16 +60,16 @@ public class StatsActivity extends ActivityWithMenu {
 
         TextView tv = new TextView(this);
         tv.setText("Swipe left/right to switch between reports!");
-        tv.setTextColor(Color.CYAN);
-        tv.setTextSize(28);
+        tv.setTextColor(Color.GREEN);
+        tv.setTextSize(25);
 
-        for (int i = 0; i < 2; i++) {
+        //for (int i = 0; i < 2; i++) {
             //Show toast twice the "long" period
             Toast toast = new Toast(getApplicationContext());
             toast.setView(tv);
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
-        }
+        //}
     }
 
     private void assignButtonNames() {
@@ -153,26 +151,27 @@ public class StatsActivity extends ActivityWithMenu {
                     break;
             }
         } else {
-            buttonTD.getBackground().mutate().setColorFilter(null);
-            buttonYTD.getBackground().mutate().setColorFilter(null);
-            button7d.getBackground().mutate().setColorFilter(null);
-            button30d.getBackground().mutate().setColorFilter(null);
-            button90d.getBackground().mutate().setColorFilter(null);
+
+            buttonTD.setAlpha(0.5f);
+            buttonYTD.setAlpha(0.5f);
+            button7d.setAlpha(0.5f);
+            button30d.setAlpha(0.5f);
+            button90d.setAlpha(0.5f);
             switch (state) {
                 case TODAY:
-                    buttonTD.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+                    buttonTD.setAlpha(1f);
                     break;
                 case YESTERDAY:
-                    buttonYTD.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+                    buttonYTD.setAlpha(1f);
                     break;
                 case D7:
-                    button7d.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+                    button7d.setAlpha(1f);
                     break;
                 case D30:
-                    button30d.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+                    button30d.setAlpha(1f);
                     break;
                 case D90:
-                    button90d.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+                    button90d.setAlpha(1f);
                     break;
             }
         }

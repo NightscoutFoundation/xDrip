@@ -168,6 +168,7 @@
 
         <activity
             android:name=".stats.StatsActivity"
+            android:theme="@style/AppTheme"
             android:label="Statistics" />
         <activity
             android:name=".SnoozeActivity"
@@ -227,6 +228,7 @@
             android:label="@string/title_activity_system_status" />
         <activity
             android:name=".utils.Preferences"
+            android:theme="@style/OldAppTheme"
             android:label="@string/title_activity_preferences" />
 
         <receiver android:name=".xDripWidget">
