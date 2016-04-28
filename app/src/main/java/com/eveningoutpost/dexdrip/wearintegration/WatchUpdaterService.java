@@ -245,17 +245,19 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
         long startTime = new Date().getTime() - (60000 * 60 * 24);
         BgReading last_bg = BgReading.last();
-        List<BgReading> graph_bgs = BgReading.latestForGraph(60, startTime);
-        BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(getApplicationContext());
-        if (!graph_bgs.isEmpty()) {
-            DataMap entries = dataMap(last_bg, mPrefs, bgGraphBuilder);
-            final ArrayList<DataMap> dataMaps = new ArrayList<>(graph_bgs.size());
-            for (BgReading bg : graph_bgs) {
-                dataMaps.add(dataMap(bg, mPrefs, bgGraphBuilder));
-            }
-            entries.putDataMapArrayList("entries", dataMaps);
+        if (last_bg != null) {
+            List<BgReading> graph_bgs = BgReading.latestForGraph(60, startTime);
+            BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(getApplicationContext());
+            if (!graph_bgs.isEmpty()) {
+                DataMap entries = dataMap(last_bg, mPrefs, bgGraphBuilder);
+                final ArrayList<DataMap> dataMaps = new ArrayList<>(graph_bgs.size());
+                for (BgReading bg : graph_bgs) {
+                    dataMaps.add(dataMap(bg, mPrefs, bgGraphBuilder));
+                }
+                entries.putDataMapArrayList("entries", dataMaps);
 
-            new SendToDataLayerThread(WEARABLE_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, entries);
+                new SendToDataLayerThread(WEARABLE_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, entries);
+            }
         }
     }
 

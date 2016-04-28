@@ -81,7 +81,7 @@ class SendToDataLayerThread extends AsyncTask<DataMap,Void,Void> {
                         UserError.Log.d(TAG, "DataMap: " + dataMap + " sent to: " + node.getDisplayName());
                     } else {
                         UserError.Log.e(TAG, "ERROR: failed to send DataMap");
-                        result = Wearable.DataApi.putDataItem(googleApiClient, request).await(15, TimeUnit.SECONDS);
+                        result = Wearable.DataApi.putDataItem(googleApiClient, request).await(25, TimeUnit.SECONDS);
                         if (result.getStatus().isSuccess()) {
                             UserError.Log.d(TAG, "DataMap retry: " + dataMap + " sent to: " + node.getDisplayName());
                         } else {
