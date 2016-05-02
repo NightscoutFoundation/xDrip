@@ -378,6 +378,7 @@ public class BgReading extends Model implements ShareUploadableBg{
                 double calSlope = (calibration.first_scale / firstAdjSlope)*1000;
                 double calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope)*-1;
                 bgReading.calculated_value = (((calSlope * bgReading.raw_data) + calIntercept) - 5);
+                bgReading.filtered_calculated_value = (((calSlope * bgReading.ageAdjustedFiltered()) + calIntercept) -5);
 
             } else {
                 BgReading lastBgReading = BgReading.last();

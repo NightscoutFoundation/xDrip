@@ -103,7 +103,7 @@ public class SnoozeActivity extends ActivityWithMenu {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.OldAppTheme); // or null actionbar broken dialog size
+       // setTheme(R.style.OldAppTheme); // or null actionbar broken dialog size
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_snooze);
         alertStatus = (TextView) findViewById(R.id.alert_status);
