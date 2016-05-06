@@ -39,6 +39,7 @@ public class GcmActivity extends Activity {
     public static final String TASK_TAG_UNMETERED = "unmetered";
     private static final String TAG = "jamorham gcmactivity";
     public static double last_sync_request = 0;
+    private static double last_ping_request = 0;
     public static AtomicInteger msgId = new AtomicInteger(1);
     public static String token = null;
     public static String senderid = null;
@@ -115,6 +116,21 @@ public class GcmActivity extends Activity {
 
     public static void syncBGReading(BgReading bgReading) {
         GcmActivity.sendMessage(GcmActivity.myIdentity(), "bgs", bgReading.toJSON());
+    }
+
+    public static void requestPing() {
+        if ((JoH.ts() - last_ping_request) > (60 * 1000 * 15)) {
+            last_ping_request = JoH.ts();
+            Log.d(TAG, "Sending ping");
+            GcmActivity.sendMessage("ping", "");
+        } else {
+            Log.d(TAG, "Already requested ping recently");
+        }
+    }
+
+    public static void sendLocation(final String location)
+    {
+        GcmActivity.sendMessage("plu",location);
     }
 
     public static void requestBGsync() {

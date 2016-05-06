@@ -46,16 +46,16 @@
     <!--     make sure to keep this values in sync with AlertPlayer.getAlertProfile -->
     <string-array name="BgAlertProfileEntries">
         <item>High</item>
-        <item>Ascending (disables reraise)</item>
         <item>Medium</item>
+        <item>Ascending volume</item>
         <item>Vibrate only</item>
         <item>Silent</item>
     </string-array>
 
     <string-array name="BgAlertProfileValues">
         <item>High</item>
-        <item>ascending</item>
         <item>medium</item>
+        <item>ascending</item>
         <item>vibrate only</item>
         <item>Silent</item>
     </string-array>

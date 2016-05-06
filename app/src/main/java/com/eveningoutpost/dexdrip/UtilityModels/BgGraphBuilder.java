@@ -62,6 +62,8 @@ public class BgGraphBuilder {
     public final static double NOISE_TRIGGER = 10;
     public final static double NOISE_HIGH = 200;
     public final static double NOISE_FORGIVE = 100;
+    public static double low_occurs_at = -1;
+    public static double previous_low_occurs_at = -1;
     private final static String TAG = "jamorham graph test";
     final int pointSize;
     final int axisTextSize;
@@ -99,6 +101,7 @@ public class BgGraphBuilder {
     private List<PointValue> highValues = new ArrayList<PointValue>();
     private List<PointValue> lowValues = new ArrayList<PointValue>();
     private List<PointValue> rawInterpretedValues = new ArrayList<PointValue>();
+    private List<PointValue> filteredValues = new ArrayList<PointValue>();
     private List<PointValue> calibrationValues = new ArrayList<PointValue>();
     private List<PointValue> treatmentValues = new ArrayList<PointValue>();
     private List<PointValue> iobValues = new ArrayList<PointValue>();
@@ -273,12 +276,13 @@ public class BgGraphBuilder {
 
             if (prefs.getBoolean("show_filtered_curve", true)) {
                 // use autosplit here too
-                ArrayList<Line> rawlines = rawInterpretedLines();
+               final ArrayList<Line> filtered_lines = filteredLines();
 
-                for (Line thisline : rawlines) {
+                for (Line thisline : filtered_lines) {
                     lines.add(thisline);
                 }
             }
+            lines.add(rawInterpretedLine());
 
             lines.add(inRangeValuesLine());
             lines.add(lowValuesLine());
@@ -333,7 +337,7 @@ public class BgGraphBuilder {
     }
 
     // auto split a line - jump thresh in minutes
-    public ArrayList<Line> autoSplitLine(Line macroline, float jumpthresh) {
+    public ArrayList<Line> autoSplitLine(Line macroline, final float jumpthresh) {
        // if (d) Log.d(TAG, "Enter autoSplit Line");
         ArrayList<Line> linearray = new ArrayList<Line>();
         float lastx = -999999;
@@ -343,7 +347,7 @@ public class BgGraphBuilder {
 
         if (macropoints.size() > 0) {
 
-            float endmarker = macropoints.get(macropoints.size() - 1).getX();
+            final float endmarker = macropoints.get(macropoints.size() - 1).getX();
             for (PointValue thispoint : macropoints) {
 
                 // a jump too far for a line? make it a new one
@@ -366,18 +370,18 @@ public class BgGraphBuilder {
      //   if (d) Log.d(TAG, "Exit autoSplit Line");
         return linearray;
     }
-
-    public ArrayList<Line> rawInterpretedLines() {
+    // Produce an array of cubic lines, split as needed
+    public ArrayList<Line> filteredLines() {
         ArrayList<Line> linearray = new ArrayList<Line>();
-        float lastx = -999999;
-        float jumpthresh = 15; // in minutes
+        float lastx = -999999; // bogus mark value
+        final float jumpthresh = 15; // in minutes
         List<PointValue> thesepoints = new ArrayList<PointValue>();
 
-        if (rawInterpretedValues.size() > 0) {
+        if (filteredValues.size() > 0) {
 
-            float endmarker = rawInterpretedValues.get(rawInterpretedValues.size() - 1).getX();
+            final float endmarker = filteredValues.get(filteredValues.size() - 1).getX();
 
-            for (PointValue thispoint : rawInterpretedValues) {
+            for (PointValue thispoint : filteredValues) {
                 // a jump too far for a line? make it a new one
                 if (((lastx != -999999) && (Math.abs(thispoint.getX() - lastx) > jumpthresh))
                         || thispoint.getX() == endmarker) {
@@ -399,11 +403,19 @@ public class BgGraphBuilder {
             UserError.Log.i(TAG, "Raw points size is zero");
         }
 
-        if ((Home.get_follower()) && (rawInterpretedValues.size() < 3)) {
+        if ((Home.get_follower()) && (filteredValues.size() < 3)) {
             GcmActivity.requestBGsync();
         }
         //UserError.Log.i(TAG, "Returning linearray: " + Integer.toString(linearray.size()));
         return linearray;
+    }
+
+    public Line rawInterpretedLine() {
+        Line line = new Line(rawInterpretedValues);
+        line.setHasLines(false);
+        line.setPointRadius(1);
+        line.setHasPoints(true);
+        return line;
     }
 
     public Line[] calibrationValuesLine() {
@@ -525,6 +537,7 @@ public class BgGraphBuilder {
 
     private void addBgReadingValues() {
        //UserError.Log.i(TAG, "ADD BG READINGS START");
+        filteredValues.clear();
         rawInterpretedValues.clear();
         iobValues.clear();
         activityValues.clear();
@@ -538,11 +551,12 @@ public class BgGraphBuilder {
         lowValues.clear();
         inRangeValues.clear();
         calibrationValues.clear();
-        final double bgScale = bgScale();
 
-        final double trendstart = JoH.ts()-(1000*60*10); // 10 minutes // TODO MAKE PREFERENCE
-        final double noise_trendstart = JoH.ts()-(1000*60*20); // 20 minutes // TODO MAKE PREFERENCE
-        double oldest_noise_timestamp = JoH.ts();
+        final double bgScale = bgScale();
+        final double now = JoH.ts();
+        final double trendstart = now-(1000*60*12); // 10 minutes // TODO MAKE PREFERENCE
+        final double noise_trendstart = now-(1000*60*20); // 20 minutes // TODO MAKE PREFERENCE
+        double oldest_noise_timestamp = now;
         double newest_noise_timestamp = 0;
         TrendLine[] polys = new TrendLine[5];
         TrendLine noisePoly = new PolyTrendLine(2);
@@ -558,8 +572,8 @@ public class BgGraphBuilder {
         List<Double> noise_polyxList = new ArrayList<Double>();
         List<Double> noise_polyyList = new ArrayList<Double>();
 
-        final double avg1start = JoH.ts()-(1000*60*60*8); // 8 hours
-        final double momentum_illustration_start = JoH.ts()-(1000*60*60*2); // 8 hours
+        final double avg1start = now-(1000*60*60*8); // 8 hours
+        final double momentum_illustration_start = now-(1000*60*60*2); // 8 hours
         avg1startfuzzed=avg1start / FUZZER;
         avg1value = 0;
         avg1counter = 0;
@@ -591,17 +605,18 @@ public class BgGraphBuilder {
         final boolean predict_use_momentum = prefs.getBoolean("predict_use_momentum", true);
         final boolean show_moment_working_line = prefs.getBoolean("show_momentum_working_line",false);
         final boolean interpret_raw = prefs.getBoolean("interpret_raw", false);
-
+        final boolean show_filtered = prefs.getBoolean("show_filtered_curve", false);
+        final boolean predict_lows = prefs.getBoolean("predict_lows", true);
 
         for (BgReading bgReading : bgReadings) {
             // jamorham special
-            if ((bgReading.filtered_calculated_value > 0) &&(bgReading.filtered_calculated_value != bgReading.calculated_value)) {
-                rawInterpretedValues.add(new PointValue((float) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(bgReading.filtered_calculated_value)));
+            if ((show_filtered) && (bgReading.filtered_calculated_value > 0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
+                filteredValues.add(new PointValue((float) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(bgReading.filtered_calculated_value)));
             }
-            if (bgReading.raw_calculated > 0 && interpret_raw) {
-
+            if ((interpret_raw && (bgReading.raw_calculated > 0))) {
                 rawInterpretedValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.raw_calculated)));
-            } else if (bgReading.calculated_value >= 400) {
+            }
+            if (bgReading.calculated_value >= 400) {
                 highValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(400)));
             } else if (unitized(bgReading.calculated_value) >= highMark) {
                 highValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
@@ -740,6 +755,42 @@ public class BgGraphBuilder {
             }
         } catch (Exception e) {
             Log.e(TAG,"Error creating back trend: "+e.toString());
+        }
+
+        // low estimator
+        // work backwards to see whether we think a low is estimated
+        low_occurs_at = -1;
+        try {
+            if ((predict_lows) && (poly != null)) {
+                final double offset = 1;
+                final double plow_now = JoH.ts();
+                double plow_timestamp = plow_now + (1000 * 60 * 60 * 2); // max look-ahead
+                double polyPredicty = poly.predict(plow_timestamp);
+                Log.d(TAG, "Low predictor at max lookahead is: " + JoH.qs(polyPredicty));
+                if (polyPredicty <= (lowMark+offset)) {
+                    low_occurs_at = plow_timestamp;
+                    final double lowMarkIndicator = (lowMark - (lowMark / 4));
+                    //if (d) Log.d(TAG, "Poly predict: "+JoH.qs(polyPredict)+" @ "+JoH.qsz(iob.timestamp));
+                    while (plow_timestamp > plow_now) {
+                        plow_timestamp = plow_timestamp - FUZZER;
+                        polyPredicty = poly.predict(plow_timestamp);
+                        if (polyPredicty > (lowMark+offset)) {
+                            PointValue zv = new PointValue((float) (plow_timestamp / FUZZER), (float) polyPredicty);
+                            polyBgValues.add(zv);
+                        } else {
+                            low_occurs_at = plow_timestamp;
+                            if (polyPredicty > lowMarkIndicator) {
+                                polyBgValues.add(new PointValue((float) (plow_timestamp / FUZZER), (float) polyPredicty));
+                            }
+                        }
+                    }
+                    Log.i(TAG, "LOW PREDICTED AT: " + JoH.dateTimeText((long) low_occurs_at));
+                    predictivehours = Math.max(predictivehours, (int) ((low_occurs_at - plow_now) / (60 * 60 * 1000)) + 1);
+                }
+            }
+
+        } catch (NullPointerException e) {
+            //Log.d(TAG,"Error with low prediction trend: "+e.toString());
         }
 
         final boolean show_noise_working_line;

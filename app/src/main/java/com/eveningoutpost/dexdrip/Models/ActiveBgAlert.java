@@ -1,6 +1,8 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.provider.BaseColumns;
+
+import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.activeandroid.Model;
@@ -19,6 +21,7 @@ import java.util.Date;
 public class ActiveBgAlert extends Model {
 
     private final static String TAG = AlertPlayer.class.getSimpleName();
+    private static boolean patched = false;
 
     @Column(name = "alert_uuid")
     public String alert_uuid;
@@ -119,6 +122,7 @@ public class ActiveBgAlert extends Model {
 
     public static void Create(String alert_uuid, boolean is_snoozed, Long next_alert_at) {
         Log.d(TAG, "ActiveBgAlert Create called");
+        fixUpTable();
         ActiveBgAlert aba = getOnly();
         if (aba == null) {
             aba = new ActiveBgAlert();
@@ -166,6 +170,23 @@ public class ActiveBgAlert extends Model {
     public void updateNextAlertAt(long nextAlertTime){
         next_alert_at = nextAlertTime;
         save();
+    }
+
+    private static void fixUpTable() {
+        if (patched) return;
+        String[] patchup = {
+                "ALTER TABLE ActiveBgAlert ADD COLUMN alert_started_at INTEGER;"
+        };
+
+        for (String patch : patchup) {
+            try {
+                SQLiteUtils.execSql(patch);
+                Log.e(TAG, "Processed patch should not have succeeded!!: " + patch);
+            } catch (Exception e) {
+                // Log.d(TAG, "Patch: " + patch + " generated exception as it should: " + e.toString());
+            }
+        }
+        patched = true;
     }
 }
 

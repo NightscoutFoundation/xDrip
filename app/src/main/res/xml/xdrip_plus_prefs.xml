@@ -108,6 +108,11 @@
                     android:key="predict_use_momentum"
                     android:summary="Calculate including BG trend"
                     android:title="Use trend momentum" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="predict_lows"
+                    android:summary="Extrapolate data to try to predict lows"
+                    android:title="Forecast Lows" />
             </PreferenceCategory>
             <PreferenceCategory
                 android:key="title_I_understandb"
@@ -192,7 +197,7 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="disable_all_sync"
-                    android:summary="Temporary work-around option"
+                    android:summary="Temporary work-around option, completely stops all synchronization. May need reboot after being re-enabled. Use with care!"
                     android:title="Disable all sync features" />
             </PreferenceCategory>
         </PreferenceScreen>

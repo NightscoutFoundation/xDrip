@@ -57,6 +57,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 longs.remove(0);
                                 lats.remove(0);
                             }
+                            // relay location
+                            if (Home.getPreferencesBooleanDefaultFalse("plus_follow_master")
+                                    && Home.getPreferencesBooleanDefaultFalse("plus_follow_geolocation")
+                                    && (!Home.get_follower())) {
+                                GcmActivity.sendLocation(location);
+                            }
                         }
                     }
                     if (active) {

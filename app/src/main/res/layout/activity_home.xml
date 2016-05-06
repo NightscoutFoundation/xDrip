@@ -97,6 +97,22 @@
                 android:textSize="12sp"
                 android:textStyle="normal" />
 
+            <TextView
+                android:id="@+id/lowpredict"
+                android:layout_below="@+id/textBridgeBattery"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="-2dp"
+                android:background="@android:color/transparent"
+                android:gravity="left|top"
+                android:paddingStart="30dp"
+                android:paddingEnd="30dp"
+                android:text="Low prediction"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#C30909" />
+
             <ImageButton
                 android:id="@+id/btnSpeak"
                 android:layout_width="wrap_content"

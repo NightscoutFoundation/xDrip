@@ -123,8 +123,18 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                 } else {
                     Log.e(TAG, "Invalid CAL payload");
                 }
+            } else if (action.equals("ping")) {
+                // don't respond to wakeup pings
             } else if (action.equals("p")) {
                 GcmActivity.send_ping_reply();
+            } else if (action.equals("q")) {
+                Home.toaststatic("Received ping reply");
+            } else if (action.equals("plu")) {
+                // process map update
+                if (Home.get_follower())
+                {
+                    MapsActivity.newMapLocation(payload,(long)JoH.ts());
+                }
             } else if (action.equals("bgs")) {
                 Log.i(TAG, "Received BG packet(s)");
                 String bgs[] = payload.split("\\^");

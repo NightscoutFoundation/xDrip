@@ -14,6 +14,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.os.Handler;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.EditAlertActivity;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
@@ -109,7 +110,11 @@ public class AlertPlayer {
         return singletone;
     }
 
-    public synchronized  void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue )  {
+    public synchronized void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue) {
+        startAlert(ctx, trendingToAlertEnd, newAlert, bgValue, Home.getPreferencesBooleanDefaultFalse("start_snoozed")); // for start snoozed by default!
+    }
+
+    public synchronized  void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue , boolean start_snoozed)  {
         Log.d(TAG, "startAlert called, Threadid " + Thread.currentThread().getId());
         if (trendingToAlertEnd) {
             Log.d(TAG,"startAlert: This alert is trending to it's end will not do anything");
@@ -119,8 +124,9 @@ public class AlertPlayer {
         stopAlert(ctx, true, false);
 
         long nextAlertTime = newAlert.getNextAlertTime(ctx);
-        ActiveBgAlert.Create(newAlert.uuid, false, nextAlertTime );
-        Vibrate(ctx, newAlert, bgValue, newAlert.override_silent_mode, 0);
+
+        ActiveBgAlert.Create(newAlert.uuid, start_snoozed, nextAlertTime );
+        if (!start_snoozed) Vibrate(ctx, newAlert, bgValue, newAlert.override_silent_mode, 0);
     }
 
     public synchronized void stopAlert(Context ctx, boolean ClearData, boolean clearIfSnoozeFinished) {

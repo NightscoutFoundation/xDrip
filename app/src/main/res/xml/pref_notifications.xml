@@ -10,7 +10,7 @@
             android:title="Alerts and Notifications">
             <Preference
                 android:key="bg_level_alerts"
-                android:title="Glucose Level Alerts">
+                android:title="Glucose Level Alerts List">
                 <intent
                     android:action="android.intent.action.MAIN"
                     android:targetClass="com.eveningoutpost.dexdrip.AlertList"
@@ -25,19 +25,25 @@
                     android:entries="@array/BgAlertProfileEntries"
                     android:entryValues="@array/BgAlertProfileValues"
                     android:key="bg_alert_profile"
-                    android:title="Alerts profile" />
+                    android:title="Alert Volume Profile" />
 
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="smart_snoozing"
                     android:summary="Keep snoozing if bg is heading in the right direction"
-                    android:title="Smart snoozing" />
+                    android:title="Smart Snoozing" />
 
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="smart_alerting"
                     android:summary="Don't alert if bg is heading in the right direction"
-                    android:title="Smart alerting" />
+                    android:title="Smart Alerting" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="start_snoozed"
+                    android:summary="Alerts start out snoozed and must persist for a while to actually trigger"
+                    android:title="Start Snoozed" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"
@@ -65,7 +71,7 @@
                 android:key="calibration_alerts_screen"
                 android:title="Calibration Alerts">
                 <CheckBoxPreference
-                    android:defaultValue="true"
+                    android:defaultValue="false"
                     android:key="calibration_notifications"
                     android:summary="Alert when a calibration is requested"
                     android:title="Calibration Alerts" />

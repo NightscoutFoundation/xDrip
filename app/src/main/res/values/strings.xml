@@ -109,7 +109,7 @@
     <!-- broadcast settings -->
     <string name="pref_title_broadcast_enabled">Broadcast locally</string>
     <string name="pref_summary_broadcast_enabled">Enable local broadcast of data so other apps (eg. NightWatch) can listen on new values</string>
-    <string name="title_activity_share_test">ShareTest</string>
+    <string name="title_activity_share_test">Share Test</string>
     <string name="title_activity_system_status">System Status</string>
 
     <string name="toast_crash">Something went wrong :( a report has been sent to help fix the issue.</string>
@@ -119,7 +119,7 @@
     <string name="finish_preferences_activity">finish_preferences_activity</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
-    <string name="title_activity_alert_list">AlertList</string>
+    <string name="title_activity_alert_list">Alert List</string>
     <string name="import_db_warning">
         WARNING: Importing a database might cause SEVERE DATA LOSS. If you don\'t know why you want to use the import, don\'t use it.
         In regular operation of xDrip it is not needed. Just use it in case of previous data loss.

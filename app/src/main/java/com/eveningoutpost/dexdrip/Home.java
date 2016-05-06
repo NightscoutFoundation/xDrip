@@ -47,6 +47,7 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -100,18 +101,19 @@ import lecho.lib.hellocharts.view.PreviewLineChartView;
 
 public class Home extends ActivityWithMenu {
     static String TAG = "jamorham: " + Home.class.getSimpleName();
-    public static String menu_name = "xDrip";
+    public static String menu_name = "Home Screen";
     public static boolean activityVisible = false;
     public static boolean invalidateMenu = false;
     public static Context staticContext;
     private static boolean is_follower = false;
     private static boolean is_follower_set = false;
+    private static boolean is_holo = true;
     private static boolean reset_viewport = false;
     private boolean updateStuff;
     private boolean updatingPreviewViewport = false;
     private boolean updatingChartViewport = false;
     private BgGraphBuilder bgGraphBuilder;
-    private SharedPreferences prefs;
+    private static SharedPreferences prefs;
     private Viewport tempViewport = new Viewport();
     private Viewport holdViewport = new Viewport();
     private boolean isBTShare;
@@ -562,7 +564,7 @@ public class Home extends ActivityWithMenu {
                     Toast.LENGTH_LONG).show();
             return;
         }
-
+        allWords = allWords.trim();
         allWords = allWords.replaceAll(":", "."); // fix real times
         allWords = allWords.replaceAll("(\\d)([a-zA-Z])", "$1 $2"); // fix like 22mm
         allWords = allWords.replaceAll("([0-9].[0-9])([0-9][0-9])", "$1 $2"); // fix multi number order like blood 3.622 grams
@@ -1004,8 +1006,18 @@ public class Home extends ActivityWithMenu {
         return Home.is_follower;
     }
 
+    public static boolean get_holo()
+    {
+        return Home.is_holo;
+    }
+
     private void updateCurrentBgInfo(String source) {
         Log.d(TAG, "updateCurrentBgInfo from: " + source);
+        if (source.equals("new data"))
+        {
+            evaluateLowAlarm();
+        }
+
         if (!activityVisible) {
             Log.d(TAG, "Display not visible - not updating chart");
             return;
@@ -1016,6 +1028,7 @@ public class Home extends ActivityWithMenu {
         }
         setupCharts();
         final TextView notificationText = (TextView) findViewById(R.id.notices);
+        final TextView lowPredictText = (TextView) findViewById(R.id.lowpredict);
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             notificationText.setTextSize(40);
         }
@@ -1073,6 +1086,34 @@ public class Home extends ActivityWithMenu {
             }
         }
 
+
+        // TODO we need to consider noise level?
+        final double low_predicted_alarm_minutes = 35; // when to raise the alarm
+        lowPredictText.setText("");
+        if (BgGraphBuilder.low_occurs_at > 0) {
+            final double now = JoH.ts();
+            final double predicted_low_in_mins = (BgGraphBuilder.low_occurs_at - now) / 60000;
+
+            if (predicted_low_in_mins > 1) {
+                lowPredictText.append("Low predicted\nin: " + (int) predicted_low_in_mins + " mins");
+
+                if (predicted_low_in_mins < low_predicted_alarm_minutes) {
+                    lowPredictText.setTextColor(Color.RED); // low front getting too close!
+                    // alarm it!
+                    //sendNotification("Low predicted in "+(int)predicted_low_in_mins+" minutes", "Low Forecasting");
+                   // AlertType.predictiveLowAlert("Low in " + (int) predicted_low_in_mins);
+                } else {
+                    final double previous_predicted_low_in_mins = (BgGraphBuilder.previous_low_occurs_at - now) / 60000;
+                    if ((BgGraphBuilder.previous_low_occurs_at > 0) && ((previous_predicted_low_in_mins+5) < predicted_low_in_mins)) {
+                        lowPredictText.setTextColor(Color.GREEN); // low front is getting further away
+                    } else {
+                        lowPredictText.setTextColor(Color.YELLOW); // low front is getting nearer!
+                    }
+                }
+            }
+            BgGraphBuilder.previous_low_occurs_at = BgGraphBuilder.low_occurs_at;
+        }
+
         if (navigationDrawerFragment == null) Log.e("Runtime", "navigationdrawerfragment is null");
 
         try {
@@ -1093,6 +1134,26 @@ public class Home extends ActivityWithMenu {
 
         //showcasemenu(1); // 3 dot menu
 
+    }
+
+    // TODO This should probably be relocated..
+    public void evaluateLowAlarm() {
+        // TODO we need to consider noise level?
+        // TODO Rate Limiter??
+        final double low_predicted_alarm_minutes = 35; // when to raise the alarm
+
+        if (BgGraphBuilder.low_occurs_at > 0) {
+            final double now = JoH.ts();
+            final double predicted_low_in_mins = (BgGraphBuilder.low_occurs_at - now) / 60000;
+            if (predicted_low_in_mins > 1) {
+                if (predicted_low_in_mins < low_predicted_alarm_minutes) {
+
+                    // alarm it!
+                    //sendNotification("Low predicted in "+(int)predicted_low_in_mins+" minutes", "Low Forecasting");
+                   // AlertType.predictiveLowAlert("Low in " + (int) predicted_low_in_mins);
+                }
+            }
+        }
     }
 
     private void updateCurrentBgInfoForWifiWixel(TextView notificationText) {
@@ -1239,6 +1300,7 @@ public class Home extends ActivityWithMenu {
         if ((currentBgValueText.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) > 0) {
             currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
             dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            if (get_follower()) { GcmActivity.requestPing(); }
         }
         BgReading lastBgReading = BgReading.lastNoSenssor();
         boolean predictive = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("predictive_bg", false);
@@ -1682,6 +1744,17 @@ public class Home extends ActivityWithMenu {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public static boolean getPreferencesBooleanDefaultFalse(final String pref)
+    {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if ((prefs != null) && (prefs.getBoolean(pref, false))) {
+            return true;
+        }
+        return false;
     }
 
     private class ChartViewPortListener implements ViewportChangeListener {
