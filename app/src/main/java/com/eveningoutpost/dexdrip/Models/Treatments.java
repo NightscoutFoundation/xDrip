@@ -94,12 +94,18 @@ public class Treatments extends Model {
     // This shouldn't be needed but it seems it is
     private static void fixUpTable() {
         if (patched) return;
-        String[] patchup = {"ALTER TABLE Treatments ADD COLUMN eventType TEXT;",
+        String[] patchup = {
+                "CREATE TABLE Treatments (_id INTEGER PRIMARY KEY AUTOINCREMENT);",
+                "ALTER TABLE Treatments ADD COLUMN timestamp INTEGER;",
+                "ALTER TABLE Treatments ADD COLUMN uuid TEXT;",
+                "ALTER TABLE Treatments ADD COLUMN eventType TEXT;",
                 "ALTER TABLE Treatments ADD COLUMN enteredBy TEXT;",
                 "ALTER TABLE Treatments ADD COLUMN notes TEXT;",
                 "ALTER TABLE Treatments ADD COLUMN created_at TEXT;",
                 "ALTER TABLE Treatments ADD COLUMN insulin REAL;",
-                "ALTER TABLE Treatments ADD COLUMN carbs REAL;"};
+                "ALTER TABLE Treatments ADD COLUMN carbs REAL;",
+                "CREATE INDEX index_Treatments_timestamp on Treatments(timestamp);",
+                "CREATE UNIQUE INDEX index_Treatments_uuid on Treatments(uuid);"};
 
         for (String patch : patchup) {
             try {
@@ -218,6 +224,7 @@ public class Treatments extends Model {
     }
 
     public static List<Treatments> latestForGraph(int number, double startTime) {
+        fixUpTable();
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(1); // are there decimal points in the database??
         return new Select()
