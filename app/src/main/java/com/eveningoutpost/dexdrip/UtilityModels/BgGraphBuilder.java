@@ -762,7 +762,7 @@ public class BgGraphBuilder {
         low_occurs_at = -1;
         try {
             if ((predict_lows) && (poly != null)) {
-                final double offset = 1;
+                final double offset = 0;
                 final double plow_now = JoH.ts();
                 double plow_timestamp = plow_now + (1000 * 60 * 60 * 2); // max look-ahead
                 double polyPredicty = poly.predict(plow_timestamp);

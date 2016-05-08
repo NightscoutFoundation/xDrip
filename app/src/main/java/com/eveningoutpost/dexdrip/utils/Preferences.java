@@ -664,6 +664,7 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("xplus_liver_sensitivity"));
             bindPreferenceSummaryToValue(findPreference("xplus_liver_maximpact"));
 
+            bindPreferenceSummaryToValue(findPreference("low_predict_alarm_level"));
 
 
             useCustomSyncKey.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {

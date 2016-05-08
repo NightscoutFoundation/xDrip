@@ -1013,10 +1013,6 @@ public class Home extends ActivityWithMenu {
 
     private void updateCurrentBgInfo(String source) {
         Log.d(TAG, "updateCurrentBgInfo from: " + source);
-        if (source.equals("new data"))
-        {
-            evaluateLowAlarm();
-        }
 
         if (!activityVisible) {
             Log.d(TAG, "Display not visible - not updating chart");
@@ -1088,20 +1084,17 @@ public class Home extends ActivityWithMenu {
 
 
         // TODO we need to consider noise level?
-        final double low_predicted_alarm_minutes = 35; // when to raise the alarm
+        // when to raise the alarm
         lowPredictText.setText("");
         if (BgGraphBuilder.low_occurs_at > 0) {
+            final double low_predicted_alarm_minutes = Double.parseDouble(prefs.getString("low_predict_alarm_level","50"));
             final double now = JoH.ts();
             final double predicted_low_in_mins = (BgGraphBuilder.low_occurs_at - now) / 60000;
 
             if (predicted_low_in_mins > 1) {
                 lowPredictText.append("Low predicted\nin: " + (int) predicted_low_in_mins + " mins");
-
                 if (predicted_low_in_mins < low_predicted_alarm_minutes) {
                     lowPredictText.setTextColor(Color.RED); // low front getting too close!
-                    // alarm it!
-                    //sendNotification("Low predicted in "+(int)predicted_low_in_mins+" minutes", "Low Forecasting");
-                   // AlertType.predictiveLowAlert("Low in " + (int) predicted_low_in_mins);
                 } else {
                     final double previous_predicted_low_in_mins = (BgGraphBuilder.previous_low_occurs_at - now) / 60000;
                     if ((BgGraphBuilder.previous_low_occurs_at > 0) && ((previous_predicted_low_in_mins+5) < predicted_low_in_mins)) {
@@ -1136,25 +1129,7 @@ public class Home extends ActivityWithMenu {
 
     }
 
-    // TODO This should probably be relocated..
-    public void evaluateLowAlarm() {
-        // TODO we need to consider noise level?
-        // TODO Rate Limiter??
-        final double low_predicted_alarm_minutes = 35; // when to raise the alarm
 
-        if (BgGraphBuilder.low_occurs_at > 0) {
-            final double now = JoH.ts();
-            final double predicted_low_in_mins = (BgGraphBuilder.low_occurs_at - now) / 60000;
-            if (predicted_low_in_mins > 1) {
-                if (predicted_low_in_mins < low_predicted_alarm_minutes) {
-
-                    // alarm it!
-                    //sendNotification("Low predicted in "+(int)predicted_low_in_mins+" minutes", "Low Forecasting");
-                   // AlertType.predictiveLowAlert("Low in " + (int) predicted_low_in_mins);
-                }
-            }
-        }
-    }
 
     private void updateCurrentBgInfoForWifiWixel(TextView notificationText) {
         if (!WixelReader.IsConfigured(getApplicationContext())) {
@@ -1756,6 +1731,31 @@ public class Home extends ActivityWithMenu {
         }
         return false;
     }
+
+    public static String getPreferencesStringDefaultBlank(final String pref)
+    {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs != null) {
+            return prefs.getString(pref,"");
+        }
+        return "";
+    }
+
+    public static boolean setPreferencesString(final String pref, final String str)
+    {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs != null) {
+            prefs.edit().putString(pref,str).apply();
+            return true;
+        }
+        return false;
+    }
+
+
 
     private class ChartViewPortListener implements ViewportChangeListener {
         @Override

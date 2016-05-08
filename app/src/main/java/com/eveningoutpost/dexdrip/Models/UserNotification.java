@@ -1,13 +1,17 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.Home;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by stephenblack on 11/29/14.
@@ -46,6 +50,13 @@ public class UserNotification extends Model {
     @Column(name = "bg_fall_alert")
     public boolean bg_fall_alert;
 
+    private final static List<String> legacy_types = Arrays.asList(
+            "bg_alert", "calibration_alert", "double_calibration_alert",
+            "extra_calibration_alert", "bg_unclear_readings_alert",
+            "bg_missed_alerts", "bg_rise_alert", "bg_fall_alert");
+    private final static String TAG = "UserNotification";
+
+
     public static UserNotification lastBgAlert() {
         return new Select()
                 .from(UserNotification.class)
@@ -75,20 +86,40 @@ public class UserNotification extends Model {
                 .executeSingle();
     }
 
-    
+    // the UserNotifcation model is difficult to extend without adding more
+    // booleans which will introduce a database incompatibility and prevent
+    // downgrading. So instead we work around it with shared preferences until
+    // such time as the booleans are just replaced with a string field or similar
+    // improvement.
+
     public static UserNotification GetNotificationByType(String type) {
-        type = type + " = ?";
-        return new Select()
-        .from(UserNotification.class)
-        .where(type, true)
-        .orderBy("_ID desc")
-        .executeSingle();
+        if (legacy_types.contains(type)) {
+            return new Select()
+                    .from(UserNotification.class)
+                    .where(type, true)
+                    .orderBy("_ID desc")
+                    .executeSingle();
+        } else {
+            final String timestamp = Home.getPreferencesStringDefaultBlank("UserNotification:timestamp:" + type);
+            if (timestamp.equals("")) return null;
+            final String message = Home.getPreferencesStringDefaultBlank("UserNotification:message:" + type);
+            if (message.equals("")) return null;
+            UserNotification userNotification = new UserNotification();
+            userNotification.timestamp = Double.parseDouble(timestamp);
+            userNotification.message = message;
+            Log.d(TAG, "Workaround for: " + type + " " + userNotification.message + " timestamp: " + userNotification.timestamp);
+            return userNotification;
+        }
     }
-    
+
     public static void DeleteNotificationByType(String type) {
-        UserNotification userNotification = UserNotification.GetNotificationByType(type);
-        if (userNotification != null) {
-            userNotification.delete();
+        if (legacy_types.contains(type)) {
+            UserNotification userNotification = UserNotification.GetNotificationByType(type);
+            if (userNotification != null) {
+                userNotification.delete();
+            }
+        } else {
+            Home.setPreferencesString("UserNotification:timestamp:" + type, "");
         }
     }
     
@@ -112,6 +143,11 @@ public class UserNotification extends Model {
             userNotification.bg_rise_alert = true;
         } else if (type == "bg_fall_alert") {
             userNotification.bg_fall_alert = true;
+        } else {
+            Log.d(TAG,"Saving workaround for: "+type+" "+message);
+            Home.setPreferencesString("UserNotification:timestamp:" + type, JoH.qs((JoH.ts())));
+            Home.setPreferencesString("UserNotification:message:" + type, message);
+           return null;
         }
         userNotification.save();
         return userNotification;

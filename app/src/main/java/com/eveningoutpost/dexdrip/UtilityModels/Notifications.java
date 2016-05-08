@@ -22,6 +22,8 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.AddCalibration;
@@ -38,6 +40,7 @@ import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -85,6 +88,7 @@ public class Notifications extends IntentService {
     public static final int missedAlertNotificationId = 010;
     public static final int riseAlertNotificationId = 011;
     public static final int failAlertNotificationId = 012;
+    public static final int lowPredictAlertNotificationId = 013;
 
     SharedPreferences prefs;
 
@@ -254,9 +258,11 @@ public class Notifications extends IntentService {
         FileBasedNotifications(context);
         BgReading.checkForDropAllert(context);
         BgReading.checkForRisingAllert(context);
+        evaluateLowPredictionAlarm();
 
         Sensor sensor = Sensor.currentSensor();
 
+        // TODO need to check performance of rest of this method when in follower mode
         List<BgReading> bgReadings = BgReading.latest(3);
         List<Calibration> calibrations = Calibration.allForSensorInLastFourDays();
         if (bgReadings == null || bgReadings.size() < 3) {
@@ -485,6 +491,23 @@ public class Notifications extends IntentService {
         player.start();
     }
 
+
+    private void evaluateLowPredictionAlarm() {
+        if ((BgGraphBuilder.low_occurs_at > 0) && (BgGraphBuilder.last_noise < BgGraphBuilder.NOISE_HIGH)) {
+            final double low_predicted_alarm_minutes = Double.parseDouble(prefs.getString("low_predict_alarm_level","50"));
+            final double now = JoH.ts();
+            final double predicted_low_in_mins = (BgGraphBuilder.low_occurs_at - now) / 60000;
+            android.util.Log.d(TAG, "evaluateLowPredictionAlarm: mins: " + predicted_low_in_mins);
+            if (predicted_low_in_mins > 1) {
+                if (predicted_low_in_mins < low_predicted_alarm_minutes) {
+                    Notifications.lowPredictAlert(xdrip.getAppContext(), true, "Low predicted in "+(int)predicted_low_in_mins+" mins");
+                } else {
+                    Notifications.lowPredictAlert(xdrip.getAppContext(),false, ""); // cancel it
+                }
+            }
+        }
+    }
+
     private void clearAllCalibrationNotifications() {
         notificationDismiss(calibrationNotificationId);
         notificationDismiss(extraCalibrationNotificationId);
@@ -578,6 +601,17 @@ public class Notifications extends IntentService {
         RiseDropAlert(context, on, "bg_fall_alert", "bg falling fast", failAlertNotificationId);
     }
 
+    public static void lowPredictAlert(Context context, boolean on, String msg) {
+        final String type = "bg_predict_alert";
+        if(on) {
+            OtherAlert(context, type, msg, lowPredictAlertNotificationId, 10);
+        } else {
+            NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotifyMgr.cancel(lowPredictAlertNotificationId);
+            UserNotification.DeleteNotificationByType(type);
+        }
+    }
+
     public static void RiseDropAlert(Context context, boolean on, String type, String message, int notificatioId) {
         if(on) {
          // This alerts will only happen once. Want to have maxint, but not create overflow.
@@ -594,11 +628,12 @@ public class Notifications extends IntentService {
         String otherAlertsSound = prefs.getString("other_alerts_sound", "content://settings/system/notification_sound");
         Boolean otherAlertsOverrideSilent = prefs.getBoolean("other_alerts_override_silent", false);
 
-        Log.d(TAG,"OtherAlert called " + type + " " + message);
+        Log.d(TAG,"OtherAlert called " + type + " " + message + " snooze = " + snooze);
         UserNotification userNotification = UserNotification.GetNotificationByType(type); //"bg_unclear_readings_alert"
         if ((userNotification == null) || (userNotification.timestamp <= ((new Date().getTime()) - (60000 * snooze)))) {
             if (userNotification != null) {
                 userNotification.delete();
+                Log.d(TAG,"Delete");
             }
             UserNotification.create(message, type);
             Intent intent = new Intent(context, Home.class);
@@ -617,6 +652,7 @@ public class Notifications extends IntentService {
             }
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyMgr.cancel(notificatioId);
+            Log.d(TAG, "Notify");
             mNotifyMgr.notify(notificatioId, mBuilder.build());
         }
     }

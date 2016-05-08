@@ -111,6 +111,7 @@
                 android:paddingEnd="30dp"
                 android:text="Low prediction"
                 android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textStyle="bold"
                 android:textColor="#C30909" />
 
             <ImageButton

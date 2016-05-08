@@ -113,6 +113,14 @@
                     android:key="predict_lows"
                     android:summary="Extrapolate data to try to predict lows"
                     android:title="Forecast Lows" />
+                <EditTextPreference
+                    android:defaultValue="50"
+                    android:inputType="number"
+                    android:key="low_predict_alarm_level"
+                    android:digits="0123456789"
+                    android:summary=""
+                    android:dependency="predict_lows"
+                    android:title="Alarm at Forcasted Low mins" />
             </PreferenceCategory>
             <PreferenceCategory
                 android:key="title_I_understandb"
