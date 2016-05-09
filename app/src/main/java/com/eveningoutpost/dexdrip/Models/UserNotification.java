@@ -94,6 +94,7 @@ public class UserNotification extends Model {
 
     public static UserNotification GetNotificationByType(String type) {
         if (legacy_types.contains(type)) {
+            type = type + " = ?";
             return new Select()
                     .from(UserNotification.class)
                     .where(type, true)
