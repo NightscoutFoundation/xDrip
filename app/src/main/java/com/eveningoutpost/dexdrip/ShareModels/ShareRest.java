@@ -118,28 +118,34 @@ public class ShareRest {
             okHttpClient.networkInterceptors().add(new Interceptor() {
                 @Override
                 public Response intercept(Chain chain) throws IOException {
-                    // Add user-agent and relevant headers.
-                    Request original = chain.request();
-                    Request copy = original.newBuilder().build();
-                    Request modifiedRequest = original.newBuilder()
-                            .header("User-Agent", "Dexcom Share/3.0.2.11 CFNetwork/711.2.23 Darwin/14.0.0")
-                            .header("Content-Type", "application/json")
-                            .header("Accept", "application/json")
-                            .build();
-                    Log.d(TAG, "Sending request: " + modifiedRequest.toString());
-                    Buffer buffer = new Buffer();
-                    copy.body().writeTo(buffer);
-                    Log.d(TAG, "Request body: " + buffer.readUtf8());
+                    try {
+                        // Add user-agent and relevant headers.
+                        Request original = chain.request();
+                        Request copy = original.newBuilder().build();
+                        Request modifiedRequest = original.newBuilder()
+                                .header("User-Agent", "Dexcom Share/3.0.2.11 CFNetwork/711.2.23 Darwin/14.0.0")
+                                .header("Content-Type", "application/json")
+                                .header("Accept", "application/json")
+                                .build();
+                        Log.d(TAG, "Sending request: " + modifiedRequest.toString());
+                        Buffer buffer = new Buffer();
+                        copy.body().writeTo(buffer);
+                        Log.d(TAG, "Request body: " + buffer.readUtf8());
 
-                    Response response = chain.proceed(modifiedRequest);
-                    Log.d(TAG, "Received response: " + response.toString());
-                    if (response.body() != null) {
-                        MediaType contentType = response.body().contentType();
-                        String bodyString = response.body().string();
-                        Log.d(TAG, "Response body: " + bodyString);
-                        return response.newBuilder().body(ResponseBody.create(contentType, bodyString)).build();
-                    } else
-                        return response;
+                        Response response = chain.proceed(modifiedRequest);
+                        Log.d(TAG, "Received response: " + response.toString());
+                        if (response.body() != null) {
+                            MediaType contentType = response.body().contentType();
+                            String bodyString = response.body().string();
+                            Log.d(TAG, "Response body: " + bodyString);
+                            return response.newBuilder().body(ResponseBody.create(contentType, bodyString)).build();
+                        } else
+                            return response;
+
+                    } catch (NullPointerException e) {
+                        Log.e(TAG, "Got null pointer exception: " + e);
+                        return null;
+                    }
                 }
             });
 
