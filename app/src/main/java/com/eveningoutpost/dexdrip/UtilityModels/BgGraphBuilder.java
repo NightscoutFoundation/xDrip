@@ -764,7 +764,7 @@ public class BgGraphBuilder {
             if ((predict_lows) && (poly != null)) {
                 final double offset = 0;
                 final double plow_now = JoH.ts();
-                double plow_timestamp = plow_now + (1000 * 60 * 60 * 2); // max look-ahead
+                double plow_timestamp = plow_now + (1000 * 60 * 99); // max look-ahead
                 double polyPredicty = poly.predict(plow_timestamp);
                 Log.d(TAG, "Low predictor at max lookahead is: " + JoH.qs(polyPredicty));
                 if (polyPredicty <= (lowMark+offset)) {

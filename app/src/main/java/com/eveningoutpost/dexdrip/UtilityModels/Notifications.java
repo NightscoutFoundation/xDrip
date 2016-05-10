@@ -494,7 +494,8 @@ public class Notifications extends IntentService {
 
     private void evaluateLowPredictionAlarm() {
         if ((BgGraphBuilder.low_occurs_at > 0) && (BgGraphBuilder.last_noise < BgGraphBuilder.NOISE_HIGH)) {
-            final double low_predicted_alarm_minutes = Double.parseDouble(prefs.getString("low_predict_alarm_level","50"));
+            if (!prefs.getBoolean("predict_lows_alarm", false)) return;
+            final double low_predicted_alarm_minutes = Double.parseDouble(prefs.getString("low_predict_alarm_level","40"));
             final double now = JoH.ts();
             final double predicted_low_in_mins = (BgGraphBuilder.low_occurs_at - now) / 60000;
             android.util.Log.d(TAG, "evaluateLowPredictionAlarm: mins: " + predicted_low_in_mins);
@@ -604,7 +605,7 @@ public class Notifications extends IntentService {
     public static void lowPredictAlert(Context context, boolean on, String msg) {
         final String type = "bg_predict_alert";
         if(on) {
-            OtherAlert(context, type, msg, lowPredictAlertNotificationId, 10);
+            OtherAlert(context, type, msg, lowPredictAlertNotificationId, 20);
         } else {
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyMgr.cancel(lowPredictAlertNotificationId);
@@ -632,8 +633,12 @@ public class Notifications extends IntentService {
         UserNotification userNotification = UserNotification.GetNotificationByType(type); //"bg_unclear_readings_alert"
         if ((userNotification == null) || (userNotification.timestamp <= ((new Date().getTime()) - (60000 * snooze)))) {
             if (userNotification != null) {
-                userNotification.delete();
-                Log.d(TAG,"Delete");
+                try {
+                    userNotification.delete();
+                } catch (NullPointerException e) {
+                    // ignore null pointer exception during delete as we emulate database records
+                }
+                Log.d(TAG, "Delete");
             }
             UserNotification.create(message, type);
             Intent intent = new Intent(context, Home.class);
