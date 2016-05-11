@@ -1,0 +1,93 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/drawer_layout"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    tools:context="com.eveningoutpost.dexdrip.Home">
+
+    <!-- As the main content view, the view below consumes the entire
+         space available using match_parent in both dimensions. -->
+    <FrameLayout android:id="@+id/container" android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+    </FrameLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#212121">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:layout_weight="0.80"
+                android:paddingTop="0dp"
+                android:layout_marginTop="0dp">
+
+                <lecho.lib.hellocharts.view.LineChartView
+                    android:id="@+id/chart"
+                    android:layout_width="match_parent"
+                    android:layout_alignParentStart="false"
+                    android:layout_alignParentEnd="true"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/buttonlayout"/>
+
+                <LinearLayout
+                    android:id="@+id/buttonlayout"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center_horizontal">
+
+                    <Button
+                        android:layout_width="73dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/prev_arrow"
+                        android:id="@+id/button_prev"
+                        android:layout_gravity="center_horizontal" />
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="xx.xx.xxxx"
+                        android:id="@+id/button_date1"
+                        android:layout_gravity="center_horizontal" />
+
+                    <Spinner
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:id="@+id/daysspinner"
+                        android:layout_weight="1"
+                        android:spinnerMode="dialog"/>
+
+                    <Button
+                        android:layout_width="73dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/next_arrow"
+                        android:id="@+id/button_next"
+                        android:layout_gravity="center_horizontal" />
+                </LinearLayout>
+
+            </RelativeLayout>
+                
+            <lecho.lib.hellocharts.view.PreviewLineChartView
+                android:id="@+id/chart_preview"
+                android:layout_width="wrap_content"
+                android:layout_weight=".20"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:layout_height="0dp">
+            </lecho.lib.hellocharts.view.PreviewLineChartView>
+
+        </LinearLayout>
+
+    <fragment android:id="@+id/navigation_drawer"
+        android:layout_width="@dimen/navigation_drawer_width" android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:name="com.eveningoutpost.dexdrip.NavigationDrawerFragment"
+        tools:layout="@layout/fragment_navigation_drawer" />
+</android.support.v4.widget.DrawerLayout>
+
