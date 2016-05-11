@@ -222,14 +222,17 @@ public class Treatments extends Model {
             return false;
         }
     }
-
     public static List<Treatments> latestForGraph(int number, double startTime) {
+        return latestForGraph(number,startTime,JoH.ts());
+    }
+
+    public static List<Treatments> latestForGraph(int number, double startTime, double endTime) {
         fixUpTable();
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(1); // are there decimal points in the database??
         return new Select()
                 .from(Treatments.class)
-                .where("timestamp >= " + df.format(startTime))
+                .where("timestamp >= ? and timestamp <= ?", df.format(startTime), df.format(endTime))
                 .orderBy("timestamp asc")
                 .limit(number)
                 .execute();

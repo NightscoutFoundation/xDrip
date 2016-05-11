@@ -117,6 +117,9 @@ public class NavDrawerBuilder {
         this.nav_drawer_options.add(StatsActivity.MENU_NAME);
         this.nav_drawer_intents.add(new Intent(context, StatsActivity.class));
 
+        this.nav_drawer_options.add(BGHistory.menu_name);
+        this.nav_drawer_intents.add(new Intent(context, BGHistory.class));
+
         this.nav_drawer_options.add("Settings");
         this.nav_drawer_intents.add(new Intent(context, Preferences.class));
     }

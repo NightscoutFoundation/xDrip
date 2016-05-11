@@ -176,7 +176,7 @@ public class BgSparklineBuilder {
         LineChartData lineData = new LineChartData(lines);
         if (showAxes) {
             lineData.setAxisYLeft(bgGraphBuilder.yAxis());
-            lineData.setAxisXBottom(bgGraphBuilder.xAxis());
+            lineData.setAxisXBottom(bgGraphBuilder.chartXAxis());
         }
         //lines.add(bgGraphBuilder.rawInterpretedLine());
         chart.setLineChartData(lineData);

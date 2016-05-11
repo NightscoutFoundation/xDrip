@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
@@ -69,13 +70,14 @@ public class BgGraphBuilder {
     final int axisTextSize;
     final int previewAxisTextSize;
     final int hoursPreviewStep;
-    private final int numValues = (60 / 5) * 24;
+    //private final int numValues = (60 / 5) * 24;
     public double end_time = (new Date().getTime() + (60000 * 10)) / FUZZER;
     public double predictive_end_time;
     public double start_time = end_time - ((60000 * 60 * 24)) / FUZZER;
     private final static double timeshift = 500000;
+    private static final int NUM_VALUES =(60/5)*24;
 
-    private final List<Treatments> treatments = Treatments.latestForGraph(numValues, (start_time * FUZZER));
+    private final List<Treatments> treatments;
     private final static boolean d = false; // debug flag, could be read from preferences
 
     public Context context;
@@ -87,6 +89,7 @@ public class BgGraphBuilder {
     public boolean doMgdl;
     public Viewport viewport;
     private int predictivehours = 0;
+    private boolean prediction_enabled = false;
     private static double avg1value = 0;
     private static double avg2value = 0;
     private static int avg1counter = 0;
@@ -125,7 +128,10 @@ public class BgGraphBuilder {
     }
 
     public BgGraphBuilder(Context context, long start, long end){
+        this(context, start, end, NUM_VALUES, true);
+    }
 
+    public BgGraphBuilder(Context context, long start, long end, int numValues, boolean show_prediction){
         // swap argument order if needed
         if (start > end)
         {
@@ -135,10 +141,12 @@ public class BgGraphBuilder {
             if (d) Log.d(TAG,"Swapping timestamps");
         }
         if (d) Log.d(TAG,"Called timestamps: "+JoH.dateTimeText(start)+" -> "+JoH.dateTimeText(end));
+        prediction_enabled = show_prediction;
         end_time = end / FUZZER;
         start_time = start / FUZZER;
         bgReadings = BgReading.latestForGraph( numValues, start, end);
         calibrations = Calibration.latestForGraph( numValues, start, end);
+        treatments = Treatments.latestForGraph(numValues, start, end);
         this.context = context;
         this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
         this.highMark = tolerantParseDouble(prefs.getString("highValue", "170"));
@@ -196,7 +204,7 @@ public class BgGraphBuilder {
         LineChartData lineData = new LineChartData(defaultLines());
         JoH.benchmark("Default lines create - bggraph builder");
         lineData.setAxisYLeft(yAxis());
-        lineData.setAxisXBottom(xAxis());
+        lineData.setAxisXBottom(chartXAxis());
         return lineData;
     }
 
@@ -249,7 +257,9 @@ public class BgGraphBuilder {
                 lines.add(subLine); // iob line
             }
 
-            predictive_end_time = (new Date().getTime() + (60000 * 10) + (1000 * 60 * 60 * predictivehours)) / FUZZER; // used first in ideal/highline
+            predictive_end_time = ((end_time * FUZZER) + (60000 * 10) + (1000 * 60 * 60 * predictivehours)) / FUZZER; // used first in ideal/highline
+//            predictive_end_time = (new Date().getTime() + (60000 * 10) + (1000 * 60 * 60 * predictivehours)) / FUZZER; // used first in ideal/highline
+
 
             if (prefs.getBoolean("show_full_average_line", false)) {
                 if (avg2value > 0) lines.add(avg2Line());
@@ -761,7 +771,7 @@ public class BgGraphBuilder {
         // work backwards to see whether we think a low is estimated
         low_occurs_at = -1;
         try {
-            if ((predict_lows) && (poly != null)) {
+            if ((predict_lows) && (prediction_enabled) && (poly != null)) {
                 final double offset = 0;
                 final double plow_now = JoH.ts();
                 double plow_timestamp = plow_now + (1000 * 60 * 99); // max look-ahead
@@ -802,7 +812,7 @@ public class BgGraphBuilder {
         // noise debug
         try {
             // overlay noise curve
-            if (show_noise_working_line) {
+            if ((show_noise_working_line) && (prediction_enabled)) {
                 for (BgReading bgReading : bgReadings) {
                     // only show working curve for last x hours to a
                     if ((bgReading.timestamp > oldest_noise_timestamp) && (bgReading.timestamp > last_calibration)) {
@@ -896,25 +906,28 @@ public class BgGraphBuilder {
             } catch (Exception e) {
                 // could not get a bg reading
             }
-           // final List<Iob> iobinfo_old = Treatments.ioBForGraph(numValues, (start_time * FUZZER));
-            final List<Iob> iobinfo  = Treatments.ioBForGraph_new(numValues, (start_time * FUZZER)); // for test
+            // final List<Iob> iobinfo_old = Treatments.ioBForGraph(numValues, (start_time * FUZZER));
+            final List<Iob> iobinfo = Treatments.ioBForGraph_new(NUM_VALUES, (start_time * FUZZER)); // for test
 
             long fuzzed_timestamp = (long) end_time; // initial value in case there are no iob records
-            if (d) Log.d(TAG,"Internal date timestamp: "+android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", new java.util.Date()));
+            if (d)
+                Log.d(TAG, "Internal date timestamp: " + android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", new java.util.Date()));
 
 
-            if (d) Log.d(TAG,"initial Fuzzed end timestamp: "+android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", fuzzed_timestamp * FUZZER));
-            if (d) Log.d(TAG,"initial Fuzzed start timestamp: "+android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", (long)start_time * FUZZER));
-            if (iobinfo != null) {
+            if (d)
+                Log.d(TAG, "initial Fuzzed end timestamp: " + android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", fuzzed_timestamp * FUZZER));
+            if (d)
+                Log.d(TAG, "initial Fuzzed start timestamp: " + android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", (long) start_time * FUZZER));
+            if ((iobinfo != null) && (prediction_enabled)) {
 
                 double predict_weight = 0.1;
 
                 for (Iob iob : iobinfo) {
 
                     double activity = iob.activity;
-                    if ((iob.iob > 0) || (iob.cob > 0) || (iob.jActivity > 0) || (iob.jCarbImpact >0)) {
+                    if ((iob.iob > 0) || (iob.cob > 0) || (iob.jActivity > 0) || (iob.jCarbImpact > 0)) {
                         fuzzed_timestamp = iob.timestamp / FUZZER;
-                        if (d) Log.d(TAG,"iob timestamp: "+iob.timestamp);
+                        if (d) Log.d(TAG, "iob timestamp: " + iob.timestamp);
                         if (iob.iob > Profile.minimum_shown_iob) {
                             double height = iob.iob * iobscale;
                             if (height > highMark) height = highMark;
@@ -930,7 +943,8 @@ public class BgGraphBuilder {
                             double height = iob.cob * cobscale;
                             if (height > highMark) height = highMark;
                             PointValue pv = new PointValue((float) fuzzed_timestamp, (float) height);
-                            if (d) Log.d(TAG, "Cob total record: " + JoH.qs(height) + " " + JoH.qs(iob.cob) + " " + Float.toString(pv.getY()) + " @ timestamp: " + Long.toString(iob.timestamp));
+                            if (d)
+                                Log.d(TAG, "Cob total record: " + JoH.qs(height) + " " + JoH.qs(iob.cob) + " " + Float.toString(pv.getY()) + " @ timestamp: " + Long.toString(iob.timestamp));
                             cobValues.add(pv); // warning should not be hardcoded
                         }
 
@@ -940,7 +954,8 @@ public class BgGraphBuilder {
                             if (poly != null) {
                                 try {
                                     polyPredict = poly.predict(iob.timestamp);
-                                    if (d) Log.d(TAG, "Poly predict: " + JoH.qs(polyPredict) + " @ " + JoH.qs(iob.timestamp));
+                                    if (d)
+                                        Log.d(TAG, "Poly predict: " + JoH.qs(polyPredict) + " @ " + JoH.qs(iob.timestamp));
                                     if (show_moment_working_line) {
                                         if ((polyPredict < highMark) && (polyPredict > 0)) {
                                             PointValue zv = new PointValue((float) fuzzed_timestamp, (float) polyPredict);
@@ -951,19 +966,20 @@ public class BgGraphBuilder {
                                     Log.e(TAG, "Got exception with poly predict: " + e.toString());
                                 }
                             }
-                            if (d) Log.d(TAG, "Processing prediction: before: " + JoH.qs(predictedbg) + " activity: " + JoH.qs(iob.jActivity) + " jcarbimpact: " + JoH.qs(iob.jCarbImpact));
+                            if (d)
+                                Log.d(TAG, "Processing prediction: before: " + JoH.qs(predictedbg) + " activity: " + JoH.qs(iob.jActivity) + " jcarbimpact: " + JoH.qs(iob.jCarbImpact));
                             predictedbg -= iob.jActivity; // lower bg by current insulin activity
                             predictedbg += iob.jCarbImpact;
 
                             double predictedbg_final = predictedbg;
                             // add momentum characteristics if we have them
                             final boolean momentum_smoothing = true;
-                            if ((predict_use_momentum) && (polyPredict>0))
-                            {
-                                predictedbg_final = ((predictedbg * predict_weight) + polyPredict )/(predict_weight+1);
+                            if ((predict_use_momentum) && (polyPredict > 0)) {
+                                predictedbg_final = ((predictedbg * predict_weight) + polyPredict) / (predict_weight + 1);
                                 if (momentum_smoothing) predictedbg = predictedbg_final;
 
-                            if (d) Log.d(TAG,"forecast predict_weight: "+JoH.qs(predict_weight));
+                                if (d)
+                                    Log.d(TAG, "forecast predict_weight: " + JoH.qs(predict_weight));
                             }
                             predict_weight = predict_weight * 2.5; // from 0-infinity - // TODO account for step!!!
                             // we should pull in actual graph upper and lower limits here
@@ -974,7 +990,7 @@ public class BgGraphBuilder {
                         }
                         if (fuzzed_timestamp > end_time) {
                             predictivehours = (int) (((fuzzed_timestamp - end_time) * FUZZER) / (1000 * 60 * 60)) + 1; // round up to nearest future hour - timestamps in minutes here
-                            if (d) Log.d(TAG,"Predictive hours updated to: "+predictivehours);
+                            if (d) Log.d(TAG, "Predictive hours updated to: " + predictivehours);
                         } else {
                             if ((fuzzed_timestamp == end_time - 4) && (iob.iob > 0)) {
                                 // show current iob
@@ -994,34 +1010,37 @@ public class BgGraphBuilder {
 
                     }
                 }
-                if (d) Log.i(TAG, "Size of iob: " + Integer.toString(iobinfo.size()) + " Predictive hours: " + Integer.toString(predictivehours)
-                        + " Predicted end game change: " + JoH.qs(predictedbg - mylastbg.calculated_value_mmol())
-                        + " Start bg: " + JoH.qs(mylastbg.calculated_value_mmol()) + " Predicted: " + JoH.qs(predictedbg));
+                if (d)
+                    Log.i(TAG, "Size of iob: " + Integer.toString(iobinfo.size()) + " Predictive hours: " + Integer.toString(predictivehours)
+                            + " Predicted end game change: " + JoH.qs(predictedbg - mylastbg.calculated_value_mmol())
+                            + " Start bg: " + JoH.qs(mylastbg.calculated_value_mmol()) + " Predicted: " + JoH.qs(predictedbg));
                 // calculate bolus or carb adjustment - these should have granularity for injection / pump and thresholds
             } else {
                 if (d) Log.i(TAG, "iobinfo was null");
             }
 
             double[] evaluation;
-            if (doMgdl)
-            {
-                // These routines need to understand how the profile is defined to use native instead of scaled
-                evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
-            } else {
-                evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
+            if (prediction_enabled) {
+                if (doMgdl) {
+                    // These routines need to understand how the profile is defined to use native instead of scaled
+                    evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
+                } else {
+                    evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
 
-            }
+                }
 
-                if (d) Log.i(TAG, "Predictive Bolus Wizard suggestion: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
-            if (evaluation[0] > Profile.minimum_carb_recommendation) {
-                PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));
-                iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));
-                annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
-            }
-            if (evaluation[1] > Profile.minimum_insulin_recommendation) {
-                PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (11 * bgScale));
-                iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
-                annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
+                if (d)
+                    Log.i(TAG, "Predictive Bolus Wizard suggestion: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
+                if (evaluation[0] > Profile.minimum_carb_recommendation) {
+                    PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));
+                    iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));
+                    annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
+                }
+                if (evaluation[1] > Profile.minimum_insulin_recommendation) {
+                    PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (11 * bgScale));
+                    iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
+                    annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
+                }
             }
 
         } catch (Exception e) {
@@ -1158,39 +1177,67 @@ public class BgGraphBuilder {
         return yAxis;
     }
 
+    @NonNull
     public Axis xAxis() {
         Axis xAxis = new Axis();
         xAxis.setAutoGenerated(false);
         List<AxisValue> xAxisValues = new ArrayList<AxisValue>();
-        GregorianCalendar now = new GregorianCalendar();
-        GregorianCalendar today = new GregorianCalendar(now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH));
+        //GregorianCalendar now = new GregorianCalendar();
+        //GregorianCalendar today = new GregorianCalendar(now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH));
         final java.text.DateFormat timeFormat = hourFormat();
         timeFormat.setTimeZone(TimeZone.getDefault());
-        double start_hour_block = today.getTime().getTime();
-        double timeNow = new Date().getTime();
-        for (int l = 0; l <= 24; l++) {
-            if ((start_hour_block + (60000 * 60 * (l))) < timeNow) {
-                if ((start_hour_block + (60000 * 60 * (l + 1))) >= timeNow) {
-                    endHour = start_hour_block + (60000 * 60 * (l));
-                    l = 25;
-                }
-            }
+       // double start_hour_block = today.getTime().getTime();
+        //double timeNow = new Date().getTime();
+        //for (int l = 0; l <= 24; l++) {
+        //    if ((start_hour_block + (60000 * 60 * (l))) < timeNow) {
+        //        if ((start_hour_block + (60000 * 60 * (l + 1))) >= timeNow) {
+        //            endHour = start_hour_block + (60000 * 60 * (l));
+        //            l = 25;
+       //         }
+        //    }
+       // }
+
+
+        GregorianCalendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis((long)(start_time * FUZZER));
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        if (calendar.getTimeInMillis()<(start_time * FUZZER)){
+            calendar.add(Calendar.HOUR, 1);
         }
-        for (int l = 0; l <= (24 + predictivehours); l++) {
-            double timestamp = (endHour + ((predictivehours) * 60 * 1000 * 60) - (60000 * 60 * l));
-            xAxisValues.add(new AxisValue((long) (timestamp / FUZZER), (timeFormat.format(timestamp)).toCharArray()));
+        while (calendar.getTimeInMillis()< ( (end_time * FUZZER) + (predictivehours * 60 * 60 * 1000))) {
+            xAxisValues.add(new AxisValue((calendar.getTimeInMillis() / FUZZER), (timeFormat.format(calendar.getTimeInMillis())).toCharArray()));
+            calendar.add(Calendar.HOUR, 1);
         }
+
+        //for (int l = 0; l <= (24 + predictivehours); l++) {
+        //    double timestamp = (endHour + ((predictivehours) * 60 * 1000 * 60) - (60000 * 60 * l));
+        //    xAxisValues.add(new AxisValue((long) (timestamp / FUZZER), (timeFormat.format(timestamp)).toCharArray()));
+       // }
         xAxis.setValues(xAxisValues);
+        return xAxis;
+    }
+
+    public Axis chartXAxis() {
+        Axis xAxis = xAxis();
         xAxis.setHasLines(prefs.getBoolean("show_graph_grid_time", true));
         xAxis.setTextSize(axisTextSize);
         return xAxis;
+    }
+
+    public Axis previewXAxis(){
+        Axis previewXaxis = xAxis();
+        previewXaxis.setTextSize(previewAxisTextSize);
+        previewXaxis.setHasLines(true);
+        return previewXaxis;
     }
 
     private SimpleDateFormat hourFormat() {
         return new SimpleDateFormat(DateFormat.is24HourFormat(context) ? "HH" : "h a");
     }
 
-    public Axis previewXAxis() {
+  /*  public Axis previewXAxis() {
         List<AxisValue> previewXaxisValues = new ArrayList<AxisValue>();
         final java.text.DateFormat timeFormat = hourFormat();
         timeFormat.setTimeZone(TimeZone.getDefault());
@@ -1204,7 +1251,7 @@ public class BgGraphBuilder {
         previewXaxis.setTextSize(previewAxisTextSize);
         return previewXaxis;
     }
-
+*/
     /////////VIEWPORT RELATED//////////////
     public Viewport advanceViewport(Chart chart, Chart previewChart) {
         viewport = new Viewport(previewChart.getMaximumViewport());
