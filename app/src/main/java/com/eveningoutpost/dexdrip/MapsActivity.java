@@ -87,10 +87,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // sanity check goes here
         LatLng mylocation;
         try {
-           mylocation = new LatLng(Double.parseDouble(splits[0]), Double.parseDouble(splits[1]));
-        } catch (NumberFormatException e)
-        {
-            Log.e(TAG,"Mylocation exception: '"+lastGeoLocation+"'");
+            mylocation = new LatLng(Double.parseDouble(splits[0]), Double.parseDouble(splits[1]));
+        } catch (NumberFormatException e) {
+            Log.e(TAG, "Mylocation number exception: '" + lastGeoLocation + "'");
+            return;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            Log.e(TAG, "Mylocation array index exception: '" + lastGeoLocation + "'");
             return;
         }
             CircleOptions circleOptions = new CircleOptions()

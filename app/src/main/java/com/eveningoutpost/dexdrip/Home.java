@@ -1021,6 +1021,7 @@ public class Home extends ActivityWithMenu {
         if (reset_viewport) {
             reset_viewport = false;
             holdViewport.set(0, 0, 0, 0);
+            chart.setZoomType(ZoomType.HORIZONTAL);
         }
         setupCharts();
         final TextView notificationText = (TextView) findViewById(R.id.notices);
