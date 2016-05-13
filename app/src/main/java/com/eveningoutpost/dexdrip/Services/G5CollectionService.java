@@ -49,6 +49,7 @@ import com.eveningoutpost.dexdrip.G5Model.SensorTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.TransmitterStatus;
 import com.eveningoutpost.dexdrip.G5Model.TransmitterTimeRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.UnbondRequestTxMessage;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
@@ -280,7 +281,11 @@ public class G5CollectionService extends Service {
             mBluetoothAdapter.startLeScan(new UUID[]{ BluetoothServices.Advertisement }, mLeScanCallback);
         } else {
             Log.d(TAG, "startScan");
-            mLEScanner.startScan(filters, settings, mScanCallback);
+            try {
+                mLEScanner.startScan(filters, settings, mScanCallback);
+            } catch (IllegalStateException e) {
+                Log.e(TAG,"Scan error: "+e.getMessage());
+            }
         }
 
         isScanning = true;
