@@ -597,10 +597,8 @@ public class AlertType extends Model {
         for(AlertType alert : alerts) {
             alert.delete();
         }
-        
-        Gson gson = new Gson();
-        
-        AlertType[] newAlerts = gson.fromJson(savedAlerts, AlertType[].class);
+
+        AlertType[] newAlerts = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(savedAlerts, AlertType[].class);
         if (newAlerts == null) {
             Log.e(TAG, "newAlerts is null");
             return true;
