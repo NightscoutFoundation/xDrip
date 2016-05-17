@@ -47,7 +47,6 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
-import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -100,8 +99,9 @@ import lecho.lib.hellocharts.view.PreviewLineChartView;
 
 
 public class Home extends ActivityWithMenu {
-    static String TAG = "jamorham: " + Home.class.getSimpleName();
-    public static String menu_name = "Home Screen";
+    private final static String TAG = "jamorham: " + Home.class.getSimpleName();
+    public final static String START_SPEECH_RECOGNITION = "START_APP_SPEECH_RECOGNITION";
+    public final static String menu_name = "Home Screen";
     public static boolean activityVisible = false;
     public static boolean invalidateMenu = false;
     public static Context staticContext;
@@ -227,13 +227,14 @@ public class Home extends ActivityWithMenu {
 
             @Override
             public void onClick(View v) {
-                promptSpeechInput();
+                promptTextInput();
+
             }
         });
         btnSpeak.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                promptTextInput();
+                promptSpeechInput();
                 return true;
             }
         });
@@ -378,7 +379,7 @@ public class Home extends ActivityWithMenu {
     }
 
     private void processIncomingBundle(Bundle bundle) {
-        Log.d(TAG,"Processing incoming bundle");
+        Log.d(TAG, "Processing incoming bundle");
         if (bundle != null) {
             String receivedText = bundle.getString(WatchUpdaterService.WEARABLE_VOICE_PAYLOAD);
             if (receivedText != null) {
@@ -389,7 +390,15 @@ public class Home extends ActivityWithMenu {
             }
             if (bundle.getString(WatchUpdaterService.WEARABLE_APPROVE_TREATMENT)!=null) processAndApproveTreatment();
             if (bundle.getString(WatchUpdaterService.WEARABLE_CANCEL_TREATMENT)!=null) cancelTreatment();
+            if (bundle.getString(Home.START_SPEECH_RECOGNITION)!=null) promptSpeechInput();
         }
+    }
+
+    public static void startHomeWithExtra(Context context, String extra, String text) {
+        Intent intent = new Intent(context, Home.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(extra, text);
+        context.startActivity(intent);
     }
 
     private boolean hideTreatmentButtonsIfAllDone() {
@@ -474,10 +483,32 @@ public class Home extends ActivityWithMenu {
         searchWords = lcs;
     }
 
+    private void promptKeypadInput()
+    {
+        Log.d(TAG, "Showing pop-up");
+
+/*        LayoutInflater inflater = (LayoutInflater) xdrip.getAppContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.keypad_activity_phone, null);
+        myPopUp = new PopupWindow(popupView, ViewGroup.LayoutParams.FILL_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        myPopUp.showAtLocation(findViewById(R.id.chart), Gravity.CENTER, 0, 0);*/
+
+        startActivity(new Intent(this,PhoneKeypadInputActivity.class));
+    }
+
     private void promptTextInput() {
+
+        //if (recognitionRunning) return;
+        //recognitionRunning = true;
+
+        promptKeypadInput();
+    }
+
+    private void promptTextInput_disabled() {
 
         if (recognitionRunning) return;
         recognitionRunning = true;
+
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Type treatment\neg: units x.x");
@@ -1021,7 +1052,7 @@ public class Home extends ActivityWithMenu {
         if (reset_viewport) {
             reset_viewport = false;
             holdViewport.set(0, 0, 0, 0);
-            chart.setZoomType(ZoomType.HORIZONTAL);
+            if (chart!=null) chart.setZoomType(ZoomType.HORIZONTAL);
         }
         setupCharts();
         final TextView notificationText = (TextView) findViewById(R.id.notices);
@@ -1740,6 +1771,17 @@ public class Home extends ActivityWithMenu {
         }
         if (prefs != null) {
             return prefs.getString(pref,"");
+        }
+        return "";
+    }
+
+    public static String getPreferencesStringWithDefault(final String pref, final String def)
+    {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs != null) {
+            return prefs.getString(pref,def);
         }
         return "";
     }

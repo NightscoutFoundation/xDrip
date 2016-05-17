@@ -47,7 +47,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     SharedPreferences mPrefs;
     SharedPreferences.OnSharedPreferenceChangeListener mPreferencesListener;
 
-    private static void receivedText(Context context, String text) {
+    public static void receivedText(Context context, String text) {
         startHomeWithExtra(context, WEARABLE_VOICE_PAYLOAD, text);
     }
 

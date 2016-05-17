@@ -3,7 +3,7 @@
     <string-array name="DexCollectionMethods">
         <item>Bluetooth Wixel</item>
         <item>xBridge Wixel</item>
-        <item>Wifi Wixel</item>
+        <item>Wifi Wixel / Parakeet</item>
         <item>Wifi Wixel + BT Wixel</item>
         <item>G4 Share Receiver</item>
         <item>G5 Transmitter (test)</item>

@@ -114,6 +114,9 @@
         <activity
             android:name=".BGHistory"
             android:label="Glucose History" />
+        <activity android:name=".PhoneKeypadInputActivity"
+            android:theme="@style/PopUpKeypad"
+            android:label="Keypad Input" />
 
         <receiver android:name=".AutoStart">
             <intent-filter>
