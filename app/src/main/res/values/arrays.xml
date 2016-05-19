@@ -7,6 +7,7 @@
         <item>Wifi Wixel + BT Wixel</item>
         <item>G4 Share Receiver</item>
         <item>G5 Transmitter (test)</item>
+        <item>LimiTTer</item>
         <item>xDrip+ Sync Follower</item>
     </string-array>
 
@@ -17,6 +18,7 @@
         <item>WifiBlueToothWixel</item>
         <item>DexcomShare</item>
         <item>DexcomG5</item>
+        <item>LimiTTer</item>
         <item>Follower</item>
 
     </string-array>

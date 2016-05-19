@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Home;
@@ -18,6 +19,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
+import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.google.gson.Gson;
@@ -31,6 +33,36 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+
+class DexParameters extends SlopeParameters {
+    DexParameters() {
+        LOW_SLOPE_1 = 0.95;
+        LOW_SLOPE_2 = 0.85;
+        HIGH_SLOPE_1 = 1.3;
+        HIGH_SLOPE_2 = 1.4;
+        DEFAULT_LOW_SLOPE_LOW = 1.08;
+        DEFAULT_LOW_SLOPE_HIGH = 1.15;
+        DEFAULT_SLOPE = 1;
+        DEFAULT_HIGH_SLOPE_HIGH = 1.3;
+        DEFAUL_HIGH_SLOPE_LOW = 1.2;
+    }
+
+}
+
+class LiParameters extends SlopeParameters {
+    LiParameters() {
+        LOW_SLOPE_1 = 1;
+        LOW_SLOPE_2 = 1;
+        HIGH_SLOPE_1 = 1;
+        HIGH_SLOPE_2 = 1;
+        DEFAULT_LOW_SLOPE_LOW = 1;
+        DEFAULT_LOW_SLOPE_HIGH = 1;
+        DEFAULT_SLOPE = 1;
+        DEFAULT_HIGH_SLOPE_HIGH = 1;
+        DEFAUL_HIGH_SLOPE_LOW = 1;
+    }
+}
 
 /**
  * Created by stephenblack on 10/29/14.
@@ -439,6 +471,9 @@ public class Calibration extends Model {
             double p = 0;
             double q = 0;
             double w;
+
+            SlopeParameters sParams = getSlopeParameters();
+
             List<Calibration> calibrations = allForSensorInLastFourDays(); //5 days was a bit much, dropped this to 4
 
             // less than 5 calibrations in last 4 days? cast the net wider if in extended mode
@@ -476,13 +511,13 @@ public class Calibration extends Model {
                 Calibration calibration = Calibration.last();
                 calibration.intercept = ((n * p) - (m * q)) / d;
                 calibration.slope = ((l * q) - (m * p)) / d;
-                if ((calibrations.size() == 2 && calibration.slope < 0.95) || (calibration.slope < 0.85)) { // I have not seen a case where a value below 7.5 proved to be accurate but we should keep an eye on this
+                if ((calibrations.size() == 2 && calibration.slope < sParams.getLowSlope1()) || (calibration.slope < sParams.getLowSlope2())) { // I have not seen a case where a value below 7.5 proved to be accurate but we should keep an eye on this
                     calibration.slope = calibration.slopeOOBHandler(0);
                     if(calibrations.size() > 2) { calibration.possible_bad = true; }
                     calibration.intercept = calibration.bg - (calibration.estimate_raw_at_time_of_calibration * calibration.slope);
                     CalibrationRequest.createOffset(calibration.bg, 25);
                 }
-                if ((calibrations.size() == 2 && calibration.slope > 1.3) || (calibration.slope > 1.4)) {
+                if ((calibrations.size() == 2 && calibration.slope > sParams.getHighSlope1()) || (calibration.slope > sParams.getHighSlope2())) {
                     calibration.slope = calibration.slopeOOBHandler(1);
                     if(calibrations.size() > 2) { calibration.possible_bad = true; }
                     calibration.intercept = calibration.bg - (calibration.estimate_raw_at_time_of_calibration * calibration.slope);
@@ -507,7 +542,15 @@ public class Calibration extends Model {
         }
     }
 
+    @NonNull
+    private static SlopeParameters getSlopeParameters() {
+        return CollectionServiceStarter.isLimitter() ? new LiParameters() : new DexParameters();
+    }
+
     private double slopeOOBHandler(int status) {
+
+        SlopeParameters sParams = getSlopeParameters();
+
     // If the last slope was reasonable and reasonably close, use that, otherwise use a slope that may be a little steep, but its best to play it safe when uncertain
         List<Calibration> calibrations = Calibration.latest(3);
         Calibration thisCalibration = calibrations.get(0);
@@ -516,24 +559,24 @@ public class Calibration extends Model {
                 if ((Math.abs(thisCalibration.bg - thisCalibration.estimate_bg_at_time_of_calibration) < 30) && (calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad == true)) {
                     return calibrations.get(1).slope;
                 } else {
-                    return Math.max(((-0.048) * (thisCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.1, 1.08);
+                    return Math.max(((-0.048) * (thisCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.1, sParams.getDefaultLowSlopeLow());
                 }
             } else if (calibrations.size() == 2) {
-                return Math.max(((-0.048) * (thisCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.1, 1.15);
+                return Math.max(((-0.048) * (thisCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.1, sParams.getDefaultLowSlopeHigh());
             }
-            return 1;
+            return sParams.getDefaultSlope();
         } else {
             if (calibrations.size() == 3) {
                 if ((Math.abs(thisCalibration.bg - thisCalibration.estimate_bg_at_time_of_calibration) < 30) && (calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad == true)) {
                     return calibrations.get(1).slope;
                 } else {
-                    return 1.3;
+                    return sParams.getDefaultHighSlopeHigh();
                 }
             } else if (calibrations.size() == 2) {
-                return 1.2;
+                return sParams.getDefaulHighSlopeLow();
             }
         }
-        return 1;
+        return sParams.getDefaultSlope();
     }
 
     private static List<Calibration> calibrations_for_sensor(Sensor sensor) {
@@ -750,5 +793,53 @@ public class Calibration extends Model {
                 .where("timestamp > " + timestamp)
                 .orderBy("timestamp desc")
                 .execute();
+    }
+}
+
+abstract class SlopeParameters {
+    protected double LOW_SLOPE_1;
+    protected double LOW_SLOPE_2;
+    protected double HIGH_SLOPE_1;
+    protected double HIGH_SLOPE_2;
+    protected double DEFAULT_LOW_SLOPE_LOW;
+    protected double DEFAULT_LOW_SLOPE_HIGH;
+    protected int DEFAULT_SLOPE;
+    protected double DEFAULT_HIGH_SLOPE_HIGH;
+    protected double DEFAUL_HIGH_SLOPE_LOW;
+
+    public double getLowSlope1() {
+        return LOW_SLOPE_1;
+    }
+
+    public double getLowSlope2() {
+        return LOW_SLOPE_2;
+    }
+
+    public double getHighSlope1() {
+        return HIGH_SLOPE_1;
+    }
+
+    public double getHighSlope2() {
+        return HIGH_SLOPE_2;
+    }
+
+    public double getDefaultLowSlopeLow() {
+        return DEFAULT_LOW_SLOPE_LOW;
+    }
+
+    public double getDefaultLowSlopeHigh() {
+        return DEFAULT_LOW_SLOPE_HIGH;
+    }
+
+    public int getDefaultSlope() {
+        return DEFAULT_SLOPE;
+    }
+
+    public double getDefaultHighSlopeHigh() {
+        return DEFAULT_HIGH_SLOPE_HIGH;
+    }
+
+    public double getDefaulHighSlopeLow() {
+        return DEFAUL_HIGH_SLOPE_LOW;
     }
 }

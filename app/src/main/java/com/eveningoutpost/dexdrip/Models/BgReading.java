@@ -17,6 +17,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.ShareModels.ShareUploadableBg;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
+import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -873,8 +874,8 @@ public class BgReading extends Model implements ShareUploadableBg{
     }
 
     public void calculateAgeAdjustedRawValue(){
-        double adjust_for = (86400000 * 1.9) - time_since_sensor_started;
-        if (adjust_for > 0) {
+        final double adjust_for = (86400000 * 1.9) - time_since_sensor_started;
+        if ((adjust_for > 0) && (!CollectionServiceStarter.isLimitter())) {
             age_adjusted_raw_value = (((.45) * (adjust_for / (86400000 * 1.9))) * raw_data) + raw_data;
             Log.i(TAG, "calculateAgeAdjustedRawValue: RAW VALUE ADJUSTMENT FROM:" + raw_data + " TO: " + age_adjusted_raw_value);
         } else {

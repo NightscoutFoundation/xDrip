@@ -290,28 +290,33 @@ public class BluetoothScan extends ListActivityWithMenu {
             btDevice.address = device.getAddress();
             btDevice.save();
         }
-        if(device.getName().toLowerCase().contains("dexcom")) {
-            if(!CollectionServiceStarter.isBTShare(getApplicationContext())) {
+        if (device.getName().toLowerCase().contains("dexcom")) {
+            if (!CollectionServiceStarter.isBTShare(getApplicationContext())) {
                 prefs.edit().putString("dex_collection_method", "DexcomShare").apply();
                 prefs.edit().putBoolean("calibration_notifications", false).apply();
             }
-            if(prefs.getString("share_key", "SM00000000").compareTo("SM00000000") == 0 || prefs.getString("share_key", "SM00000000").length() < 10) {
+            if (prefs.getString("share_key", "SM00000000").compareTo("SM00000000") == 0 || prefs.getString("share_key", "SM00000000").length() < 10) {
                 requestSerialNumber(prefs);
             } else returnToHome();
 
-        } else if(device.getName().toLowerCase().contains("bridge")) {
-            if(!CollectionServiceStarter.isDexbridgeWixel(getApplicationContext()))
+        } else if (device.getName().toLowerCase().contains("bridge")) {
+            if (!CollectionServiceStarter.isDexbridgeWixel(getApplicationContext()))
                 prefs.edit().putString("dex_collection_method", "DexbridgeWixel").apply();
-            if(prefs.getString("dex_txid", "00000").compareTo("00000") == 0 || prefs.getString("dex_txid", "00000").length() < 5) {
+            if (prefs.getString("dex_txid", "00000").compareTo("00000") == 0 || prefs.getString("dex_txid", "00000").length() < 5) {
                 requestTransmitterId(prefs);
             } else returnToHome();
 
-        } else if(device.getName().toLowerCase().contains("drip")) {
+        } else if (device.getName().toLowerCase().contains("drip")) {
             if (!
                     (CollectionServiceStarter.isBTWixel(getApplicationContext())
                             || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())
-                    )) {
+                    ) || CollectionServiceStarter.isLimitter()) {
                 prefs.edit().putString("dex_collection_method", "BluetoothWixel").apply();
+            }
+            returnToHome();
+        } else if (device.getName().toLowerCase().contains("limitter")) {
+            if (!CollectionServiceStarter.isLimitter()) {
+                prefs.edit().putString("dex_collection_method", "LimiTTer").apply();
             }
             returnToHome();
         } else {

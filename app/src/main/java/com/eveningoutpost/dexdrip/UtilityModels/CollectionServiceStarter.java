@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.DailyIntentService;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
@@ -45,12 +46,13 @@ public class CollectionServiceStarter {
     public static boolean isBTWixel(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
-        if(collection_method.compareTo("BluetoothWixel") == 0) {
-            return true;
-        }
-        return false;
+        return isBTWixel(collection_method);
     }
-    public static boolean isBTWixel(String collection_method) { return collection_method.equals("BluetoothWixel"); }
+
+    public static boolean isBTWixel(String collection_method) {
+        return collection_method.equals("BluetoothWixel")
+                || collection_method.equals("LimiTTer");
+    }
 
     public static boolean isDexbridgeWixel(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -93,6 +95,17 @@ public class CollectionServiceStarter {
         }
         return false;
     }
+
+        /*
+     * LimiTTer emulates a BT-Wixel and works with the BT-Wixel service.
+     * It would work without any changes but in some cases knowing that the data does not
+     * come from a Dexcom sensor but from a Libre sensor might enhance the performance.
+     * */
+
+    public static boolean isLimitter() {
+        return Home.getPreferencesStringDefaultBlank("dex_collection_method").equals("LimiTTer");
+    }
+
     public static boolean isWifiWixel(String collection_method) { return collection_method.equals("WifiWixel"); }
 
     public static boolean isFollower(String collection_method) { return collection_method.equals("Follower"); }
