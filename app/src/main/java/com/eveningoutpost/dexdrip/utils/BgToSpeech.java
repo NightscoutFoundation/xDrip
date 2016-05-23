@@ -60,7 +60,7 @@ public class BgToSpeech {
         }
     }
 
-    private BgToSpeech(Context context){
+    private BgToSpeech(Context context) {
         this.context = context;
         this.tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
@@ -68,11 +68,18 @@ public class BgToSpeech {
 
                 Log.d("BgToSpeech", "Calling onInit(), tts = " + tts);
                 if (status == TextToSpeech.SUCCESS && tts != null) {
-                    
+
                     //try local language
                     Locale loc = Locale.getDefault();
                     Log.d("BgToSpeech", "status == TextToSpeech.SUCCESS + loc" + loc);
-                    int result = tts.setLanguage(Locale.getDefault());
+                    int result;
+                    try {
+                        result = tts.setLanguage(Locale.getDefault());
+                    } catch (IllegalArgumentException e) {
+                        // can end up here with Locales like "OS"
+                        Log.e("BgToSpeech", "Got TTS set language error: " + e.toString());
+                        result = TextToSpeech.LANG_MISSING_DATA;
+                    }
                     if (result == TextToSpeech.LANG_MISSING_DATA
                             || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                         Log.e("BgToSpeech", "Default system language is not supported");
@@ -86,7 +93,7 @@ public class BgToSpeech {
                     }
                 } else {
                     Log.e("BgToSpeech", "status != TextToSpeech.SUCCESS; status: " + status);
-                    tts= null;
+                    tts = null;
                 }
             }
         });
