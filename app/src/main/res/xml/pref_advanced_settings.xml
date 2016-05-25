@@ -121,6 +121,29 @@
                 android:key="status_line_time"
                 android:summary="The current time."
                 android:title="Time" />
+            <SwitchPreference
+                android:key="extra_status_line"
+                android:title="Show Extra Line"
+                android:summary="Show Extra Line"
+                android:defaultValue="false" />
+            <SwitchPreference
+                android:key="widget_status_line"
+                android:title="Show on widget"
+                android:summary="Also show the extra status line on the widget"
+                android:dependency="extra_status_line"
+                android:defaultValue="false" />
+            <CheckBoxPreference
+                android:key="status_line_calibration_long"
+                android:title="Calibration Data (long)"
+                android:summary="Show slope and intercept in long form."
+                android:dependency="extra_status_line"
+                android:defaultValue="true"/>
+            <CheckBoxPreference
+                android:key="status_line_calibration_short"
+                android:title="Calibration Data (short)"
+                android:summary="Show slope and intercept in short form."
+                android:dependency="extra_status_line"
+                android:defaultValue="false"/>
             </PreferenceScreen>
 
             <Preference
