@@ -331,7 +331,7 @@ public class Home extends ActivityWithMenu {
             calintent.putExtra("bg_string", JoH.qs(glucosenumber));
             calintent.putExtra("bg_age", Long.toString((long) (glucosenumber / 1000)));
             getApplicationContext().startActivity(calintent);
-            Log.d(TAG,"ProcessCalibrationNoUI number: "+glucosenumber+" offset: "+timeoffset);
+            Log.d(TAG, "ProcessCalibrationNoUI number: " + glucosenumber + " offset: " + timeoffset);
         }
     }
 
@@ -493,7 +493,7 @@ public class Home extends ActivityWithMenu {
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         myPopUp.showAtLocation(findViewById(R.id.chart), Gravity.CENTER, 0, 0);*/
 
-        startActivity(new Intent(this,PhoneKeypadInputActivity.class));
+        startActivity(new Intent(this, PhoneKeypadInputActivity.class));
     }
 
     private void promptTextInput() {
@@ -614,6 +614,12 @@ public class Home extends ActivityWithMenu {
                 || (allWords.contentEquals("delete all treatment"))) {
             Treatments.delete_all(true);
             updateCurrentBgInfo("delete all treatment");
+        }
+
+        if (allWords.contentEquals("delete last calibration")
+                || allWords.contentEquals("clear last calibration"))
+        {
+            Calibration.clearLastCalibration();
         }
 
         // reset parameters for new speech
@@ -1037,6 +1043,11 @@ public class Home extends ActivityWithMenu {
         return Home.is_follower;
     }
 
+    public static boolean get_master()
+    {
+        return (!get_follower()) && (Home.getPreferencesBooleanDefaultFalse("plus_follow_master"));
+    }
+
     public static boolean get_holo()
     {
         return Home.is_holo;
@@ -1332,7 +1343,7 @@ public class Home extends ActivityWithMenu {
     @NonNull
     private String extraStatusLine() {
         StringBuilder extraline = new StringBuilder();
-        Calibration lastCalibration = Calibration.last();
+        Calibration lastCalibration = Calibration.lastValid();
         if (prefs.getBoolean("status_line_calibration_long", false) && lastCalibration != null){
             if(extraline.length()!=0) extraline.append(' ');
             extraline.append("slope = ");

@@ -135,8 +135,10 @@ public class SystemStatus extends ActivityWithMenu {
 
         if (td== null || td.sensor_battery_level == 0){
             transmitter_status_view.setText("not available");
+            GcmActivity.requestSensorBatteryUpdate();
         } else if((System.currentTimeMillis() - td.timestamp) > 1000*60*60*24){
             transmitter_status_view.setText("no data in 24 hours");
+            GcmActivity.requestSensorBatteryUpdate();
         } else {
             transmitter_status_view.setText("" + td.sensor_battery_level);
 

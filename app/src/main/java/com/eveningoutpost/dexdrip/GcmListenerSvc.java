@@ -18,6 +18,8 @@ import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
@@ -131,9 +133,23 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                 Home.toaststatic("Received ping reply");
             } else if (action.equals("plu")) {
                 // process map update
-                if (Home.get_follower())
-                {
-                    MapsActivity.newMapLocation(payload,(long)JoH.ts());
+                if (Home.get_follower()) {
+                    MapsActivity.newMapLocation(payload, (long) JoH.ts());
+                }
+            } else if (action.equals("sbu")) {
+                if (Home.get_follower()) {
+                    Log.i(TAG, "Received sensor battery level update");
+                    Sensor.updateBatteryLevel(Integer.parseInt(payload), true);
+                    TransmitterData.updateTransmitterBatteryFromSync(Integer.parseInt(payload));
+                }
+            } else if (action.equals("sbr")) {
+                if ((Home.get_master())  && JoH.ratelimit("gcm-sbu",300)) {
+                    Log.i(TAG, "Received sensor battery request");
+                    try {
+                        GcmActivity.sendSensorBattery(Sensor.currentSensor().latest_battery_level);
+                    } catch (NullPointerException e ) {
+                        Log.e(TAG,"Cannot send sensor battery as sensor is null");
+                    }
                 }
             } else if (action.equals("bgs")) {
                 Log.i(TAG, "Received BG packet(s)");

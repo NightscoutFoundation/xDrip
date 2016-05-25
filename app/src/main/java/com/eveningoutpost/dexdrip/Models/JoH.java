@@ -40,6 +40,7 @@ public class JoH {
 
     private static double benchmark_time = 0;
     private static Map<String, Double> benchmarks = new HashMap<String, Double>();
+    private static final Map<String, Double> rateLimits = new HashMap<String, Double>();
 
     // qs = quick string conversion of double for printing
     public static String qs(double x) {
@@ -219,6 +220,19 @@ public class JoH {
                 benchmark_time = 0;
             }
         }
+    }
+
+    // return true if below rate limit
+    public static boolean ratelimit(String name, int seconds)
+    {
+            // check if over limit
+            if ((rateLimits.containsKey(name)) && (JoH.ts()-rateLimits.get(name)<(seconds*1000))) {
+                Log.d(TAG,name+" rate limited: "+seconds+" seconds");
+                return false;
+            }
+            // not over limit
+            rateLimits.put(name,JoH.ts());
+            return true;
     }
 
     public static void benchmark_method_start() {

@@ -22,6 +22,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -476,11 +477,20 @@ public class Calibration extends Model {
 
             List<Calibration> calibrations = allForSensorInLastFourDays(); //5 days was a bit much, dropped this to 4
 
+            if (calibrations == null)
+            {
+                Log.e(TAG,"Somehow ended up with null calibration list!");
+                Home.toaststatic("Somehow ended up with null calibration list!");
+                return;
+            }
+
             // less than 5 calibrations in last 4 days? cast the net wider if in extended mode
             if ((calibrations.size() < 5) && extended)
             {
                 calibrations = allForSensorLimited(5);
-                Home.toaststaticnext("Calibrated using data beyond last 4 days");
+                if (calibrations.size() >= 5) {
+                    Home.toaststaticnext("Calibrated using data beyond last 4 days");
+                }
             }
 
             if (calibrations.size() <= 1) {
@@ -530,8 +540,8 @@ public class Calibration extends Model {
                 {
                     calibration.sensor_confidence = 0;
                     calibration.slope_confidence = 0;
-                    Home.toaststaticnext("Got invalid zero slope calibration");
-                // don't think we should save this as it will get used by calibration.last()
+                    Home.toaststaticnext("Got invalid zero slope calibration!");
+                    calibration.save(); // Save nulled record, lastValid should protect from bad calibrations
 
                 } else {
                     calibration.save();
@@ -660,6 +670,20 @@ public class Calibration extends Model {
 
     }
 
+    public static void clearLastCalibration() {
+        CalibrationRequest.clearAll();
+        Log.d(TAG, "Trying to clear last calibration");
+                Calibration calibration = Calibration.last();
+                        if (calibration != null) {
+                            calibration.slope_confidence = 0;
+                            calibration.sensor_confidence = 0;
+                            calibration.save();
+                            CalibrationSendQueue.addToQueue(calibration, xdrip.getAppContext());
+                        }
+            }
+
+
+
     public String toS() {
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
@@ -678,6 +702,21 @@ public class Calibration extends Model {
         return new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())
+                .orderBy("timestamp desc")
+                .executeSingle();
+    }
+
+    public static Calibration lastValid() {
+        Sensor sensor = Sensor.currentSensor();
+        if(sensor == null) {
+            return null;
+        }
+        return new Select()
+                .from(Calibration.class)
+                .where("Sensor = ? ", sensor.getId())
+                .where("slope_confidence != 0")
+                .where("sensor_confidence != 0")
+                .where("slope !=0 or intercept !=0")
                 .orderBy("timestamp desc")
                 .executeSingle();
     }

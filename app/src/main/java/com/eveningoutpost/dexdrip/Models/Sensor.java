@@ -6,6 +6,8 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.GcmActivity;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue;
 
@@ -126,7 +128,21 @@ public class Sensor extends Model {
                 .executeSingle();
     }
 
+    public static void updateBatteryLevel(int sensorBatteryLevel, boolean from_sync) {
+        Sensor sensor = Sensor.currentSensor();
+        if (sensor == null)
+        {
+            Log.d("Sensor","Cant sync battery level from master as sensor data is null");
+            return;
+        }
+        updateBatteryLevel(sensor, sensorBatteryLevel, from_sync);
+    }
+
     public static void updateBatteryLevel(Sensor sensor, int sensorBatteryLevel) {
+        updateBatteryLevel(sensor, sensorBatteryLevel, false);
+    }
+
+    public static void updateBatteryLevel(Sensor sensor, int sensorBatteryLevel, boolean from_sync) {
         if(sensorBatteryLevel < 120) {
             // This must be a wrong battery level. Some transmitter send those every couple of readings
             // even if the battery is ok.
@@ -144,6 +160,7 @@ public class Sensor extends Model {
         }
         sensor.save();
         SensorSendQueue.addToQueue(sensor);
+        if ((!from_sync) && (Home.get_master())) { GcmActivity.sendSensorBattery(sensor.latest_battery_level); }
     }
 
     public static void updateSensorLocation(String sensor_location) {

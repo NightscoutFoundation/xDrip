@@ -133,6 +133,15 @@ public class GcmActivity extends Activity {
         GcmActivity.sendMessage("plu",location);
     }
 
+    public static void sendSensorBattery(final int battery)
+    {
+        if (JoH.ratelimit("gcm-sbu",300))
+        {
+            GcmActivity.sendMessage("sbu",Integer.toString(battery));
+        }
+    }
+
+
     public static void requestBGsync() {
         if (token != null) {
             if ((JoH.ts() - last_sync_request) > (60 * 1000 * 5)) {
@@ -186,7 +195,16 @@ public class GcmActivity extends Activity {
         for (String bgr : bundlea) {
             BgReading.bgReadingInsertFromJson(bgr,false);
         }
+        GcmActivity.requestSensorBatteryUpdate();
         Home.staticRefreshBGCharts();
+    }
+
+    public static void requestSensorBatteryUpdate()
+    {
+        if (Home.get_follower() && JoH.ratelimit("SensorBatteryUpdateRequest",300))
+        {
+            GcmActivity.sendMessage("sbr",""); // request sensor battery update
+        }
     }
 
     public static void pushTreatmentAsync(final Treatments thistreatment) {

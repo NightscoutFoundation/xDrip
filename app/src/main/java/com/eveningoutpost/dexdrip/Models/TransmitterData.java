@@ -112,4 +112,26 @@ public class TransmitterData extends Model {
                 .executeSingle();
     }
 
+    public static void updateTransmitterBatteryFromSync(final int battery_level) {
+        try {
+            TransmitterData td = TransmitterData.last();
+            if ((td == null) || (td.raw_data!=0))
+            {
+                td=TransmitterData.create(0,battery_level,(long)JoH.ts());
+                Log.d(TAG,"Created new fake transmitter data record for battery sync");
+                if (td==null) return;
+            }
+            if (battery_level != td.sensor_battery_level) {
+                td.sensor_battery_level = battery_level;
+                td.timestamp = (long)JoH.ts(); // freshen timestamp on this bogus record for system status
+                Log.d(TAG,"Saving synced sensor battery, new level: "+battery_level);
+                td.save();
+            } else {
+                Log.d(TAG,"Synced sensor battery level same as existing: "+battery_level);
+            }
+        } catch (Exception e) {
+            Log.e(TAG,"Got exception updating sensor battery from sync: "+e.toString());
+        }
+    }
+
 }
