@@ -622,6 +622,18 @@ public class Home extends ActivityWithMenu {
             Calibration.clearLastCalibration();
         }
 
+        if (allWords.contentEquals("clear battery warning")) {
+            try {
+                final Sensor sensor = Sensor.currentSensor();
+                if (sensor != null) {
+                    sensor.latest_battery_level = 0;
+                    sensor.save();
+                }
+            } catch (Exception e) {
+                // do nothing
+            }
+        }
+
         // reset parameters for new speech
         glucoseset = false;
         insulinset = false;
@@ -1797,6 +1809,29 @@ public class Home extends ActivityWithMenu {
         return "";
     }
 
+    public static long getPreferencesLong(final String pref, final long def)
+    {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs != null) {
+            return prefs.getLong(pref, def);
+        }
+        return def;
+    }
+
+    public static boolean setPreferencesLong(final String pref, final long lng)
+    {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs != null) {
+            prefs.edit().putLong(pref,lng).apply();
+            return true;
+        }
+        return false;
+    }
+
     public static boolean setPreferencesString(final String pref, final String str)
     {
         if ((prefs == null) && (xdrip.getAppContext() != null)) {
@@ -1809,7 +1844,15 @@ public class Home extends ActivityWithMenu {
         return false;
     }
 
-
+    public static double convertToMgDlIfMmol(double value)
+    {
+        if (!getPreferencesStringWithDefault("units", "mgdl").equals("mgdl"))
+        {
+            return value * com.eveningoutpost.dexdrip.UtilityModels.Constants.MMOLL_TO_MGDL;
+        } else {
+            return value; // no conversion needed
+        }
+    }
 
     private class ChartViewPortListener implements ViewportChangeListener {
         @Override

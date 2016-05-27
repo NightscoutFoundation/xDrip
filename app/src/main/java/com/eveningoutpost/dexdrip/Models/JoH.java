@@ -60,6 +60,10 @@ public class JoH {
         return new Date().getTime();
     }
 
+    public static long tsl() {
+        return new Date().getTime();
+    }
+
     public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
@@ -275,6 +279,11 @@ public class JoH {
     public static String dateTimeText(long timestamp)
     {
         return android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", timestamp).toString();
+    }
+
+    public static double tolerantParseDouble(String str) throws NumberFormatException {
+        return Double.parseDouble(str.replace(",", "."));
+
     }
 
     public static void static_toast(final Context context, final String msg, final int length) {

@@ -203,6 +203,7 @@ public class GcmActivity extends Activity {
     {
         if (Home.get_follower() && JoH.ratelimit("SensorBatteryUpdateRequest",300))
         {
+            Log.d(TAG,"Requesting Sensor Battery Update");
             GcmActivity.sendMessage("sbr",""); // request sensor battery update
         }
     }

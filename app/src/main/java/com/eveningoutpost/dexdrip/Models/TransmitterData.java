@@ -121,7 +121,7 @@ public class TransmitterData extends Model {
                 Log.d(TAG,"Created new fake transmitter data record for battery sync");
                 if (td==null) return;
             }
-            if (battery_level != td.sensor_battery_level) {
+            if ((battery_level != td.sensor_battery_level) || ((JoH.ts()-td.timestamp)>(1000*60*60))) {
                 td.sensor_battery_level = battery_level;
                 td.timestamp = (long)JoH.ts(); // freshen timestamp on this bogus record for system status
                 Log.d(TAG,"Saving synced sensor battery, new level: "+battery_level);

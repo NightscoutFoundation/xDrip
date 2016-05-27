@@ -35,6 +35,7 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
     private static final String TAG = "jamorham GCMlis";
     private static SharedPreferences prefs;
     private static byte[] staticKey;
+    public static double lastMessageReceived = 0;
 
     @Override
     public void onMessageReceived(String from, Bundle data) {
@@ -91,6 +92,7 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
             }
 
             Log.i(TAG, "Got action: " + action + " with payload: " + payload);
+            lastMessageReceived = JoH.ts();
 
             // new treatment
             if (action.equals("nt") && (payload != null)) {
@@ -143,7 +145,7 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                     TransmitterData.updateTransmitterBatteryFromSync(Integer.parseInt(payload));
                 }
             } else if (action.equals("sbr")) {
-                if ((Home.get_master())  && JoH.ratelimit("gcm-sbu",300)) {
+                if ((Home.get_master())  && JoH.ratelimit("gcm-sbr",300)) {
                     Log.i(TAG, "Received sensor battery request");
                     try {
                         GcmActivity.sendSensorBattery(Sensor.currentSensor().latest_battery_level);

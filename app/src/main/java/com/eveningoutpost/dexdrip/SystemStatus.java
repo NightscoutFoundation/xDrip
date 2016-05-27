@@ -117,7 +117,12 @@ public class SystemStatus extends ActivityWithMenu {
         setVersionName();
         setCollectionMethod();
         setCurrentDevice();
-        setConnectionStatus();
+        if (Home.get_follower())
+        {
+            setConnectionStatusFollower();
+        } else {
+            setConnectionStatus();
+        }
         setSensorStatus();
         setTransmitterStatus();
         setNotes();
@@ -165,7 +170,7 @@ public class SystemStatus extends ActivityWithMenu {
             sensor_status.append(" (");
             sensor_status.append((System.currentTimeMillis() - sens.started_at) / (1000 * 60 * 60 * 24));
             sensor_status.append("d ");
-            sensor_status.append(((System.currentTimeMillis() - sens.started_at)%(1000 * 60 * 60 * 24))/(1000*60*60));
+            sensor_status.append(((System.currentTimeMillis() - sens.started_at) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             sensor_status.append("h)");
         } else {
             sensor_status.append("not available");
@@ -219,6 +224,14 @@ public class SystemStatus extends ActivityWithMenu {
                     }
                 }
             }
+        }
+    }
+
+    private void setConnectionStatusFollower() {
+        if (GcmListenerSvc.lastMessageReceived == 0) {
+            connection_status.setText("No data");
+        } else {
+            connection_status.setText((JoH.qs((JoH.ts() - GcmListenerSvc.lastMessageReceived) / 60000, 0)) + " mins ago");
         }
     }
 
