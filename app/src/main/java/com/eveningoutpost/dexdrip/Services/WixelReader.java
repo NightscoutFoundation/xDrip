@@ -210,6 +210,10 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
     // read from http source like cloud hosted parakeet receiver.cgi / json.get
     public static List<TransmitterRawData> readHttpJson(String url, int numberOfRecords) {
         List<TransmitterRawData> trd_list = new LinkedList<TransmitterRawData>();
+        int processNumberOfRecords = numberOfRecords;
+        // get more records to ensure we can handle coexistence of parakeet and usb-python-wixel
+        // TODO make this work on preference option for the feature
+        if (true) numberOfRecords = numberOfRecords + 1;
 
         try {
 
@@ -231,7 +235,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
 
                     // Mozilla header facilitates compression
                     .header("User-Agent", "Mozilla/5.0")
-                    .header("Connection","close")
+                    .header("Connection", "close")
                     .url(url + "?n=" + Integer.toString(numberOfRecords)
                             + "&r=" + Long.toString((System.currentTimeMillis() / 1000) % 9999999))
                     .build();
@@ -255,16 +259,28 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
 
                     TransmitterRawData trd = gson.fromJson(data, TransmitterRawData.class);
                     trd.CaptureDateTime = System.currentTimeMillis() - trd.RelativeTime;
-                    ParakeetHelper.checkParakeetNotifications(trd.CaptureDateTime);
 
-                    try {
-                        MapsActivity.newMapLocation(trd.GeoLocation, trd.CaptureDateTime);
-                    } catch (Exception e) {
-                        Log.e(TAG,"Exception with maps activity: "+e.toString());
+                    // Versions of the Python USB script after 20th May 2016 will
+                    // submit a bogus geolocation in the middle of the ocean to differentiate
+                    // themselves from actual parakeet data even though both can coexist on the
+                    // parakeet web service.
+
+                    ParakeetHelper.checkParakeetNotifications(trd.CaptureDateTime, trd.GeoLocation);
+                    if ((trd.GeoLocation != null)) {
+                        if (!trd.GeoLocation.equals("-15,-15")) {
+                            try {
+                                MapsActivity.newMapLocation(trd.GeoLocation, trd.CaptureDateTime);
+                            } catch (Exception e) {
+                                Log.e(TAG, "Exception with maps activity: " + e.toString());
+                            }
+                        } else {
+                            // look a little further if we see usb-wixel data on parakeet app engine
+                            processNumberOfRecords = numberOfRecords + 1;
+                        }
                     }
-                        trd_list.add(0, trd);
+                    trd_list.add(0, trd);
                     //  System.out.println( trd.toTableString());
-                    if (trd_list.size() == numberOfRecords) {
+                    if (trd_list.size() == processNumberOfRecords) {
                         // We have the data we want, let's get out
                         break;
                     }
@@ -291,7 +307,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
 
         // go over all hosts and read data from them
         for(String host : hosts) {
-
+            host = host.trim();
             List<TransmitterRawData> tmpList;
             if (host.startsWith("mongodb://")) {
             	tmpList = ReadFromMongo(host ,numberOfRecords);

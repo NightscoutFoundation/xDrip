@@ -90,7 +90,7 @@ public class Preferences extends PreferenceActivity {
                     toast("Error processing security key");
                 } else {
                     byte[] plainbytes = JoH.decompressBytesToBytes(CipherUtils.decryptBytes(result, staticKey));
-                    staticKey=null;
+                    staticKey = null;
                     Log.d(TAG, "Plain bytes size: " + plainbytes.length);
                     if (plainbytes.length > 0) {
                         SdcardImportExport.storePreferencesFromBytes(plainbytes, getApplicationContext());
@@ -129,7 +129,7 @@ public class Preferences extends PreferenceActivity {
                             && prefsmap.containsKey(getString(R.string.wizard_uuid))) {
                         staticKey = CipherUtils.hexToBytes(prefsmap.get(getString(R.string.wizard_key)));
 
-                        new WebAppHelper(new ServiceCallback()).executeOnExecutor(xdrip.executor,getString(R.string.wserviceurl) + "/joh-getsw/" + prefsmap.get(getString(R.string.wizard_uuid)));
+                        new WebAppHelper(new ServiceCallback()).executeOnExecutor(xdrip.executor, getString(R.string.wserviceurl) + "/joh-getsw/" + prefsmap.get(getString(R.string.wizard_uuid)));
                     } else {
                         Log.d(TAG, "Incorrectly formatted wizard pref");
                     }
@@ -479,6 +479,7 @@ public class Preferences extends PreferenceActivity {
             addPreferencesFromResource(R.xml.pref_advanced_settings);
             addPreferencesFromResource(R.xml.xdrip_plus_prefs);
 
+            bindPreferenceSummaryToValue(findPreference("persistent_high_threshold_mins"));
 
             bindPreferenceTitleAppendToValueUpdateChannel(findPreference("update_channel"));
             final Preference profile_carb_ratio_default = findPreference("profile_carb_ratio_default");

@@ -108,25 +108,7 @@
                     android:key="predict_use_momentum"
                     android:summary="Calculate including BG trend"
                     android:title="Use trend momentum" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="predict_lows"
-                    android:summary="Extrapolate data to try to predict lows"
-                    android:title="Forecast Lows" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="predict_lows_alarm"
-                    android:dependency="predict_lows"
-                    android:summary="Notify when predicted low time reaches threshold"
-                    android:title="Raise alarm on Forecast Low" />
-                <EditTextPreference
-                    android:defaultValue="40"
-                    android:inputType="number"
-                    android:key="low_predict_alarm_level"
-                    android:digits="0123456789"
-                    android:summary=""
-                    android:dependency="predict_lows_alarm"
-                    android:title="Alarm at Forecasted Low mins" />
+
             </PreferenceCategory>
             <PreferenceCategory
                 android:key="title_I_understandb"

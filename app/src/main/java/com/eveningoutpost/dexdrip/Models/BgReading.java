@@ -41,6 +41,7 @@ public class BgReading extends Model implements ShareUploadableBg{
     private static boolean predictBG;
     private final static String TAG = BgReading.class.getSimpleName();
     private final static String TAG_ALERT = TAG +" AlertBg";
+    private final static String PERSISTENT_HIGH_SINCE = "persistent_high_since";
     //TODO: Have these as adjustable settings!!
     public final static double BESTOFFSET = (60000 * 0); // Assume readings are about x minutes off from actual!
 
@@ -197,7 +198,7 @@ public class BgReading extends Model implements ShareUploadableBg{
     }
 
     public static double currentSlope() {
-        return currentSlope(false);
+        return currentSlope(Home.get_follower());
     }
 
     public static double currentSlope(boolean is_follower) {
@@ -342,7 +343,7 @@ public class BgReading extends Model implements ShareUploadableBg{
             return bgReading;
         }
 
-        Calibration calibration = Calibration.last();
+        Calibration calibration = Calibration.lastValid();
         if (calibration == null) {
             Log.d(TAG, "create: No calibration yet");
             bgReading.sensor = sensor;
@@ -425,7 +426,7 @@ public class BgReading extends Model implements ShareUploadableBg{
             return ;
         }
 
-        Calibration calibration = Calibration.last();
+        Calibration calibration = Calibration.lastValid();
         if (calibration == null) {
             Log.d(TAG, "create: No calibration yet");
             bgReading.sensor = sensor;
@@ -638,7 +639,7 @@ public class BgReading extends Model implements ShareUploadableBg{
     }
 
     public static List<BgReading> latestForGraph(int number, double startTime) {
-        return latestForGraph(number, (long)startTime, Long.MAX_VALUE);
+        return latestForGraph(number, (long) startTime, Long.MAX_VALUE);
     }
 
     public static List<BgReading> latestForGraph(int number, long startTime) {
@@ -723,7 +724,7 @@ public class BgReading extends Model implements ShareUploadableBg{
 
     public static void bgReadingInsertFromJson(String json)
     {
-        bgReadingInsertFromJson(json,true);
+        bgReadingInsertFromJson(json, true);
     }
 
     public static void bgReadingInsertFromJson(String json, boolean do_notification) {
@@ -984,6 +985,66 @@ public class BgReading extends Model implements ShareUploadableBg{
 
     }
 
+    public static boolean checkForPersistentHigh() {
+
+        // skip if not enabled
+        if (!Home.getPreferencesBooleanDefaultFalse("persistent_high_alert_enabled")) return false;
+
+
+        List<BgReading> last = BgReading.latest(1);
+        if (last != null) {
+
+            final long now = JoH.tsl();
+            final long since = now - last.get(0).timestamp;
+            // only process if last reading <10 mins
+            if (since < 600000) {
+                // check if exceeding high
+                if (last.get(0).calculated_value >
+                        Home.convertToMgDlIfMmol(
+                                JoH.tolerantParseDouble(Home.getPreferencesStringWithDefault("highValue", "170")))) {
+
+                    final double this_slope = last.get(0).calculated_value_slope * 60000;
+                    //Log.d(TAG, "CheckForPersistentHigh: Slope: " + JoH.qs(this_slope));
+
+                    // if not falling
+                    if (this_slope > 0) {
+                        final long high_since = Home.getPreferencesLong(PERSISTENT_HIGH_SINCE, 0);
+                        if (high_since == 0) {
+                            // no previous persistent high so set start as now
+                            Home.setPreferencesLong(PERSISTENT_HIGH_SINCE, now);
+                            Log.d(TAG,"Registering start of persistent high at time now");
+                        } else {
+                            final long high_for_mins = (now - high_since) / (1000 * 60);
+                            if (high_for_mins > Long.parseLong(Home.getPreferencesStringWithDefault("persistent_high_threshold_mins","60")))  {
+                                // we have been high for longer than the threshold - raise alert
+
+                                // except if alerts are disabled
+                                if(Home.getPreferencesLong("alerts_disabled_until", 0) > new Date().getTime()) {
+                                    Log.i(TAG, "checkforPersistentHigh: Notifications are currently disabled cannot alert!!");
+                                    return false;
+                                }
+                                Log.i(TAG, "Persistent high for: " + high_for_mins + " mins -> alerting");
+                                Notifications.persistentHighAlert(xdrip.getAppContext(), true, "Persistent High for > " + (int) high_for_mins + " mins");
+
+                            } else {
+                                Log.d(TAG, "Persistent high below time threshold at: " + high_for_mins);
+                            }
+                        }
+                    }
+                } else {
+                    // not high - cancel any existing
+                    if (Home.getPreferencesLong(PERSISTENT_HIGH_SINCE,0)!=0)
+                    {
+                        Log.i(TAG,"Cancelling previous persistent high as we are no longer high");
+                     Home.setPreferencesLong(PERSISTENT_HIGH_SINCE, 0); // clear it
+                        Notifications.persistentHighAlert(xdrip.getAppContext(), false, ""); // cancel it
+                    }
+                }
+            }
+        }
+        return false; // actually we should probably return void as we do everything inside this method
+    }
+
     public static void checkForRisingAllert(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         Boolean rising_alert = prefs.getBoolean("rising_alert", false);
@@ -1240,7 +1301,7 @@ public class BgReading extends Model implements ShareUploadableBg{
     }
 
     public double usedRaw() {
-        Calibration calibration = Calibration.last();
+        Calibration calibration = Calibration.lastValid();
         if (calibration != null && calibration.check_in) {
             return raw_data;
         }

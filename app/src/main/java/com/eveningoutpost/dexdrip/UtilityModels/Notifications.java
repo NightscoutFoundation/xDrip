@@ -89,7 +89,9 @@ public class Notifications extends IntentService {
     public static final int riseAlertNotificationId = 011;
     public static final int failAlertNotificationId = 012;
     public static final int lowPredictAlertNotificationId = 013;
-
+    public static final int parakeetMissingId = 014;
+    public static final int persistentHighAlertNotificationId = 015;
+    private static boolean low_notifying = false;
     SharedPreferences prefs;
 
     public Notifications() {
@@ -258,6 +260,7 @@ public class Notifications extends IntentService {
         FileBasedNotifications(context);
         BgReading.checkForDropAllert(context);
         BgReading.checkForRisingAllert(context);
+        BgReading.checkForPersistentHigh();
         evaluateLowPredictionAlarm();
 
         Sensor sensor = Sensor.currentSensor();
@@ -495,16 +498,27 @@ public class Notifications extends IntentService {
     private void evaluateLowPredictionAlarm() {
         if ((BgGraphBuilder.low_occurs_at > 0) && (BgGraphBuilder.last_noise < BgGraphBuilder.NOISE_HIGH)) {
             if (!prefs.getBoolean("predict_lows_alarm", false)) return;
-            final double low_predicted_alarm_minutes = Double.parseDouble(prefs.getString("low_predict_alarm_level","40"));
+            final double low_predicted_alarm_minutes = Double.parseDouble(prefs.getString("low_predict_alarm_level", "40"));
             final double now = JoH.ts();
             final double predicted_low_in_mins = (BgGraphBuilder.low_occurs_at - now) / 60000;
             android.util.Log.d(TAG, "evaluateLowPredictionAlarm: mins: " + predicted_low_in_mins);
             if (predicted_low_in_mins > 1) {
                 if (predicted_low_in_mins < low_predicted_alarm_minutes) {
-                    Notifications.lowPredictAlert(xdrip.getAppContext(), true, "Low predicted in "+(int)predicted_low_in_mins+" mins");
+                    Notifications.lowPredictAlert(xdrip.getAppContext(), true, "Low predicted in " + (int) predicted_low_in_mins + " mins");
+                    low_notifying = true;
                 } else {
-                    Notifications.lowPredictAlert(xdrip.getAppContext(),false, ""); // cancel it
+                    Notifications.lowPredictAlert(xdrip.getAppContext(), false, ""); // cancel it
                 }
+            } else {
+                if (low_notifying) {
+                    Notifications.lowPredictAlert(xdrip.getAppContext(), false, ""); // cancel it
+                    low_notifying = false;
+                }
+            }
+        } else {
+            if (low_notifying) {
+                Notifications.lowPredictAlert(xdrip.getAppContext(), false, ""); // cancel it
+                low_notifying = false;
             }
         }
     }
@@ -613,6 +627,17 @@ public class Notifications extends IntentService {
         }
     }
 
+    public static void persistentHighAlert(Context context, boolean on, String msg) {
+        final String type = "persistent_high_alert";
+        if(on) {
+            OtherAlert(context, type, msg, persistentHighAlertNotificationId, 20);
+        } else {
+            NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotifyMgr.cancel(persistentHighAlertNotificationId);
+            UserNotification.DeleteNotificationByType(type);
+        }
+    }
+
     public static void RiseDropAlert(Context context, boolean on, String type, String message, int notificatioId) {
         if(on) {
          // This alerts will only happen once. Want to have maxint, but not create overflow.
@@ -626,7 +651,7 @@ public class Notifications extends IntentService {
 
     private static void OtherAlert(Context context, String type, String message, int notificatioId, int snooze) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String otherAlertsSound = prefs.getString("other_alerts_sound", "content://settings/system/notification_sound");
+        String otherAlertsSound = prefs.getString(type+"_sound",prefs.getString("other_alerts_sound", "content://settings/system/notification_sound"));
         Boolean otherAlertsOverrideSilent = prefs.getBoolean("other_alerts_override_silent", false);
 
         Log.d(TAG,"OtherAlert called " + type + " " + message + " snooze = " + snooze);

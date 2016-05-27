@@ -898,14 +898,18 @@ public class BgGraphBuilder {
                     } else {
                         predictedbg = mylastbg.calculated_value_mmol();
                     }
-                    if (d) Log.d(TAG, "Starting prediction with bg of: " + JoH.qs(predictedbg));
+                    //if (d) Log.d(TAG, "Starting prediction with bg of: " + JoH.qs(predictedbg));
                     lasttimestamp = mylastbg.timestamp / FUZZER;
+
+                     if (d) Log.d(TAG, "Starting prediction with bg of: " + JoH.qs(predictedbg) + " secs ago: "+(JoH.ts()-mylastbg.timestamp)/1000);
                 } else {
-                    if (d) Log.d(TAG, "COULD NOT GET LAST BG READING FOR PREDICTION!!!");
+                    Log.i(TAG, "COULD NOT GET LAST BG READING FOR PREDICTION!!!");
                 }
             } catch (Exception e) {
                 // could not get a bg reading
             }
+
+            final double initial_predicted_bg = predictedbg;
             // final List<Iob> iobinfo_old = Treatments.ioBForGraph(numValues, (start_time * FUZZER));
             final List<Iob> iobinfo = Treatments.ioBForGraph_new(NUM_VALUES, (start_time * FUZZER)); // for test
 
@@ -948,6 +952,7 @@ public class BgGraphBuilder {
                             cobValues.add(pv); // warning should not be hardcoded
                         }
 
+                        // momentum curve
                         // do we actually need to calculate this within the loop - can we use only the last datum?
                         if (fuzzed_timestamp > (lasttimestamp)) {
                             double polyPredict = 0;
@@ -955,9 +960,9 @@ public class BgGraphBuilder {
                                 try {
                                     polyPredict = poly.predict(iob.timestamp);
                                     if (d)
-                                        Log.d(TAG, "Poly predict: " + JoH.qs(polyPredict) + " @ " + JoH.qs(iob.timestamp));
+                                        Log.d(TAG, "Poly predict: " + JoH.qs(polyPredict) + " @ " + JoH.dateTimeText(iob.timestamp));
                                     if (show_moment_working_line) {
-                                        if ((polyPredict < highMark) && (polyPredict > 0)) {
+                                        if (((polyPredict < highMark) || (polyPredict < initial_predicted_bg)) && (polyPredict > 0)) {
                                             PointValue zv = new PointValue((float) fuzzed_timestamp, (float) polyPredict);
                                             polyBgValues.add(zv);
                                         }
@@ -983,7 +988,7 @@ public class BgGraphBuilder {
                             }
                             predict_weight = predict_weight * 2.5; // from 0-infinity - // TODO account for step!!!
                             // we should pull in actual graph upper and lower limits here
-                            if ((predictedbg_final < highMark) && (predictedbg_final > 0)) {
+                            if (((predictedbg_final < highMark) || (polyPredict < initial_predicted_bg)) && (predictedbg_final > 0)) {
                                 PointValue zv = new PointValue((float) fuzzed_timestamp, (float) predictedbg_final);
                                 predictedBgValues.add(zv);
                             }
