@@ -24,7 +24,7 @@ public class Extensions {
     }
 
     public static String lastTwoCharactersOfString(String s) {
-        return s.substring(s.length() - 2);
+        return s.length()>1 ? s.substring(s.length() - 2) : "ERR-"+s;
     }
 
     public static void doSleep(long time) {
