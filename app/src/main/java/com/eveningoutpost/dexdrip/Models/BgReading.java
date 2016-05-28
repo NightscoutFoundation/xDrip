@@ -992,7 +992,7 @@ public class BgReading extends Model implements ShareUploadableBg{
 
 
         List<BgReading> last = BgReading.latest(1);
-        if (last != null) {
+        if ((last != null) && (last.size()>0)) {
 
             final long now = JoH.tsl();
             final long since = now - last.get(0).timestamp;
