@@ -1,6 +1,8 @@
 # Jamorham xDrip+
 > My enhanced personal research version of xDrip
 
+ Info page and APK download: https://jamorham.github.io/#xdrip-plus
+
 ##Features
 * Natural language voice and text input of Treatments (Insulin/Carbs)
 * Tasker plugin support including remote calibrations
