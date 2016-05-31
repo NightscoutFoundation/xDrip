@@ -368,7 +368,7 @@ public class DexShareCollectionService extends Service {
         readData.readSystemTime(systemTimeListener);
     }
 
-    public boolean connect(final String address) {
+    public synchronized boolean connect(final String address) {
         PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "DexShareCollectionStart");
@@ -381,7 +381,11 @@ public class DexShareCollectionService extends Service {
         }
         if (mBluetoothGatt != null) {
             Log.i(TAG, "BGatt isnt null, Closing.");
-            mBluetoothGatt.close();
+            try {
+                mBluetoothGatt.close();
+            } catch (NullPointerException e) {
+                Log.d(TAG, "concurrency related null pointer exception in connect");
+            }
             mBluetoothGatt = null;
         }
         for (BluetoothDevice bluetoothDevice : mBluetoothAdapter.getBondedDevices()) {
