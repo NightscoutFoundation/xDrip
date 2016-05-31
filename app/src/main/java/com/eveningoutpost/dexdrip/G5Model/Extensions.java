@@ -23,7 +23,7 @@ public class Extensions {
         return data;
     }
 
-    public static String lastTwoCharactersOfString(String s) {
+    public static String lastTwoCharactersOfString(final String s) {
         return s.length()>1 ? s.substring(s.length() - 2) : "ERR-"+s;
     }
 
