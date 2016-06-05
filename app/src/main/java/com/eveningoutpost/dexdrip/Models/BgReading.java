@@ -361,7 +361,7 @@ public class BgReading extends Model implements ShareUploadableBg{
             bgReading.save();
             bgReading.perform_calculations();
         } else {
-            Log.d(TAG,"Calibrations, so doing everything");
+            Log.d(TAG,"Calibrations, so doing everything: "+calibration.uuid);
             bgReading.sensor = sensor;
             bgReading.sensor_uuid = sensor.uuid;
             bgReading.calibration = calibration;
