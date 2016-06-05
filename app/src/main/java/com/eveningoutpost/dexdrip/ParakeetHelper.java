@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.WebAppHelper;
 
@@ -132,28 +133,37 @@ public class ParakeetHelper {
         }
     }
 
-    // TODO This should be in some general notification class instead of duplicated here
+
     private static void sendNotification(String body, String title) {
-        Intent intent = new Intent(xdrip.getAppContext(), Home.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(xdrip.getAppContext(), 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+        if (Home.getPreferencesBooleanDefaultFalse("parakeet_status_alerts")) {
+            Intent intent = new Intent(xdrip.getAppContext(), Home.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            PendingIntent pendingIntent = PendingIntent.getActivity(xdrip.getAppContext(), 0 /* Request code */, intent,
+                    PendingIntent.FLAG_ONE_SHOT);
 
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(xdrip.getAppContext())
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setLargeIcon(BitmapFactory.decodeResource(xdrip.getAppContext().getResources(), R.drawable.jamorham_parakeet_marker))
-                .setContentTitle(title)
-                .setContentText(body)
-                .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
+            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(xdrip.getAppContext())
+                    .setSmallIcon(R.drawable.ic_launcher)
+                    .setLargeIcon(BitmapFactory.decodeResource(xdrip.getAppContext().getResources(), R.drawable.jamorham_parakeet_marker))
+                    .setContentTitle(title)
+                    .setContentText(body)
+                    .setAutoCancel(true)
+                 //   .setSound(defaultSoundUri)
+                    .setContentIntent(pendingIntent);
 
-        NotificationManager notificationManager =
-                (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            if (!((PowerStateReceiver.power_connected) && (Home.getPreferencesBooleanDefaultFalse("parakeet_charge_silent"))))
+            {
+                notificationBuilder.setSound(defaultSoundUri);
+            }
 
-        notificationManager.cancel(Notifications.parakeetMissingId);
-        notificationManager.notify(Notifications.parakeetMissingId, notificationBuilder.build());
+            NotificationManager notificationManager =
+                    (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+            notificationManager.cancel(Notifications.parakeetMissingId);
+            notificationManager.notify(Notifications.parakeetMissingId, notificationBuilder.build());
+        } else {
+            Log.d(TAG, "Not sending parakeet notification as they are disabled: " + body);
+        }
     }
 
     private static void cancelParakeetMissingNotification()

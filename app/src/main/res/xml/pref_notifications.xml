@@ -174,7 +174,7 @@
                 android:title="Extra Alerts (xDrip+)">
                 <PreferenceCategory android:title="Persistent High Alert"
                     android:summary="When above High level for too long and not heading downwards">
-                    <CheckBoxPreference
+                    <SwitchPreference
                         android:defaultValue="false"
                         android:key="persistent_high_alert_enabled"
                         android:title="Persistent High Alert"
@@ -198,7 +198,7 @@
                 </PreferenceCategory>
                 <PreferenceCategory android:title="Forecasted Low Alert"
                     android:summary="When momentum trend indicates a Low would be predicted">
-                <CheckBoxPreference
+                <SwitchPreference
                     android:defaultValue="true"
                     android:key="predict_lows"
                     android:summary="Extrapolate data to try to predict lows"
@@ -225,6 +225,19 @@
                         android:summary="Choose sound used for predicted low alarm."
                         android:dependency="predict_lows"
                         android:title="Predicted Low Sound" />
+                </PreferenceCategory>
+                <PreferenceCategory android:title="Other xDrip+ alerts">
+                    <SwitchPreference
+                        android:defaultValue="true"
+                        android:key="parakeet_status_alerts"
+                        android:summary="Notify when parakeet device stops checking in"
+                        android:title="Parakeet related alerts" />
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="parakeet_charge_silent"
+                        android:dependency="parakeet_status_alerts"
+                        android:summary="Raise parakeet notifiction silently when charging"
+                        android:title="Silent alert when charging" />
                 </PreferenceCategory>
             </PreferenceScreen>
         </PreferenceCategory>
