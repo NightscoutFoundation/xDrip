@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
@@ -138,6 +139,11 @@ public class NightscoutUploader {
                 try {
                     int apiVersion = 0;
                     URI uri = new URI(baseURI);
+                    if ((uri.getHost().startsWith("192.168.")) && (!JoH.isLANConnected()))
+                    {
+                        Log.d(TAG,"Skipping Nighscout upload to: "+uri.getHost()+" due to no LAN connection");
+                        continue;
+                    }
                     if (uri.getPath().endsWith("/v1/")) apiVersion = 1;
                     String baseURL;
                     String secret = uri.getUserInfo();
