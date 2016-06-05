@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 public class WidgetUpdateService extends Service {
@@ -21,6 +22,7 @@ public class WidgetUpdateService extends Service {
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context ctx, Intent intent) {
+            final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-widget-bcast", 20000);
             Log.d(TAG, "onReceive("+intent.getAction()+")");
             if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
                 updateCurrentBgInfo();
@@ -30,6 +32,7 @@ public class WidgetUpdateService extends Service {
             } else if (intent.getAction().compareTo(Intent.ACTION_SCREEN_OFF) == 0) {
                 disableClockTicks();
             }
+            JoH.releaseWakeLock(wl);
         }
     };
 

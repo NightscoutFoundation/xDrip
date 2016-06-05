@@ -20,13 +20,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.localeTasker.Constants;
 import com.eveningoutpost.dexdrip.localeTasker.bundle.BundleScrubber;
 import com.eveningoutpost.dexdrip.localeTasker.bundle.PluginBundleManager;
 import com.eveningoutpost.dexdrip.localeTasker.ui.EditActivity;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Locale;
 
@@ -59,73 +62,77 @@ public final class FireReceiver extends BroadcastReceiver {
          * Always be strict on input parameters! A malicious third-party app could send a malformed Intent.
          */
 
-        if (!com.twofortyfouram.locale.Intent.ACTION_FIRE_SETTING.equals(intent.getAction())) {
-            if (Constants.IS_LOGGABLE) {
-                Log.e(Constants.LOG_TAG,
-                        String.format(Locale.US, "Received unexpected Intent action %s", intent.getAction())); //$NON-NLS-1$
+       final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-tasker-onreceiver", 60000);
+        try {
+
+            if (!com.twofortyfouram.locale.Intent.ACTION_FIRE_SETTING.equals(intent.getAction())) {
+                if (Constants.IS_LOGGABLE) {
+                    Log.e(Constants.LOG_TAG,
+                            String.format(Locale.US, "Received unexpected Intent action %s", intent.getAction())); //$NON-NLS-1$
+                }
+                JoH.releaseWakeLock(wl);
+                return;
             }
-            return;
-        }
 
-        BundleScrubber.scrub(intent);
+            BundleScrubber.scrub(intent);
 
-        final Bundle bundle = intent.getBundleExtra(com.twofortyfouram.locale.Intent.EXTRA_BUNDLE);
-        BundleScrubber.scrub(bundle);
+            final Bundle bundle = intent.getBundleExtra(com.twofortyfouram.locale.Intent.EXTRA_BUNDLE);
+            BundleScrubber.scrub(bundle);
 
-        if (PluginBundleManager.isBundleValid(bundle)) {
-            // We receive a space delimited string message from Tasker in the format
-            // COMMAND PARAM1 PARAM2 etc..
+            if (PluginBundleManager.isBundleValid(bundle)) {
+                // We receive a space delimited string message from Tasker in the format
+                // COMMAND PARAM1 PARAM2 etc..
 
-            final String message = bundle.getString(PluginBundleManager.BUNDLE_EXTRA_STRING_MESSAGE);
+                final String message = bundle.getString(PluginBundleManager.BUNDLE_EXTRA_STRING_MESSAGE);
 
-            if (!message.isEmpty()) {
-                String[] message_array = message.toString().split("\\s+"); // split by space
+                if ((message != null) && !message.isEmpty()) {
+                    String[] message_array = message.split("\\s+"); // split by space
 
 
-                // Commands recognised:
-                //
+                    // Commands recognised:
+                    //
 
-                // CAL: BG: -> Calibrate from a historical blood glucose reading
+                    // CAL: BG: -> Calibrate from a historical blood glucose reading
 
-                switch (message_array[0]) {
+                    switch (message_array[0]) {
 
-                    case "CAL":
-                    case "BG":
-                    case "CAL:":
-                    case "BG:":
+                        case "CAL":
+                        case "BG":
+                        case "CAL:":
+                        case "BG:":
 
-                        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
-                        // format = BG BGAGE
-                        // bg in whatever format the app is using mmol/l or mg/dl
-                        // needs sanity check and potential standardizing
+                            Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+                            // format = BG BGAGE
+                            // bg in whatever format the app is using mmol/l or mg/dl
+                            // needs sanity check and potential standardizing
 
-                        // bgage is positive age ago of bg test reading in seconds (minus applied later)
+                            // bgage is positive age ago of bg test reading in seconds (minus applied later)
 
-                        // We push the values to the Calibration Activity
-                        Intent calintent = new Intent();
-                        calintent.setClassName("com.eveningoutpost.dexdrip", "com.eveningoutpost.dexdrip.AddCalibration");
-                        calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            // We push the values to the Calibration Activity
+                            Intent calintent = new Intent();
+                            calintent.setClassName("com.eveningoutpost.dexdrip", "com.eveningoutpost.dexdrip.AddCalibration");
+                            calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                        calintent.putExtra("bg_string", message_array[1]);
-                        calintent.putExtra("bg_age", message_array[2]);
-                        calintent.putExtra("from_external","true");
-                        context.startActivity(calintent);
+                            calintent.putExtra("bg_string", message_array[1]);
+                            calintent.putExtra("bg_age", message_array[2]);
+                            calintent.putExtra("from_external", "true");
+                            context.startActivity(calintent);
 
-                        break;
+                            break;
 
 
-                    case "ALERT":
-                        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+                        case "ALERT":
+                            Toast.makeText(context, message, Toast.LENGTH_LONG).show();
 
-                        // Modify Alerts
+                            // Modify Alerts
 
-                        break;
+                            break;
 
-                    case "SNOOZE":
+                        case "SNOOZE":
 
-                        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, message, Toast.LENGTH_LONG).show();
 
-                        // Snooze Alerts
+                            // Snooze Alerts
 
 
 //                    case "PREFS":
@@ -173,13 +180,16 @@ public final class FireReceiver extends BroadcastReceiver {
 //                        }
 //
 //                        break;
-                    default:
-                        Toast.makeText(context, "Unknown xDrip first Tasker parameter " + message_array[0], Toast.LENGTH_LONG).show();
-                        break;
+                        default:
+                            Toast.makeText(context, "Unknown xDrip first Tasker parameter " + message_array[0], Toast.LENGTH_LONG).show();
+                            break;
+                    }
+
                 }
 
             }
-
+        } finally {
+            JoH.releaseWakeLock(wl);
         }
     }
 

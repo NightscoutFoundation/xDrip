@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -155,6 +157,7 @@ public class WatchUpdaterService extends WearableListenerService implements
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        final PowerManager.WakeLock wl = JoH.getWakeLock("watchupdate-onstart",60000);
         double timestamp = 0;
         if (intent != null) {
             timestamp = intent.getDoubleExtra("timestamp", 0);
@@ -182,6 +185,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         if (pebble_integration) {
             sendData();
         }
+        JoH.releaseWakeLock(wl);
         return START_STICKY;
     }
 
@@ -194,7 +198,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     @Override
     public void onMessageReceived(MessageEvent event) {
         if (wear_integration) {
-
+            final PowerManager.WakeLock wl = JoH.getWakeLock("watchupdate-msgrec", 60000);
             if (event != null) {
                 Log.d(TAG, "wearable event path: " + event.getPath());
                 switch (event.getPath()) {
@@ -223,7 +227,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                         break;
                 }
             }
-
+            JoH.releaseWakeLock(wl);
         }
     }
 

@@ -2,6 +2,11 @@ package com.eveningoutpost.dexdrip.Models;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
@@ -11,6 +16,7 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -37,6 +43,7 @@ import java.util.zip.Inflater;
 public class JoH {
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
     private final static String TAG = "jamorham JoH";
+    private final static boolean debug_wakelocks = false;
 
     private static double benchmark_time = 0;
     private static Map<String, Double> benchmarks = new HashMap<String, Double>();
@@ -284,6 +291,29 @@ public class JoH {
     public static double tolerantParseDouble(String str) throws NumberFormatException {
         return Double.parseDouble(str.replace(",", "."));
 
+    }
+
+    public static PowerManager.WakeLock getWakeLock(final String name, int millis) {
+        final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, name);
+        wl.acquire(millis);
+        if (debug_wakelocks) Log.d(TAG,"getWakeLock: "+name+" "+wl.toString());
+        return wl;
+    }
+
+    public static void releaseWakeLock(PowerManager.WakeLock wl)
+    {
+        if (debug_wakelocks) Log.d(TAG,"releaseWakeLock: "+wl.toString());
+        if (wl.isHeld()) wl.release();
+    }
+
+    public static boolean isLANConnected() {
+        ConnectivityManager cm =
+                (ConnectivityManager) xdrip.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        final boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnected();
+        return isConnected && ((activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) || (activeNetwork.getType() == ConnectivityManager.TYPE_ETHERNET));
     }
 
     public static void static_toast(final Context context, final String msg, final int length) {

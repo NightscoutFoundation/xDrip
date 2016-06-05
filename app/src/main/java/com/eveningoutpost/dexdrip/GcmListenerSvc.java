@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
@@ -40,6 +41,8 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
     @Override
     public void onMessageReceived(String from, Bundle data) {
 
+        final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-onMsgRec",120000);
+
         String message = data.getString("message");
 
         Log.d(TAG, "From: " + from);
@@ -59,6 +62,7 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
 
             if (xfrom.equals(GcmActivity.token)) {
                 GcmActivity.queueAction(action + payload);
+                JoH.releaseWakeLock(wl);
                 return;
             }
 
@@ -72,6 +76,7 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                         Log.e(TAG, "Exception unsubscribing: " + e.toString());
                     }
                 }
+                JoH.releaseWakeLock(wl);
                 return;
             }
 
@@ -183,11 +188,14 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
             // direct downstream message.
             Log.i(TAG, "Received downstream message: " + message);
         }
+
+        JoH.releaseWakeLock(wl);
     }
 
     public class ServiceCallback implements Preferences.OnServiceTaskCompleted {
         @Override
         public void onTaskCompleted(byte[] result) {
+            final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-gcm-callback",60000);
             try {
                 if (result.length > 0) {
                     if ((staticKey == null) || (staticKey.length != 16)) {
@@ -207,6 +215,8 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Got error in BFP callback: " + e.toString());
+            } finally {
+                JoH.releaseWakeLock(wl);
             }
         }
     }

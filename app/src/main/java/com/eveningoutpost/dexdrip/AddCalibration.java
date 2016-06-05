@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -49,6 +51,8 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
     // jamorham - receive automated calibration via broadcast intent / tasker receiver
     public void automatedCalibration() {
 
+        final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-autocalib",60000);
+
         final long estimatedInterstitialLagSeconds = 600; // how far behind venous glucose do we estimate
 
         Bundle extras = getIntent().getExtras();
@@ -66,6 +70,9 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                         new Thread() {
                             @Override
                             public void run() {
+
+                                final PowerManager.WakeLock wlt = JoH.getWakeLock("xdrip-autocalib",60000);
+
                                 long bgAgeNumber = Long.parseLong(bg_age);
 
                                 // most appropriate raw value to calculate calibration
@@ -83,6 +90,8 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                     Log.d("jamorham calib", "Relaying tasker pushed calibration");
                                     GcmActivity.pushCalibration(string_value, bg_age);
                                 }
+
+                                JoH.releaseWakeLock(wlt);
                             }
                         }.start();
 
@@ -95,6 +104,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
             } else {
                 Log.w("CALERROR", "ERROR during automated calibration - no active sensor");
             }
+            JoH.releaseWakeLock(wl);
             finish();
         }
 

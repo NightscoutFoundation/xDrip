@@ -103,15 +103,19 @@ public class Notifications extends IntentService {
     protected void onHandleIntent(Intent intent) {
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "NotificationsIntent");
-        wl.acquire();
-        Log.d("Notifications", "Running Notifications Intent Service");
-        Context context =getApplicationContext(); 
-        ReadPerfs(context);
-        notificationSetter(context);
-        ArmTimer(context);
-        context.startService(new Intent(context, MissedReadingService.class));
-        wl.release();
+        wl.acquire(60000);
+        try {
+            Log.d("Notifications", "Running Notifications Intent Service");
+            Context context = getApplicationContext();
+            ReadPerfs(context);
+            notificationSetter(context);
+            ArmTimer(context);
+            context.startService(new Intent(context, MissedReadingService.class));
+        } finally {
+            if (wl.isHeld()) wl.release();
+        }
     }
+
 
     public void ReadPerfs(Context context) {
         mContext = context;
@@ -366,7 +370,10 @@ public class Notifications extends IntentService {
         if (wakeIntent != null)
             alarm.cancel(wakeIntent);
         wakeIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, wakeIntent);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // is this right for Lollipop??
             alarm.setAlarmClock(new AlarmManager.AlarmClockInfo(wakeTime, wakeIntent), wakeIntent);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, wakeIntent);

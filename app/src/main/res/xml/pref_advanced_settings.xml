@@ -32,6 +32,11 @@
             android:title="Less common settings">
             <CheckBoxPreference
                 android:defaultValue="false"
+                android:key="excessive_wakelocks"
+                android:summary="Older gratuitous wakelocks which can drain extra battery but might be needed for NightWatch or Android Wear"
+                android:title="Use Excessive Wakelocks" />
+            <CheckBoxPreference
+                android:defaultValue="false"
                 android:key="predictive_bg"
                 android:summary="Old method - Not Recommended! Attempts to predict readings each minute based on the past few values."
                 android:title="Display Predictive Values" />

@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -52,8 +53,14 @@ public class WifiCollectionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);
+        final PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "xdrip-wificolsvc-onStart");
+
+        wl.acquire(60000);
+
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             stopSelf();
+            if (wl.isHeld()) wl.release();
             return START_NOT_STICKY;
         }
         if (CollectionServiceStarter.isWifiWixel(getApplicationContext())
@@ -63,8 +70,10 @@ public class WifiCollectionService extends Service {
             setFailoverTimer();
         } else {
             stopSelf();
+            if (wl.isHeld()) wl.release();
             return START_NOT_STICKY;
         }
+        if (wl.isHeld()) wl.release();
         return START_STICKY;
     }
 
@@ -102,10 +111,13 @@ public class WifiCollectionService extends Service {
             Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             Calendar calendar = Calendar.getInstance();
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                alarm.setExact(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, WifiCollectionService.class), 0));
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, WifiCollectionService.class), 0));
+            } else if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                alarm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, WifiCollectionService.class), 0));
             } else {
-                alarm.set(alarm.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, WifiCollectionService.class), 0));
+                alarm.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, WifiCollectionService.class), 0));
             }
         } else {
             stopSelf();

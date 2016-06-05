@@ -80,7 +80,7 @@ public class BgSendQueue extends Model {
     }
 
     public static void handleNewBgReading(BgReading bgReading, String operation_type, Context context) {
-        handleNewBgReading(bgReading, operation_type, context,false);
+        handleNewBgReading(bgReading, operation_type, context, false);
     }
 
     public static void handleNewBgReading(BgReading bgReading, String operation_type, Context context, boolean is_follower) {
@@ -154,21 +154,20 @@ public class BgSendQueue extends Model {
 
                 //just keep it alive for 3 more seconds to allow the watch to be updated
                 // TODO: change NightWatch to not allow the system to sleep.
-                powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                        "broadcstNightWatch").acquire(3000);
-
+                if (prefs.getBoolean("excessive_wakelocks", false)) {
+                    powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                            "broadcstNightWatch").acquire(3000);
+                }
             }
 
             // send to wear
             if (prefs.getBoolean("wear_sync", false)) {
-
-                /*By integrating the watch part of Nightwatch we inherited the same wakelock
-                    problems NW had - so adding the same quick fix for now.
-                    TODO: properly "wakelock" the wear (and probably pebble) services
-                 */
                 context.startService(new Intent(context, WatchUpdaterService.class));
-                powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                        "quickFix3").acquire(15000);
+                if (prefs.getBoolean("excessive_wakelocks", false)) {
+                    powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                            "wear-quickFix3").acquire(15000);
+
+                }
             }
 
             // send to pebble

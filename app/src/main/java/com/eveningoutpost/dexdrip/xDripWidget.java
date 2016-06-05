@@ -7,10 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.widget.RemoteViews;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
@@ -29,6 +31,7 @@ public class xDripWidget extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-widget-onupdate", 20000);
         final int N = appWidgetIds.length;
         for (int i = 0; i < N; i++) {
 
@@ -36,6 +39,7 @@ public class xDripWidget extends AppWidgetProvider {
             updateAppWidget(context, appWidgetManager, appWidgetIds[i]);
 
         }
+        JoH.releaseWakeLock(wl);
     }
 
     @Override

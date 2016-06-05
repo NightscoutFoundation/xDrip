@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -159,7 +160,7 @@ public class GcmActivity extends Activity {
         new Thread() {
             @Override
             public void run() {
-
+                final PowerManager.WakeLock wl = JoH.getWakeLock("syncBGTable",300000);
                 if ((JoH.ts() - last_sync_request) > (60 * 1000 * 5)) {
                     last_sync_request = JoH.ts();
 
@@ -180,6 +181,7 @@ public class GcmActivity extends Activity {
                 } else {
                     Log.d(TAG, "Ignoring recent sync request");
                 }
+                JoH.releaseWakeLock(wl);
             }
         }.start();
     }
