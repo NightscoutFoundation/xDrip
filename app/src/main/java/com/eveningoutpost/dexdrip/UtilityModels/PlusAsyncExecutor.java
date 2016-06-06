@@ -61,14 +61,14 @@ public class PlusAsyncExecutor implements Executor {
                     final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);
                     final PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, queueId);
                     try {
-                        wl.acquire();
+                        wl.acquire(3600000); // failsafe value = 60 mins
                         final int locksnow = wlocks.incrementAndGet();
                         Log.d(TAG, "Acquire Wakelocks total: " + locksnow);
                         r.run();
                     } finally {
                         // each task will try to call the next when done
                         next(queueId);
-                        wl.release(); // will stack wakelocks
+                        if (wl.isHeld()) wl.release(); // will stack wakelocks
                         final int locksnow = wlocks.decrementAndGet();
                         Log.d(TAG, "Release Wakelocks total: " + locksnow);
                     }
