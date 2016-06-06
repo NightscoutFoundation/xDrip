@@ -117,9 +117,10 @@ public class SystemStatus extends ActivityWithMenu {
         setVersionName();
         setCollectionMethod();
         setCurrentDevice();
-        if (Home.get_follower())
-        {
+        if (Home.get_follower()) {
             setConnectionStatusFollower();
+        } else if (prefs.getString("dex_collection_method", "bogus").equals("WifiWixel")) {
+            setConnectionStatusWifiWixel();
         } else {
             setConnectionStatus();
         }
@@ -232,6 +233,14 @@ public class SystemStatus extends ActivityWithMenu {
             connection_status.setText("No data");
         } else {
             connection_status.setText((JoH.qs((JoH.ts() - GcmListenerSvc.lastMessageReceived) / 60000, 0)) + " mins ago");
+        }
+    }
+    private void setConnectionStatusWifiWixel() {
+        if (ParakeetHelper.isParakeetCheckingIn())
+        {
+            connection_status.setText(ParakeetHelper.parakeetStatusString());
+        } else {
+            connection_status.setText("No data");
         }
     }
 

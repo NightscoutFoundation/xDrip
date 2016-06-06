@@ -47,6 +47,27 @@ public class ParakeetHelper {
         return null;
     }
 
+    public static boolean isParakeetCheckingIn()
+    {
+        return !parakeet_not_checking_in;
+    }
+
+    private static int parakeetMinutesSinceCheckin()
+    {
+        return (int)((JoH.ts()-highest_parakeet_timestamp)/60000);
+    }
+
+    public static String parakeetStatusString()
+    {
+        if (isParakeetCheckingIn())
+        {
+            return "Parakeet seen "+parakeetMinutesSinceCheckin()+" mins ago";
+        } else {
+            return "Parakeet no data";
+        }
+    }
+
+
     public static String getParakeetSetupURL(Context context) {
         String url = getParakeetURL(context);
         if (url == null) return null;
