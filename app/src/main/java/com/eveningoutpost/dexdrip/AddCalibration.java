@@ -23,6 +23,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
     public static String menu_name = "Add Calibration";
     private static final String TAG = "AddCalibration";
     private NavigationDrawerFragment mNavigationDrawerFragment;
+    private static double lastExternalCalibrationValue = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +72,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                             @Override
                             public void run() {
 
-                                final PowerManager.WakeLock wlt = JoH.getWakeLock("xdrip-autocalib",60000);
+                                final PowerManager.WakeLock wlt = JoH.getWakeLock("xdrip-autocalibt",60000);
 
                                 long bgAgeNumber = Long.parseLong(bg_age);
 
@@ -83,12 +84,18 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                 }
                                 // Sanity checking can go here
 
+                                if (calValue > 0) {
+                                    if (calValue != lastExternalCalibrationValue) {
+                                        lastExternalCalibrationValue = calValue;
+                                        Calibration calibration = Calibration.create(calValue, bgAgeNumber, getApplicationContext());
+                                    } else {
+                                        Log.w(TAG, "Ignoring Remote calibration value as identical to last one: " + calValue);
+                                    }
 
-                                Calibration calibration = Calibration.create(calValue, bgAgeNumber, getApplicationContext());
-
-                                if (from_external.equals("true")) {
-                                    Log.d("jamorham calib", "Relaying tasker pushed calibration");
-                                    GcmActivity.pushCalibration(string_value, bg_age);
+                                    if (from_external.equals("true")) {
+                                        Log.d("jamorham calib", "Relaying tasker pushed calibration");
+                                        GcmActivity.pushCalibration(string_value, bg_age);
+                                    }
                                 }
 
                                 JoH.releaseWakeLock(wlt);
