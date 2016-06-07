@@ -117,8 +117,7 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
         if (this.dictionary == null) {
             this.dictionary = new PebbleDictionary();
         }
-
-        this.bgReading=null;
+        
         if (this.bgReading != null) {
             boolean no_signal;
 
