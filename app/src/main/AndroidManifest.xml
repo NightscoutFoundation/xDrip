@@ -207,8 +207,11 @@
             android:name=".CalibrationCheckInActivity"
             android:label="@string/title_activity_calibration_check_in" />
         <activity
-        android:name=".utils.InstallPebbleWatchFace"
+        android:name=".UtilityModels.pebble.watchface.InstallPebbleWatchFace"
             android:label="Install Pebble Watchface" />
+        <activity
+            android:name=".UtilityModels.pebble.watchface.InstallPebbleTrendWatchFace"
+            android:label="Install Pebble Trend Watchface"/>
         <activity
             android:name=".UsbConnectedActivity"
             android:label="@string/title_activity_usb_connected">
@@ -286,7 +289,7 @@
             android:name=".UtilityModels.Notifications"
             android:exported="false" />
         <service
-            android:name=".UtilityModels.PebbleSync"
+            android:name=".UtilityModels.pebble.PebbleWatchSync"
             android:enabled="true"
             android:exported="true" />
         <service

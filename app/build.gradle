@@ -101,6 +101,11 @@ android {
         versionName generateVersionName()
         buildConfigField "int", "buildVersion", generateVersionNumberString()
     }
+
+    packagingOptions {
+        exclude 'META-INF/INDEX.LIST'
+    }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -116,6 +121,7 @@ android {
             ext.enableCrashlytics = false
       //      applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
+            debuggable true
         }
     }
 }
@@ -165,6 +171,10 @@ dependencies {
     }
     compile 'uk.com.robust-it:cloning:1.9.2'
     compile 'com.github.amlcurran.showcaseview:library:5.4.1'
+
+    // Pebble-Trend, needs to be checked if really needed
+    //compile 'com.android.support:multidex:1.0.1'
+    compile 'ar.com.hjg:pngj:2.1.0'
 
 }
 

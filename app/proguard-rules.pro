@@ -40,6 +40,7 @@
 -dontwarn obj.objenesis.instantiator.sun.**
 -dontwarn obj.objenesis.instantiator.sun.UnsafeFactoryInstantiator
 -dontwarn sun.misc.Unsafe
+-dontwarn ar.com.hjg.pngj.**
 
 -keep class com.nightscout.** { *; }
 -keep class com.squareup.** { *; }
@@ -52,3 +53,4 @@
 -keep class rx.internal.util.** { *; }
 -keep class sun.misc.Unsafe { *; }
 -keep class com.eveningoutpost.dexdrip.Models.** { *; }
+-keep class ar.com.hjg.pngj.** { *; }

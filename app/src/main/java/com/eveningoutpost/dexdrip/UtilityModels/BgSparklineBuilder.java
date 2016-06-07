@@ -38,6 +38,7 @@ public class BgSparklineBuilder {
     private boolean showHighLine = false;
     private boolean showAxes = false;
     private boolean useSmallDots = true;
+    private boolean useTinyDots = false;
 
     public BgSparklineBuilder setStart(long start) {
         this.start = start / BgGraphBuilder.FUZZER;
@@ -100,10 +101,16 @@ public class BgSparklineBuilder {
         this.useSmallDots = useSmallDots;
         return this;
     }
+    public BgSparklineBuilder setTinyDots(boolean useTinyDots) {
+        this.useTinyDots = useTinyDots;
+        return this;
+    }
 
     public BgSparklineBuilder setSmallDots() {
         return this.setSmallDots(true);
     }
+
+    public BgSparklineBuilder setTinyDots() { return this.setTinyDots(true); }
 
     public BgSparklineBuilder setBgGraphBuilder(BgGraphBuilder bgGraphBuilder) {
         this.bgGraphBuilder = bgGraphBuilder;
@@ -172,6 +179,10 @@ public class BgSparklineBuilder {
         if (useSmallDots) {
             for(Line line: lines)
                 line.setPointRadius(2);
+        }
+        if (useTinyDots) {
+            for(Line line: lines)
+                line.setPointRadius(1);
         }
         LineChartData lineData = new LineChartData(lines);
         if (showAxes) {

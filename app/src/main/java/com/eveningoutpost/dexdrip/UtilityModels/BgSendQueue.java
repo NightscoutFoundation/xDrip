@@ -24,6 +24,8 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.ShareModels.BgUploader;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
+import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
+import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -49,16 +51,16 @@ public class BgSendQueue extends Model {
     @Column(name = "operation_type")
     public String operation_type;
 
-/*
-    public static List<BgSendQueue> queue() {
-        return new Select()
-                .from(BgSendQueue.class)
-                .where("success = ?", false)
-                .orderBy("_ID asc")
-                .limit(20)
-                .execute();
-    }
-*/
+    /*
+        public static List<BgSendQueue> queue() {
+            return new Select()
+                    .from(BgSendQueue.class)
+                    .where("success = ?", false)
+                    .orderBy("_ID asc")
+                    .limit(20)
+                    .execute();
+        }
+    */
     public static List<BgSendQueue> mongoQueue() {
         return new Select()
                 .from(BgSendQueue.class)
@@ -89,7 +91,7 @@ public class BgSendQueue extends Model {
                 "sendQueue");
         wakeLock.acquire();
         try {
-           if (!is_follower) addToQueue(bgReading, operation_type);
+            if (!is_follower) addToQueue(bgReading, operation_type);
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -98,7 +100,7 @@ public class BgSendQueue extends Model {
                 context.sendBroadcast(updateIntent);
             }
 
-            if(AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, xDripWidget.class)).length > 0){
+            if (AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, xDripWidget.class)).length > 0) {
                 context.startService(new Intent(context, WidgetUpdateService.class));
             }
 
@@ -121,19 +123,19 @@ public class BgSendQueue extends Model {
                 //raw value
                 double slope = 0, intercept = 0, scale = 0, filtered = 0, unfiltered = 0, raw = 0;
                 Calibration cal = Calibration.last();
-                if (cal != null){
+                if (cal != null) {
                     // slope/intercept/scale like uploaded to NightScout (NightScoutUploader.java)
-                    if(cal.check_in) {
+                    if (cal.check_in) {
                         slope = cal.first_slope;
-                        intercept= cal.first_intercept;
-                        scale =  cal.first_scale;
+                        intercept = cal.first_intercept;
+                        scale = cal.first_scale;
                     } else {
-                        slope = 1000/cal.slope;
-                        intercept=  (cal.intercept * -1000) / (cal.slope);
+                        slope = 1000 / cal.slope;
+                        intercept = (cal.intercept * -1000) / (cal.slope);
                         scale = 1;
                     }
-                    unfiltered= bgReading.usedRaw()*1000;
-                    filtered = bgReading.ageAdjustedFiltered()*1000;
+                    unfiltered = bgReading.usedRaw() * 1000;
+                    filtered = bgReading.ageAdjustedFiltered() * 1000;
                 }
                 //raw logic from https://github.com/nightscout/cgm-remote-monitor/blob/master/lib/plugins/rawbg.js#L59
                 if (slope != 0 && intercept != 0 && scale != 0) {
@@ -171,12 +173,11 @@ public class BgSendQueue extends Model {
             }
 
             // send to pebble
-            if(prefs.getBoolean("broadcast_to_pebble", false)) {
-                context.startService(new Intent(context, PebbleSync.class));
+            if (prefs.getBoolean("broadcast_to_pebble", false) && (PebbleUtil.getCurrentPebbleSyncType(prefs) != 1)) {
+                context.startService(new Intent(context, PebbleWatchSync.class));
             }
 
-            if ((!is_follower) && (prefs.getBoolean("plus_follow_master",false)))
-            {
+            if ((!is_follower) && (prefs.getBoolean("plus_follow_master", false))) {
                 GcmActivity.syncBGReading(bgReading);
             }
 
@@ -199,7 +200,7 @@ public class BgSendQueue extends Model {
     }
 
     public void markMongoSuccess() {
-        mongo_success = true;
+        this.mongo_success = true;
         save();
     }
 
@@ -207,9 +208,9 @@ public class BgSendQueue extends Model {
         Intent batteryIntent = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-        if(level == -1 || scale == -1) {
+        if (level == -1 || scale == -1) {
             return 50;
         }
-        return (int)(((float)level / (float)scale) * 100.0f);
+        return (int) (((float) level / (float) scale) * 100.0f);
     }
 }

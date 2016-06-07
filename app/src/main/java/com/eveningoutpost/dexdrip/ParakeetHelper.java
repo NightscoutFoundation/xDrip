@@ -40,7 +40,7 @@ public class ParakeetHelper {
 
         for (String host : hosts) {
             host = host.trim();
-            if ((host.startsWith("http://") || host.startsWith("https://")) && host.contains("/json.get")) {
+            if ((host.startsWith("http://") || host.startsWith("https://")) && (host.contains("/json.get") || host.contains("Parakeet"))) {
                 return host;
             }
         }
@@ -192,6 +192,10 @@ public class ParakeetHelper {
         NotificationManager notificationManager =
                 (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(Notifications.parakeetMissingId);
+    }
+
+    public static boolean isRealParakeetDevice() {
+        return (!parakeet_not_checking_in);
     }
 
     public static class ServiceCallback implements Preferences.OnServiceTaskCompleted {

@@ -1,21 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
+    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:key="smart_watch_options"
+        android:summary="Pebble and Android Wear options"
+        android:icon="@drawable/ic_watch_grey600_48dp"
+        android:title="Smart Watch Features">
     <PreferenceCategory
-        android:title="Watch Integration"
+        android:title="Wear Integration"
         android:key="watch_integration">
-        <CheckBoxPreference
+        <SwitchPreference
             android:key="wear_sync"
             android:title="Android Wear Integration"
             android:summary="Send data to Android Wear Watchface."
             android:defaultValue="false" />
+        </PreferenceCategory>
+        <PreferenceCategory
+            android:title="Pebble Integration"
+            android:key="pebble_integration">
         <SwitchPreference
-            android:title="Send to Pebble"
             android:key="broadcast_to_pebble"
-            android:summary="If you have a pebble watch you can send bg data straight to it"
-            android:defaultValue="false">
-        </SwitchPreference>
+            android:title="Pebble Watch Integration"
+            android:summary="Send data to Pebble Watchface."
+            android:defaultValue="false" />
+        <ListPreference
+            android:title="Choose Pebble Watchface"
+            android:key="broadcast_to_pebble_type"
+            android:dependency="broadcast_to_pebble"
+            android:summary="Standard or Trend pebble watchfaces"
+            android:entries="@array/SendToPebbleChoice"
+            android:entryValues="@array/SendToPebbleChoiceValues"
+            android:defaultValue="2">
+        </ListPreference>
+
+        <CheckBoxPreference
+            android:title="@string/pref_pebble_display_trend"
+            android:key="pebble_display_trend"
+            android:summary="@string/pref_summary_display_trend"
+            android:dependency="broadcast_to_pebble"
+            android:defaultValue="false" >
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:title="@string/pref_pebble_display_high_line"
+            android:key="pebble_high_line"
+            android:summary="Displays the High Line"
+            android:dependency="broadcast_to_pebble"
+            android:defaultValue="false" >
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:title="@string/pref_pebble_display_low_line"
+            android:key="pebble_low_line"
+            android:summary="Displays the Low line"
+            android:dependency="broadcast_to_pebble"
+            android:defaultValue="false" >
+        </CheckBoxPreference>
+        <ListPreference
+            android:title="Trend Time Period"
+            android:key="pebble_trend_period"
+            android:summary="Set the trend period to display"
+            android:dependency="broadcast_to_pebble"
+            android:entries="@array/PebbleTrendPeriods"
+            android:entryValues="@array/PebbleTrendPeriodValues"
+            android:defaultValue="3">
+        </ListPreference>
+        <CheckBoxPreference
+            android:title="Display Delta"
+            android:key="pebble_show_delta"
+            android:summary="Displays the Delta value"
+            android:dependency="broadcast_to_pebble"
+            android:defaultValue="true" >
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:title="Display Delta Units"
+            android:key="pebble_show_delta_units"
+            android:summary="Displays the Delta units"
+            android:dependency="broadcast_to_pebble"
+            android:defaultValue="true" >
+        </CheckBoxPreference>
+        <CheckBoxPreference
+            android:title="Display Slope Arrows"
+            android:key="pebble_show_arrows"
+            android:summary="Displays the Slope Arrows"
+            android:dependency="broadcast_to_pebble"
+            android:defaultValue="true" >
+        </CheckBoxPreference>
+        <EditTextPreference
+            android:key="pebble_special_value"
+            android:title="Special Value"
+            android:summary="Special BGL value to display the message below"
+            android:dependency="broadcast_to_pebble"
+            android:defaultValue="99"/>
+        <EditTextPreference
+            android:key="pebble_special_text"
+            android:title="Text to display when hitting special value"
+            android:summary="Message to display when BGL hits the special value above"
+            android:dependency="broadcast_to_pebble"
+            android:defaultValue="BAZINGA!" />
     </PreferenceCategory>
+        </PreferenceScreen>
 
     <PreferenceCategory
         android:key="other_category"

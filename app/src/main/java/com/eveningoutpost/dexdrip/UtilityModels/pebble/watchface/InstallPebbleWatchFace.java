@@ -1,5 +1,5 @@
 
-package com.eveningoutpost.dexdrip.utils;
+package com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -27,11 +27,16 @@ import java.io.OutputStream;
 
 /**
  * Created by jamorham on 22/04/2016.
+ * modified by Andy, to be able to add additional PebbleWtatchFace, which can just extend this
  */
 public class InstallPebbleWatchFace extends AppCompatActivity {
 
     private final static int MY_PERMISSIONS_REQUEST_STORAGE = 99;
     private static String TAG = "InstallPebbleWatchFace";
+
+    protected String getTag() {
+        return TAG;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +47,7 @@ public class InstallPebbleWatchFace extends AppCompatActivity {
         }
     }
 
-    private boolean isExternalStorageWritable() {
+    protected boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if (!checkPermissions()) return false;
         return Environment.MEDIA_MOUNTED.equals(state);
@@ -78,12 +83,22 @@ public class InstallPebbleWatchFace extends AppCompatActivity {
         }
     }
 
-    private void toast(String msg) {
+
+    protected InputStream openRawResource() {
+        return getResources().openRawResource(R.raw.xdrip_pebble);
+    }
+
+    protected String getOutputFilename() {
+        return "xDrip-plus-pebble-auto-install.pbw";
+    }
+
+
+    protected void toast(String msg) {
         try {
             Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "Toast msg: " + msg);
+            Log.d(getTag(), "Toast msg: " + msg);
         } catch (Exception e) {
-            Log.e(TAG, "Couldn't display toast: " + msg);
+            Log.e(getTag(), "Couldn't display toast: " + msg);
         }
     }
 
@@ -95,9 +110,9 @@ public class InstallPebbleWatchFace extends AppCompatActivity {
         // create the file where pebble helper can process it
         try {
             // Confirmed as freely redistributable by jstevensog - source https://github.com/jstevensog/xDrip-pebble
-            InputStream in = getResources().openRawResource(R.raw.xdrip_pebble);
+            InputStream in = openRawResource();
 
-            String dest_filename = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/xDrip-plus-pebble-auto-install.pbw";
+            String dest_filename = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + getOutputFilename();
             OutputStream out = new FileOutputStream(dest_filename);
             byte[] buffer = new byte[8192];
             int read;
@@ -115,7 +130,7 @@ public class InstallPebbleWatchFace extends AppCompatActivity {
             startActivity(intent);
 
         } catch (Exception e) {
-            UserError.Log.e(TAG, " Got exception: " + e.toString());
+            UserError.Log.e(getTag(), " Got exception: " + e.toString());
         }
         return true;
     }

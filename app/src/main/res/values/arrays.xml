@@ -23,6 +23,31 @@
 
     </string-array>
 
+    <string-array name="SendToPebbleChoice">
+
+        <item>Standard Watchface</item>
+        <item>Trend Watchface</item>
+    </string-array>
+    <string-array name="SendToPebbleChoiceValues">
+
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+
+    <string-array name="PebbleTrendPeriods">
+        <item>1hr</item>
+        <item>2hr</item>
+        <item>3hr</item>
+        <item>4hr</item>
+    </string-array>
+    <string-array name="PebbleTrendPeriodValues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
     <string-array name="UpdateChannel">
         <item>stable</item>
         <item>beta</item>
