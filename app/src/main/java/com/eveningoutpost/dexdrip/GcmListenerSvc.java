@@ -227,6 +227,11 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
         }
     }
 
+    public static int lastMessageMinutesAgo()
+    {
+        return (int)((JoH.ts() - GcmListenerSvc.lastMessageReceived) / 60000);
+    }
+
     private void sendNotification(String body, String title) {
         Intent intent = new Intent(this, Home.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
