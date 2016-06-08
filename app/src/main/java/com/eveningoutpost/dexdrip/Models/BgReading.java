@@ -42,6 +42,8 @@ public class BgReading extends Model implements ShareUploadableBg{
     private final static String TAG = BgReading.class.getSimpleName();
     private final static String TAG_ALERT = TAG +" AlertBg";
     private final static String PERSISTENT_HIGH_SINCE = "persistent_high_since";
+    public static final double AGE_ADJUSTMENT_TIME = 86400000 * 1.9;
+    public static final double AGE_ADJUSTMENT_FACTOR = .45;
     //TODO: Have these as adjustable settings!!
     public final static double BESTOFFSET = (60000 * 0); // Assume readings are about x minutes off from actual!
 
@@ -875,9 +877,9 @@ public class BgReading extends Model implements ShareUploadableBg{
     }
 
     public void calculateAgeAdjustedRawValue(){
-        final double adjust_for = (86400000 * 1.9) - time_since_sensor_started;
+        final double adjust_for = AGE_ADJUSTMENT_TIME - time_since_sensor_started;
         if ((adjust_for > 0) && (!CollectionServiceStarter.isLimitter())) {
-            age_adjusted_raw_value = (((.45) * (adjust_for / (86400000 * 1.9))) * raw_data) + raw_data;
+            age_adjusted_raw_value = ((AGE_ADJUSTMENT_FACTOR * (adjust_for / AGE_ADJUSTMENT_TIME)) * raw_data) + raw_data;
             Log.i(TAG, "calculateAgeAdjustedRawValue: RAW VALUE ADJUSTMENT FROM:" + raw_data + " TO: " + age_adjusted_raw_value);
         } else {
             age_adjusted_raw_value = raw_data;
