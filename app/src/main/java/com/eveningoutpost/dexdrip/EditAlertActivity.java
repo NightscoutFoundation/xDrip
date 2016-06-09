@@ -77,7 +77,7 @@ public class EditAlertActivity extends ActivityWithMenu {
     private int startMinute = 0;
     private int endHour = 23;
     private int endMinute = 59;
-    private int alertReraise = 1;
+
 
     private int defaultSnooze;
 
@@ -155,7 +155,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             buttonRemove.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             buttonTest.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             buttonalertMp3.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
-            buttonSave.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+            
             buttonPreSnooze.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             alertText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
             alertThreshold.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
@@ -189,6 +189,7 @@ public class EditAlertActivity extends ActivityWithMenu {
 
         uuid = getExtra(savedInstanceState, "uuid");
         String status;
+        int alertReraise;
         if (uuid == null) {
             // This is a new alert
             above = Boolean.parseBoolean(getExtra(savedInstanceState, "above"));
@@ -431,7 +432,7 @@ public class EditAlertActivity extends ActivityWithMenu {
 
                 threshold = unitsConvertFromDisp(threshold);
 
-                alertReraise = 1;
+                int alertReraise = 1;
                 Integer alterReraiseInt = parseInt(reraise.getText().toString());
                 if(alterReraiseInt ==null)
                     return;
