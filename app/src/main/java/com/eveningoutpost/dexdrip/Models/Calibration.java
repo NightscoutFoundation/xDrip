@@ -617,7 +617,8 @@ public class Calibration extends Model {
         List<BgReading> bgReadings = BgReading.latestUnCalculated(adjustCount);
         if (calibrations.size() == 3) {
             int denom = bgReadings.size();
-            Calibration latestCalibration = calibrations.get(0);
+            //Calibration latestCalibration = calibrations.get(0);
+            Calibration latestCalibration = Calibration.lastValid();
             int i = 0;
             for (BgReading bgReading : bgReadings) {
                 double oldYValue = bgReading.calculated_value;
@@ -627,7 +628,8 @@ public class Calibration extends Model {
                 i += 1;
             }
         } else if (calibrations.size() == 2) {
-            Calibration latestCalibration = calibrations.get(0);
+            //Calibration latestCalibration = calibrations.get(0);
+            Calibration latestCalibration = Calibration.lastValid();
             for (BgReading bgReading : bgReadings) {
                 double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
                 bgReading.calculated_value = newYvalue;
