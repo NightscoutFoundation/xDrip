@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
@@ -109,7 +110,7 @@ public class DisplayQRCode extends AppCompatActivity {
     }
 
     public static void uploadBytes(byte[] result, final int callback_option) {
-
+        final PowerManager.WakeLock wl = JoH.getWakeLock("uploadBytes",1200000);
         if ((result != null) && (result.length > 0)) {
             final byte[] mykey = CipherUtils.getRandomKey();
 
@@ -165,6 +166,7 @@ public class DisplayQRCode extends AppCompatActivity {
                                             }
                                         }
                                     } else {
+                                        Log.d(TAG,"Got unhandled reply: "+reply);
                                         toast(reply);
                                     }
                                 } else {
@@ -180,6 +182,8 @@ public class DisplayQRCode extends AppCompatActivity {
                 } catch (Exception e) {
                     toast(e.getMessage());
                     Log.e(TAG, "General exception: " + e.toString());
+                } finally {
+                    JoH.releaseWakeLock(wl);
                 }
             } else {
                 toast("Something went wrong preparing the settings");

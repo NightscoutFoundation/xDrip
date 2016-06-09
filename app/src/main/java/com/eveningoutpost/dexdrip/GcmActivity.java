@@ -40,6 +40,8 @@ public class GcmActivity extends Activity {
     public static final String TASK_TAG_UNMETERED = "unmetered";
     private static final String TAG = "jamorham gcmactivity";
     public static double last_sync_request = 0;
+    public static double last_sync_fill = 0;
+    private static int bg_sync_backoff = 0;
     private static double last_ping_request = 0;
     public static AtomicInteger msgId = new AtomicInteger(1);
     public static String token = null;
@@ -136,20 +138,20 @@ public class GcmActivity extends Activity {
 
     public static void sendSensorBattery(final int battery)
     {
-        if (JoH.ratelimit("gcm-sbu",300))
-        {
-            GcmActivity.sendMessage("sbu",Integer.toString(battery));
+        if (JoH.ratelimit("gcm-sbu",300)) {
+            GcmActivity.sendMessage("sbu", Integer.toString(battery));
         }
     }
 
 
     public static void requestBGsync() {
         if (token != null) {
-            if ((JoH.ts() - last_sync_request) > (60 * 1000 * 5)) {
+            if ((JoH.ts() - last_sync_request) > (60 * 1000 * ( 5 + bg_sync_backoff ))) {
                 last_sync_request = JoH.ts();
                 GcmActivity.sendMessage("bfr", "");
+                bg_sync_backoff++;
             } else {
-                Log.d(TAG, "Already requested BGsync recently");
+                Log.d(TAG, "Already requested BGsync recently, backoff: "+bg_sync_backoff);
             }
         } else {
             Log.d(TAG,"No token for BGSync");
@@ -161,25 +163,31 @@ public class GcmActivity extends Activity {
             @Override
             public void run() {
                 final PowerManager.WakeLock wl = JoH.getWakeLock("syncBGTable",300000);
-                if ((JoH.ts() - last_sync_request) > (60 * 1000 * 5)) {
-                    last_sync_request = JoH.ts();
+                if ((JoH.ts() - last_sync_fill) > (60 * 1000 * ( 5 + bg_sync_backoff))) {
+                    last_sync_fill = JoH.ts();
+                    bg_sync_backoff++;
 
                     final List<BgReading> bgReadings = BgReading.latestForGraph(300, JoH.ts() - (24 * 60 * 60 * 1000));
-                    String mypacket = "";
 
+                    StringBuilder stringBuilder = new StringBuilder();
                     for (BgReading bgReading : bgReadings) {
                         String myrecord = bgReading.toJSON();
-                        if (mypacket.length() > 0) {
-                            mypacket = mypacket + "^";
+                        if (stringBuilder.length() > 0) {
+                            stringBuilder.append("^");
                         }
-                        mypacket = mypacket + myrecord;
+                        stringBuilder.append(myrecord);
                     }
+                    final String mypacket = stringBuilder.toString();
                     Log.d(TAG, "Total BGreading sync packet size: " + mypacket.length());
-                    if (DisplayQRCode.mContext == null)
-                        DisplayQRCode.mContext = xdrip.getAppContext();
-                    DisplayQRCode.uploadBytes(mypacket.getBytes(Charset.forName("UTF-8")), 2);
+                    if (mypacket.length()>0) {
+                        if (DisplayQRCode.mContext == null)
+                            DisplayQRCode.mContext = xdrip.getAppContext();
+                        DisplayQRCode.uploadBytes(mypacket.getBytes(Charset.forName("UTF-8")), 2);
+                    } else {
+                        Log.i(TAG,"Not uploading data due to zero length");
+                    }
                 } else {
-                    Log.d(TAG, "Ignoring recent sync request");
+                    Log.d(TAG, "Ignoring recent sync request, backoff: "+bg_sync_backoff);
                 }
                 JoH.releaseWakeLock(wl);
             }
@@ -188,6 +196,7 @@ public class GcmActivity extends Activity {
 
     // callback function
     public static void backfillLink(String id, String key) {
+        Log.d(TAG,"sending bfb message: " + id);
         sendMessage("bfb", id + "^" + key);
         DisplayQRCode.mContext = null;
     }
