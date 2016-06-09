@@ -106,7 +106,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                 newString= extras.getString(paramName);
             }
         } else {
-            newString= (String) savedInstanceState.getSerializable(paramName);
+            newString = (String) savedInstanceState.getSerializable(paramName);
         }
         return newString;
     }
@@ -261,6 +261,13 @@ public class EditAlertActivity extends ActivityWithMenu {
         enableVibrateControls();
 
 
+    }
+    
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putString("uuid", uuid);
+        outState.putString("above", String.valueOf(above));
     }
 
     @Override
@@ -481,7 +488,7 @@ public class EditAlertActivity extends ActivityWithMenu {
 
 
                 if (uuid == null) {
-                    Log.wtf(TAG, "Error remove pressed, while we were removing an alert");
+                    Log.wtf(TAG, "Error remove pressed, while we were adding an alert");
                 }  else {
                     AlertType.remove_alert(uuid);
                 }
