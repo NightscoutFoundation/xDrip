@@ -61,6 +61,7 @@ public class PebbleWatchSync extends Service {
             pebbleDisplays.put(PebbleDisplayType.None, new PebbleDisplayDummy());
             pebbleDisplays.put(PebbleDisplayType.Standard, new PebbleDisplayStandard());
             pebbleDisplays.put(PebbleDisplayType.Trend, new PebbleDisplayTrendOld());
+            pebbleDisplays.put(PebbleDisplayType.TrendClassic, new PebbleDisplayTrendOld());
             //pebbleDisplays.put(PebbleDisplayType.Trend, new PebbleDisplayTrend());
         }
 

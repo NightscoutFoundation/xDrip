@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.UtilityModels.pebble;
 import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
@@ -10,9 +11,15 @@ import com.eveningoutpost.dexdrip.UtilityModels.SimpleImageEncoder;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
+import java.io.BufferedOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by THE NIGHTSCOUT PROJECT CONTRIBUTORS (and adapted to fit the needs of this project)
@@ -41,7 +48,9 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
     private static byte[] chunk;
     private static ByteBuffer buff = null;
     public static int retries = 0;
-
+    private static final boolean debugPNG = false;
+    private static boolean didTrend = false;
+    private static final ReentrantLock lock = new ReentrantLock();
     private static short sendStep = 5;
     private PebbleDictionary dictionary = new PebbleDictionary();
 
@@ -117,7 +126,7 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
         if (this.dictionary == null) {
             this.dictionary = new PebbleDictionary();
         }
-        
+
         if (this.bgReading != null) {
             boolean no_signal;
 
@@ -139,10 +148,10 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
                 // We display last reading, even if none was sent for some time.
                 if (this.lastBfReadingSent != null) {
                     this.dictionary.addString(BG_KEY, this.lastBfReadingSent);
-                    this.dictionary.addInt8(VIBE_KEY, (byte) 0x01); // not sure what this does exactly
+                    this.dictionary.addInt8(VIBE_KEY, (byte) (getBooleanValue("pebble_vibrate_no_signal") ? 0x01 : 0x00)); // not sure what this does exactly
                 } else {
                     this.dictionary.addString(BG_KEY, "?RF");
-                    this.dictionary.addInt8(VIBE_KEY, (byte) 0x01);
+                    this.dictionary.addInt8(VIBE_KEY, (byte)(getBooleanValue("pebble_vibrate_no_signal") ? 0x01 : 0x00));
                 }
             } else {
                 this.dictionary.addString(BG_KEY, bgReadingS);
@@ -185,8 +194,13 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
         return this.dictionary;
     }
 
-    private void sendTrendToPebble() {
+    private synchronized void sendTrendToPebble(boolean clearTrend) {
         //create a sparkline bitmap to send to the pebble
+
+        final Bitmap blankTrend;
+        if (clearTrend) { blankTrend = Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888); Log.d(TAG,"Attempting to blank trend"); } else { blankTrend = null; didTrend=true; }
+
+
         Log.i(TAG, "sendTrendToPebble called: sendStep= " + sendStep + ", messageInTransit= " + messageInTransit + //
                 ", transactionFailed= " + transactionFailed + ", sendStep= " + sendStep);
         if (!done && (sendStep == 1 && ((!messageInTransit && !transactionOk && !transactionFailed) || //
@@ -194,7 +208,7 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
 
             if (!messageInTransit && !transactionOk && !transactionFailed) {
 
-                if (!doWeDisplayTrendData()) {
+                if (!clearTrend && (!doWeDisplayTrendData())) {
                     sendStep = 5;
                     transactionFailed = false;
                     transactionOk = false;
@@ -214,17 +228,33 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
                         .setBgGraphBuilder(this.bgGraphBuilder)
                         .setStart(System.currentTimeMillis() - 60000 * 60 * trendPeriod)
                         .setEnd(System.currentTimeMillis())
-                        .setHeightPx(84) // 84
-                        .setWidthPx(144)
+                        .setHeightPx(PebbleUtil.pebbleDisplayType == PebbleDisplayType.TrendClassic ? 64 : 84) // 84
+                        .setWidthPx(PebbleUtil.pebbleDisplayType == PebbleDisplayType.TrendClassic ? 84 : 144) // 144
                         .showHighLine(highLine)
                         .showLowLine(lowLine)
                         .setTinyDots()
+                        .setShowFiltered(Home.getPreferencesBooleanDefaultFalse("pebble_filtered_line"))
                                 //.setSmallDots()
                         .build();
 
                 //encode the trend bitmap as a PNG
-                byte[] img = SimpleImageEncoder.encodeBitmapAsPNG(bgTrend, true, 16, true);
-                //byte[] img = SimpleImageEncoder.encodeBitmapAsPNG(bgTrend, true, 2, true);
+
+                final byte[] img = SimpleImageEncoder.encodeBitmapAsPNG(clearTrend ? blankTrend : bgTrend, true, PebbleUtil.pebbleDisplayType == PebbleDisplayType.TrendClassic ? 2 : 16, true);
+
+                if (debugPNG) {
+                    try {
+                        // save debug image output
+                        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("/sdcard/download/xdrip-trend-debug.png"));
+                        bos.write(img);
+                        bos.flush();
+                        bos.close();
+                    } catch (FileNotFoundException e) {
+
+                    } catch (IOException e) {
+
+                    }
+                }
+
                 image_size = img.length;
                 buff = ByteBuffer.wrap(img);
                 bgTrend.recycle();
@@ -315,6 +345,7 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
             done = true;
             current_size = 0;
             buff = null;
+            if (clearTrend) didTrend=false; // cleared
         }
     }
 
@@ -330,46 +361,63 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
     }
 
 
-    public void sendData() {
-        if (PebbleKit.isWatchConnected(this.context)) {
-            Log.d(TAG,"Sendstep: "+sendStep);
-            if (sendStep == 5) {
-                sendStep = 0;
-                done = false;
-                clearDictionary();
-            }
+    public synchronized void sendData() {
+        try {
+            if (lock.tryLock(60, TimeUnit.SECONDS)) {
+                try {
+                    if (PebbleKit.isWatchConnected(this.context)) {
+                        Log.d(TAG, "Sendstep: " + sendStep);
+                        if (sendStep == 5) {
+                            sendStep = 0;
+                            done = false;
+                            clearDictionary();
+                        }
 
-            Log.i(TAG, "sendData: messageInTransit= " + messageInTransit + ", transactionFailed= " + transactionFailed + ", sendStep= " + sendStep);
-            if (sendStep == 0 && !messageInTransit && !transactionOk && !transactionFailed) {
-                this.bgReading = BgReading.last();
-                sendingData = true;
-                buildDictionary();
-                sendDownload();
-            }
+                        Log.i(TAG, "sendData: messageInTransit= " + messageInTransit + ", transactionFailed= " + transactionFailed + ", sendStep= " + sendStep);
+                        if (sendStep == 0 && !messageInTransit && !transactionOk && !transactionFailed) {
+                            this.bgReading = BgReading.last();
+                            sendingData = true;
+                            buildDictionary();
+                            sendDownload();
+                        }
 
 
-            if (sendStep == 0 && !messageInTransit && transactionOk && !transactionFailed) {
-                Log.i(TAG, "sendData: sendStep 0 complete, clearing dictionary");
-                clearDictionary();
-                transactionOk = false;
-                sendStep = 1;
-            }
-            if (sendStep > 0 && sendStep < 5) {
-                if (!doWeDisplayTrendData()) {
-                    sendStep = 5;
-                } else {
-                    sendTrendToPebble();
+                        if (sendStep == 0 && !messageInTransit && transactionOk && !transactionFailed) {
+                            Log.i(TAG, "sendData: sendStep 0 complete, clearing dictionary");
+                            clearDictionary();
+                            transactionOk = false;
+                            sendStep = 1;
+                        }
+                        if (sendStep > 0 && sendStep < 5) {
+                            if (!doWeDisplayTrendData()) {
+                                if (didTrend) {
+                                    sendTrendToPebble(true); // clear trend image
+                                } else {
+                                    sendStep = 5;
+                                }
+                            } else {
+                                sendTrendToPebble(false);
+                            }
+                        }
+
+                        if (sendStep == 5) {
+                            Log.i(TAG, "sendData: finished sending.  sendStep = " + sendStep);
+                            done = true;
+                            transactionFailed = false;
+                            transactionOk = false;
+                            messageInTransit = false;
+                            sendingData = false;
+                        }
+                    }
+                } finally {
+                    lock.unlock();
                 }
+            } else {
+                Log.w(TAG, "Could not acquire lock within timeout!");
             }
-
-            if (sendStep == 5) {
-                Log.i(TAG, "sendData: finished sending.  sendStep = " + sendStep);
-                done = true;
-                transactionFailed = false;
-                transactionOk = false;
-                messageInTransit = false;
-                sendingData = false;
-            }
+        } catch (InterruptedException e)
+        {
+            Log.w(TAG,"Got interrupted while waiting to acquire lock!");
         }
     }
 

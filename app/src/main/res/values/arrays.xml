@@ -26,12 +26,14 @@
     <string-array name="SendToPebbleChoice">
 
         <item>Standard Watchface</item>
-        <item>Trend Watchface</item>
+        <item>Color Trend Watchface</item>
+        <item>Pebble Classic Trend Watchface</item>
     </string-array>
     <string-array name="SendToPebbleChoiceValues">
 
         <item>2</item>
         <item>3</item>
+        <item>4</item>
     </string-array>
 
 

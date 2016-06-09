@@ -213,6 +213,9 @@
             android:name=".UtilityModels.pebble.watchface.InstallPebbleTrendWatchFace"
             android:label="Install Pebble Trend Watchface"/>
         <activity
+            android:name=".UtilityModels.pebble.watchface.InstallPebbleClassicTrendWatchface"
+            android:label="Install Pebble Classic Trend Watchface"/>
+        <activity
             android:name=".UsbConnectedActivity"
             android:label="@string/title_activity_usb_connected">
             <intent-filter>

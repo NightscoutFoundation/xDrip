@@ -39,6 +39,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
+import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleClassicTrendWatchface;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleTrendWatchFace;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleWatchFace;
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
@@ -609,12 +610,14 @@ public class Preferences extends PreferenceActivity {
             final PreferenceCategory watchCategory = (PreferenceCategory) findPreference("pebble_integration");
             //final ListPreference pebbleType = (ListPreference) findPreference("watch_integration");
             final Preference pebbleTrend = findPreference("pebble_display_trend");
+            final Preference pebbleFilteredLine = findPreference("pebble_filtered_line");
             final Preference pebbleHighLine = findPreference("pebble_high_line");
             final Preference pebbleLowLine = findPreference("pebble_low_line");
             final Preference pebbleTrendPeriod = findPreference("pebble_trend_period");
             final Preference pebbleDelta = findPreference("pebble_show_delta");
             final Preference pebbleDeltaUnits = findPreference("pebble_show_delta_units");
             final Preference pebbleShowArrows = findPreference("pebble_show_arrows");
+            final Preference pebbleVibrateNoSignal = findPreference("pebble_vibrate_no_signal");
             final EditTextPreference pebbleSpecialValue = (EditTextPreference) findPreference("pebble_special_value");
             bindPreferenceSummaryToValueAndEnsureNumeric(pebbleSpecialValue);
             final Preference pebbleSpecialText = findPreference("pebble_special_text");
@@ -796,14 +799,17 @@ public class Preferences extends PreferenceActivity {
                 watchCategory.removePreference(pebbleSpecialText);
             }
 
-            if (currentPebbleSync != 3) {
+            if ((currentPebbleSync != 3) && (currentPebbleSync != 4)) {
                 watchCategory.removePreference(pebbleTrend);
+                watchCategory.removePreference(pebbleFilteredLine);
                 watchCategory.removePreference(pebbleHighLine);
                 watchCategory.removePreference(pebbleLowLine);
+                watchCategory.removePreference(pebbleTrendPeriod);
                 watchCategory.removePreference(pebbleTrendPeriod);
                 watchCategory.removePreference(pebbleDelta);
                 watchCategory.removePreference(pebbleDeltaUnits);
                 watchCategory.removePreference(pebbleShowArrows);
+                watchCategory.removePreference(pebbleVibrateNoSignal);
             }
 
             // master switch for pebble
@@ -849,6 +855,7 @@ public class Preferences extends PreferenceActivity {
                             watchCategory.removePreference(pebbleSpecialText);
                         } else {
                             watchCategory.removePreference(pebbleTrend);
+                            watchCategory.removePreference(pebbleFilteredLine);
                             watchCategory.removePreference(pebbleHighLine);
                             watchCategory.removePreference(pebbleLowLine);
                             watchCategory.removePreference(pebbleTrendPeriod);
@@ -857,17 +864,20 @@ public class Preferences extends PreferenceActivity {
                             watchCategory.removePreference(pebbleShowArrows);
                             watchCategory.removePreference(pebbleSpecialValue);
                             watchCategory.removePreference(pebbleSpecialText);
+                            watchCategory.removePreference(pebbleVibrateNoSignal);
                         }
 
                         // Add New one
-                        if (pebbleType == 3) {
+                        if ((pebbleType == 3) || (pebbleType == 4)) {
                             watchCategory.addPreference(pebbleTrend);
+                            watchCategory.addPreference(pebbleFilteredLine);
                             watchCategory.addPreference(pebbleHighLine);
                             watchCategory.addPreference(pebbleLowLine);
                             watchCategory.addPreference(pebbleTrendPeriod);
                             watchCategory.addPreference(pebbleDelta);
                             watchCategory.addPreference(pebbleDeltaUnits);
                             watchCategory.addPreference(pebbleShowArrows);
+                            watchCategory.addPreference(pebbleVibrateNoSignal);
                         }
 
                         if (oldPebbleType != 1) {
@@ -877,6 +887,25 @@ public class Preferences extends PreferenceActivity {
 
                     }
 
+                    return true;
+                }
+            });
+
+
+            pebbleTrend.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    Context context = preference.getContext();
+                    context.startService(new Intent(context, PebbleWatchSync.class));
+                    return true;
+                }
+            });
+
+            pebbleFilteredLine.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    Context context = preference.getContext();
+                    context.startService(new Intent(context, PebbleWatchSync.class));
                     return true;
                 }
             });
@@ -1048,17 +1077,38 @@ public class Preferences extends PreferenceActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
             builder.setTitle("Pebble Install");
-            builder.setMessage(pebbleType == 2 ? "Install Standard Pebble Watchface?" : "Install Pebble Trend Watchface?");
+
+            switch (pebbleType)
+                {
+                    case 2:
+                        builder.setMessage("Install Standard Pebble Watchface?");
+                        break;
+                    case 3:
+                        builder.setMessage("Install Pebble Trend Watchface?");
+                        break;
+                    case 4:
+                        builder.setMessage("Install Pebble Classic Trend Watchface?");
+                        break;
+                }
+
 
             builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
 
-                    if (pebbleType == 2) {
-                        context.startActivity(new Intent(context, InstallPebbleWatchFace.class));
-                    } else {
-                        context.startActivity(new Intent(context, InstallPebbleTrendWatchFace.class));
+                    switch (pebbleType)
+                    {
+                        case 2:
+                            context.startActivity(new Intent(context, InstallPebbleWatchFace.class));
+                            break;
+                        case 3:
+                            context.startActivity(new Intent(context, InstallPebbleTrendWatchFace.class));
+                            break;
+                        case 4:
+                            context.startActivity(new Intent(context, InstallPebbleClassicTrendWatchface.class));
+                            break;
                     }
+
                 }
             });
 

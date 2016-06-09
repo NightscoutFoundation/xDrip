@@ -5,6 +5,8 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.util.DisplayMetrics;
+
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.view.View;
 
@@ -39,6 +41,7 @@ public class BgSparklineBuilder {
     private boolean showAxes = false;
     private boolean useSmallDots = true;
     private boolean useTinyDots = false;
+    private boolean showFiltered = false;
 
     public BgSparklineBuilder setStart(long start) {
         this.start = start / BgGraphBuilder.FUZZER;
@@ -105,6 +108,10 @@ public class BgSparklineBuilder {
         this.useTinyDots = useTinyDots;
         return this;
     }
+    public BgSparklineBuilder setShowFiltered(boolean showFiltered) {
+        this.showFiltered = showFiltered;
+        return this;
+    }
 
     public BgSparklineBuilder setSmallDots() {
         return this.setSmallDots(true);
@@ -168,10 +175,17 @@ public class BgSparklineBuilder {
 
     public Bitmap build() {
         List<Line> lines = new ArrayList<>();
-        bgGraphBuilder.defaultLines();
+        bgGraphBuilder.defaultLines(true); // simple mode
         lines.add(bgGraphBuilder.inRangeValuesLine());
         lines.add(bgGraphBuilder.lowValuesLine());
         lines.add(bgGraphBuilder.highValuesLine());
+
+        if (showFiltered) {
+            for (Line line : bgGraphBuilder.filteredLines()) {
+                line.setHasPoints(false);
+                lines.add(line);
+            }
+        }
         if (showLowLine)
             lines.add(bgGraphBuilder.lowLine());
         if (showHighLine)

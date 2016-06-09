@@ -77,6 +77,7 @@ public class xDripWidget extends AppWidgetProvider {
             int width = appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
             views.setImageViewBitmap(R.id.widgetGraph, new BgSparklineBuilder(context)
                     .setBgGraphBuilder(bgGraphBuilder)
+                    //.setShowFiltered(Home.getPreferencesBooleanDefaultFalse("show_filtered_curve"))
                     .setHeight(height).setWidth(width).build());
 
             estimate = lastBgreading.calculated_value;

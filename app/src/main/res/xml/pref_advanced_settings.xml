@@ -32,13 +32,21 @@
             android:defaultValue="2">
         </ListPreference>
 
+
         <CheckBoxPreference
             android:title="@string/pref_pebble_display_trend"
             android:key="pebble_display_trend"
             android:summary="@string/pref_summary_display_trend"
             android:dependency="broadcast_to_pebble"
-            android:defaultValue="false" >
+            android:defaultValue="true" >
         </CheckBoxPreference>
+            <CheckBoxPreference
+                android:title="Display filtered line"
+                android:key="pebble_filtered_line"
+                android:summary="Also show the filtered data on the trend"
+                android:dependency="broadcast_to_pebble"
+                android:defaultValue="false" >
+            </CheckBoxPreference>
         <CheckBoxPreference
             android:title="@string/pref_pebble_display_high_line"
             android:key="pebble_high_line"
@@ -74,7 +82,7 @@
             android:key="pebble_show_delta_units"
             android:summary="Displays the Delta units"
             android:dependency="broadcast_to_pebble"
-            android:defaultValue="true" >
+            android:defaultValue="false" >
         </CheckBoxPreference>
         <CheckBoxPreference
             android:title="Display Slope Arrows"
@@ -83,6 +91,14 @@
             android:dependency="broadcast_to_pebble"
             android:defaultValue="true" >
         </CheckBoxPreference>
+            <CheckBoxPreference
+                android:title="Vibrate when missed signal"
+                android:key="pebble_vibrate_no_signal"
+                android:summary="Vibrate watch to alert when we are not getting any glucose data"
+                android:dependency="broadcast_to_pebble"
+                android:defaultValue="false" >
+            </CheckBoxPreference>
+
         <EditTextPreference
             android:key="pebble_special_value"
             android:title="Special Value"

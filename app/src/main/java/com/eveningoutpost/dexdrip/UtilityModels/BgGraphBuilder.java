@@ -201,7 +201,7 @@ public class BgGraphBuilder {
     public LineChartData lineData() {
        // if (d) Log.d(TAG, "START lineData from: " + JoH.backTrace());
        JoH.benchmark(null);
-        LineChartData lineData = new LineChartData(defaultLines());
+        LineChartData lineData = new LineChartData(defaultLines(false));
         JoH.benchmark("Default lines create - bggraph builder");
         lineData.setAxisYLeft(yAxis());
         lineData.setAxisXBottom(chartXAxis());
@@ -244,7 +244,7 @@ public class BgGraphBuilder {
         return previewLineData;
     }
 
-    public List<Line> defaultLines() {
+    public List<Line> defaultLines(boolean simple) {
         List<Line> lines = new ArrayList<Line>();
         try {
 
@@ -257,7 +257,7 @@ public class BgGraphBuilder {
                 lines.add(subLine); // iob line
             }
 
-            predictive_end_time = ((end_time * FUZZER) + (60000 * 10) + (1000 * 60 * 60 * predictivehours)) / FUZZER; // used first in ideal/highline
+            predictive_end_time = simple ? end_time : ((end_time * FUZZER) + (60000 * 10) + (1000 * 60 * 60 * predictivehours)) / FUZZER; // used first in ideal/highline
 //            predictive_end_time = (new Date().getTime() + (60000 * 10) + (1000 * 60 * 60 * predictivehours)) / FUZZER; // used first in ideal/highline
 
 
@@ -413,9 +413,7 @@ public class BgGraphBuilder {
             UserError.Log.i(TAG, "Raw points size is zero");
         }
 
-        if ((Home.get_follower()) && (filteredValues.size() < 3)) {
-            GcmActivity.requestBGsync();
-        }
+
         //UserError.Log.i(TAG, "Returning linearray: " + Integer.toString(linearray.size()));
         return linearray;
     }
@@ -617,6 +615,13 @@ public class BgGraphBuilder {
         final boolean interpret_raw = prefs.getBoolean("interpret_raw", false);
         final boolean show_filtered = prefs.getBoolean("show_filtered_curve", false);
         final boolean predict_lows = prefs.getBoolean("predict_lows", true);
+
+
+        if ((Home.get_follower()) && (bgReadings.size() < 3)) {
+            GcmActivity.requestBGsync();
+        }
+
+
 
         for (BgReading bgReading : bgReadings) {
             // jamorham special

@@ -62,6 +62,9 @@ public class PebbleUtil {
             case 3:
                 return PebbleDisplayType.Trend;
 
+            case 4:
+                return PebbleDisplayType.TrendClassic;
+
             default:
                 return PebbleDisplayType.None;
 
