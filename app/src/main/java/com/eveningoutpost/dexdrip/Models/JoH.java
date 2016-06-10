@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.PowerManager;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
@@ -234,7 +235,7 @@ public class JoH {
     }
 
     // return true if below rate limit
-    public static boolean ratelimit(String name, int seconds)
+    public static synchronized boolean ratelimit(String name, int seconds)
     {
             // check if over limit
             if ((rateLimits.containsKey(name)) && (JoH.ts()-rateLimits.get(name)<(seconds*1000))) {
@@ -244,6 +245,31 @@ public class JoH {
             // not over limit
             rateLimits.put(name,JoH.ts());
             return true;
+    }
+
+    // return true if below rate limit
+    public static synchronized boolean ratelimitmilli(String name, int milliseconds)
+    {
+        // check if over limit
+        if ((rateLimits.containsKey(name)) && (JoH.ts()-rateLimits.get(name)<(milliseconds))) {
+            Log.d(TAG,name+" rate limited: "+milliseconds+" milliseconds");
+            return false;
+        }
+        // not over limit
+        rateLimits.put(name,JoH.ts());
+        return true;
+    }
+
+    public static boolean getWifiSleepPolicyNever()
+    {
+        try {
+            int policy = Settings.Global.getInt(xdrip.getAppContext().getContentResolver(), android.provider.Settings.Global.WIFI_SLEEP_POLICY);
+            Log.d(TAG,"Current WifiPolicy: "+ ((policy == Settings.Global.WIFI_SLEEP_POLICY_NEVER) ? "Never" : Integer.toString(policy))+" "+Settings.Global.WIFI_SLEEP_POLICY_DEFAULT+" "+Settings.Global.WIFI_SLEEP_POLICY_NEVER_WHILE_PLUGGED);
+            return (policy == Settings.Global.WIFI_SLEEP_POLICY_NEVER);
+        } catch (Exception e) {
+            Log.e(TAG,"Exception during global settings policy");
+            return true; // we don't know anything
+        }
     }
 
     public static void benchmark_method_start() {
@@ -314,6 +340,14 @@ public class JoH {
         final boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnected();
         return isConnected && ((activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) || (activeNetwork.getType() == ConnectivityManager.TYPE_ETHERNET));
+    }
+    public static boolean isMobileDataOrEthernetConnected() {
+        ConnectivityManager cm =
+                (ConnectivityManager) xdrip.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        final boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnected();
+        return isConnected && ((activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) || (activeNetwork.getType() == ConnectivityManager.TYPE_ETHERNET));
     }
 
     public static void static_toast(final Context context, final String msg, final int length) {

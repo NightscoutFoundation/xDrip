@@ -252,7 +252,7 @@ public class SimpleImageEncoder {
             int [] lineData = line.getScanline();
             for (int x = 0; x < imageInfo.cols; x++) {
                 int pixel = pixels[y * imageInfo.cols + x];
-
+                //lineData[x] = getNearestColorIndex(pixel) ^ (x % 2) ^ (y % 2);
                 lineData[x] = getNearestColorIndex(pixel);
             }
             writer.writeRow(line);

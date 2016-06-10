@@ -915,6 +915,7 @@ public class BgGraphBuilder {
             }
 
             final double initial_predicted_bg = predictedbg;
+            final double relaxed_predicted_bg_limit = initial_predicted_bg * 1.20;
             // final List<Iob> iobinfo_old = Treatments.ioBForGraph(numValues, (start_time * FUZZER));
             final List<Iob> iobinfo = Treatments.ioBForGraph_new(NUM_VALUES, (start_time * FUZZER)); // for test
 
@@ -993,7 +994,7 @@ public class BgGraphBuilder {
                             }
                             predict_weight = predict_weight * 2.5; // from 0-infinity - // TODO account for step!!!
                             // we should pull in actual graph upper and lower limits here
-                            if (((predictedbg_final < highMark) || (polyPredict < initial_predicted_bg)) && (predictedbg_final > 0)) {
+                            if (((predictedbg_final < highMark) || (predictedbg_final < relaxed_predicted_bg_limit)) && (predictedbg_final > 0)) {
                                 PointValue zv = new PointValue((float) fuzzed_timestamp, (float) predictedbg_final);
                                 predictedBgValues.add(zv);
                             }

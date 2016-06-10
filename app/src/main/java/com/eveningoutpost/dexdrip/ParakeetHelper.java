@@ -112,7 +112,7 @@ public class ParakeetHelper {
 
                     if (!parakeet_not_checking_in) {
                         if ((minutes_since > PARAKEET_ALERT_MISSING_MINUTES) && (highest_parakeet_timestamp > 0)) {
-                            if (timestamp >= highest_parakeet_timestamp) {
+                            if (timestamp >= highest_timestamp) {
                                 parakeet_not_checking_in = true;
                                 Log.i(TAG, "Parakeet missing for: " + minutes_since + " mins");
                                 sendNotification("The parakeet has not connected > " + minutes_since + " mins",

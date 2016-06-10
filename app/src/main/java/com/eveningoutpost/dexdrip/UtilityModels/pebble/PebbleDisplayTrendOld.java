@@ -1,10 +1,12 @@
 package com.eveningoutpost.dexdrip.UtilityModels.pebble;
 
 import android.graphics.Bitmap;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.SimpleImageEncoder;
@@ -57,13 +59,17 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
 
     @Override
     public void startDeviceCommand() {
-        transactionFailed = false;
-        transactionOk = false;
-        sendStep = 5;
-        messageInTransit = false;
-        done = true;
-        sendingData = false;
-        sendData();
+        if (JoH.ratelimitmilli("pebble-trend", 250)) {
+            transactionFailed = false;
+            transactionOk = false;
+            sendStep = 5;
+            messageInTransit = false;
+            done = true;
+            sendingData = false;
+            sendData();
+        } else {
+            Log.d(TAG, "SendData ratelimited!");
+        }
     }
 
 
@@ -362,53 +368,56 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
 
 
     public synchronized void sendData() {
+        PowerManager.WakeLock wl = JoH.getWakeLock("pebble-trend-sendData",60000);
         try {
             if (lock.tryLock(60, TimeUnit.SECONDS)) {
                 try {
-                    if (PebbleKit.isWatchConnected(this.context)) {
-                        Log.d(TAG, "Sendstep: " + sendStep);
-                        if (sendStep == 5) {
-                            sendStep = 0;
-                            done = false;
-                            clearDictionary();
-                        }
 
-                        Log.i(TAG, "sendData: messageInTransit= " + messageInTransit + ", transactionFailed= " + transactionFailed + ", sendStep= " + sendStep);
-                        if (sendStep == 0 && !messageInTransit && !transactionOk && !transactionFailed) {
-                            this.bgReading = BgReading.last();
-                            sendingData = true;
-                            buildDictionary();
-                            sendDownload();
-                        }
+                        if (PebbleKit.isWatchConnected(this.context)) {
+                            Log.d(TAG, "Sendstep: " + sendStep);
+                            if (sendStep == 5) {
+                                sendStep = 0;
+                                done = false;
+                                clearDictionary();
+                            }
+
+                            Log.i(TAG, "sendData: messageInTransit= " + messageInTransit + ", transactionFailed= " + transactionFailed + ", sendStep= " + sendStep);
+                            if (sendStep == 0 && !messageInTransit && !transactionOk && !transactionFailed) {
+                                this.bgReading = BgReading.last();
+                                sendingData = true;
+                                buildDictionary();
+                                sendDownload();
+                            }
 
 
-                        if (sendStep == 0 && !messageInTransit && transactionOk && !transactionFailed) {
-                            Log.i(TAG, "sendData: sendStep 0 complete, clearing dictionary");
-                            clearDictionary();
-                            transactionOk = false;
-                            sendStep = 1;
-                        }
-                        if (sendStep > 0 && sendStep < 5) {
-                            if (!doWeDisplayTrendData()) {
-                                if (didTrend) {
-                                    sendTrendToPebble(true); // clear trend image
+                            if (sendStep == 0 && !messageInTransit && transactionOk && !transactionFailed) {
+                                Log.i(TAG, "sendData: sendStep 0 complete, clearing dictionary");
+                                clearDictionary();
+                                transactionOk = false;
+                                sendStep = 1;
+                            }
+                            if (sendStep > 0 && sendStep < 5) {
+                                if (!doWeDisplayTrendData()) {
+                                    if (didTrend) {
+                                        sendTrendToPebble(true); // clear trend image
+                                    } else {
+                                        sendStep = 5;
+                                    }
                                 } else {
-                                    sendStep = 5;
+                                    sendTrendToPebble(false);
                                 }
-                            } else {
-                                sendTrendToPebble(false);
+                            }
+
+                            if (sendStep == 5) {
+                                Log.i(TAG, "sendData: finished sending.  sendStep = " + sendStep);
+                                done = true;
+                                transactionFailed = false;
+                                transactionOk = false;
+                                messageInTransit = false;
+                                sendingData = false;
                             }
                         }
 
-                        if (sendStep == 5) {
-                            Log.i(TAG, "sendData: finished sending.  sendStep = " + sendStep);
-                            done = true;
-                            transactionFailed = false;
-                            transactionOk = false;
-                            messageInTransit = false;
-                            sendingData = false;
-                        }
-                    }
                 } finally {
                     lock.unlock();
                 }
@@ -418,6 +427,8 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
         } catch (InterruptedException e)
         {
             Log.w(TAG,"Got interrupted while waiting to acquire lock!");
+        } finally {
+            JoH.releaseWakeLock(wl);
         }
     }
 

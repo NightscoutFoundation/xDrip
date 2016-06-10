@@ -939,6 +939,44 @@ public class Home extends ActivityWithMenu {
         activityVisible = true;
         updateCurrentBgInfo("generic on resume");
 
+        if (!JoH.getWifiSleepPolicyNever()) {
+            if (JoH.ratelimit("policy-never", 3600)) {
+                if (getPreferencesLong("wifi_warning_never", 0) == 0) {
+                    if (!JoH.isMobileDataOrEthernetConnected()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setTitle("WiFi Sleep Policy Issue");
+                        builder.setMessage("Your WiFi is set to sleep when the phone screen is off.\n\nThis may cause problems if you don't have cellular data or have devices on your local network.\n\nWould you like to go to the settings page to set:\n\nAlways Keep WiFi on during Sleep?");
+
+                        builder.setNeutralButton("Maybe Later", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                        builder.setPositiveButton("YES, Do it", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                toast("Recommend that you change WiFi to always be on during sleep");
+                                startActivity(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
+
+                            }
+                        });
+
+                        builder.setNegativeButton("NO, Never", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                setPreferencesLong("wifi_warning_never", (long) JoH.ts());
+                            }
+                        });
+
+                        AlertDialog alert = builder.create();
+                        alert.show();
+
+                    }
+                }
+            }
+        }
     }
 
     private void setupCharts() {
