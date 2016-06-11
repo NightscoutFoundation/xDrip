@@ -50,13 +50,16 @@ import com.eveningoutpost.dexdrip.G5Model.TransmitterStatus;
 import com.eveningoutpost.dexdrip.G5Model.TransmitterTimeRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.UnbondRequestTxMessage;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.G5Model.Transmitter;
 
+import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -145,29 +148,41 @@ public class G5CollectionService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Log.d(TAG, "onG5StartCommand");
-        Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
-        keepAlive();
+        PowerManager.WakeLock wl = JoH.getWakeLock("g5-start-service",60000);
+        try {
+            Log.d(TAG, "onG5StartCommand");
+            Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
+            if (!CollectionServiceStarter.isBTG5(xdrip.getAppContext())) {
+                stopSelf();
+                return START_NOT_STICKY;
+            } else {
 
-        mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = mBluetoothManager.getAdapter();
+                keepAlive();
 
-        if (mGatt != null) {
-            mGatt.close();
-            mGatt = null;
+                mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+                mBluetoothAdapter = mBluetoothManager.getAdapter();
+
+                if (mGatt != null) {
+                    mGatt.close();
+                    mGatt = null;
+                }
+
+                if (Sensor.isActive()) {
+                    setupBluetooth();
+                    Log.d(TAG, "Active Sensor");
+
+                } else {
+                    stopScan();
+                    Log.d(TAG, "No Active Sensor");
+                }
+
+
+                return START_STICKY;
+            }
+        } finally {
+            JoH.releaseWakeLock(wl);
         }
-
-        if (Sensor.isActive()){
-            setupBluetooth();
-            Log.d(TAG, "Active Sensor");
-
-        } else {
-            stopScan();
-            Log.d(TAG, "No Active Sensor");
         }
-
-        return START_STICKY;
-    }
 
     private void getTransmitterDetails() {
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
