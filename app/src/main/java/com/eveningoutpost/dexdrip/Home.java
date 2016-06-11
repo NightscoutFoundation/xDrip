@@ -1124,7 +1124,8 @@ public class Home extends ActivityWithMenu {
         notificationText.setText("");
         notificationText.setTextColor(Color.RED);
         boolean isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
-        boolean isDexbridgeWixel = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
+        // port this lot to DexCollectionType to avoid multiple lookups of the same preference
+        boolean isDexbridgeWixel = CollectionServiceStarter.isDexBridgeOrWifiandDexBridge();
         boolean isWifiBluetoothWixel = CollectionServiceStarter.isWifiandBTWixel(getApplicationContext());
         isBTShare = CollectionServiceStarter.isBTShare(getApplicationContext());
         isG5Share = CollectionServiceStarter.isBTG5(getApplicationContext());
@@ -1241,7 +1242,7 @@ public class Home extends ActivityWithMenu {
         }
 
         if (ActiveBluetoothDevice.first() == null) {
-            notificationText.setText("First pair with your BT device!");
+            notificationText.setText("First use the menu to scan for your BT device!");
             return;
         }
         updateCurrentBgInfoCommon(notificationText);
@@ -1323,8 +1324,8 @@ public class Home extends ActivityWithMenu {
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(0);
 
-        boolean isDexbridge = CollectionServiceStarter.isDexbridgeWixel(getApplicationContext());
-        boolean isWifiWixel = CollectionServiceStarter.isWifiandBTWixel(getApplicationContext()) | CollectionServiceStarter.isWifiWixel(getApplicationContext());
+        final boolean isDexbridge = CollectionServiceStarter.isDexBridgeOrWifiandDexBridge();
+        //boolean isWifiWixel = CollectionServiceStarter.isWifiandBTWixel(getApplicationContext()) | CollectionServiceStarter.isWifiWixel(getApplicationContext());
         if (isDexbridge) {
             int bridgeBattery = prefs.getInt("bridge_battery", 0);
 
@@ -1822,6 +1823,15 @@ public class Home extends ActivityWithMenu {
         if ((prefs != null) && (prefs.getBoolean(pref, false))) {
             return true;
         }
+        return false;
+    }
+
+    public static boolean getPreferencesBoolean(final String pref,boolean def)
+    {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if ((prefs != null) && (prefs.getBoolean(pref, def))) return true;
         return false;
     }
 

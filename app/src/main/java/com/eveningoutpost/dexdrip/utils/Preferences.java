@@ -741,7 +741,9 @@ public class Preferences extends PreferenceActivity {
             }
 
 
-            if ((collectionType != DexCollectionType.WifiWixel) && (collectionType != DexCollectionType.WifiBlueToothWixel)) {
+            if ((collectionType != DexCollectionType.WifiWixel)
+                    && (collectionType != DexCollectionType.WifiBlueToothWixel)
+                    && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
                 String receiversIpAddresses;
                 receiversIpAddresses = this.prefs.getString("wifi_recievers_addresses", "");
                 // only hide if non wifi wixel mode and value not previously set to cope with
@@ -751,10 +753,12 @@ public class Preferences extends PreferenceActivity {
                 }
             }
 
-            if (collectionType != DexCollectionType.DexbridgeWixel) {
+            if ((collectionType != DexCollectionType.DexbridgeWixel)
+                    && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
                 collectionCategory.removePreference(transmitterId);
             }
 
+            // shouldn't this be merged in to logic above?
             if (collectionType == DexCollectionType.DexcomG5) {
                 collectionCategory.addPreference(transmitterId);
             }
@@ -992,9 +996,11 @@ public class Preferences extends PreferenceActivity {
 
                     if (collectionType != DexCollectionType.BluetoothWixel
                             && collectionType != DexCollectionType.DexcomShare
+                            && collectionType != DexCollectionType.WifiWixel
                             && collectionType != DexCollectionType.DexbridgeWixel
                             && collectionType != DexCollectionType.LimiTTer
                             && collectionType != DexCollectionType.WifiBlueToothWixel
+                            && collectionType != DexCollectionType.WifiDexBridgeWixel
                             ) {
                         collectionCategory.removePreference(runInForeground);
                     } else {
@@ -1003,10 +1009,11 @@ public class Preferences extends PreferenceActivity {
 
                     // jamorham always show wifi receivers option if populated as we may switch modes dynamically
                     if (collectionType != DexCollectionType.WifiWixel
-                            && collectionType != DexCollectionType.WifiBlueToothWixel) {
+                            && collectionType != DexCollectionType.WifiBlueToothWixel
+                            && collectionType != DexCollectionType.WifiDexBridgeWixel) {
                         String receiversIpAddresses;
                         receiversIpAddresses = AllPrefsFragment.this.prefs.getString("wifi_recievers_addresses", "");
-                        if (receiversIpAddresses == null || receiversIpAddresses.equals("")) {
+                        if (receiversIpAddresses == null || receiversIpAddresses.trim().equals("")) {
                             collectionCategory.removePreference(wifiRecievers);
                         } else {
                             collectionCategory.addPreference(wifiRecievers);
@@ -1015,8 +1022,11 @@ public class Preferences extends PreferenceActivity {
                         collectionCategory.addPreference(wifiRecievers);
                     }
 
-                    if (collectionType != DexCollectionType.DexbridgeWixel) {
+                    if ((collectionType != DexCollectionType.DexbridgeWixel)
+                            && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
                         collectionCategory.removePreference(transmitterId);
+
+                        //TODO Bridge battery display support
                     } else {
                         collectionCategory.addPreference(transmitterId);
                     }

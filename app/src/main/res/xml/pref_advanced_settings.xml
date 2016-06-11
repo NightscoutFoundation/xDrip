@@ -133,6 +133,11 @@
                 android:summary="Older gratuitous wakelocks which can drain extra battery but might be needed for NightWatch or Android Wear"
                 android:title="Use Excessive Wakelocks" />
             <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="bluetooth_excessive_wakelocks"
+                android:summary="Older bluetooth wakelocks which can drain extra battery but might be needed for bluetooth reception"
+                android:title="Bluetooth Wakelocks" />
+            <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="predictive_bg"
                 android:summary="Old method - Not Recommended! Attempts to predict readings each minute based on the past few values."

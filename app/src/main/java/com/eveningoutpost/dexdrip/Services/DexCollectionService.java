@@ -35,6 +35,9 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+
+import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
@@ -90,6 +93,10 @@ public class DexCollectionService extends Service {
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         listenForChangeInSettings();
         bgToSpeech = BgToSpeech.setupTTS(mContext); //keep reference to not being garbage collected
+        if(CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()){
+            Log.i(TAG,"onCreate: resetting bridge_battery preference to 0");
+            prefs.edit().putInt("bridge_battery",0).apply();
+        }
         Log.i(TAG, "onCreate: STARTING SERVICE");
     }
 
@@ -101,7 +108,7 @@ public class DexCollectionService extends Service {
         }
         Context context = getApplicationContext();
         if (CollectionServiceStarter.isBTWixel(context)
-                || CollectionServiceStarter.isDexbridgeWixel(context)
+                || CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()
                 || CollectionServiceStarter.isWifiandBTWixel(context)
                 || CollectionServiceStarter.isFollower(context)) {
             setFailoverTimer();
@@ -152,10 +159,10 @@ public class DexCollectionService extends Service {
 
     public void setRetryTimer() {
         if (CollectionServiceStarter.isBTWixel(getApplicationContext())
-                || CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())
+                || CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()
                 || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())) {
             long retry_in;
-            if(CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
+            if(CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()) {
                 retry_in = (1000 * 25);
             }else {
                 retry_in = (1000*65);
@@ -176,7 +183,7 @@ public class DexCollectionService extends Service {
 
     public void setFailoverTimer() {
         if (CollectionServiceStarter.isBTWixel(getApplicationContext())
-                || CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())
+                || CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()
                 || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())
                 || CollectionServiceStarter.isFollower(getApplicationContext())) {
 
@@ -256,30 +263,37 @@ public class DexCollectionService extends Service {
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            PowerManager powerManager = (PowerManager) mContext.getSystemService(POWER_SERVICE);
-            PowerManager.WakeLock wakeLock2 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                    "DexCollectionService");
-            wakeLock2.acquire(45000);
-            switch (newState) {
-                case BluetoothProfile.STATE_CONNECTED:
-                    mConnectionState = STATE_CONNECTED;
-                    ActiveBluetoothDevice.connected();
-                    Log.i(TAG, "onConnectionStateChange: Connected to GATT server.");
-                    mBluetoothGatt.discoverServices();
-                    break;
-                case BluetoothProfile.STATE_DISCONNECTED:
-                    mConnectionState = STATE_DISCONNECTED;
-                    ActiveBluetoothDevice.disconnected();
-                    if (mBluetoothGatt != null) {
-                        Log.i(TAG, "onConnectionStateChange: mBluetoothGatt is not null, closing.");
-                        mBluetoothGatt.close();
-                        mBluetoothGatt = null;
-                        mCharacteristic = null;
-                    }
-                    lastdata = null;
-                    Log.i(TAG, "onConnectionStateChange: Disconnected from GATT server.");
-                    setRetryTimer();
-                    break;
+            PowerManager.WakeLock wl = JoH.getWakeLock("bluetooth-gatt", 60000);
+            try {
+                if (Home.getPreferencesBoolean("bluetooth_excessive_wakelocks", true)) {
+                    PowerManager powerManager = (PowerManager) mContext.getSystemService(POWER_SERVICE);
+                    PowerManager.WakeLock wakeLock2 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                            "DexCollectionService");
+                    wakeLock2.acquire(45000);
+                }
+                switch (newState) {
+                    case BluetoothProfile.STATE_CONNECTED:
+                        mConnectionState = STATE_CONNECTED;
+                        ActiveBluetoothDevice.connected();
+                        Log.i(TAG, "onConnectionStateChange: Connected to GATT server.");
+                        mBluetoothGatt.discoverServices();
+                        break;
+                    case BluetoothProfile.STATE_DISCONNECTED:
+                        mConnectionState = STATE_DISCONNECTED;
+                        ActiveBluetoothDevice.disconnected();
+                        if (mBluetoothGatt != null) {
+                            Log.i(TAG, "onConnectionStateChange: mBluetoothGatt is not null, closing.");
+                            mBluetoothGatt.close();
+                            mBluetoothGatt = null;
+                            mCharacteristic = null;
+                        }
+                        lastdata = null;
+                        Log.i(TAG, "onConnectionStateChange: Disconnected from GATT server.");
+                        setRetryTimer();
+                        break;
+                }
+            } finally {
+                JoH.releaseWakeLock(wl);
             }
         }
 
@@ -431,7 +445,7 @@ public class DexCollectionService extends Service {
 
     public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
         long timestamp = new Date().getTime();
-        if (CollectionServiceStarter.isDexbridgeWixel(getApplicationContext())) {
+        if (CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()) {
             Log.i(TAG, "setSerialDataToTransmitterRawData: Dealing with Dexbridge packet!");
             int DexSrc;
             int TransmitterID;

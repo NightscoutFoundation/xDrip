@@ -19,6 +19,8 @@ import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -42,6 +44,18 @@ public class CollectionServiceStarter {
             return true;
         }
         return false;
+    }
+
+    // are we in the specifc mode supporting wifi and dexbridge at the same time
+    public static boolean isWifiandDexBridge()
+    {
+        return (DexCollectionType.getDexCollectionType() == DexCollectionType.WifiDexBridgeWixel);
+    }
+
+    // are we in any mode which supports dexbridge
+    public static boolean isDexBridgeOrWifiandDexBridge()
+    {
+        return isWifiandDexBridge() || isDexbridgeWixel(xdrip.getAppContext());
     }
 
     public static boolean isBTWixel(Context context) {
@@ -136,6 +150,7 @@ public class CollectionServiceStarter {
             stopBtShareService();
             stopFollowerThread();
             stopG5ShareService();
+
             startBtWixelService();
         } else if (isWifiWixel(collection_method)) {
             Log.d("DexDrip", "Starting wifi wixel collector");
@@ -143,6 +158,7 @@ public class CollectionServiceStarter {
             stopFollowerThread();
             stopBtShareService();
             stopG5ShareService();
+
             startWifWixelThread();
         } else if (isBTShare(collection_method)) {
             Log.d("DexDrip", "Starting bt share collector");
@@ -150,6 +166,7 @@ public class CollectionServiceStarter {
             stopFollowerThread();
             stopWifWixelThread();
             stopG5ShareService();
+
             startBtShareService();
 
         } else if (isBTG5(collection_method)) {
@@ -157,14 +174,16 @@ public class CollectionServiceStarter {
             stopBtWixelService();
             stopWifWixelThread();
             stopBtShareService();
+
             startBtG5Service();
-        } else if (isWifiandBTWixel(context)) {
+        } else if (isWifiandBTWixel(context) || isWifiandDexBridge()) {
             Log.d("DexDrip", "Starting wifi and bt wixel collector");
             stopBtWixelService();
             stopFollowerThread();
             stopWifWixelThread();
             stopBtShareService();
             stopG5ShareService();
+
             // start both
             Log.d("DexDrip", "Starting wifi wixel collector first");
             startWifWixelThread();
@@ -175,6 +194,8 @@ public class CollectionServiceStarter {
             stopWifWixelThread();
             stopBtShareService();
             stopBtWixelService();
+            stopG5ShareService();
+
             startFollowerThread();
         }
 

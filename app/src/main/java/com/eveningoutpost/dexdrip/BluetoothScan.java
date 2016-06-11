@@ -47,7 +47,7 @@ import lecho.lib.hellocharts.util.ChartUtils;
 
 @TargetApi(android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothScan extends ListActivityWithMenu {
-    public static String menu_name = "Scan for BT";
+    public static String menu_name = "Bluetooth Scan";
 
     private final static String TAG = BluetoothScan.class.getSimpleName();
     private static final long SCAN_PERIOD = 30000;
@@ -300,7 +300,7 @@ public class BluetoothScan extends ListActivityWithMenu {
             } else returnToHome();
 
         } else if (device.getName().toLowerCase().contains("bridge")) {
-            if (!CollectionServiceStarter.isDexbridgeWixel(getApplicationContext()))
+            if (!CollectionServiceStarter.isDexBridgeOrWifiandDexBridge())
                 prefs.edit().putString("dex_collection_method", "DexbridgeWixel").apply();
             if (prefs.getString("dex_txid", "00000").compareTo("00000") == 0 || prefs.getString("dex_txid", "00000").length() < 5) {
                 requestTransmitterId(prefs);

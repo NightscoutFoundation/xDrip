@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.utils;
 
+import com.eveningoutpost.dexdrip.Home;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +17,8 @@ public enum DexCollectionType {
     LimiTTer("LimiTTer"),
     WifiBlueToothWixel("WifiBlueToothWixel"),
     WifiWixel("WifiWixel"),
-    DexcomG5("DexcomG5"),;
+    DexcomG5("DexcomG5"),
+    WifiDexBridgeWixel("WifiDexbridgeWixel");
 
     String internalName;
     private static Map<String, DexCollectionType> mapToInternalName;
@@ -40,5 +43,10 @@ public enum DexCollectionType {
             return mapToInternalName.get(dexCollectionType);
         else
             return None;
+    }
+
+    public static DexCollectionType getDexCollectionType()
+    {
+        return getType(Home.getPreferencesStringWithDefault("dex_collection_method", "BluetoothWixel"));
     }
 }
