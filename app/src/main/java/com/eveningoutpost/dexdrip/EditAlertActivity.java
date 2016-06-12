@@ -81,9 +81,6 @@ public class EditAlertActivity extends ActivityWithMenu {
     private int endHour = 23;
     private int endMinute = 59;
 
-
-    private int defaultSnooze;   /// remove member variable  ?????????????
-
     private String audioPath;    ///  remove member variable ????????????
 
     private TextView viewAlertOverrideText;
@@ -196,6 +193,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         uuid = getExtra(savedInstanceState, "uuid");
         String status;
         int alertReraise;
+        int defaultSnooze;
         if (uuid == null) {
             // This is a new alert
             above = Boolean.parseBoolean(getExtra(savedInstanceState, "above"));
@@ -264,7 +262,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         reraise.setText(String.valueOf(alertReraise));
         alertMp3File.setKeyListener(null);
         viewHeader.setText(status);
-        setDefaultSnoozeSpinner();
+        setDefaultSnoozeSpinner(defaultSnooze);
         setPreSnoozeSpinner();
         enableAllDayControls();
         setDisabledView();
@@ -470,6 +468,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                 if(alterReraiseInt ==null)
                     return;
                 alertReraise = alterReraiseInt;
+                int defaultSnooze = parseInt(editSnooze.getText().toString());
 
                 if(alertReraise < 1) {
                     Toast.makeText(getApplicationContext(), "Reraise Value must be 1 minute or greater", Toast.LENGTH_LONG).show();
@@ -742,7 +741,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         }
         return path;
     }
-    public void setDefaultSnoozeSpinner() {
+    public void setDefaultSnoozeSpinner(int defaultSnooze) {
         editSnooze.setText(String.valueOf(defaultSnooze));
         editSnooze.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -756,12 +755,12 @@ public class EditAlertActivity extends ActivityWithMenu {
 
                     final NumberPicker snoozeValue = (NumberPicker) d.findViewById(R.id.numberPicker1);
 
-
+                    int defaultSnooze = parseInt(editSnooze.getText().toString());
                     SnoozeActivity.SetSnoozePickerValues(snoozeValue, above, defaultSnooze);
                     b1.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            defaultSnooze = SnoozeActivity.getTimeFromSnoozeValue(snoozeValue.getValue());
+                            int defaultSnooze = SnoozeActivity.getTimeFromSnoozeValue(snoozeValue.getValue());
                             editSnooze.setText(String.valueOf(defaultSnooze));
 
                             d.dismiss();
@@ -797,6 +796,7 @@ public class EditAlertActivity extends ActivityWithMenu {
 
                 final NumberPicker snoozeValue = (NumberPicker) d.findViewById(R.id.numberPicker1);
 
+                int defaultSnooze = parseInt(editSnooze.getText().toString());
                 SnoozeActivity.SetSnoozePickerValues(snoozeValue, above, defaultSnooze);
                 b1.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -850,6 +850,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         boolean vibrate = checkboxVibrate.isChecked();
         boolean overrideSilentMode = checkboxAlertOverride.isChecked();
         String mp3_file = audioPath;
+        int defaultSnooze = parseInt(editSnooze.getText().toString());
         AlertType.testAlert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, vibrate, mContext);
 
     }
