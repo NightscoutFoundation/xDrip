@@ -232,9 +232,13 @@ public class DexCollectionService extends Service {
             ActiveBluetoothDevice btDevice = ActiveBluetoothDevice.first();
             if (btDevice != null) {
                 String deviceAddress = btDevice.address;
-                if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(deviceAddress) != null) {
-                    connect(deviceAddress);
-                    return;
+                try {
+                    if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(deviceAddress) != null) {
+                        connect(deviceAddress);
+                        return;
+                    }
+                } catch (IllegalArgumentException e) {
+                    Log.e(TAG, "IllegalArgumentException: " + e);
                 }
             }
         } else if (mConnectionState == STATE_CONNECTED) { //WOOO, we are good to go, nothing to do here!
