@@ -15,15 +15,28 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 public class WidgetUpdateService extends Service {
-    public String TAG = "WidgetUpdateService";
+    private static final String TAG = "WidgetUpdateService";
 
     private boolean isRegistered = false;
+
+    public static void staticRefreshWidgets()
+    {
+        try {
+            Context context = xdrip.getAppContext();
+            if (AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, xDripWidget.class)).length > 0) {
+                context.startService(new Intent(context, WidgetUpdateService.class));
+            }
+        } catch (Exception e)
+        {
+            Log.e(TAG,"Got exception in staticRefreshWidgets: "+e);
+        }
+    }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context ctx, Intent intent) {
             final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-widget-bcast", 20000);
-            Log.d(TAG, "onReceive("+intent.getAction()+")");
+            //Log.d(TAG, "onReceive("+intent.getAction()+")");
             if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
                 updateCurrentBgInfo();
             } else if (intent.getAction().compareTo(Intent.ACTION_SCREEN_ON) == 0) {

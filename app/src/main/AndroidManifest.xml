@@ -360,7 +360,12 @@
         <activity
             android:name=".UtilityModels.SendFeedBack"
             android:label="@string/title_activity_send_feed_back"
-            android:noHistory="true" />
+            android:noHistory="true">
+        <intent-filter>
+            <action android:name="xdrip_plus_send_developer_feedback"/>
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+        </activity>
         <activity
             android:name=".utils.SdcardImportExport"
             android:label="Settings on external storage" />

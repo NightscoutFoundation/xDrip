@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
+import com.eveningoutpost.dexdrip.UtilityModels.ColorCache;
 
 import java.util.Date;
 import java.util.List;
@@ -77,7 +78,8 @@ public class xDripWidget extends AppWidgetProvider {
             int width = appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
             views.setImageViewBitmap(R.id.widgetGraph, new BgSparklineBuilder(context)
                     .setBgGraphBuilder(bgGraphBuilder)
-                    //.setShowFiltered(Home.getPreferencesBooleanDefaultFalse("show_filtered_curve"))
+                            //.setShowFiltered(Home.getPreferencesBooleanDefaultFalse("show_filtered_curve"))
+                    .setBackgroundColor(ColorCache.getCol(ColorCache.X.color_widget_chart_background))
                     .setHeight(height).setWidth(width).build());
 
             estimate = lastBgreading.calculated_value;

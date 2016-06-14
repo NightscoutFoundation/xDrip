@@ -1,0 +1,28 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/example_chart_widget"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@android:id/title"
+        style="@android:style/TextAppearance.DeviceDefault.SearchResult.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Title" />
+
+    <TextView
+        android:id="@android:id/summary"
+        style="@android:style/TextAppearance.DeviceDefault.SearchResult.Subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Summary" />
+
+    <lecho.lib.hellocharts.view.LineChartView
+        android:id="@+id/example_linechart"
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        />
+
+
+</LinearLayout>

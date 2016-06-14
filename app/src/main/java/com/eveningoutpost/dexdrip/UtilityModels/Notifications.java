@@ -46,6 +46,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
+import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
+
 /**
  * Created by stephenblack on 11/28/14.
  */
@@ -113,6 +116,15 @@ public class Notifications extends IntentService {
             context.startService(new Intent(context, MissedReadingService.class));
         } finally {
             if (wl.isHeld()) wl.release();
+        }
+    }
+
+    public static void staticUpdateNotification() {
+        try {
+            Context context = xdrip.getAppContext();
+            context.startService(new Intent(context, Notifications.class));
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception in staticupdatenotification: " + e);
         }
     }
 
@@ -447,6 +459,7 @@ public class Notifications extends IntentService {
                     .setWidth(64)
                     .setStart(System.currentTimeMillis() - 60000 * 60 * 3)
                     .setBgGraphBuilder(bgGraphBuilder)
+                    .setBackgroundColor(getCol(X.color_notification_chart_background))
                     .build();
             b.setLargeIcon(iconBitmap);
             NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();
@@ -455,6 +468,7 @@ public class Notifications extends IntentService {
                     .showHighLine()
                     .showLowLine()
                     .showAxes(true)
+                    .setBackgroundColor(getCol(X.color_notification_chart_background))
                     .setShowFiltered(Home.getPreferencesBooleanDefaultFalse("show_filtered_curve"))
                     .build();
             bigPictureStyle.bigPicture(notifiationBitmap)

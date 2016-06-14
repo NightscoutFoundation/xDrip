@@ -95,7 +95,8 @@ import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
 import lecho.lib.hellocharts.view.PreviewLineChartView;
 
-
+import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
+import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 
 
 public class Home extends ActivityWithMenu {
@@ -374,6 +375,7 @@ public class Home extends ActivityWithMenu {
             public void run() {
                 // possibly this should have some delay
                 processCalibrationNoUI(myglucosenumber,mytimeoffset);
+                staticRefreshBGCharts();
             }
         }.start();
     }
@@ -900,9 +902,14 @@ public class Home extends ActivityWithMenu {
         }
     }
 
-    public static void staticRefreshBGCharts() {
+    public static void staticRefreshBGCharts()
+    {
+        staticRefreshBGCharts(false);
+    }
+
+    public static void staticRefreshBGCharts(boolean override) {
         reset_viewport = true;
-        if (activityVisible) {
+        if (activityVisible || override) {
             Intent updateIntent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA);
             staticContext.sendBroadcast(updateIntent);
         }
@@ -989,7 +996,7 @@ public class Home extends ActivityWithMenu {
             params.topMargin = 130;
             chart.setLayoutParams(params);
         }
-
+        chart.setBackgroundColor(getCol(X.color_home_chart_background));
         chart.setZoomType(ZoomType.HORIZONTAL);
 
         //Transmitter Battery Level
@@ -1033,6 +1040,7 @@ public class Home extends ActivityWithMenu {
             chart.setBackground(background);
         }
         previewChart = (PreviewLineChartView) findViewById(R.id.chart_preview);
+        previewChart.setBackgroundColor(getCol(X.color_home_chart_background));
         previewChart.setZoomType(ZoomType.HORIZONTAL);
 
         chart.setLineChartData(bgGraphBuilder.lineData());
@@ -1867,6 +1875,18 @@ public class Home extends ActivityWithMenu {
         }
         return def;
     }
+
+    public static int getPreferencesInt(final String pref, final int def)
+    {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs != null) {
+            return prefs.getInt(pref, def);
+        }
+        return def;
+    }
+
 
     public static boolean setPreferencesLong(final String pref, final long lng)
     {

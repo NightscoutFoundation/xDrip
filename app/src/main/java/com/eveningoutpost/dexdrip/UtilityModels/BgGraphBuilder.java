@@ -24,6 +24,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+
 import com.rits.cloning.Cloner;
 
 import java.lang.reflect.Field;
@@ -50,6 +51,9 @@ import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
+
+import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
+import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 
 /**
  * Created by stephenblack on 11/15/14.
@@ -315,7 +319,8 @@ public class BgGraphBuilder {
 
     public Line highValuesLine() {
         Line highValuesLine = new Line(highValues);
-        highValuesLine.setColor(ChartUtils.COLOR_ORANGE);
+        //highValuesLine.setColor(ChartUtils.COLOR_ORANGE);
+        highValuesLine.setColor(getCol(X.color_high_values));
         highValuesLine.setHasLines(false);
         highValuesLine.setPointRadius(pointSize);
         highValuesLine.setHasPoints(true);
@@ -324,7 +329,8 @@ public class BgGraphBuilder {
 
     public Line lowValuesLine() {
         Line lowValuesLine = new Line(lowValues);
-        lowValuesLine.setColor(Color.parseColor("#C30909"));
+        //lowValuesLine.setColor(Color.parseColor("#C30909"));
+        lowValuesLine.setColor(getCol(X.color_low_values));
         lowValuesLine.setHasLines(false);
         lowValuesLine.setPointRadius(pointSize);
         lowValuesLine.setHasPoints(true);
@@ -333,7 +339,8 @@ public class BgGraphBuilder {
 
     public Line inRangeValuesLine() {
         Line inRangeValuesLine = new Line(inRangeValues);
-        inRangeValuesLine.setColor(ChartUtils.COLOR_BLUE);
+        //inRangeValuesLine.setColor(ChartUtils.COLOR_BLUE);
+        inRangeValuesLine.setColor(getCol(X.color_inrange_values));
         inRangeValuesLine.setHasLines(false);
         inRangeValuesLine.setPointRadius(pointSize);
         inRangeValuesLine.setHasPoints(true);
@@ -399,7 +406,7 @@ public class BgGraphBuilder {
                     line.setHasPoints(true);
                     line.setPointRadius(2);
                     line.setStrokeWidth(1);
-                    line.setColor(Color.parseColor("#a0a0a0"));
+                    line.setColor(getCol(X.color_filtered));
                     line.setCubic(true);
                     line.setHasLines(true);
                     linearray.add(line);
@@ -429,12 +436,12 @@ public class BgGraphBuilder {
     public Line[] calibrationValuesLine() {
         Line[] lines = new Line[2];
         lines[0] = new Line(calibrationValues);
-        lines[0].setColor(Color.parseColor("#FFFFFF"));
+        lines[0].setColor(getCol(X.color_calibration_dot_background));
         lines[0].setHasLines(false);
         lines[0].setPointRadius(pointSize * 3 / 2);
         lines[0].setHasPoints(true);
         lines[1] = new Line(calibrationValues);
-        lines[1].setColor(ChartUtils.COLOR_RED);
+        lines[1].setColor(getCol(X.color_calibration_dot_foreground));
         lines[1].setHasLines(false);
         lines[1].setPointRadius(pointSize * 3 / 4);
         lines[1].setHasPoints(true);
@@ -446,13 +453,13 @@ public class BgGraphBuilder {
         try {
 
             lines[0] = new Line(treatmentValues);
-            lines[0].setColor(Color.parseColor("#FFFFFF"));
+            lines[0].setColor(getCol(X.color_treatment_dot_background));
             lines[0].setHasLines(false);
             lines[0].setPointRadius(pointSize * 5 / 2);
             lines[0].setHasPoints(true);
 
             lines[1] = new Line(treatmentValues);
-            lines[1].setColor(TREATMENT_COLOR_GREEN);
+            lines[1].setColor(getCol(X.color_treatment_dot_foreground));
             lines[1].setHasLines(false);
             lines[1].setPointRadius(pointSize * 5 / 4);
             lines[1].setHasPoints(true);
@@ -464,7 +471,7 @@ public class BgGraphBuilder {
 
             // insulin on board
             lines[2] = new Line(iobValues);
-            lines[2].setColor(TREATMENT_COLOR_GREEN);
+            lines[2].setColor(getCol(X.color_treatment));
             // need splitter for cubics
             lines[2].setHasLines(true);
             lines[2].setCubic(false);
@@ -478,7 +485,7 @@ public class BgGraphBuilder {
 
             // iactivity on board
             lines[3] = new Line(activityValues);
-            lines[3].setColor(TREATMENT_COLOR_DARK_GREEN);
+            lines[3].setColor(getCol(X.color_treatment_dark));
             lines[3].setHasLines(false);
             lines[3].setCubic(false);
             lines[3].setFilled(false);
@@ -489,7 +496,7 @@ public class BgGraphBuilder {
 
             // annotations
             lines[4] = new Line(annotationValues);
-            lines[4].setColor(TREATMENT_COLOR_GREEN);
+            lines[4].setColor(getCol(X.color_treatment_dot_foreground));
             lines[4].setHasLines(false);
             lines[4].setCubic(false);
             lines[4].setFilled(false);
@@ -498,7 +505,7 @@ public class BgGraphBuilder {
             lines[4].setHasLabels(true);
 
             lines[5] = new Line(predictedBgValues);
-            lines[5].setColor(ChartUtils.COLOR_VIOLET);
+            lines[5].setColor(getCol(X.color_predictive));
             lines[5].setHasLines(false);
             lines[5].setCubic(false);
             lines[5].setStrokeWidth(1);
@@ -508,7 +515,7 @@ public class BgGraphBuilder {
             lines[5].setHasLabels(false);
 
             lines[6] = new Line(cobValues);
-            lines[6].setColor(PREDICTIVE_COLOR_PURPLE); // change this to cob color name
+            lines[6].setColor(getCol(X.color_predictive_dark));
             lines[6].setHasLines(false);
             lines[6].setCubic(false);
             lines[6].setFilled(false);
@@ -1066,7 +1073,7 @@ public class BgGraphBuilder {
         Line myLine = new Line(myLineValues);
         myLine.setHasPoints(false);
         myLine.setStrokeWidth(1);
-        myLine.setColor(Color.parseColor("#558800"));
+        myLine.setColor(getCol(X.color_average1_line));
         myLine.setPathEffect(new DashPathEffect(new float[]{10.0f, 10.0f}, 0));
         myLine.setAreaTransparency(50);
         return myLine;
@@ -1078,7 +1085,7 @@ public class BgGraphBuilder {
         Line myLine = new Line(myLineValues);
         myLine.setHasPoints(false);
         myLine.setStrokeWidth(1);
-        myLine.setColor(Color.parseColor("#c56f9d"));
+        myLine.setColor(getCol(X.color_average2_line));
         myLine.setPathEffect(new DashPathEffect(new float[]{30.0f, 10.0f}, 0));
         myLine.setAreaTransparency(50);
         return myLine;
@@ -1092,7 +1099,7 @@ public class BgGraphBuilder {
         Line myLine = new Line(myLineValues);
         myLine.setHasPoints(false);
         myLine.setStrokeWidth(1);
-        myLine.setColor(Color.parseColor("#a4a409"));
+        myLine.setColor(getCol(X.color_target_line));
         myLine.setPathEffect(new DashPathEffect(new float[]{5f, 5f}, 0));
         myLine.setAreaTransparency(50);
         return myLine;
@@ -1105,7 +1112,7 @@ public class BgGraphBuilder {
         Line highLine = new Line(highLineValues);
         highLine.setHasPoints(false);
         highLine.setStrokeWidth(1);
-        highLine.setColor(ChartUtils.COLOR_ORANGE);
+        highLine.setColor(getCol(X.color_high_values));
         return highLine;
     }
 
@@ -1116,7 +1123,7 @@ public class BgGraphBuilder {
         Line highLine = new Line(predictiveHighLineValues);
         highLine.setHasPoints(false);
         highLine.setStrokeWidth(1);
-        highLine.setColor(ChartUtils.darkenColor(ChartUtils.darkenColor(ChartUtils.darkenColor(ChartUtils.COLOR_ORANGE))));
+        highLine.setColor(ChartUtils.darkenColor(ChartUtils.darkenColor(ChartUtils.darkenColor(getCol(X.color_high_values)))));
         return highLine;
     }
 
@@ -1127,7 +1134,7 @@ public class BgGraphBuilder {
         Line lowLine = new Line(lowLineValues);
         lowLine.setHasPoints(false);
         lowLine.setAreaTransparency(50);
-        lowLine.setColor(Color.parseColor("#C30909"));
+        lowLine.setColor(getCol(X.color_low_values));
         lowLine.setStrokeWidth(1);
         lowLine.setFilled(true);
         return lowLine;
@@ -1140,7 +1147,7 @@ public class BgGraphBuilder {
         Line lowLine = new Line(lowLineValues);
         lowLine.setHasPoints(false);
         lowLine.setAreaTransparency(40);
-        lowLine.setColor(ChartUtils.darkenColor(ChartUtils.darkenColor(ChartUtils.darkenColor(Color.parseColor("#C30909")))));
+        lowLine.setColor(ChartUtils.darkenColor(ChartUtils.darkenColor(ChartUtils.darkenColor(getCol(X.color_low_values)))));
         lowLine.setStrokeWidth(1);
         lowLine.setFilled(true);
         return lowLine;
@@ -1400,7 +1407,7 @@ public class BgGraphBuilder {
             }
             tooltip = Toast.makeText(context, timeFormat.format(time) + ": " + Math.round(pointValue.getY() * 10) / 10d, Toast.LENGTH_LONG);
             View view = tooltip.getView();
-            view.setBackgroundColor(Color.parseColor("#212121")); // TODO Make this a value string
+            view.setBackgroundColor(getCol(X.color_home_chart_background));
             tooltip.show();
         }
 

@@ -6,10 +6,9 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.util.DisplayMetrics;
-
-import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.view.View;
+
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,6 +43,7 @@ public class BgSparklineBuilder {
     private boolean useSmallDots = true;
     private boolean useTinyDots = false;
     private boolean showFiltered = false;
+    private int backgroundColor = Color.TRANSPARENT;
     private final static int SCALE_TRIGGER = 84;
 
     public BgSparklineBuilder setStart(long start) {
@@ -121,6 +121,12 @@ public class BgSparklineBuilder {
     }
 
     public BgSparklineBuilder setTinyDots() { return this.setTinyDots(true); }
+
+    public BgSparklineBuilder setBackgroundColor(int color)
+    {
+        this.backgroundColor = color;
+        return this;
+    }
 
     public BgSparklineBuilder setBgGraphBuilder(BgGraphBuilder bgGraphBuilder) {
         this.bgGraphBuilder = bgGraphBuilder;
@@ -224,6 +230,7 @@ public class BgSparklineBuilder {
             }
         }
         //lines.add(bgGraphBuilder.rawInterpretedLine());
+        chart.setBackgroundColor(backgroundColor);
         chart.setLineChartData(lineData);
         Viewport viewport = chart.getMaximumViewport();
         viewport.left = start;

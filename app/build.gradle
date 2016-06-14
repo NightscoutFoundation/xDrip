@@ -19,6 +19,9 @@ repositories {
         url "https://jitpack.io"
     }
     maven { url "https://oss.sonatype.org/content/groups/public/" }
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 def generateVersionNumber = { ->
@@ -175,6 +178,8 @@ dependencies {
     // Pebble-Trend, needs to be checked if really needed
     //compile 'com.android.support:multidex:1.0.1'
     compile 'ar.com.hjg:pngj:2.1.0'
+   // compile 'com.rarepebble:colorpicker:1.7.0'
+    compile(name:'colorpicker',ext:'aar')
 
 }
 

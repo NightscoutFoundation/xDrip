@@ -41,11 +41,11 @@ public class xdrip extends Application {
          Log.e("xdrip.java", e.toString());
      }
         executor = new PlusAsyncExecutor();
-        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
-        PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
-        PreferenceManager.setDefaultValues(this, R.xml.pref_notifications, false);
-        PreferenceManager.setDefaultValues(this, R.xml.pref_data_source, false);
-        PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_prefs, false);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_general, true);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, true);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_notifications, true);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_data_source, true);
+        PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_prefs, true);
         JoH.ratelimit("policy-never", 3600); // don't on first load
         new IdempotentMigrations(getApplicationContext()).performAll();
         AlertType.fromSettings(getApplicationContext());
