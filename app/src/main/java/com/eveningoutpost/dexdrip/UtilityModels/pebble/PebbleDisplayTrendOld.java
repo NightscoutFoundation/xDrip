@@ -8,6 +8,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.SimpleImageEncoder;
 import com.getpebble.android.kit.PebbleKit;
@@ -45,6 +46,7 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
     private static boolean transactionOk = false;
     private static boolean done = false;
     private static boolean sendingData = false;
+    private static int lastTrendPeriod = -1;
     private static int current_size = 0;
     private static int image_size = 0;
     private static byte[] chunk;
@@ -229,16 +231,26 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
                 String trendPeriodString = PreferenceManager.getDefaultSharedPreferences(this.context).getString("pebble_trend_period", "3");
                 Integer trendPeriod = Integer.parseInt(trendPeriodString);
 
+                if ((trendPeriod != lastTrendPeriod) || (JoH.ratelimit("pebble-bggraphbuilder",60)))
+                {
+                    long end = System.currentTimeMillis() + (60000 * 5);
+                    long start = end - (60000 * 60*trendPeriod) -  (60000 * 10);
+                    this.bgGraphBuilder = new BgGraphBuilder(context, start, end, NUM_VALUES, true);
+                    lastTrendPeriod=trendPeriod;
+                }
+
+
                 Log.d(TAG, "sendTrendToPebble: highLine is " + highLine + ", lowLine is " + lowLine + ",trendPeriod is " + trendPeriod);
                 Bitmap bgTrend = new BgSparklineBuilder(this.context)
                         .setBgGraphBuilder(this.bgGraphBuilder)
                         .setStart(System.currentTimeMillis() - 60000 * 60 * trendPeriod)
                         .setEnd(System.currentTimeMillis())
-                        .setHeightPx(PebbleUtil.pebbleDisplayType == PebbleDisplayType.TrendClassic ? 64 : 84) // 84
+                        .setHeightPx(PebbleUtil.pebbleDisplayType == PebbleDisplayType.TrendClassic ? 63 : 84) // 84
                         .setWidthPx(PebbleUtil.pebbleDisplayType == PebbleDisplayType.TrendClassic ? 84 : 144) // 144
                         .showHighLine(highLine)
                         .showLowLine(lowLine)
-                        .setTinyDots()
+                       // .showAxes(true)
+                        .setTinyDots(Home.getPreferencesBooleanDefaultFalse("pebble_tiny_dots"))
                         .setShowFiltered(Home.getPreferencesBooleanDefaultFalse("pebble_filtered_line"))
                                 //.setSmallDots()
                         .build();
@@ -252,6 +264,18 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
                         // save debug image output
                         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("/sdcard/download/xdrip-trend-debug.png"));
                         bos.write(img);
+                        bos.flush();
+                        bos.close();
+                    } catch (FileNotFoundException e) {
+
+                    } catch (IOException e) {
+                    }
+                    // also save full colour
+                    final byte[] img2 = SimpleImageEncoder.encodeBitmapAsPNG(bgTrend, true, 16, true);
+                    try {
+                        // save debug image output
+                        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("/sdcard/download/xdrip-trend-debug-colour.png"));
+                        bos.write(img2);
                         bos.flush();
                         bos.close();
                     } catch (FileNotFoundException e) {

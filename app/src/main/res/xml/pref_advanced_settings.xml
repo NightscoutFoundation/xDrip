@@ -47,6 +47,13 @@
                 android:dependency="broadcast_to_pebble"
                 android:defaultValue="false" >
             </CheckBoxPreference>
+            <CheckBoxPreference
+                android:title="Use Tiny dot size"
+                android:key="pebble_tiny_dots"
+                android:summary="Show Tiny dots instead of Small dots on the graph"
+                android:dependency="broadcast_to_pebble"
+                android:defaultValue="false" >
+            </CheckBoxPreference>
         <CheckBoxPreference
             android:title="@string/pref_pebble_display_high_line"
             android:key="pebble_high_line"

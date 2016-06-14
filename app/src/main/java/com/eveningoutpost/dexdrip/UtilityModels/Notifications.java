@@ -454,6 +454,7 @@ public class Notifications extends IntentService {
                     .setBgGraphBuilder(bgGraphBuilder)
                     .showHighLine()
                     .showLowLine()
+                    .showAxes(true)
                     .setShowFiltered(Home.getPreferencesBooleanDefaultFalse("show_filtered_curve"))
                     .build();
             bigPictureStyle.bigPicture(notifiationBitmap)

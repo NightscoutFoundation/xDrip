@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.util.DisplayMetrics;
 
 import com.eveningoutpost.dexdrip.Home;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.Viewport;
@@ -42,6 +44,7 @@ public class BgSparklineBuilder {
     private boolean useSmallDots = true;
     private boolean useTinyDots = false;
     private boolean showFiltered = false;
+    private final static int SCALE_TRIGGER = 84;
 
     public BgSparklineBuilder setStart(long start) {
         this.start = start / BgGraphBuilder.FUZZER;
@@ -186,8 +189,16 @@ public class BgSparklineBuilder {
                 lines.add(line);
             }
         }
-        if (showLowLine)
-            lines.add(bgGraphBuilder.lowLine());
+        if (showLowLine) {
+            if (height <= SCALE_TRIGGER) {
+                Line line = bgGraphBuilder.lowLine();
+                line.setFilled(false);
+                lines.add(line);
+            } else {
+                lines.add(bgGraphBuilder.lowLine());
+            }
+        }
+
         if (showHighLine)
             lines.add(bgGraphBuilder.highLine());
         if (useSmallDots) {
@@ -200,22 +211,60 @@ public class BgSparklineBuilder {
         }
         LineChartData lineData = new LineChartData(lines);
         if (showAxes) {
-            lineData.setAxisYLeft(bgGraphBuilder.yAxis());
-            lineData.setAxisXBottom(bgGraphBuilder.chartXAxis());
+            if (height<=SCALE_TRIGGER) {
+                Axis xaxis = bgGraphBuilder.chartXAxis();
+                xaxis.setTextSize(4);
+            } else {
+                Axis yaxis = bgGraphBuilder.yAxis();
+                yaxis.setTextSize(6);
+                lineData.setAxisYLeft(yaxis);
+                Axis xaxis = bgGraphBuilder.chartXAxis();
+                xaxis.setTextSize(6);
+                lineData.setAxisXBottom(xaxis);
+            }
         }
         //lines.add(bgGraphBuilder.rawInterpretedLine());
         chart.setLineChartData(lineData);
         Viewport viewport = chart.getMaximumViewport();
         viewport.left = start;
         viewport.right = end;
+        if (height<=SCALE_TRIGGER)
+        {
+            // for pebble classic we always want the lowest mark to be in the same place on the image
+            viewport.bottom= (float)(bgGraphBuilder.doMgdl ? 2 * Constants.MMOLL_TO_MGDL : 2);
+        }
         chart.setViewportCalculationEnabled(false);
         chart.setInteractive(false);
         chart.setCurrentViewport(viewport);
         chart.setPadding(0, 0, 0, 0);
         chart.setLeft(0);
         chart.setTop(0);
-        chart.setRight(width);
-        chart.setBottom(height);
-        return getViewBitmap(chart);
+        if (height>SCALE_TRIGGER) {
+            chart.setRight(width);
+            chart.setBottom(height);
+        } else {
+            chart.setRight(width*2);
+            chart.setBottom(height*2);
+        }
+
+            Log.d(TAG,"pebble debug: w:"+width+" h:"+height+" start:"+start+" end:"+end+" ");
+
+        if (height>SCALE_TRIGGER) {
+            return getViewBitmap(chart);
+        } else {
+            return getResizedBitmap(getViewBitmap(chart),width,height);
+        }
+    }
+
+    private Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleHeight);
+        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+        return resizedBitmap;
     }
 }

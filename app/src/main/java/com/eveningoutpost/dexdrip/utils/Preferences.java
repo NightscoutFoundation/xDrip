@@ -618,6 +618,7 @@ public class Preferences extends PreferenceActivity {
             final Preference pebbleDeltaUnits = findPreference("pebble_show_delta_units");
             final Preference pebbleShowArrows = findPreference("pebble_show_arrows");
             final Preference pebbleVibrateNoSignal = findPreference("pebble_vibrate_no_signal");
+            final Preference pebbleTinyDots = findPreference("pebble_tiny_dots");
             final EditTextPreference pebbleSpecialValue = (EditTextPreference) findPreference("pebble_special_value");
             bindPreferenceSummaryToValueAndEnsureNumeric(pebbleSpecialValue);
             final Preference pebbleSpecialText = findPreference("pebble_special_text");
@@ -806,6 +807,7 @@ public class Preferences extends PreferenceActivity {
             if ((currentPebbleSync != 3) && (currentPebbleSync != 4)) {
                 watchCategory.removePreference(pebbleTrend);
                 watchCategory.removePreference(pebbleFilteredLine);
+                watchCategory.removePreference(pebbleTinyDots);
                 watchCategory.removePreference(pebbleHighLine);
                 watchCategory.removePreference(pebbleLowLine);
                 watchCategory.removePreference(pebbleTrendPeriod);
@@ -860,6 +862,7 @@ public class Preferences extends PreferenceActivity {
                         } else {
                             watchCategory.removePreference(pebbleTrend);
                             watchCategory.removePreference(pebbleFilteredLine);
+                            watchCategory.removePreference(pebbleTinyDots);
                             watchCategory.removePreference(pebbleHighLine);
                             watchCategory.removePreference(pebbleLowLine);
                             watchCategory.removePreference(pebbleTrendPeriod);
@@ -875,6 +878,7 @@ public class Preferences extends PreferenceActivity {
                         if ((pebbleType == 3) || (pebbleType == 4)) {
                             watchCategory.addPreference(pebbleTrend);
                             watchCategory.addPreference(pebbleFilteredLine);
+                            watchCategory.addPreference(pebbleTinyDots);
                             watchCategory.addPreference(pebbleHighLine);
                             watchCategory.addPreference(pebbleLowLine);
                             watchCategory.addPreference(pebbleTrendPeriod);
@@ -966,6 +970,14 @@ public class Preferences extends PreferenceActivity {
                 }
             });
 
+            pebbleTinyDots.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    Context context = preference.getContext();
+                    context.startService(new Intent(context, PebbleWatchSync.class));
+                    return true;
+                }
+            });
             // Pebble Trend -- END
 
             //bindWidgetUpdater();
@@ -1065,7 +1077,11 @@ public class Preferences extends PreferenceActivity {
                     if (preference.getKey().equals("dex_collection_method")) {
                         CollectionServiceStarter.restartCollectionService(preference.getContext(), (String) newValue);
                         if (newValue.equals("Follower")) {
-                            AllPrefsFragment.this.prefs.edit().putBoolean("plus_follow_master", false).apply();
+                            if (AllPrefsFragment.this.prefs.getBoolean("plus_follow_master",false))
+                            {
+                                AllPrefsFragment.this.prefs.edit().putBoolean("plus_follow_master", false).apply();
+                                JoH.static_toast(preference.getContext(),"Turning off xDrip+ Sync Master for Followers!",Toast.LENGTH_LONG);
+                            }
                             GcmActivity.requestBGsync();
                         }
                     } else {

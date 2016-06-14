@@ -27,6 +27,8 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
     protected static final int UPLOADER_BATTERY_KEY = 5;
     protected static final int NAME_KEY = 6;
 
+    protected static final int NUM_VALUES =(60/5)*24;
+
     protected Context context;
     protected BgGraphBuilder bgGraphBuilder;
     protected BgReading bgReading;
