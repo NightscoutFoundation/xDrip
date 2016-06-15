@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Models.AlertType;
@@ -141,6 +142,7 @@ public class SdcardImportExport extends AppCompatActivity {
             if (succeeded) {
                 succeeded &= dataToSDcopy(PREFERENCES_FILE);
             }
+            Home.setPreferencesString("saved_alerts","");
             return succeeded;
         } else {
             toast("SDcard not writable - cannot save");

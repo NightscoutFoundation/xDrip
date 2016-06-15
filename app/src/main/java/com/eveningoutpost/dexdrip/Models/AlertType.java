@@ -578,39 +578,47 @@ public class AlertType extends Model {
         return true;
 
     }
-    
-    
+
+
     // Read all alerts from preference key and write them to db.
     public static boolean fromSettings(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String savedAlerts = prefs.getString("saved_alerts", "");
-        if(savedAlerts.isEmpty()) {
+        if (savedAlerts.isEmpty()) {
             Log.i(TAG, "read saved_alerts string and it is empty");
             return true;
         }
         Log.i(TAG, "read alerts string " + savedAlerts);
-
-     // Now delete all existing alerts
-        List<AlertType> alerts  = new Select()
-        .from(AlertType.class)
-        .execute();
-        for(AlertType alert : alerts) {
-            alert.delete();
-        }
 
         AlertType[] newAlerts = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(savedAlerts, AlertType[].class);
         if (newAlerts == null) {
             Log.e(TAG, "newAlerts is null");
             return true;
         }
-        
-        Log.e(TAG, "read successfuly " + newAlerts.length);
-        for(AlertType alert : newAlerts) {
-            Log.e(TAG, "Saving alert " + alert.name);
-            alert.save();
+
+        Log.i(TAG, "read successfuly " + newAlerts.length);
+        // Now delete all existing alerts if we managed to unpack the json
+        try {
+            List<AlertType> alerts = new Select()
+                    .from(AlertType.class)
+                    .execute();
+            for (AlertType alert : alerts) {
+                alert.delete();
+            }
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Got null pointer exception: " + e);
+        }
+
+        try {
+            for (AlertType alert : newAlerts) {
+                Log.e(TAG, "Saving alert " + alert.name);
+                alert.save();
+            }
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Got null pointer exception 2: " + e);
         }
         // Delete the string, so next time we will not load the data
-        prefs.edit().putString("saved_alerts", "").commit();
+        prefs.edit().putString("saved_alerts", "").apply();
         return true;
 
     }
