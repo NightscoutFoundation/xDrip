@@ -34,8 +34,8 @@
 
         <CheckBoxPreference
             android:key="run_service_in_foreground"
-            android:title="Run Collection Service in foreground"
-            android:summary="Running in foreground prevents android from killing the service and creates a notification with a trend line."
+            android:title="Run Collector in foreground"
+            android:summary="Shows a persistent notification graph, visible on lock-screen and prevents android killing the service."
             android:defaultValue="false" />
 
         <EditTextPreference

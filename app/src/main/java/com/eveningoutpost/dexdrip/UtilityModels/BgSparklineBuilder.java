@@ -239,6 +239,7 @@ public class BgSparklineBuilder {
         {
             // for pebble classic we always want the lowest mark to be in the same place on the image
             viewport.bottom= (float)(bgGraphBuilder.doMgdl ? 2 * Constants.MMOLL_TO_MGDL : 2);
+            viewport.top= (float)(bgGraphBuilder.doMgdl ? 16 * Constants.MMOLL_TO_MGDL : 16);
         }
         chart.setViewportCalculationEnabled(false);
         chart.setInteractive(false);
@@ -264,6 +265,7 @@ public class BgSparklineBuilder {
     }
 
     private Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        if (bm==null) return null;
         int width = bm.getWidth();
         int height = bm.getHeight();
         float scaleWidth = ((float) newWidth) / width;
