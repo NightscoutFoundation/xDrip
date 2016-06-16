@@ -286,7 +286,10 @@ public class GoogleDriveInterface extends Activity implements ConnectionCallback
         if ((prefs == null) && (xdrip.getAppContext() != null)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         }
-        if ((prefs != null) && (prefs.getBoolean("use_custom_sync_key", false))) {
+        if ((prefs != null) && (prefs.getBoolean("use_custom_sync_key", true))) {
+            if (prefs.getString("custom_sync_key", "").equals("")) {
+                prefs.edit().putString("custom_sync_key", CipherUtils.getRandomHexKey()).commit();
+            }
             String mykey = prefs.getString("custom_sync_key", "");
             if ((mykey.length() > 16)) {
                 return mykey;

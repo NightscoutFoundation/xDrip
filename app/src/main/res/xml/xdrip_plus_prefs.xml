@@ -2,98 +2,89 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
         android:key="xdrip_plus_category"
-        android:title="xDrip+ extra settings">
-        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-            android:key="xdrip_plus_display_settings"
-            android:summary="Display customisations"
-            android:icon="@drawable/ic_chart_areaspline_grey600_48dp"
+        android:title="xDrip+ extra settings"/>
+    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:icon="@drawable/ic_chart_areaspline_grey600_48dp"
+        android:key="xdrip_plus_display_settings"
+        android:summary="Display customisations"
+        android:title="xDrip+ Display Settings">
+
+        <PreferenceCategory
+            android:key="xdrip_plus_display_category"
             android:title="xDrip+ Display Settings">
+            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
 
-            <PreferenceCategory
-                android:key="xdrip_plus_display_category"
-                android:title="xDrip+ Display Settings">
-                <PreferenceScreen
-                    xmlns:android="http://schemas.android.com/apk/res/android"
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:icon="@drawable/ic_palette_grey600_48dp"
+                android:key="xdrip_plus_color_settings"
+                android:summary="Customize Colours"
+                android:title="xDrip+ Color Settings">
 
-                    android:key="xdrip_plus_color_settings"
-                    android:summary="Customize Colours"
-                    android:icon="@drawable/ic_palette_grey600_48dp"
-                    android:title="xDrip+ Color Settings">
+                <com.eveningoutpost.dexdrip.utils.ExampleChartPreferenceView
+                    android:key="example_chart"
+                    android:summary=""
+                    android:title="Example Chart" />
 
-                    <com.eveningoutpost.dexdrip.utils.ExampleChartPreferenceView
-                        android:key="example_chart"
-                        android:title="Example Chart"
-                        android:summary=""
-                        />
-
-                    <PreferenceCategory
-                        android:key="xdrip_plus_display_colorset1"
-                        android:title="Glucose Values and Lines">
+                <PreferenceCategory
+                    android:key="xdrip_plus_display_colorset1"
+                    android:title="Glucose Values and Lines">
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#FFBB33"
                         android:key="color_high_values"
                         android:title="High Glucose Values"
-                        android:defaultValue="#FFBB33"
-                        app:colorpicker_selectNoneButtonText="Revert to Default"
                         app:colorpicker_noneSelectedSummaryText="Default Color Selected"
-                        app:colorpicker_showHex="false"
-                        />
+                        app:colorpicker_selectNoneButtonText="Revert to Default"
+                        app:colorpicker_showHex="false" />
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#33B5E6"
                         android:key="color_inrange_values"
                         android:title="In-range Glucose Values"
-                        android:defaultValue="#33B5E6"
-                        app:colorpicker_selectNoneButtonText="Revert to Default"
                         app:colorpicker_noneSelectedSummaryText="Default Color Selected"
-                        app:colorpicker_showHex="false"
-                        />
+                        app:colorpicker_selectNoneButtonText="Revert to Default"
+                        app:colorpicker_showHex="false" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#C30909"
                         android:key="color_low_values"
                         android:title="Low Glucose Values"
-                        android:defaultValue="#C30909"
-                        app:colorpicker_selectNoneButtonText="Revert to Default"
                         app:colorpicker_noneSelectedSummaryText="Default Color Selected"
-                        app:colorpicker_showHex="false"
-                        />
+                        app:colorpicker_selectNoneButtonText="Revert to Default"
+                        app:colorpicker_showHex="false" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#a0a0a0"
                         android:key="color_filtered"
                         android:title="Filtered Values"
-                        android:defaultValue="#a0a0a0"
-                        app:colorpicker_selectNoneButtonText="Revert to Default"
                         app:colorpicker_noneSelectedSummaryText="Default Color Selected"
-                        app:colorpicker_showHex="false"
-                        />
-                    </PreferenceCategory>
+                        app:colorpicker_selectNoneButtonText="Revert to Default"
+                        app:colorpicker_showHex="false" />
+                </PreferenceCategory>
 
-                    <PreferenceCategory
-                        android:key="xdrip_plus_display_colorset2"
-                        android:title="Treatments / Prediction Curves">
+                <PreferenceCategory
+                    android:key="xdrip_plus_display_colorset2"
+                    android:title="Treatments / Prediction Curves">
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#77aa00"
                         android:key="color_treatment"
                         android:title="Treatment Color"
-                        android:defaultValue="#77aa00"
-                        app:colorpicker_selectNoneButtonText="Revert to Default"
                         app:colorpicker_noneSelectedSummaryText="Default Color Selected"
-                        app:colorpicker_showHex="false"
-                        />
+                        app:colorpicker_selectNoneButtonText="Revert to Default"
+                        app:colorpicker_showHex="false" />
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#334400"
                         android:key="color_treatment_dark"
                         android:title="Treatment Color Dark"
-                        android:defaultValue="#334400"
-                        app:colorpicker_selectNoneButtonText="Revert to Default"
                         app:colorpicker_noneSelectedSummaryText="Default Color Selected"
-                        app:colorpicker_showHex="false"
-                        />
+                        app:colorpicker_selectNoneButtonText="Revert to Default"
+                        app:colorpicker_showHex="false" />
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#AA66CC"
                         android:key="color_predictive"
                         android:title="Predictive Color"
-                        android:defaultValue="#AA66CC"
-                        app:colorpicker_selectNoneButtonText="Revert to Default"
                         app:colorpicker_noneSelectedSummaryText="Default Color Selected"
-                        app:colorpicker_showHex="false"
-                        />
+                        app:colorpicker_selectNoneButtonText="Revert to Default"
+                        app:colorpicker_showHex="false" />
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
                         android:defaultValue="#7700aa"
                         android:key="color_predictive_dark"
@@ -103,308 +94,297 @@
                         app:colorpicker_showHex="false" />
 
 
+                </PreferenceCategory>
 
-                    </PreferenceCategory>
-
-                    <PreferenceCategory
-                        android:key="xdrip_plus_display_colorset3"
-                        android:title="Average and Target Lines">
+                <PreferenceCategory
+                    android:key="xdrip_plus_display_colorset3"
+                    android:title="Average and Target Lines">
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#558800"
                         android:key="color_average1_line"
                         android:title="8 Hour Average Line"
-                        android:defaultValue="#558800"
-                        app:colorpicker_selectNoneButtonText="Revert to Default"
                         app:colorpicker_noneSelectedSummaryText="Default Color Selected"
-                        app:colorpicker_showHex="false"
-                        />
+                        app:colorpicker_selectNoneButtonText="Revert to Default"
+                        app:colorpicker_showHex="false" />
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#c56f9d"
                         android:key="color_average2_line"
                         android:title="24 Hour Average Line"
-                        android:defaultValue="#c56f9d"
-                        app:colorpicker_selectNoneButtonText="Revert to Default"
                         app:colorpicker_noneSelectedSummaryText="Default Color Selected"
-                        app:colorpicker_showHex="false"
-                        />
+                        app:colorpicker_selectNoneButtonText="Revert to Default"
+                        app:colorpicker_showHex="false" />
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#a4a409"
                         android:key="color_target_line"
                         android:title="Glucose Target Line"
-                        android:defaultValue="#a4a409"
-                        app:colorpicker_selectNoneButtonText="Revert to Default"
                         app:colorpicker_noneSelectedSummaryText="Default Color Selected"
-                        app:colorpicker_showHex="false"
-                        />
-                    </PreferenceCategory>
+                        app:colorpicker_selectNoneButtonText="Revert to Default"
+                        app:colorpicker_showHex="false" />
+                </PreferenceCategory>
 
-                    <PreferenceCategory
-                        android:key="xdrip_plus_display_colorset4"
-                        android:title="Annotations and Dots">
+                <PreferenceCategory
+                    android:key="xdrip_plus_display_colorset4"
+                    android:title="Annotations and Dots">
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#FFFFFF"
                         android:key="color_calibration_dot_background"
                         android:title="Blood Test Background"
-                        android:defaultValue="#FFFFFF"
-                        app:colorpicker_selectNoneButtonText="Revert to Default"
                         app:colorpicker_noneSelectedSummaryText="Default Color Selected"
-                        app:colorpicker_showHex="false"
-                        />
+                        app:colorpicker_selectNoneButtonText="Revert to Default"
+                        app:colorpicker_showHex="false" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#FF4444"
                         android:key="color_calibration_dot_foreground"
                         android:title="Blood Test Foreground"
-                        android:defaultValue="#FF4444"
-                        app:colorpicker_selectNoneButtonText="Revert to Default"
                         app:colorpicker_noneSelectedSummaryText="Default Color Selected"
-                        app:colorpicker_showHex="false"
-                        />
+                        app:colorpicker_selectNoneButtonText="Revert to Default"
+                        app:colorpicker_showHex="false" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#FFFFFF"
                         android:key="color_treatment_dot_background"
                         android:title="Treatment Background"
-                        android:defaultValue="#FFFFFF"
-                        app:colorpicker_selectNoneButtonText="Revert to Default"
                         app:colorpicker_noneSelectedSummaryText="Default Color Selected"
-                        app:colorpicker_showHex="false"
-                        />
+                        app:colorpicker_selectNoneButtonText="Revert to Default"
+                        app:colorpicker_showHex="false" />
 
                     <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#77aa00"
                         android:key="color_treatment_dot_foreground"
                         android:title="Treatment Foreground"
-                        android:defaultValue="#77aa00"
-                        app:colorpicker_selectNoneButtonText="Revert to Default"
                         app:colorpicker_noneSelectedSummaryText="Default Color Selected"
-                        app:colorpicker_showHex="false"
-                        />
+                        app:colorpicker_selectNoneButtonText="Revert to Default"
+                        app:colorpicker_showHex="false" />
 
-                    </PreferenceCategory>
-                    <PreferenceCategory
-                        android:key="xdrip_plus_display_colorset5"
-                        android:title="Backgrounds">
-                        <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
-                            android:key="color_home_chart_background"
-                            android:title="Main Chart Background"
-                            android:defaultValue="#212121"
-                            app:colorpicker_selectNoneButtonText="Revert to Default"
-                            app:colorpicker_noneSelectedSummaryText="Default Color Selected"
-                            app:colorpicker_showHex="false"
-                            />
+                </PreferenceCategory>
+                <PreferenceCategory
+                    android:key="xdrip_plus_display_colorset5"
+                    android:title="Backgrounds">
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#212121"
+                        android:key="color_home_chart_background"
+                        android:title="Main Chart Background"
+                        app:colorpicker_noneSelectedSummaryText="Default Color Selected"
+                        app:colorpicker_selectNoneButtonText="Revert to Default"
+                        app:colorpicker_showHex="false" />
 
-                        <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
-                            android:key="color_notification_chart_background"
-                            android:title="Notification Chart Background"
-                            android:defaultValue="#00000000"
-                            app:colorpicker_selectNoneButtonText="Revert to Default"
-                            app:colorpicker_noneSelectedSummaryText="Default Color Selected"
-                            app:colorpicker_showHex="false"
-                            />
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#00000000"
+                        android:key="color_notification_chart_background"
+                        android:title="Notification Chart Background"
+                        app:colorpicker_noneSelectedSummaryText="Default Color Selected"
+                        app:colorpicker_selectNoneButtonText="Revert to Default"
+                        app:colorpicker_showHex="false" />
 
-                        <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
-                            android:key="color_widget_chart_background"
-                            android:title="Widget Chart Background"
-                            android:defaultValue="#00000000"
-                            app:colorpicker_selectNoneButtonText="Revert to Default"
-                            app:colorpicker_noneSelectedSummaryText="Default Color Selected"
-                            app:colorpicker_showHex="false"
-                            />
-                        </PreferenceCategory>
-                </PreferenceScreen>
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#00000000"
+                        android:key="color_widget_chart_background"
+                        android:title="Widget Chart Background"
+                        app:colorpicker_noneSelectedSummaryText="Default Color Selected"
+                        app:colorpicker_selectNoneButtonText="Revert to Default"
+                        app:colorpicker_showHex="false" />
+                </PreferenceCategory>
+            </PreferenceScreen>
 
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="bg_compensate_noise"
-                    android:summary="Try to work around noisy readings"
-                    android:title="\u26A0 Smooth sensor noise" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="bg_from_filtered"
-                    android:summary="Delayed but more stable when noisy"
-                    android:title="Glucose number from Filtered" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="show_graph_grid_time"
-                    android:summary="Grid time lines visible"
-                    android:title="Show Graph grid time lines" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="show_graph_grid_glucose"
-                    android:summary="Grid glucose lines visible"
-                    android:title="Show Graph grid glucose lines" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="show_filtered_curve"
-                    android:summary="Useful for noise and missed readings"
-                    android:title="Display filtered plot" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="show_raw_plot"
-                    android:summary="The standard xDrip calculated values"
-                    android:title="Display raw data plot" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="show_target_line"
-                    android:summary="Display ideal glucose target line"
-                    android:title="Show Graph target line" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="show_recent_average_line"
-                    android:summary="Display 8 hour average line"
-                    android:title="Show Graph recent average" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="show_full_average_line"
-                    android:summary="Display 24 hour average line"
-                    android:title="Show Graph total average" />
-                <CheckBoxPreference
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="bg_compensate_noise"
+                android:summary="Try to work around noisy readings"
+                android:title="\u26A0 Smooth sensor noise" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="bg_from_filtered"
+                android:summary="Delayed but more stable when noisy"
+                android:title="Glucose number from Filtered" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="show_graph_grid_time"
+                android:summary="Grid time lines visible"
+                android:title="Show Graph grid time lines" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="show_graph_grid_glucose"
+                android:summary="Grid glucose lines visible"
+                android:title="Show Graph grid glucose lines" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="show_filtered_curve"
+                android:summary="Useful for noise and missed readings"
+                android:title="Display filtered plot" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="show_raw_plot"
+                android:summary="The standard xDrip calculated values"
+                android:title="Display raw data plot" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="show_target_line"
+                android:summary="Display ideal glucose target line"
+                android:title="Show Graph target line" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="show_recent_average_line"
+                android:summary="Display 8 hour average line"
+                android:title="Show Graph recent average" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="show_full_average_line"
+                android:summary="Display 24 hour average line"
+                android:title="Show Graph total average" />
+            <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="show_momentum_working_line"
                 android:summary="Predictive model inner workings"
                 android:title="Show Momentum working curve" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="show_noise_workings"
-                    android:summary="Noise model inner workings"
-                    android:title="Show Noise workings" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="always_show_bwp"
-                    android:summary="Display Insulin/Carb calculations at all times"
-                    android:title="Always show Bolus Wizard Preview" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="plus_extra_features"
-                    android:summary="Show extra and alpha test features"
-                    android:title="Parakeet and Extra test features" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="show_noise_workings"
+                android:summary="Noise model inner workings"
+                android:title="Show Noise workings" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="always_show_bwp"
+                android:summary="Display Insulin/Carb calculations at all times"
+                android:title="Always show Bolus Wizard Preview" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="plus_extra_features"
+                android:summary="Show extra and alpha test features"
+                android:title="Parakeet and Extra test features" />
 
-            </PreferenceCategory>
-        </PreferenceScreen>
+        </PreferenceCategory>
+    </PreferenceScreen>
 
-        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-            android:dependency="I_understand"
-            android:key="xdrip_plus_profile_settings"
-            android:summary="Insulin, Carb ratios etc for models"
-            android:icon="@drawable/ic_auto_fix_grey600_48dp"
+    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:dependency="I_understand"
+        android:icon="@drawable/ic_auto_fix_grey600_48dp"
+        android:key="xdrip_plus_profile_settings"
+        android:summary="Insulin, Carb ratios etc for models"
+        android:title="xDrip+ Predictive Simulation settings">
+
+
+        <PreferenceCategory
+            android:key="xdrip_plus_profile_category"
             android:title="xDrip+ Predictive Simulation settings">
 
+            <EditTextPreference
+                android:defaultValue="10"
+                android:key="profile_carb_ratio_default"
+                android:summary="Grams of Carbohydrate 1 Unit covers"
+                android:title="Carb Ratio" />
+            <EditTextPreference
+                android:defaultValue="54"
+                android:key="profile_insulin_sensitivity_default"
+                android:summary="Glucose drop for 1 Unit"
+                android:title="Insulin Sensitivity" />
+            <EditTextPreference
+                android:defaultValue="35"
+                android:key="profile_carb_absorption_default"
+                android:summary="Linear model carbs absorbed per hour"
+                android:title="Carb Absorption rate" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="predict_use_momentum"
+                android:summary="Calculate including BG trend"
+                android:title="Use trend momentum" />
 
-            <PreferenceCategory
-                android:key="xdrip_plus_profile_category"
-                android:title="xDrip+ Predictive Simulation settings">
-
-                <EditTextPreference
-                    android:defaultValue="10"
-                    android:key="profile_carb_ratio_default"
-                    android:summary="Grams of Carbohydrate 1 Unit covers"
-                    android:title="Carb Ratio" />
-                <EditTextPreference
-                    android:defaultValue="54"
-                    android:key="profile_insulin_sensitivity_default"
-                    android:summary="Glucose drop for 1 Unit"
-                    android:title="Insulin Sensitivity" />
-                <EditTextPreference
-                    android:defaultValue="35"
-                    android:key="profile_carb_absorption_default"
-                    android:summary="Linear model carbs absorbed per hour"
-                    android:title="Carb Absorption rate" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="predict_use_momentum"
-                    android:summary="Calculate including BG trend"
-                    android:title="Use trend momentum" />
-
-            </PreferenceCategory>
-            <PreferenceCategory
-                android:key="title_I_understandb"
-                android:title="EULA">
-                <Preference
-                    android:key="I_understandb"
-                    android:summary="Not for medical use - research tool only"
-                    android:title="End User License Agreement">
-                    <intent
-                        android:action="android.intent.action.MAIN"
-                        android:targetClass="com.eveningoutpost.dexdrip.LicenseAgreementActivity"
-                        android:targetPackage="com.eveningoutpost.dexdrip" />
-                </Preference>
-            </PreferenceCategory>
-
-            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                android:dependency="I_understand"
-                android:key="xdrip_plus_adv_predict"
-                android:summary="Deep settings for algorithms"
-                android:title="Low level prediction values">
-
-
-                <PreferenceCategory
-                    android:key="xdrip_plus_adv_predict_cat"
-                    android:title="Low level prediction values">
-                    <EditTextPreference
-                        android:defaultValue="3.0"
-                        android:key="xplus_insulin_dia"
-                        android:summary=""
-                        android:title="Insulin duration in hours" />
-
-                    <EditTextPreference
-                        android:defaultValue="2"
-                        android:key="xplus_liver_sensitivity"
-                        android:summary=""
-                        android:title="Default Liver Sensitivity Ratio" />
-                    <EditTextPreference
-                        android:defaultValue="0.8"
-                        android:key="xplus_liver_maximpact"
-                        android:summary=""
-                        android:title="Default Liver Maximum Impact (0-1)" />
-                </PreferenceCategory>
-            </PreferenceScreen>
-
-
-        </PreferenceScreen>
+        </PreferenceCategory>
+        <PreferenceCategory
+            android:key="title_I_understandb"
+            android:title="EULA">
+            <Preference
+                android:key="I_understandb"
+                android:summary="Not for medical use - research tool only"
+                android:title="End User License Agreement">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.eveningoutpost.dexdrip.LicenseAgreementActivity"
+                    android:targetPackage="@string/local_target_package" />
+            </Preference>
+        </PreferenceCategory>
 
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:dependency="I_understand"
-            android:key="xdrip_plus_sync_settings"
-            android:icon="@drawable/ic_google_circles_communities_grey600_48dp"
-            android:summary="Settings for syncing between handsets"
-            android:title="xDrip+ Sync settings">
+            android:key="xdrip_plus_adv_predict"
+            android:summary="Deep settings for algorithms"
+            android:title="Low level prediction values">
 
 
             <PreferenceCategory
-                android:key="xdrip_plus_sync_category"
-                android:title="xDrip+ Sync settings">
-
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="use_custom_sync_key"
-                    android:summary="Key is used instead of Google account"
-                    android:title="Sync using custom security key" />
+                android:key="xdrip_plus_adv_predict_cat"
+                android:title="Low level prediction values">
                 <EditTextPreference
-                    android:defaultValue=""
-                    android:key="custom_sync_key"
-                    android:summary="Handset sync grouping key"
-                    android:title="Handset Group Security Sync Key" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="plus_extra_features"
-                    android:key="plus_follow_master"
-                    android:summary="This device will send data to followers"
-                    android:title="Be master for followers" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:dependency="plus_follow_master"
-                    android:key="plus_follow_geolocation"
-                    android:summary="Send Parakeet map location to followers"
-                    android:title="Sync Parakeet GeoLocation" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="disable_all_sync"
-                    android:summary="Temporary work-around option, completely stops all synchronization. May need reboot after being re-enabled. Use with care!"
-                    android:title="Disable all sync features" />
+                    android:defaultValue="3.0"
+                    android:key="xplus_insulin_dia"
+                    android:summary=""
+                    android:title="Insulin duration in hours" />
+
+                <EditTextPreference
+                    android:defaultValue="2"
+                    android:key="xplus_liver_sensitivity"
+                    android:summary=""
+                    android:title="Default Liver Sensitivity Ratio" />
+                <EditTextPreference
+                    android:defaultValue="0.8"
+                    android:key="xplus_liver_maximpact"
+                    android:summary=""
+                    android:title="Default Liver Maximum Impact (0-1)" />
             </PreferenceCategory>
         </PreferenceScreen>
 
-        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-            android:key="xdrip_plus_update_settings"
-            android:summary="Automatic Updates, crash reports and Feedback to Developer"
-            android:icon="@drawable/ic_briefcase_download_grey600_48dp"
-            android:title="xDrip+ Update Settings">
+
+    </PreferenceScreen>
+
+    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:dependency="I_understand"
+        android:icon="@drawable/ic_google_circles_communities_grey600_48dp"
+        android:key="xdrip_plus_sync_settings"
+        android:summary="Settings for syncing between handsets"
+        android:title="xDrip+ Sync settings">
+
+
+        <PreferenceCategory
+            android:key="xdrip_plus_sync_category"
+            android:title="xDrip+ Sync settings">
+
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="use_custom_sync_key"
+                android:summary="Key is used instead of Google account"
+                android:title="Sync using custom security key" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="custom_sync_key"
+                android:summary="Handset sync grouping key"
+                android:title="Handset Group Security Sync Key" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="plus_extra_features"
+                android:key="plus_follow_master"
+                android:summary="This device will send data to followers"
+                android:title="Be master for followers" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="plus_follow_master"
+                android:key="plus_follow_geolocation"
+                android:summary="Send Parakeet map location to followers"
+                android:title="Sync Parakeet GeoLocation" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="disable_all_sync"
+                android:summary="Temporary work-around option, completely stops all synchronization. May need reboot after being re-enabled. Use with care!"
+                android:title="Disable all sync features" />
+        </PreferenceCategory>
+    </PreferenceScreen>
+
+    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:icon="@drawable/ic_briefcase_download_grey600_48dp"
+        android:key="xdrip_plus_update_settings"
+        android:summary="Automatic Updates, crash reports and Feedback to Developer"
+        android:title="xDrip+ Update Settings">
         <SwitchPreference
             android:defaultValue="true"
             android:key="auto_update_download"
@@ -424,14 +404,17 @@
             android:key="enable_crashlytics"
             android:summary="Send crash errors to developer"
             android:title="Automatic Crash Reporting" />
-            <Preference
-                android:key="send_feedback"
-                android:title="Send Feedback Message"
-                android:summary="Web feedback form for sending messages and ratings of xDrip+ to the developers">
-                <intent android:action="xdrip_plus_send_developer_feedback" />
-            </Preference>
-        </PreferenceScreen>
+        <Preference
+            android:key="send_feedback"
+            android:summary="Web feedback form for sending messages and ratings of xDrip+ to the developers"
+            android:title="Send Feedback Message">
+            <intent android:action="xdrip_plus_send_developer_feedback" />
+        </Preference>
+    </PreferenceScreen>
 
+    <PreferenceCategory
+        android:key="xdrip_plus_move_settings"
+        android:title="Copying Settings">
         <Preference
             android:icon="@drawable/ic_qrcode_grey600_48dp"
             android:key="show_qr_codes"
@@ -439,7 +422,7 @@
             <intent
                 android:action="android.intent.action.MAIN"
                 android:targetClass="com.eveningoutpost.dexdrip.utils.DisplayQRCode"
-                android:targetPackage="com.eveningoutpost.dexdrip" />
+                android:targetPackage="@string/local_target_package" />
         </Preference>
         <Preference
             android:icon="@drawable/ic_content_save_grey600_48dp"
@@ -448,7 +431,7 @@
             <intent
                 android:action="android.intent.action.MAIN"
                 android:targetClass="com.eveningoutpost.dexdrip.utils.SdcardImportExport"
-                android:targetPackage="com.eveningoutpost.dexdrip" />
+                android:targetPackage="@string/local_target_package" />
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

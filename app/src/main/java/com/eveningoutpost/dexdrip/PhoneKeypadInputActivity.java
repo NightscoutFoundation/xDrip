@@ -180,6 +180,15 @@ public class PhoneKeypadInputActivity extends Activity {
                         finish();
                     }
                 });
+        speakbutton.setOnLongClickListener(
+                new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        Home.startHomeWithExtra(getApplicationContext(), Home.START_TEXT_RECOGNITION, "ok");
+                        finish();
+                        return true;
+                    }
+                });
 
         //hashButton.setOnClickListener(new View.OnClickListener() {
         //    @Override

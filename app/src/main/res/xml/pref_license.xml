@@ -1,11 +1,11 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-        <Preference android:title="End User License Agreement"
-            android:summary="Not for medical decisions - research only"
-            android:key="I_understand" >
-            <intent
-                android:action="android.intent.action.MAIN"
-                android:targetPackage="com.eveningoutpost.dexdrip"
-                android:targetClass="com.eveningoutpost.dexdrip.LicenseAgreementActivity"
-                />
-        </Preference>
+    <Preference
+        android:key="I_understand"
+        android:summary="Not for medical decisions - research only"
+        android:title="End User License Agreement">
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetClass="com.eveningoutpost.dexdrip.LicenseAgreementActivity"
+            android:targetPackage="@string/local_target_package" />
+    </Preference>
 </PreferenceScreen>

@@ -1,10 +1,10 @@
 <!--                        android:targetPackage="@string/target_package" -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-        android:key="whole_alerts_screen"
         android:icon="@drawable/ic_add_alert_grey600_48dp"
-        android:title="Alarms and Alerts"
-        android:summary="Glucose, Calibration and Other alerts">
+        android:key="whole_alerts_screen"
+        android:summary="Glucose, Calibration and Other alerts"
+        android:title="Alarms and Alerts">
         <PreferenceCategory
             android:key="alerts_category"
             android:title="Alerts and Notifications">
@@ -14,7 +14,7 @@
                 <intent
                     android:action="android.intent.action.MAIN"
                     android:targetClass="com.eveningoutpost.dexdrip.AlertList"
-                    android:targetPackage="com.eveningoutpost.dexdrip" />
+                    android:targetPackage="@string/local_target_package" />
             </Preference>
 
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
@@ -102,7 +102,7 @@
                 <intent
                     android:action="android.intent.action.MAIN"
                     android:targetClass="com.eveningoutpost.dexdrip.MissedReadingActivity"
-                    android:targetPackage="com.eveningoutpost.dexdrip" />
+                    android:targetPackage="@string/local_target_package" />
             </PreferenceScreen>
 
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
@@ -172,58 +172,60 @@
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="smart_alerts_screen"
                 android:title="Extra Alerts (xDrip+)">
-                <PreferenceCategory android:title="Persistent High Alert"
-                    android:summary="When above High level for too long and not heading downwards">
+                <PreferenceCategory
+                    android:summary="When above High level for too long and not heading downwards"
+                    android:title="Persistent High Alert">
                     <SwitchPreference
                         android:defaultValue="false"
                         android:key="persistent_high_alert_enabled"
-                        android:title="Persistent High Alert"
-                        android:summary="Alarm if above high value" />
+                        android:summary="Alarm if above high value"
+                        android:title="Persistent High Alert" />
                     <EditTextPreference
                         android:defaultValue="60"
-                        android:key="persistent_high_threshold_mins"
-                        android:inputType="number"
-                        android:numeric="integer"
                         android:dependency="persistent_high_alert_enabled"
+                        android:inputType="number"
+                        android:key="persistent_high_threshold_mins"
+                        android:numeric="integer"
                         android:title="for longer than (minutes)" />
                     <RingtonePreference
                         android:defaultValue="content://settings/system/notification_sound"
+                        android:dependency="persistent_high_alert_enabled"
                         android:key="persistent_high_alert_sound"
                         android:ringtoneType="notification"
                         android:showSilent="true"
                         android:summary="Choose sound used for persistent high alarm."
-                        android:dependency="persistent_high_alert_enabled"
                         android:title="Persistent High Sound" />
 
                 </PreferenceCategory>
-                <PreferenceCategory android:title="Forecasted Low Alert"
-                    android:summary="When momentum trend indicates a Low would be predicted">
-                <SwitchPreference
-                    android:defaultValue="true"
-                    android:key="predict_lows"
-                    android:summary="Extrapolate data to try to predict lows"
-                    android:title="Forecast Lows" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="predict_lows_alarm"
-                    android:dependency="predict_lows"
-                    android:summary="Notify when predicted low time reaches threshold"
-                    android:title="Raise alarm on Forecast Low" />
-                <EditTextPreference
-                    android:defaultValue="40"
-                    android:inputType="number"
-                    android:key="low_predict_alarm_level"
-                    android:digits="0123456789"
-                    android:summary=""
-                    android:dependency="predict_lows_alarm"
-                    android:title="Alarm at Forecasted Low mins" />
+                <PreferenceCategory
+                    android:summary="When momentum trend indicates a Low would be predicted"
+                    android:title="Forecasted Low Alert">
+                    <SwitchPreference
+                        android:defaultValue="true"
+                        android:key="predict_lows"
+                        android:summary="Extrapolate data to try to predict lows"
+                        android:title="Forecast Lows" />
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:dependency="predict_lows"
+                        android:key="predict_lows_alarm"
+                        android:summary="Notify when predicted low time reaches threshold"
+                        android:title="Raise alarm on Forecast Low" />
+                    <EditTextPreference
+                        android:defaultValue="40"
+                        android:dependency="predict_lows_alarm"
+                        android:digits="0123456789"
+                        android:inputType="number"
+                        android:key="low_predict_alarm_level"
+                        android:summary=""
+                        android:title="Alarm at Forecasted Low mins" />
                     <RingtonePreference
                         android:defaultValue="content://settings/system/notification_sound"
+                        android:dependency="predict_lows"
                         android:key="bg_predict_alert_sound"
                         android:ringtoneType="notification"
                         android:showSilent="true"
                         android:summary="Choose sound used for predicted low alarm."
-                        android:dependency="predict_lows"
                         android:title="Predicted Low Sound" />
                 </PreferenceCategory>
                 <PreferenceCategory android:title="Other xDrip+ alerts">
@@ -234,8 +236,8 @@
                         android:title="Parakeet related alerts" />
                     <CheckBoxPreference
                         android:defaultValue="false"
-                        android:key="parakeet_charge_silent"
                         android:dependency="parakeet_status_alerts"
+                        android:key="parakeet_charge_silent"
                         android:summary="Raise parakeet notifiction silently when charging"
                         android:title="Silent alert when charging" />
                 </PreferenceCategory>

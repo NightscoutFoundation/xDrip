@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <string name="local_target_package">com.eveningoutpost.dexdrip</string>
     <string name="pref_I_understand_title"> I UNDERSTAND AND AGREE</string>
     <string name="pref_I_understand_summery">xDrip+ MUST NOT BE USED TO MAKE MEDICAL DECISIONS. IT IS A RESEARCH TOOL ONLY AND IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.</string>
     <string name="app_name">xDrip+</string>
@@ -113,7 +113,7 @@
     <string name="title_activity_system_status">System Status</string>
 
     <!-- pebble settings -->
-    <string name="pref_pebble_trend_watchface">Use Pebble Trend Watchface</string> 
+    <string name="pref_pebble_trend_watchface">Use Pebble Trend Watchface</string>
     <string name="pref_summary_pebble_trend_watchface">Use/install Pebble Trend Watchface (experimental)</string>
     <string name="pref_pebble_display_trend">Display Trend</string>
     <string name="pref_summary_display_trend">Show the BG trend on the xDrip Pebble watch face.</string>
