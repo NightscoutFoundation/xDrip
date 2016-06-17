@@ -154,7 +154,7 @@ public class GcmActivity extends Activity {
                 Log.d(TAG, "Already requested BGsync recently, backoff: "+bg_sync_backoff);
             }
         } else {
-            Log.d(TAG,"No token for BGSync");
+            Log.d(TAG, "No token for BGSync");
         }
     }
 
@@ -264,6 +264,10 @@ public class GcmActivity extends Activity {
         String currenttime = Double.toString(new Date().getTime());
         String tosend = currenttime + " " + bg_value + " " + seconds_ago;
         sendMessage(myIdentity(), "cal", tosend);
+    }
+
+    public static void clearLastCalibration() {
+        sendMessage(myIdentity(), "clc", "");
     }
 
     private static synchronized String sendMessageNow(String identity, String action, String payload) {

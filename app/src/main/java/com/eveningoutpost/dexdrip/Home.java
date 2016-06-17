@@ -35,11 +35,13 @@ import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -60,6 +62,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
+import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
@@ -102,6 +105,7 @@ import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 public class Home extends ActivityWithMenu {
     private final static String TAG = "jamorham: " + Home.class.getSimpleName();
     public final static String START_SPEECH_RECOGNITION = "START_APP_SPEECH_RECOGNITION";
+    public final static String START_TEXT_RECOGNITION = "START_APP_TEXT_RECOGNITION";
     public final static String menu_name = "Home Screen";
     public static boolean activityVisible = false;
     public static boolean invalidateMenu = false;
@@ -123,18 +127,22 @@ public class Home extends ActivityWithMenu {
     private BroadcastReceiver newDataReceiver;
     private LineChartView chart;
     private ImageButton btnSpeak;
+    private ImageButton btnNote;
     private ImageButton btnApprove;
     private ImageButton btnCancel;
     private ImageButton btnCarbohydrates;
     private ImageButton btnBloodGlucose;
     private ImageButton btnInsulinDose;
     private ImageButton btnTime;
+    private ImageButton btnUndo;
+    private ImageButton btnRedo;
     private TextView voiceRecognitionText;
     private TextView textCarbohydrates;
     private TextView textBloodGlucose;
     private TextView textInsulinDose;
     private TextView textTime;
     private final int REQ_CODE_SPEECH_INPUT = 1994;
+    private final int REQ_CODE_SPEECH_NOTE_INPUT = 1995;
     private static double last_speech_time = 0;
     private PreviewLineChartView previewChart;
     private TextView dexbridgeBattery;
@@ -156,6 +164,7 @@ public class Home extends ActivityWithMenu {
     boolean glucoseset = false;
     boolean timeset = false;
     private wordDataWrapper searchWords = null;
+    private AlertDialog dialog;
 
     static boolean oneshot = false;
     private static ShowcaseView myShowcase;
@@ -216,6 +225,8 @@ public class Home extends ActivityWithMenu {
         this.btnCancel = (ImageButton) findViewById(R.id.cancelTreatment);
         this.btnApprove = (ImageButton) findViewById(R.id.approveTreatment);
         this.btnTime = (ImageButton) findViewById(R.id.timeButton);
+        this.btnUndo= (ImageButton) findViewById(R.id.btnUndo);
+        this.btnRedo= (ImageButton) findViewById(R.id.btnRedo);
 
         hideAllTreatmentButtons();
 
@@ -237,6 +248,30 @@ public class Home extends ActivityWithMenu {
             public boolean onLongClick(View v) {
                 promptSpeechInput();
                 return true;
+            }
+        });
+
+        this.btnNote = (ImageButton) findViewById(R.id.btnNote);
+        btnNote.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (Home.getPreferencesBooleanDefaultFalse("default_to_voice_notes"))
+                {
+                    showNoteTextInputDialog(v);
+                } else {
+                    promptSpeechNoteInput(v);
+                }
+                return false;
+            }
+        });
+        btnNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!Home.getPreferencesBooleanDefaultFalse("default_to_voice_notes")) {
+                    showNoteTextInputDialog(v);
+                } else {
+                    promptSpeechNoteInput(v);
+                }
             }
         });
 
@@ -265,6 +300,7 @@ public class Home extends ActivityWithMenu {
                 textInsulinDose.setVisibility(View.INVISIBLE);
                 btnInsulinDose.setVisibility(View.INVISIBLE);
                 Treatments.create(0, thisinsulinnumber, Treatments.getTimeStampWithOffset(thistimeoffset));
+                reset_viewport=true;
                 if (hideTreatmentButtonsIfAllDone()) {
                     updateCurrentBgInfo("insulin button");
                 }
@@ -277,6 +313,7 @@ public class Home extends ActivityWithMenu {
                 // proccess and approve treatment
                 textCarbohydrates.setVisibility(View.INVISIBLE);
                 btnCarbohydrates.setVisibility(View.INVISIBLE);
+                reset_viewport=true;
                 Treatments.create(thiscarbsnumber, 0, Treatments.getTimeStampWithOffset(thistimeoffset));
                 if (hideTreatmentButtonsIfAllDone()) {
                     updateCurrentBgInfo("carbs button");
@@ -288,6 +325,7 @@ public class Home extends ActivityWithMenu {
 
             @Override
             public void onClick(View v) {
+              reset_viewport=true;
               processCalibration();
             }
         });
@@ -391,8 +429,9 @@ public class Home extends ActivityWithMenu {
                 naturalLanguageRecognition(receivedText);
             }
             if (bundle.getString(WatchUpdaterService.WEARABLE_APPROVE_TREATMENT)!=null) processAndApproveTreatment();
-            if (bundle.getString(WatchUpdaterService.WEARABLE_CANCEL_TREATMENT)!=null) cancelTreatment();
-            if (bundle.getString(Home.START_SPEECH_RECOGNITION)!=null) promptSpeechInput();
+            else if (bundle.getString(WatchUpdaterService.WEARABLE_CANCEL_TREATMENT)!=null) cancelTreatment();
+            else if (bundle.getString(Home.START_SPEECH_RECOGNITION)!=null) promptSpeechInput();
+            else if (bundle.getString(Home.START_TEXT_RECOGNITION)!=null) promptTextInput_old();
         }
     }
 
@@ -485,6 +524,29 @@ public class Home extends ActivityWithMenu {
         searchWords = lcs;
     }
 
+    public void promptSpeechNoteInput(View abc) {
+
+        if (recognitionRunning) return;
+        recognitionRunning = true;
+
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        // intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US"); // debug voice
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                "Speak your note text");
+
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_NOTE_INPUT);
+        } catch (ActivityNotFoundException a) {
+            Toast.makeText(getApplicationContext(),
+                    "Speech recognition is not supported",
+                    Toast.LENGTH_LONG).show();
+        }
+
+    }
+
     private void promptKeypadInput()
     {
         Log.d(TAG, "Showing pop-up");
@@ -506,7 +568,7 @@ public class Home extends ActivityWithMenu {
         promptKeypadInput();
     }
 
-    private void promptTextInput_disabled() {
+    private void promptTextInput_old() {
 
         if (recognitionRunning) return;
         recognitionRunning = true;
@@ -861,6 +923,28 @@ public class Home extends ActivityWithMenu {
                 break;
             }
 
+            case REQ_CODE_SPEECH_NOTE_INPUT: {
+
+                if (resultCode == RESULT_OK && null != data) {
+                    ArrayList<String> result = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    //voiceRecognitionText.setText(result.get(0));
+                    //voiceRecognitionText.setVisibility(View.VISIBLE);
+                    //last_speech_time = JoH.ts();
+                    //naturalLanguageRecognition(result.get(0));
+                    String treatment_text = result.get(0).trim();
+                    Log.d(TAG, "Got treatment note: " + treatment_text);
+                    voiceRecognitionText.setText(result.get(0));
+                    voiceRecognitionText.setVisibility(View.VISIBLE);
+                    Treatments.create_note(treatment_text, 0); // timestamp?
+                    if (dialog !=null) { dialog.cancel(); dialog=null; }
+                    Home.staticRefreshBGCharts();
+
+                }
+                recognitionRunning = false;
+                break;
+            }
+
         }
     }
 
@@ -1131,6 +1215,20 @@ public class Home extends ActivityWithMenu {
         }
         notificationText.setText("");
         notificationText.setTextColor(Color.RED);
+
+        UndoRedo.purgeQueues();
+
+        if (UndoRedo.undoListHasItems()) {
+            btnUndo.setVisibility(View.VISIBLE);
+        } else {
+            btnUndo.setVisibility(View.INVISIBLE);
+        }
+
+        if (UndoRedo.redoListHasItems()) {
+            btnRedo.setVisibility(View.VISIBLE);
+        } else {
+            btnRedo.setVisibility(View.INVISIBLE);
+        }
         boolean isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
         // port this lot to DexCollectionType to avoid multiple lookups of the same preference
         boolean isDexbridgeWixel = CollectionServiceStarter.isDexBridgeOrWifiandDexBridge();
@@ -1698,7 +1796,68 @@ public class Home extends ActivityWithMenu {
 
 
     public void parakeetSetupMode(MenuItem myitem) {
+        // TODO NEEDS AN ARE YOU SURE DIALOG
         ParakeetHelper.parakeetSetupMode(getApplicationContext());
+    }
+
+    public void undoButtonClick(View myitem)
+    {
+       if (UndoRedo.undoNextItem()) staticRefreshBGCharts();
+    }
+
+    public void redoButtonClick(View myitem)
+    {
+        if (UndoRedo.redoNextItem()) staticRefreshBGCharts();
+    }
+
+    public void noteDefaultMethodChanged(View myitem)
+    {
+        setPreferencesBoolean("default_to_voice_notes",!getPreferencesBooleanDefaultFalse("default_to_voice_notes"));
+    }
+
+    public void showNoteTextInputDialog(View myitem)
+    {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.note_dialog_phone, null);
+        dialogBuilder.setView(dialogView);
+
+        final EditText edt = (EditText) dialogView.findViewById(R.id.treatment_note_edit_text);
+        final CheckBox cbx = (CheckBox) dialogView.findViewById(R.id.default_to_voice_input);
+        cbx.setChecked(getPreferencesBooleanDefaultFalse("default_to_voice_notes"));
+
+        dialogBuilder.setTitle("Treatment Note");
+        //dialogBuilder.setMessage("Enter text below");
+        dialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String treatment_text = edt.getText().toString().trim();
+                Log.d(TAG, "Got treatment note: " + treatment_text);
+                Treatments.create_note(treatment_text, 0); // timestamp?
+                Home.staticRefreshBGCharts();
+                dialog = null;
+            }
+        });
+        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //pass
+                dialog=null;
+            }
+        });
+        dialog = dialogBuilder.create();
+        edt.setInputType(InputType.TYPE_CLASS_TEXT);
+        edt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    if (dialog != null)
+                        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                }
+            }
+        });
+
+
+        dialog.show();
+
     }
 
     public void doBackFillBroadcast(MenuItem myitem) {
@@ -1887,6 +2046,18 @@ public class Home extends ActivityWithMenu {
         return def;
     }
 
+
+    public static boolean setPreferencesBoolean(final String pref, final boolean lng)
+    {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs != null) {
+            prefs.edit().putBoolean(pref,lng).apply();
+            return true;
+        }
+        return false;
+    }
 
     public static boolean setPreferencesLong(final String pref, final long lng)
     {

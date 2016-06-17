@@ -77,25 +77,24 @@
                 android:paddingEnd="10dp"
                 android:paddingStart="10dp"
                 android:gravity="left|top"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
+                android:text="Extra status line"
+                android:background="@android:color/transparent"
                 android:layout_below="@+id/notices"
-                android:text=""
-                android:background="@android:color/transparent"/>
+                android:layout_alignParentStart="true" />
 
             <TextView
                 android:id="@+id/textBridgeBattery"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/notices"
-                android:layout_marginTop="-1dp"
                 android:background="@android:color/transparent"
                 android:inputType="none"
-                android:text=""
+                android:text="Battery Status"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textSize="12sp"
-                android:textStyle="normal" />
+                android:textStyle="normal"
+                android:layout_below="@+id/extraStatusLine"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="10dp" />
 
             <TextView
                 android:id="@+id/lowpredict"
@@ -118,17 +117,72 @@
                 android:id="@+id/btnSpeak"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignRight="@+id/currentBgValueRealTime"
-                android:layout_below="@+id/currentBgValueRealTime"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="7dp"
+                android:layout_marginRight="7dp"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/speaktreatment"
                 android:gravity="right"
-                android:src="@android:drawable/ic_btn_speak_now" />
+                android:src="@android:drawable/ic_btn_speak_now"
+                android:layout_below="@+id/currentBgValueRealTime"
+                android:layout_alignEnd="@+id/currentBgValueRealTime"
+                android:nestedScrollingEnabled="false"
+                android:paddingTop="2dp"
+                android:paddingRight="1dp" />
+
+            <ImageButton
+                android:id="@+id/btnNote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:contentDescription="Add note"
+                android:gravity="right"
+                android:onClick="showNoteTextInputDialog"
+                android:src="@drawable/ic_note_plus_grey600_24dp"
+                android:paddingRight="6dp"
+                android:layout_marginRight="0dp"
+                android:paddingLeft="2dp"
+                android:layout_below="@+id/btnSpeak"
+                android:layout_alignEnd="@+id/lowpredict"
+                android:layout_marginTop="4dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp" />
+
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnUndo"
+                android:src="@drawable/ic_undo_variant_grey600_24dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="Undo last"
+                android:onClick="undoButtonClick"
+
+                android:paddingLeft="1dp"
+                android:paddingRight="2dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="3dp"
+                android:layout_below="@+id/btnNote"
+                android:layout_alignStart="@+id/btnNote"
+                android:layout_marginTop="8dp" />
+
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnRedo"
+                android:src="@drawable/ic_redo_variant_grey600_24dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="Redo last"
+                android:onClick="redoButtonClick"
+                android:paddingLeft="1dp"
+                android:paddingRight="2dp"
+                android:paddingTop="1dp"
+                android:paddingBottom="1dp"
+                android:layout_below="@+id/btnUndo"
+                android:layout_alignStart="@+id/btnUndo"
+                android:layout_marginTop="8dp" />
+
 
             <TextView
-
                 android:id="@+id/treatmentTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -250,6 +304,7 @@
                 android:textColor="@android:color/holo_green_light"
                 android:textSize="22dp"
                 android:textStyle="bold" />
+
 
         </RelativeLayout>
 

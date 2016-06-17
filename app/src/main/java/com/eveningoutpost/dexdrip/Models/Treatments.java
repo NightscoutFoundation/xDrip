@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.GoogleDriveInterface;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 
@@ -88,9 +89,44 @@ public class Treatments extends Model {
         Treatment.save();
         GcmActivity.pushTreatmentAsync(Treatment);
         NSClientChat.pushTreatmentAsync(Treatment);
+        UndoRedo.addUndoTreatment(Treatment.uuid);
         return Treatment;
     }
 
+    public static synchronized Treatments create_note(String note, long timestamp) {
+        // TODO sanity check values
+        Log.d(TAG, "Creating treatment note: "+note);
+
+        if (timestamp == 0) {
+            timestamp = new Date().getTime();
+        }
+
+        if ((note==null || (note.length()==0)))
+        {
+            Log.i(TAG,"Empty treatment note - not saving");
+            return null;
+        }
+
+        Treatments Treatment = new Treatments();
+        Treatment.enteredBy = "xdrip";
+        Treatment.eventType = "<none>";
+        Treatment.carbs = 0;
+        Treatment.insulin = 0;
+        Treatment.notes = note;
+        Treatment.timestamp = timestamp;
+        Treatment.created_at = DateUtil.toISOString(timestamp);
+        Treatment.uuid = UUID.randomUUID().toString();
+        Treatment.save();
+        pushTreatmentSync(Treatment);
+        UndoRedo.addUndoTreatment(Treatment.uuid);
+        return Treatment;
+    }
+
+    public static void pushTreatmentSync(Treatments Treatment)
+    {
+        GcmActivity.pushTreatmentAsync(Treatment);
+        NSClientChat.pushTreatmentAsync(Treatment);
+    }
     // This shouldn't be needed but it seems it is
     private static void fixUpTable() {
         if (patched) return;
@@ -162,6 +198,7 @@ public class Treatments extends Model {
         Treatments thistreat = byuuid(uuid);
         if (thistreat != null) {
             thistreat.delete();
+            Home.staticRefreshBGCharts();
         }
     }
 
@@ -189,7 +226,12 @@ public class Treatments extends Model {
         }
     }
 
-    public static synchronized boolean pushTreatmentFromJson(String json) {
+    public static synchronized boolean pushTreatmentFromJson(String json)
+    {
+        return pushTreatmentFromJson(json,false);
+    }
+
+    public static synchronized boolean pushTreatmentFromJson(String json,boolean from_interactive) {
         Log.d(TAG, "converting treatment from json: ");
         Treatments mytreatment = fromJSON(json);
         if (mytreatment != null) {
@@ -216,6 +258,10 @@ public class Treatments extends Model {
             fixUpTable();
             long x = mytreatment.save();
             Log.d(TAG, "Saving treatment result: " + x);
+            if (from_interactive)
+            {
+                pushTreatmentSync(mytreatment);
+            }
             Home.staticRefreshBGCharts();
             return true;
         } else {
@@ -223,7 +269,7 @@ public class Treatments extends Model {
         }
     }
     public static List<Treatments> latestForGraph(int number, double startTime) {
-        return latestForGraph(number,startTime,JoH.ts());
+        return latestForGraph(number, startTime, JoH.ts());
     }
 
     public static List<Treatments> latestForGraph(int number, double startTime, double endTime) {
@@ -676,6 +722,7 @@ public class Treatments extends Model {
             jsonObject.put("insulin", insulin);
             jsonObject.put("carbs", carbs);
             jsonObject.put("timestamp", timestamp);
+            jsonObject.put("notes", notes);
             return jsonObject.toString();
         } catch (JSONException e) {
             // TODO Auto-generated catch block

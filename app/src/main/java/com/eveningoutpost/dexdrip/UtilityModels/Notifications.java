@@ -325,16 +325,28 @@ public class Notifications extends IntentService {
 
     private long calcuatleArmTime(Context ctx, long now) {
 
-      Long wakeTime = Long.MAX_VALUE; // This is the absalute time, not time from now.
-      ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
-      if (activeBgAlert != null) {
-          AlertType alert = AlertType.get_alert(activeBgAlert.alert_uuid);
-          if (alert != null) {
-              wakeTime = activeBgAlert.next_alert_at ;
-              Log.d(TAG , "ArmTimer waking at: "+ new Date(wakeTime) +" in " +  (wakeTime - now)/60000d + " minutes");
-          }
-      }
-      
+        Long wakeTime = Long.MAX_VALUE; // This is the absalute time, not time from now.
+        ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
+        if (activeBgAlert != null) {
+            AlertType alert = AlertType.get_alert(activeBgAlert.alert_uuid);
+            if (alert != null) {
+                wakeTime = activeBgAlert.next_alert_at ;
+                Log.d(TAG , "ArmTimer waking at: "+ new Date(wakeTime) +" in " +  (wakeTime - now)/60000d + " minutes");
+                if (wakeTime < now) {
+                    // next alert should be at least one minute from now.
+                    wakeTime = now + 60000;
+                    Log.w(TAG , "setting next alert to 1 minute from now (no problem right now, but needs a fix someplace else)");
+                }
+
+            }
+        } else {
+            // no active alert exists
+            wakeTime = now + 6 * 60000;
+        }
+/*
+ *
+ *       leaving this code here since this is a code for a more correct calculation
+ *       I guess that we will have to return to this once.
       // check snooze ending values
       long alerts_disabled_until = prefs.getLong("alerts_disabled_until", 0);
       if (alerts_disabled_until != 0) {
@@ -344,18 +356,16 @@ public class Notifications extends IntentService {
       if (high_alerts_disabled_until != 0) {
         wakeTime = Math.min(wakeTime, high_alerts_disabled_until);
       }
-
       long low_alerts_disabled_until = prefs.getLong("low_alerts_disabled_until", 0);
       if (low_alerts_disabled_until != 0) {
         wakeTime = Math.min(wakeTime, low_alerts_disabled_until);
       }
-      
-      // All this requires listeners on snooze changes...
 
+      // All this requires listeners on snooze changes...
       // check when the first alert should be fired. take care of that ???
-      
-      Log.d("Notifications" , "calcuatleArmTime returning: "+ new Date(wakeTime) +" in " +  (wakeTime - now)/60000d + " minutes");
-      return wakeTime;
+  */
+        Log.d("Notifications" , "calcuatleArmTime returning: "+ new Date(wakeTime) +" in " +  (wakeTime - now)/60000d + " minutes");
+        return wakeTime;
     }
     
     private void ArmTimer(Context ctx) {

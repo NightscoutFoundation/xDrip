@@ -18,6 +18,7 @@ import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
@@ -109,13 +110,17 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
             } else if (action.equals("dt")) {
                 Log.i(TAG, "Attempting GCM delete specific treatment");
                 Treatments.delete_by_uuid(filter(payload));
+            } else if (action.equals("clc"))
+            {
+                Log.i(TAG,"Attempting to clear last calibration");
+                Calibration.clearLastCalibration();
             } else if (action.equals("cal")) {
                 String[] message_array = filter(payload).split("\\s+");
                 if ((message_array.length == 3) && (message_array[0].length() > 0)
                         && (message_array[1].length() > 0) && (message_array[2].length() > 0)) {
                     // [0]=timestamp [1]=bg_String [2]=bgAge
                     Intent calintent = new Intent();
-                    calintent.setClassName("com.eveningoutpost.dexdrip", "com.eveningoutpost.dexdrip.AddCalibration");
+                    calintent.setClassName(getString(R.string.local_target_package), "com.eveningoutpost.dexdrip.AddCalibration");
                     calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
                     long timediff = (long) ((new Date().getTime() - Double.parseDouble(message_array[0])) / 1000);

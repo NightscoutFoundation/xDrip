@@ -8,6 +8,7 @@ import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
@@ -693,6 +694,30 @@ public class Calibration extends Model {
                 .serializeSpecialFloatingPointValues()
                 .create();
         return gson.toJson(this);
+    }
+
+    public static Calibration byuuid(String uuid) {
+        return new Select()
+                .from(Calibration.class)
+                .where("uuid = ?", uuid)
+                .orderBy("_ID desc")
+                .executeSingle();
+    }
+
+    public static void clear_byuuid(String uuid,boolean from_interactive)
+    {
+        Calibration calibration = byuuid(uuid);
+        if (calibration!=null)
+        {
+            calibration.slope_confidence = 0;
+            calibration.sensor_confidence = 0;
+            calibration.save();
+            CalibrationSendQueue.addToQueue(calibration, xdrip.getAppContext());
+            if (from_interactive)
+            {
+                GcmActivity.clearLastCalibration();
+            }
+        }
     }
 
     //COMMON SCOPES!
