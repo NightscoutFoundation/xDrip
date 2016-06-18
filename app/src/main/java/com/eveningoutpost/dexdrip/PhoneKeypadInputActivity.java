@@ -48,8 +48,9 @@ public class PhoneKeypadInputActivity extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int width = dm.widthPixels;
         int height = dm.heightPixels;
-        Log.d(TAG, "Width height: " + width + " " + height);
-        getWindow().setLayout((int) Math.min(520, width), (int) Math.min(650, height));
+        final int refdpi = 320;
+        Log.d(TAG, "Width height: " + width + " " + height+" DPI:"+dm.densityDpi);
+        getWindow().setLayout((int) Math.min(((520*dm.densityDpi)/refdpi), width), (int) Math.min((650*dm.densityDpi)/refdpi, height));
 
         WindowManager.LayoutParams lp = getWindow().getAttributes();
         lp.dimAmount = 0.5f;
