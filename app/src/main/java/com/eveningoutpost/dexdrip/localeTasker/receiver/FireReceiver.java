@@ -16,6 +16,7 @@
 package com.eveningoutpost.dexdrip.localeTasker.receiver;
 
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +26,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.localeTasker.Constants;
 import com.eveningoutpost.dexdrip.localeTasker.bundle.BundleScrubber;
 import com.eveningoutpost.dexdrip.localeTasker.bundle.PluginBundleManager;
@@ -110,7 +112,7 @@ public final class FireReceiver extends BroadcastReceiver {
 
                             // We push the values to the Calibration Activity
                             Intent calintent = new Intent();
-                            calintent.setClassName("com.eveningoutpost.dexdrip", "com.eveningoutpost.dexdrip.AddCalibration");
+                            calintent.setClassName(xdrip.getAppContext().getString(R.string.local_target_package), "com.eveningoutpost.dexdrip.AddCalibration");
                             calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
                             calintent.putExtra("bg_string", message_array[1]);

@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 
 
 public class AddCalibration extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -50,7 +51,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
     }
 
     // jamorham - receive automated calibration via broadcast intent / tasker receiver
-    public void automatedCalibration() {
+    public synchronized void automatedCalibration() {
 
         final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-autocalib",60000);
 
@@ -141,7 +142,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                     // sanity check the number?
 
                                     Calibration calibration = Calibration.create(calValue, getApplicationContext());
-
+                                    UndoRedo.addUndoCalibration(calibration.uuid);
                                     Intent tableIntent = new Intent(v.getContext(), Home.class);
                                     startActivity(tableIntent);
                                     GcmActivity.pushCalibration(string_value, "0");

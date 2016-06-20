@@ -191,7 +191,10 @@ public class BgSendQueue extends Model {
 
             //Text to speech
             //Log.d("BgToSpeech", "gonna call speak");
-            BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp);
+            if (prefs.getBoolean("bg_to_speech", false))
+            {
+                BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp);
+            }
 
 
         } finally {

@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +26,7 @@ import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 
+import com.eveningoutpost.dexdrip.xdrip;
 import com.rits.cloning.Cloner;
 
 import java.lang.reflect.Field;
@@ -38,6 +40,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import lecho.lib.hellocharts.formatter.LineChartValueFormatter;
 import lecho.lib.hellocharts.formatter.SimpleLineChartValueFormatter;
@@ -138,7 +142,7 @@ public class BgGraphBuilder {
     private List<PointValue> polyBgValues = new ArrayList<PointValue>();
     private List<PointValue> noisePolyBgValues = new ArrayList<PointValue>();
     private List<PointValue> activityValues = new ArrayList<PointValue>();
-    private List<PointValue> annotationValues = new ArrayList<PointValue>();
+    private List<PointValue> annotationValues = new ArrayList<>();
     public static double last_noise = -99999;
     public static double best_bg_estimate = -99999;
     public static double last_bg_estimate = -99999;
@@ -628,7 +632,7 @@ public class BgGraphBuilder {
         // enumerate calibrations
         try {
             for (Calibration calibration : calibrations) {
-                calibrationValues.add(new PointValueExtended((float) (calibration.timestamp / FUZZER), (float) unitized(calibration.bg)));
+                calibrationValues.add(new PointValue((float) (calibration.timestamp / FUZZER), (float) unitized(calibration.bg)));
            if (calibration.timestamp > last_calibration)
            {
                last_calibration = calibration.timestamp;
@@ -654,21 +658,21 @@ public class BgGraphBuilder {
         for (BgReading bgReading : bgReadings) {
             // jamorham special
             if ((show_filtered) && (bgReading.filtered_calculated_value > 0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
-                filteredValues.add(new PointValueExtended((float) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(bgReading.filtered_calculated_value)));
+                filteredValues.add(new PointValue((float) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(bgReading.filtered_calculated_value)));
             }
             if ((interpret_raw && (bgReading.raw_calculated > 0))) {
-                rawInterpretedValues.add(new PointValueExtended((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.raw_calculated)));
+                rawInterpretedValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.raw_calculated)));
             }
             if (bgReading.calculated_value >= 400) {
-                highValues.add(new PointValueExtended((float) (bgReading.timestamp / FUZZER), (float) unitized(400)));
+                highValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(400)));
             } else if (unitized(bgReading.calculated_value) >= highMark) {
-                highValues.add(new PointValueExtended((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
+                highValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
             } else if (unitized(bgReading.calculated_value) >= lowMark) {
-                inRangeValues.add(new PointValueExtended((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
+                inRangeValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
             } else if (bgReading.calculated_value >= 40) {
-                lowValues.add(new PointValueExtended((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
+                lowValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
             } else if (bgReading.calculated_value > 13) {
-                lowValues.add(new PointValueExtended((float) (bgReading.timestamp / FUZZER), (float) unitized(40)));
+                lowValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(40)));
             }
 
             avg2counter++;
@@ -790,7 +794,7 @@ public class BgGraphBuilder {
                         double polyPredicty = poly.predict(bgReading.timestamp);
                         //if (d) Log.d(TAG, "Poly predict: "+JoH.qs(polyPredict)+" @ "+JoH.qs(iob.timestamp));
                         if ((polyPredicty < highMark) && (polyPredicty > 0)) {
-                            PointValue zv = new PointValueExtended((float) (bgReading.timestamp / FUZZER), (float) polyPredicty);
+                            PointValue zv = new PointValue((float) (bgReading.timestamp / FUZZER), (float) polyPredicty);
                             polyBgValues.add(zv);
                         }
                     }
@@ -818,12 +822,12 @@ public class BgGraphBuilder {
                         plow_timestamp = plow_timestamp - FUZZER;
                         polyPredicty = poly.predict(plow_timestamp);
                         if (polyPredicty > (lowMark+offset)) {
-                            PointValue zv = new PointValueExtended((float) (plow_timestamp / FUZZER), (float) polyPredicty);
+                            PointValue zv = new PointValue((float) (plow_timestamp / FUZZER), (float) polyPredicty);
                             polyBgValues.add(zv);
                         } else {
                             low_occurs_at = plow_timestamp;
                             if (polyPredicty > lowMarkIndicator) {
-                                polyBgValues.add(new PointValueExtended((float) (plow_timestamp / FUZZER), (float) polyPredicty));
+                                polyBgValues.add(new PointValue((float) (plow_timestamp / FUZZER), (float) polyPredicty));
                             }
                         }
                     }
@@ -852,7 +856,7 @@ public class BgGraphBuilder {
                         double polyPredicty = unitized(noisePoly.predict(bgReading.timestamp));
                         if (d) Log.d(TAG, "noise Poly predict: "+JoH.qs(polyPredicty)+" @ "+JoH.qs(bgReading.timestamp));
                         if ((polyPredicty < highMark) && (polyPredicty > 0)) {
-                            PointValue zv = new PointValueExtended((float) (bgReading.timestamp / FUZZER), (float) polyPredicty);
+                            PointValue zv = new PointValue((float) (bgReading.timestamp / FUZZER), (float) polyPredicty);
                             noisePolyBgValues.add(zv);
                         }
                     }
@@ -894,6 +898,15 @@ public class BgGraphBuilder {
                 if ((treatment.notes !=null) &&(treatment.notes.length()>0))
                 {
                     pv.note=treatment.notes;
+                    try {
+                        final Pattern p = Pattern.compile(".*?pos:([0-9.]+).*");
+                        final Matcher m = p.matcher(treatment.enteredBy);
+                        if (m.matches()) {
+                            pv.set(pv.getX(), (float)JoH.tolerantParseDouble(m.group(1)));
+                        }
+                    } catch (Exception e) {
+                        Log.d(TAG, "Exception matching position: " + e);
+                    }
                 } else {
                     pv.note="Treatment";
                 }
@@ -975,18 +988,18 @@ public class BgGraphBuilder {
                         if (iob.iob > Profile.minimum_shown_iob) {
                             double height = iob.iob * iobscale;
                             if (height > highMark) height = highMark;
-                            PointValue pv = new PointValueExtended((float) fuzzed_timestamp, (float) height);
+                            PointValue pv = new PointValue((float) fuzzed_timestamp, (float) height);
                             iobValues.add(pv);
                             double activityheight = iob.jActivity * 3; // currently scaled by profile
                             if (activityheight > highMark) activityheight = highMark;
-                            PointValue av = new PointValueExtended((float) fuzzed_timestamp, (float) activityheight);
+                            PointValue av = new PointValue((float) fuzzed_timestamp, (float) activityheight);
                             activityValues.add(av);
                         }
 
                         if (iob.cob > 0) {
                             double height = iob.cob * cobscale;
                             if (height > highMark) height = highMark;
-                            PointValue pv = new PointValueExtended((float) fuzzed_timestamp, (float) height);
+                            PointValue pv = new PointValue((float) fuzzed_timestamp, (float) height);
                             if (d)
                                 Log.d(TAG, "Cob total record: " + JoH.qs(height) + " " + JoH.qs(iob.cob) + " " + Float.toString(pv.getY()) + " @ timestamp: " + Long.toString(iob.timestamp));
                             cobValues.add(pv); // warning should not be hardcoded
@@ -1003,7 +1016,7 @@ public class BgGraphBuilder {
                                         Log.d(TAG, "Poly predict: " + JoH.qs(polyPredict) + " @ " + JoH.dateTimeText(iob.timestamp));
                                     if (show_moment_working_line) {
                                         if (((polyPredict < highMark) || (polyPredict < initial_predicted_bg)) && (polyPredict > 0)) {
-                                            PointValue zv = new PointValueExtended((float) fuzzed_timestamp, (float) polyPredict);
+                                            PointValue zv = new PointValue((float) fuzzed_timestamp, (float) polyPredict);
                                             polyBgValues.add(zv);
                                         }
                                     }
@@ -1029,7 +1042,7 @@ public class BgGraphBuilder {
                             predict_weight = predict_weight * 2.5; // from 0-infinity - // TODO account for step!!!
                             // we should pull in actual graph upper and lower limits here
                             if (((predictedbg_final < highMark) || (predictedbg_final < relaxed_predicted_bg_limit)) && (predictedbg_final > 0)) {
-                                PointValue zv = new PointValueExtended((float) fuzzed_timestamp, (float) predictedbg_final);
+                                PointValue zv = new PointValue((float) fuzzed_timestamp, (float) predictedbg_final);
                                 predictedBgValues.add(zv);
                             }
                         }
@@ -1044,7 +1057,7 @@ public class BgGraphBuilder {
                                     position = 7.0 * bgScale;
                                 }
 
-                                PointValue iv = new PointValueExtended((float) fuzzed_timestamp, (float) position);
+                                PointValue iv = new PointValue((float) fuzzed_timestamp, (float) position);
                                 DecimalFormat df = new DecimalFormat("#");
                                 df.setMaximumFractionDigits(2);
                                 df.setMinimumIntegerDigits(1);
@@ -1077,12 +1090,12 @@ public class BgGraphBuilder {
                 if (d)
                     Log.i(TAG, "Predictive Bolus Wizard suggestion: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
                 if (evaluation[0] > Profile.minimum_carb_recommendation) {
-                    PointValue iv = new PointValueExtended((float) fuzzed_timestamp, (float) (10 * bgScale));
+                    PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));
                     iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));
                     annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
                 }
                 if (evaluation[1] > Profile.minimum_insulin_recommendation) {
-                    PointValue iv = new PointValueExtended((float) fuzzed_timestamp, (float) (11 * bgScale));
+                    PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (11 * bgScale));
                     iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
                     annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
                 }
@@ -1439,13 +1452,30 @@ public class BgGraphBuilder {
                     alternate=pve.note;
                 }
             } catch (ClassCastException e) {
-                Log.e(TAG, "Error casting a point from pointValue to PointValueExtended", e);
+               // Log.e(TAG, "Error casting a point from pointValue to PointValueExtended", e);
             }
 
             final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(context);
             //Won't give the exact time of the reading but the time on the grid: close enough.
-            Long time = ((long) pointValue.getX()) * FUZZER;
-            if (tooltip != null) {
+            final Long time = ((long) pointValue.getX()) * FUZZER;
+            final double ypos = pointValue.getY();
+
+            final String message;
+            if (alternate.length()>0) {
+                message = timeFormat.format(time) + ":    "+alternate;
+            } else {
+                message = timeFormat.format(time) + ":    " + (Math.round(pointValue.getY() * 10) / 10d) + " "+unit() +  filtered;
+            }
+
+            final View.OnClickListener mOnClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Home.startHomeWithExtra(xdrip.getAppContext(), Home.CREATE_TREATMENT_NOTE, time.toString(), Double.toString(ypos) );
+                }
+            };
+          Home.snackBar(message,mOnClickListener);
+
+           /* if (tooltip != null) {
                 tooltip.cancel();
             }
             if (alternate.length()>0) {
@@ -1455,7 +1485,7 @@ public class BgGraphBuilder {
             }
             View view = tooltip.getView();
             view.setBackgroundColor(getCol(X.color_home_chart_background));
-            tooltip.show();
+            tooltip.show();*/
         }
 
         @Override

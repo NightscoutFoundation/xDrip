@@ -60,8 +60,10 @@ import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
+import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
+import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
@@ -106,6 +108,7 @@ public class Home extends ActivityWithMenu {
     private final static String TAG = "jamorham: " + Home.class.getSimpleName();
     public final static String START_SPEECH_RECOGNITION = "START_APP_SPEECH_RECOGNITION";
     public final static String START_TEXT_RECOGNITION = "START_APP_TEXT_RECOGNITION";
+    public final static String CREATE_TREATMENT_NOTE = "CREATE_TREATMENT_NOTE";
     public final static String menu_name = "Home Screen";
     public static boolean activityVisible = false;
     public static boolean invalidateMenu = false;
@@ -143,6 +146,9 @@ public class Home extends ActivityWithMenu {
     private TextView textTime;
     private final int REQ_CODE_SPEECH_INPUT = 1994;
     private final int REQ_CODE_SPEECH_NOTE_INPUT = 1995;
+    private final int SHOWCASE_UNDO = 4;
+    private final int SHOWCASE_REDO = 5;
+    private final int SHOWCASE_NOTE_LONG = 6;
     private static double last_speech_time = 0;
     private PreviewLineChartView previewChart;
     private TextView dexbridgeBattery;
@@ -166,9 +172,9 @@ public class Home extends ActivityWithMenu {
     private wordDataWrapper searchWords = null;
     private AlertDialog dialog;
 
-    static boolean oneshot = false;
+    private static final boolean oneshot = true;
     private static ShowcaseView myShowcase;
-    public Activity mActivity;
+    public static Activity mActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -225,8 +231,8 @@ public class Home extends ActivityWithMenu {
         this.btnCancel = (ImageButton) findViewById(R.id.cancelTreatment);
         this.btnApprove = (ImageButton) findViewById(R.id.approveTreatment);
         this.btnTime = (ImageButton) findViewById(R.id.timeButton);
-        this.btnUndo= (ImageButton) findViewById(R.id.btnUndo);
-        this.btnRedo= (ImageButton) findViewById(R.id.btnRedo);
+        this.btnUndo = (ImageButton) findViewById(R.id.btnUndo);
+        this.btnRedo = (ImageButton) findViewById(R.id.btnRedo);
 
         hideAllTreatmentButtons();
 
@@ -255,9 +261,8 @@ public class Home extends ActivityWithMenu {
         btnNote.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if (Home.getPreferencesBooleanDefaultFalse("default_to_voice_notes"))
-                {
-                    showNoteTextInputDialog(v);
+                if (Home.getPreferencesBooleanDefaultFalse("default_to_voice_notes")) {
+                    showNoteTextInputDialog(v,0);
                 } else {
                     promptSpeechNoteInput(v);
                 }
@@ -268,7 +273,7 @@ public class Home extends ActivityWithMenu {
             @Override
             public void onClick(View v) {
                 if (!Home.getPreferencesBooleanDefaultFalse("default_to_voice_notes")) {
-                    showNoteTextInputDialog(v);
+                    showNoteTextInputDialog(v,0);
                 } else {
                     promptSpeechNoteInput(v);
                 }
@@ -288,7 +293,7 @@ public class Home extends ActivityWithMenu {
 
             @Override
             public void onClick(View v) {
-              processAndApproveTreatment();
+                processAndApproveTreatment();
             }
         });
 
@@ -300,7 +305,7 @@ public class Home extends ActivityWithMenu {
                 textInsulinDose.setVisibility(View.INVISIBLE);
                 btnInsulinDose.setVisibility(View.INVISIBLE);
                 Treatments.create(0, thisinsulinnumber, Treatments.getTimeStampWithOffset(thistimeoffset));
-                reset_viewport=true;
+                reset_viewport = true;
                 if (hideTreatmentButtonsIfAllDone()) {
                     updateCurrentBgInfo("insulin button");
                 }
@@ -313,7 +318,7 @@ public class Home extends ActivityWithMenu {
                 // proccess and approve treatment
                 textCarbohydrates.setVisibility(View.INVISIBLE);
                 btnCarbohydrates.setVisibility(View.INVISIBLE);
-                reset_viewport=true;
+                reset_viewport = true;
                 Treatments.create(thiscarbsnumber, 0, Treatments.getTimeStampWithOffset(thistimeoffset));
                 if (hideTreatmentButtonsIfAllDone()) {
                     updateCurrentBgInfo("carbs button");
@@ -325,8 +330,8 @@ public class Home extends ActivityWithMenu {
 
             @Override
             public void onClick(View v) {
-              reset_viewport=true;
-              processCalibration();
+                reset_viewport = true;
+                processCalibration();
             }
         });
 
@@ -356,15 +361,14 @@ public class Home extends ActivityWithMenu {
     }
 
     // handle sending the intent
-    private void processCalibrationNoUI(double glucosenumber,double timeoffset) {
-        if (timeoffset<0)
-        {
+    private void processCalibrationNoUI(double glucosenumber, double timeoffset) {
+        if (timeoffset < 0) {
             toaststaticnext("Got calibration in the future - cannot process!");
             return;
         }
-        if (glucosenumber>0) {
+        if (glucosenumber > 0) {
             Intent calintent = new Intent(getApplicationContext(), AddCalibration.class);
-        // TODO fix up class names
+            // TODO fix up class names
             //calintent.setClassName("com.eveningoutpost.dexdrip", "com.eveningoutpost.dexdrip.AddCalibration");
             calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             calintent.putExtra("bg_string", JoH.qs(glucosenumber));
@@ -378,24 +382,23 @@ public class Home extends ActivityWithMenu {
         // TODO BG Tests to be possible without being calibrations
         // TODO Offer Choice? Reject calibrations under various circumstances
         // This should be wrapped up in a generic method
-           processCalibrationNoUI(thisglucosenumber,thistimeoffset);
+        processCalibrationNoUI(thisglucosenumber, thistimeoffset);
 
-            textBloodGlucose.setVisibility(View.INVISIBLE);
-            btnBloodGlucose.setVisibility(View.INVISIBLE);
-            if (hideTreatmentButtonsIfAllDone()) {
-                updateCurrentBgInfo("bg button");
-            }
+        textBloodGlucose.setVisibility(View.INVISIBLE);
+        btnBloodGlucose.setVisibility(View.INVISIBLE);
+        if (hideTreatmentButtonsIfAllDone()) {
+            updateCurrentBgInfo("bg button");
+        }
 
 
     }
 
-    private void cancelTreatment()
-    {
+    private void cancelTreatment() {
         hideAllTreatmentButtons();
         WatchUpdaterService.sendWearToast("Treatment cancelled", Toast.LENGTH_SHORT);
     }
-    private void processAndApproveTreatment()
-    {
+
+    private void processAndApproveTreatment() {
         // preserve globals before threading off
         final double myglucosenumber = thisglucosenumber;
         final double mytimeoffset = thistimeoffset;
@@ -412,7 +415,7 @@ public class Home extends ActivityWithMenu {
             @Override
             public void run() {
                 // possibly this should have some delay
-                processCalibrationNoUI(myglucosenumber,mytimeoffset);
+                processCalibrationNoUI(myglucosenumber, mytimeoffset);
                 staticRefreshBGCharts();
             }
         }.start();
@@ -428,17 +431,31 @@ public class Home extends ActivityWithMenu {
                 last_speech_time = JoH.ts();
                 naturalLanguageRecognition(receivedText);
             }
-            if (bundle.getString(WatchUpdaterService.WEARABLE_APPROVE_TREATMENT)!=null) processAndApproveTreatment();
-            else if (bundle.getString(WatchUpdaterService.WEARABLE_CANCEL_TREATMENT)!=null) cancelTreatment();
-            else if (bundle.getString(Home.START_SPEECH_RECOGNITION)!=null) promptSpeechInput();
-            else if (bundle.getString(Home.START_TEXT_RECOGNITION)!=null) promptTextInput_old();
+            if (bundle.getString(WatchUpdaterService.WEARABLE_APPROVE_TREATMENT) != null)
+                processAndApproveTreatment();
+            else if (bundle.getString(WatchUpdaterService.WEARABLE_CANCEL_TREATMENT) != null)
+                cancelTreatment();
+            else if (bundle.getString(Home.START_SPEECH_RECOGNITION) != null) promptSpeechInput();
+            else if (bundle.getString(Home.START_TEXT_RECOGNITION) != null) promptTextInput_old();
+            else if (bundle.getString(Home.CREATE_TREATMENT_NOTE) != null) {
+                try {
+                    showNoteTextInputDialog(null, Long.parseLong(bundle.getString(Home.CREATE_TREATMENT_NOTE)), JoH.tolerantParseDouble(bundle.getString(Home.CREATE_TREATMENT_NOTE + "2")));
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "Got null point exception during CREATE_TREATMENT_NOTE Intent");
+                }
+            }
         }
     }
 
     public static void startHomeWithExtra(Context context, String extra, String text) {
+        startHomeWithExtra(context, extra, text, "");
+    }
+
+    public static void startHomeWithExtra(Context context, String extra, String text, String even_more) {
         Intent intent = new Intent(context, Home.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(extra, text);
+        intent.putExtra(extra + "2", even_more);
         context.startActivity(intent);
     }
 
@@ -547,8 +564,7 @@ public class Home extends ActivityWithMenu {
 
     }
 
-    private void promptKeypadInput()
-    {
+    private void promptKeypadInput() {
         Log.d(TAG, "Showing pop-up");
 
 /*        LayoutInflater inflater = (LayoutInflater) xdrip.getAppContext().getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -681,8 +697,7 @@ public class Home extends ActivityWithMenu {
         }
 
         if (allWords.contentEquals("delete last calibration")
-                || allWords.contentEquals("clear last calibration"))
-        {
+                || allWords.contentEquals("clear last calibration")) {
             Calibration.clearLastCalibration();
         }
 
@@ -763,9 +778,11 @@ public class Home extends ActivityWithMenu {
                 if ((glucoseset == false) && (thisnumber > 0)) {
                     thisglucosenumber = thisnumber;
                     if (prefs.getString("units", "mgdl").equals("mgdl")) {
-                        if (textBloodGlucose != null) textBloodGlucose.setText(Double.toString(thisnumber) + " mg/dl");
+                        if (textBloodGlucose != null)
+                            textBloodGlucose.setText(Double.toString(thisnumber) + " mg/dl");
                     } else {
-                        if (textBloodGlucose != null) textBloodGlucose.setText(Double.toString(thisnumber) + " mmol/l");
+                        if (textBloodGlucose != null)
+                            textBloodGlucose.setText(Double.toString(thisnumber) + " mmol/l");
                     }
 
                     Log.d(TAG, "Blood test: " + Double.toString(thisnumber));
@@ -884,6 +901,17 @@ public class Home extends ActivityWithMenu {
         }
     }
 
+    public static void toastStaticFromUI(final String msg) {
+        try {
+            Toast.makeText(staticContext, msg, Toast.LENGTH_LONG).show();
+            Log.d(TAG, "toast: " + msg);
+        } catch (Exception e) {
+            toaststaticnext(msg);
+            Log.d(TAG, "Couldn't display toast (rescheduling): " + msg + " / " + e.toString());
+        }
+    }
+
+
     /**
      * Receiving speech input
      */
@@ -937,7 +965,10 @@ public class Home extends ActivityWithMenu {
                     voiceRecognitionText.setText(result.get(0));
                     voiceRecognitionText.setVisibility(View.VISIBLE);
                     Treatments.create_note(treatment_text, 0); // timestamp?
-                    if (dialog !=null) { dialog.cancel(); dialog=null; }
+                    if (dialog != null) {
+                        dialog.cancel();
+                        dialog = null;
+                    }
                     Home.staticRefreshBGCharts();
 
                 }
@@ -972,8 +1003,7 @@ public class Home extends ActivityWithMenu {
     private void checkEula() {
 
         boolean warning_agreed_to = prefs.getBoolean("warning_agreed_to", false);
-        if (!warning_agreed_to)
-        {
+        if (!warning_agreed_to) {
             startActivity(new Intent(getApplicationContext(), Agreement.class));
             finish();
         } else {
@@ -986,8 +1016,7 @@ public class Home extends ActivityWithMenu {
         }
     }
 
-    public static void staticRefreshBGCharts()
-    {
+    public static void staticRefreshBGCharts() {
         staticRefreshBGCharts(false);
     }
 
@@ -1179,19 +1208,16 @@ public class Home extends ActivityWithMenu {
         is_follower_set = true;
     }
 
-    public static boolean get_follower()
-    {
+    public static boolean get_follower() {
         if (!is_follower_set) set_is_follower();
         return Home.is_follower;
     }
 
-    public static boolean get_master()
-    {
+    public static boolean get_master() {
         return (!get_follower()) && (Home.getPreferencesBooleanDefaultFalse("plus_follow_master"));
     }
 
-    public static boolean get_holo()
-    {
+    public static boolean get_holo() {
         return Home.is_holo;
     }
 
@@ -1205,7 +1231,7 @@ public class Home extends ActivityWithMenu {
         if (reset_viewport) {
             reset_viewport = false;
             holdViewport.set(0, 0, 0, 0);
-            if (chart!=null) chart.setZoomType(ZoomType.HORIZONTAL);
+            if (chart != null) chart.setZoomType(ZoomType.HORIZONTAL);
         }
         setupCharts();
         final TextView notificationText = (TextView) findViewById(R.id.notices);
@@ -1220,12 +1246,14 @@ public class Home extends ActivityWithMenu {
 
         if (UndoRedo.undoListHasItems()) {
             btnUndo.setVisibility(View.VISIBLE);
+            showcasemenu(SHOWCASE_UNDO);
         } else {
             btnUndo.setVisibility(View.INVISIBLE);
         }
 
         if (UndoRedo.redoListHasItems()) {
             btnRedo.setVisibility(View.VISIBLE);
+            showcasemenu(SHOWCASE_REDO);
         } else {
             btnRedo.setVisibility(View.INVISIBLE);
         }
@@ -1287,7 +1315,7 @@ public class Home extends ActivityWithMenu {
         // when to raise the alarm
         lowPredictText.setText("");
         if (BgGraphBuilder.low_occurs_at > 0) {
-            final double low_predicted_alarm_minutes = Double.parseDouble(prefs.getString("low_predict_alarm_level","50"));
+            final double low_predicted_alarm_minutes = Double.parseDouble(prefs.getString("low_predict_alarm_level", "50"));
             final double now = JoH.ts();
             final double predicted_low_in_mins = (BgGraphBuilder.low_occurs_at - now) / 60000;
 
@@ -1297,7 +1325,7 @@ public class Home extends ActivityWithMenu {
                     lowPredictText.setTextColor(Color.RED); // low front getting too close!
                 } else {
                     final double previous_predicted_low_in_mins = (BgGraphBuilder.previous_low_occurs_at - now) / 60000;
-                    if ((BgGraphBuilder.previous_low_occurs_at > 0) && ((previous_predicted_low_in_mins+5) < predicted_low_in_mins)) {
+                    if ((BgGraphBuilder.previous_low_occurs_at > 0) && ((previous_predicted_low_in_mins + 5) < predicted_low_in_mins)) {
                         lowPredictText.setTextColor(Color.GREEN); // low front is getting further away
                     } else {
                         lowPredictText.setTextColor(Color.YELLOW); // low front is getting nearer!
@@ -1328,7 +1356,6 @@ public class Home extends ActivityWithMenu {
         //showcasemenu(1); // 3 dot menu
 
     }
-
 
 
     private void updateCurrentBgInfoForWifiWixel(TextView notificationText) {
@@ -1390,7 +1417,7 @@ public class Home extends ActivityWithMenu {
                 List<Calibration> calibrations = Calibration.latest(2);
                 if (calibrations.size() < 2) {
                     notificationText.setText("Please enter two calibrations to get started!");
-                    Log.d(TAG,"Asking for calibration B: Uncalculated BG readings: "+BgReading.latestUnCalculated(2).size()+" / Calibrations size: "+calibrations.size());
+                    Log.d(TAG, "Asking for calibration B: Uncalculated BG readings: " + BgReading.latestUnCalculated(2).size() + " / Calibrations size: " + calibrations.size());
                 }
             }
         }
@@ -1475,7 +1502,9 @@ public class Home extends ActivityWithMenu {
         if ((currentBgValueText.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) > 0) {
             currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
             dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-            if (get_follower()) { GcmActivity.requestPing(); }
+            if (get_follower()) {
+                GcmActivity.requestPing();
+            }
         }
         BgReading lastBgReading = BgReading.lastNoSenssor();
         boolean predictive = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("predictive_bg", false);
@@ -1488,8 +1517,8 @@ public class Home extends ActivityWithMenu {
             display_delta = "";
         }
 
-        if(prefs.getBoolean("extra_status_line", false)) {
-          extraStatusLineText.setText(extraStatusLine());
+        if (prefs.getBoolean("extra_status_line", false)) {
+            extraStatusLineText.setText(extraStatusLine());
             extraStatusLineText.setVisibility(View.VISIBLE);
         } else {
             extraStatusLineText.setText("");
@@ -1501,61 +1530,61 @@ public class Home extends ActivityWithMenu {
     private String extraStatusLine() {
         StringBuilder extraline = new StringBuilder();
         Calibration lastCalibration = Calibration.lastValid();
-        if (prefs.getBoolean("status_line_calibration_long", false) && lastCalibration != null){
-            if(extraline.length()!=0) extraline.append(' ');
+        if (prefs.getBoolean("status_line_calibration_long", false) && lastCalibration != null) {
+            if (extraline.length() != 0) extraline.append(' ');
             extraline.append("slope = ");
-            extraline.append(String.format("%.2f",lastCalibration.slope));
+            extraline.append(String.format("%.2f", lastCalibration.slope));
             extraline.append(' ');
             extraline.append("inter = ");
-            extraline.append(String.format("%.2f",lastCalibration.intercept));
+            extraline.append(String.format("%.2f", lastCalibration.intercept));
         }
 
-        if(prefs.getBoolean("status_line_calibration_short", false) && lastCalibration != null) {
-            if(extraline.length()!=0) extraline.append(' ');
+        if (prefs.getBoolean("status_line_calibration_short", false) && lastCalibration != null) {
+            if (extraline.length() != 0) extraline.append(' ');
             extraline.append("s:");
-            extraline.append(String.format("%.2f",lastCalibration.slope));
+            extraline.append(String.format("%.2f", lastCalibration.slope));
             extraline.append(' ');
             extraline.append("i:");
-            extraline.append(String.format("%.2f",lastCalibration.intercept));
+            extraline.append(String.format("%.2f", lastCalibration.intercept));
         }
 
-        if(prefs.getBoolean("status_line_avg", false)
+        if (prefs.getBoolean("status_line_avg", false)
                 || prefs.getBoolean("status_line_a1c_dcct", false)
                 || prefs.getBoolean("status_line_a1c_ifcc", false
                 || prefs.getBoolean("status_line_in", false))
                 || prefs.getBoolean("status_line_high", false)
-                || prefs.getBoolean("status_line_low", false)){
+                || prefs.getBoolean("status_line_low", false)) {
 
             StatsResult statsResult = new StatsResult(prefs);
 
-            if(prefs.getBoolean("status_line_avg", false)) {
-                if(extraline.length()!=0) extraline.append(' ');
+            if (prefs.getBoolean("status_line_avg", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
                 extraline.append(statsResult.getAverageUnitised());
             }
-            if(prefs.getBoolean("status_line_a1c_dcct", false)) {
-                if(extraline.length()!=0) extraline.append(' ');
+            if (prefs.getBoolean("status_line_a1c_dcct", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
                 extraline.append(statsResult.getA1cDCCT());
             }
-            if(prefs.getBoolean("status_line_a1c_ifcc", false)) {
-                if(extraline.length()!=0) extraline.append(' ');
+            if (prefs.getBoolean("status_line_a1c_ifcc", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
                 extraline.append(statsResult.getA1cIFCC());
             }
-            if(prefs.getBoolean("status_line_in", false)) {
-                if(extraline.length()!=0) extraline.append(' ');
+            if (prefs.getBoolean("status_line_in", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
                 extraline.append(statsResult.getInPercentage());
             }
-            if(prefs.getBoolean("status_line_high", false)) {
-                if(extraline.length()!=0) extraline.append(' ');
+            if (prefs.getBoolean("status_line_high", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
                 extraline.append(statsResult.getHighPercentage());
             }
-            if(prefs.getBoolean("status_line_low", false)) {
-                if(extraline.length()!=0) extraline.append(' ');
+            if (prefs.getBoolean("status_line_low", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
                 extraline.append(statsResult.getLowPercentage());
             }
         }
-        if(prefs.getBoolean("status_line_time", false)) {
+        if (prefs.getBoolean("status_line_time", false)) {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-            if(extraline.length()!=0) extraline.append(' ');
+            if (extraline.length() != 0) extraline.append(' ');
             extraline.append(sdf.format(new Date()));
         }
         return extraline.toString();
@@ -1589,8 +1618,7 @@ public class Home extends ActivityWithMenu {
                 currentBgValueText.setTypeface(null, Typeface.NORMAL);
 
                 // if noise has settled down then switch off filtered mode
-                if ((bg_from_filtered) && (BgGraphBuilder.last_noise < BgGraphBuilder.NOISE_FORGIVE) && (prefs.getBoolean("bg_compensate_noise", false)))
-                {
+                if ((bg_from_filtered) && (BgGraphBuilder.last_noise < BgGraphBuilder.NOISE_FORGIVE) && (prefs.getBoolean("bg_compensate_noise", false))) {
                     bg_from_filtered = false;
                     prefs.edit().putBoolean("bg_from_filtered", false).apply();
 
@@ -1607,8 +1635,7 @@ public class Home extends ActivityWithMenu {
                     extrastring = "\u26A0"; // warning symbol !
                 }
 
-                if (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_HIGH)
-                {
+                if (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_HIGH) {
                     bg_from_filtered = true; // force filtered mode
                 }
 
@@ -1628,7 +1655,8 @@ public class Home extends ActivityWithMenu {
                 String stringEstimate = bgGraphBuilder.unitized_string(estimate);
                 currentBgValueText.setText(stringEstimate + " " + BgReading.activeSlopeArrow());
             }
-            if (extrastring.length()>0) currentBgValueText.setText(extrastring+currentBgValueText.getText());
+            if (extrastring.length() > 0)
+                currentBgValueText.setText(extrastring + currentBgValueText.getText());
         }
         int minutes = (int) (System.currentTimeMillis() - lastBgReading.timestamp) / (60 * 1000);
         notificationText.append("\n" + minutes + ((minutes == 1) ? " Minute ago" : " Minutes ago"));
@@ -1648,9 +1676,8 @@ public class Home extends ActivityWithMenu {
                 //final double estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
                 display_delta = bgGraphBuilder.unitizedDeltaStringRaw(true, true, estimated_delta);
                 addDisplayDelta();
-                if (!prefs.getBoolean("show_noise_workings", false))
-                {
-                    notificationText.append("\nNoise: "+bgGraphBuilder.noiseString(BgGraphBuilder.last_noise));
+                if (!prefs.getBoolean("show_noise_workings", false)) {
+                    notificationText.append("\nNoise: " + bgGraphBuilder.noiseString(BgGraphBuilder.last_noise));
                 }
             } else {
                 addDisplayDelta();
@@ -1666,8 +1693,7 @@ public class Home extends ActivityWithMenu {
         }
     }
 
-    private void addDisplayDelta()
-    {
+    private void addDisplayDelta() {
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             notificationText.append("  ");
         } else {
@@ -1688,8 +1714,8 @@ public class Home extends ActivityWithMenu {
         }
 
         //speak readings
-        MenuItem menuItem =  menu.findItem(R.id.action_toggle_speakreadings);
-        if(prefs.getBoolean("bg_to_speech_shortcut", false)){
+        MenuItem menuItem = menu.findItem(R.id.action_toggle_speakreadings);
+        if (prefs.getBoolean("bg_to_speech_shortcut", false)) {
 
             menuItem.setVisible(true);
             if (prefs.getBoolean("bg_to_speech", false)) {
@@ -1711,23 +1737,38 @@ public class Home extends ActivityWithMenu {
     }
 
     @Override
-    public void onNewIntent(Intent intent)
-    {
+    public void onNewIntent(Intent intent) {
         Bundle bundle = intent.getExtras();
         processIncomingBundle(bundle);
     }
 
 
     private synchronized void showcasemenu(int option) {
-
         if ((myShowcase != null) && (myShowcase.isShowing())) return;
+        if (ShotStateStore.hasShot(option)) return;
         //  if (showcaseblocked) return;
         try {
             ViewTarget target = null;
-
-            if (oneshot == false) {
+            String title = "";
+            String message = "";
 
                 switch (option) {
+
+                    case SHOWCASE_NOTE_LONG:
+                        target = new ViewTarget(R.id.btnNote, this);
+                        title = getString(R.string.note_button);
+                        message = getString(R.string.showcase_note_long);
+                        break;
+                    case SHOWCASE_REDO:
+                        target = new ViewTarget(R.id.btnRedo, this);
+                        title = getString(R.string.redo_button);
+                        message = getString(R.string.showcase_redo);
+                        break;
+                    case SHOWCASE_UNDO:
+                        target = new ViewTarget(R.id.btnUndo, this);
+                        title = getString(R.string.undo_button);
+                        message = getString(R.string.showcase_undo);
+                        break;
                     case 3:
                         target = new ViewTarget(R.id.btnSpeak, this);
                         break;
@@ -1745,7 +1786,6 @@ public class Home extends ActivityWithMenu {
                                 target = new ViewTarget(view);
                                 break;
                             }
-
                         }
                         break;
                 }
@@ -1763,16 +1803,17 @@ public class Home extends ActivityWithMenu {
                                 }
                             })*/
                             .setTarget(target)
-
                             .setStyle(R.style.CustomShowcaseTheme2)
-                            .setContentTitle("Access the Menu")
-                            .setContentText("Overflow menu has even more options!")
-                                    //  .blockAllTouches()
+                            .setContentTitle(title)
+                            .setContentText("\n"+message)
+                            .setShowcaseDrawer(new JamorhamShowcaseDrawer(getResources(),getTheme(),90,14))
+                            .singleShot(oneshot ? option : -1)
                             .build();
-                    myShowcase.show();
 
+                    myShowcase.setBackgroundColor(Color.TRANSPARENT);
+                    myShowcase.show();
                 }
-            }
+
         } catch (Exception e) {
             Log.e(TAG, "Exception in showcase: " + e.toString());
         }
@@ -1800,23 +1841,23 @@ public class Home extends ActivityWithMenu {
         ParakeetHelper.parakeetSetupMode(getApplicationContext());
     }
 
-    public void undoButtonClick(View myitem)
-    {
-       if (UndoRedo.undoNextItem()) staticRefreshBGCharts();
+    public void undoButtonClick(View myitem) {
+        if (UndoRedo.undoNextItem()) staticRefreshBGCharts();
     }
 
-    public void redoButtonClick(View myitem)
-    {
+    public void redoButtonClick(View myitem) {
         if (UndoRedo.redoNextItem()) staticRefreshBGCharts();
     }
 
-    public void noteDefaultMethodChanged(View myitem)
-    {
-        setPreferencesBoolean("default_to_voice_notes",!getPreferencesBooleanDefaultFalse("default_to_voice_notes"));
+    public void noteDefaultMethodChanged(View myitem) {
+        setPreferencesBoolean("default_to_voice_notes", !getPreferencesBooleanDefaultFalse("default_to_voice_notes"));
     }
 
-    public void showNoteTextInputDialog(View myitem)
-    {
+    public void showNoteTextInputDialog(View myitem, final long timestamp) {
+    showNoteTextInputDialog(myitem,timestamp,-1);
+    }
+    public void showNoteTextInputDialog(View myitem, final long timestamp, final double position) {
+        Log.d(TAG,"showNoteTextInputDialog: ts:"+timestamp+" pos:"+position);
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.note_dialog_phone, null);
@@ -1832,15 +1873,17 @@ public class Home extends ActivityWithMenu {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String treatment_text = edt.getText().toString().trim();
                 Log.d(TAG, "Got treatment note: " + treatment_text);
-                Treatments.create_note(treatment_text, 0); // timestamp?
+                Treatments.create_note(treatment_text, timestamp, position); // timestamp?
                 Home.staticRefreshBGCharts();
+                if (getPreferencesBooleanDefaultFalse("default_to_voice_notes")) showcasemenu(SHOWCASE_NOTE_LONG);
                 dialog = null;
             }
         });
         dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                //pass
-                dialog=null;
+                if (getPreferencesBooleanDefaultFalse("default_to_voice_notes")) showcasemenu(SHOWCASE_NOTE_LONG);
+                dialog = null;
+
             }
         });
         dialog = dialogBuilder.create();
@@ -1982,8 +2025,7 @@ public class Home extends ActivityWithMenu {
         return super.onOptionsItemSelected(item);
     }
 
-    public static boolean getPreferencesBooleanDefaultFalse(final String pref)
-    {
+    public static boolean getPreferencesBooleanDefaultFalse(final String pref) {
         if ((prefs == null) && (xdrip.getAppContext() != null)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         }
@@ -1993,8 +2035,7 @@ public class Home extends ActivityWithMenu {
         return false;
     }
 
-    public static boolean getPreferencesBoolean(final String pref,boolean def)
-    {
+    public static boolean getPreferencesBoolean(final String pref, boolean def) {
         if ((prefs == null) && (xdrip.getAppContext() != null)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         }
@@ -2002,30 +2043,27 @@ public class Home extends ActivityWithMenu {
         return false;
     }
 
-    public static String getPreferencesStringDefaultBlank(final String pref)
-    {
+    public static String getPreferencesStringDefaultBlank(final String pref) {
         if ((prefs == null) && (xdrip.getAppContext() != null)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         }
         if (prefs != null) {
-            return prefs.getString(pref,"");
+            return prefs.getString(pref, "");
         }
         return "";
     }
 
-    public static String getPreferencesStringWithDefault(final String pref, final String def)
-    {
+    public static String getPreferencesStringWithDefault(final String pref, final String def) {
         if ((prefs == null) && (xdrip.getAppContext() != null)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         }
         if (prefs != null) {
-            return prefs.getString(pref,def);
+            return prefs.getString(pref, def);
         }
         return "";
     }
 
-    public static long getPreferencesLong(final String pref, final long def)
-    {
+    public static long getPreferencesLong(final String pref, final long def) {
         if ((prefs == null) && (xdrip.getAppContext() != null)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         }
@@ -2035,8 +2073,7 @@ public class Home extends ActivityWithMenu {
         return def;
     }
 
-    public static int getPreferencesInt(final String pref, final int def)
-    {
+    public static int getPreferencesInt(final String pref, final int def) {
         if ((prefs == null) && (xdrip.getAppContext() != null)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         }
@@ -2047,52 +2084,59 @@ public class Home extends ActivityWithMenu {
     }
 
 
-    public static boolean setPreferencesBoolean(final String pref, final boolean lng)
-    {
+    public static boolean setPreferencesBoolean(final String pref, final boolean lng) {
         if ((prefs == null) && (xdrip.getAppContext() != null)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         }
         if (prefs != null) {
-            prefs.edit().putBoolean(pref,lng).apply();
+            prefs.edit().putBoolean(pref, lng).apply();
             return true;
         }
         return false;
     }
 
-    public static boolean setPreferencesLong(final String pref, final long lng)
-    {
+    public static boolean setPreferencesLong(final String pref, final long lng) {
         if ((prefs == null) && (xdrip.getAppContext() != null)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         }
         if (prefs != null) {
-            prefs.edit().putLong(pref,lng).apply();
+            prefs.edit().putLong(pref, lng).apply();
             return true;
         }
         return false;
     }
 
-    public static boolean setPreferencesString(final String pref, final String str)
-    {
+    public static boolean setPreferencesString(final String pref, final String str) {
         if ((prefs == null) && (xdrip.getAppContext() != null)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         }
         if (prefs != null) {
-            prefs.edit().putString(pref,str).apply();
+            prefs.edit().putString(pref, str).apply();
             return true;
         }
         return false;
     }
 
-    public static double convertToMgDlIfMmol(double value)
-    {
-        if (!getPreferencesStringWithDefault("units", "mgdl").equals("mgdl"))
-        {
+    public static double convertToMgDlIfMmol(double value) {
+        if (!getPreferencesStringWithDefault("units", "mgdl").equals("mgdl")) {
             return value * com.eveningoutpost.dexdrip.UtilityModels.Constants.MMOLL_TO_MGDL;
         } else {
             return value; // no conversion needed
         }
     }
 
+    public static void snackBar(String message, View.OnClickListener mOnClickListener) {
+
+        android.support.design.widget.Snackbar.make(
+
+                mActivity.findViewById(android.R.id.content),
+                message, android.support.design.widget.Snackbar.LENGTH_LONG)
+                .setAction(R.string.add_note, mOnClickListener)
+                //.setActionTextColor(Color.RED)
+                .show();
+    }
+
+    // classes
     private class ChartViewPortListener implements ViewportChangeListener {
         @Override
         public void onViewportChanged(Viewport newViewport) {

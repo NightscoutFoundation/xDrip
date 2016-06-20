@@ -149,6 +149,8 @@ dependencies {
     compile project(':localeapi')
     compile 'com.nispok:snackbar:2.10.8'
     compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:recyclerview-v7:23.1.1'
     compile 'com.google.android.gms:play-services-drive:8.4.0'
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
     compile 'com.google.android.gms:play-services-maps:8.4.0'
@@ -173,7 +175,7 @@ dependencies {
         transitive = true;
     }
     compile 'uk.com.robust-it:cloning:1.9.2'
-    compile 'com.github.amlcurran.showcaseview:library:5.4.1'
+    compile 'com.github.amlcurran.showcaseview:library:5.4.3'
 
     // Pebble-Trend, needs to be checked if really needed
     //compile 'com.android.support:multidex:1.0.1'

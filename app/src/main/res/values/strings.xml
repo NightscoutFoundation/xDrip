@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="local_target_package">com.eveningoutpost.dexdrip</string>
-    <string name="pref_I_understand_title"> I UNDERSTAND AND AGREE</string>
-    <string name="pref_I_understand_summery">xDrip+ MUST NOT BE USED TO MAKE MEDICAL DECISIONS. IT IS A RESEARCH TOOL ONLY AND IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.</string>
-    <string name="app_name">xDrip+</string>
-    <string name="hello_world">Hello world!</string>
+
     <string name="action_settings">Settings</string>
-    <string name="title_activity_bluetooth_scan">BluetoothScan</string>
+
+    <string name="title_activity_bluetooth_scan">Bluetooth Scan</string>
     <string name="connected">Connected</string>
     <string name="disconnected">Disconnected</string>
     <string name="menu_scan">Scan</string>
@@ -25,7 +22,7 @@
     <string name="title_activity_start_new_sensor">Start New Sensor</string>
     <string name="title_activity_new_sensor_location">New Sensor Location</string>
     <string name="title_activity_stop_sensor">Stop Sensor</string>
-    <string name="title_activity_nav_drawer">NavDrawer</string>
+    <string name="title_activity_nav_drawer">Nav Drawer</string>
     <string name="title_section1">Home</string>
     <string name="title_section2">Add Calibration</string>
     <string name="title_section3">Start Sensor</string>
@@ -36,9 +33,9 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_license_agreement">End User License Agreement</string>
-    <string name="action_example">Example action</string>
-    <string name="title_activity_calibration_check_in">CalibrationCheckInActivity</string>
-    <string name="title_activity_usb_connected">UsbConnectedActivity</string>
+    <string name="xyzaction_example">Example action</string>
+    <string name="title_activity_calibration_check_in">Calibration Activity</string>
+    <string name="title_activity_usb_connected">Usb Connected Activity</string>
     <string name="snooze">Snooze</string>
     <string name="snooze_hint">Snooze alert for x minutes</string>
     <string name="ok">OK</string>
@@ -46,20 +43,9 @@
     <string name="no">No</string>
     <string name="pref_sensor_location_dont_ask_again"> Don\'t ask me that again</string>
 
-    <string-array name="menu_options">
-        <item>Dex Drip</item>
-        <item>Enter Calibration</item>
-        <item>Calculated Data Table</item>
-        <item>Raw Data Table</item>
-        <item>Calibration Table</item>
-        <item>Start Sensor</item>
-        <item>Stop Sensor</item>
-        <item>Scan for BT</item>
-    </string-array>
-
-    <string name="title_activity_main">MainActivity</string>
-    <string name="title_activity_calibration_data_table">CalibrationDataTable</string>
-    <string name="title_activity_fake_numbers">FakeNumbers</string>
+    <string name="title_activity_main">Main Activity</string>
+    <string name="title_activity_calibration_data_table">Calibration Data Table</string>
+    <string name="title_activity_fake_numbers">Fake Numbers</string>
     <string name="title_activity_edit_alert">Edit Alert</string>
     <string name="title_snooze">Snooze</string>
     <string name="title_activity_double_calibration">Double Calibration</string>
@@ -122,67 +108,34 @@
 
 
     <string name="toast_crash">Something went wrong :( a report has been sent to help fix the issue.</string>
-    <string name="plugin_name">xDrip</string>
+
     <string name="taskerConfigInstruction">Just click the Tick icon here to confirm. You shouldn\'t need to change the configuration string.</string>
     <string name="taskerConfiguration">Tasker Configuration</string>
     <string name="finish_preferences_activity">finish_preferences_activity</string>
-    <string name="appwidget_text">EXAMPLE</string>
+
     <string name="add_widget">Add widget</string>
     <string name="title_activity_alert_list">Alert List</string>
-    <string name="import_db_warning">
-        WARNING: Importing a database might cause SEVERE DATA LOSS. If you don\'t know why you want to use the import, don\'t use it.
-        In regular operation of xDrip it is not needed. Just use it in case of previous data loss.
-        If you are not sure what to do, in case you still want to use the import, please ask an expert user.\n\n
-        Instructions:\n
-        Place the database you want to install in the directory \'xdrip\' on your primary external storage
-        (sometimes called \'internal storage\' by the file browser).
-        It is the same directory xDrip exports to.\n
-        In case you have a zipped export in this directory, unzip it (usually longpress->extract on the file in the file browser).
-        If it gets extracted to a subdirectory it will still be found by the import.\n\n
-        After having placed the file, start this import routine.
-        Scroll to the correct database name, click on it and follow the instructions on the screen.  \n\n
-        ATTENTION: A Database can only be imported if it has the same database version number currently needed for this xDrip version.
-        The database verions number may change with xDrip updates.
-        It is best to import the database with the same version of the xDrip app it was exported and then update xDrip.
-    </string>
-
-    <string name="importanttext">Do NOT use or rely on this software or any associated materials for any medical purpose or decision.\n\nDo NOT rely on this system for any real-time alarms or time critical data.\n\nDo NOT use or rely on this system for treatment decisions or use as a substitute for professional healthcare judgement.\n\nAll software and materials have been provided for informational purposes only as a proof of concept to assist possibilities for further research.\n\nNo claims at all are made about fitness for any purpose and everything is provided \"AS IS\". Any part of the system can fail at any time.\n\nAlways seek the advice of a qualified healthcare professional for any medical questions.\n\nAlways follow your glucose-sensor manufacturers\' instructions when using any equipment; do not discontinue use of accompanying reader or receiver, other than as advised by your doctor.\n\nThis software is not associated with or endorsed by any equipment manufacturer and all trademarks are those of their respective owners.\n\nYour use of this software is entirely at your own risk.\n\nNo charge has been made by the developers for the use of this software.\n\nThis is an open-source project which has been created by volunteers. The source code is published free and open-source for you to inspect and evaluate.\n\nBy using this software and/or website you agree that you are over 18 years of age and have read, understood and agree to all of the above.\n</string>
     <string name="speaktreatment">Speak treatment</string>
-    <string name="gcmtpc">/topics/</string>
-    <string name="gcmtpcs">/topics/</string>
-    <string name="gcmstpcs">/topics/</string>
+
     <string name="title_activity_update">xDrip+ Update Available</string>
     <string name="title_activity_display_qrcode">Share Settings Via QR code</string>
     <string name="title_activity_send_feed_back">Send Feedback to Jamorham</string>
     <string name="title_activity_maps">Parakeet Map</string>
-    <string name="title_activity_display_preferences">DisplayPreferencesActivity</string>
-    <string name="wserviceurl">https://xdrip-plus-updates.appspot.com</string>
-    <string name="all_settings_wizard">all_settings_wizard</string>
-    <string name="wizard_uuid">wizard_uuid</string>
-    <string name="wizard_key">wizard_key</string>
+    <string name="title_activity_display_preferences">Display Preferences</string>
+
     <string name="export_submenu">Import / Export features</string>
 
     <string name="action_resend_to_watch">Resend glucose to watch</string>
     <string name="action_open_watch_setting">Open Settings on Wear</string>
-    <string name="prev_arrow"><![CDATA[<<]]></string>
-    <string name="next_arrow"><![CDATA[>>]]></string>
 
-    <string name="zero">0</string>
-    <string name="one">1</string>
-    <string name="two">2</string>
-    <string name="three">3</string>
-    <string name="four">4</string>
-    <string name="five">5</string>
-    <string name="six">6</string>
-    <string name="seven">7</string>
-    <string name="eight">8</string>
-    <string name="nine">9</string>
-    <string name="star">*</string>
-    <string name="dot">\u2022</string>
-    <string name="hash">#</string>
-    <string name="tick">\u2713</string>
-    <string name="backarrow">\u2190</string>
-    <string name="call">Call</string>
     <string name="erase">Erase</string>
+    <string name="interface_tips_from_start">All interface tips will show again from the start</string>
+    <string name="note_button">Note Button</string>
+    <string name="showcase_note_long">The Note Button now prompts for voice input.\n\nLong press on it to enter with keyboard or change options.</string>
+    <string name="redo_button">Redo Button</string>
+    <string name="showcase_redo">The Redo Button can step forwards through undone Treatment Simulations, Calibrations and Notes\n\nAfter 30 minutes it will hide again</string>
+    <string name="undo_button">Undo Button</string>
+    <string name="showcase_undo">The Undo Button can step backwards through Treatment Simulations, Calibrations and Notes\n\nAfter 30 minutes it will hide again</string>
+    <string name="add_note">Add Note</string>
 
 </resources>

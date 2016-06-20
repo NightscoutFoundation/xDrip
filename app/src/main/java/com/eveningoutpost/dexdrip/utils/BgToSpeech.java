@@ -10,6 +10,7 @@ import android.speech.tts.TextToSpeech;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.text.DecimalFormat;
 import java.util.Locale;
@@ -23,8 +24,15 @@ public class BgToSpeech {
     private final Context context;
 
     private TextToSpeech tts = null;
+    private static final String TAG = "BgToSpeech";
 
     public static BgToSpeech setupTTS(Context context){
+
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if (! prefs.getBoolean("bg_to_speech", false)){
+            return null;
+        }
+
         if(instance == null) {
             instance = new BgToSpeech(context);
             return instance;
@@ -40,14 +48,20 @@ public class BgToSpeech {
             instance.tearDown();
             instance = null;
         } else {
-            Log.e("BgToSpeech", "tearDownTTS() called but instance is null!");
-
+           // Log.e(TAG, "tearDownTTS() called but instance is null!");
         }
     }
 
-    public static void speak(final double value, long timestamp){
-        if(instance == null){
-            Log.e("BgToSpeech", "speak() called but instance is null!");
+    public static void speak(final double value, long timestamp) {
+        if (instance == null) {
+            try {
+                setupTTS(xdrip.getAppContext());
+            } catch (Exception e) {
+                Log.e(TAG, "Got exception trying to on demand set up instance: " + e);
+            }
+        }
+        if (instance == null) {
+            Log.e(TAG, "speak() called but instance is null!");
         } else {
             instance.speakInternal(value, timestamp);
         }
@@ -55,7 +69,11 @@ public class BgToSpeech {
 
     private void tearDown() {
         if (tts != null) {
-            tts.shutdown();
+            try {
+                tts.shutdown();
+            } catch (IllegalArgumentException e) {
+                Log.e(TAG,"Got exception shutting down service: " + e);
+            }
             tts = null;
         }
     }
@@ -66,33 +84,33 @@ public class BgToSpeech {
             @Override
             public void onInit(int status) {
 
-                Log.d("BgToSpeech", "Calling onInit(), tts = " + tts);
+                Log.d(TAG, "Calling onInit(), tts = " + tts);
                 if (status == TextToSpeech.SUCCESS && tts != null) {
 
                     //try local language
                     Locale loc = Locale.getDefault();
-                    Log.d("BgToSpeech", "status == TextToSpeech.SUCCESS + loc" + loc);
+                    Log.d(TAG, "status == TextToSpeech.SUCCESS + loc" + loc);
                     int result;
                     try {
                         result = tts.setLanguage(Locale.getDefault());
                     } catch (IllegalArgumentException e) {
                         // can end up here with Locales like "OS"
-                        Log.e("BgToSpeech", "Got TTS set language error: " + e.toString());
+                        Log.e(TAG, "Got TTS set language error: " + e.toString());
                         result = TextToSpeech.LANG_MISSING_DATA;
                     }
                     if (result == TextToSpeech.LANG_MISSING_DATA
                             || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                        Log.e("BgToSpeech", "Default system language is not supported");
+                        Log.e(TAG, "Default system language is not supported");
                         result = tts.setLanguage(Locale.ENGLISH);
                     }
                     //try any english
                     if (result == TextToSpeech.LANG_MISSING_DATA
                             || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                        Log.e("BgToSpeech", "English is not supported");
+                        Log.e(TAG, "English is not supported");
                         tts = null;
                     }
                 } else {
-                    Log.e("BgToSpeech", "status != TextToSpeech.SUCCESS; status: " + status);
+                    Log.e(TAG, "status != TextToSpeech.SUCCESS; status: " + status);
                     tts = null;
                 }
             }
@@ -116,9 +134,9 @@ public class BgToSpeech {
 
         int result = tts.speak(calculateText(value, prefs), TextToSpeech.QUEUE_FLUSH, null);
             if(result == TextToSpeech.SUCCESS){
-                Log.d("BgToSpeech", "successfully spoken");
+                Log.d(TAG, "successfully spoken");
             } else {
-                Log.d("BgToSpeech", "error " + result + ". trying again with new tts-object.");
+                Log.d(TAG, "error " + result + ". trying again with new tts-object.");
             }
     }
 
@@ -148,7 +166,7 @@ public class BgToSpeech {
         } else {
             text = "error";
         }
-        Log.d("BgToSpeech", "text: " + text);
+        Log.d(TAG, "text: " + text);
         return text;
     }
 
@@ -160,7 +178,7 @@ public class BgToSpeech {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             ctx.startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            Log.e("BgToSpeech", "Could not install TTS data: " + e.toString());
+            Log.e(TAG, "Could not install TTS data: " + e.toString());
         }
     }
 

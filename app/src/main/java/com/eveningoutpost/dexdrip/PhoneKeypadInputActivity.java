@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -50,8 +51,8 @@ public class PhoneKeypadInputActivity extends Activity {
         int height = dm.heightPixels;
         final int refdpi = 320;
         Log.d(TAG, "Width height: " + width + " " + height+" DPI:"+dm.densityDpi);
-        getWindow().setLayout((int) Math.min(((520*dm.densityDpi)/refdpi), width), (int) Math.min((650*dm.densityDpi)/refdpi, height));
-
+        getWindow().setLayout((int) Math.min(((520 * dm.densityDpi) / refdpi), width), (int) Math.min((650 * dm.densityDpi) / refdpi, height));
+        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         WindowManager.LayoutParams lp = getWindow().getAttributes();
         lp.dimAmount = 0.5f;
 
@@ -337,7 +338,7 @@ public class PhoneKeypadInputActivity extends Activity {
                 break;
             case "time":
                 timetabbutton.setBackgroundColor(onColor);
-                append = " time";
+                append = " when";
                 break;
         }
         value = getValue(currenttab);

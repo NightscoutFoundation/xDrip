@@ -69,6 +69,10 @@ public class Treatments extends Model {
     public String created_at;
 
     public static synchronized Treatments create(double carbs, double insulin, long timestamp) {
+        return create(carbs, insulin, timestamp, -1);
+    }
+
+    public static synchronized Treatments create(double carbs, double insulin, long timestamp, double position) {
         // TODO sanity check values
         Log.d(TAG, "Creating treatment: Insulin: " + Double.toString(insulin) + " / Carbs: " + Double.toString(carbs));
 
@@ -79,7 +83,13 @@ public class Treatments extends Model {
         }
 
         Treatments Treatment = new Treatments();
-        Treatment.enteredBy = "xdrip";
+
+        if (position>0) {
+            Treatment.enteredBy = "xdrip pos:" + JoH.qs(position, 2);
+        } else {
+            Treatment.enteredBy = "xdrip";
+        }
+
         Treatment.eventType = "<none>";
         Treatment.carbs = carbs;
         Treatment.insulin = insulin;
@@ -93,7 +103,13 @@ public class Treatments extends Model {
         return Treatment;
     }
 
-    public static synchronized Treatments create_note(String note, long timestamp) {
+    // Note
+    public static synchronized Treatments create_note(String note, long timestamp)
+    {
+        return create_note(note, timestamp, -1);
+    }
+
+    public static synchronized Treatments create_note(String note, long timestamp, double position) {
         // TODO sanity check values
         Log.d(TAG, "Creating treatment note: "+note);
 
@@ -108,7 +124,13 @@ public class Treatments extends Model {
         }
 
         Treatments Treatment = new Treatments();
-        Treatment.enteredBy = "xdrip";
+
+        if (position>0) {
+            Treatment.enteredBy = "xdrip pos:" + JoH.qs(position, 2);
+        } else {
+            Treatment.enteredBy = "xdrip";
+        }
+
         Treatment.eventType = "<none>";
         Treatment.carbs = 0;
         Treatment.insulin = 0;

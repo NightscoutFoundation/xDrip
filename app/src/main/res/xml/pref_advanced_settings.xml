@@ -117,11 +117,19 @@
             android:defaultValue="false"
             android:key="broadcast_data_through_intents"
             android:summary="@string/pref_summary_broadcast_enabled"
-            android:title="@string/pref_title_broadcast_enabled"></SwitchPreference>
+            android:title="@string/pref_title_broadcast_enabled" />
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_less_common_settings"
             android:summary="Debug and other misc options"
             android:title="Less common settings">
+            <Preference
+                android:key="recent_errors"
+                android:title="View Recent Errors/Warnings">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.eveningoutpost.dexdrip.ErrorsActivity"
+                    android:targetPackage="@string/local_target_package" />
+            </Preference>
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="excessive_wakelocks"
@@ -248,14 +256,7 @@
                     android:title="Calibration Data (short)" />
             </PreferenceScreen>
 
-            <Preference
-                android:key="recent_errors"
-                android:title="View Recent Errors/Warnings">
-                <intent
-                    android:action="android.intent.action.MAIN"
-                    android:targetClass="com.eveningoutpost.dexdrip.ErrorsActivity"
-                    android:targetPackage="@string/local_target_package" />
-            </Preference>
+
             <PreferenceCategory
                 android:key="community_help_category"
                 android:title="Help the community">

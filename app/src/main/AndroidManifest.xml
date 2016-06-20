@@ -247,7 +247,7 @@
         <activity
             android:name=".utils.Preferences"
             android:theme="@style/OldAppTheme"
-            android:label="@string/title_activity_preferences" />
+            android:label="@string/action_settings" />
 
         <receiver android:name=".xDripWidget">
             <intent-filter>

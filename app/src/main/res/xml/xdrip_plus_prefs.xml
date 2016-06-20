@@ -189,11 +189,16 @@
                 </PreferenceCategory>
             </PreferenceScreen>
 
-            <CheckBoxPreference
+            <SwitchPreference
                 android:defaultValue="true"
                 android:key="bg_compensate_noise"
                 android:summary="Try to work around noisy readings"
                 android:title="\u26A0 Smooth sensor noise" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="show_showcase"
+                android:summary="Show tips / hints describing button functions etc. Uncheck and Recheck to reset to the beginning"
+                android:title="Show interface hints" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="bg_from_filtered"

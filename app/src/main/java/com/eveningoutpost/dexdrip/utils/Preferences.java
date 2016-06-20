@@ -36,6 +36,7 @@ import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
@@ -648,6 +649,18 @@ public class Preferences extends PreferenceActivity {
                 }
             });
 
+            final Preference showShowcase = findPreference("show_showcase");
+            showShowcase.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    if ((boolean)newValue)
+                    {
+                        ShotStateStore.resetAllShots();
+                        JoH.static_toast(preference.getContext(),getString(R.string.interface_tips_from_start),Toast.LENGTH_LONG);
+                    }
+                    return true;
+                }
+            });
 
             units_pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -1122,8 +1135,7 @@ public class Preferences extends PreferenceActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
 
-                    switch (pebbleType)
-                    {
+                    switch (pebbleType) {
                         case 2:
                             context.startActivity(new Intent(context, InstallPebbleWatchFace.class));
                             break;
@@ -1213,6 +1225,7 @@ public class Preferences extends PreferenceActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     if ((Boolean) newValue) {
+                        prefs.edit().putBoolean("bg_to_speech",true).commit(); // early write before we exit method
                         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
                         alertDialog.setTitle("Install Text-To-Speech Data?");
                         alertDialog.setMessage("Install Text-To-Speech Data?\n(After installation of languages you might have to press \"Restart Collector\" in System Status.)");
@@ -1226,6 +1239,9 @@ public class Preferences extends PreferenceActivity {
                         alertDialog.setNegativeButton(R.string.no, null);
                         AlertDialog alert = alertDialog.create();
                         alert.show();
+                        BgToSpeech.setupTTS(preference.getContext()); // try to initialize now
+                    } else {
+                        BgToSpeech.tearDownTTS();
                     }
                     return true;
                 }
