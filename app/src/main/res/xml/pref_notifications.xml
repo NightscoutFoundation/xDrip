@@ -41,7 +41,7 @@
 
                 <CheckBoxPreference
                     android:defaultValue="true"
-                    android:key="no_alarms_during calls"
+                    android:key="no_alarms_during_calls"
                     android:summary="Alarms silenced during telephone calls"
                     android:title="Don't alarm during phone calls" />
 

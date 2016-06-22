@@ -351,7 +351,7 @@ public class AlertPlayer {
 
     public static boolean notSilencedDueToCall()
     {
-        return !(Home.getPreferencesBooleanDefaultFalse("no_alarms_during calls") && (JoH.isOngoingCall()));
+        return !(Home.getPreferencesBooleanDefaultFalse("no_alarms_during_calls") && (JoH.isOngoingCall()));
     }
 
     private void Vibrate(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, int timeFromStartPlaying) {
