@@ -745,6 +745,7 @@ public class Treatments extends Model {
             jsonObject.put("carbs", carbs);
             jsonObject.put("timestamp", timestamp);
             jsonObject.put("notes", notes);
+            jsonObject.put("enteredBy", enteredBy);
             return jsonObject.toString();
         } catch (JSONException e) {
             // TODO Auto-generated catch block

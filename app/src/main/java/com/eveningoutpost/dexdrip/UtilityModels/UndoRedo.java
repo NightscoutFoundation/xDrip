@@ -90,11 +90,11 @@ public class UndoRedo {
                 } else if (item.Calibration_uuid !=null)
                 {
                     // TODO try catch
-                    item.saved_data = Calibration.byuuid(item.Treatment_uuid).toS();
+                    item.saved_data = Calibration.byuuid(item.Calibration_uuid).toS();
                     item.expires = JoH.ts()+EXPIRY_TIME;
                     redo_queue.add(item);
                     undo_queue.remove(location);
-                    Calibration.clear_byuuid(item.Treatment_uuid, true); // from interactive
+                    Calibration.clear_byuuid(item.Calibration_uuid, true); // from interactive
                     return true;
                 }
 

@@ -697,6 +697,7 @@ public class Calibration extends Model {
     }
 
     public static Calibration byuuid(String uuid) {
+        if (uuid == null) return null;
         return new Select()
                 .from(Calibration.class)
                 .where("uuid = ?", uuid)
@@ -706,6 +707,7 @@ public class Calibration extends Model {
 
     public static void clear_byuuid(String uuid,boolean from_interactive)
     {
+        if (uuid == null) return;
         Calibration calibration = byuuid(uuid);
         if (calibration!=null)
         {
