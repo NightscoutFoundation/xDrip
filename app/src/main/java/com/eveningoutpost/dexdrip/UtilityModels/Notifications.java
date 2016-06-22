@@ -705,10 +705,12 @@ public class Notifications extends IntentService {
                             .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
             mBuilder.setVibrate(vibratePattern);
             mBuilder.setLights(0xff00ff00, 300, 1000);
-            if(otherAlertsOverrideSilent) {
-                mBuilder.setSound(Uri.parse(otherAlertsSound), AudioAttributes.USAGE_ALARM);
-            } else {
-                mBuilder.setSound(Uri.parse(otherAlertsSound));
+            if (AlertPlayer.notSilencedDueToCall()) {
+                if (otherAlertsOverrideSilent) {
+                    mBuilder.setSound(Uri.parse(otherAlertsSound), AudioAttributes.USAGE_ALARM);
+                } else {
+                    mBuilder.setSound(Uri.parse(otherAlertsSound));
+                }
             }
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyMgr.cancel(notificatioId);

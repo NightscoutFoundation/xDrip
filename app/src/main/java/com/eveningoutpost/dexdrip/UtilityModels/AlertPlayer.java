@@ -9,16 +9,17 @@ import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
-import android.os.Handler;
 
-import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.EditAlertActivity;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
@@ -117,7 +118,7 @@ public class AlertPlayer {
     public synchronized  void startAlert(Context ctx, boolean trendingToAlertEnd, AlertType newAlert, String bgValue , boolean start_snoozed)  {
         Log.d(TAG, "startAlert called, Threadid " + Thread.currentThread().getId());
         if (trendingToAlertEnd) {
-            Log.d(TAG,"startAlert: This alert is trending to it's end will not do anything");
+            Log.d(TAG, "startAlert: This alert is trending to it's end will not do anything");
             return;
         }
 
@@ -125,7 +126,7 @@ public class AlertPlayer {
 
         long nextAlertTime = newAlert.getNextAlertTime(ctx);
 
-        ActiveBgAlert.Create(newAlert.uuid, start_snoozed, nextAlertTime );
+        ActiveBgAlert.Create(newAlert.uuid, start_snoozed, nextAlertTime);
         if (!start_snoozed) Vibrate(ctx, newAlert, bgValue, newAlert.override_silent_mode, 0);
     }
 
@@ -160,7 +161,7 @@ public class AlertPlayer {
     public synchronized  void PreSnooze(Context ctx, String uuid, int repeatTime) {
         Log.i(TAG, "PreSnooze called repeatTime = "+ repeatTime);
         stopAlert(ctx, true, false);
-        ActiveBgAlert.Create(uuid, true, new Date().getTime() + repeatTime * 60000 );
+        ActiveBgAlert.Create(uuid, true, new Date().getTime() + repeatTime * 60000);
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
         if (activeBgAlert  == null) {
             Log.wtf(TAG, "Just created the alert, where did it go...");
@@ -348,6 +349,11 @@ public class AlertPlayer {
         return getAlertProfile(ctx) == ALERT_PROFILE_ASCENDING;
     }
 
+    public static boolean notSilencedDueToCall()
+    {
+        return !(Home.getPreferencesBooleanDefaultFalse("no_alarms_during calls") && (JoH.isOngoingCall()));
+    }
+
     private void Vibrate(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, int timeFromStartPlaying) {
         Log.d(TAG, "Vibrate called timeFromStartPlaying = " + timeFromStartPlaying);
         Log.d("ALARM", "setting vibrate alarm");
@@ -375,6 +381,7 @@ public class AlertPlayer {
             .setContentText(content)
             .setContentIntent(notificationIntent(ctx, intent))
             .setDeleteIntent(snoozeIntent(ctx));
+
         if (profile != ALERT_PROFILE_VIBRATE_ONLY && profile != ALERT_PROFILE_SILENT) {
             if (timeFromStartPlaying >= MAX_VIBRATING) {
                 // Before this, we only vibrate...
@@ -385,17 +392,26 @@ public class AlertPlayer {
                 }
                 Log.d(TAG, "Vibrate volumeFrac = " + volumeFrac);
                 boolean isRingTone = EditAlertActivity.isPathRingtone(ctx, alert.mp3_file);
-                if(isRingTone && !overrideSilent) {
+
+                if (notSilencedDueToCall()) {
+                    if (isRingTone && !overrideSilent) {
                         builder.setSound(Uri.parse(alert.mp3_file));
-                } else {
-                    if(overrideSilent || isLoudPhone(ctx)) {
-                        PlayFile(ctx, alert.mp3_file, volumeFrac);
+                    } else {
+                        if (overrideSilent || isLoudPhone(ctx)) {
+                            PlayFile(ctx, alert.mp3_file, volumeFrac);
+                        }
                     }
+                } else {
+                    Log.i(TAG,"Silenced Alert Noise due to ongoing call");
                 }
             }
         }
         if (profile != ALERT_PROFILE_SILENT && alert.vibrate) {
-            builder.setVibrate(Notifications.vibratePattern);
+            if (notSilencedDueToCall()) {
+                builder.setVibrate(Notifications.vibratePattern);
+            } else {
+                Log.i(TAG, "Vibration silenced due to ongoing call");
+            }
         } else {
             // In order to still show on all android wear watches, either a sound or a vibrate pattern
             // seems to be needed. This pattern basically does not vibrate:

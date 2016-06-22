@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
@@ -323,7 +325,7 @@ public class JoH {
         final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, name);
         wl.acquire(millis);
-        if (debug_wakelocks) Log.d(TAG,"getWakeLock: "+name+" "+wl.toString());
+        if (debug_wakelocks) Log.d(TAG, "getWakeLock: " + name + " " + wl.toString());
         return wl;
     }
 
@@ -348,6 +350,26 @@ public class JoH {
         final boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnected();
         return isConnected && ((activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) || (activeNetwork.getType() == ConnectivityManager.TYPE_ETHERNET));
+    }
+
+    public static boolean isScreenOn() {
+        final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return pm.isInteractive();
+        } else {
+            return pm.isScreenOn();
+        }
+    }
+
+    public static boolean isOngoingCall(){
+        try {
+            AudioManager manager = (AudioManager) xdrip.getAppContext().getSystemService(Context.AUDIO_SERVICE);
+            return (manager.getMode() == AudioManager.MODE_IN_CALL);
+            // possibly should have MODE_IN_COMMUNICATION as well
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public static void static_toast(final Context context, final String msg, final int length) {
