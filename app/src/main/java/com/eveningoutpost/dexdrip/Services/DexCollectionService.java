@@ -411,7 +411,7 @@ public class DexCollectionService extends Service {
         return i;
     }
 
-    public boolean connect(final String address) {
+    public synchronized boolean connect(final String address) {
         Log.i(TAG, "connect: going to connect to device at address: " + address);
         if (mBluetoothAdapter == null || address == null) {
             Log.i(TAG, "connect: BluetoothAdapter not initialized or unspecified address.");
@@ -420,7 +420,11 @@ public class DexCollectionService extends Service {
         }
         if (mBluetoothGatt != null) {
             Log.i(TAG, "connect: mBluetoothGatt isnt null, Closing.");
-            mBluetoothGatt.close();
+            try {
+                mBluetoothGatt.close();
+            } catch (NullPointerException e) {
+                Log.wtf(TAG, "Concurrency related null pointer in connect");
+            }
             mBluetoothGatt = null;
         }
         device = mBluetoothAdapter.getRemoteDevice(address);
@@ -440,7 +444,12 @@ public class DexCollectionService extends Service {
         if (mBluetoothGatt == null) {
             return;
         }
-        mBluetoothGatt.close();
+        try {
+            mBluetoothGatt.close();
+        } catch (NullPointerException e) {
+            Log.wtf(TAG, "Concurrency related null pointer in close");
+        }
+
         setRetryTimer();
         mBluetoothGatt = null;
         mCharacteristic = null;

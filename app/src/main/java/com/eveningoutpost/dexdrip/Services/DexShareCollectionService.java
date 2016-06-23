@@ -320,8 +320,8 @@ public class DexShareCollectionService extends Service {
                                             BgReading.create(egvRecords, additiveSystemTimeOffset, getApplicationContext());
                                             {
                                                 Log.d(TAG, "Releasing wl in egv");
-                                                if(wakeLock1 != null && wakeLock1.isHeld()) wakeLock1.release();
                                                 requestLowPriority();
+                                                if(wakeLock1 != null && wakeLock1.isHeld()) wakeLock1.release();
                                                 Log.d(TAG, "released");
                                             }
                                             if (shouldDisconnect) {
@@ -478,7 +478,11 @@ public class DexShareCollectionService extends Service {
         if (mBluetoothGatt == null) {
             return;
         }
-        mBluetoothGatt.close();
+        try {
+            mBluetoothGatt.close();
+        } catch (NullPointerException e) {
+            Log.d(TAG, "concurrency related null pointer exception in close");
+        }
         setRetryTimer();
         mBluetoothGatt = null;
         mConnectionState = STATE_DISCONNECTED;
