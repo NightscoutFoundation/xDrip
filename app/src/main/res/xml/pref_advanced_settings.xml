@@ -142,6 +142,11 @@
                 android:title="Bluetooth Wakelocks" />
             <CheckBoxPreference
                 android:defaultValue="false"
+                android:key="broadcast_data_through_intents_without_permission"
+                android:summary="Send broadcasts without locking to the older permission model"
+                android:title="Compatible Broadcast" />
+            <CheckBoxPreference
+                android:defaultValue="false"
                 android:key="predictive_bg"
                 android:summary="Old method - Not Recommended! Attempts to predict readings each minute based on the past few values."
                 android:title="Display Predictive Values" />

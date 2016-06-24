@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.eveningoutpost.dexdrip">
 
-    <permission android:name="com.eveningoutpost.dexdrip.permissions.RECEIVE_BG_ESTIMATE" />
+
     <permission android:name="com.eveningoutpost.dexdrip.permission.C2D_MESSAGE" />
 
     <uses-feature
@@ -231,7 +231,6 @@
             android:name=".Services.DexShareCollectionService"
             android:enabled="true"
             android:exported="true" />
-
         <service
             android:name=".Services.G5CollectionService"
             android:enabled="true"
@@ -408,7 +407,6 @@
                 <category android:name="com.google.android.voicesearch.SELF_NOTE" />
                 <data android:mimeType="text/plain" />
             </intent-filter>
-
         </activity>
     </application>
 

@@ -152,7 +152,11 @@ public class BgSendQueue extends Model {
                 intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
 
 
-                context.sendBroadcast(intent, Intents.RECEIVER_PERMISSION);
+                if (prefs.getBoolean("broadcast_data_through_intents_without_permission", false)) {
+                    context.sendBroadcast(intent);
+                } else {
+                    context.sendBroadcast(intent, Intents.RECEIVER_PERMISSION);
+                }
 
                 //just keep it alive for 3 more seconds to allow the watch to be updated
                 // TODO: change NightWatch to not allow the system to sleep.
