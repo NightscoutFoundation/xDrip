@@ -534,7 +534,8 @@ public class Notifications extends IntentService {
             android.util.Log.d(TAG, "evaluateLowPredictionAlarm: mins: " + predicted_low_in_mins);
             if (predicted_low_in_mins > 1) {
                 if (predicted_low_in_mins < low_predicted_alarm_minutes) {
-                    Notifications.lowPredictAlert(xdrip.getAppContext(), true, "Low predicted in " + (int) predicted_low_in_mins + " mins");
+                    Notifications.lowPredictAlert(xdrip.getAppContext(), true, getString(R.string.low_predicted)
+                            +" "+getString(R.string.in)+" " + (int) predicted_low_in_mins + getString(R.string.space_mins));
                     low_notifying = true;
                 } else {
                     Notifications.lowPredictAlert(xdrip.getAppContext(), false, ""); // cancel it
@@ -715,6 +716,7 @@ public class Notifications extends IntentService {
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyMgr.cancel(notificatioId);
             Log.d(TAG, "Notify");
+            Log.ueh("OtherAlert",message);
             mNotifyMgr.notify(notificatioId, mBuilder.build());
         }
     }

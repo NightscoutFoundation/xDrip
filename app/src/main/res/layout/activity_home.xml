@@ -106,7 +106,7 @@
                 android:layout_marginTop="-2dp"
                 android:background="@android:color/transparent"
                 android:gravity="left|top"
-                android:paddingStart="30dp"
+                android:paddingStart="35dp"
                 android:paddingEnd="30dp"
                 android:text="Low prediction"
                 android:textAppearance="?android:attr/textAppearanceSmall"

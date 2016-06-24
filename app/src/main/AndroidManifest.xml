@@ -97,8 +97,8 @@
             android:theme="@android:style/Theme.NoDisplay" />
         <activity
             android:name=".GcmActivity"
-            android:theme="@android:style/Theme.NoDisplay"
-            android:label="GCM connect" />
+            android:label="GCM connect"
+            android:theme="@android:style/Theme.NoDisplay" />
         <activity
             android:name=".AddCalibration"
             android:label="@string/title_activity_add_calibration" />
@@ -114,9 +114,10 @@
         <activity
             android:name=".BGHistory"
             android:label="Glucose History" />
-        <activity android:name=".PhoneKeypadInputActivity"
-            android:theme="@style/PopUpKeypad"
-            android:label="Keypad Input" />
+        <activity
+            android:name=".PhoneKeypadInputActivity"
+            android:label="Keypad Input"
+            android:theme="@style/PopUpKeypad" />
 
         <receiver android:name=".AutoStart">
             <intent-filter>
@@ -180,8 +181,8 @@
 
         <activity
             android:name=".stats.StatsActivity"
-            android:theme="@style/AppTheme"
-            android:label="Statistics" />
+            android:label="Statistics"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".SnoozeActivity"
             android:label="@string/title_snooze" />
@@ -207,14 +208,14 @@
             android:name=".CalibrationCheckInActivity"
             android:label="@string/title_activity_calibration_check_in" />
         <activity
-        android:name=".UtilityModels.pebble.watchface.InstallPebbleWatchFace"
+            android:name=".UtilityModels.pebble.watchface.InstallPebbleWatchFace"
             android:label="Install Pebble Watchface" />
         <activity
             android:name=".UtilityModels.pebble.watchface.InstallPebbleTrendWatchFace"
-            android:label="Install Pebble Trend Watchface"/>
+            android:label="Install Pebble Trend Watchface" />
         <activity
             android:name=".UtilityModels.pebble.watchface.InstallPebbleClassicTrendWatchface"
-            android:label="Install Pebble Classic Trend Watchface"/>
+            android:label="Install Pebble Classic Trend Watchface" />
         <activity
             android:name=".UsbConnectedActivity"
             android:label="@string/title_activity_usb_connected">
@@ -234,8 +235,7 @@
         <service
             android:name=".Services.G5CollectionService"
             android:enabled="true"
-            android:exported="true" >
-        </service>
+            android:exported="true"></service>
 
         <activity
             android:name=".ShareTest"
@@ -245,8 +245,8 @@
             android:label="@string/title_activity_system_status" />
         <activity
             android:name=".utils.Preferences"
-            android:theme="@style/OldAppTheme"
-            android:label="@string/action_settings" />
+            android:label="@string/action_settings"
+            android:theme="@style/OldAppTheme" />
 
         <receiver android:name=".xDripWidget">
             <intent-filter>
@@ -272,7 +272,7 @@
             android:label="@string/title_activity_alert_list" />
         <activity
             android:name=".ErrorsActivity"
-            android:label="Error List" />
+            android:label="@string/title_activity_error" />
         <activity
             android:name=".MissedReadingActivity"
             android:label="Configure Missed Readings" />
@@ -360,10 +360,11 @@
             android:name=".UtilityModels.SendFeedBack"
             android:label="@string/title_activity_send_feed_back"
             android:noHistory="true">
-        <intent-filter>
-            <action android:name="xdrip_plus_send_developer_feedback"/>
-            <category android:name="android.intent.category.DEFAULT" />
-        </intent-filter>
+            <intent-filter>
+                <action android:name="xdrip_plus_send_developer_feedback" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".utils.SdcardImportExport"
@@ -398,16 +399,23 @@
             android:label="Simulation handheld">
             <intent-filter>
                 <action android:name="com.google.android.gm.action.AUTO_SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="*/*" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="com.google.android.voicesearch.SELF_NOTE" />
+
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ProfileEditor.ProfileEditor"
+            android:label="@string/title_activity_profile_editor"></activity>
     </application>
 
 </manifest>

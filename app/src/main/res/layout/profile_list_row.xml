@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:id="@+id/profile_list_row_block"
+    android:orientation="vertical"
+    android:paddingBottom="10dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="10dp">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:text="00:00 -> 23:59"
+        android:textColor="@color/title"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/genre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/carbsSeekBar"
+        android:layout_below="@+id/whichday"
+        android:clickable="true"
+        android:text="Carbs per Unit" />
+
+    <TextView
+        android:id="@+id/whichday"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:text="Everyday"
+        android:textColor="@color/year" />
+
+    <SeekBar
+        android:id="@+id/carbsSeekBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/sensitivitySeekBar"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/genre"
+        android:indeterminate="false"
+        android:max="40"
+        android:paddingBottom="5dp"
+        android:paddingLeft="20dp"
+        android:paddingTop="5dp"
+        android:progress="10" />
+
+    <EditText
+        android:id="@+id/profileCarbsText"
+        android:layout_width="35dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/genre"
+        android:imeOptions="actionDone"
+        android:inputType="numberDecimal"
+        android:singleLine="true"
+        android:text="123"
+        android:textColor="@color/year"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/sensitivityLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/carbsSeekBar"
+        android:layout_marginTop="5dp"
+        android:clickable="true"
+        android:text="Insulin Sensitivity: mmol drop per Unit" />
+
+    <SeekBar
+        android:id="@+id/sensitivitySeekBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/sensitivityLabel"
+        android:layout_marginBottom="6dp"
+        android:layout_toStartOf="@+id/profileSensText"
+        android:max="90"
+        android:paddingBottom="5dp"
+        android:paddingLeft="20dp"
+        android:paddingTop="5dp"
+        android:progress="30" />
+
+    <EditText
+        android:id="@+id/profileSensText"
+        android:layout_width="35dp"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/sensitivityLabel"
+        android:layout_alignTop="@+id/sensitivitySeekBar"
+        android:imeOptions="actionDone"
+        android:inputType="numberDecimal"
+        android:singleLine="true"
+        android:text="123"
+        android:textColor="@color/year"
+
+        android:textSize="14sp" />
+
+
+    <TextView
+        android:id="@+id/textView16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/profileTextClockStart"
+        android:layout_centerHorizontal="true"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
+        android:text="\u2192"
+        android:textAlignment="center"
+        android:textColor="@color/title"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/profileTextClockStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/profileTextClockEnd"
+        android:layout_toStartOf="@+id/textView16"
+        android:text="00:00"
+        android:textColor="@color/title"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/profileTextClockEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/whichday"
+        android:layout_toEndOf="@+id/textView16"
+        android:text="23:59"
+        android:textColor="@color/title"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+
+</RelativeLayout>

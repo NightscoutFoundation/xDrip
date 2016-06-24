@@ -932,8 +932,7 @@ public class BgGraphBuilder {
         }
         try {
 
-            final double iobscale = 1 * bgScale;
-            final double cobscale = 0.2 * bgScale;
+
             // we need to check we actually have sufficient data for this
             double predictedbg = -1000;
             BgReading mylastbg = bgReadings.get(0);
@@ -961,8 +960,11 @@ public class BgGraphBuilder {
                 // could not get a bg reading
             }
 
+            final double iobscale = 1 * bgScale;
+            final double cobscale = 0.2 * bgScale;
             final double initial_predicted_bg = predictedbg;
             final double relaxed_predicted_bg_limit = initial_predicted_bg * 1.20;
+            final double cob_insulin_max_draw_value = highMark * 1.20;
             // final List<Iob> iobinfo_old = Treatments.ioBForGraph(numValues, (start_time * FUZZER));
             final List<Iob> iobinfo = Treatments.ioBForGraph_new(NUM_VALUES, (start_time * FUZZER)); // for test
 
@@ -987,18 +989,18 @@ public class BgGraphBuilder {
                         if (d) Log.d(TAG, "iob timestamp: " + iob.timestamp);
                         if (iob.iob > Profile.minimum_shown_iob) {
                             double height = iob.iob * iobscale;
-                            if (height > highMark) height = highMark;
+                            if (height > cob_insulin_max_draw_value) height = cob_insulin_max_draw_value;
                             PointValue pv = new PointValue((float) fuzzed_timestamp, (float) height);
                             iobValues.add(pv);
                             double activityheight = iob.jActivity * 3; // currently scaled by profile
-                            if (activityheight > highMark) activityheight = highMark;
+                            if (activityheight > cob_insulin_max_draw_value) activityheight = cob_insulin_max_draw_value;
                             PointValue av = new PointValue((float) fuzzed_timestamp, (float) activityheight);
                             activityValues.add(av);
                         }
 
                         if (iob.cob > 0) {
                             double height = iob.cob * cobscale;
-                            if (height > highMark) height = highMark;
+                            if (height > cob_insulin_max_draw_value) height = cob_insulin_max_draw_value;
                             PointValue pv = new PointValue((float) fuzzed_timestamp, (float) height);
                             if (d)
                                 Log.d(TAG, "Cob total record: " + JoH.qs(height) + " " + JoH.qs(iob.cob) + " " + Float.toString(pv.getY()) + " @ timestamp: " + Long.toString(iob.timestamp));
@@ -1462,9 +1464,9 @@ public class BgGraphBuilder {
 
             final String message;
             if (alternate.length()>0) {
-                message = timeFormat.format(time) + ":    "+alternate;
+                message = timeFormat.format(time) + "    "+alternate;
             } else {
-                message = timeFormat.format(time) + ":    " + (Math.round(pointValue.getY() * 10) / 10d) + " "+unit() +  filtered;
+                message = timeFormat.format(time) + "      " + (Math.round(pointValue.getY() * 10) / 10d) + " "+unit() +  filtered;
             }
 
             final View.OnClickListener mOnClickListener = new View.OnClickListener() {

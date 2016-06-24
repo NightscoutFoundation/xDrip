@@ -141,7 +141,7 @@
                 android:summary="Older bluetooth wakelocks which can drain extra battery but might be needed for bluetooth reception"
                 android:title="Bluetooth Wakelocks" />
             <CheckBoxPreference
-                android:defaultValue="false"
+                android:defaultValue="true"
                 android:key="broadcast_data_through_intents_without_permission"
                 android:summary="Send broadcasts without locking to the older permission model"
                 android:title="Compatible Broadcast" />

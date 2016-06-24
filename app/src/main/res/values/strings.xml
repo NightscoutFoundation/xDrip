@@ -43,6 +43,7 @@
     <string name="no">No</string>
     <string name="pref_sensor_location_dont_ask_again"> Don\'t ask me that again</string>
 
+    <string name="title_activity_error">"Error and Event List"</string>
     <string name="title_activity_main">Main Activity</string>
     <string name="title_activity_calibration_data_table">Calibration Data Table</string>
     <string name="title_activity_fake_numbers">Fake Numbers</string>
@@ -137,5 +138,30 @@
     <string name="undo_button">Undo Button</string>
     <string name="showcase_undo">The Undo Button can step backwards through Treatment Simulations, Calibrations and Notes\n\nAfter 30 minutes it will hide again</string>
     <string name="add_note">Add Note</string>
+    <string name="title_activity_profile_editor">Treatment Profile Editor</string>
+    <string name="first_use_menu_to_scan">First use the menu to scan for your BT device or change the Data Source in Settings!</string>
+    <string name="bluetooth_low_energy_not_supported">Unfortunately your android version does not support Bluetooth Low Energy</string>
+    <string name="first_configure_ip_address">First configure your wifi wixel reader ip addresses or parakeet url</string>
+    <string name="now_start_your_sensor">Now start your sensor or check Settings</string>
+    <string name="please_wait_while_sensor_warms_up">Please wait while sensor warms up! (</string>
+    <string name="minutes_with_bracket">" minutes)"</string>
+    <string name="possible_bad_calibration">Possible bad calibration slope, please have a glass of water, wash hands, then recalibrate in a few!</string>
+    <string name="please_enter_two_calibrations">Please enter two calibrations to get started!</string>
+    <string name="please_wait_need_two_readings_first">Please wait, need 2 readings from transmitter first.</string>
+    <string name="please_enter_two_calibrations_to_get_started">Please enter two calibrations to get started!</string>
+    <string name="now_pair_with_your_dexcom_share">Now pair with your Dexcom Share</string>
+    <string name="now_choose_start_sensor_in_settings">Now choose start your sensor in your settings</string>
+    <string name="double_check_dex_receiver_serial_number">Double Check Dex Receiver Serial Number, should be 10 characters, don\'t forget the letters</string>
+    <string name="please_set_dex_receiver_serial_number">Please set your Dex Receiver Serial Number in App Settings</string>
+    <string name="unfortunately_andoird_version_no_blueooth_low_energy">Unfortunately your android version does not support Bluetooth Low Energy</string>
+    <string name="waiting_for_packet">Waiting for packet</string>
+    <string name="persistent_high_for_greater_than"><![CDATA["Persistent High for > "]]></string>
+    <string name="space_mins">" mins"</string>
+    <string name="till">till</string>
+    <string name="low_predicted">Low predicted</string>
+    <string name="in">in</string>
+    <string name="yes_enter_setup_mode">Yes enter setup mode</string>
+    <string name="nokeep_parakeet_as_it_is">No keep Parakeet as it is</string>
+    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Are you sure you want to switch the Parakeet to setup mode?\n\nNormally this is only used to send further text messages to the Parakeet to reconfigure the transmitter it listens for etc.</string>
 
 </resources>

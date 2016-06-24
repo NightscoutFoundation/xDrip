@@ -32,6 +32,19 @@
                 android:text="High"
                 android:id="@+id/highSeverityCheckbox"
                 android:checked="true"/>
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="EL"
+                android:id="@+id/userEventLowCheckbox"
+                android:checked="true"
+                android:layout_marginLeft="12dp" />
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="EH"
+                android:id="@+id/userEventHighCheckbox"
+                android:checked="true"/>
         </LinearLayout>
 
         <ListView

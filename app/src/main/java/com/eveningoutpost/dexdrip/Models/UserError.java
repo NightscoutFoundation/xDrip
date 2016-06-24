@@ -27,6 +27,9 @@ public class UserError extends Model {
     @Column(name = "severity", index = true)
     public int severity; // int between 1 and 3, 3 being most severe
 
+    // 5 = internal lower level user events
+    // 6 = higher granularity user events
+
     @Column(name = "timestamp", index = true)
     public double timestamp; // Time the error was raised
 
@@ -55,6 +58,15 @@ public class UserError extends Model {
     public static UserError UserErrorLow(String shortError, String message) {
         return new UserError(1, shortError, message);
     }
+
+    public static UserError UserEventLow(String shortError, String message) {
+        return new UserError(5, shortError, message);
+    }
+
+    public static UserError UserEventHigh(String shortError, String message) {
+        return new UserError(6, shortError, message);
+    }
+
 
     public static void cleanup() {
        new Cleanup().execute(deletable());
@@ -153,6 +165,17 @@ public class UserError extends Model {
             android.util.Log.wtf(a, e);
             UserError.UserErrorHigh(a, e.toString());
         }
+
+        public static void uel(String a, String b) {
+            android.util.Log.i(a, b);
+            UserError.UserEventLow(a, b);
+        }
+
+        public static void ueh(String a, String b) {
+            android.util.Log.i(a, b);
+            UserError.UserEventHigh(a, b);
+        }
+
         public static void d(String a, String b){
             android.util.Log.d(a, b);
         }

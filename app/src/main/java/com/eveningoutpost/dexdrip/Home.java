@@ -40,6 +40,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -55,6 +56,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.ProfileEditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
@@ -93,6 +95,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.listener.ViewportChangeListener;
@@ -109,6 +113,7 @@ public class Home extends ActivityWithMenu {
     public final static String START_SPEECH_RECOGNITION = "START_APP_SPEECH_RECOGNITION";
     public final static String START_TEXT_RECOGNITION = "START_APP_TEXT_RECOGNITION";
     public final static String CREATE_TREATMENT_NOTE = "CREATE_TREATMENT_NOTE";
+    public final static String HOME_FULL_WAKEUP = "HOME_FULL_WAKEUP";
     public final static String menu_name = "Home Screen";
     public static boolean activityVisible = false;
     public static boolean invalidateMenu = false;
@@ -195,6 +200,10 @@ public class Home extends ActivityWithMenu {
         this.dexbridgeBattery = (TextView) findViewById(R.id.textBridgeBattery);
         this.extraStatusLineText = (TextView) findViewById(R.id.extraStatusLine);
         this.currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
+
+        extraStatusLineText.setText("");
+        dexbridgeBattery.setText("");
+
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             this.currentBgValueText.setTextSize(100);
         }
@@ -443,6 +452,27 @@ public class Home extends ActivityWithMenu {
                 } catch (NullPointerException e) {
                     Log.d(TAG, "Got null point exception during CREATE_TREATMENT_NOTE Intent");
                 }
+            } else if (bundle.getString(Home.HOME_FULL_WAKEUP) != null) {
+                if (!JoH.isScreenOn()) {
+                    final int timeout = 60000;
+                    final PowerManager.WakeLock wl = JoH.getWakeLock("full-wakeup", timeout + 1000);
+                    final Window win = getWindow();
+                    win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+                            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+                            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+                            WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+                    Timer t = new Timer();
+                    t.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            JoH.releaseWakeLock(wl);
+                            finish();
+                        }
+                    }, timeout);
+                }
+            } else {
+                Log.d(TAG,"Screen is already on so not turning on");
             }
         }
     }
@@ -458,7 +488,11 @@ public class Home extends ActivityWithMenu {
         intent.putExtra(extra + "2", even_more);
         context.startActivity(intent);
     }
+    public void testFeature(MenuItem x) {
+        startActivity(new Intent(this, ProfileEditor.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 
+        //Home.startHomeWithExtra(getApplicationContext(), Home.HOME_FULL_WAKEUP, "1");
+    }
     private boolean hideTreatmentButtonsIfAllDone() {
         if ((btnBloodGlucose.getVisibility() == View.INVISIBLE) &&
                 (btnCarbohydrates.getVisibility() == View.INVISIBLE) &&
@@ -1320,7 +1354,7 @@ public class Home extends ActivityWithMenu {
             final double predicted_low_in_mins = (BgGraphBuilder.low_occurs_at - now) / 60000;
 
             if (predicted_low_in_mins > 1) {
-                lowPredictText.append("Low predicted\nin: " + (int) predicted_low_in_mins + " mins");
+                lowPredictText.append(getString(R.string.low_predicted)+"\n"+getString(R.string.in)+": " + (int) predicted_low_in_mins + getString(R.string.space_mins));
                 if (predicted_low_in_mins < low_predicted_alarm_minutes) {
                     lowPredictText.setTextColor(Color.RED); // low front getting too close!
                 } else {
@@ -1360,7 +1394,7 @@ public class Home extends ActivityWithMenu {
 
     private void updateCurrentBgInfoForWifiWixel(TextView notificationText) {
         if (!WixelReader.IsConfigured(getApplicationContext())) {
-            notificationText.setText("First configure your wifi wixel reader ip addresses");
+            notificationText.setText(R.string.first_configure_ip_address);
             return;
         }
 
@@ -1370,12 +1404,12 @@ public class Home extends ActivityWithMenu {
 
     private void updateCurrentBgInfoForBtBasedWixel(TextView notificationText) {
         if ((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
-            notificationText.setText("Unfortunately your android version does not support Bluetooth Low Energy");
+            notificationText.setText(R.string.bluetooth_low_energy_not_supported);
             return;
         }
 
         if (ActiveBluetoothDevice.first() == null) {
-            notificationText.setText("First use the menu to scan for your BT device!");
+            notificationText.setText(R.string.first_use_menu_to_scan);
             return;
         }
         updateCurrentBgInfoCommon(notificationText);
@@ -1387,14 +1421,14 @@ public class Home extends ActivityWithMenu {
 
         final boolean isSensorActive = Sensor.isActive();
         if (!isSensorActive) {
-            notificationText.setText("Now start your sensor");
+            notificationText.setText(R.string.now_start_your_sensor);
             return;
         }
 
         final long now = System.currentTimeMillis();
         if (Sensor.currentSensor().started_at + 60000 * 60 * 2 >= now) {
             double waitTime = (Sensor.currentSensor().started_at + 60000 * 60 * 2 - now) / 60000.0;
-            notificationText.setText("Please wait while sensor warms up! (" + String.format("%.2f", waitTime) + " minutes)");
+            notificationText.setText(getString(R.string.please_wait_while_sensor_warms_up) + String.format("%.2f", waitTime) + getString(R.string.minutes_with_bracket));
             return;
         }
 
@@ -1402,21 +1436,21 @@ public class Home extends ActivityWithMenu {
             List<Calibration> calibrations = Calibration.latest(2);
             if (calibrations.size() > 1) {
                 if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
-                    notificationText.setText("Possible bad calibration slope, please have a glass of water, wash hands, then recalibrate in a few!");
+                    notificationText.setText(R.string.possible_bad_calibration);
                 }
                 displayCurrentInfo();
             } else {
-                notificationText.setText("Please enter two calibrations to get started!");
+                notificationText.setText(R.string.please_enter_two_calibrations);
                 Log.d(TAG, "Asking for calibration A: Uncalculated BG readings: " + BgReading.latest(2).size() + " / Calibrations size: " + calibrations.size());
 
             }
         } else {
             if (BgReading.latestUnCalculated(2).size() < 2) {
-                notificationText.setText("Please wait, need 2 readings from transmitter first.");
+                notificationText.setText(R.string.please_wait_need_two_readings_first);
             } else {
                 List<Calibration> calibrations = Calibration.latest(2);
                 if (calibrations.size() < 2) {
-                    notificationText.setText("Please enter two calibrations to get started!");
+                    notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
                     Log.d(TAG, "Asking for calibration B: Uncalculated BG readings: " + BgReading.latestUnCalculated(2).size() + " / Calibrations size: " + calibrations.size());
                 }
             }
@@ -1425,28 +1459,28 @@ public class Home extends ActivityWithMenu {
 
     private void updateCurrentBgInfoForBtShare(TextView notificationText) {
         if ((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
-            notificationText.setText("Unfortunately your android version does not support Bluetooth Low Energy");
+            notificationText.setText(R.string.unfortunately_andoird_version_no_blueooth_low_energy);
             return;
         }
 
         String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
         if (receiverSn.compareTo("SM00000000") == 0 || receiverSn.length() == 0) {
-            notificationText.setText("Please set your Dex Receiver Serial Number in App Settings");
+            notificationText.setText(R.string.please_set_dex_receiver_serial_number);
             return;
         }
 
         if (receiverSn.length() < 10) {
-            notificationText.setText("Double Check Dex Receiver Serial Number, should be 10 characters, don't forget the letters");
+            notificationText.setText(R.string.double_check_dex_receiver_serial_number);
             return;
         }
 
         if (ActiveBluetoothDevice.first() == null) {
-            notificationText.setText("Now pair with your Dexcom Share");
+            notificationText.setText(R.string.now_pair_with_your_dexcom_share);
             return;
         }
 
         if (!Sensor.isActive()) {
-            notificationText.setText("Now choose start your sensor in your settings");
+            notificationText.setText(R.string.now_choose_start_sensor_in_settings);
             return;
         }
 
@@ -1463,7 +1497,7 @@ public class Home extends ActivityWithMenu {
             int bridgeBattery = prefs.getInt("bridge_battery", 0);
 
             if (bridgeBattery == 0) {
-                dexbridgeBattery.setText("Waiting for packet");
+                dexbridgeBattery.setText(R.string.waiting_for_packet);
             } else {
                 dexbridgeBattery.setText("Bridge Battery: " + bridgeBattery + "%");
             }
@@ -1837,8 +1871,27 @@ public class Home extends ActivityWithMenu {
 
 
     public void parakeetSetupMode(MenuItem myitem) {
-        // TODO NEEDS AN ARE YOU SURE DIALOG
-        ParakeetHelper.parakeetSetupMode(getApplicationContext());
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage(R.string.are_you_sure_you_want_switch_parakeet_to_setup);
+
+                alertDialogBuilder.setPositiveButton(R.string.yes_enter_setup_mode, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                // switch parakeet to setup mode
+                ParakeetHelper.parakeetSetupMode(getApplicationContext());
+            }
+        });
+
+
+        alertDialogBuilder.setNegativeButton(R.string.nokeep_parakeet_as_it_is, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+               // do nothing
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     public void undoButtonClick(View myitem) {

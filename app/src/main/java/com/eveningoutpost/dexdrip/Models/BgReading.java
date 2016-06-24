@@ -15,6 +15,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.ShareModels.ShareUploadableBg;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -1026,7 +1027,7 @@ public class BgReading extends Model implements ShareUploadableBg{
                                     return false;
                                 }
                                 Log.i(TAG, "Persistent high for: " + high_for_mins + " mins -> alerting");
-                                Notifications.persistentHighAlert(xdrip.getAppContext(), true, "Persistent High for > " + (int) high_for_mins + " mins");
+                                Notifications.persistentHighAlert(xdrip.getAppContext(), true, xdrip.getAppContext().getString(R.string.persistent_high_for_greater_than) + (int) high_for_mins + xdrip.getAppContext().getString(R.string.space_mins));
 
                             } else {
                                 Log.d(TAG, "Persistent high below time threshold at: " + high_for_mins);
