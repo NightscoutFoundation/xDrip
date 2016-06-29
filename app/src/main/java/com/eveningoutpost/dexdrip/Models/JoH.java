@@ -25,6 +25,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -58,6 +59,19 @@ public class JoH {
     }
 
     public static String qs(double x, int digits) {
+
+        if (digits==-1)
+        {
+            digits=0;
+            if (((int)x != x)) {
+                digits++;
+                if ((((int)x*10)/10 != x)) {
+                    digits++;
+                    if ((((int)x*100)/100 != x)) digits++;
+                }
+            }
+        }
+
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setDecimalSeparator('.');
         DecimalFormat df = new DecimalFormat("#", symbols);
@@ -385,6 +399,19 @@ public class JoH {
         } catch (Exception e) {
             Log.e(TAG, "Couldn't display toast: " + msg + " e: "+e.toString());
             Home.toaststatic(msg);
+        }
+    }
+
+    public static Object cloneObject(Object obj) {
+        try {
+            Object clone = obj.getClass().newInstance();
+            for (Field field : obj.getClass().getDeclaredFields()) {
+                field.setAccessible(true);
+                field.set(clone, field.get(obj));
+            }
+            return clone;
+        } catch (Exception e) {
+            return null;
         }
     }
 
