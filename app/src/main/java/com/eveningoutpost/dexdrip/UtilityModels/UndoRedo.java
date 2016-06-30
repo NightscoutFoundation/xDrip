@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
+import com.eveningoutpost.dexdrip.Models.UserError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 public class UndoRedo {
 
     private static int EXPIRY_TIME = (1000 * 60 * 30);
+    private static String TAG = "UndoRedo";
 
     private static final List<Undo_item> undo_queue = new ArrayList<>();
     private static final List<Undo_item> redo_queue = new ArrayList<>();
@@ -71,27 +73,26 @@ public class UndoRedo {
         if (queueChanged) purgeQueues();
     }
 
-    public static boolean undoNextItem()
-    {
-        if (undoListHasItems())
-        {
+    public static boolean undoNextItem() {
+        if (undoListHasItems()) {
             synchronized (queue_lock) {
                 final int location = undo_queue.size() - 1;
                 Undo_item item = undo_queue.get(location);
-                if (item.Treatment_uuid !=null)
-                {
-                    // TODO try catch
-                    item.saved_data = Treatments.byuuid(item.Treatment_uuid).toJSON();
-                    item.expires = JoH.ts()+EXPIRY_TIME;
-                    redo_queue.add(item);
-                    undo_queue.remove(location);
-                    Treatments.delete_last(true); // should we lock to UUID as well?
+                if (item.Treatment_uuid != null) {
+                    try {
+                        item.saved_data = Treatments.byuuid(item.Treatment_uuid).toJSON();
+                        item.expires = JoH.ts() + EXPIRY_TIME;
+                        redo_queue.add(item);
+                        undo_queue.remove(location);
+                        Treatments.delete_last(true); // should we lock to UUID as well?
+                    } catch (NullPointerException e) {
+                        UserError.Log.wtf(TAG, "Null pointer exception in undoNext()");
+                    }
                     return true;
-                } else if (item.Calibration_uuid !=null)
-                {
+                } else if (item.Calibration_uuid != null) {
                     // TODO try catch
                     item.saved_data = Calibration.byuuid(item.Calibration_uuid).toS();
-                    item.expires = JoH.ts()+EXPIRY_TIME;
+                    item.expires = JoH.ts() + EXPIRY_TIME;
                     redo_queue.add(item);
                     undo_queue.remove(location);
                     Calibration.clear_byuuid(item.Calibration_uuid, true); // from interactive
@@ -99,8 +100,10 @@ public class UndoRedo {
                 }
 
             }
-        return false;
-        }  else { return false; }
+            return false;
+        } else {
+            return false;
+        }
 
     }
 

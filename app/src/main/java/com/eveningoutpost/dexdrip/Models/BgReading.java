@@ -313,7 +313,7 @@ public class BgReading extends Model implements ShareUploadableBg{
                 return bgReading;
             }
         }
-        Log.w(TAG, "getForPreciseTimestamp: No luck finding a BG timestamp match: " + timestamp + " " + precision);
+        Log.w(TAG, "getForPreciseTimestamp: No luck finding a BG timestamp match: " + JoH.dateTimeText((long)timestamp) + " precision:" + precision);
         return null;
     }
 

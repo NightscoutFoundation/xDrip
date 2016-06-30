@@ -8,6 +8,7 @@ import android.graphics.Matrix;
 import android.util.DisplayMetrics;
 import android.view.View;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import java.util.ArrayList;
@@ -161,7 +162,11 @@ public class BgSparklineBuilder {
         v.buildDrawingCache();
         Bitmap cacheBitmap = v.getDrawingCache();
         if (cacheBitmap == null) {
-            Log.e(TAG, "failed getViewBitmap(" + v + ")", new RuntimeException());
+            android.util.Log.e(TAG, "failed getViewBitmap(" + JoH.backTrace() + ")", new RuntimeException());
+
+            v.destroyDrawingCache(); // duplicate of below, flow could be reordered better
+            v.setWillNotCacheDrawing(willNotCache);
+            v.setDrawingCacheBackgroundColor(color);
             return null;
         }
 

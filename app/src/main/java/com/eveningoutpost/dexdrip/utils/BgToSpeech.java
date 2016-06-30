@@ -149,20 +149,24 @@ public class BgToSpeech {
         if (value >= 400) {
             text = "high";
         } else if (value >= 40) {
-            if(doMgdl) {
+            if (doMgdl) {
                 df.setMaximumFractionDigits(0);
-                text =  df.format(value);
+                text = df.format(value);
             } else {
                 df.setMaximumFractionDigits(1);
                 df.setMinimumFractionDigits(1);
-                text =  df.format(value* Constants.MGDL_TO_MMOLL);
-                if(tts.getLanguage().getLanguage().startsWith("en")){
-                    // in case the text has a comma in current locale but TTS defaults to English
-                    text.replace(",", ".");
+                text = df.format(value * Constants.MGDL_TO_MMOLL);
+                try {
+                    if (tts.getLanguage().getLanguage().startsWith("en")) {
+                        // in case the text has a comma in current locale but TTS defaults to English
+                        text = text.replace(",", ".");
+                    }
+                } catch (NullPointerException e) {
+                    Log.e(TAG, "Null pointer for TTS in calculateText");
                 }
             }
         } else if (value > 12) {
-            text =  "low";
+            text = "low";
         } else {
             text = "error";
         }

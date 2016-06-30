@@ -61,7 +61,7 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
             String payload = data.getString("datum");
             String action = data.getString("action");
 
-            if (xfrom.equals(GcmActivity.token)) {
+            if ((xfrom!=null) && (xfrom.equals(GcmActivity.token))) {
                 GcmActivity.queueAction(action + payload);
                 JoH.releaseWakeLock(wl);
                 return;
@@ -80,6 +80,8 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                 JoH.releaseWakeLock(wl);
                 return;
             }
+
+            if (payload == null) payload="";
 
             if (payload.length() > 16) {
                 if (GoogleDriveInterface.keyInitialized()) {
@@ -100,6 +102,7 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
             Log.i(TAG, "Got action: " + action + " with payload: " + payload);
             lastMessageReceived = JoH.ts();
 
+            if (action==null) action="null";
             // new treatment
             if (action.equals("nt") && (payload != null)) {
                 Log.i(TAG, "Attempting GCM push to Treatment");
