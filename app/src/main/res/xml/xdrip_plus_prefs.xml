@@ -275,16 +275,26 @@
             android:key="xdrip_plus_profile_category"
             android:title="xDrip+ Predictive Simulation settings">
 
-            <EditTextPreference
+            <Preference
                 android:defaultValue="10"
                 android:key="profile_carb_ratio_default"
                 android:summary="Grams of Carbohydrate 1 Unit covers"
-                android:title="Carb Ratio" />
-            <EditTextPreference
+                android:title="Carb Ratio">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.eveningoutpost.dexdrip.profileeditor.ProfileEditor"
+                    android:targetPackage="@string/local_target_package"></intent>
+            </Preference>
+            <Preference
                 android:defaultValue="54"
                 android:key="profile_insulin_sensitivity_default"
                 android:summary="Glucose drop for 1 Unit"
-                android:title="Insulin Sensitivity" />
+                android:title="Insulin Sensitivity">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.eveningoutpost.dexdrip.profileeditor.ProfileEditor"
+                    android:targetPackage="@string/local_target_package"></intent>
+            </Preference>
             <EditTextPreference
                 android:defaultValue="35"
                 android:key="profile_carb_absorption_default"
@@ -293,7 +303,7 @@
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="predict_use_momentum"
-                android:summary="Calculate including BG trend"
+                android:summary="Calculate including glucose trend"
                 android:title="Use trend momentum" />
 
         </PreferenceCategory>

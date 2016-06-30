@@ -163,5 +163,9 @@
     <string name="yes_enter_setup_mode">Yes enter setup mode</string>
     <string name="nokeep_parakeet_as_it_is">No keep Parakeet as it is</string>
     <string name="are_you_sure_you_want_switch_parakeet_to_setup">Are you sure you want to switch the Parakeet to setup mode?\n\nNormally this is only used to send further text messages to the Parakeet to reconfigure the transmitter it listens for etc.</string>
+    <string name="split_delete_or_do_nothing">Split, delete or do nothing</string>
+    <string name="split_this_block_in_two">Split this block in two</string>
+    <string name="delete_this_time_block">Delete this time block</string>
+    <string name="cancel_do_nothing">Cancel - do nothing</string>
 
 </resources>

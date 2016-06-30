@@ -414,8 +414,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ProfileEditor.ProfileEditor"
-            android:label="@string/title_activity_profile_editor"></activity>
+            android:windowSoftInputMode="adjustPan"
+            android:name=".profileeditor.ProfileEditor"
+            android:label="@string/title_activity_profile_editor"/>
     </application>
 
 </manifest>

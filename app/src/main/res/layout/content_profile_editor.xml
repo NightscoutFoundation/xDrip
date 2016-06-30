@@ -7,11 +7,115 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".ProfileEditor.ProfileEditor">
+    tools:context=".profileeditor.ProfileEditor">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/profile_recycler_view"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical" />
+        android:weightSum="1"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/profile_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical"
+            android:fadeScrollbars="false"
+            android:layout_gravity="top"
+            android:layout_weight="1" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+
+            android:layout_height="94dp"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:gravity="bottom">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Adjust all by a factor"
+                android:id="@+id/adjustbyfactor"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true" />
+
+            <SeekBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/profileAdjustAllseekBar"
+                android:paddingTop="5dp"
+                android:progress="25"
+                android:max="50"
+                android:layout_below="@+id/adjustbyfactor"
+                android:layout_toEndOf="@+id/textView20"
+                android:layout_toStartOf="@+id/textView19" />
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:text="Cancel"
+                android:id="@+id/profileCancelbtn"
+                android:onClick="profileCancelButton"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignTop="@+id/profileUndoBtn" />
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Save"
+                android:id="@+id/profileSaveBtn"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignTop="@+id/profileUndoBtn"
+                android:onClick="profileSaveButton"
+                android:nestedScrollingEnabled="true" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reset"
+                android:id="@+id/profileUndoBtn"
+                android:layout_alignParentBottom="true"
+                android:layout_toEndOf="@+id/profileCancelbtn"
+                android:onClick="profileUndoButton" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="+50%"
+                android:id="@+id/textView19"
+                android:layout_alignTop="@+id/profileAdjustAllseekBar"
+                android:layout_alignParentEnd="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="-50%"
+                android:id="@+id/textView20"
+                android:layout_below="@+id/adjustbyfactor"
+                android:layout_alignParentStart="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="100%"
+                android:id="@+id/profileAdjustAllPercentage"
+                android:layout_marginRight="20dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
 </RelativeLayout>

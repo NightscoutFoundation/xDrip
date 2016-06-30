@@ -75,7 +75,7 @@
         android:layout_below="@+id/carbsSeekBar"
         android:layout_marginTop="5dp"
         android:clickable="true"
-        android:text="Insulin Sensitivity: mmol drop per Unit" />
+        android:text="Insulin Sensitivity: glucose drop per Unit" />
 
     <SeekBar
         android:id="@+id/sensitivitySeekBar"

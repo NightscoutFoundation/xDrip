@@ -4,6 +4,10 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
+import com.eveningoutpost.dexdrip.profileeditor.ProfileItem;
+
+import java.util.List;
 
 /**
  * Created by jamorham on 04/01/16.
@@ -23,14 +27,18 @@ public class Profile {
     public static double minimum_insulin_recommendation = 0.1;
     public static double minimum_carb_recommendation = 1;
     public static double scale_factor = 18;
-    private static double the_carb_ratio = 10;
-    private static double stored_default_sensitivity = 54;
+    private static double the_carb_ratio = 10; // now defunct
+    private static double stored_default_sensitivity = 54; // now defunct
     private static double stored_default_absorption_rate = 35;
     private static double stored_default_insulin_action_time = 3.0;
     private static double stored_default_carb_delay_minutes = 15;
+    private static List<ProfileItem> profileItemList;
 
-    static double getSensitivity(double when) {
-        return stored_default_sensitivity; // expressed in native units lowering effect of 1U
+    public static double getSensitivity(double when) {
+       final double sensitivity = findItemListElementForTime(when).sensitivity;
+       // Log.d(TAG,"sensitivity: "+sensitivity);
+        return sensitivity;
+       // expressed in native units lowering effect of 1U
     }
 
     public static void setSensitivityDefault(double value) {
@@ -68,8 +76,53 @@ public class Profile {
     }
 
     static double getCarbRatio(double when) {
-        return the_carb_ratio; // g per unit
+        return findItemListElementForTime(when).carb_ratio;
+        //return the_carb_ratio; // g per unit
     }
+
+
+    private static void populateProfile()
+    {
+        if (profileItemList==null)
+        {
+            profileItemList = ProfileEditor.loadData(false);
+            Log.d(TAG,"Loaded profile data, blocks: "+profileItemList.size());
+        }
+    }
+
+    public static void invalidateProfile()
+    {
+        profileItemList = null;
+    }
+
+    private static ProfileItem findItemListElementForTime(double when)
+    {
+        populateProfile();
+        // TODO does this want/need a hash table lookup cache?
+        if (profileItemList.size()==1) profileItemList.get(0); // always will be first/only element.
+        // get time of day
+        final int min = ProfileItem.timeStampToMin(when);
+        // find element
+        for (ProfileItem item : profileItemList)
+        {
+            if (item.start_min < item.end_min) {
+                // regular
+                if ((item.start_min <= min) && (item.end_min >= min)) {
+                   // Log.d(TAG, "Match on item " + item.getTimePeriod() + " " + profileItemList.indexOf(item));
+                    return item;
+                }
+            } else {
+                // item spans midnight
+                if ((min >= item.start_min) || (min <= item.end_min))
+                {
+                  //  Log.d(TAG, "midnight span Match on item " + item.getTimePeriod() + " " + profileItemList.indexOf(item));
+                    return item;
+                }
+            }
+        }
+        return null; // should be impossible
+    }
+
 
     static public void setDefaultCarbRatio(Double value) {
         if (value <= 0) {
@@ -153,6 +206,8 @@ public class Profile {
         } catch (Exception e) {
             Home.toaststatic("Invalid insulin action time");
         }
+        profileItemList=null;
+        populateProfile();
     }
 
     private static double tolerantParseDouble(String str) throws NumberFormatException {

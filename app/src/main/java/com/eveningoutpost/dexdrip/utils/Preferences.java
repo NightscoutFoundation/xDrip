@@ -31,6 +31,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
+import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
@@ -76,6 +77,8 @@ public class Preferences extends PreferenceActivity {
     private static Preference units_pref;
     private static String static_units;
     private static Preference profile_insulin_sensitivity_default;
+    private static Preference profile_carb_ratio_default;
+
 
     private void refreshFragments() {
         this.preferenceFragment = new AllPrefsFragment();
@@ -268,6 +271,7 @@ public class Preferences extends PreferenceActivity {
         this.preferenceFragment = new AllPrefsFragment();
         getFragmentManager().beginTransaction().replace(android.R.id.content,
                 this.preferenceFragment).commit();
+        processExtraData();
     }
 
     @Override
@@ -298,6 +302,35 @@ public class Preferences extends PreferenceActivity {
     @Override
     public void onBuildHeaders(List<Header> target) {
         loadHeadersFromResource(R.xml.pref_headers, target);
+    }
+
+    @Override
+    public void onNewIntent(Intent intent)
+    {
+        setIntent(intent);
+        if (!processExtraData()) {
+            super.onNewIntent(intent);
+        }
+    }
+
+    private boolean processExtraData() {
+        final Intent intent = getIntent();
+        if (intent != null) {
+            final Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                final String str = bundle.getString("refresh");
+                if (str != null) {
+                    refreshProfileRatios();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static void refreshProfileRatios() {
+        profile_carb_ratio_default.setTitle(format_carb_ratio(profile_carb_ratio_default.getTitle().toString(), ProfileEditor.minMaxCarbs(ProfileEditor.loadData(false))));
+        profile_insulin_sensitivity_default.setTitle(format_insulin_sensitivity(profile_insulin_sensitivity_default.getTitle().toString(), ProfileEditor.minMaxSens(ProfileEditor.loadData(false))));
     }
 
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
@@ -389,7 +422,7 @@ public class Preferences extends PreferenceActivity {
         }
     }
 
-    private static void do_format_insulin_sensitivity(Preference preference, SharedPreferences prefs, boolean from_change, String newValue) {
+    /*private static void do_format_insulin_sensitivity(Preference preference, SharedPreferences prefs, boolean from_change, String newValue) {
         if (newValue == null) {
             newValue = prefs.getString("profile_insulin_sensitivity_default", "54");
         }
@@ -400,13 +433,13 @@ public class Preferences extends PreferenceActivity {
         }
 
         EditTextPreference thispref = (EditTextPreference) preference;
-        thispref.setText(newValue);
+                thispref.setText(newValue);
         if (from_change) {
             preference.getEditor().putString("profile_insulin_sensitivitiy", newValue);
         }
 
         preference.setTitle(format_insulin_sensitivity(preference.getTitle().toString(), newValue));
-    }
+    }*/
 
 
     private static void bindPreferenceSummaryToValue(Preference preference) {
@@ -498,38 +531,47 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("persistent_high_threshold_mins"));
 
             bindPreferenceTitleAppendToValueUpdateChannel(findPreference("update_channel"));
-            final Preference profile_carb_ratio_default = findPreference("profile_carb_ratio_default");
-            profile_carb_ratio_default.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if (!isNumeric(newValue.toString())) {
-                        return false;
-                    }
-                    preference.setTitle(format_carb_ratio(preference.getTitle().toString(), newValue.toString()));
-                    Profile.reloadPreferences(AllPrefsFragment.this.prefs);
-                    Home.staticRefreshBGCharts();
-                    return true;
-                }
-            });
-
-            profile_carb_ratio_default.setTitle(format_carb_ratio(profile_carb_ratio_default.getTitle().toString(), this.prefs.getString("profile_carb_ratio_default", "")));
-
 
             profile_insulin_sensitivity_default = findPreference("profile_insulin_sensitivity_default");
-            profile_insulin_sensitivity_default.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if (!isNumeric(newValue.toString())) {
-                        return false;
-                    }
-                    do_format_insulin_sensitivity(preference, AllPrefsFragment.this.prefs, true, newValue.toString());
-                    Profile.reloadPreferences(AllPrefsFragment.this.prefs);
-                    Home.staticRefreshBGCharts();
-                    return true;
-                }
-            });
+            profile_carb_ratio_default = findPreference("profile_carb_ratio_default");
+            refreshProfileRatios();
 
-            do_format_insulin_sensitivity(profile_insulin_sensitivity_default, this.prefs, false, null);
+//            profile_carb_ratio_default.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+//                @Override
+//                public boolean onPreferenceChange(Preference preference, Object newValue) {
+//                    if (!isNumeric(newValue.toString())) {
+//                        return false;
+//                    }
+//                    preference.setTitle(format_carb_ratio(preference.getTitle().toString(), newValue.toString()));
+//                    Profile.reloadPreferences(AllPrefsFragment.this.prefs);
+//                    Home.staticRefreshBGCharts();
+//                    return true;
+//                }
+//            });
+
+            //profile_carb_ratio_default.setTitle(format_carb_ratio(profile_carb_ratio_default.getTitle().toString(), this.prefs.getString("profile_carb_ratio_default", "")));
+
+
+
+
+
+
+
+//            profile_insulin_sensitivity_default.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+//                @Override
+//                public boolean onPreferenceChange(Preference preference, Object newValue) {
+//                    if (!isNumeric(newValue.toString())) {
+//                        return false;
+//                    }
+//                    do_format_insulin_sensitivity(preference, AllPrefsFragment.this.prefs, true, newValue.toString());
+//                    Profile.reloadPreferences(AllPrefsFragment.this.prefs);
+//                    Home.staticRefreshBGCharts();
+//                    return true;
+//                }
+//            });
+
+            //do_format_insulin_sensitivity(profile_insulin_sensitivity_default, this.prefs, false, null);
+
 
             final Preference profile_carb_absorption_default = findPreference("profile_carb_absorption_default");
             profile_carb_absorption_default.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -675,21 +717,24 @@ public class Preferences extends PreferenceActivity {
                             if (highVal < 36) {
                                 AllPrefsFragment.this.prefs.edit().putString("highValue", Long.toString(Math.round(highVal * Constants.MMOLL_TO_MGDL))).apply();
                                 AllPrefsFragment.this.prefs.edit().putString("profile_insulin_sensitivity_default", Long.toString(Math.round(default_insulin_sensitivity * Constants.MMOLL_TO_MGDL))).apply();
+                                // TODO convert insulin profiles
                             }
                             if (lowVal < 36) {
                                 AllPrefsFragment.this.prefs.edit().putString("lowValue", Long.toString(Math.round(lowVal * Constants.MMOLL_TO_MGDL))).apply();
                                 AllPrefsFragment.this.prefs.edit().putString("profile_insulin_sensitivity_default", Long.toString(Math.round(default_insulin_sensitivity * Constants.MMOLL_TO_MGDL))).apply();
+                                // TODO convert insulin profiles
                             }
 
                         } else {
                             if (highVal > 35) {
                                 AllPrefsFragment.this.prefs.edit().putString("highValue", JoH.qs(highVal * Constants.MGDL_TO_MMOLL, 1)).apply();
                                 AllPrefsFragment.this.prefs.edit().putString("profile_insulin_sensitivity_default", JoH.qs(default_insulin_sensitivity * Constants.MGDL_TO_MMOLL, 2)).apply();
-
+                                // TODO convert insulin profiles
                             }
                             if (lowVal > 35) {
                                 AllPrefsFragment.this.prefs.edit().putString("lowValue", JoH.qs(lowVal * Constants.MGDL_TO_MMOLL, 1)).apply();
                                 AllPrefsFragment.this.prefs.edit().putString("profile_insulin_sensitivity_default", JoH.qs(default_insulin_sensitivity * Constants.MGDL_TO_MMOLL, 2)).apply();
+                                // TODO convert insulin profiles
                             }
                         }
                         preference.setSummary(newValue.toString());
@@ -697,7 +742,9 @@ public class Preferences extends PreferenceActivity {
                         setSummary("lowValue");
                         if (profile_insulin_sensitivity_default != null) {
                             Log.d(TAG, "refreshing profile insulin sensitivity default display");
-                            do_format_insulin_sensitivity(profile_insulin_sensitivity_default, AllPrefsFragment.this.prefs, false, null);
+                            profile_insulin_sensitivity_default.setTitle(format_insulin_sensitivity(profile_insulin_sensitivity_default.getTitle().toString(), ProfileEditor.minMaxSens(ProfileEditor.loadData(false))));
+
+//                            do_format_insulin_sensitivity(profile_insulin_sensitivity_default, AllPrefsFragment.this.prefs, false, null);
                         }
                         Profile.reloadPreferences(AllPrefsFragment.this.prefs);
 
