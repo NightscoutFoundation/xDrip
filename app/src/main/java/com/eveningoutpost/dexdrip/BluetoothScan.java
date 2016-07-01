@@ -274,21 +274,23 @@ public class BluetoothScan extends ListActivityWithMenu {
         if (device == null || device.getName() == null) return;
         Toast.makeText(this, R.string.connecting_to_device, Toast.LENGTH_LONG).show();
 
-        ActiveBluetoothDevice btDevice = new Select().from(ActiveBluetoothDevice.class)
-                .orderBy("_ID desc")
-                .executeSingle();
-
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        prefs.edit().putString("last_connected_device_address", device.getAddress()).apply();
-        if (btDevice == null) {
-            ActiveBluetoothDevice newBtDevice = new ActiveBluetoothDevice();
-            newBtDevice.name = device.getName();
-            newBtDevice.address = device.getAddress();
-            newBtDevice.save();
-        } else {
-            btDevice.name = device.getName();
-            btDevice.address = device.getAddress();
-            btDevice.save();
+        synchronized (ActiveBluetoothDevice.table_lock) {
+            ActiveBluetoothDevice btDevice = new Select().from(ActiveBluetoothDevice.class)
+                    .orderBy("_ID desc")
+                    .executeSingle();
+
+            prefs.edit().putString("last_connected_device_address", device.getAddress()).apply();
+            if (btDevice == null) {
+                ActiveBluetoothDevice newBtDevice = new ActiveBluetoothDevice();
+                newBtDevice.name = device.getName();
+                newBtDevice.address = device.getAddress();
+                newBtDevice.save();
+            } else {
+                btDevice.name = device.getName();
+                btDevice.address = device.getAddress();
+                btDevice.save();
+            }
         }
         if (device.getName().toLowerCase().contains("dexcom")) {
             if (!CollectionServiceStarter.isBTShare(getApplicationContext())) {

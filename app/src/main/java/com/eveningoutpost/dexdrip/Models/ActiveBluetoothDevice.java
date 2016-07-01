@@ -21,21 +21,24 @@ public class ActiveBluetoothDevice extends Model {
     @Column(name = "connected")
     public boolean connected;
 
-    public static ActiveBluetoothDevice first() {
+
+    public static final Object table_lock = new Object();
+
+    public static synchronized ActiveBluetoothDevice first() {
         return new Select()
                 .from(ActiveBluetoothDevice.class)
                 .orderBy("_ID asc")
                 .executeSingle();
     }
 
-    public static void forget() {
+    public static synchronized  void forget() {
         ActiveBluetoothDevice activeBluetoothDevice = ActiveBluetoothDevice.first();
         if (activeBluetoothDevice != null) {
             activeBluetoothDevice.delete();
         }
     }
 
-    public static void connected() {
+    public static synchronized  void connected() {
         ActiveBluetoothDevice activeBluetoothDevice = ActiveBluetoothDevice.first();
         if(activeBluetoothDevice != null) {
             activeBluetoothDevice.connected = true;
@@ -43,7 +46,7 @@ public class ActiveBluetoothDevice extends Model {
         }
     }
 
-    public static void disconnected() {
+    public static synchronized  void disconnected() {
         ActiveBluetoothDevice activeBluetoothDevice = ActiveBluetoothDevice.first();
         if(activeBluetoothDevice != null) {
             activeBluetoothDevice.connected = false;
@@ -51,7 +54,7 @@ public class ActiveBluetoothDevice extends Model {
         }
     }
 
-    public static boolean is_connected() {
+    public static synchronized boolean is_connected() {
         ActiveBluetoothDevice activeBluetoothDevice = ActiveBluetoothDevice.first();
         return (activeBluetoothDevice != null && activeBluetoothDevice.connected);
     }
