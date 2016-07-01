@@ -42,17 +42,23 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
     @Override
     public void onMessageReceived(String from, Bundle data) {
 
+        if (data == null) return;
         final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-onMsgRec",120000);
 
+        if (from == null) from="null";
         String message = data.getString("message");
 
         Log.d(TAG, "From: " + from);
-        if (message != null) Log.d(TAG, "Message: " + message);
+        if (message != null) { Log.d(TAG, "Message: " + message); } else { message = "null"; }
 
         Bundle notification = data.getBundle("notification");
         if (notification != null) {
             Log.d(TAG, "Processing notification bundle");
-            sendNotification(notification.getString("body"), notification.getString("title"));
+            try {
+                sendNotification(notification.getString("body"), notification.getString("title"));
+            } catch (NullPointerException e) {
+                Log.d(TAG, "Null pointer exception within sendnotification");
+            }
         }
 
         if (from.startsWith(getString(R.string.gcmtpc))) {
