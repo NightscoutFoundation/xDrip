@@ -715,8 +715,8 @@ public class Notifications extends IntentService {
             }
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyMgr.cancel(notificatioId);
-            Log.d(TAG, "Notify");
-            Log.ueh("OtherAlert",message);
+            //Log.d(TAG, "Notify");
+            Log.ueh("Other Alert",message);
             mNotifyMgr.notify(notificatioId, mBuilder.build());
         }
     }

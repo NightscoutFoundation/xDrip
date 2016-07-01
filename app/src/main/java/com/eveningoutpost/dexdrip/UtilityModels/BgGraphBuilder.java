@@ -875,7 +875,6 @@ public class BgGraphBuilder {
         try {
             // display treatment blobs and annotations
             for (Treatments treatment : treatments) {
-
                 double height = 6 * bgScale;
                 if (treatment.insulin > 0)
                     height = treatment.insulin; // some scaling needed I think
@@ -939,7 +938,7 @@ public class BgGraphBuilder {
             double lasttimestamp = 0;
 
             // this can be optimised to oncreate and onchange
-            Profile.reloadPreferences(prefs);
+            Profile.reloadPreferences(prefs); // TODO handle this better now we use profile time blocks
 
 
             try {
@@ -1043,7 +1042,7 @@ public class BgGraphBuilder {
                             }
                             predict_weight = predict_weight * 2.5; // from 0-infinity - // TODO account for step!!!
                             // we should pull in actual graph upper and lower limits here
-                            if (((predictedbg_final < highMark) || (predictedbg_final < relaxed_predicted_bg_limit)) && (predictedbg_final > 0)) {
+                            if (((predictedbg_final < cob_insulin_max_draw_value) || (predictedbg_final < relaxed_predicted_bg_limit)) && (predictedbg_final > 0)) {
                                 PointValue zv = new PointValue((float) fuzzed_timestamp, (float) predictedbg_final);
                                 predictedBgValues.add(zv);
                             }

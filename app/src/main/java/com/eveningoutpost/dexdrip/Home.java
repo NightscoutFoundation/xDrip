@@ -249,7 +249,7 @@ public class Home extends ActivityWithMenu {
             initializeSearchWords("");
         }
 
-        this.btnSpeak = (ImageButton) findViewById(R.id.btnSpeak);
+        this.btnSpeak = (ImageButton) findViewById(R.id.btnTreatment);
         btnSpeak.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -489,10 +489,13 @@ public class Home extends ActivityWithMenu {
         context.startActivity(intent);
     }
     public void testFeature(MenuItem x) {
-        startActivity(new Intent(this, ProfileEditor.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 
-        //Home.startHomeWithExtra(getApplicationContext(), Home.HOME_FULL_WAKEUP, "1");
+     }
+
+    public void viewEventLog(MenuItem x) {
+        startActivity(new Intent(this, ErrorsActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
     }
+
     private boolean hideTreatmentButtonsIfAllDone() {
         if ((btnBloodGlucose.getVisibility() == View.INVISIBLE) &&
                 (btnCarbohydrates.getVisibility() == View.INVISIBLE) &&
@@ -1804,7 +1807,7 @@ public class Home extends ActivityWithMenu {
                         message = getString(R.string.showcase_undo);
                         break;
                     case 3:
-                        target = new ViewTarget(R.id.btnSpeak, this);
+                        target = new ViewTarget(R.id.btnTreatment, this);
                         break;
 
                     case 1:
@@ -1928,6 +1931,18 @@ public class Home extends ActivityWithMenu {
                 Log.d(TAG, "Got treatment note: " + treatment_text);
                 Treatments.create_note(treatment_text, timestamp, position); // timestamp?
                 Home.staticRefreshBGCharts();
+
+                if (treatment_text.length()>0) {
+                    // display snackbar of the snackbar
+                    final View.OnClickListener mOnClickListener = new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Home.startHomeWithExtra(xdrip.getAppContext(), Home.CREATE_TREATMENT_NOTE, Long.toString(timestamp), Double.toString(position));
+                        }
+                    };
+                    Home.snackBar(getString(R.string.added)+":    " + treatment_text, mOnClickListener);
+                }
+
                 if (getPreferencesBooleanDefaultFalse("default_to_voice_notes")) showcasemenu(SHOWCASE_NOTE_LONG);
                 dialog = null;
             }
@@ -1969,7 +1984,7 @@ public class Home extends ActivityWithMenu {
     }
 
     public void checkForUpdate(MenuItem myitem) {
-        toast("Checking for update..");
+        toast(getString(R.string.checking_for_update));
         UpdateActivity.checkForAnUpdate(getApplicationContext());
     }
 

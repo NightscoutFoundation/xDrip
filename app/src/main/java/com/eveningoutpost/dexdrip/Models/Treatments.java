@@ -84,7 +84,7 @@ public class Treatments extends Model {
 
         Treatments Treatment = new Treatments();
 
-        if (position>0) {
+        if (position > 0) {
             Treatment.enteredBy = "xdrip pos:" + JoH.qs(position, 2);
         } else {
             Treatment.enteredBy = "xdrip";
@@ -104,51 +104,68 @@ public class Treatments extends Model {
     }
 
     // Note
-    public static synchronized Treatments create_note(String note, long timestamp)
-    {
+    public static synchronized Treatments create_note(String note, long timestamp) {
         return create_note(note, timestamp, -1);
     }
 
     public static synchronized Treatments create_note(String note, long timestamp, double position) {
         // TODO sanity check values
-        Log.d(TAG, "Creating treatment note: "+note);
+        Log.d(TAG, "Creating treatment note: " + note);
 
         if (timestamp == 0) {
             timestamp = new Date().getTime();
         }
 
-        if ((note==null || (note.length()==0)))
-        {
-            Log.i(TAG,"Empty treatment note - not saving");
+        if ((note == null || (note.length() == 0))) {
+            Log.i(TAG, "Empty treatment note - not saving");
             return null;
         }
 
-        Treatments Treatment = new Treatments();
+        boolean is_new = false;
 
-        if (position>0) {
+        // find treatment
+        Treatments Treatment = byTimestamp(timestamp, 60 * 1000 * 5);
+
+        // if unknown create
+        if (Treatment == null) {
+            Treatment = new Treatments();
+            Log.d(TAG, "Creating new treatment entry for note");
+            is_new = true;
+
+            Treatment.eventType = "<none>";
+            Treatment.carbs = 0;
+            Treatment.insulin = 0;
+            Treatment.notes = note;
+            Treatment.timestamp = timestamp;
+            Treatment.created_at = DateUtil.toISOString(timestamp);
+            Treatment.uuid = UUID.randomUUID().toString();
+
+        } else {
+            if (Treatment.notes == null) Treatment.notes = "";
+            Log.d(TAG, "Found existing treatment for note: " + Treatment.uuid + " distance:" + Long.toString(timestamp - Treatment.timestamp) + " " + Treatment.notes);
+            // append existing note or treatment
+            if (Treatment.notes.length() > 0) Treatment.notes += " \u2192 ";
+            Treatment.notes += note;
+        }
+
+        if (position > 0) {
             Treatment.enteredBy = "xdrip pos:" + JoH.qs(position, 2);
         } else {
             Treatment.enteredBy = "xdrip";
         }
 
-        Treatment.eventType = "<none>";
-        Treatment.carbs = 0;
-        Treatment.insulin = 0;
-        Treatment.notes = note;
-        Treatment.timestamp = timestamp;
-        Treatment.created_at = DateUtil.toISOString(timestamp);
-        Treatment.uuid = UUID.randomUUID().toString();
+
         Treatment.save();
         pushTreatmentSync(Treatment);
-        UndoRedo.addUndoTreatment(Treatment.uuid);
+        if (is_new) UndoRedo.addUndoTreatment(Treatment.uuid);
         return Treatment;
     }
 
-    public static void pushTreatmentSync(Treatments Treatment)
-    {
+    public static void pushTreatmentSync(Treatments Treatment) {
         GcmActivity.pushTreatmentAsync(Treatment);
         NSClientChat.pushTreatmentAsync(Treatment);
     }
+
     // This shouldn't be needed but it seems it is
     private static void fixUpTable() {
         if (patched) return;
@@ -192,10 +209,14 @@ public class Treatments extends Model {
     }
 
     public static Treatments byTimestamp(long timestamp) {
+        return byTimestamp(timestamp, 1500);
+    }
+
+    public static Treatments byTimestamp(long timestamp, int plus_minus_millis) {
         return new Select()
                 .from(Treatments.class)
-                .where("timestamp <= ? and timestamp >= ?", (timestamp + 1500), (timestamp - 1500)) // 3 second window
-                .orderBy("_ID desc")
+                .where("timestamp <= ? and timestamp >= ?", (timestamp + plus_minus_millis), (timestamp - plus_minus_millis)) // window
+                .orderBy("abs(timestamp-" + Long.toString(timestamp) + ") asc")
                 .executeSingle();
     }
 
@@ -216,9 +237,18 @@ public class Treatments extends Model {
         return delete_last(false);
     }
 
-    public static void delete_by_uuid(String uuid) {
+    public static void delete_by_uuid(String uuid)
+    {
+        delete_by_uuid(uuid,false);
+    }
+
+    public static void delete_by_uuid(String uuid, boolean from_interactive) {
         Treatments thistreat = byuuid(uuid);
         if (thistreat != null) {
+
+            if (from_interactive) {
+                GcmActivity.push_delete_treatment(thistreat);
+            }
             thistreat.delete();
             Home.staticRefreshBGCharts();
         }
@@ -230,8 +260,8 @@ public class Treatments extends Model {
 
             if (from_interactive) {
                 GcmActivity.push_delete_treatment(thistreat);
-                GoogleDriveInterface gdrive = new GoogleDriveInterface();
-                gdrive.deleteTreatmentAtRemote(thistreat.uuid);
+                //GoogleDriveInterface gdrive = new GoogleDriveInterface();
+                //gdrive.deleteTreatmentAtRemote(thistreat.uuid);
             }
             thistreat.delete();
         }
@@ -248,18 +278,32 @@ public class Treatments extends Model {
         }
     }
 
-    public static synchronized boolean pushTreatmentFromJson(String json)
-    {
-        return pushTreatmentFromJson(json,false);
+    public static synchronized boolean pushTreatmentFromJson(String json) {
+        return pushTreatmentFromJson(json, false);
     }
 
-    public static synchronized boolean pushTreatmentFromJson(String json,boolean from_interactive) {
+    public static synchronized boolean pushTreatmentFromJson(String json, boolean from_interactive) {
         Log.d(TAG, "converting treatment from json: ");
         Treatments mytreatment = fromJSON(json);
         if (mytreatment != null) {
             Treatments dupe_treatment = byTimestamp(mytreatment.timestamp);
             if (dupe_treatment != null) {
                 Log.i(TAG, "Duplicate treatment for: " + mytreatment.timestamp);
+
+                if (dupe_treatment.uuid.equals(mytreatment.uuid) && (mytreatment.notes != null))
+                {
+                    if ((dupe_treatment.notes == null) || (dupe_treatment.notes.length()<mytreatment.notes.length()))
+                    {
+                        dupe_treatment.notes = mytreatment.notes;
+                        fixUpTable();
+                        dupe_treatment.save();
+                        Log.d(TAG,"Saved updated treatement notes");
+                        // should not end up needing to append notes and be from_interactive via undo as these
+                        // would be mutually exclusive operations so we don't need to handle that here.
+                        Home.staticRefreshBGCharts();
+                    }
+                }
+
                 return false;
             }
             Log.d(TAG, "Saving pushed treatment: " + mytreatment.uuid);
@@ -280,8 +324,7 @@ public class Treatments extends Model {
             fixUpTable();
             long x = mytreatment.save();
             Log.d(TAG, "Saving treatment result: " + x);
-            if (from_interactive)
-            {
+            if (from_interactive) {
                 pushTreatmentSync(mytreatment);
             }
             Home.staticRefreshBGCharts();
@@ -290,6 +333,7 @@ public class Treatments extends Model {
             return false;
         }
     }
+
     public static List<Treatments> latestForGraph(int number, double startTime) {
         return latestForGraph(number, startTime, JoH.ts());
     }

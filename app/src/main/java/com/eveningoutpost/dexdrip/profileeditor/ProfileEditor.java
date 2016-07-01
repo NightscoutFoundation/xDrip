@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Profile;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
@@ -310,6 +311,7 @@ public class ProfileEditor extends AppCompatActivity {
             Home.setPreferencesString("saved_profile_list_json", data);
             Home.setPreferencesString("saved_profile_list_json_working", "");
             Log.d(TAG, "Saved final data");
+            UserError.Log.uel(TAG,"Saved Treatment Profile data, timeblocks:"+profileItemListTmp.size());
             updateAdjustmentFactor(1.0); // reset it
             dataChanged = true;
             Profile.invalidateProfile();

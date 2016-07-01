@@ -84,9 +84,10 @@ public class UndoRedo {
                         item.expires = JoH.ts() + EXPIRY_TIME;
                         redo_queue.add(item);
                         undo_queue.remove(location);
-                        Treatments.delete_last(true); // should we lock to UUID as well?
+                        Treatments.delete_by_uuid(item.Treatment_uuid,true);
                     } catch (NullPointerException e) {
                         UserError.Log.wtf(TAG, "Null pointer exception in undoNext()");
+                        undo_queue.remove(location);
                     }
                     return true;
                 } else if (item.Calibration_uuid != null) {

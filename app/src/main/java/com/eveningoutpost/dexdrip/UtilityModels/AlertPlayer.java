@@ -417,6 +417,7 @@ public class AlertPlayer {
             // seems to be needed. This pattern basically does not vibrate:
             builder.setVibrate(new long[]{1, 0});
         }
+        Log.ueh("Alerting",content);
         NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(Notifications.exportAlertNotificationId);
         mNotifyMgr.notify(Notifications.exportAlertNotificationId, builder.build());

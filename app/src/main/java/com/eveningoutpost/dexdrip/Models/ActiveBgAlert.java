@@ -61,6 +61,7 @@ public class ActiveBgAlert extends Model {
     public void snooze(int minutes) {
         next_alert_at = new Date().getTime() + minutes * 60000;
         is_snoozed = true;
+        Log.ueh("Snoozed Alert","Snoozed until: "+JoH.dateTimeText(next_alert_at));
         save();
     }
 

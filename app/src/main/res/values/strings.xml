@@ -167,5 +167,7 @@
     <string name="split_this_block_in_two">Split this block in two</string>
     <string name="delete_this_time_block">Delete this time block</string>
     <string name="cancel_do_nothing">Cancel - do nothing</string>
+    <string name="added">Added</string>
+    <string name="checking_for_update">Checking for update..</string>
 
 </resources>

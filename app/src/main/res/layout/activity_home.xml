@@ -114,19 +114,23 @@
                 android:textColor="#C30909" />
 
             <ImageButton
-                android:id="@+id/btnSpeak"
+                android:id="@+id/btnTreatment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="7dp"
+                android:layout_marginRight="6dp"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/speaktreatment"
                 android:gravity="right"
-                android:src="@android:drawable/ic_btn_speak_now"
+                android:src="@drawable/ic_eyedropper_variant_grey600_24dp"
                 android:layout_below="@+id/currentBgValueRealTime"
                 android:layout_alignEnd="@+id/currentBgValueRealTime"
                 android:nestedScrollingEnabled="false"
                 android:paddingTop="2dp"
-                android:paddingRight="1dp" />
+                android:paddingRight="4dp"
+                android:paddingBottom="1dp"
+                android:layout_marginBottom="1dp"
+                android:layout_marginTop="1dp"
+                android:paddingLeft="2dp" />
 
             <ImageButton
                 android:id="@+id/btnNote"
@@ -140,7 +144,7 @@
                 android:paddingRight="6dp"
                 android:layout_marginRight="0dp"
                 android:paddingLeft="2dp"
-                android:layout_below="@+id/btnSpeak"
+                android:layout_below="@+id/btnTreatment"
                 android:layout_alignEnd="@+id/lowpredict"
                 android:layout_marginTop="4dp"
                 android:paddingTop="2dp"
@@ -157,7 +161,7 @@
                 android:onClick="undoButtonClick"
 
                 android:paddingLeft="1dp"
-                android:paddingRight="2dp"
+                android:paddingRight="3dp"
                 android:paddingTop="2dp"
                 android:paddingBottom="3dp"
                 android:layout_below="@+id/btnNote"
@@ -174,7 +178,7 @@
                 android:contentDescription="Redo last"
                 android:onClick="redoButtonClick"
                 android:paddingLeft="1dp"
-                android:paddingRight="2dp"
+                android:paddingRight="3dp"
                 android:paddingTop="1dp"
                 android:paddingBottom="1dp"
                 android:layout_below="@+id/btnUndo"
@@ -186,9 +190,9 @@
                 android:id="@+id/treatmentTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/btnSpeak"
+                android:layout_alignTop="@+id/btnTreatment"
                 android:layout_marginTop="6dp"
-                android:layout_toStartOf="@+id/btnSpeak"
+                android:layout_toStartOf="@+id/btnTreatment"
                 android:background="@android:color/transparent"
                 android:gravity="right"
                 android:shadowColor="@android:color/black"
@@ -206,7 +210,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:layout_below="@+id/btnSpeak"
+                android:layout_below="@+id/btnTreatment"
                 android:layout_marginStart="29dp"
                 android:contentDescription="Confirm Treatment"
                 android:src="@android:drawable/ic_input_add" />

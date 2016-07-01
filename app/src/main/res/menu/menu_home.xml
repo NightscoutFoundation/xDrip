@@ -76,6 +76,24 @@
         android:visible="false"
         android:showAsAction="never"/>
 
+    <item android:id="@+id/testFeature"
+        android:title="Debugging test feature"
+        android:checkable="false"
+        android:orderInCategory="1"
+        android:onClick="testFeature"
+        android:visible="false"
+        android:showAsAction="never"/>
+
+
+    <item android:id="@+id/userEvents"
+        android:title="View Events Log"
+        android:checkable="false"
+        android:orderInCategory="1"
+        android:onClick="viewEventLog"
+        android:visible="true"
+        android:showAsAction="never"/>
+
+
     <item android:id="@+id/synctreatments"
         android:title="Sync Treatments"
         android:checkable="false"
