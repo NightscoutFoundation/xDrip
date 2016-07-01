@@ -99,6 +99,7 @@ public class UserError extends Model {
                 .orderBy("timestamp desc")
                 .execute();
         userErrors.addAll(highErrors);
+        userErrors.addAll(events);
         return userErrors;
     }
 
