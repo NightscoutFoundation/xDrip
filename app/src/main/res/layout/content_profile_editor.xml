@@ -74,8 +74,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
                 android:layout_alignTop="@+id/profileUndoBtn"
-                android:onClick="profileSaveButton"
-                android:nestedScrollingEnabled="true" />
+                android:onClick="profileSaveButton" />
 
             <Button
                 android:layout_width="wrap_content"

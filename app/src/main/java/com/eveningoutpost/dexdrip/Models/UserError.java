@@ -92,6 +92,12 @@ public class UserError extends Model {
                 .where("timestamp < ?", (new Date().getTime() - 1000*60*60*24*3))
                 .orderBy("timestamp desc")
                 .execute();
+        List<UserError> events = new Select()
+                .from(UserError.class)
+                .where("severity > ?", 3)
+                .where("timestamp < ?", (new Date().getTime() - 1000*60*60*24*7))
+                .orderBy("timestamp desc")
+                .execute();
         userErrors.addAll(highErrors);
         return userErrors;
     }
