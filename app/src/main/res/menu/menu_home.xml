@@ -41,7 +41,7 @@
 </menu>
     </item>
     <item android:id="@+id/showmap"
-        android:title="Show Parakeet map"
+        android:title="@string/show_parakeet_map"
         android:checkable="false"
         android:onClick="showMapFromMenu"
         android:visible="true"
@@ -49,7 +49,7 @@
         android:showAsAction="never"/>
 
     <item android:id="@+id/parakeetsetup"
-        android:title="Switch Parakeet to Setup mode"
+        android:title="@string/switch_parakeet_to_setup_mode"
         android:checkable="false"
         android:onClick="parakeetSetupMode"
         android:visible="true"
@@ -84,9 +84,16 @@
         android:visible="false"
         android:showAsAction="never"/>
 
+    <item android:id="@+id/crowdtranslate"
+        android:title="@string/crowd_sourced_translation"
+        android:checkable="false"
+        android:orderInCategory="1"
+        android:onClick="crowdTranslate"
+        android:visible="true"
+        android:showAsAction="never"/>
 
     <item android:id="@+id/userEvents"
-        android:title="View Events Log"
+        android:title="@string/view_events_log"
         android:checkable="false"
         android:orderInCategory="1"
         android:onClick="viewEventLog"
@@ -102,7 +109,7 @@
         android:showAsAction="never"/>
 
     <item android:id="@+id/sharemyconfig"
-        android:title="Share config via QR code"
+        android:title="@string/share_config_via_qr_code"
         android:icon="@drawable/ic_qrcode_grey600_48dp"
         android:checkable="false"
         android:orderInCategory="1"
@@ -118,21 +125,21 @@
         android:showAsAction="never"/>
 
     <item android:id="@+id/checkforupdate"
-        android:title="Check for updated version"
+        android:title="@string/check_for_updated_version"
         android:checkable="false"
         android:orderInCategory="1"
         android:onClick="checkForUpdate"
         android:showAsAction="never"/>
 
     <item android:id="@+id/sendfeedback"
-        android:title="Send Feedback to developer"
+        android:title="@string/send_feedback_to_developer"
         android:checkable="false"
         android:orderInCategory="1"
         android:onClick="sendFeedback"
         android:showAsAction="never"/>
 
     <item android:id="@+id/action_toggle_speakreadings"
-        android:title="@string/menu_toggle_speakreadings"
+        android:title="@string/speak_readings"
         android:checkable="true"
         android:orderInCategory="2"
         android:visible="false"

@@ -326,11 +326,11 @@ public class PhoneKeypadInputActivity extends Activity {
         switch (currenttab) {
             case "insulin":
                 insulintabbutton.setBackgroundColor(onColor);
-                append = " units";
+                append = " "+getString(R.string.units);
                 break;
             case "carbs":
                 carbstabbutton.setBackgroundColor(onColor);
-                append = " carbs";
+                append = " "+getString(R.string.carbs);
                 break;
             case "bloodtest":
                 bloodtesttabbutton.setBackgroundColor(onColor);
@@ -338,7 +338,7 @@ public class PhoneKeypadInputActivity extends Activity {
                 break;
             case "time":
                 timetabbutton.setBackgroundColor(onColor);
-                append = " when";
+                append = " "+getString(R.string.when);
                 break;
         }
         value = getValue(currenttab);

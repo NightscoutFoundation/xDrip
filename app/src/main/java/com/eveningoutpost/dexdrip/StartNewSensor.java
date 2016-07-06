@@ -24,7 +24,7 @@ import java.util.Date;
 
 
 public class StartNewSensor extends ActivityWithMenu {
-    public static String menu_name = "Start Sensor";
+   // public static String menu_name = "Start Sensor";
     private Button button;
     private DatePicker dp;
     private TimePicker tp;
@@ -47,7 +47,7 @@ public class StartNewSensor extends ActivityWithMenu {
 
     @Override
     public String getMenuName() {
-        return menu_name;
+        return getString(R.string.start_sensor);
     }
     public void addListenerOnButton() {
         button = (Button)findViewById(R.id.startNewSensor);

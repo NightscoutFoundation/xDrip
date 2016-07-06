@@ -30,14 +30,14 @@
         android:layout_alignStart="@+id/carbsSeekBar"
         android:layout_below="@+id/whichday"
         android:clickable="true"
-        android:text="Carbs per Unit" />
+        android:text="@string/carbs_per_unit" />
 
     <TextView
         android:id="@+id/whichday"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:text="Everyday"
+        android:text="@string/everyday"
         android:textColor="@color/year" />
 
     <SeekBar
@@ -75,7 +75,7 @@
         android:layout_below="@+id/carbsSeekBar"
         android:layout_marginTop="5dp"
         android:clickable="true"
-        android:text="Insulin Sensitivity: glucose drop per Unit" />
+        android:text="@string/insulin_sensitivity_glucose_drop_per_unit" />
 
     <SeekBar
         android:id="@+id/sensitivitySeekBar"

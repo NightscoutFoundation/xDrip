@@ -25,6 +25,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class UpdateActivity extends AppCompatActivity {
@@ -65,11 +66,20 @@ public class UpdateActivity extends AppCompatActivity {
                         getVersionInformation(context);
                         if (versionnumber == 0) return;
 
+                        String locale = "";
+                        try {
+                            locale = Locale.getDefault().toString();
+                            if (locale == null) locale = "";
+                        } catch (Exception e) {
+                            // do nothing
+                        }
+
+
                         Request request = new Request.Builder()
                                 // Mozilla header facilitates compression
                                 .header("User-Agent", "Mozilla/5.0")
                                 .header("Connection", "close")
-                                .url(CHECK_URL + "?r=" + Long.toString((System.currentTimeMillis() / 100000) % 9999999))
+                                .url(CHECK_URL + "?r=" + Long.toString((System.currentTimeMillis() / 100000) % 9999999) + "&ln=" + JoH.urlEncode(locale))
                                 .build();
 
                         Response response = httpClient.newCall(request).execute();
@@ -142,9 +152,9 @@ public class UpdateActivity extends AppCompatActivity {
         });
 
         TextView detail = (TextView) findViewById(R.id.updatedetail);
-        detail.setText("New Version date: " + Integer.toString(newversion) + "\nOld Version date: "+ Integer.toString(versionnumber) );
+        detail.setText(getString(R.string.new_version_date_colon) + Integer.toString(newversion) + "\n"+getString(R.string.old_version_date_colon) + Integer.toString(versionnumber));
         TextView channel = (TextView) findViewById(R.id.update_channel);
-        channel.setText("Update Channel: " + JoH.ucFirst(prefs.getString("update_channel", "beta")));
+        channel.setText(getString(R.string.update_channel_colon_space) + JoH.ucFirst(prefs.getString("update_channel", "beta")));
     }
 
     public void closeActivity(View myview) {

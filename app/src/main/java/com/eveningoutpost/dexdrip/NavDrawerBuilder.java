@@ -36,7 +36,7 @@ public class NavDrawerBuilder {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean IUnderstand = prefs.getBoolean("I_understand", false);
         if (IUnderstand == false) {
-            this.nav_drawer_options.add("Settings");
+            this.nav_drawer_options.add(aContext.getString(R.string.settings));
             this.nav_drawer_intents.add(new Intent(context, Preferences.class));
             return;
         }
@@ -44,20 +44,20 @@ public class NavDrawerBuilder {
         this.nav_drawer_options.add(Home.menu_name);
         this.nav_drawer_intents.add(new Intent(context, Home.class));
         if (is_active_sensor) {
-            this.nav_drawer_options.add("Calibration Graph");
+            this.nav_drawer_options.add(aContext.getString(R.string.calibration_graph));
             this.nav_drawer_intents.add(new Intent(context, CalibrationGraph.class));
         }
 
         if (prefs.getBoolean("show_data_tables", false)) {
-            this.nav_drawer_options.add("BG Data Table");
+            this.nav_drawer_options.add(aContext.getString(R.string.bg_data_table));
             this.nav_drawer_intents.add(new Intent(context, BgReadingTable.class));
-            this.nav_drawer_options.add("Calibration Data Table");
+            this.nav_drawer_options.add(aContext.getString(R.string.calibration_data_table));
             this.nav_drawer_intents.add(new Intent(context, CalibrationDataTable.class));
         }
 
         if ((prefs.getString("dex_collection_method","").equals("Follower")))
         {
-            this.nav_drawer_options.add(AddCalibration.menu_name);
+            this.nav_drawer_options.add(aContext.getString(R.string.add_calibration));
             this.nav_drawer_intents.add(new Intent(context, AddCalibration.class));
         } else {
 
@@ -70,11 +70,11 @@ public class NavDrawerBuilder {
                                     this.nav_drawer_options.add(CalibrationOverride.menu_name);
                                     this.nav_drawer_intents.add(new Intent(context, CalibrationOverride.class));
                                 } else {
-                                    this.nav_drawer_options.add(AddCalibration.menu_name);
+                                    this.nav_drawer_options.add(aContext.getString(R.string.add_calibration));
                                     this.nav_drawer_intents.add(new Intent(context, AddCalibration.class));
                                 }
                             } else {
-                                this.nav_drawer_options.add("Cannot Calibrate right now");
+                                this.nav_drawer_options.add(aContext.getString(R.string.cannot_calibrate_right_now));
                                 this.nav_drawer_intents.add(new Intent(context, Home.class));
                             }
                         } else {
@@ -86,7 +86,7 @@ public class NavDrawerBuilder {
                 this.nav_drawer_options.add(StopSensor.menu_name);
                 this.nav_drawer_intents.add(new Intent(context, StopSensor.class));
             } else {
-                this.nav_drawer_options.add(StartNewSensor.menu_name);
+                this.nav_drawer_options.add(aContext.getString(R.string.start_sensor));
                 this.nav_drawer_intents.add(new Intent(context, StartNewSensor.class));
             }
         }
@@ -102,7 +102,7 @@ public class NavDrawerBuilder {
         }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            this.nav_drawer_options.add(SystemStatus.menu_name);
+            this.nav_drawer_options.add(aContext.getString(R.string.system_status));
             this.nav_drawer_intents.add(new Intent(context, SystemStatus.class));
         }
 
@@ -111,16 +111,16 @@ public class NavDrawerBuilder {
             this.nav_drawer_options.add(AlertList.menu_name);
             this.nav_drawer_intents.add(new Intent(context, AlertList.class));
         }
-        this.nav_drawer_options.add(SnoozeActivity.menu_name);
+        this.nav_drawer_options.add(aContext.getString(R.string.snooze_alert));
         this.nav_drawer_intents.add(new Intent(context, SnoozeActivity.class));
 
-        this.nav_drawer_options.add(StatsActivity.MENU_NAME);
+        this.nav_drawer_options.add(aContext.getString(R.string.statistics));
         this.nav_drawer_intents.add(new Intent(context, StatsActivity.class));
 
-        this.nav_drawer_options.add(BGHistory.menu_name);
+        this.nav_drawer_options.add(aContext.getString(R.string.history));
         this.nav_drawer_intents.add(new Intent(context, BGHistory.class));
 
-        this.nav_drawer_options.add("Settings");
+        this.nav_drawer_options.add(aContext.getString(R.string.settings));
         this.nav_drawer_intents.add(new Intent(context, Preferences.class));
     }
 }

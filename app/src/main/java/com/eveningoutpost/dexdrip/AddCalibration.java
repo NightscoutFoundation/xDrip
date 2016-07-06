@@ -21,7 +21,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 
 public class AddCalibration extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     Button button;
-    public static String menu_name = "Add Calibration";
+    //public static String menu_name = "Add Calibration";
     private static final String TAG = "AddCalibration";
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private static double lastExternalCalibrationValue = 0;
@@ -42,7 +42,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
     protected void onResume() {
         super.onResume();
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), menu_name, this);
+        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), getString(R.string.add_calibration), this);
         automatedCalibration();
     }
     @Override

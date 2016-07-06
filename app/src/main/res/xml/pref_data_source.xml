@@ -3,17 +3,17 @@
 
     <PreferenceCategory
         android:key="collection_category"
-        android:title="Data Source Settings">
+        android:title="@string/data_source_settings">
 
         <ListPreference
             android:key="dex_collection_method"
-            android:title="Hardware Data Source"
+            android:title="@string/hardware_data_source"
             android:summary="How are you going to receive data from your Dexcom/Transmitter?"
             android:entries="@array/DexCollectionMethods"
             android:entryValues="@array/DexCollectionMethodValues"
             android:defaultValue="BluetoothWixel"/>
         <EditTextPreference
-            android:title="Enter 10 Character Dexcom Receiver Serial Number"
+            android:title="@string/enter_ten_character_dexcom_receiver_serial"
             android:key="share_key"
             android:shouldDisableView="true"
             android:defaultValue="SM00000000"/>
@@ -25,7 +25,7 @@
 
         <EditTextPreference
             android:key="dex_txid"
-            android:title="Dexcom Transmitter ID"
+            android:title="@string/dexcom_transmitter_id"
             android:summary="ID of your Dexcom Transmitter, eg 12AB3"
             android:singleLine="true"
             android:maxLines="1"
@@ -34,12 +34,12 @@
 
         <CheckBoxPreference
             android:key="run_service_in_foreground"
-            android:title="Run Collector in foreground"
-            android:summary="Shows a persistent notification graph, visible on lock-screen and prevents android killing the service."
+            android:title="@string/run_collector_in_foreground"
+            android:summary="@string/shows_a_persistent_notification"
             android:defaultValue="false" />
 
         <EditTextPreference
-            android:title="List of recievers"
+            android:title="@string/list_of_receivers"
             android:key="wifi_recievers_addresses"
             android:dialogTitle="@string/wifi_recievers_dialog_title"
             android:dialogMessage="@string/wifi_recievers_dialog_message"

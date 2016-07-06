@@ -55,6 +55,8 @@
 
     <string name="appwidget_text" translatable="false">EXAMPLE</string>
     <string name="plugin_name">xDrip</string>
+    <string name="pref_default_mongodb_collection">entries</string>
+    <string name="pref_default_mongodb_device_status_collection">devicestatus</string>
 
 
 </resources>

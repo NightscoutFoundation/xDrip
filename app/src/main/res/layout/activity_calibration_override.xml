@@ -22,7 +22,7 @@
             android:singleLine="true"
             android:textAlignment="center"
             android:textSize="24dp"
-            android:hint="Enter BG Value"
+            android:hint="@string/enter_blood_glucose_value"
             android:layout_marginTop="51dp"
             android:layout_below="@+id/textView5"
             android:layout_centerHorizontal="true" />
@@ -30,7 +30,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Done"
+            android:text="@string/done"
             android:id="@+id/save_calibration_button"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true" />
@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Entering a calibration now will override your previously entered calibration."
+            android:text="@string/entering_a_calibration_now_will_override_your_previously_entered_calibration"
             android:id="@+id/textView5"
             android:textSize="20dp"
             android:layout_alignParentTop="true"

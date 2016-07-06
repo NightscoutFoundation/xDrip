@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -13,6 +14,8 @@ import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
 import com.eveningoutpost.dexdrip.UtilityModels.PlusAsyncExecutor;
+
+import java.util.Locale;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -46,6 +49,18 @@ public class xdrip extends Application {
         PreferenceManager.setDefaultValues(this, R.xml.pref_notifications, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_source, true);
         PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_prefs, true);
+
+        if (Locale.getDefault()!=Locale.ENGLISH)
+        {
+            if (Home.getPreferencesBoolean("force_english",false)) {
+                Locale.setDefault(Locale.ENGLISH);
+                Configuration config = getResources().getConfiguration();
+                config.locale = Locale.ENGLISH;
+                getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+            }
+        }
+
+
         JoH.ratelimit("policy-never", 3600); // don't on first load
         new IdempotentMigrations(getApplicationContext()).performAll();
         AlertType.fromSettings(getApplicationContext());

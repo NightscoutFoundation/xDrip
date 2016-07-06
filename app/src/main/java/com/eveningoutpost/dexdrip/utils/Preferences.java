@@ -573,6 +573,17 @@ public class Preferences extends PreferenceActivity {
             //do_format_insulin_sensitivity(profile_insulin_sensitivity_default, this.prefs, false, null);
 
 
+            final Preference force_english = findPreference("force_english");
+            force_english.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                                                            @Override
+                                                            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                                                                prefs.edit().putBoolean("force_english",(boolean)newValue).commit();
+                                                                SdcardImportExport.hardReset();
+                                                                return true;
+                                                            }
+                                                        }
+            );
+
             final Preference profile_carb_absorption_default = findPreference("profile_carb_absorption_default");
             profile_carb_absorption_default.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override

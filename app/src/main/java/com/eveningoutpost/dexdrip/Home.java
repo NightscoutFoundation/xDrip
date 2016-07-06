@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -56,7 +57,6 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
@@ -68,6 +68,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
+import com.eveningoutpost.dexdrip.languageeditor.LanguageEditor;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
@@ -114,7 +115,7 @@ public class Home extends ActivityWithMenu {
     public final static String START_TEXT_RECOGNITION = "START_APP_TEXT_RECOGNITION";
     public final static String CREATE_TREATMENT_NOTE = "CREATE_TREATMENT_NOTE";
     public final static String HOME_FULL_WAKEUP = "HOME_FULL_WAKEUP";
-    public final static String menu_name = "Home Screen";
+    public static String menu_name = "Home Screen";
     public static boolean activityVisible = false;
     public static boolean invalidateMenu = false;
     public static Context staticContext;
@@ -185,6 +186,7 @@ public class Home extends ActivityWithMenu {
     protected void onCreate(Bundle savedInstanceState) {
         mActivity = this;
         staticContext = getApplicationContext();
+        menu_name=staticContext.getString(R.string.home_screen);
         super.onCreate(savedInstanceState);
         setTheme(R.style.AppThemeToolBarLite); // for toolbar mode
 
@@ -488,9 +490,11 @@ public class Home extends ActivityWithMenu {
         intent.putExtra(extra + "2", even_more);
         context.startActivity(intent);
     }
-    public void testFeature(MenuItem x) {
-
+    public void crowdTranslate(MenuItem x) {
+        startActivity(new Intent(this,LanguageEditor.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
      }
+    public void testFeature(MenuItem x) {
+    }
 
     public void viewEventLog(MenuItem x) {
         startActivity(new Intent(this, ErrorsActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("events", ""));
@@ -589,13 +593,13 @@ public class Home extends ActivityWithMenu {
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
         // intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US"); // debug voice
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
-                "Speak your note text");
+                getString(R.string.speak_your_note_text));
 
         try {
             startActivityForResult(intent, REQ_CODE_SPEECH_NOTE_INPUT);
         } catch (ActivityNotFoundException a) {
             Toast.makeText(getApplicationContext(),
-                    "Speech recognition is not supported",
+                    getString(R.string.speech_recognition_is_not_supported),
                     Toast.LENGTH_LONG).show();
         }
 
@@ -680,13 +684,13 @@ public class Home extends ActivityWithMenu {
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
         // intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US"); // debug voice
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
-                "Speak your treatment eg:\nx.x units insulin / xx grams carbs");
+                getString(R.string.speak_your_treatment));
 
         try {
             startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
         } catch (ActivityNotFoundException a) {
             Toast.makeText(getApplicationContext(),
-                    "Speech recognition is not supported",
+                    R.string.speech_recognition_is_not_supported,
                     Toast.LENGTH_LONG).show();
         }
 
@@ -1165,12 +1169,12 @@ public class Home extends ActivityWithMenu {
                     paint.setColor(Color.parseColor("#FFFFAA"));
                     paint.setStyle(Paint.Style.STROKE);
                     paint.setAlpha(100);
-                    canvas.drawText("transmitter battery", 10, chart.getHeight() / 3 - (int) (1.2 * px), paint);
+                    canvas.drawText(getString(R.string.transmitter_battery), 10, chart.getHeight() / 3 - (int) (1.2 * px), paint);
                     if (sensor.latest_battery_level <= Constants.TRANSMITTER_BATTERY_EMPTY) {
                         paint.setTextSize((int) (px * 1.5));
-                        canvas.drawText("VERY LOW", 10, chart.getHeight() / 3, paint);
+                        canvas.drawText(getString(R.string.very_low), 10, chart.getHeight() / 3, paint);
                     } else {
-                        canvas.drawText("low", 10, chart.getHeight() / 3, paint);
+                        canvas.drawText(getString(R.string.low), 10, chart.getHeight() / 3, paint);
                     }
                 }
 
@@ -1407,7 +1411,7 @@ public class Home extends ActivityWithMenu {
 
     private void updateCurrentBgInfoForBtBasedWixel(TextView notificationText) {
         if ((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)) {
-            notificationText.setText(R.string.bluetooth_low_energy_not_supported);
+            notificationText.setText(R.string.unfortunately_andoird_version_no_blueooth_low_energy);
             return;
         }
 
@@ -1443,7 +1447,7 @@ public class Home extends ActivityWithMenu {
                 }
                 displayCurrentInfo();
             } else {
-                notificationText.setText(R.string.please_enter_two_calibrations);
+                notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
                 Log.d(TAG, "Asking for calibration A: Uncalculated BG readings: " + BgReading.latest(2).size() + " / Calibrations size: " + calibrations.size());
 
             }
@@ -1635,7 +1639,7 @@ public class Home extends ActivityWithMenu {
         String slope_arrow = lastBgReading.slopeArrow();
         String extrastring = "";
         if ((new Date().getTime()) - (60000 * 11) - lastBgReading.timestamp > 0) {
-            notificationText.setText("Signal Missed");
+            notificationText.setText(R.string.signal_missed);
             if (!predictive) {
                 estimate = lastBgReading.calculated_value;
             } else {
@@ -1696,7 +1700,7 @@ public class Home extends ActivityWithMenu {
                 currentBgValueText.setText(extrastring + currentBgValueText.getText());
         }
         int minutes = (int) (System.currentTimeMillis() - lastBgReading.timestamp) / (60 * 1000);
-        notificationText.append("\n" + minutes + ((minutes == 1) ? " Minute ago" : " Minutes ago"));
+        notificationText.append("\n" + minutes + ((minutes == 1) ? getString(R.string.space_minute_ago) : getString(R.string.space_minutes_ago)));
 
         // do we actually need to do this query here if we again do it in unitizedDeltaString
         List<BgReading> bgReadingList = BgReading.latest(2, is_follower);
@@ -1923,7 +1927,7 @@ public class Home extends ActivityWithMenu {
         final CheckBox cbx = (CheckBox) dialogView.findViewById(R.id.default_to_voice_input);
         cbx.setChecked(getPreferencesBooleanDefaultFalse("default_to_voice_notes"));
 
-        dialogBuilder.setTitle("Treatment Note");
+        dialogBuilder.setTitle(R.string.treatment_note);
         //dialogBuilder.setMessage("Enter text below");
         dialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
@@ -1947,7 +1951,7 @@ public class Home extends ActivityWithMenu {
                 dialog = null;
             }
         });
-        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        dialogBuilder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 if (getPreferencesBooleanDefaultFalse("default_to_voice_notes")) showcasemenu(SHOWCASE_NOTE_LONG);
                 dialog = null;
@@ -2009,10 +2013,10 @@ public class Home extends ActivityWithMenu {
                 @Override
                 protected String doInBackground(Void... params) {
                     int permissionCheck = ContextCompat.checkSelfPermission(Home.this,
-                            android.Manifest.permission.READ_EXTERNAL_STORAGE);
+                            Manifest.permission.READ_EXTERNAL_STORAGE);
                     if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
                         ActivityCompat.requestPermissions(Home.this,
-                                new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                                 0);
                         return null;
                     } else {
@@ -2029,12 +2033,12 @@ public class Home extends ActivityWithMenu {
                                 Snackbar.with(Home.this)
                                         .type(SnackbarType.MULTI_LINE)
                                         .duration(4000)
-                                        .text("Exported to " + filename) // text to display
+                                        .text(getString(R.string.exported_to) + filename) // text to display
                                         .actionLabel("Share") // action button label
                                         .actionListener(new SnackbarUriListener(Uri.fromFile(new File(filename)))),
                                 Home.this);
                     } else {
-                        Toast.makeText(Home.this, "Could not export Database :(", Toast.LENGTH_LONG).show();
+                        Toast.makeText(Home.this, R.string.could_not_export_database, Toast.LENGTH_LONG).show();
                     }
                 }
             }.execute();
@@ -2203,6 +2207,8 @@ public class Home extends ActivityWithMenu {
                 //.setActionTextColor(Color.RED)
                 .show();
     }
+
+
 
     // classes
     private class ChartViewPortListener implements ViewportChangeListener {

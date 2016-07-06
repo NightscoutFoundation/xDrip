@@ -24,7 +24,7 @@
                     android:id="@+id/bg_value_1"
                     android:textAlignment="center"
                     android:textSize="24sp"
-                    android:hint="Enter First BG Value"
+                    android:hint="@string/enter_first_bg_value"
                     android:layout_marginTop="10dp" />
                 <EditText
                     android:layout_width="wrap_content"
@@ -34,14 +34,14 @@
                     android:id="@+id/bg_value_2"
                     android:textAlignment="center"
                     android:textSize="24sp"
-                    android:hint="Enter Second BG Value"
+                    android:hint="@string/enter_second_bg_value"
                     android:layout_marginTop="20dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="In order to get started, please perform two finger prick tests and enter the values here!"
+                    android:text="@string/in_order_to_get_started_please_perform_two_finger"
                     android:layout_margin="15dp" />
 
 
@@ -49,7 +49,7 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Done"
+                    android:text="@string/done"
                     android:id="@+id/save_calibration_button" />
 
             </LinearLayout>

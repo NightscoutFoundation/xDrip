@@ -21,7 +21,7 @@ import lecho.lib.hellocharts.view.LineChartView;
 
 
 public class CalibrationGraph extends ActivityWithMenu {
-    public static String menu_name = "Calibration Graph";
+    //public static String menu_name = "Calibration Graph";
    private LineChartView chart;
     private LineChartData data;
     public double  start_x = 50;
@@ -38,7 +38,7 @@ public class CalibrationGraph extends ActivityWithMenu {
 
     @Override
     public String getMenuName() {
-        return menu_name;
+        return getString(R.string.calibration_graph);
     }
 
     @Override

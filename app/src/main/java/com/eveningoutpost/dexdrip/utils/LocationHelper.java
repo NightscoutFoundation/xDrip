@@ -54,7 +54,7 @@ public class LocationHelper {
                 parent.startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
             }
         });
-        builder.setNegativeButton(R.string.location_no, null);
+        builder.setNegativeButton(R.string.no, null);
         builder.create().show();
     }
 

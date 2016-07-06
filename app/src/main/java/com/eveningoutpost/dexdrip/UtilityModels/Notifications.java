@@ -71,6 +71,8 @@ public class Notifications extends IntentService {
     public static boolean smart_alerting;
     private final static String TAG = AlertPlayer.class.getSimpleName();
 
+    private static String last_noise_string = "Startup";
+
     Context mContext;
     PendingIntent wakeIntent;
     private static Handler mHandler = new Handler(Looper.getMainLooper());
@@ -278,6 +280,8 @@ public class Notifications extends IntentService {
         BgReading.checkForRisingAllert(context);
         BgReading.checkForPersistentHigh();
         evaluateLowPredictionAlarm();
+        reportNoiseChanges();
+
 
         Sensor sensor = Sensor.currentSensor();
 
@@ -524,9 +528,19 @@ public class Notifications extends IntentService {
         player.start();
     }
 
+    // TODO move to BgGraphBuilder?
+    private void reportNoiseChanges()
+    {
+        final String this_noise_string=BgGraphBuilder.noiseString(BgGraphBuilder.last_noise);
+        if (!BgGraphBuilder.noiseString(BgGraphBuilder.last_noise).equals(last_noise_string))
+        {
+            Log.uel("Noise","Changed from: "+last_noise_string+" to "+this_noise_string);
+            last_noise_string = this_noise_string;
+        }
+    }
 
     private void evaluateLowPredictionAlarm() {
-        if ((BgGraphBuilder.low_occurs_at > 0) && (BgGraphBuilder.last_noise < BgGraphBuilder.NOISE_HIGH)) {
+        if ((BgGraphBuilder.low_occurs_at > 0) && (BgGraphBuilder.last_noise < BgGraphBuilder.NOISE_TOO_HIGH_FOR_PREDICT)) {
             if (!prefs.getBoolean("predict_lows_alarm", false)) return;
             final double low_predicted_alarm_minutes = Double.parseDouble(prefs.getString("low_predict_alarm_level", "40"));
             final double now = JoH.ts();
@@ -610,7 +624,7 @@ public class Notifications extends IntentService {
             if (userNotification != null) { userNotification.delete(); }
             UserNotification.create("Double Calibration", "double_calibration_alert");
             String title = "Sensor is ready";
-            String content = "Sensor is ready, please enter a double calibration";
+            String content = getString(R.string.sensor_is_ready_please_enter_double_calibration);
             Intent intent = new Intent(mContext, DoubleCalibrationActivity.class);
             calibrationNotificationCreate(title, content, intent, calibrationNotificationId);
         }

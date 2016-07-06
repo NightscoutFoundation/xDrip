@@ -28,7 +28,7 @@ import lecho.lib.hellocharts.view.PreviewLineChartView;
 // by AdrianLxM
 
 public class BGHistory extends ActivityWithMenu {
-    public static String menu_name = "History";
+   // public static String menu_name = "History";
     static String TAG = BGHistory.class.getName();
     private boolean updatingPreviewViewport = false;
     private boolean updatingChartViewport = false;
@@ -54,7 +54,7 @@ public class BGHistory extends ActivityWithMenu {
         setupButtons();
         setupCharts();
 
-        Toast.makeText(this, "Double tap or pinch to zoom.",
+        Toast.makeText(this, R.string.double_tap_or_pinch_to_zoom,
                 Toast.LENGTH_LONG).show();
     }
 
@@ -120,7 +120,7 @@ public class BGHistory extends ActivityWithMenu {
 
     @Override
     public String getMenuName() {
-        return menu_name;
+        return getString(R.string.history);
     }
 
     private void setupCharts() {

@@ -68,8 +68,8 @@
 
         <PreferenceScreen
             android:key="dexcom_server_upload_screen"
-            android:summary="Upload data to Dexcoms Servers so you can use your data with Dexcoms apps"
-            android:title="Dexcom Share Server Upload">
+            android:summary="@string/upload_data_to_dex_servers"
+            android:title="@string/dexcom_share_server_upload">
 
             <CheckBoxPreference
                 android:defaultValue="false"
@@ -97,8 +97,8 @@
                 android:title="10 Character Dexcom Receiver Serial Number" />
             <Preference
                 android:dependency="share_upload"
-                android:summary="Manage your existing followers and invite new ones."
-                android:title="Manage Followers">
+                android:summary="@string/manage_existing_followers"
+                android:title="@string/manage_followers">
                 <intent
                     android:action="android.intent.action.MAIN"
                     android:targetClass="com.eveningoutpost.dexdrip.FollowerManagementActivity"

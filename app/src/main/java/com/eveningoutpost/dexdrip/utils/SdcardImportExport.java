@@ -90,13 +90,13 @@ public class SdcardImportExport extends AppCompatActivity {
     public void savePreferencesToSD(View myview) {
 
         if (savePreferencesToSD()) {
-            toast("Preferences saved in sdcard Downloads");
+            toast(getString(R.string.preferences_saved_in_sdcard_downloads));
         } else {
-            toast("Couldn't write to sdcard - check permissions?");
+            toast(getString(R.string.could_not_write_to_sdcard_check_perms));
         }
     }
 
-    private static void hardReset() {
+    public static void hardReset() {
         // shared preferences are cached so we need a hard restart
         GcmActivity.last_sync_request = 0;
         android.os.Process.killProcess(android.os.Process.myPid());
@@ -104,10 +104,10 @@ public class SdcardImportExport extends AppCompatActivity {
 
     public void loadPreferencesToSD(View myview) {
         if (loadPreferencesFromSD()) {
-            toast("Loaded Preferences! - Restarting");
+            toast(getString(R.string.loaded_preferences_restarting));
             hardReset();
         } else {
-            toast("Could not load preferences - check permissions or file?");
+            toast(getString(R.string.could_not_load_preferences_check_pers));
         }
     }
 
@@ -122,13 +122,13 @@ public class SdcardImportExport extends AppCompatActivity {
 
     public void deletePreferencesOnSD(View myview) {
         if (!isExternalStorageWritable()) {
-            toast("External storage is not writable");
+            toast(getString(R.string.external_storage_not_writable));
             return;
         }
         if (deleteFolder(new File(getCustomSDcardpath()), false)) {
-            toast("Successfully deleted");
+            toast(getString(R.string.successfully_deleted));
         } else {
-            toast("Deletion problem");
+            toast(getString(R.string.deletion_problem));
         }
     }
 
@@ -145,7 +145,7 @@ public class SdcardImportExport extends AppCompatActivity {
             Home.setPreferencesString("saved_alerts","");
             return succeeded;
         } else {
-            toast("SDcard not writable - cannot save");
+            toast(getString(R.string.sdcard_not_writable_cannot_save));
             return false;
         }
     }
@@ -154,7 +154,7 @@ public class SdcardImportExport extends AppCompatActivity {
         if (isExternalStorageWritable()) {
             return dataFromSDcopy(PREFERENCES_FILE);
         } else {
-            toast("SDcard not readable");
+            toast(getString(R.string.sdcard_not_readable));
             return false;
         }
     }
@@ -210,12 +210,12 @@ public class SdcardImportExport extends AppCompatActivity {
 
         if (source_file.exists() && source_file_xdrip.exists())
         {
-            toast("Warning settings from xDrip and xDrip+ exist - loading xDrip+");
+            toast(getString(R.string.warning_settings_from_xdrip_and_plus_exist));
         } else {
             if (source_file_xdrip.exists())
             {
                 source_file = source_file_xdrip;
-                toast("Loading settings from xDrip mainline");
+                toast(getString(R.string.loading_settings_from_xdrip_mainline));
             }
         }
         try {

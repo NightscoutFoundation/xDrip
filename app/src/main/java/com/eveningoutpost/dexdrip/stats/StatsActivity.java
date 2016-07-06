@@ -23,7 +23,7 @@ import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 public class StatsActivity extends ActivityWithMenu {
 
-    public static final String MENU_NAME = "Statistics";
+    //public static final String MENU_NAME = "Statistics";
     public static final int TODAY = 0;
     public static final int YESTERDAY = 1;
     public static final int D7 = 2;
@@ -214,7 +214,7 @@ public class StatsActivity extends ActivityWithMenu {
 
     @Override
     public String getMenuName() {
-        return MENU_NAME;
+        return getString(R.string.statistics);
     }
 
 

@@ -3,14 +3,14 @@
     <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
         android:icon="@drawable/ic_add_alert_grey600_48dp"
         android:key="whole_alerts_screen"
-        android:summary="Glucose, Calibration and Other alerts"
-        android:title="Alarms and Alerts">
+        android:summary="@string/glucose_calibration_and_other_alerts"
+        android:title="@string/alarms_and_alerts">
         <PreferenceCategory
             android:key="alerts_category"
-            android:title="Alerts and Notifications">
+            android:title="@string/alerts_and_notifications">
             <Preference
                 android:key="bg_level_alerts"
-                android:title="Glucose Level Alerts List">
+                android:title="@string/glucose_level_alerts_list">
                 <intent
                     android:action="android.intent.action.MAIN"
                     android:targetClass="com.eveningoutpost.dexdrip.AlertList"
@@ -19,37 +19,37 @@
 
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="bg_alerts_screen"
-                android:title="Glucose Alerts Settings">
+                android:title="@string/glucose_alerts_settings">
                 <ListPreference
                     android:defaultValue="ascending"
                     android:entries="@array/BgAlertProfileEntries"
                     android:entryValues="@array/BgAlertProfileValues"
                     android:key="bg_alert_profile"
-                    android:title="Alert Volume Profile" />
+                    android:title="@string/alert_volume_profile" />
 
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="smart_snoozing"
-                    android:summary="Keep snoozing if bg is heading in the right direction"
-                    android:title="Smart Snoozing" />
+                    android:summary="@string/keep_snoozing_if_glucose_is_heading_in_right_direction"
+                    android:title="@string/smart_snoozing" />
 
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="smart_alerting"
-                    android:summary="Don't alert if bg is heading in the right direction"
-                    android:title="Smart Alerting" />
+                    android:summary="@string/dont_alert_if_glucose_in_right_direction"
+                    android:title="@string/smart_alerting" />
 
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="no_alarms_during_calls"
-                    android:summary="Alarms silenced during telephone calls"
-                    android:title="Don't alarm during phone calls" />
+                    android:summary="@string/alarms_silenced_during_telephone_calls"
+                    android:title="@string/dont_alarm_during_phone_calls" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="start_snoozed"
-                    android:summary="Alerts start out snoozed and must persist for a while to actually trigger"
-                    android:title="Start Snoozed" />
+                    android:summary="@string/alerts_start_out_snoozed_and_must_persist_for_a_while"
+                    android:title="@string/start_snoozed" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"
@@ -61,7 +61,7 @@
                     android:defaultValue="false"
                     android:key="disable_alerts_stale_data"
                     android:summary="Suppress snoozed and active alerts after predefined period of missed readings"
-                    android:title="Suppress Alerts if missed readings" />
+                    android:title="@string/suppress_alerts_if_missed_readings" />
                 <EditTextPreference
                     android:defaultValue="15"
                     android:dependency="disable_alerts_stale_data"
@@ -75,12 +75,12 @@
 
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="calibration_alerts_screen"
-                android:title="Calibration Alerts">
+                android:title="@string/calibration_alerts">
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="calibration_notifications"
                     android:summary="Alert when a calibration is requested"
-                    android:title="Calibration Alerts" />
+                    android:title="@string/calibration_alerts" />
                 <RingtonePreference
 
                     android:defaultValue="content://settings/system/notification_sound"
@@ -88,7 +88,7 @@
                     android:ringtoneType="notification"
                     android:showSilent="true"
                     android:summary="Set sound used for calibration requests."
-                    android:title="Calibration Request Sound" />
+                    android:title="@string/calibration_request_sound" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="calibration_alerts_override_silent"
@@ -104,7 +104,7 @@
 
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="missed_readings_screen"
-                android:title="Missed reading Alert">
+                android:title="@string/missed_reading_alert">
                 <intent
                     android:action="android.intent.action.MAIN"
                     android:targetClass="com.eveningoutpost.dexdrip.MissedReadingActivity"
@@ -113,13 +113,13 @@
 
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="other_alerts_screen"
-                android:title="Other Alerts">
+                android:title="@string/other_alerts">
 
                 <PreferenceCategory android:title="Noisy Readings">
                     <CheckBoxPreference
                         android:defaultValue="false"
                         android:key="bg_unclear_readings_alerts"
-                        android:title="Bad (noisy) Value Alerts" />
+                        android:title="@string/bad_noisy_value_alerts" />
                     <EditTextPreference
                         android:defaultValue="90"
                         android:dependency="bg_unclear_readings_alerts"
@@ -177,46 +177,46 @@
             </PreferenceScreen>
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="smart_alerts_screen"
-                android:title="Extra Alerts (xDrip+)">
+                android:title="@string/extra_alerts_xdrip_plus">
                 <PreferenceCategory
                     android:summary="When above High level for too long and not heading downwards"
-                    android:title="Persistent High Alert">
+                    android:title="@string/persistent_high_alert">
                     <SwitchPreference
                         android:defaultValue="false"
                         android:key="persistent_high_alert_enabled"
-                        android:summary="Alarm if above high value"
-                        android:title="Persistent High Alert" />
+                        android:summary="@string/alarm_if_above_high_value"
+                        android:title="@string/persistent_high_alert" />
                     <EditTextPreference
                         android:defaultValue="60"
                         android:dependency="persistent_high_alert_enabled"
                         android:inputType="number"
                         android:key="persistent_high_threshold_mins"
                         android:numeric="integer"
-                        android:title="for longer than (minutes)" />
+                        android:title="@string/for_longer_than_minutes" />
                     <RingtonePreference
                         android:defaultValue="content://settings/system/notification_sound"
                         android:dependency="persistent_high_alert_enabled"
                         android:key="persistent_high_alert_sound"
                         android:ringtoneType="notification"
                         android:showSilent="true"
-                        android:summary="Choose sound used for persistent high alarm."
-                        android:title="Persistent High Sound" />
+                        android:summary="@string/choose_sound_used_for_persistent_high_alarm"
+                        android:title="@string/persistent_high_sound" />
 
                 </PreferenceCategory>
                 <PreferenceCategory
                     android:summary="When momentum trend indicates a Low would be predicted"
-                    android:title="Forecasted Low Alert">
+                    android:title="@string/forecasted_low_alert">
                     <SwitchPreference
                         android:defaultValue="true"
                         android:key="predict_lows"
-                        android:summary="Extrapolate data to try to predict lows"
-                        android:title="Forecast Lows" />
+                        android:summary="@string/extrapolate_data_to_try_to_predict_lows"
+                        android:title="@string/forecast_lows" />
                     <CheckBoxPreference
                         android:defaultValue="false"
                         android:dependency="predict_lows"
                         android:key="predict_lows_alarm"
-                        android:summary="Notify when predicted low time reaches threshold"
-                        android:title="Raise alarm on Forecast Low" />
+                        android:summary="@string/notify_when_predicted_low_time_reaches_threshold"
+                        android:title="@string/raise_alarm_on_forecast_low" />
                     <EditTextPreference
                         android:defaultValue="40"
                         android:dependency="predict_lows_alarm"
@@ -224,28 +224,28 @@
                         android:inputType="number"
                         android:key="low_predict_alarm_level"
                         android:summary=""
-                        android:title="Alarm at Forecasted Low mins" />
+                        android:title="@string/alarm_at_forecasted_low_mins" />
                     <RingtonePreference
                         android:defaultValue="content://settings/system/notification_sound"
                         android:dependency="predict_lows"
                         android:key="bg_predict_alert_sound"
                         android:ringtoneType="notification"
                         android:showSilent="true"
-                        android:summary="Choose sound used for predicted low alarm."
-                        android:title="Predicted Low Sound" />
+                        android:summary="@string/choose_sound_used_for_predicted_low_alarm"
+                        android:title="@string/predicted_low_sound" />
                 </PreferenceCategory>
-                <PreferenceCategory android:title="Other xDrip+ alerts">
+                <PreferenceCategory android:title="@string/other_xdrip_plus_alerts">
                     <SwitchPreference
                         android:defaultValue="true"
                         android:key="parakeet_status_alerts"
-                        android:summary="Notify when parakeet device stops checking in"
-                        android:title="Parakeet related alerts" />
+                        android:summary="@string/notify_when_parakeet_device_stops_checking_in"
+                        android:title="@string/parakeet_related_alerts" />
                     <CheckBoxPreference
                         android:defaultValue="false"
                         android:dependency="parakeet_status_alerts"
                         android:key="parakeet_charge_silent"
-                        android:summary="Raise parakeet notifiction silently when charging"
-                        android:title="Silent alert when charging" />
+                        android:summary="@string/raise_parakeet_notification_silently_when_charging"
+                        android:title="@string/silent_alert_when_charging" />
                 </PreferenceCategory>
             </PreferenceScreen>
         </PreferenceCategory>

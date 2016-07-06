@@ -1,8 +1,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <Preference
         android:key="I_understand"
-        android:summary="Not for medical decisions - research only"
-        android:title="End User License Agreement">
+        android:summary="@string/not_for_medical_use"
+        android:title="@string/end_user_license_agreement">
         <intent
             android:action="android.intent.action.MAIN"
             android:targetClass="com.eveningoutpost.dexdrip.LicenseAgreementActivity"

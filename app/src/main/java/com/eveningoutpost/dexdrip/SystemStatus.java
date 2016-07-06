@@ -41,7 +41,7 @@ import java.util.Set;
 
 public class SystemStatus extends ActivityWithMenu {
     private static final int SMALL_SCREEN_WIDTH = 300;
-    public static final String menu_name = "System Status";
+    //public static final String menu_name = "System Status";
     private TextView version_name_view;
     private TextView collection_method;
     private TextView current_device;
@@ -108,7 +108,7 @@ public class SystemStatus extends ActivityWithMenu {
 
     @Override
     public String getMenuName() {
-        return menu_name;
+        return getString(R.string.system_status);
     }
 
     private void set_current_values() {

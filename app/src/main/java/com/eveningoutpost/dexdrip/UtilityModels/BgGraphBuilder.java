@@ -90,6 +90,7 @@ public class BgGraphBuilder {
     public static final int PREDICTIVE_COLOR_PURPLE = Color.parseColor("#7700aa");
     public final static long DEXCOM_PERIOD = 300000;
     public final static double NOISE_TRIGGER = 10;
+    public final static double NOISE_TOO_HIGH_FOR_PREDICT = 60;
     public final static double NOISE_HIGH = 200;
     public final static double NOISE_FORGIVE = 100;
     public static double low_occurs_at = -1;
@@ -224,6 +225,7 @@ public class BgGraphBuilder {
     public static String noiseString(double thisnoise)
     {
         if (thisnoise>NOISE_HIGH) return "Extreme";
+        if (thisnoise>NOISE_TOO_HIGH_FOR_PREDICT) return "Very High";
         if (thisnoise>NOISE_TRIGGER) return "High";
         return "Low";
     }

@@ -26,6 +26,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -399,6 +400,14 @@ public class JoH {
         } catch (Exception e) {
             Log.e(TAG, "Couldn't display toast: " + msg + " e: "+e.toString());
             Home.toaststatic(msg);
+        }
+    }
+
+    public static String urlEncode(String source) {
+        try {
+            return URLEncoder.encode(source, "UTF-8");
+        } catch (Exception e) {
+            return "encoding-exception";
         }
     }
 

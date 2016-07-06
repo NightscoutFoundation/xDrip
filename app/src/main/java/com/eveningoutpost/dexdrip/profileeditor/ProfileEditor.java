@@ -475,8 +475,8 @@ public class ProfileEditor extends AppCompatActivity {
                 case SHOWCASE_PROFILE_SPLIT:
                     target = new ProfileViewTarget(R.id.profile_recycler_view, this, 40, 40);
 
-                    title = "Long Press to Split or Delete";
-                    message = "Press and Hold on the background to Split or Delete a time block";
+                    title = getString(R.string.long_press_to_split_or_delete);
+                    message = getString(R.string.press_and_hold_on_the_background_to_split_or_delete);
                     break;
 
             }

@@ -51,7 +51,7 @@ public class ErrorsActivity extends ActivityWithMenu {
                 final String str = bundle.getString("events");
                 if (str != null) {
                     userEventHighCheckboxView.setChecked(true);
-                    userEventLowCheckboxView.setChecked(true);
+                    userEventLowCheckboxView.setChecked(false);
                     mediumCheckboxView.setChecked(false);
                     highCheckboxView.setChecked(false);
                     lowCheckboxView.setChecked(false);

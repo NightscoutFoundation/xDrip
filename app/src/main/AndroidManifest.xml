@@ -81,19 +81,21 @@
             android:name=".wearintegration.WatchUpdaterService"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
+                    <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                    <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                    <data android:scheme="wear" android:host="*" android:pathPrefix="/xdrip" />
             </intent-filter>
         </service>
 
         <activity
             android:name=".Tables.BgReadingTable"
-            android:label="Bg Readings Table" />
+            android:label="@string/bg_readings_table" />
         <activity
             android:name=".Tables.SensorDataTable"
-            android:label="Sensor Table" />
+            android:label="@string/sensor_table" />
         <activity
             android:name=".ImportDatabaseActivity"
-            android:label="Import Database" />
+            android:label="@string/import_database" />
         <activity
             android:name=".GoogleDriveInterface"
             android:label="Sync Data"
@@ -104,7 +106,7 @@
             android:theme="@android:style/Theme.NoDisplay" />
         <activity
             android:name=".AddCalibration"
-            android:label="@string/title_activity_add_calibration" />
+            android:label="@string/add_calibration" />
         <activity
             android:name=".StartNewSensor"
             android:label="@string/title_activity_start_new_sensor" />
@@ -116,7 +118,7 @@
             android:label="@string/title_activity_stop_sensor" />
         <activity
             android:name=".BGHistory"
-            android:label="Glucose History" />
+            android:label="@string/glucose_history" />
         <activity
             android:name=".PhoneKeypadInputActivity"
             android:label="Keypad Input"
@@ -136,7 +138,7 @@
 
         <activity
             android:name=".Tables.CalibrationDataTable"
-            android:label="@string/title_activity_calibration_data_table" />
+            android:label="@string/calibration_data_table" />
 
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
@@ -188,7 +190,7 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".SnoozeActivity"
-            android:label="@string/title_snooze" />
+            android:label="@string/snooze" />
         <activity
             android:name=".FakeNumbers"
             android:label="@string/title_activity_fake_numbers" />
@@ -203,22 +205,22 @@
             android:label="@string/title_activity_calibration_override" />
         <activity
             android:name=".CalibrationGraph"
-            android:label="@string/title_activity_calibration_graph" />
+            android:label="@string/calibration_graph" />
         <activity
             android:name=".LicenseAgreementActivity"
-            android:label="@string/title_activity_license_agreement" />
+            android:label="@string/end_user_license_agreement" />
         <activity
             android:name=".CalibrationCheckInActivity"
             android:label="@string/title_activity_calibration_check_in" />
         <activity
             android:name=".UtilityModels.pebble.watchface.InstallPebbleWatchFace"
-            android:label="Install Pebble Watchface" />
+            android:label="@string/install_pebble_watchface" />
         <activity
             android:name=".UtilityModels.pebble.watchface.InstallPebbleTrendWatchFace"
-            android:label="Install Pebble Trend Watchface" />
+            android:label="@string/install_pebble_trend_watchface" />
         <activity
             android:name=".UtilityModels.pebble.watchface.InstallPebbleClassicTrendWatchface"
-            android:label="Install Pebble Classic Trend Watchface" />
+            android:label="@string/install_pebble_classic_trend_watchface" />
         <activity
             android:name=".UsbConnectedActivity"
             android:label="@string/title_activity_usb_connected">
@@ -245,10 +247,10 @@
             android:label="@string/title_activity_share_test" />
         <activity
             android:name=".SystemStatus"
-            android:label="@string/title_activity_system_status" />
+            android:label="@string/system_status" />
         <activity
             android:name=".utils.Preferences"
-            android:label="@string/action_settings"
+            android:label="@string/settings"
             android:theme="@style/OldAppTheme" />
 
         <receiver android:name=".xDripWidget">
@@ -278,10 +280,10 @@
             android:label="@string/title_activity_error" />
         <activity
             android:name=".MissedReadingActivity"
-            android:label="Configure Missed Readings" />
+            android:label="@string/configure_missed_readings" />
         <activity
             android:name=".FollowerManagementActivity"
-            android:label="Manage Followers" />
+            android:label="@string/manage_followers" />
 
         <service
             android:name=".Services.SnoozeOnNotificationDismissService"
@@ -361,6 +363,7 @@
             android:noHistory="true" />
         <activity
             android:name=".UtilityModels.SendFeedBack"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_send_feed_back"
             android:noHistory="true">
             <intent-filter>
@@ -371,7 +374,7 @@
         </activity>
         <activity
             android:name=".utils.SdcardImportExport"
-            android:label="Settings on external storage" />
+            android:label="@string/settings_on_external_storage" />
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -419,7 +422,15 @@
         <activity
             android:windowSoftInputMode="adjustPan"
             android:name=".profileeditor.ProfileEditor"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_profile_editor"/>
+        <activity
+            android:name=".languageeditor.LanguageEditor"
+            android:label="@string/language_editor"
+            android:configChanges="orientation|screenSize"
+            android:windowSoftInputMode="adjustPan">
+
+        </activity>
     </application>
 
 </manifest>

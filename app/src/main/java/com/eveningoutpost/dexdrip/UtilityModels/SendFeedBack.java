@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -27,6 +28,20 @@ public class SendFeedBack extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_feed_back);
         send_url = getString(R.string.wserviceurl)+"/joh-feedback";
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            final Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                final String str = bundle.getString("request_translation");
+                if (str != null) {
+                    // don't extract string - english only
+                    ((EditText) findViewById(R.id.yourText)).setText("Dear developers, please may I request that you add translation capability for: "+str+"\n\n");
+
+                }
+            }
+        }
+
     }
 
     public void closeActivity(View myview) {

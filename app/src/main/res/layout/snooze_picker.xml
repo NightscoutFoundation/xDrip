@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="150dp"
+    android:orientation="vertical" android:layout_width="180dp"
     android:layout_gravity="center_horizontal|center_vertical"
     android:layout_height="280dp">
 
@@ -26,13 +26,13 @@
                 android:id="@+id/button2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cancel" />
+                android:text="@string/cancel" />
 
             <Button
                 android:id="@+id/button1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Set" />
+                android:text="@string/set" />
         </LinearLayout>
     </LinearLayout>
 

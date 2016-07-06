@@ -24,12 +24,12 @@
         android:singleLine="true"
         android:textAlignment="center"
         android:textSize="24dp"
-        android:hint="Enter BG Value" />
+        android:hint="@string/enter_blood_glucose_value" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Done"
+        android:text="@string/done"
         android:id="@+id/save_calibration_button"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
@@ -39,7 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="This does not get used for anything, its just to keep track of differences for algorithem improvement purposes"
+        android:text="@string/this_does_not_get_used_for_anything_its_just_to_keep_track_of_differences_for_algorithem_improvement_purposes"
         android:id="@+id/textView2"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true" />

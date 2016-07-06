@@ -290,7 +290,7 @@ public class Treatments extends Model {
             if (dupe_treatment != null) {
                 Log.i(TAG, "Duplicate treatment for: " + mytreatment.timestamp);
 
-                if (dupe_treatment.uuid.equals(mytreatment.uuid) && (mytreatment.notes != null))
+                if ((dupe_treatment.uuid !=null) && (mytreatment.uuid !=null) && (dupe_treatment.uuid.equals(mytreatment.uuid)) && (mytreatment.notes != null))
                 {
                     if ((dupe_treatment.notes == null) || (dupe_treatment.notes.length()<mytreatment.notes.length()))
                     {

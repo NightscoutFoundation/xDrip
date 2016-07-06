@@ -105,6 +105,10 @@ android {
         buildConfigField "int", "buildVersion", generateVersionNumberString()
     }
 
+    lintOptions {
+        disable 'MissingTranslation'
+    }
+
     packagingOptions {
         exclude 'META-INF/INDEX.LIST'
     }
