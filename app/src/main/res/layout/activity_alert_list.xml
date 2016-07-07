@@ -21,7 +21,7 @@
                 android:id="@+id/button_create_low"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Create low alert" />
+                android:text="@string/create_low_alert" />
             <ListView
                 android:id="@+id/listView_low"
                 android:layout_width="fill_parent"
@@ -40,7 +40,7 @@
                 android:id="@+id/button_create_high"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Create high alert"/>
+                android:text="@string/create_high_alert"/>
             <ListView
                 android:id="@+id/listView_high"
                 android:layout_width="fill_parent"
@@ -57,7 +57,7 @@
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="(Long Press an existing alert to edit)"
+                android:text="@string/long_press_an_existing_alert_to_edit"
                 android:textSize="12sp"
                 android:gravity="center_horizontal" />
         </LinearLayout>

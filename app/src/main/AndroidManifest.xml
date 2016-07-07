@@ -81,9 +81,13 @@
             android:name=".wearintegration.WatchUpdaterService"
             android:exported="true">
             <intent-filter>
-                    <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
-                    <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
-                    <data android:scheme="wear" android:host="*" android:pathPrefix="/xdrip" />
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+
+                <data
+                    android:host="*"
+                    android:pathPrefix="/xdrip"
+                    android:scheme="wear" />
             </intent-filter>
         </service>
 
@@ -196,6 +200,7 @@
             android:label="@string/title_activity_fake_numbers" />
         <activity
             android:name=".EditAlertActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_edit_alert" />
         <activity
             android:name=".DoubleCalibrationActivity"
@@ -240,7 +245,7 @@
         <service
             android:name=".Services.G5CollectionService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity
             android:name=".ShareTest"
@@ -420,14 +425,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:windowSoftInputMode="adjustPan"
             android:name=".profileeditor.ProfileEditor"
             android:configChanges="orientation|screenSize"
-            android:label="@string/title_activity_profile_editor"/>
+            android:label="@string/title_activity_profile_editor"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".languageeditor.LanguageEditor"
-            android:label="@string/language_editor"
             android:configChanges="orientation|screenSize"
+            android:label="@string/language_editor"
             android:windowSoftInputMode="adjustPan">
 
         </activity>

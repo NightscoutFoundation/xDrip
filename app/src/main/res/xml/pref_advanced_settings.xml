@@ -120,7 +120,7 @@
             android:title="@string/pref_title_broadcast_enabled" />
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_less_common_settings"
-            android:summary="Debug and other misc options"
+            android:summary="@string/debug_and_other_misc_options"
             android:title="@string/less_common_settings">
             <Preference
                 android:key="recent_errors"

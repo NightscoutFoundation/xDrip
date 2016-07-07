@@ -147,7 +147,7 @@ public class SystemStatus extends ActivityWithMenu {
             GcmActivity.requestSensorBatteryUpdate();
         } else {
             transmitter_status_view.setText("" + td.sensor_battery_level);
-
+            GcmActivity.requestSensorBatteryUpdate(); // always ask
             if (td.sensor_battery_level <= Constants.TRANSMITTER_BATTERY_EMPTY) {
                 transmitter_status_view.append(" - very low");
             } else if (td.sensor_battery_level <= Constants.TRANSMITTER_BATTERY_LOW) {

@@ -167,7 +167,12 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                 if ((Home.get_master())  && JoH.ratelimit("gcm-sbr",300)) {
                     Log.i(TAG, "Received sensor battery request");
                     try {
-                        GcmActivity.sendSensorBattery(Sensor.currentSensor().latest_battery_level);
+                        TransmitterData td = TransmitterData.last();
+                        if ((td != null) && (td.sensor_battery_level != 0)) {
+                            GcmActivity.sendSensorBattery(td.sensor_battery_level);
+                        } else {
+                            GcmActivity.sendSensorBattery(Sensor.currentSensor().latest_battery_level);
+                        }
                     } catch (NullPointerException e ) {
                         Log.e(TAG,"Cannot send sensor battery as sensor is null");
                     }

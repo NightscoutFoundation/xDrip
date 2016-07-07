@@ -87,7 +87,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="Remembered Device:   "
+                        android:text="Bluetooth Device:   "
                         android:id="@+id/textView7" />
 
                     <TextView

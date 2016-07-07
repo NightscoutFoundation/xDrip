@@ -203,7 +203,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             buttonRemove.setVisibility(View.GONE);
             // One can not snooze an alert that is still not in the database...
             buttonPreSnooze.setVisibility(View.GONE);
-            status = "Adding " + (above ? "high" : "low") + " alert";
+            status = getString(R.string.adding)+" " + (above ? getString(R.string.high) : getString(R.string.low)) + " "+getString(R.string.alert);
             startHour = 0;
             startMinute = 0;
             endHour = 23;

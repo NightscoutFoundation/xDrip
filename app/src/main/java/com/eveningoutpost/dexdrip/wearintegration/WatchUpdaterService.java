@@ -135,6 +135,8 @@ public class WatchUpdaterService extends WearableListenerService implements
         pebble_integration = mPrefs.getBoolean("pebble_sync", false);
         if (wear_integration) {
             googleApiConnect();
+        } else {
+            this.stopService(new Intent(this, WatchUpdaterService.class));
         }
     }
 
@@ -185,6 +187,16 @@ public class WatchUpdaterService extends WearableListenerService implements
         if (pebble_integration) {
             sendData();
         }
+
+        //if ((!wear_integration)&&(!pebble_integration))
+        if (!wear_integration)    // only wear sync starts this service, pebble features are not used?
+        {
+            Log.i(TAG,"Stopping service");
+            stopSelf();
+            JoH.releaseWakeLock(wl);
+            return START_NOT_STICKY;
+        }
+
         JoH.releaseWakeLock(wl);
         return START_STICKY;
     }

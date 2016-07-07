@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 
@@ -48,8 +49,8 @@ public class IdempotentMigrations {
             int bg_low_snooze = Integer.parseInt(prefs.getString("bg_snooze",  Integer.toString(SnoozeActivity.getDefaultSnooze(false))));
 
 
-            AlertType.add_alert(null, "High Alert", true, highMark, true, 1, bg_notification_sound, 0, 0, bg_sound_in_silent, bg_high_snooze, true);
-            AlertType.add_alert(null, "Low Alert", false, lowMark, true, 1, bg_notification_sound, 0, 0, bg_sound_in_silent, bg_low_snooze, true);
+            AlertType.add_alert(null, mContext.getString(R.string.high_alert), true, highMark, true, 1, bg_notification_sound, 0, 0, bg_sound_in_silent, bg_high_snooze, true);
+            AlertType.add_alert(null, mContext.getString(R.string.low_alert), false, lowMark, true, 1, bg_notification_sound, 0, 0, bg_sound_in_silent, bg_low_snooze, true);
             prefs.edit().putBoolean("bg_notifications", false).apply();
         }
     }
