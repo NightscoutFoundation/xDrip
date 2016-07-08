@@ -158,6 +158,7 @@ public class Home extends ActivityWithMenu {
     private static double last_speech_time = 0;
     private PreviewLineChartView previewChart;
     private TextView dexbridgeBattery;
+    private TextView parakeetBattery;
     private TextView currentBgValueText;
     private TextView notificationText;
     private TextView extraStatusLineText;
@@ -200,11 +201,13 @@ public class Home extends ActivityWithMenu {
         setSupportActionBar(mToolbar);
 
         this.dexbridgeBattery = (TextView) findViewById(R.id.textBridgeBattery);
+        this.parakeetBattery = (TextView) findViewById(R.id.parakeetbattery);
         this.extraStatusLineText = (TextView) findViewById(R.id.extraStatusLine);
         this.currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
 
         extraStatusLineText.setText("");
         dexbridgeBattery.setText("");
+        parakeetBattery.setText("");
 
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             this.currentBgValueText.setTextSize(100);
@@ -1504,31 +1507,32 @@ public class Home extends ActivityWithMenu {
             int bridgeBattery = prefs.getInt("bridge_battery", 0);
 
             if (bridgeBattery == 0) {
-                dexbridgeBattery.setText(R.string.waiting_for_packet);
+                //dexbridgeBattery.setText(R.string.waiting_for_packet);
+                dexbridgeBattery.setVisibility(View.INVISIBLE);
             } else {
-                dexbridgeBattery.setText("Bridge Battery: " + bridgeBattery + "%");
+                dexbridgeBattery.setText(getString(R.string.xbridge_battery)+": " + bridgeBattery + "%");
             }
             if (bridgeBattery < 50) dexbridgeBattery.setTextColor(Color.YELLOW);
             if (bridgeBattery < 25) dexbridgeBattery.setTextColor(Color.RED);
             else dexbridgeBattery.setTextColor(Color.GREEN);
             dexbridgeBattery.setVisibility(View.VISIBLE);
-        } else if (CollectionServiceStarter.isWifiWixel(getApplicationContext())
-                || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())) {
+        }
+        if (CollectionServiceStarter.isWifiWixel(getApplicationContext())
+                || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())
+                || CollectionServiceStarter.isWifiandDexBridge()) {
             int bridgeBattery = prefs.getInt("parakeet_battery", 0);
             if (bridgeBattery > 0) {
-                // reuse dexbridge battery text. If we end up running dexbridge and parakeet then this will need a rethink
-                // only show it when it gets low
                 if (bridgeBattery < 50) {
-                    dexbridgeBattery.setText("Parakeet Battery: " + bridgeBattery + "%");
+                    parakeetBattery.setText(getString(R.string.parakeet_battery)+": " + bridgeBattery + "%");
 
                     if (bridgeBattery < 40) {
-                        dexbridgeBattery.setTextColor(Color.RED);
+                        parakeetBattery.setTextColor(Color.RED);
                     } else {
-                        dexbridgeBattery.setTextColor(Color.YELLOW);
+                        parakeetBattery.setTextColor(Color.YELLOW);
                     }
-                    dexbridgeBattery.setVisibility(View.VISIBLE);
+                    parakeetBattery.setVisibility(View.VISIBLE);
                 } else {
-                    dexbridgeBattery.setVisibility(View.INVISIBLE);
+                    parakeetBattery.setVisibility(View.INVISIBLE);
                 }
 
 
