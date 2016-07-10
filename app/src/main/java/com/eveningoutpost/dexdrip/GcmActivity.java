@@ -46,10 +46,13 @@ public class GcmActivity extends Activity {
     public static AtomicInteger msgId = new AtomicInteger(1);
     public static String token = null;
     public static String senderid = null;
-    public static List<GCM_data> gcm_queue = new ArrayList<>();
+    public static final List<GCM_data> gcm_queue = new ArrayList<>();
     private static final Object queue_lock = new Object();
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     public static boolean cease_all_activity = false;
+    private static int recursion_depth = 0;
+    private static final int MAX_RECURSION = 30;
+    private static final int MAX_QUEUE_SIZE = 500;
 
     public static synchronized void queueAction(String reference) {
         synchronized (queue_lock) {
@@ -67,6 +70,10 @@ public class GcmActivity extends Activity {
     }
 
     public static void queueCheckOld(Context context) {
+        queueCheckOld(context, false);
+    }
+
+    public static void queueCheckOld(Context context, boolean recursive) {
 
         if (context == null) {
             Log.e(TAG, "Can't process old queue as null context");
@@ -78,6 +85,7 @@ public class GcmActivity extends Activity {
         final double MAX_RESENT = 10;
         Double timenow = JoH.ts();
         boolean queuechanged = false;
+        if (!recursive) recursion_depth = 0;
         synchronized (queue_lock) {
             for (GCM_data datum : gcm_queue) {
                 if ((timenow - datum.timestamp) > MAX_QUEUE_AGE
@@ -98,7 +106,14 @@ public class GcmActivity extends Activity {
                 }
             }
         }
-        if (queuechanged)  queueCheckOld(context);
+        if (queuechanged) {
+            recursion_depth++;
+            if (recursion_depth < MAX_RECURSION) {
+                queueCheckOld(context, true);
+            } else {
+                Log.e(TAG, "Max recursion exceeded!");
+            }
+        }
     }
 
     private static String sendMessage(final String action, final String payload) {
@@ -293,7 +308,12 @@ public class GcmActivity extends Activity {
                 Log.e(TAG, "identity is null cannot sendMessage");
                 return "";
             }
-            gcm_queue.add(new GCM_data(data));
+            if (gcm_queue.size() < MAX_QUEUE_SIZE) {
+                gcm_queue.add(new GCM_data(data));
+            } else {
+                Log.e(TAG, "Queue size exceeded");
+                Home.toaststaticnext("Maximum Sync Queue size Exceeded!");
+            }
             final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(xdrip.getAppContext());
             if (token == null) {
                 Log.e(TAG, "GCM token is null - cannot sendMessage");

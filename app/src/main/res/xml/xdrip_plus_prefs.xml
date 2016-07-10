@@ -207,55 +207,60 @@
                 android:summary="@string/show_tips_hints"
                 android:title="@string/show_interface_hints" />
             <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="bg_from_filtered"
-                android:summary="Delayed but more stable when noisy"
-                android:title="Glucose number from Filtered" />
+                android:defaultValue="true"
+                android:key="rewrite_history"
+                android:summary="@string/after_calibration_rewrite_history"
+                android:title="@string/rewrite_history" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="show_graph_grid_time"
-                android:summary="Grid time lines visible"
+                android:summary="@string/grid_time_lines_visible"
                 android:title="@string/show_graph_time_lines" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="show_graph_grid_glucose"
-                android:summary="Grid glucose lines visible"
+                android:summary="@string/grid_glucose_lines_visible"
                 android:title="@string/show_graph_glucose_lines" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="show_filtered_curve"
-                android:summary="Useful for noise and missed readings"
+                android:summary="@string/useful_for_noise_and_missed_readings"
                 android:title="@string/display_filtered_plot" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="show_raw_plot"
-                android:summary="The standard xDrip calculated values"
+                android:summary="@string/the_standard_xdrip_calculated_value"
                 android:title="@string/display_raw_plot_data" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="show_target_line"
-                android:summary="Display ideal glucose target line"
+                android:summary="@string/display_ideal_glucose_target_line"
                 android:title="@string/show_graph_target_line" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="show_recent_average_line"
-                android:summary="Display 8 hour average line"
+                android:summary="@string/display_eight_hour_average_line"
                 android:title="@string/show_graph_recent_average" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="show_full_average_line"
-                android:summary="Display 24 hour average line"
+                android:summary="@string/display_twenty_four_hour_average_line"
                 android:title="@string/show_graph_total_average" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="show_momentum_working_line"
-                android:summary="Predictive model inner workings"
+                android:summary="@string/predictive_model_inner_workings"
                 android:title="@string/show_momentum_working_curve" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="show_noise_workings"
-                android:summary="Noise model inner workings"
+                android:summary="@string/noise_model_inner_workings"
                 android:title="@string/show_noise_workings" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="bg_from_filtered"
+                android:summary="Delayed but more stable when noisy (not recommended)"
+                android:title="@string/glucose_number_from_filtered" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="always_show_bwp"

@@ -477,5 +477,19 @@
     <string name="alert">alert</string>
     <string name="high_alert">High Alert</string>
     <string name="low_alert">Low Alert</string>
+    <string name="xbridge_battery">xBridge Battery</string>
+    <string name="parakeet_battery">Parakeet Battery</string>
+    <string name="after_calibration_rewrite_history">After calibration, adjust recent raw graph to smooth to the new calibration</string>
+    <string name="rewrite_history">Rewrite History</string>
+    <string name="grid_time_lines_visible">Grid time lines visible</string>
+    <string name="grid_glucose_lines_visible">Grid glucose lines visible</string>
+    <string name="useful_for_noise_and_missed_readings">Useful for noise and missed readings</string>
+    <string name="the_standard_xdrip_calculated_value">The standard xDrip calculated values</string>
+    <string name="display_ideal_glucose_target_line">Display ideal glucose target line</string>
+    <string name="display_eight_hour_average_line">Display 8 hour average line</string>
+    <string name="display_twenty_four_hour_average_line">Display 24 hour average line</string>
+    <string name="predictive_model_inner_workings">Predictive model inner workings</string>
+    <string name="noise_model_inner_workings">Noise model inner workings</string>
+    <string name="glucose_number_from_filtered">Glucose number from Filtered</string>
 
 </resources>

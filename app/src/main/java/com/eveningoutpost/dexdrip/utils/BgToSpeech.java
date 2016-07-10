@@ -130,9 +130,14 @@ public class BgToSpeech {
             return;
         }
 
+        if (tts == null)
+        {
+            Log.wtf(TAG,"TTS is null in speakInternal");
+            return;
+        }
         // ACTUAL TTS:
 
-        int result = tts.speak(calculateText(value, prefs), TextToSpeech.QUEUE_FLUSH, null);
+        final int result = tts.speak(calculateText(value, prefs), TextToSpeech.QUEUE_FLUSH, null);
             if(result == TextToSpeech.SUCCESS){
                 Log.d(TAG, "successfully spoken");
             } else {
