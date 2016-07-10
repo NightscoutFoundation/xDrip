@@ -349,10 +349,10 @@ public class BgReading extends Model implements ShareUploadableBg{
 
         final List<BgReading> possibleDuplicates = possibleDuplicates(timestamp);
             if (possibleDuplicates != null && possibleDuplicates.size() > 0) {
-                Log.v(TAG, "BgReading.create: Received Packet where we already have another reading for the same timeslot. Exiting.");
+                Log.i(TAG, "BgReading.create: Received Packet where we already have another reading for the same timeslot. Exiting.");
                 final DateFormat dateFormatter = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, Locale.getDefault());
                 for (BgReading reading : possibleDuplicates) {
-                    Log.v(TAG, "  Possible duplicate with offset " + (timestamp - reading.timestamp) + " ms to reading at " + dateFormatter.format(new Date(reading.timestamp)) + ", raw: " + (raw_data/1000) + " vs. " + reading.raw_data + ".");
+                    Log.i(TAG, "  Possible duplicate with offset " + (timestamp - reading.timestamp) + " ms to reading at " + dateFormatter.format(new Date(reading.timestamp)) + ", raw: " + (raw_data/1000) + " vs. " + reading.raw_data + ".");
                 }
             return null;
         }

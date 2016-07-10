@@ -295,7 +295,7 @@
                 <intent
                     android:action="android.intent.action.MAIN"
                     android:targetClass="com.eveningoutpost.dexdrip.profileeditor.ProfileEditor"
-                    android:targetPackage="@string/local_target_package"></intent>
+                    android:targetPackage="@string/local_target_package"/>
             </Preference>
             <Preference
                 android:defaultValue="54"
@@ -305,7 +305,7 @@
                 <intent
                     android:action="android.intent.action.MAIN"
                     android:targetClass="com.eveningoutpost.dexdrip.profileeditor.ProfileEditor"
-                    android:targetPackage="@string/local_target_package"></intent>
+                    android:targetPackage="@string/local_target_package"/>
             </Preference>
             <EditTextPreference
                 android:defaultValue="35"

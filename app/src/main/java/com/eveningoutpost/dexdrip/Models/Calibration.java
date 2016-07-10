@@ -372,8 +372,9 @@ public class Calibration extends Model {
 
 
     public static Calibration create(double bg, long timeoffset, Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String unit = prefs.getString("units", "mgdl");
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final String unit = prefs.getString("units", "mgdl");
+        final boolean adjustPast = prefs.getBoolean("rewrite_history", true);
 
         if(unit.compareTo("mgdl") != 0 ) {
             bg = bg * Constants.MMOLL_TO_MGDL;
@@ -428,8 +429,8 @@ public class Calibration extends Model {
                 if (!is_follower) {
                     BgSendQueue.handleNewBgReading(bgReading, "update", context);
                     // TODO probably should add a more fine grained prefs option in future
-                    calculate_w_l_s(prefs.getBoolean("plus_extra_features",false));
-                    adjustRecentBgReadings();
+                    calculate_w_l_s(prefs.getBoolean("infrequent_calibration",false));
+                    adjustRecentBgReadings(adjustPast ? 30 : 1);
                     CalibrationSendQueue.addToQueue(calibration, context);
                     context.startService(new Intent(context, Notifications.class));
                     Calibration.requestCalibrationIfRangeTooNarrow();
@@ -474,7 +475,7 @@ public class Calibration extends Model {
             double q = 0;
             double w;
 
-            SlopeParameters sParams = getSlopeParameters();
+            final SlopeParameters sParams = getSlopeParameters();
 
             List<Calibration> calibrations = allForSensorInLastFourDays(); //5 days was a bit much, dropped this to 4
 
@@ -608,39 +609,59 @@ public class Calibration extends Model {
         Log.i(TAG, "CALIBRATIONS TIME PERCENTAGE WEIGHT: " + time_percentage);
         return Math.max((((((slope_confidence + sensor_confidence) * (time_percentage))) / 2) * 100), 1);
     }
+
+    // this method no longer used
     public static void adjustRecentBgReadings() {// This just adjust the last 30 bg readings transition from one calibration point to the next
         adjustRecentBgReadings(30);
     }
 
     public static void adjustRecentBgReadings(int adjustCount) {
         //TODO: add some handling around calibration overrides as they come out looking a bit funky
-        List<Calibration> calibrations = Calibration.latest(3);
-        List<BgReading> bgReadings = BgReading.latestUnCalculated(adjustCount);
-        if (calibrations.size() == 3) {
-            int denom = bgReadings.size();
+        final List<Calibration> calibrations = Calibration.latest(3);
+        if (calibrations == null) {
+            Log.wtf(TAG, "Calibrations is null in adjustRecentBgReadings");
+            return;
+        }
+
+        final List<BgReading> bgReadings = BgReading.latestUnCalculated(adjustCount);
+        if (bgReadings == null) {
+            Log.wtf(TAG, "bgReadings is null in adjustRecentBgReadings");
+            return;
+        }
+
+        // ongoing calibration
+        if (calibrations.size() >= 3) {
+            final int denom = bgReadings.size();
             //Calibration latestCalibration = calibrations.get(0);
-            Calibration latestCalibration = Calibration.lastValid();
+            final Calibration latestCalibration = Calibration.lastValid();
             int i = 0;
             for (BgReading bgReading : bgReadings) {
-                double oldYValue = bgReading.calculated_value;
-                double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
-                bgReading.calculated_value = ((newYvalue * (denom - i)) + (oldYValue * ( i ))) / denom;
+                final double oldYValue = bgReading.calculated_value;
+                final double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
+                bgReading.calculated_value = ((newYvalue * (denom - i)) + (oldYValue * (i))) / denom;
                 bgReading.save();
                 i += 1;
             }
+            // initial calibration
         } else if (calibrations.size() == 2) {
             //Calibration latestCalibration = calibrations.get(0);
-            Calibration latestCalibration = Calibration.lastValid();
+            final Calibration latestCalibration = Calibration.lastValid();
             for (BgReading bgReading : bgReadings) {
-                double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
+                final double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
                 bgReading.calculated_value = newYvalue;
                 BgReading.updateCalculatedValue(bgReading);
                 bgReading.save();
 
             }
         }
-        bgReadings.get(0).find_new_raw_curve();
-        bgReadings.get(0).find_new_curve();
+
+        try {
+            // TODO this method call is probably only needed when we are called for initial calibration, it should probably be moved
+            bgReadings.get(0).find_new_raw_curve();
+            bgReadings.get(0).find_new_curve();
+        } catch (NullPointerException e) {
+            Log.wtf(TAG, "Got null pointer exception in adjustRecentBgReadings");
+        }
     }
 
     public void rawValueOverride(double rawValue, Context context) {
