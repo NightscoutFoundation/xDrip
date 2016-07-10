@@ -39,7 +39,7 @@ public class TransmitterData extends Model {
     public static synchronized TransmitterData create(byte[] buffer, int len, Long timestamp) {
         if (len < 6) { return null; }
         TransmitterData transmitterData = new TransmitterData();
-        if (buffer[0] == 0x11 && buffer[1] == 0x00) {
+        if ((buffer[0] == 0x11 || buffer[0] == 0x15) && buffer[1] == 0x00) {
             //this is a dexbridge packet.  Process accordingly.
             Log.i(TAG, "create Processing a Dexbridge packet");
             ByteBuffer txData = ByteBuffer.allocate(len);
@@ -49,7 +49,13 @@ public class TransmitterData extends Model {
             transmitterData.filtered_data = txData.getInt(6);
             //  bitwise and with 0xff (1111....1) to avoid that the byte is treated as signed.
             transmitterData.sensor_battery_level = txData.get(10) & 0xff;
-            Log.i(TAG, "Created transmitterData record with Raw value of " + transmitterData.raw_data + " and Filtered value of " + transmitterData.filtered_data + " at " + transmitterData.timestamp);
+            if (buffer[0] == 0x15) {
+                Log.i(TAG, "create Processing a Dexbridge packet includes delay information");
+                transmitterData.timestamp = timestamp - txData.getInt(16);
+            } else {
+                transmitterData.timestamp = timestamp;
+            }
+            Log.i(TAG, "Created transmitterData record with Raw value of " + transmitterData.raw_data + " and Filtered value of " + transmitterData.filtered_data + " at " + timestamp + " with timestamp " + transmitterData.timestamp);
         } else { //this is NOT a dexbridge packet.  Process accordingly.
             Log.i(TAG, "create Processing a BTWixel or IPWixel packet");
             StringBuilder data_string = new StringBuilder();
@@ -61,6 +67,7 @@ public class TransmitterData extends Model {
             }
             transmitterData.raw_data = Integer.parseInt(data[0]);
             transmitterData.filtered_data = Integer.parseInt(data[0]);
+            transmitterData.timestamp = timestamp;
         }
         //Stop allowing duplicate data, its bad!
         TransmitterData lastTransmitterData = TransmitterData.last();
@@ -68,7 +75,6 @@ public class TransmitterData extends Model {
             return null;
         }
 
-        transmitterData.timestamp = timestamp;
         transmitterData.uuid = UUID.randomUUID().toString();
         transmitterData.save();
         return transmitterData;
