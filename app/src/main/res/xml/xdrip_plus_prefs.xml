@@ -389,7 +389,6 @@
                 android:title="@string/handset_group_security_key" />
             <CheckBoxPreference
                 android:defaultValue="false"
-                android:dependency="plus_extra_features"
                 android:key="plus_follow_master"
                 android:summary="@string/this_device_will_send_data_to_followers"
                 android:title="@string/be_master_for_followers" />

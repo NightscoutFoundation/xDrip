@@ -347,10 +347,10 @@ public class BgReading extends Model implements ShareUploadableBg{
             return bgReading;
         }
 
-        List<BgReading> possibleDuplicates = possibleDuplicates(timestamp);
+        final List<BgReading> possibleDuplicates = possibleDuplicates(timestamp);
             if (possibleDuplicates != null && possibleDuplicates.size() > 0) {
                 Log.v(TAG, "BgReading.create: Received Packet where we already have another reading for the same timeslot. Exiting.");
-                DateFormat dateFormatter = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, Locale.getDefault());
+                final DateFormat dateFormatter = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, Locale.getDefault());
                 for (BgReading reading : possibleDuplicates) {
                     Log.v(TAG, "  Possible duplicate with offset " + (timestamp - reading.timestamp) + " ms to reading at " + dateFormatter.format(new Date(reading.timestamp)) + ", raw: " + (raw_data/1000) + " vs. " + reading.raw_data + ".");
                 }
@@ -591,8 +591,9 @@ public class BgReading extends Model implements ShareUploadableBg{
         return null;
     }
 
+    // TODO this method and readingNearTimeStamp should probably get merged in to a single method with margin as a parameter
     public static List<BgReading> possibleDuplicates(long timestamp) {
-        Sensor sensor = Sensor.currentSensor();
+        final Sensor sensor = Sensor.currentSensor();
         if (sensor != null) {
             return new Select()
                     .from(BgReading.class)
@@ -691,7 +692,7 @@ public class BgReading extends Model implements ShareUploadableBg{
 
     public static BgReading readingNearTimeStamp(double startTime) {
         final double margin = (4 * 60*1000);
-        DecimalFormat df = new DecimalFormat("#");
+        final DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(1);
         return new Select()
                 .from(BgReading.class)
