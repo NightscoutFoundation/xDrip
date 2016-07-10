@@ -30,10 +30,12 @@ import com.google.gson.internal.bind.DateTypeAdapter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
 
@@ -342,8 +344,17 @@ public class BgReading extends Model implements ShareUploadableBg{
         Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
             Log.i("BG GSON: ",bgReading.toS());
-
             return bgReading;
+        }
+
+        List<BgReading> possibleDuplicates = possibleDuplicates(timestamp);
+            if (possibleDuplicates != null && possibleDuplicates.size() > 0) {
+                Log.v(TAG, "BgReading.create: Received Packet where we already have another reading for the same timeslot. Exiting.");
+                DateFormat dateFormatter = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, Locale.getDefault());
+                for (BgReading reading : possibleDuplicates) {
+                    Log.v(TAG, "  Possible duplicate with offset " + (timestamp - reading.timestamp) + " ms to reading at " + dateFormatter.format(new Date(reading.timestamp)) + ", raw: " + (raw_data/1000) + " vs. " + reading.raw_data + ".");
+                }
+            return null;
         }
 
         Calibration calibration = Calibration.lastValid();
@@ -579,6 +590,23 @@ public class BgReading extends Model implements ShareUploadableBg{
         }
         return null;
     }
+
+    public static List<BgReading> possibleDuplicates(long timestamp) {
+        Sensor sensor = Sensor.currentSensor();
+        if (sensor != null) {
+            return new Select()
+                    .from(BgReading.class)
+                    .where("Sensor = ? ", sensor.getId())
+                    .where("calculated_value != 0")
+                    .where("raw_data != 0")
+                    .where("timestamp >= " + (timestamp-(3*60*1000))) // if we already have a reading up to 3 minutes before that timestamp
+                    .where("timestamp <= " + (timestamp+(3*60*1000))) // or there is within 3 minutes after the given timestamp
+                    .orderBy("timestamp desc")
+                    .execute();
+        }
+        return null;
+    }
+
     public static List<BgReading> latest_by_size(int number) {
         Sensor sensor = Sensor.currentSensor();
         return new Select()

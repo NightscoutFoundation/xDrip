@@ -486,7 +486,7 @@ public class DexCollectionService extends Service {
                 }
                 return;
             }
-            if (buffer[0] == 0x11 && buffer[1] == 0x00) {
+            if ((buffer[0] == 0x11 || buffer[0] == 0x15) && buffer[1] == 0x00) {
                 //we have a data packet.  Check to see if the TXID is what we are expecting.
                 Log.i(TAG, "setSerialDataToTransmitterRawData: Received Data packet");
                 if (len >= 0x11) {
@@ -509,13 +509,8 @@ public class DexCollectionService extends Service {
                     ackMessage.put(0, (byte) 0x02);
                     ackMessage.put(1, (byte) 0xF0);
                     sendBtMessage(ackMessage);
-                    //make sure we are not processing a packet we already have
-                    if (secondsNow - lastPacketTime < 60000) {
-                        Log.v(TAG, "setSerialDataToTransmitterRawData: Received Duplicate Packet.  Exiting.");
-                        return;
-                    } else {
-                        lastPacketTime = secondsNow;
-                    }
+                    //duplicates are already filtered in TransmitterData.create - so no need to filter here
+                    lastPacketTime = secondsNow;
                     Log.v(TAG, "setSerialDataToTransmitterRawData: Creating TransmitterData at " + timestamp);
                     processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
                 }
@@ -539,6 +534,7 @@ public class DexCollectionService extends Service {
         sensor.latest_battery_level = (sensor.latest_battery_level!=0)?Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level):transmitterData.sensor_battery_level;
         sensor.save();
 
-        BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, timestamp);
+        Log.d(TAG, "BgReading.create: new BG reading at " + timestamp + " with a timestamp of " + transmitterData.timestamp);
+        BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, transmitterData.timestamp);
     }
 }
