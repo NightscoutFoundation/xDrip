@@ -30,8 +30,8 @@ public class xdrip extends Application {
 
     @Override
     public void onCreate() {
-        super.onCreate();
         xdrip.context = getApplicationContext();
+        super.onCreate();
      try {
          if (PreferenceManager.getDefaultSharedPreferences(xdrip.context).getBoolean("enable_crashlytics", true)) {
              Crashlytics crashlyticsKit = new Crashlytics.Builder()
@@ -72,6 +72,15 @@ public class xdrip extends Application {
     public static Context getAppContext()
     {
         return xdrip.context;
+    }
+
+    public static boolean checkAppContext(Context context) {
+        if (getAppContext() == null) {
+            xdrip.context = context;
+            return false;
+        } else {
+            return true;
+        }
     }
 
 }

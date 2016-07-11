@@ -191,6 +191,10 @@ public class Home extends ActivityWithMenu {
         super.onCreate(savedInstanceState);
         setTheme(R.style.AppThemeToolBarLite); // for toolbar mode
 
+        if (!xdrip.checkAppContext(getApplicationContext())) {
+            toast("Unusual internal context problem - please report");
+            Log.wtf(TAG,"xdrip.checkAppContext FAILED!");
+        }
         set_is_follower();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
