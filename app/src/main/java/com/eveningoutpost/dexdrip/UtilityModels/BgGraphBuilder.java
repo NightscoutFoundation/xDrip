@@ -634,11 +634,12 @@ public class BgGraphBuilder {
         // enumerate calibrations
         try {
             for (Calibration calibration : calibrations) {
-                calibrationValues.add(new PointValue((float) (calibration.timestamp / FUZZER), (float) unitized(calibration.bg)));
-           if (calibration.timestamp > last_calibration)
-           {
-               last_calibration = calibration.timestamp;
-           }
+                if (calibration.slope_confidence!=0) {
+                    calibrationValues.add(new PointValue((float) (calibration.timestamp / FUZZER), (float) unitized(calibration.bg)));
+                    if (calibration.timestamp > last_calibration) {
+                        last_calibration = calibration.timestamp;
+                    }
+                }
             }
         } catch (Exception e) {
             Log.e(TAG, "Exception doing calibration values in bggraphbuilder: " + e.toString());
