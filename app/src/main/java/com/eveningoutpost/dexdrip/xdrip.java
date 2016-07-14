@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -25,6 +26,7 @@ import io.fabric.sdk.android.Fabric;
 
 public class xdrip extends Application {
 
+    private static final String TAG = "xdrip.java";
     private static Context context;
     public static PlusAsyncExecutor executor;
 
@@ -41,7 +43,7 @@ public class xdrip extends Application {
          }
      } catch (Exception e)
      {
-         Log.e("xdrip.java", e.toString());
+         Log.e(TAG, e.toString());
      }
         executor = new PlusAsyncExecutor();
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, true);
@@ -50,15 +52,7 @@ public class xdrip extends Application {
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_source, true);
         PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_prefs, true);
 
-        if (Locale.getDefault()!=Locale.ENGLISH)
-        {
-            if (Home.getPreferencesBoolean("force_english",false)) {
-                Locale.setDefault(Locale.ENGLISH);
-                Configuration config = getResources().getConfiguration();
-                config.locale = Locale.ENGLISH;
-                getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
-            }
-        }
+       checkForcedEnglish(this);
 
 
         JoH.ratelimit("policy-never", 3600); // don't on first load
@@ -80,6 +74,24 @@ public class xdrip extends Application {
             return false;
         } else {
             return true;
+        }
+    }
+
+    public static void checkForcedEnglish(Context context) {
+        if (Locale.getDefault() != Locale.ENGLISH) {
+            Log.d(TAG, "Locale is non-english");
+            if (Home.getPreferencesBoolean("force_english", false)) {
+                Log.i(TAG, "Forcing english");
+                Locale.setDefault(Locale.ENGLISH);
+                Configuration config = context.getResources().getConfiguration();
+                config.locale = Locale.ENGLISH;
+                try {
+                    ((Application) context).getBaseContext().getResources().updateConfiguration(config, ((Application) context).getBaseContext().getResources().getDisplayMetrics());
+                } catch (ClassCastException e) {
+                    Log.i(TAG,"Using activity context instead of base for Locale change");
+                    context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
+                }
+            }
         }
     }
 

@@ -187,14 +187,17 @@ public class Home extends ActivityWithMenu {
     protected void onCreate(Bundle savedInstanceState) {
         mActivity = this;
         staticContext = getApplicationContext();
-        menu_name=staticContext.getString(R.string.home_screen);
-        super.onCreate(savedInstanceState);
-        setTheme(R.style.AppThemeToolBarLite); // for toolbar mode
 
         if (!xdrip.checkAppContext(getApplicationContext())) {
             toast("Unusual internal context problem - please report");
             Log.wtf(TAG,"xdrip.checkAppContext FAILED!");
         }
+        xdrip.checkForcedEnglish(Home.this);
+        menu_name=staticContext.getString(R.string.home_screen);
+
+        super.onCreate(savedInstanceState);
+        setTheme(R.style.AppThemeToolBarLite); // for toolbar mode
+
         set_is_follower();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
