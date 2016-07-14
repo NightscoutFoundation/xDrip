@@ -430,7 +430,7 @@ public class Calibration extends Model {
                     BgSendQueue.handleNewBgReading(bgReading, "update", context);
                     // TODO probably should add a more fine grained prefs option in future
                     calculate_w_l_s(prefs.getBoolean("infrequent_calibration",false));
-                    adjustRecentBgReadings(adjustPast ? 30 : 1);
+                    adjustRecentBgReadings(adjustPast ? 30 : 2);
                     CalibrationSendQueue.addToQueue(calibration, context);
                     context.startService(new Intent(context, Notifications.class));
                     Calibration.requestCalibrationIfRangeTooNarrow();

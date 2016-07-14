@@ -35,6 +35,7 @@ public class LanguageAdapter extends RecyclerView.Adapter<LanguageAdapter.MyView
     private List<LanguageItem> languageList;
     private Context context;
     private boolean showcased_undo = false;
+    private boolean showcased_newline = false;
     public int first_run = 0;
 
     public LanguageAdapter(Context ctx, List<LanguageItem> languageList) {
@@ -87,12 +88,36 @@ public class LanguageAdapter extends RecyclerView.Adapter<LanguageAdapter.MyView
                 boolean handled = false;
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     final int pos = holder.getAdapterPosition();
-                    LanguageAdapter.this.notifyItemChanged(pos, new LanguageItem(languageList.get(pos).item_name, languageList.get(pos).english_text, v.getText().toString()));
+                    LanguageAdapter.this.notifyItemChanged(pos, new LanguageItem(languageList.get(pos).item_name, languageList.get(pos).english_text, v.getText().toString().replace(" ^ ","\n")));
                 }
                 return handled;
             }
         });
 
+     /*   holder.local_text.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                final int pos = holder.getAdapterPosition();
+                // has it actually changed or was this recycle element just reused?
+                if (!languageList.get(pos).local_text.equals(s.toString()))
+                {
+                    Log.d(TAG,"afterTextChanged: "+pos+" :"+s+":"+languageList.get(pos).local_text);
+                    LanguageAdapter.this.notifyItemChanged(pos, new LanguageItem(languageList.get(pos).item_name, languageList.get(pos).english_text, s.toString()));
+
+                }
+             }
+        });
+*/
         return holder;
     }
 
@@ -104,7 +129,9 @@ public class LanguageAdapter extends RecyclerView.Adapter<LanguageAdapter.MyView
 
 
         holder.english_text.setText(languageItem.english_text);
-        holder.local_text.setText(languageItem.local_text);
+
+
+        holder.local_text.setText(languageItem.local_text.replace("\n", " ^ "));
         holder.id_text.setText(languageItem.item_name);
 
 
@@ -114,7 +141,7 @@ public class LanguageAdapter extends RecyclerView.Adapter<LanguageAdapter.MyView
 
             // optimize with flag
             if (!showcased_undo) {
-                if (JoH.ratelimit("language-showcase",2)) {
+                if (JoH.ratelimit("language-showcase", 2)) {
                     if (!ShotStateStore.hasShot(LanguageEditor.SHOWCASE_LANGUAGE_ELEMENT_UNDO)) {
                         ShowcaseView myShowcase = new ShowcaseView.Builder((Activity) context)
 
@@ -129,6 +156,8 @@ public class LanguageAdapter extends RecyclerView.Adapter<LanguageAdapter.MyView
                         myShowcase.setBackgroundColor(Color.TRANSPARENT);
                         myShowcase.show();
                         showcased_undo = true;
+                    } else {
+                        showcased_undo = true;
                     }
                 }
             }
@@ -136,6 +165,32 @@ public class LanguageAdapter extends RecyclerView.Adapter<LanguageAdapter.MyView
         } else {
             holder.local_text.setTextColor(Color.parseColor("#a5d6a7"));
             holder.elementUndo.setVisibility(View.INVISIBLE);
+        }
+
+        if (!showcased_newline) {
+            if (LanguageEditor.last_filter.length()==0) {
+                if (holder.local_text.getText().toString().contains(" ^ ")) {
+                    if (JoH.ratelimit("language-showcase", 2)) {
+                        if (!ShotStateStore.hasShot(LanguageEditor.SHOWCASE_LANGUAGE_ELEMENT_NEWLINE)) {
+                            ShowcaseView myShowcase = new ShowcaseView.Builder((Activity) context)
+
+                                    .setTarget(new ViewTarget(holder.local_text))
+                                    .setStyle(R.style.CustomShowcaseTheme2)
+                                    .setContentTitle("Line break and other Symbols") // always in english
+                                    .setContentText("\n" + "Symbols like ^ are used internally for advancing to a new line.\n\nPlease be careful to preserve these exactly and also respect other symbols you find like : which may affect the user interface if removed.") // always in english
+                                    .setShowcaseDrawer(new JamorhamShowcaseDrawer(context.getResources(), context.getTheme(), 90, 50))
+                                    .singleShot(LanguageEditor.oneshot ? LanguageEditor.SHOWCASE_LANGUAGE_ELEMENT_NEWLINE : -1)
+                                    .build();
+
+                            myShowcase.setBackgroundColor(Color.TRANSPARENT);
+                            myShowcase.show();
+                            showcased_newline = true;
+                        } else {
+                            showcased_newline = true;
+                        }
+                    }
+                }
+            }
         }
     }
 

@@ -241,7 +241,7 @@ public class AlertPlayer {
         return false;
     }
 
-    private void PlayFile(final Context ctx, String FileName, float VolumeFrac) {
+    private synchronized void PlayFile(final Context ctx, String FileName, float VolumeFrac) {
         Log.i(TAG, "PlayFile: called FileName = " + FileName);
 
         if(mediaPlayer != null) {
@@ -301,6 +301,7 @@ public class AlertPlayer {
             });
             Log.i(TAG, "PlayFile: calling mediaPlayer.start() ");
             mediaPlayer.start();
+            // TODO catch and report IllegalStateException if one occurs
         } else {
             // TODO, what should we do here???
             Log.wtf(TAG,"PlayFile: Starting an alert failed, what should we do !!!");

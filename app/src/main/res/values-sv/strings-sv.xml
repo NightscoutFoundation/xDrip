@@ -454,4 +454,19 @@
 	<string name="alert">varna</string>
 	<string name="high_alert">Hög Alert</string>
 	<string name="low_alert">Låg Alert</string>
+	<string name="xbridge_battery">xBridge Batteri</string>
+	<string name="parakeet_battery">Undulat Batteri</string>
+	<string name="after_calibration_rewrite_history">Efter kalibrering, justera senaste rå graf för att jämna till den nya kalibreringen</string>
+	<string name="rewrite_history">Skriva om historien</string>
+	<string name="grid_time_lines_visible">Grid tidslinjer synlig</string>
+	<string name="grid_glucose_lines_visible">Grid glukos linjer synliga</string>
+	<string name="useful_for_noise_and_missed_readings">Användbart för buller och missade avläsningar</string>
+	<string name="the_standard_xdrip_calculated_value">Standarden xDrip beräknade värdena</string>
+	<string name="display_ideal_glucose_target_line">Display perfekt glukos mållinje</string>
+	<string name="display_eight_hour_average_line">Display 8 timmars medellinje</string>
+	<string name="display_twenty_four_hour_average_line">Display 24 timmars genomsnittlig linje</string>
+	<string name="predictive_model_inner_workings">Prediktiv modell inre arbetet</string>
+	<string name="noise_model_inner_workings">Bullermodellen inre arbetet</string>
+	<string name="glucose_number_from_filtered">Glukos nummer från filtrerad</string>
+	<string name="if_the_phone_has_text_to_speech">Om telefonen har text-till-tal funktioner det kommer att tala varje ny läsning.</string>
 </resources>

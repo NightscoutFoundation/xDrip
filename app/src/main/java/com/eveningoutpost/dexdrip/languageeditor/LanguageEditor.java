@@ -62,6 +62,8 @@ public class LanguageEditor extends AppCompatActivity {
 
     private static final String TAG = "jamorhamlanguage";
     private static final String EMAIL_KEY = "___EMAIL_KEY:";
+    private static final String NAME_KEY = "___NAME_KEY:";
+    private static final String CONSENT_KEY = "___CONSENT_KEY";
     private final List<LanguageItem> languageItemList = new ArrayList<>();
     private final List<LanguageItem> languageItemListBackup = new ArrayList<>();
     private RecyclerView recyclerView;
@@ -71,7 +73,7 @@ public class LanguageEditor extends AppCompatActivity {
     private static Button undoBtn;
 
     private boolean show_only_customized = false;
-    private String last_filter = "";
+    protected static String last_filter = "";
 
     private static Map<String, LanguageItem> user_edits = new HashMap<>();
 
@@ -80,6 +82,7 @@ public class LanguageEditor extends AppCompatActivity {
 
     private static final int SHOWCASE_LANGUAGE_INTRO = 601;
     protected static final int SHOWCASE_LANGUAGE_ELEMENT_UNDO = 602;
+    protected static final int SHOWCASE_LANGUAGE_ELEMENT_NEWLINE = 603;
 
     private Context mContext;
     private Toolbar toolbar;
@@ -332,6 +335,54 @@ public class LanguageEditor extends AppCompatActivity {
         builder.show();
     }
 
+    private void getThanksName() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Name for thanks page?");
+        builder.setMessage("We also want to have a notice in xDrip+ thanking our translators. We don't use your email address for this.\n\nPlease tell us a Name or Alias we can use to put on the thanks page for you?");
+        final EditText input = new EditText(this);
+
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        builder.setView(input);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                LanguageStore.putString(NAME_KEY, input.getText().toString());
+                saveData();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    private void getConsent() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Copyright Disclaimer");
+        builder.setMessage("If approved, your translations will be published as part of xDrip+\n\nTo ensure the stability of the project we must ask contributors to confirm that they assign the copyright of translations to the project so that we are allowed to redistribute the text.");
+
+        builder.setPositiveButton("I ASSIGN COPYRIGHT TO THE PROJECT", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                LanguageStore.putString(CONSENT_KEY, "Agreed:"+JoH.ts());
+                saveData();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
 
     private void toast(String msg) {
         JoH.static_toast(mContext, msg, Toast.LENGTH_LONG);
@@ -344,11 +395,25 @@ public class LanguageEditor extends AppCompatActivity {
         }
 
         final String email = LanguageStore.getString(EMAIL_KEY);
+        final String name = LanguageStore.getString(NAME_KEY);
+        final String consent = LanguageStore.getString(CONSENT_KEY);
 
         if (email.length() == 0) {
             toast("No email address stored - cannot send"); // don't translate
             return;
         }
+
+        if (name.length() == 0) {
+            toast("No thanks name stored - cannot send"); // don't translate
+            return;
+        }
+
+        if (consent.length() == 0) {
+            toast("No consent stored - cannot send"); // don't translate
+            return;
+        }
+
+
 
         final OkHttpClient client = new OkHttpClient();
         final String send_url = mContext.getString(R.string.wserviceurl) + "/joh-langdata";
@@ -363,6 +428,8 @@ public class LanguageEditor extends AppCompatActivity {
             final RequestBody formBody = new FormEncodingBuilder()
                     .add("locale", Locale.getDefault().toString())
                     .add("contact", email)
+                    .add("name",name)
+                    .add("consent",consent)
                     .add("data", data)
                     .build();
             new Thread(new Runnable() {
@@ -404,13 +471,21 @@ public class LanguageEditor extends AppCompatActivity {
 
     private void saveData() {
         if (!LanguageStore.getString(EMAIL_KEY).equals("")) {
-            if (JoH.ratelimit("language-save", 5)) {
-                for (LanguageItem item : user_edits.values()) {
-                    LanguageStore.putString(item.item_name, item.local_text);
+            if (!LanguageStore.getString(NAME_KEY).equals("")) {
+                if (!LanguageStore.getString(CONSENT_KEY).equals("")) {
+                    if (JoH.ratelimit("language-save", 5)) {
+                        for (LanguageItem item : user_edits.values()) {
+                            LanguageStore.putString(item.item_name, item.local_text);
+                        }
+                        final String data = getJsonToSave();
+                        Log.d(TAG, "Data to save: " + data);
+                        uploadData(data);
+                    }
+                } else{
+                    getConsent();
                 }
-                final String data = getJsonToSave();
-                Log.d(TAG, "Data to save: " + data);
-                uploadData(data);
+            } else {
+                getThanksName();
             }
         } else {
             getEmailAddress();
@@ -519,7 +594,7 @@ public class LanguageEditor extends AppCompatActivity {
                     target = new ToolbarActionItemTarget(toolbar, R.id.action_language_search);
                     // these messages always appear in english only
                     title = "Search and Submit Translations";
-                    message = "You can help crowd-source better translations for xDrip+\n\nSimply find and edit the text. Match as closely as possible the English version and then Save to Upload your suggested changes.\n\nIt is not yet possible to preview your changes in the App, but if accepted they will appear in future updates.";
+                    message = "You can help crowd-source better translations for xDrip+\n\nSimply find and edit the text, click ✔ or ➡ on your keyboard to save. Match as closely as possible the English version (including preserving punctuation symbols and capitalisation) and then use Save button to Upload your suggested changes.\n\nIt is not yet possible to preview your changes in the App, but if accepted they will appear in future updates.";
                     break;
 
                 case SHOWCASE_LANGUAGE_ELEMENT_UNDO:

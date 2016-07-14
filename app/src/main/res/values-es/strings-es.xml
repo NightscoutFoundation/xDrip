@@ -454,4 +454,19 @@
 	<string name="alert">alerta</string>
 	<string name="high_alert">Alerta máxima</string>
 	<string name="low_alert">Alerta de baja</string>
+	<string name="xbridge_battery">batería XBridge</string>
+	<string name="parakeet_battery">Batería Parakeet</string>
+	<string name="after_calibration_rewrite_history">Después de la calibración, ajuste reciente gráfico prima para suavizar a la nueva calibración</string>
+	<string name="rewrite_history">Historia de reescritura</string>
+	<string name="grid_time_lines_visible">Líneas de tiempo rejilla visibles</string>
+	<string name="grid_glucose_lines_visible">Líneas de cuadrícula de glucosa visibles</string>
+	<string name="useful_for_noise_and_missed_readings">Útil para el ruido y las lecturas perdidas</string>
+	<string name="the_standard_xdrip_calculated_value">Los valores xDrip estándar calculada</string>
+	<string name="display_ideal_glucose_target_line">Visualización de la línea de objetivos de glucosa ideales</string>
+	<string name="display_eight_hour_average_line">Pantalla 8 horas línea media</string>
+	<string name="display_twenty_four_hour_average_line">El de 24 horas la línea media</string>
+	<string name="predictive_model_inner_workings">Modelo predictivo funcionamiento interno</string>
+	<string name="noise_model_inner_workings">Modelo de ruido de funcionamiento interno</string>
+	<string name="glucose_number_from_filtered">Número de glucosa a partir de Filtrado</string>
+	<string name="if_the_phone_has_text_to_speech">Si el teléfono tiene capacidades de conversión de texto a voz que hablará cada nueva lectura.</string>
 </resources>

@@ -5,6 +5,12 @@ android {
     compileSdkVersion 23
     buildToolsVersion "22.0.1"
 
+    lintOptions {
+        checkReleaseBuilds false
+//        abortOnError false
+    }
+
+
     defaultConfig {
         applicationId "com.eveningoutpost.dexdrip"
         minSdkVersion 21
