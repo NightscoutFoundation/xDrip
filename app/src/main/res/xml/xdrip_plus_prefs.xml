@@ -288,7 +288,6 @@
             android:title="@string/xdrip_plus_prediction_settings">
 
             <Preference
-                android:defaultValue="10"
                 android:key="profile_carb_ratio_default"
                 android:summary="@string/grams_of_carbohydrate_one_unit_covers"
                 android:title="Carb Ratio">
@@ -298,7 +297,6 @@
                     android:targetPackage="@string/local_target_package"/>
             </Preference>
             <Preference
-                android:defaultValue="54"
                 android:key="profile_insulin_sensitivity_default"
                 android:summary="@string/glucose_drop_for_one_unit"
                 android:title="Insulin Sensitivity">
@@ -343,6 +341,12 @@
             <PreferenceCategory
                 android:key="xdrip_plus_adv_predict_cat"
                 android:title="@string/low_level_prediction_values">
+
+                <EditTextPreference
+                    android:defaultValue="100"
+                    android:key="plus_target_range"
+                    android:summary=""
+                    android:title="Target Glucose Default" />
                 <EditTextPreference
                     android:defaultValue="3.0"
                     android:key="xplus_insulin_dia"
@@ -434,7 +438,10 @@
             android:key="send_feedback"
             android:summary="@string/web_feedback_form_for_sending_messages"
             android:title="@string/send_feedback_message">
-            <intent android:action="xdrip_plus_send_developer_feedback" />
+            <intent
+                android:action="xdrip_plus_send_developer_feedback"
+                android:targetClass="com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack"
+                android:targetPackage="@string/local_target_package" />
         </Preference>
     </PreferenceScreen>
 

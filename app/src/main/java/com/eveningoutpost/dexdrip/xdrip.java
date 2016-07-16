@@ -50,6 +50,7 @@ public class xdrip extends Application {
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_notifications, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_source, true);
+        PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_defaults, true);
         PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_prefs, true);
 
        checkForcedEnglish(this);

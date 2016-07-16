@@ -19,6 +19,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -51,7 +52,7 @@ public class ProfileEditor extends AppCompatActivity {
     private static SeekBar adjustallSeekBar;
     private static TextView adjustPercentage;
 
-
+    private static double last_conversion = 0;
     private static final boolean oneshot = true;
     private static ShowcaseView myShowcase;
 
@@ -270,7 +271,7 @@ public class ProfileEditor extends AppCompatActivity {
     }
 
     private void saveData(boolean for_real) {
-        Gson gson = new GsonBuilder()
+        final Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
                         //.registerTypeAdapter(Date.class, new DateTypeAdapter())
                 .serializeSpecialFloatingPointValues()
@@ -350,6 +351,25 @@ public class ProfileEditor extends AppCompatActivity {
 
     }
 
+    // convert between mg/dl or mmol when we change preferences
+    public static void convertData(double multiplier) {
+        if (last_conversion == multiplier) return; // prevent repeated adjustments
+        last_conversion = multiplier;
+        final List<ProfileItem> mydata = ProfileEditor.loadData(false);
+        for (ProfileItem item : mydata) {
+            item.carb_ratio = Math.round(item.carb_ratio); // round to nearest g
+            item.sensitivity = (double) (Math.round(item.sensitivity * 10 * multiplier)) / 10;
+        }
+        final Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .serializeSpecialFloatingPointValues()
+                .create();
+        final String data = gson.toJson(mydata);
+
+        Home.setPreferencesString("saved_profile_list_json", data);
+        Home.setPreferencesString("saved_profile_list_json_working", "");
+        UserError.Log.uel(TAG, "Converted Profile data with multiplier: " + ((multiplier == Constants.MG_DL_TO_MMOL_L) ? " to mmol/l" : "to mg/dl"));
+    }
 
     public static List<ProfileItem> loadData(boolean buttons) {
         final List<ProfileItem> myprofileItemList = new ArrayList<>();
@@ -369,6 +389,7 @@ public class ProfileEditor extends AppCompatActivity {
                 undoBtn.setVisibility(View.VISIBLE);
             }
         }
+
 
         ProfileItem[] restored = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(data, ProfileItem[].class);
         if (restored != null) {

@@ -720,32 +720,42 @@ public class Preferences extends PreferenceActivity {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
 
                     try {
-                        Double highVal = Double.parseDouble(AllPrefsFragment.this.prefs.getString("highValue", "0"));
-                        Double lowVal = Double.parseDouble(AllPrefsFragment.this.prefs.getString("lowValue", "0"));
-                        Double default_insulin_sensitivity = Double.parseDouble(AllPrefsFragment.this.prefs.getString("profile_insulin_sensitivity_default", "54"));
+                        final Double highVal = Double.parseDouble(AllPrefsFragment.this.prefs.getString("highValue", "0"));
+                        final Double lowVal = Double.parseDouble(AllPrefsFragment.this.prefs.getString("lowValue", "0"));
+                        final Double default_insulin_sensitivity = Double.parseDouble(AllPrefsFragment.this.prefs.getString("profile_insulin_sensitivity_default", "54"));
+                        final Double default_target_glucose = Double.parseDouble(AllPrefsFragment.this.prefs.getString("plus_target_range", "100"));
+
                         static_units = newValue.toString();
                         if (newValue.toString().equals("mgdl")) {
                             if (highVal < 36) {
                                 AllPrefsFragment.this.prefs.edit().putString("highValue", Long.toString(Math.round(highVal * Constants.MMOLL_TO_MGDL))).apply();
                                 AllPrefsFragment.this.prefs.edit().putString("profile_insulin_sensitivity_default", Long.toString(Math.round(default_insulin_sensitivity * Constants.MMOLL_TO_MGDL))).apply();
-                                // TODO convert insulin profiles
-                            }
+                                AllPrefsFragment.this.prefs.edit().putString("plus_target_range", Long.toString(Math.round(default_target_glucose * Constants.MMOLL_TO_MGDL))).apply();
+                                ProfileEditor.convertData(Constants.MMOLL_TO_MGDL);
+                                Profile.invalidateProfile();
+                              }
                             if (lowVal < 36) {
                                 AllPrefsFragment.this.prefs.edit().putString("lowValue", Long.toString(Math.round(lowVal * Constants.MMOLL_TO_MGDL))).apply();
                                 AllPrefsFragment.this.prefs.edit().putString("profile_insulin_sensitivity_default", Long.toString(Math.round(default_insulin_sensitivity * Constants.MMOLL_TO_MGDL))).apply();
-                                // TODO convert insulin profiles
+                                AllPrefsFragment.this.prefs.edit().putString("plus_target_range", Long.toString(Math.round(default_target_glucose * Constants.MMOLL_TO_MGDL))).apply();
+                                ProfileEditor.convertData(Constants.MMOLL_TO_MGDL);
+                                Profile.invalidateProfile();
                             }
 
                         } else {
                             if (highVal > 35) {
                                 AllPrefsFragment.this.prefs.edit().putString("highValue", JoH.qs(highVal * Constants.MGDL_TO_MMOLL, 1)).apply();
                                 AllPrefsFragment.this.prefs.edit().putString("profile_insulin_sensitivity_default", JoH.qs(default_insulin_sensitivity * Constants.MGDL_TO_MMOLL, 2)).apply();
-                                // TODO convert insulin profiles
+                                AllPrefsFragment.this.prefs.edit().putString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL,1)).apply();
+                                ProfileEditor.convertData(Constants.MGDL_TO_MMOLL);
+                                Profile.invalidateProfile();
                             }
                             if (lowVal > 35) {
                                 AllPrefsFragment.this.prefs.edit().putString("lowValue", JoH.qs(lowVal * Constants.MGDL_TO_MMOLL, 1)).apply();
                                 AllPrefsFragment.this.prefs.edit().putString("profile_insulin_sensitivity_default", JoH.qs(default_insulin_sensitivity * Constants.MGDL_TO_MMOLL, 2)).apply();
-                                // TODO convert insulin profiles
+                                AllPrefsFragment.this.prefs.edit().putString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL,1)).apply();
+                                ProfileEditor.convertData(Constants.MGDL_TO_MMOLL);
+                                Profile.invalidateProfile();
                             }
                         }
                         preference.setSummary(newValue.toString());
@@ -777,7 +787,8 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("xplus_liver_maximpact"));
 
             bindPreferenceSummaryToValue(findPreference("low_predict_alarm_level"));
-
+            Profile.validateTargetRange();
+            bindPreferenceSummaryToValue(findPreference("plus_target_range"));
 
             useCustomSyncKey.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override

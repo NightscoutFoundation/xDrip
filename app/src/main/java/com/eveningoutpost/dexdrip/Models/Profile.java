@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileItem;
 
@@ -120,6 +121,7 @@ public class Profile {
                 }
             }
         }
+        Log.wtf(TAG,"Null return from findItemListElementForTime");
         return null; // should be impossible
     }
 
@@ -136,12 +138,24 @@ public class Profile {
         return 2.0;
     }
 
+    public static void validateTargetRange()
+    {
+        final double default_target_glucose = tolerantParseDouble(Home.getPreferencesStringWithDefault("plus_target_range",Double.toString(5.5 / scale_factor)));
+        if (default_target_glucose > tolerantParseDouble(Home.getPreferencesStringWithDefault("highValue",Double.toString(5.5 / scale_factor))))
+        {
+            Home.setPreferencesString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL,1));
+            UserError.Log.i(TAG,"Converted initial value of target glucose to mmol");
+        }
+    }
+
     static double getTargetRangeInMmol(double when) {
-        return 5.5;
+       // return tolerantParseDouble(Home.getPreferencesStringWithDefault("plus_target_range",Double.toString(5.5 / scale_factor)));
+        return getTargetRangeInUnits(when) / scale_factor;
     }
 
     public static double getTargetRangeInUnits(double when) {
-        return getTargetRangeInMmol(when) * scale_factor;
+        return tolerantParseDouble(Home.getPreferencesStringWithDefault("plus_target_range",Double.toString(5.5 / scale_factor)));
+        //return getTargetRangeInMmol(when) * scale_factor; // TODO deal with rounding errors here? (3 decimal places?)
     }
 
     static double getCarbSensitivity(double when) {
@@ -172,7 +186,7 @@ public class Profile {
     public static double[] evaluateEndGameMmol(double mmol, double endGameTime, double timeNow) {
         double addcarbs = 0;
         double addinsulin = 0;
-        double target_mmol = getTargetRangeInMmol(endGameTime) * scale_factor;
+        final double target_mmol = getTargetRangeInMmol(endGameTime) * scale_factor;
         double diff_mmol = target_mmol - mmol;
         if (diff_mmol > 0) {
             addcarbs = getCarbsToRaiseByMmolBetweenTwoTimes(diff_mmol, timeNow, endGameTime);
@@ -185,19 +199,19 @@ public class Profile {
     }
 
     public static void reloadPreferences(SharedPreferences prefs) {
-        // TODO HANDLE EURO NUMBER FORMAT
+        validateTargetRange();
         try {
-            Profile.setSensitivityDefault(Double.parseDouble(prefs.getString("profile_insulin_sensitivity_default", "0")));
+            Profile.setSensitivityDefault(tolerantParseDouble(prefs.getString("profile_insulin_sensitivity_default", "0")));
         } catch (Exception e) {
             Home.toaststatic("Invalid insulin sensitivity");
         }
         try {
-            Profile.setDefaultCarbRatio(Double.parseDouble(prefs.getString("profile_carb_ratio_default", "0")));
+            Profile.setDefaultCarbRatio(tolerantParseDouble(prefs.getString("profile_carb_ratio_default", "0")));
         } catch (Exception e) {
             Home.toaststatic("Invalid default carb ratio!");
         }
         try {
-            Profile.setCarbAbsorptionDefault(Double.parseDouble(prefs.getString("profile_carb_absorption_default", "0")));
+            Profile.setCarbAbsorptionDefault(tolerantParseDouble(prefs.getString("profile_carb_absorption_default", "0")));
         } catch (Exception e) {
             Home.toaststatic("Invalid carb absorption rate");
         }

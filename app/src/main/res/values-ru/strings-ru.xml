@@ -154,7 +154,7 @@
 	<string name="xdrip_plus_sync_settings">Настройки синхронизации xDrip+</string>
 	<string name="xdrip_plus_update_settings">xDrip+ Настройки обновления</string>
 	<string name="automatic_update_check">Автоматическая проверка обновлений</string>
-	<string name="update_channel">Channel Update</string>
+	<string name="update_channel">Канал обновлений</string>
 	<string name="send_crash_errors_to_developer">Ошибки передачи аварии разработчику</string>
 	<string name="automatic_crash_reporting">Отправлять отчет об ошибке</string>
 	<string name="send_feedback_message">Отправить сообщение Обратная связь</string>
@@ -307,7 +307,7 @@
 	<string name="show_only_customized_entries">Показывать только настроенные записи</string>
 	<string name="settings_on_external_storage">Установки на внешнем накопителе</string>
 	<string name="get_notified_of_new_apk_releases">Получайте уведомления о выходе новых версий APK</string>
-	<string name="choose_stable_beta_or_alpha_releases">Выберите стабильной, альфа или бета-релизы</string>
+	<string name="choose_stable_beta_or_alpha_releases">Выберите стабильный, альфа или бета-релизы</string>
 	<string name="web_feedback_form_for_sending_messages">Форма обратной связи для веб-отправки сообщений и рейтинги xDrip+ разработчикам</string>
 	<string name="be_master_for_followers">Мастер-режим для фолловеров</string>
 	<string name="this_device_will_send_data_to_followers">Это устройство будет посылать данные последователей</string>
