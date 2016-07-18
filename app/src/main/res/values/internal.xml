@@ -25,7 +25,7 @@
 
     <string name="local_target_package">com.eveningoutpost.dexdrip</string>
     <string name="app_name">xDrip+</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name_launcher">xDrip+</string>
     <string name="wserviceurl">https://xdrip-plus-updates.appspot.com</string>
     <string name="all_settings_wizard">all_settings_wizard</string>
     <string name="wizard_uuid">wizard_uuid</string>

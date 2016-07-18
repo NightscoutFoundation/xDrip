@@ -49,7 +49,14 @@ public class UpdateActivity extends AppCompatActivity {
             String channel = prefs.getString("update_channel", "beta");
             Log.i(TAG, "Checking for a software update, channel: " + channel);
 
-            final String CHECK_URL = context.getString(R.string.wserviceurl) + "/update-check/" + channel;
+            String subversion = "";
+            if (!context.getString(R.string.app_name).equals("xDrip+"))
+            {
+                subversion=context.getString(R.string.app_name).replaceAll("[^a-zA-Z0-9]","");
+                Log.d(TAG,"Using subversion: "+subversion);
+            }
+
+            final String CHECK_URL = context.getString(R.string.wserviceurl) + "/update-check/" + channel + subversion;
             DOWNLOAD_URL = "";
             newversion = 0;
 
