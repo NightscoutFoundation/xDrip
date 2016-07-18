@@ -155,6 +155,7 @@ public class Home extends ActivityWithMenu {
     private final int SHOWCASE_UNDO = 4;
     private final int SHOWCASE_REDO = 5;
     private final int SHOWCASE_NOTE_LONG = 6;
+    private final int SHOWCASE_VARIANT = 7;
     private static double last_speech_time = 0;
     private PreviewLineChartView previewChart;
     private TextView dexbridgeBattery;
@@ -379,6 +380,11 @@ public class Home extends ActivityWithMenu {
         // lower priority
         PlusSyncService.startSyncService(getApplicationContext(), "HomeOnCreate");
         ParakeetHelper.notifyOnNextCheckin(false);
+
+        if (!getString(R.string.app_name).equals("xDrip+")) {
+            showcasemenu(SHOWCASE_VARIANT);
+        }
+
     }
 
     // handle sending the intent
@@ -1803,8 +1809,18 @@ public class Home extends ActivityWithMenu {
             ViewTarget target = null;
             String title = "";
             String message = "";
+            int size1 = 90;
+            int size2 = 14;
 
                 switch (option) {
+
+                    case SHOWCASE_VARIANT:
+                        target= new ViewTarget(R.id.btnNote, this); // dummy
+                        size1=0;
+                        size2=0;
+                        title="You are using an xDrip+ variant";
+                        message="xDrip+ variants allow multiple apps to be installed at once. Either for advanced use or to allow xDrip-Experimental and xDrip+ to both be installed at the same time.\n\nWith variants, some things might not work properly due to one app or another having exclusive access, for example bluetooth pairing. Feedback and bug reports about variants is welcomed!";
+                        break;
 
                     case SHOWCASE_NOTE_LONG:
                         target = new ViewTarget(R.id.btnNote, this);
@@ -1830,7 +1846,7 @@ public class Home extends ActivityWithMenu {
 
                         List<View> views = toolbar.getTouchables();
 
-                        Log.d("xxy", Integer.toString(views.size()));
+                        //Log.d("xxy", Integer.toString(views.size()));
                         for (View view : views) {
                             Log.d("jamhorham showcase", view.getClass().getSimpleName());
 
@@ -1858,7 +1874,7 @@ public class Home extends ActivityWithMenu {
                             .setStyle(R.style.CustomShowcaseTheme2)
                             .setContentTitle(title)
                             .setContentText("\n"+message)
-                            .setShowcaseDrawer(new JamorhamShowcaseDrawer(getResources(),getTheme(),90,14))
+                            .setShowcaseDrawer(new JamorhamShowcaseDrawer(getResources(),getTheme(),size1,size2))
                             .singleShot(oneshot ? option : -1)
                             .build();
 
