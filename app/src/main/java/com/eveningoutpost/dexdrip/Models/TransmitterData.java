@@ -69,9 +69,17 @@ public class TransmitterData extends Model {
             transmitterData.filtered_data = Integer.parseInt(data[0]);
             transmitterData.timestamp = timestamp;
         }
-        //Stop allowing duplicate data, its bad!
-        TransmitterData lastTransmitterData = TransmitterData.last();
+
+        //Stop allowing readings that are older than the last one - or duplicate data, its bad!
+        final TransmitterData lastTransmitterData = TransmitterData.last();
+        if (lastTransmitterData != null && lastTransmitterData.timestamp >= timestamp) {
+            return null;
+        }
         if (lastTransmitterData != null && lastTransmitterData.raw_data == transmitterData.raw_data && Math.abs(lastTransmitterData.timestamp - timestamp) < (120000)) {
+            return null;
+        }
+        final Calibration lastCalibration = Calibration.last();
+        if (lastCalibration != null && lastCalibration.timestamp > timestamp) {
             return null;
         }
 
