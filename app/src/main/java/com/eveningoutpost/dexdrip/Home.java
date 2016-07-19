@@ -1524,12 +1524,15 @@ public class Home extends ActivityWithMenu {
                 //dexbridgeBattery.setText(R.string.waiting_for_packet);
                 dexbridgeBattery.setVisibility(View.INVISIBLE);
             } else {
-                dexbridgeBattery.setText(getString(R.string.xbridge_battery)+": " + bridgeBattery + "%");
+                dexbridgeBattery.setText(getString(R.string.xbridge_battery) + ": " + bridgeBattery + "%");
             }
             if (bridgeBattery < 50) dexbridgeBattery.setTextColor(Color.YELLOW);
             if (bridgeBattery < 25) dexbridgeBattery.setTextColor(Color.RED);
             else dexbridgeBattery.setTextColor(Color.GREEN);
             dexbridgeBattery.setVisibility(View.VISIBLE);
+
+        } else {
+            dexbridgeBattery.setVisibility(View.INVISIBLE);
         }
         if (CollectionServiceStarter.isWifiWixel(getApplicationContext())
                 || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())
@@ -1537,7 +1540,7 @@ public class Home extends ActivityWithMenu {
             int bridgeBattery = prefs.getInt("parakeet_battery", 0);
             if (bridgeBattery > 0) {
                 if (bridgeBattery < 50) {
-                    parakeetBattery.setText(getString(R.string.parakeet_battery)+": " + bridgeBattery + "%");
+                    parakeetBattery.setText(getString(R.string.parakeet_battery) + ": " + bridgeBattery + "%");
 
                     if (bridgeBattery < 40) {
                         parakeetBattery.setTextColor(Color.RED);
@@ -1548,14 +1551,13 @@ public class Home extends ActivityWithMenu {
                 } else {
                     parakeetBattery.setVisibility(View.INVISIBLE);
                 }
-
-
             }
         } else {
-            dexbridgeBattery.setVisibility(View.INVISIBLE);
+            parakeetBattery.setVisibility(View.INVISIBLE);
         }
         if (!prefs.getBoolean("display_bridge_battery", true)) {
             dexbridgeBattery.setVisibility(View.INVISIBLE);
+            parakeetBattery.setVisibility(View.INVISIBLE);
         }
 
         if ((currentBgValueText.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) > 0) {
