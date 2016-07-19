@@ -371,6 +371,7 @@ public class Home extends ActivityWithMenu {
         });
 
         JoH.fixActionBar(this);
+        getSupportActionBar().setTitle(R.string.app_name);
         activityVisible = true;
 
         // handle incoming extras

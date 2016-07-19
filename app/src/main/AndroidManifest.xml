@@ -37,7 +37,7 @@
         android:name=".xdrip"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name_launcher"
+        android:label="@string/app_name"
         android:largeHeap="true"
         android:theme="@style/AppTheme">
         <meta-data
@@ -57,7 +57,7 @@
 
         <activity
             android:name=".Home"
-            android:label="@string/app_name"
+            android:label="@string/app_name_launcher"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

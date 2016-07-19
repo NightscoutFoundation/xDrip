@@ -53,7 +53,7 @@
 	<string name="pref_message_mongodb_device_status_collection">Jest to nazwa kolekcji, gdzie będą przechowywane informacje o stanie baterii a także inne informacje o urządzeniu</string>
 	<string name="pref_title_api">Prześlij API (REST)</string>
 	<string name="pref_title_api_enabled">Włączone</string>
-	<string name="pref_summary_api_enabled">REST API stanowi alternatywę dla bezpośredniego przesyłania MongoDB</string>
+	<string name="pref_summary_api_enabled">REST API stanowi alternatywę dla bezpośredniego przesyłania do MongoDB</string>
 	<string name="pref_title_api_url">Głowny Adres URL</string>
 	<string name="pref_dialog_api_url">Wprowadź główny adres API URL</string>
 	<string name="pref_message_api_url">To tylko główny adres URL, uploader automatycznie dołączy / wpisy na odpowiednim miejscu. API_SECRET na serwerze powinien być taki sam jak yourpassphrase w tym ustawieniu.</string>
@@ -79,7 +79,7 @@
 	<string name="add_widget">Dodaj widget</string>
 	<string name="title_activity_alert_list">Lista alarmów</string>
 	<string name="speaktreatment">Mów leczenie</string>
-	<string name="title_activity_update">xDrip+ Aktualizacja Dostępny</string>
+	<string name="title_activity_update">Doatępna jest nowa aktualizacja xDrip+</string>
 	<string name="title_activity_display_qrcode">Udostepnij ustawienia poprzez kod QR</string>
 	<string name="title_activity_send_feed_back">Wyślij odpowiedź do Jamorham</string>
 	<string name="title_activity_maps">Mapa Parakeet</string>
@@ -155,7 +155,7 @@
 	<string name="xdrip_plus_update_settings">xDrip+ Ustawienia aktualizacji</string>
 	<string name="automatic_update_check">Automatyczne sprawdzanie aktualizacji</string>
 	<string name="update_channel">Aktualizacja kanału</string>
-	<string name="send_crash_errors_to_developer">Wyślij błędy awariach do dewelopera</string>
+	<string name="send_crash_errors_to_developer">Wyślij błędy o awariach do dewelopera</string>
 	<string name="automatic_crash_reporting">Automatyczne raportowanie awarii</string>
 	<string name="send_feedback_message">Wyślij wiadomość Feedback</string>
 	<string name="copying_settings">Ustawienia kopiowania</string>
@@ -210,7 +210,7 @@
 	<string name="special_value">Specjalna Wartość</string>
 	<string name="history">Historia</string>
 	<string name="statistics">Statystyka</string>
-	<string name="snooze_alert">Drzemka Alert</string>
+	<string name="snooze_alert">Wycisz Alarm</string>
 	<string name="less_common_settings">Mniej istotne ustawienia</string>
 	<string name="view_recent_errors_warnings">Najnowsze Błędy / ostrzeżenia</string>
 	<string name="other_settings">Inne ustawienia</string>
@@ -283,7 +283,7 @@
 	<string name="save_all_settings_to_sdcard">Zapisz wszystkie ustawienia na karcie SD</string>
 	<string name="load_all_settings_from_sdcard">Otwórz wszystkie ustawienia z karty SD</string>
 	<string name="delete_any_settings_on_sdcard">Usuń wszystkie ustawienia z karty SD</string>
-	<string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature">Za pomocą kodów QR przenieść ustawienia za pomocą Ustawienia-> Konfiguracja funkcji Auto</string>
+	<string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature">Za pomocą kodów QR przenieść ustawienia. Ustawienia-> funkcja Auto Konfiguracji</string>
 	<string name="xdrip_plus_security_key_settings_only">tylko xDrip Plus Ustawienia zabezpieczeń klucza</string>
 	<string name="show_general_and_collection_settings">Wyswietl ustawienia ogólne i collection</string>
 	<string name="copy_all_settings">Kopiowanie wszystkich ustawień</string>
@@ -337,7 +337,7 @@
 	<string name="speak_your_note_text">Wypowiadaj swoją notatkę tekstową</string>
 	<string name="alarm_if_above_high_value">Alarm w przypadku przekroczenia high value</string>
 	<string name="for_longer_than_minutes">dłuższych niż (minuty)</string>
-	<string name="choose_sound_used_for_persistent_high_alarm">Wybierz dźwięk używany przy utrzymującym się wysokim alarmie.</string>
+	<string name="choose_sound_used_for_persistent_high_alarm">Wybierz dźwięk alarmu używany przy utrzymującym się wysokim poziomie.</string>
 	<string name="persistent_high_sound">Trwały wysoki dźwięk</string>
 	<string name="forecast_lows">Prognoza niskich</string>
 	<string name="raise_alarm_on_forecast_low">Podnieść alarm Prognoza Low</string>
@@ -349,7 +349,7 @@
 	<string name="raise_parakeet_notification_silently_when_charging">Podczas ładowania wycisz notyfikacje parakeet</string>
 	<string name="silent_alert_when_charging">Ciche ostrzeżenie podczas ładowania</string>
 	<string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Przy starcie alarm jest uspiony przez pewien czas, po którym następuje uruchomienie.</string>
-	<string name="alarms_silenced_during_telephone_calls">Alarmy wyciszony w czasie rozmów telefonicznych</string>
+	<string name="alarms_silenced_during_telephone_calls">Alarmy wyciszone w czasie rozmów telefonicznych</string>
 	<string name="suppress_alerts_if_missed_readings">Wyłącza alarmy, przy braku odczytu</string>
 	<string name="bad_noisy_value_alerts">Wartosc alarmu dla złych (niedokładnych) danych</string>
 	<string name="keep_snoozing_if_glucose_is_heading_in_right_direction">Wycisz, jeśli stężenie glukozy zmierza we właściwym kierunku</string>
@@ -445,11 +445,11 @@
 	<string name="test_alert">Testowy alarm</string>
 	<string name="save_alert">zapisać alarm</string>
 	<string name="remove_alert">usunięcie wpisu</string>
-	<string name="snooze_alert_before_it_fires">drzemki alarm zanim odpala</string>
+	<string name="snooze_alert_before_it_fires">uspij alarm zanim bedzie aktywny</string>
 	<string name="create_low_alert">Ustaw ostrzeżenie o niskim poziomie</string>
-	<string name="create_high_alert">Tworzenie wysokiej alert</string>
+	<string name="create_high_alert">Ustaw ostrzeżenie o wysokim poziomie</string>
 	<string name="long_press_an_existing_alert_to_edit">(Długie naciśnięcie - edytuj istniejący alert)</string>
-	<string name="adding">Dodawanie</string>
+	<string name="adding">Dodaje</string>
 	<string name="high">wysoki</string>
 	<string name="alert">alarm</string>
 	<string name="high_alert">Wysoki Alarm</string>
@@ -464,7 +464,7 @@
 	<string name="the_standard_xdrip_calculated_value">Standardowe wartości obliczone przez xDrip</string>
 	<string name="display_ideal_glucose_target_line">Wyświetl idealną docelową linie glukozy</string>
 	<string name="display_eight_hour_average_line">Wyświetl usrednioną linie (8 godzin)</string>
-	<string name="display_twenty_four_hour_average_line">Wyświetlacz 24 godzin średnio linia</string>
+	<string name="display_twenty_four_hour_average_line">Wyświetl linia średnią (24 godziny)</string>
 	<string name="predictive_model_inner_workings">Predictive Model wewnętrzne funkcjonowanie</string>
 	<string name="noise_model_inner_workings">Hałas wewnętrzne funkcjonowanie modelu</string>
 	<string name="glucose_number_from_filtered">Numer Glukoza z filtrowanego</string>

@@ -142,7 +142,10 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                     // sanity check the number?
 
                                     Calibration calibration = Calibration.create(calValue, getApplicationContext());
-                                    UndoRedo.addUndoCalibration(calibration.uuid);
+                                    if (calibration!=null) { UndoRedo.addUndoCalibration(calibration.uuid); } else {
+                                        Log.e(TAG,"Calibration creation resulted in null");
+                                        // TODO probably follower must ensure it has a valid sensor regardless..
+                                    }
                                     Intent tableIntent = new Intent(v.getContext(), Home.class);
                                     startActivity(tableIntent);
                                     GcmActivity.pushCalibration(string_value, "0");
