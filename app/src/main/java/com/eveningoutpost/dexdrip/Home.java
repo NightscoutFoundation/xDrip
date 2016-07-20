@@ -202,7 +202,7 @@ public class Home extends ActivityWithMenu {
         set_is_follower();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        checkEula();
+        final boolean checkedeula = checkEula();
         setContentView(R.layout.activity_home);
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -371,7 +371,11 @@ public class Home extends ActivityWithMenu {
         });
 
         JoH.fixActionBar(this);
-        getSupportActionBar().setTitle(R.string.app_name);
+        try {
+            getSupportActionBar().setTitle(R.string.app_name);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Couldn't set title due to null pointer");
+        }
         activityVisible = true;
 
         // handle incoming extras
@@ -382,7 +386,7 @@ public class Home extends ActivityWithMenu {
         PlusSyncService.startSyncService(getApplicationContext(), "HomeOnCreate");
         ParakeetHelper.notifyOnNextCheckin(false);
 
-        if (!getString(R.string.app_name).equals("xDrip+")) {
+        if ((checkedeula) && (!getString(R.string.app_name).equals("xDrip+"))) {
             showcasemenu(SHOWCASE_VARIANT);
         }
 
@@ -1058,18 +1062,22 @@ public class Home extends ActivityWithMenu {
         return menu_name;
     }
 
-    private void checkEula() {
+    private boolean checkEula() {
 
-        boolean warning_agreed_to = prefs.getBoolean("warning_agreed_to", false);
+        final boolean warning_agreed_to = prefs.getBoolean("warning_agreed_to", false);
         if (!warning_agreed_to) {
             startActivity(new Intent(getApplicationContext(), Agreement.class));
             finish();
+            return false;
         } else {
-            boolean IUnderstand = prefs.getBoolean("I_understand", false);
+            final boolean IUnderstand = prefs.getBoolean("I_understand", false);
             if (!IUnderstand) {
                 Intent intent = new Intent(getApplicationContext(), LicenseAgreementActivity.class);
                 startActivity(intent);
                 finish();
+                return false;
+            } else {
+                return true;
             }
         }
     }

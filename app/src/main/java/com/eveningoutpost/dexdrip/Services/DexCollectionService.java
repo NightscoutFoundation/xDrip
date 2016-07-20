@@ -77,6 +77,7 @@ public class DexCollectionService extends Service {
     private static final int STATE_CONNECTED = BluetoothProfile.STATE_CONNECTED;
 
     public static double last_time_seen = 0;
+    private static int watchdog_count = 0;
 
     public final UUID xDripDataService = UUID.fromString(HM10Attributes.HM_10_SERVICE);
     public final UUID xDripDataCharacteristic = UUID.fromString(HM10Attributes.HM_RX_TX);
@@ -473,6 +474,7 @@ public class DexCollectionService extends Service {
     public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
         long timestamp = new Date().getTime();
         last_time_seen = JoH.ts();
+        watchdog_count=0;
         if (CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()) {
             Log.i(TAG, "setSerialDataToTransmitterRawData: Dealing with Dexbridge packet!");
             int DexSrc;
@@ -557,9 +559,15 @@ public class DexCollectionService extends Service {
         if (last_time_seen == 0) return;
         if (prefs.getBoolean("bluetooth_watchdog",false)) {
             if ((JoH.ts() - last_time_seen) > 1200000) {
-                Log.e(TAG, "Watchdog triggered, attempting to reset bluetooth");
-                JoH.restartBluetooth(getApplicationContext());
-                last_time_seen = JoH.ts();
+                if (!JoH.isOngoingCall()) {
+                    Log.e(TAG, "Watchdog triggered, attempting to reset bluetooth");
+                    JoH.restartBluetooth(getApplicationContext());
+                    last_time_seen = JoH.ts();
+                    watchdog_count++;
+                    if (watchdog_count>5) last_time_seen=0;
+                } else {
+                    Log.e(TAG,"Delaying watchdog reset as phone call is ongoing.");
+                }
             }
         }
     }
