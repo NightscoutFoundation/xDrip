@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.AndroidBarcode;
@@ -76,7 +77,8 @@ public class BluetoothScan extends ListActivityWithMenu {
             return;
         }
         if (!bluetooth_manager.getAdapter().isEnabled()) {
-            Toast.makeText(this, "Bluetooth is turned off on this device currently", Toast.LENGTH_LONG).show();
+            JoH.setBluetoothEnabled(getApplicationContext(),true);
+            Toast.makeText(this, "Trying to turn Bluetooth on", Toast.LENGTH_LONG).show();
         } else {
             if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
                 Toast.makeText(this, "The android version of this device is not compatible with Bluetooth Low Energy", Toast.LENGTH_LONG).show();

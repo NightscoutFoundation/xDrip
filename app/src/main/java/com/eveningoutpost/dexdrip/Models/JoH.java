@@ -1,6 +1,8 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -424,4 +426,59 @@ public class JoH {
         }
     }
 
+    public synchronized static void setBluetoothEnabled(Context context,boolean state)
+    {
+        try {
+            if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2) {
+
+                final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+                if (bluetoothManager == null) {
+                    UserError.Log.e(TAG, "Couldn't get bluetooth in setBluetoothEnabled");
+                    return;
+                }
+                BluetoothAdapter mBluetoothAdapter = bluetoothManager.getAdapter(); // local scope only
+                if (mBluetoothAdapter == null) {
+                    UserError.Log.e(TAG, "Couldn't get bluetooth adapter in setBluetoothEnabled");
+                    return;
+                }
+                try {
+                    if (state) {
+                        UserError.Log.i(TAG, "Setting bluetooth enabled");
+                        mBluetoothAdapter.enable();
+                    } else {
+                        UserError.Log.i(TAG, "Setting bluetooth disabled");
+                        mBluetoothAdapter.disable();
+
+                    }
+                } catch (Exception e) {
+                    UserError.Log.e(TAG, "Exception when enabling/disabling bluetooth: " + e);
+                }
+            } else {
+                UserError.Log.e(TAG,"Bluetooth low energy not supported");
+            }
+        }
+        finally {
+            //
+        }
+    }
+
+    public synchronized static void restartBluetooth(final Context context) {
+        new Thread() {
+            @Override
+            public void run() {
+                final PowerManager.WakeLock wl = getWakeLock("restart-bluetooth", 60000);
+                try {
+                    setBluetoothEnabled(context, false);
+                    try {
+                        Thread.sleep(6000);
+                    } catch (InterruptedException e) {
+                        Log.d(TAG, "Got interrupted in resetBluetooth");
+                    }
+                    setBluetoothEnabled(context, true);
+                } finally {
+                    releaseWakeLock(wl);
+                }
+            }
+        }.start();
+    }
 }

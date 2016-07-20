@@ -146,6 +146,11 @@
                 android:summary="@string/older_gratuitous_wakelocks"
                 android:title="@string/use_excessive_wakelocks" />
             <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="bluetooth_watchdog"
+                android:summary="Reset Bluetooth by turning it off and on if we don't get anything in 20 minutes"
+                android:title="Bluetooth Watchdog" />
+            <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="bluetooth_excessive_wakelocks"
                 android:summary="Older bluetooth wakelocks which can drain extra battery but might be needed for bluetooth reception"

@@ -76,6 +76,8 @@ public class DexCollectionService extends Service {
     private static final int STATE_CONNECTING = BluetoothProfile.STATE_CONNECTING;
     private static final int STATE_CONNECTED = BluetoothProfile.STATE_CONNECTED;
 
+    public static double last_time_seen = 0;
+
     public final UUID xDripDataService = UUID.fromString(HM10Attributes.HM_10_SERVICE);
     public final UUID xDripDataCharacteristic = UUID.fromString(HM10Attributes.HM_RX_TX);
 
@@ -102,8 +104,10 @@ public class DexCollectionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        final PowerManager.WakeLock wl = JoH.getWakeLock("dexcollect-service", 120000);
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2){
             stopSelf();
+            JoH.releaseWakeLock(wl);
             return START_NOT_STICKY;
         }
         Context context = getApplicationContext();
@@ -114,10 +118,13 @@ public class DexCollectionService extends Service {
             setFailoverTimer();
         } else {
             stopSelf();
+            JoH.releaseWakeLock(wl);
             return START_NOT_STICKY;
         }
         lastdata = null;
         attemptConnection();
+        watchdog();
+        JoH.releaseWakeLock(wl);
         return START_STICKY;
     }
 
@@ -204,7 +211,6 @@ public class DexCollectionService extends Service {
         }
     }
 
-
     public void attemptConnection() {
         final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         if (bluetoothManager == null) {
@@ -216,6 +222,11 @@ public class DexCollectionService extends Service {
         if (mBluetoothAdapter == null) {
             setRetryTimer();
             return;
+        }
+
+        if (!mBluetoothAdapter.isEnabled()) {
+            Log.i(TAG,"Turning bluetooth on as appears disabled");
+            JoH.setBluetoothEnabled(getApplicationContext(), true);
         }
 
         if (device != null) {
@@ -267,7 +278,7 @@ public class DexCollectionService extends Service {
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            PowerManager.WakeLock wl = JoH.getWakeLock("bluetooth-gatt", 60000);
+            final PowerManager.WakeLock wl = JoH.getWakeLock("bluetooth-gatt", 60000);
             try {
                 if (Home.getPreferencesBoolean("bluetooth_excessive_wakelocks", true)) {
                     PowerManager powerManager = (PowerManager) mContext.getSystemService(POWER_SERVICE);
@@ -307,19 +318,21 @@ public class DexCollectionService extends Service {
                 Log.d(TAG, "onServicesDiscovered received: " + status);
                 return;
             }
-
+            final PowerManager.WakeLock wl = JoH.getWakeLock("bluetooth-onservices", 60000);
             Log.d(TAG, "onServicesDiscovered received status: " + status);
 
             final BluetoothGattService gattService = mBluetoothGatt.getService(xDripDataService);
             if (gattService == null) {
                 Log.w(TAG, "onServicesDiscovered: service " + xDripDataService + " not found");
                 listAvailableServices(mBluetoothGatt);
+                JoH.releaseWakeLock(wl);
                 return;
             }
 
             final BluetoothGattCharacteristic gattCharacteristic = gattService.getCharacteristic(xDripDataCharacteristic);
             if (gattCharacteristic == null) {
                 Log.w(TAG, "onServicesDiscovered: characteristic " + xDripDataCharacteristic + " not found");
+                JoH.releaseWakeLock(wl);
                 return;
             }
 
@@ -330,6 +343,7 @@ public class DexCollectionService extends Service {
             } else {
                 Log.w(TAG, "onServicesDiscovered: characteristic " + xDripDataCharacteristic + " not found");
             }
+            JoH.releaseWakeLock(wl);
         }
 
         @Override
@@ -458,6 +472,7 @@ public class DexCollectionService extends Service {
 
     public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
         long timestamp = new Date().getTime();
+        last_time_seen = JoH.ts();
         if (CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()) {
             Log.i(TAG, "setSerialDataToTransmitterRawData: Dealing with Dexbridge packet!");
             int DexSrc;
@@ -536,5 +551,16 @@ public class DexCollectionService extends Service {
 
         Log.d(TAG, "BgReading.create: new BG reading at " + timestamp + " with a timestamp of " + transmitterData.timestamp);
         BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, transmitterData.timestamp);
+    }
+
+    private void watchdog() {
+        if (last_time_seen == 0) return;
+        if (prefs.getBoolean("bluetooth_watchdog",false)) {
+            if ((JoH.ts() - last_time_seen) > 1200000) {
+                Log.e(TAG, "Watchdog triggered, attempting to reset bluetooth");
+                JoH.restartBluetooth(getApplicationContext());
+                last_time_seen = JoH.ts();
+            }
+        }
     }
 }
