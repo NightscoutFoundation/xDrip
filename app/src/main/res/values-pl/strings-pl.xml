@@ -67,7 +67,7 @@
 	<string name="pref_summary_broadcast_enabled">Włącz lokalną transmisję danych, dzięki czemu inne aplikacje (np. NightWatch) mogą otrzymać nowe wartości</string>
 	<string name="title_activity_share_test">Podziel test</string>
 	<string name="pref_pebble_trend_watchface">Użyj Pebble Trend Watchface</string>
-	<string name="pref_summary_pebble_trend_watchface">Użyj / install Pebble Trend Watchface (doświadczalnie)</string>
+	<string name="pref_summary_pebble_trend_watchface">Użyj / Zainstaluj Pebble Trend Watchface (experymentalne)</string>
 	<string name="pref_pebble_display_trend">Wyświetl Trend</string>
 	<string name="pref_summary_display_trend">Pokaż trend BG na tarczy zegarka xDrip Pebble.</string>
 	<string name="pref_pebble_display_high_line">Pokaż linie dla wysokich</string>
@@ -159,7 +159,7 @@
 	<string name="automatic_crash_reporting">Automatyczne raportowanie awarii</string>
 	<string name="send_feedback_message">Wyślij wiadomość Feedback</string>
 	<string name="copying_settings">Ustawienia kopiowania</string>
-	<string name="show_settings_qr_codes">Pokaż Ustawienia kody QR</string>
+	<string name="show_settings_qr_codes">Ustawienia dla kodów QR</string>
 	<string name="load_save_settings_to_sdcard">Otwórz / Zapisz ustawienia na karte SD</string>
 	<string name="alarms_and_alerts">Alarmy i alerty</string>
 	<string name="alerts_and_notifications">Alerty i powiadomienia</string>
@@ -216,7 +216,7 @@
 	<string name="other_settings">Inne ustawienia</string>
 	<string name="older_gratuitous_wakelocks">Starsze wakelocks które mogą rozładowywać baterię, ale mogą być potrzebne do NightWatch lub Android Wear</string>
 	<string name="use_excessive_wakelocks">Użyj nadmiernej Wakelocks</string>
-	<string name="speak_readings">Mów Odczyty</string>
+	<string name="speak_readings">Głosowe odczytywanie wartosci BG</string>
 	<string name="extra_status_line">Dodatkowa linia statusu</string>
 	<string name="dexcom_share_server_upload">Dexcom Share Server Prześlij dane</string>
 	<string name="upload_data_to_dex_servers">Prześlij dane do serwerów Dexcom, dzięki czemu można korzystać z aplikacji Dexcom</string>
@@ -241,7 +241,7 @@
 	<string name="treatments_prediction_curves">Zabiegi / Krzywe Info</string>
 	<string name="carbs_per_unit">Węglowodany na jednostkę</string>
 	<string name="everyday">Codziennie</string>
-	<string name="insulin_sensitivity_glucose_drop_per_unit">Insulina Czułość: spadek glukozy na 1 jednostke insuliny</string>
+	<string name="insulin_sensitivity_glucose_drop_per_unit">Insulina Czułość: spadek glukozy na 1 jednostkę insuliny</string>
 	<string name="transmitter_battery">Bateria nadajnika</string>
 	<string name="very_low">BARDZO NISKIE</string>
 	<string name="low">Niski</string>
@@ -340,9 +340,9 @@
 	<string name="choose_sound_used_for_persistent_high_alarm">Wybierz dźwięk alarmu używany przy utrzymującym się wysokim poziomie.</string>
 	<string name="persistent_high_sound">Trwały wysoki dźwięk</string>
 	<string name="forecast_lows">Prognoza niskich</string>
-	<string name="raise_alarm_on_forecast_low">Podnieść alarm Prognoza Low</string>
+	<string name="raise_alarm_on_forecast_low">Aktywuj alarm gdy przewiduje niski poziom</string>
 	<string name="notify_when_predicted_low_time_reaches_threshold">Powiadom gdy przewidywany czas dla niskich wartosci osiągnie próg</string>
-	<string name="predicted_low_sound">Dźwiek Przewidywana Niska wartość</string>
+	<string name="predicted_low_sound">Dźwiek dla Przewidywanej Niskiej wartości</string>
 	<string name="choose_sound_used_for_predicted_low_alarm">Wybierz dźwięk alarmu używany do przewidywanego niskiego poziomu.</string>
 	<string name="notify_when_parakeet_device_stops_checking_in">Powiadom, jeśli urządzenie Parakeet przestanie nadawać</string>
 	<string name="parakeet_related_alerts">Alerty związane z Parakeet</string>
@@ -365,7 +365,7 @@
 	<string name="display_delta">Wyświetl Delta</string>
 	<string name="displays_the_delta_units">Wyświetla jednostki dla Delta</string>
 	<string name="display_delta_units">Wyświetl jednostki dla Delta</string>
-	<string name="displays_the_slope_arrows">Wyświetl Strzałki dla poziomu cukru</string>
+	<string name="displays_the_slope_arrows">Wyświetl strzałki dla poziomu cukru</string>
 	<string name="display_slope_arrows">Wyświetl strzałki pokazujące kierunek zmian</string>
 	<string name="vibrate_watch_to_alert_no_data">Włącz wibracje zegarka tak aby alarmował, że nie otrzymujesz żadnych danych glukozy</string>
 	<string name="vibrate_when_missed_signal">Wibruj, gdy brak sygnału</string>
@@ -434,7 +434,7 @@
 	<string name="alert_name_colon">Nazwa alarmu:</string>
 	<string name="threshold_colon">Próg:</string>
 	<string name="default_snooze_colon">Domyślnie uśpij</string>
-	<string name="re_raise_every_x_minutes_if_unaknowledged">Re-raise co\nx\nunaknowledged minut, jeżeli:</string>
+	<string name="re_raise_every_x_minutes_if_unaknowledged">Aktywuj co\nx\nminut, jeżeli niepotwierdzony:</string>
 	<string name="alert_tone_colon">Alert Tone:</string>
 	<string name="choose_file">Wybierz plik</string>
 	<string name="select_time_for_alert_colon">Wybierz czas dla wpisu:</string>
