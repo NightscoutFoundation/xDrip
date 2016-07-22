@@ -455,6 +455,7 @@
 	<string name="high_alert">높은 경고</string>
 	<string name="low_alert">낮은 경고</string>
 	<string name="xbridge_battery">xBridge 배터리</string>
+	<string name="limitter_battery">LimiTTer 배터리</string>
 	<string name="parakeet_battery">앵무새의 일종 배터리</string>
 	<string name="after_calibration_rewrite_history">교정 후 새 교정에 부드럽게 최근의 원 그래프를 조정</string>
 	<string name="rewrite_history">재 작성 역사</string>

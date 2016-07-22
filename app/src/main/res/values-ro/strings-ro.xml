@@ -455,6 +455,7 @@
 	<string name="high_alert">Alarma de mare</string>
 	<string name="low_alert">Alertă redusă</string>
 	<string name="xbridge_battery">Acumulator xBridge</string>
+	<string name="limitter_battery">LimiTTer Acumulator</string>
 	<string name="parakeet_battery">Acumulator papagalul</string>
 	<string name="after_calibration_rewrite_history">După calibrare, ajustați graficul prime recente pentru a netezi la noua calibrare</string>
 	<string name="rewrite_history">Istoricul rescriere</string>

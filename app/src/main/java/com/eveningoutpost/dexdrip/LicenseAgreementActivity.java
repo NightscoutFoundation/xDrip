@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -13,6 +12,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 
@@ -22,6 +23,7 @@ public class LicenseAgreementActivity extends AppCompatActivity {
     CheckBox agreeCheckBox;
     Button saveButton;
     SharedPreferences prefs;
+    private static final String TAG = "LicenseActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +37,20 @@ public class LicenseAgreementActivity extends AppCompatActivity {
         agreeCheckBox.setChecked(IUnderstand);
         saveButton = (Button) findViewById(R.id.saveButton);
         addListenerOnButton();
+      /*  try {
+            final int gplaystatus = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getApplicationContext());
+            if (gplaystatus != ConnectionResult.SUCCESS) {
+                findViewById(R.id.googlelicenses).setVisibility(View.GONE);
+            }
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Got exception: " + e.toString());
+        }*/
     }
 
     public void viewGoogleLicenses(View myview) {
         try {
             if (!appended) {
-                String googleLicense = GoogleApiAvailability.getInstance().getOpenSourceSoftwareLicenseInfo(getApplicationContext());
+                final String googleLicense = GoogleApiAvailability.getInstance().getOpenSourceSoftwareLicenseInfo(getApplicationContext());
                 if (googleLicense != null) {
                     String whiteheader = "<font size=-2 color=white><pre>";
                     String whitefooter = "</font></pre>";
@@ -52,14 +62,18 @@ public class LicenseAgreementActivity extends AppCompatActivity {
                     findViewById(R.id.googlelicenses).setVisibility(View.INVISIBLE);
                     findViewById(R.id.webView).setVisibility(View.VISIBLE);
 
+                } else {
+                    UserError.Log.d(TAG, "Nullpointer getting Google License: errorcode:" + GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getApplicationContext()));
+                    findViewById(R.id.googlelicenses).setVisibility(View.INVISIBLE);
                 }
             }
         } catch (Exception e) {
+            // meh
         }
     }
-    public void viewWarning(View myview)
-    {
-    startActivity(new Intent(getApplicationContext(),Agreement.class));
+
+    public void viewWarning(View myview) {
+        startActivity(new Intent(getApplicationContext(), Agreement.class));
     }
 
     public void addListenerOnButton() {

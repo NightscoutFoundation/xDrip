@@ -57,14 +57,25 @@
                     android:layout_marginTop="20dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
                     android:text="@string/view_important_warning"
                     android:id="@+id/warningButton4"
                     android:onClick="viewWarning"
-                    android:layout_gravity="right" />
+                    android:layout_gravity="right"
+                    android:backgroundTint="#2c2c2c" />
 
-                <Button
-                    style="?android:attr/buttonStyleSmall"
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/translation_credits"
+                    android:id="@+id/translator_credits"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentEnd="true"
+                    android:paddingStart="10dp"
+                    android:gravity="right"
+                    android:textColor="#ffe57f"
+                    android:paddingTop="7dp" />
+
+                <Button style="?android:attr/buttonStyleSmall"
                     android:background="@android:color/transparent"
 
                     android:layout_width="wrap_content"

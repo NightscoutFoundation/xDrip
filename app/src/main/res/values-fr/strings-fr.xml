@@ -455,6 +455,7 @@
 	<string name="high_alert">Alerte élevée</string>
 	<string name="low_alert">Low Alert</string>
 	<string name="xbridge_battery">Batterie Xbridge</string>
+	<string name="limitter_battery">LimiTTer Batterie</string>
 	<string name="parakeet_battery">Batterie Parakeet</string>
 	<string name="after_calibration_rewrite_history">Après le calibrage, ajustez le graphique brut récente pour lisser à la nouvelle calibration</string>
 	<string name="rewrite_history">Rewrite Histoire</string>
