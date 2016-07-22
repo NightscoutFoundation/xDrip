@@ -397,6 +397,7 @@
     <string name="compatible_broadcast">Compatible Broadcast</string>
     <string name="show_datatables">Show Datatables</string>
     <string name="display_bridge_battery">Display Bridge Battery</string>
+    <string name="close_gatt_on_ble_disconnect">Close GATT on BLE disconnect</string>
     <string name="disable_battery_warning">Disable Battery Warning</string>
     <string name="additional_text_status">Additional text status</string>
     <string name="average">Average</string>

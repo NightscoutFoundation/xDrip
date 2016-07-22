@@ -347,16 +347,6 @@ public class BgReading extends Model implements ShareUploadableBg{
             return bgReading;
         }
 
-        final List<BgReading> possibleDuplicates = possibleDuplicates(timestamp);
-            if (possibleDuplicates != null && possibleDuplicates.size() > 0) {
-                Log.i(TAG, "BgReading.create: Received Packet where we already have another reading for the same timeslot. Exiting.");
-                final DateFormat dateFormatter = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, Locale.getDefault());
-                for (BgReading reading : possibleDuplicates) {
-                    Log.i(TAG, "  Possible duplicate with offset " + (timestamp - reading.timestamp) + " ms to reading at " + dateFormatter.format(new Date(reading.timestamp)) + ", raw: " + (raw_data/1000) + " vs. " + reading.raw_data + ".");
-                }
-            return null;
-        }
-
         Calibration calibration = Calibration.lastValid();
         if (calibration == null) {
             Log.d(TAG, "create: No calibration yet");
@@ -587,23 +577,6 @@ public class BgReading extends Model implements ShareUploadableBg{
                         .orderBy("timestamp desc")
                         .executeSingle();
             }
-        }
-        return null;
-    }
-
-    // TODO this method and readingNearTimeStamp should probably get merged in to a single method with margin as a parameter
-    public static List<BgReading> possibleDuplicates(long timestamp) {
-        final Sensor sensor = Sensor.currentSensor();
-        if (sensor != null) {
-            return new Select()
-                    .from(BgReading.class)
-                    .where("Sensor = ? ", sensor.getId())
-                    .where("calculated_value != 0")
-                    .where("raw_data != 0")
-                    .where("timestamp >= " + (timestamp-(3*60*1000))) // if we already have a reading up to 3 minutes before that timestamp
-                    .where("timestamp <= " + (timestamp+(3*60*1000))) // or there is within 3 minutes after the given timestamp
-                    .orderBy("timestamp desc")
-                    .execute();
         }
         return null;
     }

@@ -656,6 +656,8 @@ public class Preferences extends PreferenceActivity {
 
             final Preference scanShare = findPreference("scan_share2_barcode");
             final EditTextPreference transmitterId = (EditTextPreference) findPreference("dex_txid");
+            final Preference closeGatt = findPreference("close_gatt_on_ble_disconnect");
+
             final Preference pebbleSync2 = findPreference("broadcast_to_pebble_type");
             final Preference pebbleSync1 = findPreference("broadcast_to_pebble");
 
@@ -839,6 +841,7 @@ public class Preferences extends PreferenceActivity {
             if ((collectionType != DexCollectionType.DexbridgeWixel)
                     && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
                 collectionCategory.removePreference(transmitterId);
+                collectionCategory.removePreference(closeGatt);
             }
 
             // shouldn't this be merged in to logic above?
@@ -1119,10 +1122,11 @@ public class Preferences extends PreferenceActivity {
                     if ((collectionType != DexCollectionType.DexbridgeWixel)
                             && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
                         collectionCategory.removePreference(transmitterId);
-
+                        collectionCategory.removePreference(closeGatt);
                         //TODO Bridge battery display support
                     } else {
                         collectionCategory.addPreference(transmitterId);
+                        collectionCategory.addPreference(closeGatt);
                     }
 
                     if (collectionType == DexCollectionType.DexcomG5) {
