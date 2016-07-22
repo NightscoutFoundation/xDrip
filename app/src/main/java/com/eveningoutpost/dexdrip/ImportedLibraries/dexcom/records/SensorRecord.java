@@ -22,7 +22,9 @@ public class SensorRecord extends GenericTimestampRecord {
         super(packet);
         unfiltered = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getInt(OFFSET_UNFILTERED);
         filtered = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getInt(OFFSET_FILTERED);
-        rssi = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getShort(OFFSET_RSSI);
+        byte [] usRSSI = new byte[]{packet[17],packet[16]};
+        rssi = usRSSI[0] << 8 | usRSSI[1];
+        //rssi = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN).getShort(OFFSET_RSSI);
         Log.d("ShareTest", "filtered: " + filtered + " unfiltered: " + unfiltered);
     }
 

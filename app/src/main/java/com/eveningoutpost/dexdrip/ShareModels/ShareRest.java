@@ -64,7 +64,7 @@ public class ShareRest {
         }
     };
 
-    private static final String SHARE_BASE_URL = "https://share1.dexcom.com/ShareWebServices/Services/";
+    private static final String SHARE_BASE_URL = "https://share2.dexcom.com/ShareWebServices/Services/";
     private SharedPreferences sharedPreferences;
 
     public ShareRest (Context context, OkHttpClient okHttpClient) {
@@ -123,7 +123,7 @@ public class ShareRest {
                         Request original = chain.request();
                         Request copy = original.newBuilder().build();
                         Request modifiedRequest = original.newBuilder()
-                                .header("User-Agent", "Dexcom Share/3.0.2.11 CFNetwork/711.2.23 Darwin/14.0.0")
+                                .header("User-Agent", "CGM-Store-1.2/22 CFNetwork/711.5.6 Darwin/14.0.0")
                                 .header("Content-Type", "application/json")
                                 .header("Accept", "application/json")
                                 .build();
