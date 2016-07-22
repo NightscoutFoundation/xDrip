@@ -231,6 +231,12 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
+                    android:key="status_line_capture_percentage"
+                    android:summary="Percentage of sensor readings received"
+                    android:title="Packet capture percentage" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="extra_status_line"
                     android:key="status_line_high"
                     android:summary="Percentage of values above range."
                     android:title="@string/high_percentage" />

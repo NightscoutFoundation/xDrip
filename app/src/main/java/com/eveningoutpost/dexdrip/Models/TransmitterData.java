@@ -1,6 +1,8 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.provider.BaseColumns;
+
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.activeandroid.Model;
@@ -60,10 +62,17 @@ public class TransmitterData extends Model {
             Log.i(TAG, "create Processing a BTWixel or IPWixel packet");
             StringBuilder data_string = new StringBuilder();
             for (int i = 0; i < len; ++i) { data_string.append((char) buffer[i]); }
-            String[] data = data_string.toString().split("\\s+");
+            final String[] data = data_string.toString().split("\\s+");
 
             if (data.length > 1) { 
-                transmitterData.sensor_battery_level = Integer.parseInt(data[1]); 
+                transmitterData.sensor_battery_level = Integer.parseInt(data[1]);
+                if (data.length > 2) {
+                    try {
+                        Home.setPreferencesInt("bridge_battery", Integer.parseInt(data[2]));
+                    } catch (Exception e) {
+                        Log.e(TAG, "Got exception processing classic wixel or limitter battery value: " + e.toString());
+                    }
+                }
             }
             transmitterData.raw_data = Integer.parseInt(data[0]);
             transmitterData.filtered_data = Integer.parseInt(data[0]);

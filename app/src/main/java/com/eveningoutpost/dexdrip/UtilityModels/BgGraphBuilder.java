@@ -85,9 +85,9 @@ class PointValueExtended extends PointValue {
 
 public class BgGraphBuilder {
     public static final int FUZZER = (1000 * 30 * 5); // 2.5 mins?
-    public static final int TREATMENT_COLOR_GREEN = Color.parseColor("#77aa00");
-    public static final int TREATMENT_COLOR_DARK_GREEN = Color.parseColor("#334400");
-    public static final int PREDICTIVE_COLOR_PURPLE = Color.parseColor("#7700aa");
+    //public static final int TREATMENT_COLOR_GREEN = Color.parseColor("#77aa00");
+    //public static final int TREATMENT_COLOR_DARK_GREEN = Color.parseColor("#334400");
+    //public static final int PREDICTIVE_COLOR_PURPLE = Color.parseColor("#7700aa");
     public final static long DEXCOM_PERIOD = 300000;
     public final static double NOISE_TRIGGER = 10;
     public final static double NOISE_TOO_HIGH_FOR_PREDICT = 60;
@@ -95,7 +95,7 @@ public class BgGraphBuilder {
     public final static double NOISE_FORGIVE = 100;
     public static double low_occurs_at = -1;
     public static double previous_low_occurs_at = -1;
-    private final static String TAG = "jamorham graph test";
+    private final static String TAG = "jamorham graph";
     final int pointSize;
     final int axisTextSize;
     final int previewAxisTextSize;
@@ -118,6 +118,7 @@ public class BgGraphBuilder {
     public double defaultMaxY;
     public boolean doMgdl;
     public Viewport viewport;
+    public static double capturePercentage = -1;
     private int predictivehours = 0;
     private boolean prediction_enabled = false;
     private static double avg1value = 0;
@@ -175,6 +176,15 @@ public class BgGraphBuilder {
         end_time = end / FUZZER;
         start_time = start / FUZZER;
         bgReadings = BgReading.latestForGraph( numValues, start, end);
+
+        if ((end - start) > 80000000) {
+            try {
+                capturePercentage = ((bgReadings.size() * 100) / ((end - start) / 300000));
+                //Log.d(TAG, "CPTIMEPERIOD: " + Long.toString(end - start) + " percentage: " + JoH.qs(capturePercentage));
+            } catch (Exception e) {
+                capturePercentage = -1; // invalid reading
+            }
+        }
         calibrations = Calibration.latestForGraph( numValues, start, end);
         treatments = Treatments.latestForGraph(numValues, start, end);
         this.context = context;
