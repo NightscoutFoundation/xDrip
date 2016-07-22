@@ -79,7 +79,7 @@ public class TransmitterData extends Model {
             transmitterData.timestamp = timestamp;
         }
 
-        //Stop allowing readings that are older than the last one - or duplicate data, its bad!
+        //Stop allowing readings that are older than the last one - or duplicate data, its bad! (from savek-cc)
         final TransmitterData lastTransmitterData = TransmitterData.last();
         if (lastTransmitterData != null && lastTransmitterData.timestamp >= timestamp) {
             return null;
@@ -87,7 +87,7 @@ public class TransmitterData extends Model {
         if (lastTransmitterData != null && lastTransmitterData.raw_data == transmitterData.raw_data && Math.abs(lastTransmitterData.timestamp - timestamp) < (120000)) {
             return null;
         }
-        final Calibration lastCalibration = Calibration.last();
+        final Calibration lastCalibration = Calibration.lastValid();
         if (lastCalibration != null && lastCalibration.timestamp > timestamp) {
             return null;
         }

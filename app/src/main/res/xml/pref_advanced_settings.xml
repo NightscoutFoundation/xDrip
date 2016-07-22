@@ -146,10 +146,15 @@
                 android:summary="@string/older_gratuitous_wakelocks"
                 android:title="@string/use_excessive_wakelocks" />
             <CheckBoxPreference
-                android:defaultValue="false"
+                android:defaultValue="true"
                 android:key="bluetooth_watchdog"
                 android:summary="Reset Bluetooth by turning it off and on if we don't get anything in 20 minutes"
                 android:title="Bluetooth Watchdog" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="close_gatt_on_ble_disconnect"
+                android:summary="If the bluetooth watchdog activates often then you can try unchecking this option to see if it helps"
+                android:title="@string/close_gatt_on_ble_disconnect" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="bluetooth_excessive_wakelocks"
