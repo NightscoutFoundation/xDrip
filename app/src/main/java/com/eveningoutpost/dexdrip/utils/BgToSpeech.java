@@ -136,13 +136,16 @@ public class BgToSpeech {
             return;
         }
         // ACTUAL TTS:
-
-        final int result = tts.speak(calculateText(value, prefs), TextToSpeech.QUEUE_FLUSH, null);
-            if(result == TextToSpeech.SUCCESS){
+        try {
+            final int result = tts.speak(calculateText(value, prefs), TextToSpeech.QUEUE_FLUSH, null);
+            if (result == TextToSpeech.SUCCESS) {
                 Log.d(TAG, "successfully spoken");
             } else {
                 Log.d(TAG, "error " + result + ". trying again with new tts-object.");
             }
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "IllegalStateException in TTS: " + e.toString());
+        }
     }
 
     private String calculateText(double value, SharedPreferences prefs) {
