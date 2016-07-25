@@ -7,10 +7,12 @@ package com.eveningoutpost.dexdrip;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmPubSub;
@@ -31,7 +33,8 @@ public class RegistrationIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        final PowerManager.WakeLock wl = JoH.getWakeLock("registration-intent",120000);
         try {
             InstanceID instanceID = InstanceID.getInstance(this);
             GcmActivity.senderid = getString(R.string.gcm_defaultSenderId);
@@ -42,12 +45,14 @@ public class RegistrationIntentService extends IntentService {
             subscribeTpcs(token);
             sendRegistrationToServer(token);
             sharedPreferences.edit().putBoolean(PreferencesNames.SENT_TOKEN_TO_SERVER, true).apply();
+            Intent registrationComplete = new Intent(PreferencesNames.REGISTRATION_COMPLETE);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
         } catch (Exception e) {
             Log.e(TAG, "Failed to complete token refresh", e);
             sharedPreferences.edit().putBoolean(PreferencesNames.SENT_TOKEN_TO_SERVER, false).apply();
+        } finally {
+            JoH.releaseWakeLock(wl);
         }
-        Intent registrationComplete = new Intent(PreferencesNames.REGISTRATION_COMPLETE);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
     }
 
     private void sendRegistrationToServer(String token) {

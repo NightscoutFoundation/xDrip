@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.Models;
 
 import android.provider.BaseColumns;
 
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
@@ -69,6 +70,7 @@ public class TransmitterData extends Model {
                 if (data.length > 2) {
                     try {
                         Home.setPreferencesInt("bridge_battery", Integer.parseInt(data[2]));
+                        if (Home.get_master()) GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery",-1));
                     } catch (Exception e) {
                         Log.e(TAG, "Got exception processing classic wixel or limitter battery value: " + e.toString());
                     }

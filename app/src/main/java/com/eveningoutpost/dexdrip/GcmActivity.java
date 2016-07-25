@@ -2,8 +2,10 @@ package com.eveningoutpost.dexdrip;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -19,6 +21,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
+import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -50,13 +53,17 @@ public class GcmActivity extends Activity {
     private static final Object queue_lock = new Object();
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     public static boolean cease_all_activity = false;
+    public static double last_ack = -1;
+    public static double last_send = -1;
     private static int recursion_depth = 0;
+    private static int last_bridge_battery = -1;
     private static final int MAX_RECURSION = 30;
     private static final int MAX_QUEUE_SIZE = 500;
 
     public static synchronized void queueAction(String reference) {
         synchronized (queue_lock) {
             Log.d(TAG, "Received ACK, Queue Size: " + GcmActivity.gcm_queue.size() + " " + reference);
+            last_ack = JoH.ts();
             for (GCM_data datum : gcm_queue) {
                 String thisref = datum.bundle.getString("action") + datum.bundle.getString("payload");
                 if (thisref.equals(reference)) {
@@ -157,6 +164,15 @@ public class GcmActivity extends Activity {
             GcmActivity.sendMessage("sbu", Integer.toString(battery));
         }
     }
+    public static void sendBridgeBattery(final int battery)
+    {
+        if (battery != last_bridge_battery) {
+            if (JoH.ratelimit("gcm-bbu", 1800)) {
+                GcmActivity.sendMessage("bbu", Integer.toString(battery));
+                last_bridge_battery=battery;
+            }
+        }
+    }
 
 
     public static void requestBGsync() {
@@ -167,6 +183,9 @@ public class GcmActivity extends Activity {
                 bg_sync_backoff++;
             } else {
                 Log.d(TAG, "Already requested BGsync recently, backoff: "+bg_sync_backoff);
+                if (JoH.ratelimit("check-queue", 20)) {
+                    queueCheckOld(xdrip.getAppContext());
+                }
             }
         } else {
             Log.d(TAG, "No token for BGSync");
@@ -320,7 +339,8 @@ public class GcmActivity extends Activity {
                 return "";
             }
             gcm.send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), data);
-
+            if (last_ack==-1) last_ack=0;
+            last_send = JoH.ts();
             msg = "Sent message OK";
         } catch (IOException ex) {
             msg = "Error :" + ex.getMessage();
@@ -396,6 +416,47 @@ public class GcmActivity extends Activity {
             Log.e(TAG, "Exception onPause: ", e);
         }
         super.onPause();
+    }
+
+    public static void checkSync(final Context context) {
+        if ((GcmActivity.last_ack > -1) && (GcmActivity.last_send > 0)) {
+            if (GcmActivity.last_send > GcmActivity.last_ack) {
+                if (Home.getPreferencesLong("sync_warning_never", 0) == 0) {
+                    if (PreferencesNames.SYNC_VERSION.equals("1")) {
+                        final double ack_outstanding = JoH.ts() - GcmActivity.last_send;
+                        if (ack_outstanding > 600000) {
+                            if (JoH.ratelimit("ack-failure", 7200)) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                builder.setTitle("Possible Sync Problem");
+                                builder.setMessage("It appears we haven't been able to send/receive sync data for the last: " + JoH.qs(ack_outstanding / 60000, 0) + " minutes\n\nDo you want to perform a reset of the sync system?");
+
+                                builder.setNeutralButton("Maybe Later", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                builder.setPositiveButton("YES, Do it!", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        JoH.static_toast(context, "Resetting...", Toast.LENGTH_LONG);
+                                        SdcardImportExport.forceGMSreset();
+                                    }
+                                });
+                                builder.setNegativeButton("NO, don't ask me again", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        Home.setPreferencesLong("sync_warning_never", (long) JoH.ts());
+                                    }
+                                });
+                                AlertDialog alert = builder.create();
+                                alert.show();
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**

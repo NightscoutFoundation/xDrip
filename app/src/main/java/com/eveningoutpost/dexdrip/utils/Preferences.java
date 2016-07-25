@@ -165,6 +165,7 @@ public class Preferences extends PreferenceActivity {
                 PlusSyncService.clearandRestartSyncService(getApplicationContext());
                 if (prefs.getString("dex_collection_method", "").equals("Follower")) {
                     PlusSyncService.clearandRestartSyncService(getApplicationContext());
+                    GcmActivity.last_sync_request = 0;
                     GcmActivity.requestBGsync();
                 }
             } else {
@@ -399,7 +400,7 @@ public class Preferences extends PreferenceActivity {
             preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z]+\\)$", "") + "  (" + value.toString() + ")");
             if (do_update) {
                 preference.getEditor().putString(preference.getKey(), value.toString()).apply(); // update prefs now
-                UpdateActivity.last_check_time = 0;
+                UpdateActivity.last_check_time = -1;
                 UpdateActivity.checkForAnUpdate(preference.getContext());
             }
             return true;
@@ -1178,6 +1179,9 @@ public class Preferences extends PreferenceActivity {
                     if (preference.getKey().equals("dex_collection_method")) {
                         CollectionServiceStarter.restartCollectionService(preference.getContext(), (String) newValue);
                         if (newValue.equals("Follower")) {
+                            // reset battery whenever changing collector type
+                            AllPrefsFragment.this.prefs.edit().putInt("bridge_battery",0).apply();
+                            AllPrefsFragment.this.prefs.edit().putInt("parakeet_battery",0).apply();
                             if (AllPrefsFragment.this.prefs.getBoolean("plus_follow_master",false))
                             {
                                 AllPrefsFragment.this.prefs.edit().putBoolean("plus_follow_master", false).apply();

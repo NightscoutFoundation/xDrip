@@ -36,6 +36,7 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -99,6 +100,7 @@ public class DexCollectionService extends Service {
         if(CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()){
             Log.i(TAG,"onCreate: resetting bridge_battery preference to 0");
             prefs.edit().putInt("bridge_battery",0).apply();
+            //if (Home.get_master()) GcmActivity.sendBridgeBattery(prefs.getInt("bridge_battery",-1));
         }
         Log.i(TAG, "onCreate: STARTING SERVICE");
     }
@@ -532,6 +534,7 @@ public class DexCollectionService extends Service {
                     lastPacketTime = secondsNow;
                     Log.v(TAG, "setSerialDataToTransmitterRawData: Creating TransmitterData at " + timestamp);
                     processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
+                    if (Home.get_master()) GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery",-1));
                 }
             }
         } else {

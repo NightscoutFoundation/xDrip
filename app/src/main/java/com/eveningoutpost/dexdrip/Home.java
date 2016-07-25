@@ -72,6 +72,7 @@ import com.eveningoutpost.dexdrip.languageeditor.LanguageEditor;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -750,17 +751,17 @@ public class Home extends ActivityWithMenu {
                 || allWords.contentEquals("erase last treatment")) {
             Treatments.delete_last(true);
             updateCurrentBgInfo("delete last treatment");
-        }
-
-        if ((allWords.contentEquals("delete all treatments"))
+        } else if ((allWords.contentEquals("delete all treatments"))
                 || (allWords.contentEquals("delete all treatment"))) {
             Treatments.delete_all(true);
             updateCurrentBgInfo("delete all treatment");
-        }
-
-        if (allWords.contentEquals("delete last calibration")
+        } else if (allWords.contentEquals("delete last calibration")
                 || allWords.contentEquals("clear last calibration")) {
             Calibration.clearLastCalibration();
+        } else if (allWords.contentEquals("force google reboot")) {
+            SdcardImportExport.forceGMSreset();
+        } else if (allWords.contentEquals("enable engineering mode")) {
+            Home.setPreferencesBoolean("engineering_mode", true);
         }
 
         if (allWords.contentEquals("clear battery warning")) {
@@ -1163,6 +1164,10 @@ public class Home extends ActivityWithMenu {
                 }
             }
         }
+
+        if (get_follower() || get_master()) {
+          GcmActivity.checkSync(this);
+        }
     }
 
     private void setupCharts() {
@@ -1524,19 +1529,22 @@ public class Home extends ActivityWithMenu {
         df.setMaximumFractionDigits(0);
 
         final boolean isDexbridge = CollectionServiceStarter.isDexBridgeOrWifiandDexBridge();
+        final boolean hasBtWixel = DexCollectionType.hasBtWixel();
         final boolean isLimitter = CollectionServiceStarter.isLimitter();
         //boolean isWifiWixel = CollectionServiceStarter.isWifiandBTWixel(getApplicationContext()) | CollectionServiceStarter.isWifiWixel(getApplicationContext());
-        if (isDexbridge||isLimitter) {
-            int bridgeBattery = prefs.getInt("bridge_battery", 0);
+        if (isDexbridge||isLimitter||hasBtWixel||is_follower) {
+            final int bridgeBattery = prefs.getInt("bridge_battery", 0);
 
-            if (bridgeBattery == 0) {
+            if (bridgeBattery < 1) {
                 //dexbridgeBattery.setText(R.string.waiting_for_packet);
                 dexbridgeBattery.setVisibility(View.INVISIBLE);
             } else {
                 if (isDexbridge) {
                     dexbridgeBattery.setText(getString(R.string.xbridge_battery) + ": " + bridgeBattery + "%");
-                } else {
+                } else if (isLimitter){
                     dexbridgeBattery.setText(getString(R.string.limitter_battery) + ": " + bridgeBattery + "%");
+                } else {
+                    dexbridgeBattery.setText("Bridge battery"+ ": " + bridgeBattery + ((bridgeBattery < 200) ? "%" : "mV"));
                 }
                 }
             if (bridgeBattery < 50) dexbridgeBattery.setTextColor(Color.YELLOW);
@@ -1547,10 +1555,8 @@ public class Home extends ActivityWithMenu {
         } else {
             dexbridgeBattery.setVisibility(View.INVISIBLE);
         }
-        if (CollectionServiceStarter.isWifiWixel(getApplicationContext())
-                || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())
-                || CollectionServiceStarter.isWifiandDexBridge()) {
-            int bridgeBattery = prefs.getInt("parakeet_battery", 0);
+        if (DexCollectionType.hasWifi()) {
+            final int bridgeBattery = prefs.getInt("parakeet_battery", 0);
             if (bridgeBattery > 0) {
                 if (bridgeBattery < 50) {
                     parakeetBattery.setText(getString(R.string.parakeet_battery) + ": " + bridgeBattery + "%");

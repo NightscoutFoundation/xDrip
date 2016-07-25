@@ -7,6 +7,7 @@ package com.eveningoutpost.dexdrip;
 import android.content.Intent;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
@@ -45,7 +46,9 @@ public class TaskService extends GcmTaskService {
 
     private int doUnmeteredTask() {
         if (GcmActivity.token != null) {
-            UpdateActivity.checkForAnUpdate(getApplicationContext());
+            if (JoH.ratelimit("unmetered-update", 43200)) {
+                UpdateActivity.checkForAnUpdate(getApplicationContext());
+            }
         }
         return GcmNetworkManager.RESULT_SUCCESS;
     }

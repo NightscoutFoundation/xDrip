@@ -2,11 +2,9 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 // jamorham
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -31,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class UpdateActivity extends AppCompatActivity {
 
     private static final String autoUpdatePrefsName = "auto_update_download";
+    private static final String last_update_check_time = "last_update_check_time";
     private static final String TAG = "jamorham update";
     private static OkHttpClient httpClient = null;
     public static double last_check_time = 0;
@@ -43,8 +42,10 @@ public class UpdateActivity extends AppCompatActivity {
     public static void checkForAnUpdate(final Context context) {
         if (prefs == null) prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (!prefs.getBoolean(autoUpdatePrefsName, true)) return;
+        if (last_check_time == 0) last_check_time=(double)prefs.getLong(last_update_check_time,0);
         if ((JoH.ts() - last_check_time) > 86400000) {
             last_check_time = JoH.ts();
+            prefs.edit().putLong(last_update_check_time, (long)last_check_time).apply();
 
             String channel = prefs.getString("update_channel", "beta");
             Log.i(TAG, "Checking for a software update, channel: " + channel);

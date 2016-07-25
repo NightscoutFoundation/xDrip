@@ -19,6 +19,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Models.AlertType;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -100,6 +101,20 @@ public class SdcardImportExport extends AppCompatActivity {
         // shared preferences are cached so we need a hard restart
         GcmActivity.last_sync_request = 0;
         android.os.Process.killProcess(android.os.Process.myPid());
+    }
+
+    public static void forceGMSreset() {
+        final Context context = xdrip.getAppContext();
+        final String gmsfiles = "shared_prefs/com.google.android.gms.measurement.prefs.xml,shared_prefs/com.google.android.gms.appid.xml,databases/google_app_measurement.db,databases/google_app_measurement.db-journal";
+        final String[] filenames = gmsfiles.split(",");
+        for (String filename : filenames) {
+            if (deleteFolder(new File(context.getFilesDir().getParent() + "/" + filename), false)) {
+                Log.d(TAG, "Successfully deleted: " + filename);
+            } else {
+                Log.e(TAG, "Error deleting: " + filename);
+            }
+        }
+        hardReset();
     }
 
     public void loadPreferencesToSD(View myview) {

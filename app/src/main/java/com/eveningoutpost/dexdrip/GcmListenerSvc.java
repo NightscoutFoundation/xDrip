@@ -163,6 +163,11 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                     Sensor.updateBatteryLevel(Integer.parseInt(payload), true);
                     TransmitterData.updateTransmitterBatteryFromSync(Integer.parseInt(payload));
                 }
+            } else if (action.equals("bbu")) {
+                if (Home.get_follower()) {
+                    Log.i(TAG, "Received bridge battery level update");
+                    Home.setPreferencesInt("bridge_battery", Integer.parseInt(payload));
+                }
             } else if (action.equals("sbr")) {
                 if ((Home.get_master())  && JoH.ratelimit("gcm-sbr",300)) {
                     Log.i(TAG, "Received sensor battery request");
