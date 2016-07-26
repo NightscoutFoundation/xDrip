@@ -374,6 +374,7 @@
 	<string name="compatible_broadcast">Совместимость трансляция</string>
 	<string name="show_datatables">Показать DataTables</string>
 	<string name="display_bridge_battery">Дисплей Bridge батареи</string>
+	<string name="close_gatt_on_ble_disconnect">Закрыть ГАТТ о BLE отключения</string>
 	<string name="disable_battery_warning">Отключение Предупреждение о разряде батареи</string>
 	<string name="additional_text_status">Дополнительный текстовый статус</string>
 	<string name="average">В среднем</string>

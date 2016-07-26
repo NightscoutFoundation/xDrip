@@ -374,6 +374,7 @@
 	<string name="compatible_broadcast">Kompatybilny Broadcast</string>
 	<string name="show_datatables">Pokaż DataTables</string>
 	<string name="display_bridge_battery">Wyświetlanie stanu baterii Bridge</string>
+	<string name="close_gatt_on_ble_disconnect">Blisko GATT na BLE rozłączeniem</string>
 	<string name="disable_battery_warning">Wyłączenie ostrzeżenia o stanie baterii</string>
 	<string name="additional_text_status">Dodatkowy tekst z statusem</string>
 	<string name="average">Średni</string>

@@ -374,6 +374,7 @@
 	<string name="compatible_broadcast">Kompatible Broadcasts</string>
 	<string name="show_datatables">Datentabellen anzeigen</string>
 	<string name="display_bridge_battery">Bridge Batteriestatus anzeigen</string>
+	<string name="close_gatt_on_ble_disconnect">Schließen GATT auf BLE trennen</string>
 	<string name="disable_battery_warning">Batteriewarnung deaktivieren</string>
 	<string name="additional_text_status">Zusätzlicher Statustext</string>
 	<string name="average">Durchschnittlich</string>
@@ -455,7 +456,7 @@
 	<string name="high_alert">Warnung (Hoch)</string>
 	<string name="low_alert">Warnung (Niedrig)</string>
 	<string name="xbridge_battery">xBridge Batterie</string>
-	<string name="limitter_battery">Begrenzerfunktion Batterie</string>
+	<string name="limitter_battery">LimiTTer Akku</string>
 	<string name="parakeet_battery">Parakeet Batterie</string>
 	<string name="after_calibration_rewrite_history">Nach Kalibrierung: Rohwerte an neuen Wert anpassen</string>
 	<string name="rewrite_history">Übersicht neu anlegen</string>

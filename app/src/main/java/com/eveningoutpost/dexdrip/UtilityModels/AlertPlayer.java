@@ -274,37 +274,41 @@ public class AlertPlayer {
             Log.e(TAG, "Cought exception preparing meidaPlayer", e);
             return;
         }
-        
 
-        if(mediaPlayer != null) {
+        if (mediaPlayer != null) {
             AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
             int maxVolume = manager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
             volumeBeforeAlert = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
-            volumeForThisAlert = (int)(maxVolume * VolumeFrac);
-            
+            volumeForThisAlert = (int) (maxVolume * VolumeFrac);
+
             Log.i(TAG, "before playing volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert);
             manager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeForThisAlert, 0);
-
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    Log.i(TAG, "PlayFile: onCompletion called (finished playing) ");
-                    AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
-                    int currentVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
-                    Log.i(TAG, "After playing volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert
-                            + " currentVolume " + currentVolume);
-                    if(volumeForThisAlert == currentVolume) {
-                        // If the user has changed the volume, don't change it again.
-                        manager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeBeforeAlert, 0);
+            try {
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        Log.i(TAG, "PlayFile: onCompletion called (finished playing) ");
+                        AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
+                        int currentVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                        Log.i(TAG, "After playing volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert
+                                + " currentVolume " + currentVolume);
+                        if (volumeForThisAlert == currentVolume) {
+                            // If the user has changed the volume, don't change it again.
+                            manager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeBeforeAlert, 0);
+                        }
                     }
-                }
-            });
-            Log.i(TAG, "PlayFile: calling mediaPlayer.start() ");
-            mediaPlayer.start();
-            // TODO catch and report IllegalStateException if one occurs
+                });
+                Log.i(TAG, "PlayFile: calling mediaPlayer.start() ");
+                mediaPlayer.start();
+            } catch (NullPointerException e) {
+                Log.wtf(TAG, "Playfile: Concurrency related null pointer exception: " + e.toString());
+            } catch (IllegalStateException e) {
+                Log.wtf(TAG, "Playfile: Concurrency related illegal state exception: " + e.toString());
+            }
+
         } else {
             // TODO, what should we do here???
-            Log.wtf(TAG,"PlayFile: Starting an alert failed, what should we do !!!");
+            Log.wtf(TAG, "PlayFile: Starting an alert failed, what should we do !!!");
         }
     }
 
