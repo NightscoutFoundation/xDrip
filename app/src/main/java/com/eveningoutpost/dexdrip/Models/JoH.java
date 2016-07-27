@@ -462,11 +462,20 @@ public class JoH {
         }
     }
 
+    public static void niceRestartBluetooth(Context context) {
+        if (!isOngoingCall()) {
+            if (ratelimit("joh-restart-bluetooth", 600)) {
+                restartBluetooth(context);
+            }
+        }
+    }
+
     public synchronized static void restartBluetooth(final Context context) {
         new Thread() {
             @Override
             public void run() {
                 final PowerManager.WakeLock wl = getWakeLock("restart-bluetooth", 60000);
+                Log.d(TAG,"Restarting bluetooth");
                 try {
                     setBluetoothEnabled(context, false);
                     try {

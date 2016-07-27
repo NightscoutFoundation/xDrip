@@ -22,6 +22,8 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.ReadDataShare;
@@ -104,7 +106,9 @@ public class DexShareCollectionService extends Service {
     private long lastHeartbeat = 0;
     private int heartbeatCount = 0;
 
-    private PendingIntent pendingIntent;
+    private static PendingIntent pendingIntent;
+    private static int statusErrors = 0;
+    private double instance = 0;
 
     @Override
     public void onCreate() {
@@ -118,12 +122,13 @@ public class DexShareCollectionService extends Service {
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         listenForChangeInSettings();
         bgToSpeech = BgToSpeech.setupTTS(getApplicationContext()); //keep reference to not being garbage collected
+        instance = JoH.ts();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "DexShareCollectionStart");
+        final PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
+        final PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "DexShareCollectionStart");
         wakeLock.acquire(40000);
         Log.d(TAG, "onStartCommand");
         try {
@@ -318,6 +323,7 @@ public class DexShareCollectionService extends Service {
                                         if (egvRecords != null) {
                                             Log.d(TAG, "Made the full round trip, got " + egvRecords.length + " EVG Records");
                                             BgReading.create(egvRecords, additiveSystemTimeOffset, getApplicationContext());
+                                            statusErrors=0;
                                             {
                                                 Log.d(TAG, "Releasing wl in egv");
                                                 requestLowPriority();
@@ -339,6 +345,7 @@ public class DexShareCollectionService extends Service {
                                         if (sensorRecords != null) {
                                             Log.d(TAG, "Made the full round trip, got " + sensorRecords.length + " Sensor Records");
                                             BgReading.create(sensorRecords, additiveSystemTimeOffset, getApplicationContext());
+                                            statusErrors=0;
                                             readData.getRecentEGVs(evgRecordListener);
                                         }
                                     }
@@ -350,6 +357,7 @@ public class DexShareCollectionService extends Service {
                                         if (calRecords != null) {
                                             Log.d(TAG, "Made the full round trip, got " + calRecords.length + " Cal Records");
                                             Calibration.create(calRecords, addativeDisplayTimeOffset, getApplicationContext());
+                                            statusErrors=0;
                                             readData.getRecentSensorRecords(sensorRecordListener);
                                         }
                                     }
@@ -583,7 +591,18 @@ public class DexShareCollectionService extends Service {
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             Log.i(TAG, "Gatt state change status: " + status + " new state: " + newState);
             if (status == 133) {
-                Log.e(TAG, "Got the status 133 bug, bad news! Might require devices to forget each other");
+                statusErrors++;
+                Log.e(TAG, "Got the status 133 bug, bad news! count:"+statusErrors+" - Might require devices to forget each other: instance uptime: "+JoH.qs((JoH.ts()-instance)/1000,0));
+                if (statusErrors>4)
+                {
+                    Log.wtf(TAG,"Forcing bluetooth reset to try to combat errors");
+                    statusErrors=0;
+                    JoH.niceRestartBluetooth(getApplicationContext());
+                    setRetryTimer();
+                    close();
+                    stopSelf();
+                    return;
+                }
             }
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mBluetoothGatt = gatt;

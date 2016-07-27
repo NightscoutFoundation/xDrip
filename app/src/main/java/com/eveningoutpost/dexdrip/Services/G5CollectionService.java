@@ -110,6 +110,7 @@ public class G5CollectionService extends Service {
 
     private BluetoothDevice device;
     private Boolean isBondedOrBonding = false;
+    public static boolean keep_running = true;
 
     private ScanSettings settings;
     private List<ScanFilter> filters;
@@ -183,15 +184,16 @@ public class G5CollectionService extends Service {
 
         final PowerManager.WakeLock wl = JoH.getWakeLock("g5-start-service", 120000);
         try {
-            if (!service_running) {
+            if ((!service_running) && (keep_running)) {
                 service_running = true;
 
                 Log.d(TAG, "onG5StartCommand");
                 //Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
                 //stopScan();
                 if (!CollectionServiceStarter.isBTG5(xdrip.getAppContext())) {
-                    stopSelf();
                     service_running = false;
+                    keep_running = false;
+                    stopSelf();
                     return START_NOT_STICKY;
                 } else {
 
@@ -266,6 +268,7 @@ public class G5CollectionService extends Service {
     }
 
     public synchronized void keepAlive() {
+        if (!keep_running) return;
         if (JoH.ratelimit("G5-keepalive", 5)) {
             long wakeTime = getNextAdvertiseTime() - 60 * 1000;
             //Log.e(TAG, "Delay Time: " + minuteDelay);
@@ -371,6 +374,7 @@ public class G5CollectionService extends Service {
 
     public synchronized void cycleScan(int delay) {
 
+        if (!keep_running) return;
         if (JoH.ratelimit("G5-timeout",60) || !scan_scheduled) {
             scan_scheduled=true;
             //Log.e(TAG, "Scheduling cycle scan, delay: " + delay);
@@ -418,6 +422,7 @@ public class G5CollectionService extends Service {
     }
 
     private synchronized void scanLogic() {
+        if (!keep_running) return;
         if (JoH.ratelimit("G5-scanlogic",2)) {
             try {
                 mLEScanner.stopScan(mScanCallback);
