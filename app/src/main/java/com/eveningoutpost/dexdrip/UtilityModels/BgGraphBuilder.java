@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
@@ -25,7 +24,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
-
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.rits.cloning.Cloner;
 
@@ -56,8 +55,8 @@ import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
+import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 
 /**
  * Created by stephenblack on 11/15/14.
@@ -85,9 +84,6 @@ class PointValueExtended extends PointValue {
 
 public class BgGraphBuilder {
     public static final int FUZZER = (1000 * 30 * 5); // 2.5 mins?
-    //public static final int TREATMENT_COLOR_GREEN = Color.parseColor("#77aa00");
-    //public static final int TREATMENT_COLOR_DARK_GREEN = Color.parseColor("#334400");
-    //public static final int PREDICTIVE_COLOR_PURPLE = Color.parseColor("#7700aa");
     public final static long DEXCOM_PERIOD = 300000;
     public final static double NOISE_TRIGGER = 10;
     public final static double NOISE_TOO_HIGH_FOR_PREDICT = 60;
@@ -606,7 +602,19 @@ public class BgGraphBuilder {
 
         final double bgScale = bgScale();
         final double now = JoH.ts();
-        final double trendstart = now-(1000*60*12); // 10 minutes // TODO MAKE PREFERENCE
+
+        double trend_start_working = now-(1000*60*12); // 10 minutes // TODO MAKE PREFERENCE?
+        if (bgReadings.size()>0)
+        {
+            final double ms_since_last_reading = now-bgReadings.get(0).timestamp;
+            if (ms_since_last_reading<500000)
+            {
+                trend_start_working -= ms_since_last_reading; // push back start of trend calc window
+                Log.d(TAG,"Pushed back trend start by: "+JoH.qs(ms_since_last_reading/1000)+" secs - last reading: "+JoH.dateTimeText(bgReadings.get(0).timestamp));
+            }
+        }
+
+        final double trendstart = trend_start_working;
         final double noise_trendstart = now-(1000*60*20); // 20 minutes // TODO MAKE PREFERENCE
         double oldest_noise_timestamp = now;
         double newest_noise_timestamp = 0;
@@ -654,11 +662,11 @@ public class BgGraphBuilder {
         } catch (Exception e) {
             Log.e(TAG, "Exception doing calibration values in bggraphbuilder: " + e.toString());
         }
-
+        final boolean has_filtered = DexCollectionType.hasFiltered();
         final boolean predict_use_momentum = prefs.getBoolean("predict_use_momentum", true);
         final boolean show_moment_working_line = prefs.getBoolean("show_momentum_working_line",false);
         final boolean interpret_raw = prefs.getBoolean("interpret_raw", false);
-        final boolean show_filtered = prefs.getBoolean("show_filtered_curve", false);
+        final boolean show_filtered = prefs.getBoolean("show_filtered_curve", false) && has_filtered;
         final boolean predict_lows = prefs.getBoolean("predict_lows", true);
 
 
@@ -699,7 +707,7 @@ public class BgGraphBuilder {
             // noise calculator
             if ((bgReading.timestamp > noise_trendstart) && (bgReading.timestamp > last_calibration))
             {
-                if ((bgReading.filtered_calculated_value>0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
+                if (has_filtered && (bgReading.filtered_calculated_value>0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
                     final double shifted_timestamp = bgReading.timestamp - timeshift;
 
                     if (shifted_timestamp > last_calibration) {
@@ -723,7 +731,7 @@ public class BgGraphBuilder {
             // momentum trend
             if ((bgReading.timestamp > trendstart) && (bgReading.timestamp > last_calibration))
              {
-                 if ((bgReading.filtered_calculated_value>0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
+                 if (has_filtered && (bgReading.filtered_calculated_value>0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
                      polyxList.add((double) bgReading.timestamp - timeshift);
                      polyyList.add(unitized(bgReading.filtered_calculated_value));
                  }
@@ -742,6 +750,7 @@ public class BgGraphBuilder {
         try {
 
             if (d) Log.d(TAG, "noise Poly list size: " + noise_polyxList.size());
+            // TODO Impossible to satisfy noise evaluation size with only raw data do we want it with raw only??
             if (noise_polyxList.size()>5) {
                 final double[] noise_polyys = PolyTrendLine.toPrimitiveFromList(noise_polyyList);
                 final double[] noise_polyxs = PolyTrendLine.toPrimitiveFromList(noise_polyxList);

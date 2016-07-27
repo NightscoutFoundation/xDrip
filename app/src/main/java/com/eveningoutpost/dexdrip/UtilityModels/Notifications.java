@@ -40,6 +40,7 @@ import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Calendar;
@@ -480,7 +481,7 @@ public class Notifications extends IntentService {
                     .showLowLine()
                     .showAxes(true)
                     .setBackgroundColor(getCol(X.color_notification_chart_background))
-                    .setShowFiltered(Home.getPreferencesBooleanDefaultFalse("show_filtered_curve"))
+                    .setShowFiltered(DexCollectionType.hasFiltered() && Home.getPreferencesBooleanDefaultFalse("show_filtered_curve"))
                     .build();
             bigPictureStyle.bigPicture(notifiationBitmap)
                     .setSummaryText(deltaString)

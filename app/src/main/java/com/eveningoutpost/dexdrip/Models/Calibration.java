@@ -8,16 +8,15 @@ import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.GcmActivity;
-import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
-
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.GcmActivity;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -29,8 +28,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.internal.bind.DateTypeAdapter;
 
-
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -638,7 +635,13 @@ public class Calibration extends Model {
             for (BgReading bgReading : bgReadings) {
                 final double oldYValue = bgReading.calculated_value;
                 final double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
-                bgReading.calculated_value = ((newYvalue * (denom - i)) + (oldYValue * (i))) / denom;
+                final double new_calculated_value = ((newYvalue * (denom - i)) + (oldYValue * (i))) / denom;
+                // if filtered == raw then rewrite them both because this would not happen if filtered data was from real source
+                if (bgReading.filtered_calculated_value == bgReading.calculated_value) {
+                    bgReading.filtered_calculated_value = new_calculated_value;
+                }
+                bgReading.calculated_value = new_calculated_value;
+
                 bgReading.save();
                 i += 1;
             }
@@ -648,6 +651,9 @@ public class Calibration extends Model {
             final Calibration latestCalibration = Calibration.lastValid();
             for (BgReading bgReading : bgReadings) {
                 final double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
+                if (bgReading.filtered_calculated_value == bgReading.calculated_value) {
+                    bgReading.filtered_calculated_value = newYvalue;
+                }
                 bgReading.calculated_value = newYvalue;
                 BgReading.updateCalculatedValue(bgReading);
                 bgReading.save();

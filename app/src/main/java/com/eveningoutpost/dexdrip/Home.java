@@ -1285,6 +1285,7 @@ public class Home extends ActivityWithMenu {
     }
 
     public static boolean get_master() {
+        // TODO optimize this
         return (!get_follower()) && (Home.getPreferencesBooleanDefaultFalse("plus_follow_master"));
     }
 
@@ -1720,7 +1721,7 @@ public class Home extends ActivityWithMenu {
                     extrastring = "\u26A0"; // warning symbol !
                 }
 
-                if (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_HIGH) {
+                if ((BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_HIGH) && (DexCollectionType.hasFiltered())) {
                     bg_from_filtered = true; // force filtered mode
                 }
 

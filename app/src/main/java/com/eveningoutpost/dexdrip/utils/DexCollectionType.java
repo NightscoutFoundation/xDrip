@@ -20,7 +20,8 @@ public enum DexCollectionType {
     WifiBlueToothWixel("WifiBlueToothWixel"),
     WifiWixel("WifiWixel"),
     DexcomG5("DexcomG5"),
-    WifiDexBridgeWixel("WifiDexbridgeWixel");
+    WifiDexBridgeWixel("WifiDexbridgeWixel"),
+    Follower("Follower");
 
     String internalName;
     private static final Map<String, DexCollectionType> mapToInternalName;
@@ -28,6 +29,9 @@ public enum DexCollectionType {
     private static final HashSet<DexCollectionType> usesBtWixel = new HashSet<>();
     private static final HashSet<DexCollectionType> usesWifi = new HashSet<>();
     private static final HashSet<DexCollectionType> usesXbridge = new HashSet<>();
+    private static final HashSet<DexCollectionType> usesFiltered = new HashSet<>();
+
+    public static boolean does_have_filtered = false; // TODO this could get messy with GC
 
     static {
         mapToInternalName = new HashMap<>();
@@ -40,6 +44,7 @@ public enum DexCollectionType {
         Collections.addAll(usesBtWixel, BluetoothWixel, LimiTTer, WifiBlueToothWixel);
         Collections.addAll(usesWifi, WifiBlueToothWixel,WifiWixel,WifiDexBridgeWixel);
         Collections.addAll(usesXbridge, DexbridgeWixel,WifiDexBridgeWixel);
+        Collections.addAll(usesFiltered, DexbridgeWixel, WifiDexBridgeWixel, DexcomG5, WifiWixel, Follower); // Bluetooth and Wifi+Bluetooth need dynamic mode
     }
 
 
@@ -72,6 +77,10 @@ public enum DexCollectionType {
 
     public static boolean hasWifi() {
         return usesWifi.contains(getDexCollectionType());
+    }
+
+    public static boolean hasFiltered() {
+        return does_have_filtered || usesFiltered.contains(getDexCollectionType());
     }
 
 }
