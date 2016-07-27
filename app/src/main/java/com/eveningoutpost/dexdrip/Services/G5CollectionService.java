@@ -83,11 +83,17 @@ import javax.crypto.spec.SecretKeySpec;
 public class G5CollectionService extends Service {
 
     private final static String TAG = G5CollectionService.class.getSimpleName();
+
+    private static final Object short_lock = new Object();
+    private static boolean cycling_bt = false;
+    private static boolean service_running = false;
+    private static boolean scan_scheduled = false;
+
     private ForegroundServiceStarter foregroundServiceStarter;
 
     public Service service;
     private BgToSpeech bgToSpeech;
-    private PendingIntent pendingIntent;
+    private static PendingIntent pendingIntent;
 
     private android.bluetooth.BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
@@ -109,14 +115,14 @@ public class G5CollectionService extends Service {
     private List<ScanFilter> filters;
     private SharedPreferences prefs;
 
-    private boolean isScanning = false;
+    private static boolean isScanning = false;
     private boolean isConnected = false;
     private boolean encountered133 = false;
     private Handler handler;
     public int max133Retries = 5;
     public int max133RetryCounter = 0;
     public boolean isIntialScan = true;
-    public Timer scan_interval_timer = new Timer();
+    public static Timer scan_interval_timer = new Timer();
     public ArrayList<Long> advertiseTimeMS = new ArrayList<Long>();
     public long timeInMillisecondsOfLastSuccessfulSensorRead = new Date().getTime();
     private int maxScanIntervalInMilliseconds = 5 * 1000; //seconds *1k
@@ -177,34 +183,46 @@ public class G5CollectionService extends Service {
 
         final PowerManager.WakeLock wl = JoH.getWakeLock("g5-start-service", 120000);
         try {
-            Log.d(TAG, "onG5StartCommand");
-            //Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
-            //stopScan();
-            if (!CollectionServiceStarter.isBTG5(xdrip.getAppContext())) {
-                stopSelf();
-                return START_NOT_STICKY;
-            } else {
+            if (!service_running) {
+                service_running = true;
 
-                scanCycleCount = 0;
-                mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-                mBluetoothAdapter = mBluetoothManager.getAdapter();
-
-                if (mGatt != null) {
-                    mGatt.close();
-                    mGatt = null;
-                }
-
-                if (Sensor.isActive()) {
-                    setupBluetooth();
-                    Log.d(TAG, "Active Sensor");
-
+                Log.d(TAG, "onG5StartCommand");
+                //Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
+                //stopScan();
+                if (!CollectionServiceStarter.isBTG5(xdrip.getAppContext())) {
+                    stopSelf();
+                    service_running = false;
+                    return START_NOT_STICKY;
                 } else {
-                    stopScan();
-                    Log.d(TAG, "No Active Sensor");
-                }
 
-                return START_STICKY;
+                    scanCycleCount = 0;
+                    mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+                    mBluetoothAdapter = mBluetoothManager.getAdapter();
+
+                    if (mGatt != null) {
+                        mGatt.close();
+                        mGatt = null;
+                    }
+
+                    if (Sensor.isActive()) {
+                        setupBluetooth();
+                        Log.d(TAG, "Active Sensor");
+
+                    } else {
+                        stopScan();
+                        Log.d(TAG, "No Active Sensor");
+                    }
+
+                    service_running=false;
+
+                    return START_STICKY;
+                }
+            } else {
+                Log.e(TAG,"jamorham service already active!");
+                keepAlive();
+                return START_NOT_STICKY;
             }
+
         } finally {
             JoH.releaseWakeLock(wl);
         }
@@ -247,20 +265,24 @@ public class G5CollectionService extends Service {
         Log.i(TAG, "SERVICE STOPPED");
     }
 
-    public void keepAlive() {
-        long wakeTime = getNextAdvertiseTime() - 60*1000;
-        //Log.e(TAG, "Delay Time: " + minuteDelay);
-        Log.e(TAG, "OnStart Wake Time: " + wakeTime);
-        AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-        if (pendingIntent != null)
-            alarm.cancel(pendingIntent);
-        pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
-        } else
-            alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+    public synchronized void keepAlive() {
+        if (JoH.ratelimit("G5-keepalive", 5)) {
+            long wakeTime = getNextAdvertiseTime() - 60 * 1000;
+            //Log.e(TAG, "Delay Time: " + minuteDelay);
+            Log.e(TAG, "OnStart Wake Time: " + wakeTime);
+            AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+            if (pendingIntent != null)
+                alarm.cancel(pendingIntent);
+            pendingIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            } else
+                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+        } else {
+            Log.e(TAG, "Ignoring keepalive call due to ratelimit");
+        }
     }
 
 
@@ -337,7 +359,7 @@ public class G5CollectionService extends Service {
         }
     }
 
-    private void stopLogic() {
+    private synchronized void stopLogic() {
         try {
             Log.e(TAG, "stopScan");
             mLEScanner.stopScan(mScanCallback);
@@ -347,99 +369,109 @@ public class G5CollectionService extends Service {
         }
     }
 
-    public void cycleScan(int delay) {
+    public synchronized void cycleScan(int delay) {
 
-        Timer single_timer = new Timer();
-        single_timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (scanConstantly()) {
-                    startScan();
-                } else {
-                    if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                            mBluetoothAdapter.stopLeScan(mLeScanCallback);
-                        } else {
+        if (JoH.ratelimit("G5-timeout",60) || !scan_scheduled) {
+            scan_scheduled=true;
+            //Log.e(TAG, "Scheduling cycle scan, delay: " + delay);
+            final Timer single_timer = new Timer();
+            single_timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (scanConstantly()) {
+                        startScan();
+                    } else {
+                        if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
+                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                                mBluetoothAdapter.stopLeScan(mLeScanCallback);
+                            } else {
 
-                            try {
-                                if (enforceMainThread()) {
-                                    Handler iHandler = new Handler(Looper.getMainLooper());
-                                    iHandler.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            scanLogic();
-                                        }
-                                    });
+                                try {
+                                    if (enforceMainThread()) {
+                                        Handler iHandler = new Handler(Looper.getMainLooper());
+                                        iHandler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                scanLogic();
+                                            }
+                                        });
 
-                                } else {
-                                    scanLogic();
+                                    } else {
+                                        scanLogic();
+                                    }
+                                } catch
+                                        (NullPointerException e) {
+                                    //Known bug in Samsung API 21 stack
+                                    System.out.print("Caught the NullPointerException");
+                                } finally {
+                                    scan_scheduled=false;
                                 }
-                            } catch
-                                    (NullPointerException e) {
-                                //Known bug in Samsung API 21 stack
-                                System.out.print("Caught the NullPointerException");
                             }
                         }
                     }
+                    scan_scheduled=false;
                 }
-            }
-        }, delay);
+            }, delay);
+        } else {
+            Log.e(TAG,"jamorham blocked excessive scan schedule");
+        }
     }
 
-    private void scanLogic() {
-        try {
-            mLEScanner.stopScan(mScanCallback);
-            isScanning = false;
-            if (!isConnected) {
-                mLEScanner.startScan(filters, settings, mScanCallback);
-                Log.e(TAG, "scan cycle start");
+    private synchronized void scanLogic() {
+        if (JoH.ratelimit("G5-scanlogic",2)) {
+            try {
+                mLEScanner.stopScan(mScanCallback);
+                isScanning = false;
+                if (!isConnected) {
+                    mLEScanner.startScan(filters, settings, mScanCallback);
+                    Log.e(TAG, "scan cycle start");
+                }
+                isScanning = true;
+            } catch (IllegalStateException is) {
+                setupBluetooth();
             }
-            isScanning = true;
-        } catch (IllegalStateException is) {
-            setupBluetooth();
-        }
 
 
-        scanCycleCount++;
+            scanCycleCount++;
 
-        //Log.e(TAG, "MSSinceSensorRx: " + getMillisecondsSinceLastSuccesfulSensorRead());
-        //if it isn't the initial scan, rescan for maxScanCycles
-        if (!isIntialScan && scanCycleCount > maxScanCycles) {
-            scan_interval_timer.cancel();
-            scan_interval_timer = new Timer();
-            scan_interval_timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    //Log.e(TAG, "cycling scan to stop until expected advertisement");
-                    if (isScanning) {
-                        keepAlive();
+            //Log.e(TAG, "MSSinceSensorRx: " + getMillisecondsSinceLastSuccesfulSensorRead());
+            //if it isn't the initial scan, rescan for maxScanCycles
+            if (!isIntialScan && scanCycleCount > maxScanCycles) {
+                scan_interval_timer.cancel();
+                scan_interval_timer = new Timer();
+                scan_interval_timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        //Log.e(TAG, "cycling scan to stop until expected advertisement");
+                        if (isScanning) {
+                            keepAlive();
+                        }
+                        stopScan();
                     }
-                    stopScan();
-                }
-            }, maxScanIntervalInMilliseconds);
+                }, maxScanIntervalInMilliseconds);
+            }
+            //last ditch
+            else if (!isIntialScan && getMillisecondsSinceLastSuccesfulSensorRead() > 11 * 60 * 1000) {
+                Log.e(TAG, "MSSinceSensorRx: " + getMillisecondsSinceLastSuccesfulSensorRead());
+                isIntialScan = true;
+                cycleBT();
+            }
+            //startup or re-auth, sit around and wait for tx to advertise
+            else {
+                scan_interval_timer.cancel();
+                scan_interval_timer = new Timer();
+                scan_interval_timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        //Log.e(TAG, "cycling scan");
+                        cycleScan(0);
+                    }
+                }, maxScanIntervalInMilliseconds);
+            }
         }
-        //last ditch
-        else if (!isIntialScan && getMillisecondsSinceLastSuccesfulSensorRead() > 11 * 60 * 1000) {
-            Log.e(TAG, "MSSinceSensorRx: " + getMillisecondsSinceLastSuccesfulSensorRead());
-            isIntialScan = true;
-            cycleBT();
-        }
-        //startup or re-auth, sit around and wait for tx to advertise
-        else {
-            scan_interval_timer.cancel();
-            scan_interval_timer = new Timer();
-            scan_interval_timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    //Log.e(TAG, "cycling scan");
-                    cycleScan(0);
-                }
-            }, maxScanIntervalInMilliseconds);
-        }
-
     }
 
-    public void startScan() {
+    public synchronized void startScan() {
         android.util.Log.e(TAG, "Initial scan?" + isIntialScan);
         if (isScanning) {
             Log.d(TAG, "alreadyScanning");
@@ -471,7 +503,7 @@ public class G5CollectionService extends Service {
         }
     }
 
-    private void startLogic() {
+    private synchronized void startLogic() {
         try {
             isScanning = true;
             mLEScanner.startScan(filters, settings, mScanCallback);
@@ -480,19 +512,29 @@ public class G5CollectionService extends Service {
             setupBluetooth();
         }
     }
-    void cycleBT(){
-        encountered133 = false;
-        stopScan();
-        mBluetoothAdapter.disable();
-        Timer single_timer = new Timer();
-        single_timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                mBluetoothAdapter.enable();
+    private synchronized void cycleBT(){
+        synchronized (short_lock) {
+            if (JoH.ratelimit("cyclebt",10)) {
+                if (cycling_bt) {
+                    Log.e(TAG, "jamorham Already concurrent BT cycle in progress!");
+                    return;
+                }
+                encountered133 = false;
+                stopScan();
+                Log.e(TAG, "Cycling BT-gatt - disabling BT");
+                mBluetoothAdapter.disable();
+                Timer single_timer = new Timer();
+                single_timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        mBluetoothAdapter.enable();
+                        Log.e(TAG, "Cycling BT-gatt - enableing BT");
+                        cycling_bt = false;
+                    }
+                }, 3000);
             }
-        }, 1000);
-        Log.e(TAG, "Cycling BT-gatt");
-        keepAlive();
+            keepAlive();
+        }
     }
 
     void forgetDevice() {
@@ -587,7 +629,7 @@ public class G5CollectionService extends Service {
         };
     }
 
-    public void fullAuthenticate() {
+    public synchronized void fullAuthenticate() {
 
         if (alwaysUnbond()) {
             forgetDevice();
@@ -600,14 +642,14 @@ public class G5CollectionService extends Service {
         mGatt.writeCharacteristic(authCharacteristic);
     }
 
-    public void authenticate() {
+    public synchronized void authenticate() {
         mGatt.setCharacteristicNotification(authCharacteristic, true);
         if (!mGatt.readCharacteristic(authCharacteristic)) {
             android.util.Log.e(TAG, "onCharacteristicRead : ReadCharacteristicError");
         }
     }
 
-    public void getSensorData() {
+    public synchronized void getSensorData() {
         android.util.Log.i(TAG, "Request Sensor Data");
         mGatt.setCharacteristicNotification(controlCharacteristic, true);
         BluetoothGattDescriptor descriptor = controlCharacteristic.getDescriptor(BluetoothServices.CharacteristicUpdateNotification);
@@ -619,7 +661,7 @@ public class G5CollectionService extends Service {
 
     private BluetoothAdapter.LeScanCallback mLeScanCallback = null;
 
-    private void connectToDevice(BluetoothDevice device) {
+    private synchronized void connectToDevice(BluetoothDevice device) {
         if (mGatt != null) {
             Log.i(TAG, "BGatt isnt null, Closing.");
             mGatt.close();
@@ -649,7 +691,7 @@ public class G5CollectionService extends Service {
     }
 
     // Sends the disconnect tx message to our bt device.
-    private void doDisconnectMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+    private synchronized void doDisconnectMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         mGatt.setCharacteristicNotification(controlCharacteristic, false);
         DisconnectTxMessage disconnectTx = new DisconnectTxMessage();
         characteristic.setValue(disconnectTx.byteSequence);
@@ -1194,7 +1236,7 @@ public class G5CollectionService extends Service {
         }
     };
 
-    private void processNewTransmitterData(int raw_data , int filtered_data,int sensor_battery_level, long captureTime) {
+    private synchronized void processNewTransmitterData(int raw_data , int filtered_data,int sensor_battery_level, long captureTime) {
 
         TransmitterData transmitterData = TransmitterData.create(raw_data, sensor_battery_level, captureTime);
         if (transmitterData == null) {
