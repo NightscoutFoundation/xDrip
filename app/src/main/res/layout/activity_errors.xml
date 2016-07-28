@@ -9,48 +9,69 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
 
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Low"
-                android:id="@+id/lowSeverityCheckBox"
-                android:checked="false"/>
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Mid"
-                android:id="@+id/midSeverityCheckbox"
-                android:checked="true"/>
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="High"
-                android:id="@+id/highSeverityCheckbox"
-                android:checked="true"/>
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="EL"
-                android:id="@+id/userEventLowCheckbox"
-                android:checked="true"
-                android:layout_marginLeft="12dp" />
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="EH"
-                android:id="@+id/userEventHighCheckbox"
-                android:checked="true"/>
-        </LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <ListView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:id="@+id/errorList"/>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/linearLayout4">
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Low"
+                    android:id="@+id/lowSeverityCheckBox"
+                    android:checked="false"/>
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mid"
+                    android:id="@+id/midSeverityCheckbox"
+                    android:checked="true"/>
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="High"
+                    android:id="@+id/highSeverityCheckbox"
+                    android:checked="true"/>
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="EL"
+                    android:id="@+id/userEventLowCheckbox"
+                    android:checked="true"
+                    android:layout_marginLeft="12dp" />
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="EH"
+                    android:id="@+id/userEventHighCheckbox"
+                    android:checked="true"/>
+            </LinearLayout>
+
+            <ListView
+                android:layout_width="fill_parent"
+                android:layout_height="437dp"
+                android:id="@+id/errorList"
+                android:layout_below="@+id/linearLayout4"
+                android:layout_above="@+id/send_logs_button" />
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="uploadLogs"
+                android:text="@string/upload_logs"
+                android:id="@+id/send_logs_button"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true" />
+
+        </RelativeLayout>
+
     </LinearLayout>
     <fragment
         android:id="@+id/navigation_drawer"

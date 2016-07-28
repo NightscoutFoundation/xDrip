@@ -371,7 +371,7 @@ public class DexCollectionService extends Service {
                 if (Home.getPreferencesBoolean("bluetooth_frequent_reset",false))
                 {
                     Log.e(TAG,"Resetting bluetooth due to constant reset option being set!");
-                    JoH.restartBluetooth(getApplicationContext());
+                    JoH.restartBluetooth(getApplicationContext(),5000);
                 }
                 wakeLock1.release();
             }

@@ -36,6 +36,10 @@ public class UserError extends Model {
     //todo: rather than include multiples of the same error, should we have a "Count" and just increase that on duplicates?
     //or rather, perhaps we should group up the errors
 
+    public String toString()
+    {
+        return severity+" ^ "+JoH.dateTimeText((long)timestamp)+" ^ "+shortError+" ^ "+message;
+    }
 
     public UserError() {}
 

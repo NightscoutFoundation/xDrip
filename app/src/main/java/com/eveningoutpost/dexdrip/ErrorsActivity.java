@@ -5,8 +5,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 import java.util.ArrayList;
@@ -72,6 +75,20 @@ public class ErrorsActivity extends ActivityWithMenu {
             adapter.notifyDataSetChanged();
         }
     };
+
+    public void uploadLogs(View v) {
+        StringBuilder tmp = new StringBuilder(20000);
+        tmp.append("The following logs will be sent to the developers: \n\nPlease also include your email address or we will not know who they are from!\n\n");
+        for (UserError item : errors) {
+            tmp.append(item.toString());
+            tmp.append("\n");
+            if (tmp.length() > 200000) {
+                JoH.static_toast(this, "Could not package up all logs, using most recent", Toast.LENGTH_LONG);
+                break;
+            }
+        }
+        startActivity(new Intent(getApplicationContext(), SendFeedBack.class).putExtra("generic_text", tmp.toString()));
+    }
 
     public void updateErrors() {
         List<Integer> severitiesList = new ArrayList<>();
