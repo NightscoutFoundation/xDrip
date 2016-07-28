@@ -66,6 +66,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -122,6 +123,7 @@ public class G5CollectionService extends Service {
     private Handler handler;
     public int max133Retries = 5;
     public int max133RetryCounter = 0;
+    private static int disconnected133 = 0;
     public boolean isIntialScan = true;
     public static Timer scan_interval_timer = new Timer();
     public ArrayList<Long> advertiseTimeMS = new ArrayList<Long>();
@@ -268,9 +270,18 @@ public class G5CollectionService extends Service {
     }
 
     public synchronized void keepAlive() {
+        keepAlive(0);
+    }
+
+    public synchronized void keepAlive(int wake_in_ms) {
         if (!keep_running) return;
         if (JoH.ratelimit("G5-keepalive", 5)) {
-            long wakeTime = getNextAdvertiseTime() - 60 * 1000;
+            long wakeTime;
+            if (wake_in_ms==0) {
+                wakeTime = getNextAdvertiseTime() - 60 * 1000;
+            } else {
+                wakeTime = Calendar.getInstance().getTimeInMillis() + wake_in_ms;
+            }
             //Log.e(TAG, "Delay Time: " + minuteDelay);
             Log.e(TAG, "OnStart Wake Time: " + wakeTime);
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -429,7 +440,7 @@ public class G5CollectionService extends Service {
                 isScanning = false;
                 if (!isConnected) {
                     mLEScanner.startScan(filters, settings, mScanCallback);
-                    Log.e(TAG, "scan cycle start");
+                    Log.w(TAG, "scan cycle start");
                 }
                 isScanning = true;
             } catch (IllegalStateException is) {
@@ -517,6 +528,28 @@ public class G5CollectionService extends Service {
             setupBluetooth();
         }
     }
+
+    private synchronized void cycleBT(boolean t) {
+        Log.e(TAG, "cycleBT special: count:" + disconnected133);
+        if (disconnected133 < 2) {
+            cycleBT();
+        } else {
+            Log.e(TAG, "jamorham special restart");
+            keepAlive(10000); // retry in 10 seconds
+
+            // close gatt
+            if (mGatt != null) {
+                try {
+                    mGatt.close();
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "concurrency related null pointer exception in close");
+                }
+            }
+            disconnected133 = 0;
+            stopSelf();
+        }
+    }
+
     private synchronized void cycleBT(){
         synchronized (short_lock) {
             if (JoH.ratelimit("cyclebt",10)) {
@@ -758,7 +791,8 @@ public class G5CollectionService extends Service {
                                                   Log.e(TAG, "max133RetryCounter? " + max133RetryCounter);
                                                   Log.e(TAG, "Encountered 133: " + encountered133);
                                                   max133RetryCounter = 0;
-                                                  cycleBT();
+                                                  disconnected133++;
+                                                  cycleBT(true);
                                               } else if (encountered133) {
                                                   Log.e(TAG, "max133RetryCounter? " + max133RetryCounter);
                                                   Log.e(TAG, "Encountered 133: " + encountered133);
@@ -830,7 +864,8 @@ public class G5CollectionService extends Service {
                             Log.e(TAG, "max133RetryCounter? " + max133RetryCounter);
                             Log.e(TAG, "Encountered 133: " + encountered133);
                             max133RetryCounter = 0;
-                            cycleBT();
+                            disconnected133++;
+                            cycleBT(true);
                         } else if (encountered133) {
                             Log.e(TAG, "max133RetryCounter? " + max133RetryCounter);
                             Log.e(TAG, "Encountered 133: " + encountered133);
@@ -1197,6 +1232,7 @@ public class G5CollectionService extends Service {
 
                             //Log.e(TAG, "filtered: " + sensorRx.filtered);
                             Log.e(TAG, "unfiltered: " + sensorRx.unfiltered);
+                            disconnected133=0;
                             doDisconnectMessage(gatt, characteristic);
                             processNewTransmitterData(sensorRx.unfiltered, sensorRx.filtered, sensor_battery_level, new Date().getTime());
                         }
@@ -1231,6 +1267,7 @@ public class G5CollectionService extends Service {
                     }
 
                     //Log.e(TAG, "filtered: " + sensorRx.filtered);
+                    disconnected133=0;
                     Log.e(TAG, "unfiltered: " + sensorRx.unfiltered);
                     doDisconnectMessage(gatt, characteristic);
                     processNewTransmitterData(sensorRx.unfiltered, sensorRx.filtered, sensor_battery_level, new Date().getTime());
