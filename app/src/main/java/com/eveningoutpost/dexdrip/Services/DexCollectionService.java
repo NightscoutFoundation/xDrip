@@ -175,7 +175,8 @@ public class DexCollectionService extends Service {
             if(CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()) {
                 retry_in = (1000 * 25);
             }else {
-                retry_in = (1000*65);
+                //retry_in = (1000*65);
+                retry_in = (1000 * 25); // same for both for testing
             }
             Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in / 1000) + " seconds");
             Calendar calendar = Calendar.getInstance();
@@ -245,7 +246,7 @@ public class DexCollectionService extends Service {
         if (mConnectionState == STATE_DISCONNECTED || mConnectionState == STATE_DISCONNECTING) {
             ActiveBluetoothDevice btDevice = ActiveBluetoothDevice.first();
             if (btDevice != null) {
-                String deviceAddress = btDevice.address;
+                final String deviceAddress = btDevice.address;
                 try {
                     if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(deviceAddress) != null) {
                         connect(deviceAddress);
@@ -297,6 +298,7 @@ public class DexCollectionService extends Service {
                         mBluetoothGatt.discoverServices();
                         break;
                     case BluetoothProfile.STATE_DISCONNECTED:
+                        Log.i(TAG, "onConnectionStateChange: State disconnected.");
                         mConnectionState = STATE_DISCONNECTED;
                         ActiveBluetoothDevice.disconnected();
                         if (prefs.getBoolean("close_gatt_on_ble_disconnect", true)) {
@@ -366,6 +368,11 @@ public class DexCollectionService extends Service {
                 }
                 lastdata = data;
             } finally {
+                if (Home.getPreferencesBoolean("bluetooth_frequent_reset",false))
+                {
+                    Log.e(TAG,"Resetting bluetooth due to constant reset option being set!");
+                    JoH.restartBluetooth(getApplicationContext());
+                }
                 wakeLock1.release();
             }
         }
@@ -453,13 +460,14 @@ public class DexCollectionService extends Service {
             return false;
         }
         Log.i(TAG, "connect: Trying to create a new connection.");
+        setRetryTimer();
         mBluetoothGatt = device.connectGatt(getApplicationContext(), true, mGattCallback);
         mConnectionState = STATE_CONNECTING;
         return true;
     }
 
     public void close() {
-        Log.i(TAG, "close: Closing Connection");
+        Log.i(TAG, "close: Closing Connection - setting state DISCONNECTED");
         if (mBluetoothGatt == null) {
             return;
         }

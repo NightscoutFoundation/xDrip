@@ -393,8 +393,14 @@ public class BgReading extends Model implements ShareUploadableBg{
                         lastBgReading.calibration.rawValueOverride(BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value), context);
                     }
                 }
-                bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
-                bgReading.filtered_calculated_value = ((calibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept);
+                if ((raw_data > 13) || (filtered_data > 13)) {
+                    bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
+                    bgReading.filtered_calculated_value = ((calibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept);
+                } else {
+                    // store the raw value for sending special codes, note updateCalculatedValue will try to nix it
+                    bgReading.calculated_value = raw_data;
+                    bgReading.filtered_calculated_value = filtered_data;
+                }
             }
             updateCalculatedValue(bgReading);
 
