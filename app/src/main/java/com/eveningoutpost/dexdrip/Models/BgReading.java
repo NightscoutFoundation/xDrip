@@ -169,6 +169,7 @@ public class BgReading extends Model implements ShareUploadableBg{
             }
         } else {
             return "LOW";
+            // TODO doesn't understand special low values
         }
     }
 
@@ -343,7 +344,7 @@ public class BgReading extends Model implements ShareUploadableBg{
         BgReading bgReading = new BgReading();
         Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
-            Log.i("BG GSON: ",bgReading.toS());
+            Log.i("BG GSON: ", bgReading.toS());
             return bgReading;
         }
 
@@ -365,13 +366,13 @@ public class BgReading extends Model implements ShareUploadableBg{
             bgReading.save();
             bgReading.perform_calculations();
         } else {
-            Log.d(TAG,"Calibrations, so doing everything: "+calibration.uuid);
+            Log.d(TAG, "Calibrations, so doing everything: " + calibration.uuid);
             bgReading.sensor = sensor;
             bgReading.sensor_uuid = sensor.uuid;
             bgReading.calibration = calibration;
             bgReading.calibration_uuid = calibration.uuid;
-            bgReading.raw_data = (raw_data/1000);
-            bgReading.filtered_data = (filtered_data/1000);
+            bgReading.raw_data = (raw_data / 1000);
+            bgReading.filtered_data = (filtered_data / 1000);
             bgReading.timestamp = timestamp;
             bgReading.uuid = UUID.randomUUID().toString();
             bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
@@ -379,12 +380,12 @@ public class BgReading extends Model implements ShareUploadableBg{
 
             bgReading.calculateAgeAdjustedRawValue();
 
-            if(calibration.check_in) {
-                double firstAdjSlope = calibration.first_slope + (calibration.first_decay * (Math.ceil(new Date().getTime() - calibration.timestamp)/(1000 * 60 * 10)));
-                double calSlope = (calibration.first_scale / firstAdjSlope)*1000;
-                double calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope)*-1;
+            if (calibration.check_in) {
+                double firstAdjSlope = calibration.first_slope + (calibration.first_decay * (Math.ceil(new Date().getTime() - calibration.timestamp) / (1000 * 60 * 10)));
+                double calSlope = (calibration.first_scale / firstAdjSlope) * 1000;
+                double calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope) * -1;
                 bgReading.calculated_value = (((calSlope * bgReading.raw_data) + calIntercept) - 5);
-                bgReading.filtered_calculated_value = (((calSlope * bgReading.ageAdjustedFiltered()) + calIntercept) -5);
+                bgReading.filtered_calculated_value = (((calSlope * bgReading.ageAdjustedFiltered()) + calIntercept) - 5);
 
             } else {
                 BgReading lastBgReading = BgReading.last();
@@ -393,16 +394,18 @@ public class BgReading extends Model implements ShareUploadableBg{
                         lastBgReading.calibration.rawValueOverride(BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value), context);
                     }
                 }
-                if ((raw_data > 13) || (filtered_data > 13)) {
-                    bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
-                    bgReading.filtered_calculated_value = ((calibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept);
-                } else {
-                    // store the raw value for sending special codes, note updateCalculatedValue will try to nix it
-                    bgReading.calculated_value = raw_data;
-                    bgReading.filtered_calculated_value = filtered_data;
-                }
+                bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
+                bgReading.filtered_calculated_value = ((calibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept);
             }
+
             updateCalculatedValue(bgReading);
+
+            // LimiTTer can send 12 to indicate problem with NFC reading.
+            if ((!calibration.check_in) && (raw_data == 12) && (filtered_data == 12)) {
+                // store the raw value for sending special codes, note updateCalculatedValue would try to nix it
+                bgReading.calculated_value = raw_data;
+                bgReading.filtered_calculated_value = filtered_data;
+            }
 
             bgReading.save();
             bgReading.perform_calculations();
@@ -416,6 +419,7 @@ public class BgReading extends Model implements ShareUploadableBg{
     }
 
     static void updateCalculatedValue(BgReading bgReading ) {
+        // TODO should this really be <10 other values also special??
         if (bgReading.calculated_value < 10) {
             bgReading.calculated_value = 38;
             bgReading.hide_slope = true;
