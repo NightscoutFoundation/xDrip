@@ -184,9 +184,13 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                 }
             } else if (action.equals("bgs")) {
                 Log.i(TAG, "Received BG packet(s)");
-                String bgs[] = payload.split("\\^");
-                for (String bgr : bgs) {
-                    BgReading.bgReadingInsertFromJson(bgr);
+                if (Home.get_follower()) {
+                    String bgs[] = payload.split("\\^");
+                    for (String bgr : bgs) {
+                        BgReading.bgReadingInsertFromJson(bgr);
+                    }
+                } else {
+                    Log.e(TAG,"Received remote BG packet but we are not set as a follower");
                 }
                // Home.staticRefreshBGCharts();
             } else if (action.equals("bfb")) {

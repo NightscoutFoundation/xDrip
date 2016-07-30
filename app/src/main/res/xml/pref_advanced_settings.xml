@@ -172,6 +172,7 @@
                 android:title="@string/compatible_broadcast" />
             <CheckBoxPreference
                 android:defaultValue="false"
+                android:dependency="engineering_mode"
                 android:key="predictive_bg"
                 android:summary="Old method - Not Recommended! Attempts to predict readings each minute based on the past few values."
                 android:title="Display Predictive Values" />
@@ -186,6 +187,7 @@
                 android:summary="If needed, use calibrations from longer ago, eg if calibrations are supplied infrequently."
                 android:title="Infrequent Calibration" />
             <CheckBoxPreference
+                android:dependency="engineering_mode"
                 android:defaultValue="false"
                 android:key="store_logs"
                 android:summary="Only enable if you are having trouble with the app."
@@ -205,11 +207,17 @@
                 android:key="disable_battery_warning"
                 android:summary="Disable the warning for low transmitter battery state on the home screen. (Only relevant for DIY receivers.)"
                 android:title="@string/disable_battery_warning" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="engineering_mode"
+                android:key="engineering_mode"
+                android:summary="Allows changing the most unsafe settings which could break everything!"
+                android:title="Engineering mode" />
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_extra_status_line"
                 android:summary="Options for the extra line"
                 android:title="@string/extra_status_line">
-                <CheckBoxPreference
+                <SwitchPreference
                     android:defaultValue="false"
                     android:key="extra_status_line"
                     android:summary="@string/additional_text_status"
@@ -262,11 +270,6 @@
                     android:key="status_line_time"
                     android:summary="@string/the_current_time"
                     android:title="@string/time" />
-                <SwitchPreference
-                    android:defaultValue="false"
-                    android:key="extra_status_line"
-                    android:summary="@string/show_extra_line"
-                    android:title="@string/show_extra_line" />
                 <SwitchPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"

@@ -471,4 +471,5 @@
 	<string name="noise_model_inner_workings">модель шума внутренние работы</string>
 	<string name="glucose_number_from_filtered">Глюкоза число от Filtered</string>
 	<string name="if_the_phone_has_text_to_speech">Если телефон имеет текста в речь возможности он будет говорить каждое новое чтение.</string>
+	<string name="upload_logs">Загрузить журналы</string>
 </resources>

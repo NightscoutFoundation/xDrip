@@ -17,6 +17,7 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.ShareModels.ShareUploadableBg;
+import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -40,10 +41,10 @@ import java.util.Random;
 import java.util.UUID;
 
 @Table(name = "BgReadings", id = BaseColumns._ID)
-public class BgReading extends Model implements ShareUploadableBg{
+public class BgReading extends Model implements ShareUploadableBg {
     private static boolean predictBG;
     private final static String TAG = BgReading.class.getSimpleName();
-    private final static String TAG_ALERT = TAG +" AlertBg";
+    private final static String TAG_ALERT = TAG + " AlertBg";
     private final static String PERSISTENT_HIGH_SINCE = "persistent_high_since";
     public static final double AGE_ADJUSTMENT_TIME = 86400000 * 1.9;
     public static final double AGE_ADJUSTMENT_FACTOR = .45;
@@ -116,7 +117,7 @@ public class BgReading extends Model implements ShareUploadableBg{
     @Column(name = "rc")
     public double rc;
     @Expose
-    @Column(name = "uuid", unique = true , onUniqueConflicts = Column.ConflictAction.IGNORE)
+    @Column(name = "uuid", unique = true, onUniqueConflicts = Column.ConflictAction.IGNORE)
     public String uuid;
 
     @Expose
@@ -160,7 +161,7 @@ public class BgReading extends Model implements ShareUploadableBg{
         if (calculated_value >= 400) {
             return "HIGH";
         } else if (calculated_value >= 40) {
-            if(unit.compareTo("mgdl") == 0) {
+            if (unit.compareTo("mgdl") == 0) {
                 df.setMaximumFractionDigits(0);
                 return df.format(calculated_value);
             } else {
@@ -187,7 +188,9 @@ public class BgReading extends Model implements ShareUploadableBg{
         BgReading bgReading = BgReading.lastNoSenssor();
         if (bgReading != null) {
             double currentTime = new Date().getTime();
-            if (currentTime >=  bgReading.timestamp + (60000 * 7)) { currentTime = bgReading.timestamp + (60000 * 7); }
+            if (currentTime >= bgReading.timestamp + (60000 * 7)) {
+                currentTime = bgReading.timestamp + (60000 * 7);
+            }
             double time = currentTime + BESTOFFSET;
             return ((bgReading.a * time * time) + (bgReading.b * time) + bgReading.c);
         }
@@ -220,20 +223,24 @@ public class BgReading extends Model implements ShareUploadableBg{
 
     //*******CLASS METHODS***********//
     public static void create(EGVRecord[] egvRecords, long addativeOffset, Context context) {
-        for(EGVRecord egvRecord : egvRecords) { BgReading.create(egvRecord, addativeOffset, context); }
+        for (EGVRecord egvRecord : egvRecords) {
+            BgReading.create(egvRecord, addativeOffset, context);
+        }
     }
 
     public static void create(SensorRecord[] sensorRecords, long addativeOffset, Context context) {
-        for(SensorRecord sensorRecord : sensorRecords) { BgReading.create(sensorRecord, addativeOffset, context); }
+        for (SensorRecord sensorRecord : sensorRecords) {
+            BgReading.create(sensorRecord, addativeOffset, context);
+        }
     }
 
     public static void create(SensorRecord sensorRecord, long addativeOffset, Context context) {
         Log.i(TAG, "create: gonna make some sensor records: " + sensorRecord.getUnfiltered());
-        if(BgReading.is_new(sensorRecord, addativeOffset)) {
+        if (BgReading.is_new(sensorRecord, addativeOffset)) {
             BgReading bgReading = new BgReading();
             Sensor sensor = Sensor.currentSensor();
             Calibration calibration = Calibration.getForTimestamp(sensorRecord.getSystemTime().getTime() + addativeOffset);
-            if(sensor != null && calibration != null) {
+            if (sensor != null && calibration != null) {
                 bgReading.sensor = sensor;
                 bgReading.sensor_uuid = sensor.uuid;
                 bgReading.calibration = calibration;
@@ -241,7 +248,9 @@ public class BgReading extends Model implements ShareUploadableBg{
                 bgReading.raw_data = (sensorRecord.getUnfiltered() / 1000);
                 bgReading.filtered_data = (sensorRecord.getFiltered() / 1000);
                 bgReading.timestamp = sensorRecord.getSystemTime().getTime() + addativeOffset;
-                if(bgReading.timestamp > new Date().getTime()) { return; }
+                if (bgReading.timestamp > new Date().getTime()) {
+                    return;
+                }
                 bgReading.uuid = UUID.randomUUID().toString();
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
                 bgReading.synced = false;
@@ -254,23 +263,23 @@ public class BgReading extends Model implements ShareUploadableBg{
     public static void create(EGVRecord egvRecord, long addativeOffset, Context context) {
         BgReading bgReading = BgReading.getForTimestamp(egvRecord.getSystemTime().getTime() + addativeOffset);
         Log.i(TAG, "create: Looking for BG reading to tag this thing to: " + egvRecord.getBGValue());
-        if(bgReading != null) {
+        if (bgReading != null) {
             bgReading.calculated_value = egvRecord.getBGValue();
             if (egvRecord.getBGValue() <= 13) {
                 Calibration calibration = bgReading.calibration;
-                double firstAdjSlope = calibration.first_slope + (calibration.first_decay * (Math.ceil(new Date().getTime() - calibration.timestamp)/(1000 * 60 * 10)));
-                double calSlope = (calibration.first_scale / firstAdjSlope)*1000;
-                double calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope)*-1;
+                double firstAdjSlope = calibration.first_slope + (calibration.first_decay * (Math.ceil(new Date().getTime() - calibration.timestamp) / (1000 * 60 * 10)));
+                double calSlope = (calibration.first_scale / firstAdjSlope) * 1000;
+                double calIntercept = ((calibration.first_scale * calibration.first_intercept) / firstAdjSlope) * -1;
                 bgReading.raw_calculated = (((calSlope * bgReading.raw_data) + calIntercept) - 5);
             }
             Log.i(TAG, "create: NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
             bgReading.calculated_value_slope = bgReading.slopefromName(egvRecord.getTrend().friendlyTrendName());
             bgReading.noise = egvRecord.noiseValue();
             String friendlyName = egvRecord.getTrend().friendlyTrendName();
-            if(friendlyName.compareTo("NONE") == 0 ||
+            if (friendlyName.compareTo("NONE") == 0 ||
                     friendlyName.compareTo("NOT_COMPUTABLE") == 0 ||
                     friendlyName.compareTo("NOT COMPUTABLE") == 0 ||
-                    friendlyName.compareTo("OUT OF RANGE")   == 0 ||
+                    friendlyName.compareTo("OUT OF RANGE") == 0 ||
                     friendlyName.compareTo("OUT_OF_RANGE") == 0) {
                 bgReading.hide_slope = true;
             }
@@ -284,7 +293,7 @@ public class BgReading extends Model implements ShareUploadableBg{
 
     public static BgReading getForTimestamp(double timestamp) {
         Sensor sensor = Sensor.currentSensor();
-        if(sensor != null) {
+        if (sensor != null) {
             BgReading bgReading = new Select()
                     .from(BgReading.class)
                     .where("Sensor = ? ", sensor.getId())
@@ -293,7 +302,7 @@ public class BgReading extends Model implements ShareUploadableBg{
                     .where("raw_calculated = 0")
                     .orderBy("timestamp desc")
                     .executeSingle();
-            if(bgReading != null && Math.abs(bgReading.timestamp - timestamp) < (3*60*1000)) { //cool, so was it actually within 4 minutes of that bg reading?
+            if (bgReading != null && Math.abs(bgReading.timestamp - timestamp) < (3 * 60 * 1000)) { //cool, so was it actually within 4 minutes of that bg reading?
                 Log.i(TAG, "getForTimestamp: Found a BG timestamp match");
                 return bgReading;
             }
@@ -302,21 +311,21 @@ public class BgReading extends Model implements ShareUploadableBg{
         return null;
     }
 
-    public static BgReading getForPreciseTimestamp(double timestamp,double precision) {
+    public static BgReading getForPreciseTimestamp(double timestamp, double precision) {
         Sensor sensor = Sensor.currentSensor();
-        if(sensor != null) {
+        if (sensor != null) {
             BgReading bgReading = new Select()
                     .from(BgReading.class)
                     .where("Sensor = ? ", sensor.getId())
                     .where("timestamp <= ?", (timestamp + (60 * 1000))) // 1 minute padding (should never be that far off, but why not)
                     .orderBy("timestamp desc")
                     .executeSingle();
-            if(bgReading != null && Math.abs(bgReading.timestamp - timestamp) < precision) { //cool, so was it actually within 4 minutes of that bg reading?
+            if (bgReading != null && Math.abs(bgReading.timestamp - timestamp) < precision) { //cool, so was it actually within 4 minutes of that bg reading?
                 Log.i(TAG, "getForPreciseTimestamp: Found a BG timestamp match");
                 return bgReading;
             }
         }
-        Log.w(TAG, "getForPreciseTimestamp: No luck finding a BG timestamp match: " + JoH.dateTimeText((long)timestamp) + " precision:" + precision);
+        Log.w(TAG, "getForPreciseTimestamp: No luck finding a BG timestamp match: " + JoH.dateTimeText((long) timestamp) + " precision:" + precision);
         return null;
     }
 
@@ -324,14 +333,14 @@ public class BgReading extends Model implements ShareUploadableBg{
     public static boolean is_new(SensorRecord sensorRecord, long addativeOffset) {
         double timestamp = sensorRecord.getSystemTime().getTime() + addativeOffset;
         Sensor sensor = Sensor.currentSensor();
-        if(sensor != null) {
+        if (sensor != null) {
             BgReading bgReading = new Select()
                     .from(BgReading.class)
                     .where("Sensor = ? ", sensor.getId())
                     .where("timestamp <= ?", (timestamp + (60 * 1000))) // 1 minute padding (should never be that far off, but why not)
                     .orderBy("timestamp desc")
                     .executeSingle();
-            if(bgReading != null && Math.abs(bgReading.timestamp - timestamp) < (3*60*1000)) { //cool, so was it actually within 4 minutes of that bg reading?
+            if (bgReading != null && Math.abs(bgReading.timestamp - timestamp) < (3 * 60 * 1000)) { //cool, so was it actually within 4 minutes of that bg reading?
                 Log.i(TAG, "isNew; Old Reading");
                 return false;
             }
@@ -418,7 +427,7 @@ public class BgReading extends Model implements ShareUploadableBg{
         return bgReading;
     }
 
-    static void updateCalculatedValue(BgReading bgReading ) {
+    static void updateCalculatedValue(BgReading bgReading) {
         // TODO should this really be <10 other values also special??
         if (bgReading.calculated_value < 10) {
             bgReading.calculated_value = 38;
@@ -431,13 +440,13 @@ public class BgReading extends Model implements ShareUploadableBg{
 
     // Used by xDripViewer
     public static void create(Context context, double raw_data, double age_adjusted_raw_value, double filtered_data, Long timestamp,
-            double calculated_bg,  double calculated_current_slope, boolean hide_slope) {
-        
+                              double calculated_bg, double calculated_current_slope, boolean hide_slope) {
+
         BgReading bgReading = new BgReading();
         Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
             Log.w(TAG, "No sensor, ignoring this bg reading");
-            return ;
+            return;
         }
 
         Calibration calibration = Calibration.lastValid();
@@ -457,14 +466,14 @@ public class BgReading extends Model implements ShareUploadableBg{
             bgReading.save();
             bgReading.perform_calculations();
         } else {
-            Log.d(TAG,"Calibrations, so doing everything bgReading = " + bgReading);
+            Log.d(TAG, "Calibrations, so doing everything bgReading = " + bgReading);
             bgReading.sensor = sensor;
             bgReading.sensor_uuid = sensor.uuid;
             bgReading.calibration = calibration;
             bgReading.calibration_uuid = calibration.uuid;
-            bgReading.raw_data = (raw_data/1000);
+            bgReading.raw_data = (raw_data / 1000);
             bgReading.age_adjusted_raw_value = age_adjusted_raw_value;
-            bgReading.filtered_data = (filtered_data/1000);
+            bgReading.filtered_data = (filtered_data / 1000);
             bgReading.timestamp = timestamp;
             bgReading.uuid = UUID.randomUUID().toString();
             bgReading.calculated_value = calculated_bg;
@@ -475,7 +484,7 @@ public class BgReading extends Model implements ShareUploadableBg{
         }
         BgSendQueue.handleNewBgReading(bgReading, "create", context);
 
-        Log.i("BG GSON: ",bgReading.toS());
+        Log.i("BG GSON: ", bgReading.toS());
     }
 
     public static String activeSlopeArrow() {
@@ -501,8 +510,8 @@ public class BgReading extends Model implements ShareUploadableBg{
         }
     }
 
-    public String slopeArrow(){
-        return slopeToArrowSymbol(this.calculated_value_slope*60000);
+    public String slopeArrow() {
+        return slopeToArrowSymbol(this.calculated_value_slope * 60000);
     }
 
     public String slopeName() {
@@ -523,7 +532,7 @@ public class BgReading extends Model implements ShareUploadableBg{
         } else if (slope_by_minute <= (40)) {
             arrow = "DoubleUp";
         }
-        if(hide_slope) {
+        if (hide_slope) {
             arrow = "NOT COMPUTABLE";
         }
         return arrow;
@@ -548,7 +557,7 @@ public class BgReading extends Model implements ShareUploadableBg{
         } else if (isSlopeNameInvalid(slope_name)) {
             slope_by_minute = 0;
         }
-        return slope_by_minute /60000;
+        return slope_by_minute / 60000;
     }
 
     public static boolean isSlopeNameInvalid(String slope_name) {
@@ -561,6 +570,29 @@ public class BgReading extends Model implements ShareUploadableBg{
         } else {
             return false;
         }
+    }
+
+    // Get a slope arrow based on pure guessed defaults so we can show it prior to calibration
+    public static String getSlopeArrowSymbolBeforeCalibration() {
+        final List<BgReading> last = BgReading.latestUnCalculated(2);
+        if ((last!=null) && (last.size()==2)) {
+            final double guess_slope = 1; // This is the "Default" slope for Dex and LimiTTer
+            final double time_delta = (last.get(0).timestamp-last.get(1).timestamp);
+            if (time_delta<=(BgGraphBuilder.DEXCOM_PERIOD * 2)) {
+                final double estimated_delta = (last.get(0).age_adjusted_raw_value * guess_slope) - (last.get(1).age_adjusted_raw_value * guess_slope);
+                final double estimated_delta2 = (last.get(0).raw_data * guess_slope) - (last.get(1).raw_data * guess_slope);
+                Log.d(TAG, "SlopeArrowBeforeCalibration: guess delta: " + estimated_delta + " delta2: " + estimated_delta2 + " timedelta: " + time_delta);
+                return slopeToArrowSymbol(estimated_delta / (time_delta / 60000));
+            } else { return ""; }
+        } else {
+            return "";
+        }
+    }
+
+    public static boolean last_within_minutes(final int mins) {
+        final BgReading reading = last();
+        return reading != null && ((JoH.tsl() - reading.timestamp) < (mins * 60000));
+
     }
 
     public static BgReading last()

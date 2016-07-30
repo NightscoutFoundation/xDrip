@@ -471,4 +471,5 @@
 	<string name="noise_model_inner_workings">Rauschmodell (Erweiterte Anzeige)</string>
 	<string name="glucose_number_from_filtered">Glukose aus gefilterten Werten</string>
 	<string name="if_the_phone_has_text_to_speech">Sofern das Telefon über Text-in-Sprache verfügt, wird jeder neue Wert vorgelesen.</string>
+	<string name="upload_logs">Hochladen von Logs</string>
 </resources>

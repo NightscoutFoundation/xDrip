@@ -374,6 +374,7 @@
 	<string name="compatible_broadcast">Broadcast compatibles</string>
 	<string name="show_datatables">Mostrar DataTables</string>
 	<string name="display_bridge_battery">Mostrar Puente de la batería</string>
+	<string name="close_gatt_on_ble_disconnect">Cerca del GATT sobre desconexión BLE</string>
 	<string name="disable_battery_warning">Desactivar la advertencia de batería</string>
 	<string name="additional_text_status">Estado de texto adicional</string>
 	<string name="average">Promedio</string>
@@ -455,6 +456,7 @@
 	<string name="high_alert">Alerta máxima</string>
 	<string name="low_alert">Alerta de baja</string>
 	<string name="xbridge_battery">batería XBridge</string>
+	<string name="limitter_battery">Limitador de la batería</string>
 	<string name="parakeet_battery">Batería Parakeet</string>
 	<string name="after_calibration_rewrite_history">Después de la calibración, ajuste reciente gráfico prima para suavizar a la nueva calibración</string>
 	<string name="rewrite_history">Historia de reescritura</string>
@@ -469,4 +471,5 @@
 	<string name="noise_model_inner_workings">Modelo de ruido de funcionamiento interno</string>
 	<string name="glucose_number_from_filtered">Número de glucosa a partir de Filtrado</string>
 	<string name="if_the_phone_has_text_to_speech">Si el teléfono tiene capacidades de conversión de texto a voz que hablará cada nueva lectura.</string>
+	<string name="upload_logs">Cargar los registros</string>
 </resources>

@@ -471,4 +471,5 @@
 	<string name="noise_model_inner_workings">Hałas wewnętrzne funkcjonowanie modelu</string>
 	<string name="glucose_number_from_filtered">Numer Glukoza z filtrowanego</string>
 	<string name="if_the_phone_has_text_to_speech">Jeśli telefon posiada funkcje zamiany tekstu na mowe to będzie mówić każdy nowy odczyt.</string>
+	<string name="upload_logs">Dodaj Dzienniki</string>
 </resources>

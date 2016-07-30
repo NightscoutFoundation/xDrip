@@ -471,4 +471,5 @@
 	<string name="noise_model_inner_workings">Modelul de zgomot interior lucrări</string>
 	<string name="glucose_number_from_filtered">Numărul de glucoză din Filtered</string>
 	<string name="if_the_phone_has_text_to_speech">În cazul în care telefonul are capabilități de text-to-speech va vorbi fiecare nouă lectură.</string>
+	<string name="upload_logs">Încarcă Jurnale</string>
 </resources>

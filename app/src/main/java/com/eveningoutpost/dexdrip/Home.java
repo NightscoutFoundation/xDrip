@@ -57,6 +57,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
@@ -204,10 +205,17 @@ public class Home extends ActivityWithMenu {
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         final boolean checkedeula = checkEula();
+
+        //if (Build.VERSION.SDK_INT >= 21) {
+        //    getWindow().setNavigationBarColor(Color.BLUE);
+        //    getWindow().setStatusBarColor(getCol(X.color_home_chart_background));
+        //}
         setContentView(R.layout.activity_home);
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(mToolbar);
+
+        //findViewById(R.id.home_layout_holder).setBackgroundColor(getCol(X.color_home_chart_background));
 
         this.dexbridgeBattery = (TextView) findViewById(R.id.textBridgeBattery);
         this.parakeetBattery = (TextView) findViewById(R.id.parakeetbattery);
@@ -383,14 +391,44 @@ public class Home extends ActivityWithMenu {
         Bundle bundle = getIntent().getExtras();
         processIncomingBundle(bundle);
 
+        checkBadSettings();
+
         // lower priority
         PlusSyncService.startSyncService(getApplicationContext(), "HomeOnCreate");
         ParakeetHelper.notifyOnNextCheckin(false);
+        if (getPreferencesBoolean("detect_motion",false)) ActivityRecognizedService.startActivityRecogniser(getApplicationContext());
 
         if ((checkedeula) && (!getString(R.string.app_name).equals("xDrip+"))) {
             showcasemenu(SHOWCASE_VARIANT);
         }
 
+    }
+
+    private void checkBadSettings()
+    {
+        if (getPreferencesBoolean("predictive_bg",false)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Settings Issue!");
+                builder.setMessage("You have an old experimental glucose prediction setting enabled.\n\nThis is NOT RECOMMENDED and could mess things up badly.\n\nShall I disable this for you?");
+
+                builder.setPositiveButton("YES, Please", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        setPreferencesBoolean("predictive_bg",false);
+                        toast("Setting disabled :)");
+                    }
+                });
+
+                builder.setNegativeButton("No, I really know what I'm doing", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+        }
     }
 
     // handle sending the intent
@@ -762,6 +800,7 @@ public class Home extends ActivityWithMenu {
             SdcardImportExport.forceGMSreset();
         } else if (allWords.contentEquals("enable engineering mode")) {
             Home.setPreferencesBoolean("engineering_mode", true);
+            JoH.static_toast(getApplicationContext(),"Engineering mode enabled - be careful", Toast.LENGTH_LONG);
         }
 
         if (allWords.contentEquals("clear battery warning")) {
@@ -1467,6 +1506,7 @@ public class Home extends ActivityWithMenu {
         if (Sensor.currentSensor().started_at + 60000 * 60 * 2 >= now) {
             double waitTime = (Sensor.currentSensor().started_at + 60000 * 60 * 2 - now) / 60000.0;
             notificationText.setText(getString(R.string.please_wait_while_sensor_warms_up) + String.format("%.2f", waitTime) + getString(R.string.minutes_with_bracket));
+            showUncalibratedSlope();
             return;
         }
 
@@ -1479,6 +1519,7 @@ public class Home extends ActivityWithMenu {
                 displayCurrentInfo();
             } else {
                 notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
+                showUncalibratedSlope();
                 Log.d(TAG, "Asking for calibration A: Uncalculated BG readings: " + BgReading.latest(2).size() + " / Calibrations size: " + calibrations.size());
 
             }
@@ -1489,10 +1530,16 @@ public class Home extends ActivityWithMenu {
                 List<Calibration> calibrations = Calibration.latest(2);
                 if (calibrations.size() < 2) {
                     notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
+                    showUncalibratedSlope();
                     Log.d(TAG, "Asking for calibration B: Uncalculated BG readings: " + BgReading.latestUnCalculated(2).size() + " / Calibrations size: " + calibrations.size());
                 }
             }
         }
+    }
+
+    private void showUncalibratedSlope() {
+        currentBgValueText.setText(BgReading.getSlopeArrowSymbolBeforeCalibration());
+        currentBgValueText.setTextColor(getCol(X.color_predictive));
     }
 
     private void updateCurrentBgInfoForBtShare(TextView notificationText) {

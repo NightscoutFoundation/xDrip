@@ -189,7 +189,7 @@ public class G5CollectionService extends Service {
             if ((!service_running) && (keep_running)) {
                 service_running = true;
 
-                Log.d(TAG, "onG5StartCommand");
+                Log.d(TAG, "onG5StartCommand wakeup: "+JoH.dateTimeText(JoH.tsl()));
                 //Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
                 //stopScan();
                 if (!CollectionServiceStarter.isBTG5(xdrip.getAppContext())) {
@@ -283,7 +283,7 @@ public class G5CollectionService extends Service {
                 wakeTime = Calendar.getInstance().getTimeInMillis() + wake_in_ms;
             }
             //Log.e(TAG, "Delay Time: " + minuteDelay);
-            Log.e(TAG, "OnStart Wake Time: " + wakeTime);
+            Log.e(TAG, "Scheduling Wake Time: in " +  JoH.qs((wakeTime-JoH.tsl())/1000,0)+ " secs "+ JoH.dateTimeText(wakeTime));
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
             if (pendingIntent != null)
                 alarm.cancel(pendingIntent);

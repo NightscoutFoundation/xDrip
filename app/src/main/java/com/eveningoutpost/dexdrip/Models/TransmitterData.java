@@ -78,6 +78,7 @@ public class TransmitterData extends Model {
             }
             transmitterData.raw_data = Integer.parseInt(data[0]);
             transmitterData.filtered_data = Integer.parseInt(data[0]);
+            // TODO process does_have_filtered_here with extended protocol
             transmitterData.timestamp = timestamp;
         }
 
