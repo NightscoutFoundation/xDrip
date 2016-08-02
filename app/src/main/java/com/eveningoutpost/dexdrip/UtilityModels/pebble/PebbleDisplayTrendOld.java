@@ -40,6 +40,7 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
     public static final int VIBE_KEY = 11;
 
     public static final int CHUNK_SIZE = 100;
+    public static final boolean d = false;
 
     private static boolean messageInTransit = false;
     private static boolean transactionFailed = false;
@@ -100,7 +101,7 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
     @Override
     public void receiveAck(int transactionId) {
 
-        Log.i(TAG, "receiveAck: Got an Ack for transactionId " + transactionId);
+        if (d) Log.i(TAG, "receiveAck: Got an Ack for transactionId " + transactionId);
         messageInTransit = false;
         transactionOk = true;
         transactionFailed = false;
@@ -319,17 +320,17 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
         if (!done && ((sendStep == 2 && !messageInTransit) || sendStep == 3 && transactionFailed)) {
             if (!transactionFailed && !messageInTransit) {
                 // send image chunks to Pebble.
-                Log.d(TAG, "sendTrendToPebble: current_size is " + current_size + ", image_size is " + image_size);
+                if (d) Log.d(TAG, "sendTrendToPebble: current_size is " + current_size + ", image_size is " + image_size);
                 if (current_size < image_size) {
                     this.dictionary.remove(TREND_DATA_KEY);
                     if ((image_size <= (current_size + CHUNK_SIZE))) {
                         chunk = new byte[image_size - current_size];
-                        Log.d(TAG, "sendTrendToPebble: sending chunk of size " + (image_size - current_size));
+                        if (d) Log.d(TAG, "sendTrendToPebble: sending chunk of size " + (image_size - current_size));
                         buff.get(chunk, 0, image_size - current_size);
                         sendStep = 3;
                     } else {
                         chunk = new byte[CHUNK_SIZE];
-                        Log.d(TAG, "sendTrendToPebble: sending chunk of size " + CHUNK_SIZE);
+                        if (d) Log.d(TAG, "sendTrendToPebble: sending chunk of size " + CHUNK_SIZE);
                         buff.get(chunk, 0, CHUNK_SIZE);
                         current_size += CHUNK_SIZE;
                     }
@@ -398,14 +399,14 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
                 try {
 
                         if (PebbleKit.isWatchConnected(this.context)) {
-                            Log.d(TAG, "Sendstep: " + sendStep);
+                            if (d) Log.d(TAG, "Sendstep: " + sendStep);
                             if (sendStep == 5) {
                                 sendStep = 0;
                                 done = false;
                                 clearDictionary();
                             }
 
-                            Log.i(TAG, "sendData: messageInTransit= " + messageInTransit + ", transactionFailed= " + transactionFailed + ", sendStep= " + sendStep);
+                            if (d) Log.i(TAG, "sendData: messageInTransit= " + messageInTransit + ", transactionFailed= " + transactionFailed + ", sendStep= " + sendStep);
                             if (sendStep == 0 && !messageInTransit && !transactionOk && !transactionFailed) {
                                 this.bgReading = BgReading.last();
                                 sendingData = true;
@@ -415,7 +416,7 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
 
 
                             if (sendStep == 0 && !messageInTransit && transactionOk && !transactionFailed) {
-                                Log.i(TAG, "sendData: sendStep 0 complete, clearing dictionary");
+                                if (d) Log.i(TAG, "sendData: sendStep 0 complete, clearing dictionary");
                                 clearDictionary();
                                 transactionOk = false;
                                 sendStep = 1;
@@ -433,7 +434,7 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
                             }
 
                             if (sendStep == 5) {
-                                Log.i(TAG, "sendData: finished sending.  sendStep = " + sendStep);
+                                if (d) Log.i(TAG, "sendData: finished sending.  sendStep = " + sendStep);
                                 done = true;
                                 transactionFailed = false;
                                 transactionOk = false;

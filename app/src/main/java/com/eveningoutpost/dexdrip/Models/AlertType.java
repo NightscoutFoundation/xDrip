@@ -190,11 +190,12 @@ public class AlertType extends Model {
         // Chcek the low alerts
 
         // this should already be happening in notifications.java but it doesn't seem to work so adding here as well
-        if (prefs.getBoolean("disable_alerts_stale_data",false)
-                && BgReading.last_within_minutes(Math.min(6, Integer.parseInt(prefs.getString("disable_alerts_stale_data_minutes", "15")+2))))
-        {
-            Log.w(TAG,"Blocking alarm raise as data older than: "+MissedReadingService.readPerfsInt(prefs, "bg_missed_minutes", 30));
-            return null;
+        if (prefs.getBoolean("disable_alerts_stale_data", false)) {
+            final int stale_minutes = Math.max(6, Integer.parseInt(prefs.getString("disable_alerts_stale_data_minutes", "15")) + 2);
+            if (!BgReading.last_within_minutes(stale_minutes)) {
+                Log.w(TAG, "Blocking alarm raise as data older than: " + stale_minutes);
+                return null;
+            }
         }
 
         if(prefs.getLong("low_alerts_disabled_until", 0) > new Date().getTime()){

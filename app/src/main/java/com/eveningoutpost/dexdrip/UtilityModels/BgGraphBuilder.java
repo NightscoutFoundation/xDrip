@@ -871,7 +871,7 @@ public class BgGraphBuilder {
         // noise debug
         try {
             // overlay noise curve
-            if ((show_noise_working_line) && (prediction_enabled)) {
+            if ((show_noise_working_line) && (prediction_enabled) && (noisePoly != null)) {
                 for (BgReading bgReading : bgReadings) {
                     // only show working curve for last x hours to a
                     if ((bgReading.timestamp > oldest_noise_timestamp) && (bgReading.timestamp > last_calibration)) {
