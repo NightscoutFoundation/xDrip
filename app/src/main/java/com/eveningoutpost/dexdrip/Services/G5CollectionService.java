@@ -124,6 +124,7 @@ public class G5CollectionService extends Service {
     public int max133Retries = 5;
     public int max133RetryCounter = 0;
     private static int disconnected133 = 0;
+    private static int disconnected59 = 0;
     public boolean isIntialScan = true;
     public static Timer scan_interval_timer = new Timer();
     public ArrayList<Long> advertiseTimeMS = new ArrayList<Long>();
@@ -530,8 +531,8 @@ public class G5CollectionService extends Service {
     }
 
     private synchronized void cycleBT(boolean t) {
-        Log.e(TAG, "cycleBT special: count:" + disconnected133);
-        if (disconnected133 < 2) {
+        Log.e(TAG, "cycleBT special: count:" + disconnected133 + " / "+ disconnected59);
+        if ((disconnected133 < 2) && (disconnected59 < 2)) {
             cycleBT();
         } else {
             Log.e(TAG, "jamorham special restart");
@@ -546,6 +547,7 @@ public class G5CollectionService extends Service {
                 }
             }
             disconnected133 = 0;
+            disconnected59 = 0;
             stopSelf();
         }
     }
@@ -804,6 +806,7 @@ public class G5CollectionService extends Service {
                                               } else if (status == 129) {
                                                   forgetDevice();
                                               } else {
+                                                  if (status == 59) disconnected59++;
                                                   if (scanConstantly())
                                                       startScan();
                                                   else
@@ -877,6 +880,7 @@ public class G5CollectionService extends Service {
                         } else if (status == 129) {
                             forgetDevice();
                         } else {
+                            if (status == 59) disconnected59++;
                             if (scanConstantly())
                                 startScan();
                             else
@@ -1233,6 +1237,7 @@ public class G5CollectionService extends Service {
                             //Log.e(TAG, "filtered: " + sensorRx.filtered);
                             Log.e(TAG, "unfiltered: " + sensorRx.unfiltered);
                             disconnected133=0;
+                            disconnected59=0;
                             doDisconnectMessage(gatt, characteristic);
                             processNewTransmitterData(sensorRx.unfiltered, sensorRx.filtered, sensor_battery_level, new Date().getTime());
                         }
@@ -1268,6 +1273,7 @@ public class G5CollectionService extends Service {
 
                     //Log.e(TAG, "filtered: " + sensorRx.filtered);
                     disconnected133=0;
+                    disconnected59=0;
                     Log.e(TAG, "unfiltered: " + sensorRx.unfiltered);
                     doDisconnectMessage(gatt, characteristic);
                     processNewTransmitterData(sensorRx.unfiltered, sensorRx.filtered, sensor_battery_level, new Date().getTime());
