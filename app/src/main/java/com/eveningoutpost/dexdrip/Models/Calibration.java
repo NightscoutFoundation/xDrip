@@ -377,6 +377,12 @@ public class Calibration extends Model {
             bg = bg * Constants.MMOLL_TO_MGDL;
         }
 
+        if ((bg < 40) || (bg > 400)) {
+            Log.wtf(TAG, "Invalid out of range calibration glucose mg/dl value of: " + bg);
+            JoH.static_toast_long("Calibration out of range: " + bg + " mg/dl");
+            return null;
+        }
+
         CalibrationRequest.clearAll();
         Calibration calibration = new Calibration();
         Sensor sensor = Sensor.currentSensor();

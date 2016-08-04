@@ -106,7 +106,7 @@
 	<string name="please_wait_need_two_readings_first">Proszę czekać, najpierw potrzebuje 2 odczyty z nadajnika.</string>
 	<string name="please_enter_two_calibrations_to_get_started">Aby rozpocząć, proszę podać dwie kalibracje!</string>
 	<string name="now_pair_with_your_dexcom_share">Teraz sparować z Dexcom Udostępnij</string>
-	<string name="now_choose_start_sensor_in_settings">Teraz wybierz uruchomić czujnik w ustawieniach</string>
+	<string name="now_choose_start_sensor_in_settings">Teraz uruchom czujnik w ustawieniach</string>
 	<string name="double_check_dex_receiver_serial_number">Dwukrotnie Sprawdź Numer seryjny Dex receiver, powinien składać się z 10 znaków, nie należy zapominać liter</string>
 	<string name="please_set_dex_receiver_serial_number">Proszę ustawić numer seryjny Dex Receiver w ustawieniach aplikacji</string>
 	<string name="unfortunately_andoird_version_no_blueooth_low_energy">Niestety twoja wersja Android nie obsługuje Bluetooth Low Energy</string>

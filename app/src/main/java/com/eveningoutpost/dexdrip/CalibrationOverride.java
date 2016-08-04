@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
@@ -19,7 +20,8 @@ import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 public class CalibrationOverride extends ActivityWithMenu {
         Button button;
-    public static String menu_name = "Override Calibration";
+    public static final String menu_name = "Override Calibration";
+    private static final String TAG = "OverrideCalib";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,17 +49,25 @@ public class CalibrationOverride extends ActivityWithMenu {
                     EditText value = (EditText) findViewById(R.id.bg_value);
                     String string_value = value.getText().toString();
                     if (!TextUtils.isEmpty(string_value)){
-                        double calValue = Double.parseDouble(string_value);
+                        final double calValue = JoH.tolerantParseDouble(string_value);
 
                         Calibration last_calibration = Calibration.last();
                         last_calibration.sensor_confidence = 0;
                         last_calibration.slope_confidence = 0;
                         last_calibration.save();
-                        Calibration calibration = Calibration.create(calValue, getApplicationContext());
-                        UndoRedo.addUndoCalibration(calibration.uuid);
+
+                        // TODO we need to push the nixing of this last calibration
+
+                        final Calibration calibration = Calibration.create(calValue, getApplicationContext());
+                        if (calibration != null) {
+                            UndoRedo.addUndoCalibration(calibration.uuid);
+                            GcmActivity.pushCalibration(string_value, "0");
+                        } else {
+                            Log.e(TAG, "Calibration creation resulted in null");
+                            JoH.static_toast_long("Could not create calibration!");
+                        }
                          Intent tableIntent = new Intent(v.getContext(), Home.class);
                          startActivity(tableIntent);
-                         GcmActivity.pushCalibration(string_value, "0");
                          finish();
                     } else {
                         value.setError("Calibration Can Not be blank");

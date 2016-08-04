@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -137,22 +138,25 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                         //    @Override
                         //    public void run() {
 
-                                try {
-                                    double calValue = Double.parseDouble(string_value);
-                                    // sanity check the number?
+                        try {
+                            final double calValue = JoH.tolerantParseDouble(string_value);
 
-                                    Calibration calibration = Calibration.create(calValue, getApplicationContext());
-                                    if (calibration!=null) { UndoRedo.addUndoCalibration(calibration.uuid); } else {
-                                        Log.e(TAG,"Calibration creation resulted in null");
-                                        // TODO probably follower must ensure it has a valid sensor regardless..
-                                    }
-                                    Intent tableIntent = new Intent(v.getContext(), Home.class);
-                                    startActivity(tableIntent);
-                                    GcmActivity.pushCalibration(string_value, "0");
-                                } catch (NumberFormatException e) {
-                                    Log.e(TAG, "Number format exception ", e);
-                                    Home.toaststatic("Got error parsing number in calibration");
-                                }
+                            Calibration calibration = Calibration.create(calValue, getApplicationContext());
+                            if (calibration != null) {
+                                UndoRedo.addUndoCalibration(calibration.uuid);
+                                GcmActivity.pushCalibration(string_value, "0");
+                            } else {
+                                Log.e(TAG, "Calibration creation resulted in null");
+                                JoH.static_toast_long("Could not create calibration!");
+                                // TODO probably follower must ensure it has a valid sensor regardless..
+                            }
+                            Intent tableIntent = new Intent(v.getContext(), Home.class);
+                            startActivity(tableIntent);
+
+                        } catch (NumberFormatException e) {
+                            Log.e(TAG, "Number format exception ", e);
+                            Home.toaststatic("Got error parsing number in calibration");
+                        }
                            // }
                        // }.start();
                         finish();

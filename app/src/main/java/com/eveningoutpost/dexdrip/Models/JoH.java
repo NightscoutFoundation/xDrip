@@ -405,6 +405,22 @@ public class JoH {
         }
     }
 
+    public static void static_toast_long(final String msg) {
+        try {
+            Activity activity = (Activity) xdrip.getAppContext();
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(xdrip.getAppContext(), msg, Toast.LENGTH_LONG).show();
+                }
+            });
+            Log.d(TAG, "Toast msg: " + msg);
+        } catch (Exception e) {
+            Log.e(TAG, "Couldn't display toast: " + msg + " e: "+e.toString());
+            Home.toaststatic(msg);
+        }
+    }
+
     public static String urlEncode(String source) {
         try {
             return URLEncoder.encode(source, "UTF-8");

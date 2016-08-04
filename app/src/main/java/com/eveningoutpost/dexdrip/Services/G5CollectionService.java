@@ -180,6 +180,7 @@ public class G5CollectionService extends Service {
 
     public void listenForChangeInSettings() {
         prefs.registerOnSharedPreferenceChangeListener(prefListener);
+        // TODO do we need an unregister!?
     }
 
     @Override
