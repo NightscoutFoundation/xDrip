@@ -807,12 +807,18 @@ public class G5CollectionService extends Service {
                                               } else if (status == 129) {
                                                   forgetDevice();
                                               } else {
-                                                  if (status == 59) disconnected59++;
-                                                  if (scanConstantly())
-                                                      startScan();
-                                                  else
-                                                      cycleScan(0);
-                                                  max133RetryCounter = 0;
+                                                  if (status == 59) {
+                                                      disconnected59++;
+                                                  }
+                                                  if (disconnected59 > 2) {
+                                                      cycleBT(true);
+                                                  } else {
+                                                      if (scanConstantly())
+                                                          startScan();
+                                                      else
+                                                          cycleScan(0);
+                                                      max133RetryCounter = 0;
+                                                  }
                                               }
 
                                               break;
@@ -881,12 +887,18 @@ public class G5CollectionService extends Service {
                         } else if (status == 129) {
                             forgetDevice();
                         } else {
-                            if (status == 59) disconnected59++;
-                            if (scanConstantly())
-                                startScan();
-                            else
-                                cycleScan(0);
-                            max133RetryCounter = 0;
+                            if (status == 59) {
+                                disconnected59++;
+                            }
+                            if (disconnected59 > 2) {
+                                cycleBT(true);
+                            } else {
+                                if (scanConstantly())
+                                    startScan();
+                                else
+                                    cycleScan(0);
+                                max133RetryCounter = 0;
+                            }
                         }
 
                         break;
