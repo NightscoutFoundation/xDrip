@@ -147,7 +147,7 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
                     " phoneTime-" + (int) (new Date().getTime() / 1000) + " getBgDelta-" + getBgDelta());
             no_signal = ((new Date().getTime()) - (60000 * 11) - this.bgReading.timestamp > 0);
 
-            if (!getBooleanValue("pebble_show_arrows")) {
+            if (!getBooleanValue("pebble_show_arrows") || no_signal) {
                 this.dictionary.addString(ICON_KEY, "0");
             } else {
                 this.dictionary.addString(ICON_KEY, slopeOrdinal);

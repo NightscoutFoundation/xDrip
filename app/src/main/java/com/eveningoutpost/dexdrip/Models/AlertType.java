@@ -13,6 +13,7 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
@@ -185,18 +186,24 @@ public class AlertType extends Model {
         return at;
     }
 
-    // bg_minute is the estimatin of the bg change rate
-    private static AlertType get_highest_active_alert_helper(double bg, SharedPreferences prefs) {
-        // Chcek the low alerts
-
+    private static AlertType filter_alert_on_stale(AlertType alert, SharedPreferences prefs)
+    {
         // this should already be happening in notifications.java but it doesn't seem to work so adding here as well
         if (prefs.getBoolean("disable_alerts_stale_data", false)) {
             final int stale_minutes = Math.max(6, Integer.parseInt(prefs.getString("disable_alerts_stale_data_minutes", "15")) + 2);
             if (!BgReading.last_within_minutes(stale_minutes)) {
                 Log.w(TAG, "Blocking alarm raise as data older than: " + stale_minutes);
-                return null;
+                return null; // block
             }
         }
+        return alert; // allow
+    }
+
+    // bg_minute is the estimatin of the bg change rate
+    private static AlertType get_highest_active_alert_helper(double bg, SharedPreferences prefs) {
+        // Chcek the low alerts
+
+        final double offset = ActivityRecognizedService.raise_limit_due_to_vehicle_mode() ? ActivityRecognizedService.getVehicle_mode_adjust_mgdl() : 0;
 
         if(prefs.getLong("low_alerts_disabled_until", 0) > new Date().getTime()){
             Log.i("NOTIFICATIONS", "get_highest_active_alert_helper: Low alerts are currently disabled!! Skipping low alerts");
@@ -204,14 +211,14 @@ public class AlertType extends Model {
         } else {
             List<AlertType> lowAlerts  = new Select()
                     .from(AlertType.class)
-                    .where("threshold >= ?", bg)
+                    .where("threshold >= ?", bg-offset)
                     .where("above = ?", false)
                     .orderBy("threshold asc")
                     .execute();
 
             for (AlertType lowAlert : lowAlerts) {
-                if(lowAlert.should_alarm(bg)) {
-                    return lowAlert;
+                if(lowAlert.should_alarm(bg-offset)) {
+                    return filter_alert_on_stale(lowAlert,prefs);
                 }
             }
         }
@@ -232,7 +239,7 @@ public class AlertType extends Model {
             for (AlertType HighAlert : HighAlerts) {
                 //Log.e(TAG, "Testing high alert " + HighAlert.toString());
                 if(HighAlert.should_alarm(bg)) {
-                    return HighAlert;
+                    return filter_alert_on_stale(HighAlert,prefs);
                 }
             }
         }

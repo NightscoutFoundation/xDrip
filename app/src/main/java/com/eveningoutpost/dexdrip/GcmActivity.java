@@ -174,6 +174,12 @@ public class GcmActivity extends Activity {
         }
     }
 
+    public static void sendMotionUpdate(final long timestamp, final int activity) {
+        if (JoH.ratelimit("gcm-amu", 5)) {
+            sendMessage("amu", Long.toString(timestamp) + "^" + Integer.toString(activity));
+        }
+    }
+
 
     public static void requestBGsync() {
         if (token != null) {

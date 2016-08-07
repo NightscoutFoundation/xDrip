@@ -36,6 +36,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.CalibrationRequest;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
+import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 
 import com.eveningoutpost.dexdrip.R;
@@ -117,6 +118,10 @@ public class Notifications extends IntentService {
             notificationSetter(context);
             ArmTimer(context);
             context.startService(new Intent(context, MissedReadingService.class));
+
+            if (Home.getPreferencesBoolean("motion_tracking_enabled", false)) {
+                ActivityRecognizedService.reStartActivityRecogniser(context);
+            }
         } finally {
             if (wl.isHeld()) wl.release();
         }

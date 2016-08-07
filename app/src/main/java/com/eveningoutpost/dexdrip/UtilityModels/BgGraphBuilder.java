@@ -24,8 +24,10 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.google.android.gms.location.DetectedActivity;
 import com.rits.cloning.Cloner;
 
 import java.lang.reflect.Field;
@@ -101,7 +103,7 @@ public class BgGraphBuilder {
     public double predictive_end_time;
     public double start_time = end_time - ((60000 * 60 * 24)) / FUZZER;
     private final static double timeshift = 500000;
-    private static final int NUM_VALUES =(60/5)*24;
+    private static final int NUM_VALUES = (60 / 5) * 24;
 
     private final List<Treatments> treatments;
     private final static boolean d = false; // debug flag, could be read from preferences
@@ -146,32 +148,32 @@ public class BgGraphBuilder {
     public static double last_bg_estimate = -99999;
 
 
-    public BgGraphBuilder(Context context){
-        this(context,new Date().getTime() + (60000 * 10));
+    public BgGraphBuilder(Context context) {
+        this(context, new Date().getTime() + (60000 * 10));
     }
 
-    public BgGraphBuilder(Context context, long end){
+    public BgGraphBuilder(Context context, long end) {
         this(context, end - (60000 * 60 * 24), end);
     }
 
-    public BgGraphBuilder(Context context, long start, long end){
+    public BgGraphBuilder(Context context, long start, long end) {
         this(context, start, end, NUM_VALUES, true);
     }
 
-    public BgGraphBuilder(Context context, long start, long end, int numValues, boolean show_prediction){
+    public BgGraphBuilder(Context context, long start, long end, int numValues, boolean show_prediction) {
         // swap argument order if needed
-        if (start > end)
-        {
+        if (start > end) {
             long temp = end;
             end = start;
             start = temp;
-            if (d) Log.d(TAG,"Swapping timestamps");
+            if (d) Log.d(TAG, "Swapping timestamps");
         }
-        if (d) Log.d(TAG,"Called timestamps: "+JoH.dateTimeText(start)+" -> "+JoH.dateTimeText(end));
+        if (d)
+            Log.d(TAG, "Called timestamps: " + JoH.dateTimeText(start) + " -> " + JoH.dateTimeText(end));
         prediction_enabled = show_prediction;
         end_time = end / FUZZER;
         start_time = start / FUZZER;
-        bgReadings = BgReading.latestForGraph( numValues, start, end);
+        bgReadings = BgReading.latestForGraph(numValues, start, end);
 
         if ((end - start) > 80000000) {
             try {
@@ -181,7 +183,7 @@ public class BgGraphBuilder {
                 capturePercentage = -1; // invalid reading
             }
         }
-        calibrations = Calibration.latestForGraph( numValues, start, end);
+        calibrations = Calibration.latestForGraph(numValues, start, end);
         treatments = Treatments.latestForGraph(numValues, start, end);
         this.context = context;
         this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -207,6 +209,7 @@ public class BgGraphBuilder {
         else
             return 1;
     }
+
     private static Object cloneObject(Object obj) {
         try {
             Object clone = obj.getClass().newInstance();
@@ -228,13 +231,80 @@ public class BgGraphBuilder {
         return mgdl * Constants.MGDL_TO_MMOLL;
     }
 
-    public static String noiseString(double thisnoise)
-    {
-        if (thisnoise>NOISE_HIGH) return "Extreme";
-        if (thisnoise>NOISE_TOO_HIGH_FOR_PREDICT) return "Very High";
-        if (thisnoise>NOISE_TRIGGER) return "High";
+    public static String noiseString(double thisnoise) {
+        if (thisnoise > NOISE_HIGH) return "Extreme";
+        if (thisnoise > NOISE_TOO_HIGH_FOR_PREDICT) return "Very High";
+        if (thisnoise > NOISE_TRIGGER) return "High";
         return "Low";
     }
+
+    private void extend_line(List<PointValue> points, float x, float y) {
+        if (points.size() > 1) {
+            points.remove(1); // replace last
+        }
+        points.add(new PointValue(x, y));
+        Log.d(TAG,"Extend line size: "+points.size());
+    }
+
+    private List<Line> motionLine() {
+
+        final ArrayList<ActivityRecognizedService.motionData> motion_datas = ActivityRecognizedService.getForGraph((long) start_time * FUZZER, (long) end_time * FUZZER);
+        List<PointValue> linePoints = new ArrayList<>();
+
+        final float ypos = (float)highMark;
+        int last_type = -9999;
+
+
+        final ArrayList<Line> line_array = new ArrayList<>();
+
+        Log.d(TAG,"Motion datas size: "+motion_datas.size());
+        if (motion_datas.size() > 0) {
+            motion_datas.add(new ActivityRecognizedService.motionData((long) end_time * FUZZER, DetectedActivity.UNKNOWN)); // terminator
+
+            for (ActivityRecognizedService.motionData item : motion_datas) {
+
+                Log.d(TAG, "Motion detail: " + JoH.dateTimeText(item.timestamp) + " activity: " + item.activity);
+                if ((last_type != -9999) && (last_type != item.activity)) {
+                    extend_line(linePoints, item.timestamp / FUZZER, ypos);
+                    Line new_line = new Line(linePoints);
+                    new_line.setHasLines(true);
+                    new_line.setPointRadius(0);
+                    new_line.setStrokeWidth(1);
+                    new_line.setAreaTransparency(40);
+                    new_line.setHasPoints(false);
+                    new_line.setFilled(true);
+
+                    switch (last_type) {
+                        case DetectedActivity.IN_VEHICLE:
+                            new_line.setColor(Color.parseColor("#70445599"));
+                            break;
+                        case DetectedActivity.ON_FOOT:
+                            new_line.setColor(Color.parseColor("#70995599"));
+                            break;
+                    }
+                    line_array.add(new_line);
+                    linePoints = new ArrayList<>();
+                }
+                //current
+                switch (item.activity) {
+                    case DetectedActivity.ON_FOOT:
+                    case DetectedActivity.IN_VEHICLE:
+                        extend_line(linePoints, item.timestamp / FUZZER, ypos);
+                        last_type = item.activity;
+                        break;
+
+                    default:
+                        // do nothing?
+                        break;
+                }
+            }
+
+        }
+        Log.d(TAG,"Motion array size: "+line_array.size());
+            return line_array;
+    }
+
+
     public LineChartData lineData() {
        // if (d) Log.d(TAG, "START lineData from: " + JoH.backTrace());
        JoH.benchmark(null);
@@ -286,6 +356,13 @@ public class BgGraphBuilder {
         try {
 
             addBgReadingValues();
+
+            if (!simple) {
+                // motion lines
+                if (Home.getPreferencesBoolean("plot_motion", false)) {
+                    lines.addAll(motionLine());
+                }
+            }
 
             Line[] calib = calibrationValuesLine();
             Line[] treatments = treatmentValuesLine();
@@ -344,6 +421,12 @@ public class BgGraphBuilder {
             lines.add(calib[1]); // red dot of calib in foreground
             lines.add(treatments[1]); // blue dot in centre // has annotation
             lines.add(treatments[4]); // annotations
+
+
+
+
+
+
         } catch (Exception e) {
             Log.e(TAG, "Error in bgbuilder defaultlines: " + e.toString());
         }
@@ -831,7 +914,7 @@ public class BgGraphBuilder {
         low_occurs_at = -1;
         try {
             if ((predict_lows) && (prediction_enabled) && (poly != null)) {
-                final double offset = 0;
+                final double offset = ActivityRecognizedService.raise_limit_due_to_vehicle_mode() ? unitized(ActivityRecognizedService.getVehicle_mode_adjust_mgdl()) : 0;
                 final double plow_now = JoH.ts();
                 double plow_timestamp = plow_now + (1000 * 60 * 99); // max look-ahead
                 double polyPredicty = poly.predict(plow_timestamp);

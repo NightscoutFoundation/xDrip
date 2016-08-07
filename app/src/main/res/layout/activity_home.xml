@@ -323,6 +323,19 @@
                 android:layout_below="@+id/extraStatusLine"
                 android:layout_toEndOf="@+id/textBridgeBattery" />
 
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/vehicleModeButton"
+                android:layout_below="@+id/btnRedo"
+                android:src="@drawable/ic_car_grey600_24dp"
+                android:layout_alignParentEnd="true"
+                android:background="@android:color/transparent"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="8dp"
+                android:paddingRight="4dp"
+                android:paddingBottom="2dp" />
+
 
         </RelativeLayout>
 

@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -228,7 +229,7 @@ public class JoH {
 
     public static String backTraceShort(int depth) {
         try {
-            StackTraceElement stackb = new Exception().getStackTrace()[3 + depth];
+            final StackTraceElement stackb = new Exception().getStackTrace()[3 + depth];
             return stackb.getMethodName();
         } catch (Exception e) {
             return "unknown backtrace: " + e.toString();
@@ -353,9 +354,9 @@ public class JoH {
     }
 
     public static boolean isLANConnected() {
-        ConnectivityManager cm =
+        final ConnectivityManager cm =
                 (ConnectivityManager) xdrip.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         final boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnected();
         return isConnected && ((activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) || (activeNetwork.getType() == ConnectivityManager.TYPE_ETHERNET));
@@ -399,26 +400,28 @@ public class JoH {
                 }
             });
             Log.d(TAG, "Toast msg: " + msg);
+        } catch (ClassCastException e) {
+            if (Home.mActivity != null) {
+                Activity activity = Home.mActivity;
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, msg, length).show();
+                    }
+                });
+                Log.d(TAG, "Toast msg fallback: " + msg);
+            } else {
+                Log.e(TAG, "Couldn't display toast via fallback: " + msg + " e: " + e.toString());
+                Home.toaststatic(msg);
+            }
         } catch (Exception e) {
-            Log.e(TAG, "Couldn't display toast: " + msg + " e: "+e.toString());
+            Log.e(TAG, "Couldn't display toast: " + msg + " e: " + e.toString());
             Home.toaststatic(msg);
         }
     }
 
     public static void static_toast_long(final String msg) {
-        try {
-            Activity activity = (Activity) xdrip.getAppContext();
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(xdrip.getAppContext(), msg, Toast.LENGTH_LONG).show();
-                }
-            });
-            Log.d(TAG, "Toast msg: " + msg);
-        } catch (Exception e) {
-            Log.e(TAG, "Couldn't display toast: " + msg + " e: "+e.toString());
-            Home.toaststatic(msg);
-        }
+        static_toast((Home.mActivity != null) ? Home.mActivity : xdrip.getAppContext(), msg, Toast.LENGTH_LONG);
     }
 
     public static String urlEncode(String source) {

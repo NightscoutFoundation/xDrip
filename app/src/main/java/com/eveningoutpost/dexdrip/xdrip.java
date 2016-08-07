@@ -11,6 +11,7 @@ import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
@@ -28,23 +29,20 @@ public class xdrip extends Application {
 
     private static final String TAG = "xdrip.java";
     private static Context context;
+    private static boolean fabricInited = false;
     public static PlusAsyncExecutor executor;
 
     @Override
     public void onCreate() {
         xdrip.context = getApplicationContext();
         super.onCreate();
-     try {
-         if (PreferenceManager.getDefaultSharedPreferences(xdrip.context).getBoolean("enable_crashlytics", true)) {
-             Crashlytics crashlyticsKit = new Crashlytics.Builder()
-                     .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
-                     .build();
-             Fabric.with(this, crashlyticsKit);
-         }
-     } catch (Exception e)
-     {
-         Log.e(TAG, e.toString());
-     }
+        try {
+            if (PreferenceManager.getDefaultSharedPreferences(xdrip.context).getBoolean("enable_crashlytics", true)) {
+                initCrashlytics(this);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
         executor = new PlusAsyncExecutor();
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, true);
         PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, true);
@@ -53,19 +51,35 @@ public class xdrip extends Application {
         PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_defaults, true);
         PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_prefs, true);
 
-       checkForcedEnglish(this);
+        checkForcedEnglish(this);
 
 
         JoH.ratelimit("policy-never", 3600); // don't on first load
         new IdempotentMigrations(getApplicationContext()).performAll();
         AlertType.fromSettings(getApplicationContext());
-        CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(getApplicationContext());
-        collectionServiceStarter.start(getApplicationContext());
+        new CollectionServiceStarter(getApplicationContext()).start(getApplicationContext());
         PlusSyncService.startSyncService(context, "xdrip.java");
+        if (Home.getPreferencesBoolean("motion_tracking_enabled", false)) {
+            ActivityRecognizedService.startActivityRecogniser(getApplicationContext());
+        }
+
     }
 
-    public static Context getAppContext()
-    {
+    public synchronized static void initCrashlytics(Context context) {
+        if (!fabricInited) {
+            try {
+                Crashlytics crashlyticsKit = new Crashlytics.Builder()
+                        .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
+                        .build();
+                Fabric.with(context, crashlyticsKit);
+            } catch (Exception e) {
+                Log.e(TAG, e.toString());
+            }
+            fabricInited = true;
+        }
+    }
+
+    public static Context getAppContext() {
         return xdrip.context;
     }
 

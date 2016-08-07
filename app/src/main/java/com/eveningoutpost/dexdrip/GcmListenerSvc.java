@@ -24,6 +24,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.WebAppHelper;
@@ -182,7 +183,14 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                         Log.e(TAG,"Cannot send sensor battery as sensor is null");
                     }
                 }
-            } else if (action.equals("bgs")) {
+            } else if (action.equals("amu")) {
+                if (!Home.getPreferencesBoolean("act_as_motion_master", false)) {
+                    ActivityRecognizedService.spoofActivityRecogniser(getApplicationContext(), payload);
+                } else {
+                    Home.toaststaticnext("Receiving motion updates from a different master! Make only one the master!");
+                }
+            }
+            else if (action.equals("bgs")) {
                 Log.i(TAG, "Received BG packet(s)");
                 if (Home.get_follower()) {
                     String bgs[] = payload.split("\\^");

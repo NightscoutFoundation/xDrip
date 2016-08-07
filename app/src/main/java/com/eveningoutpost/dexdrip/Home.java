@@ -49,6 +49,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -147,6 +148,7 @@ public class Home extends ActivityWithMenu {
     private ImageButton btnTime;
     private ImageButton btnUndo;
     private ImageButton btnRedo;
+    private ImageButton btnVehicleMode;
     private TextView voiceRecognitionText;
     private TextView textCarbohydrates;
     private TextView textBloodGlucose;
@@ -193,7 +195,22 @@ public class Home extends ActivityWithMenu {
 
         if (!xdrip.checkAppContext(getApplicationContext())) {
             toast("Unusual internal context problem - please report");
-            Log.wtf(TAG,"xdrip.checkAppContext FAILED!");
+            Log.wtf(TAG, "xdrip.checkAppContext FAILED!");
+            try {
+                xdrip.initCrashlytics(getApplicationContext());
+                Crashlytics.log("xdrip.checkAppContext FAILED!");
+            } catch (Exception e) {
+                // nothing we can do really
+            }
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                // not much to do
+            }
+            if (!xdrip.checkAppContext(getApplicationContext())) {
+                toast("Cannot start - please report context problem");
+                finish();
+            }
         }
         xdrip.checkForcedEnglish(Home.this);
         menu_name=staticContext.getString(R.string.home_screen);
@@ -250,7 +267,7 @@ public class Home extends ActivityWithMenu {
         }
 
 
-        // jamorham voice input
+        // jamorham voice input et al
         this.voiceRecognitionText = (TextView) findViewById(R.id.treatmentTextView);
         this.textBloodGlucose = (TextView) findViewById(R.id.textBloodGlucose);
         this.textCarbohydrates = (TextView) findViewById(R.id.textCarbohydrate);
@@ -264,6 +281,7 @@ public class Home extends ActivityWithMenu {
         this.btnTime = (ImageButton) findViewById(R.id.timeButton);
         this.btnUndo = (ImageButton) findViewById(R.id.btnUndo);
         this.btnRedo = (ImageButton) findViewById(R.id.btnRedo);
+        this.btnVehicleMode = (ImageButton) findViewById(R.id.vehicleModeButton);
 
         hideAllTreatmentButtons();
 
@@ -396,7 +414,6 @@ public class Home extends ActivityWithMenu {
         // lower priority
         PlusSyncService.startSyncService(getApplicationContext(), "HomeOnCreate");
         ParakeetHelper.notifyOnNextCheckin(false);
-        if (getPreferencesBoolean("detect_motion",false)) ActivityRecognizedService.startActivityRecogniser(getApplicationContext());
 
         if ((checkedeula) && (!getString(R.string.app_name).equals("xDrip+"))) {
             showcasemenu(SHOWCASE_VARIANT);
@@ -800,7 +817,16 @@ public class Home extends ActivityWithMenu {
             SdcardImportExport.forceGMSreset();
         } else if (allWords.contentEquals("enable engineering mode")) {
             Home.setPreferencesBoolean("engineering_mode", true);
-            JoH.static_toast(getApplicationContext(),"Engineering mode enabled - be careful", Toast.LENGTH_LONG);
+            JoH.static_toast(getApplicationContext(), "Engineering mode enabled - be careful", Toast.LENGTH_LONG);
+        } else if (allWords.contentEquals("vehicle mode test")) {
+            ActivityRecognizedService.spoofActivityRecogniser(mActivity, JoH.tsl() + "^" + 0);
+            staticRefreshBGCharts();
+        } else if (allWords.contentEquals("vehicle mode quit")) {
+            ActivityRecognizedService.spoofActivityRecogniser(mActivity, JoH.tsl() + "^" + 3);
+            staticRefreshBGCharts();
+        } else if (allWords.contentEquals("vehicle mode walk")) {
+            ActivityRecognizedService.spoofActivityRecogniser(mActivity, JoH.tsl() + "^" + 2);
+            staticRefreshBGCharts();
         }
 
         if (allWords.contentEquals("clear battery warning")) {
@@ -1463,6 +1489,13 @@ public class Home extends ActivityWithMenu {
             voiceRecognitionText.setVisibility(View.INVISIBLE);
             last_speech_time = 0;
         }
+
+        if (ActivityRecognizedService.is_in_vehicle_mode()) {
+            btnVehicleMode.setVisibility(View.VISIBLE);
+        } else {
+            btnVehicleMode.setVisibility(View.INVISIBLE);
+        }
+
 
         //showcasemenu(1); // 3 dot menu
 
