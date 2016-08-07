@@ -40,7 +40,7 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
                 }
 
                 if(bgReadings.size() + calibrations.size() > 0) {
-                	Log.i(TAG, "uoader.upload called " + bgReadings.size());
+                	Log.i(TAG, "uploader.upload called " + bgReadings.size());
                     NightscoutUploader uploader = new NightscoutUploader(context);
                     boolean uploadStatus = uploader.upload(bgReadings, calibrations, calibrations);
                     if (uploadStatus) {

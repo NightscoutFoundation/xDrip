@@ -284,12 +284,19 @@ public class NightscoutUploader {
 
         private boolean doMongoUpload(SharedPreferences prefs, List<BgReading> glucoseDataSets,
                                       List<Calibration> meterRecords,  List<Calibration> calRecords) {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
+            final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
             format.setTimeZone(TimeZone.getDefault());
 
-            String dbURI = prefs.getString("cloud_storage_mongodb_uri", null);
-            String collectionName = prefs.getString("cloud_storage_mongodb_collection", null);
-            String dsCollectionName = prefs.getString("cloud_storage_mongodb_device_status_collection", "devicestatus");
+            final String dbURI = prefs.getString("cloud_storage_mongodb_uri", null);
+
+            if ((dbURI != null) && (dbURI.startsWith("192.168.")) && (!JoH.isLANConnected()))
+            {
+                Log.d(TAG,"Skipping mongo upload to: "+dbURI+" due to no LAN connection");
+                return false;
+            }
+
+            final String collectionName = prefs.getString("cloud_storage_mongodb_collection", null);
+            final String dsCollectionName = prefs.getString("cloud_storage_mongodb_device_status_collection", "devicestatus");
 
             if (dbURI != null && collectionName != null) {
                 try {

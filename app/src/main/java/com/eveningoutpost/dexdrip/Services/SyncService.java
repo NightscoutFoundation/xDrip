@@ -6,14 +6,10 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
-import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.MongoSendTask;
-import com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Calendar;
@@ -39,7 +35,7 @@ public class SyncService extends IntentService {
     }
 
     public void attemptSend() {
-        if (enableRESTUpload || enableMongoUpload) { syncToMogoDb(); }
+        if (enableRESTUpload || enableMongoUpload) { syncToMongoDb(); }
         setRetryTimer();
     }
 
@@ -49,12 +45,13 @@ public class SyncService extends IntentService {
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
             long wakeTime = calendar.getTimeInMillis() + (1000 * 60 * 6);
             // make it up on the next BG reading or retry if the reading doesn't materialize
+            // TODO THIS NEEDS UPDATING
             PendingIntent serviceIntent = PendingIntent.getService(this, 0, new Intent(this, SyncService.class), PendingIntent.FLAG_CANCEL_CURRENT);
             alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
         }
     }
 
-    public void syncToMogoDb() {
+    public void syncToMongoDb() {
         MongoSendTask task = new MongoSendTask(getApplicationContext());
         task.executeOnExecutor(xdrip.executor);
     }

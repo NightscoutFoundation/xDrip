@@ -11,9 +11,12 @@ import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
+import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -28,10 +31,10 @@ public class MissedReadingService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        SharedPreferences prefs;
-        boolean bg_missed_alerts;
-        Context context;
-        int bg_missed_minutes;
+        final SharedPreferences prefs;
+        final boolean bg_missed_alerts;
+        final Context context;
+        final int bg_missed_minutes;
         
         
         context = getApplicationContext();
@@ -39,8 +42,16 @@ public class MissedReadingService extends IntentService {
         bg_missed_alerts =  prefs.getBoolean("bg_missed_alerts", false);
         bg_missed_minutes =  readPerfsInt(prefs, "bg_missed_minutes", 30);
         otherAlertSnooze =  readPerfsInt(prefs, "other_alerts_snooze", 20);
-        long now = new Date().getTime();
+        final long now = new Date().getTime();
         Log.d(TAG, "MissedReadingService onHandleIntent");
+
+        // send to pebble
+        if (prefs.getBoolean("broadcast_to_pebble", false) && (PebbleUtil.getCurrentPebbleSyncType(prefs) != 1) && !BgReading.last_within_minutes(11)) {
+            Log.d(TAG,"Would update pebble for missed reading");
+            if (JoH.ratelimit("peb-miss",120)) context.startService(new Intent(context, PebbleWatchSync.class));
+            // update pebble even when we don't have data to ensure missed readings show
+        }
+
         if (!bg_missed_alerts) {
         	// we should not do anything in this case. if the ui, changes will be called again
         	return;

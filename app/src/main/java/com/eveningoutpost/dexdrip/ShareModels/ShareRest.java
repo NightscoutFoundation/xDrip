@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ExistingFollower;
 import com.eveningoutpost.dexdrip.ShareModels.Models.InvitationPayload;
 import com.eveningoutpost.dexdrip.ShareModels.Models.ShareAuthenticationBody;
@@ -70,6 +71,9 @@ public class ShareRest {
     public ShareRest (Context context, OkHttpClient okHttpClient) {
         OkHttpClient httpClient = okHttpClient != null ? okHttpClient : getOkHttpClient();
 
+        if (httpClient == null) httpClient = getOkHttpClient(); // try again on failure
+        // if fails second time we've got big problems
+
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
                 .create();
@@ -89,7 +93,7 @@ public class ShareRest {
             sessionId = null;
     }
 
-    public OkHttpClient getOkHttpClient() {
+    public synchronized OkHttpClient getOkHttpClient() {
         try {
             final TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
                 @Override
@@ -132,7 +136,7 @@ public class ShareRest {
                         copy.body().writeTo(buffer);
                         Log.d(TAG, "Request body: " + buffer.readUtf8());
 
-                        Response response = chain.proceed(modifiedRequest);
+                        final Response response = chain.proceed(modifiedRequest);
                         Log.d(TAG, "Received response: " + response.toString());
                         if (response.body() != null) {
                             MediaType contentType = response.body().contentType();
@@ -144,6 +148,9 @@ public class ShareRest {
 
                     } catch (NullPointerException e) {
                         Log.e(TAG, "Got null pointer exception: " + e);
+                        return null;
+                    } catch (IllegalStateException e) {
+                        UserError.Log.wtf(TAG,"Got illegal state exception: " + e);
                         return null;
                     }
                 }
