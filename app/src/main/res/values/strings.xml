@@ -495,5 +495,7 @@
     <string name="glucose_number_from_filtered">Glucose number from Filtered</string>
     <string name="if_the_phone_has_text_to_speech">If the phone has text-to-speech capabilities it will speak each new reading.</string>
     <string name="upload_logs">Upload Logs</string>
+    <string name="short_off_text_for_switches">OFF</string>
+    <string name="short_on_text_for_switches">ON</string>
 
 </resources>

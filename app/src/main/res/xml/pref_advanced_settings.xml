@@ -9,6 +9,8 @@
             android:key="watch_integration"
             android:title="@string/wear_integration">
             <SwitchPreference
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:defaultValue="false"
                 android:key="wear_sync"
                 android:summary="@string/send_data_to_android_wear_watch"
@@ -18,6 +20,8 @@
             android:key="pebble_integration"
             android:title="@string/pebble_integration">
             <SwitchPreference
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:defaultValue="false"
                 android:key="broadcast_to_pebble"
                 android:summary="@string/send_data_to_pebble_watchface"
@@ -114,6 +118,8 @@
         android:key="other_category"
         android:title="@string/other_settings">
         <SwitchPreference
+            android:switchTextOff="@string/short_off_text_for_switches"
+            android:switchTextOn="@string/short_on_text_for_switches"
             android:defaultValue="false"
             android:key="broadcast_data_through_intents"
             android:summary="@string/pref_summary_broadcast_enabled"
@@ -131,6 +137,8 @@
                     android:targetPackage="@string/local_target_package" />
             </Preference>
             <SwitchPreference
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:defaultValue="false"
                 android:key="bg_to_speech"
                 android:summary="@string/if_the_phone_has_text_to_speech"
@@ -218,6 +226,8 @@
                 android:summary="Options for the extra line"
                 android:title="@string/extra_status_line">
                 <SwitchPreference
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:defaultValue="false"
                     android:key="extra_status_line"
                     android:summary="@string/additional_text_status"
@@ -271,6 +281,8 @@
                     android:summary="@string/the_current_time"
                     android:title="@string/time" />
                 <SwitchPreference
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="widget_status_line"

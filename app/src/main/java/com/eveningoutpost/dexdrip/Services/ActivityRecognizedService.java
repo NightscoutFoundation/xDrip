@@ -371,7 +371,8 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
             if (d) UserError.Log.uel(TAG, "Top activity: " + topActivity.toString());
             if ((topActivity.getType() != DetectedActivity.UNKNOWN) && (topActivity.getType() != DetectedActivity.TILTING)) {
                 if (activityState == null) activityState = getLastStoredDetectedActivity();
-                if ((topActivity.getConfidence() > 89)
+
+                if (((topActivity.getConfidence() > 89) || ((lastactivity != null) && (topActivity.getType() == lastactivity.getType()) && ((lastactivity.getConfidence() + topActivity.getConfidence()) > 120)))
                         && ((activityState == null) || (activityState.getType() != topActivity.getType()))) {
                     if (Home.getPreferencesBoolean("motion_tracking_enabled", false)) {
                         UserError.Log.ueh(TAG, "Changed activity state from " + ((activityState == null) ? "null" : activityState.toString()) + " to: " + topActivity.toString());

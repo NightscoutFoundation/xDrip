@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
     <PreferenceCategory
         android:key="xdrip_plus_category"
         android:title="@string/xdrip_plus_extra_settings"/>
@@ -190,6 +191,8 @@
             </PreferenceScreen>
 
             <SwitchPreference
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:defaultValue="false"
                 android:title="Force English Text"
                 android:summary="Do not use crowd-sourced local language text within xDrip+"
@@ -197,6 +200,8 @@
             </SwitchPreference>
 
             <SwitchPreference
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:defaultValue="true"
                 android:key="bg_compensate_noise"
                 android:summary="@string/try_to_work_around_noisy_readings"
@@ -416,6 +421,8 @@
         android:summary="Movement detection and vehicle mode"
         android:title="xDrip+ Motion Tracking">
         <SwitchPreference
+            android:switchTextOff="@string/short_off_text_for_switches"
+            android:switchTextOn="@string/short_on_text_for_switches"
             android:defaultValue="false"
             android:key="motion_tracking_enabled"
             android:summary="Use sensors to detect types of motion"
@@ -439,6 +446,8 @@
             android:summary="Be the master for motion data even if we are a follower. Set this on only one handset!"
             android:title="Act as motion master" />
         <SwitchPreference
+            android:switchTextOff="@string/short_off_text_for_switches"
+            android:switchTextOn="@string/short_on_text_for_switches"
             android:defaultValue="false"
             android:dependency="motion_tracking_enabled"
             android:key="vehicle_mode_enabled"
@@ -471,9 +480,12 @@
         android:summary="@string/automatic_updates_crash_reports_and_feedback"
         android:title="@string/xdrip_plus_update_settings">
         <SwitchPreference
+            android:switchTextOff="@string/short_off_text_for_switches"
+            android:switchTextOn="@string/short_on_text_for_switches"
             android:defaultValue="true"
             android:key="auto_update_download"
-            android:summary="@string/get_notified_of_new_apk_releases"
+            android:summaryOn="@string/get_notified_of_new_apk_releases"
+            android:summaryOff="New releases often have bugs fixed. It is recommended to switch on update notifications!"
             android:title="@string/automatic_update_check" />
         <ListPreference
             android:defaultValue="beta"
