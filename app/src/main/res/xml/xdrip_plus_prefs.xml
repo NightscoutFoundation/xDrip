@@ -416,12 +416,12 @@
         android:summary="Movement detection and vehicle mode"
         android:title="xDrip+ Motion Tracking">
         <SwitchPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="motion_tracking_enabled"
             android:summary="Use sensors to detect types of motion"
             android:title="Enable Motion Tracking" />
          <CheckBoxPreference
-             android:dependency="motion_tracking_enabled"
+            android:dependency="motion_tracking_enabled"
             android:defaultValue="true"
             android:key="plot_motion"
             android:summary="Store recent motion types and plot these on the main graph"

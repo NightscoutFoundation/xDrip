@@ -33,7 +33,7 @@
             android:title="@string/dexcom_transmitter_id" />
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="run_service_in_foreground"
             android:summary="@string/shows_a_persistent_notification"
             android:title="@string/run_collector_in_foreground" />

@@ -113,15 +113,18 @@ public class Notifications extends IntentService {
         wl.acquire(60000);
         try {
             Log.d("Notifications", "Running Notifications Intent Service");
-            Context context = getApplicationContext();
+            final Context context = getApplicationContext();
+
+            if (Home.getPreferencesBoolean("motion_tracking_enabled", false)) {
+                ActivityRecognizedService.reStartActivityRecogniser(context);
+            }
+
             ReadPerfs(context);
             notificationSetter(context);
             ArmTimer(context);
             context.startService(new Intent(context, MissedReadingService.class));
 
-            if (Home.getPreferencesBoolean("motion_tracking_enabled", false)) {
-                ActivityRecognizedService.reStartActivityRecogniser(context);
-            }
+
         } finally {
             if (wl.isHeld()) wl.release();
         }

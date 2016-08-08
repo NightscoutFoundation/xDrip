@@ -186,6 +186,9 @@ public class ShareRest {
                         return params[0];
                 } catch (IOException e) {
                     return null;
+                } catch (RuntimeException e) {
+                    UserError.Log.wtf(TAG, "Painful exception processing response in updateAuthenticationParams " + e);
+                    return null;
                 }
             }
 

@@ -359,7 +359,7 @@ public class BgGraphBuilder {
 
             if (!simple) {
                 // motion lines
-                if (Home.getPreferencesBoolean("plot_motion", false)) {
+                if (Home.getPreferencesBoolean("motion_tracking_enabled", false) && Home.getPreferencesBoolean("plot_motion", false)) {
                     lines.addAll(motionLine());
                 }
             }

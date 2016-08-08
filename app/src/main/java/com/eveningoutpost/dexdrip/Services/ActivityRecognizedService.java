@@ -50,8 +50,12 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
     private static final String PREFS_MOTION_VEHICLE_MODE = "vehicle_mode";
     private static final String TAG = "ActivityRecognizer";
     private static final boolean d = true;
+    private static PowerManager.WakeLock wl_global;
     public static double last_data = -1;
     private static final double vehicle_mode_adjust_mgdl = 18;
+    private static final int FREQUENCY = 1000;
+    private static final int MAX_RECEIVED = 4;
+    private static int received = 0;
     private static SharedPreferences prefs;
     private static DetectedActivity lastactivity;
     public static DetectedActivity activityState;
@@ -118,11 +122,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
     }
 
     public synchronized void stop() {
-        try {
-            ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mApiClient, get_pending_intent());
-        } catch (Exception e) {
-            UserError.Log.wtf(TAG, "Got exception stopping activity recognition: " + e.toString());
-        }
+        stopUpdates();
     }
 
     private PendingIntent get_pending_intent() {
@@ -253,6 +253,31 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
 
     }
 
+    private synchronized void requestUpdates(int frequency) {
+        try {
+            received = 0; // reset
+            wl_global = JoH.getWakeLock("motion-wait", frequency * 5); // released later
+            if (d) Log.d(TAG, "requestUpdates called: " + frequency);
+            ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(mApiClient, frequency, get_pending_intent());
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Got exception starting activity recognition: " + e.toString());
+        }
+    }
+
+    private void stopUpdates() {
+        try {
+            if (d) Log.d(TAG, "stopUpdates called");
+            ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mApiClient, get_pending_intent());
+            if (wl_global != null) {
+                if (d) Log.d(TAG, "release wakelock");
+                JoH.releaseWakeLock(wl_global);
+                wl_global = null;
+            }
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Got exception stopping activity recognition: " + e.toString());
+        }
+    }
+
     private void restart(int frequency) {
         if (Home.getPreferencesBoolean("use_remote_motion", false)) {
             Log.d(TAG, "Not re-starting as we are expecting remote instead of local motion");
@@ -262,15 +287,14 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         if ((mApiClient == null) || (!mApiClient.isConnected())) {
             start(true);
         } else {
-            // ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mApiClient,get_pending_intent());
-            ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(mApiClient, frequency, get_pending_intent());
+            requestUpdates(frequency);
         }
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         UserError.Log.e(TAG, "onConnected");
-        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(mApiClient, 3000, get_pending_intent());
+        requestUpdates(FREQUENCY);
     }
 
 
@@ -293,15 +317,20 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
             if (intent.getStringExtra(START_ACTIVITY_ACTION) != null) {
                 start(true);
             } else if (intent.getStringExtra(RESTART_ACTIVITY_ACTION) != null) {
-                restart(3000);
+                restart(FREQUENCY);
             } else if (intent.getStringExtra(STOP_ACTIVITY_ACTION) != null) {
                 UserError.Log.uel(TAG, "Stopping service");
                 stop();
             } else if (ActivityRecognitionResult.hasResult(intent)) {
                 if (mApiClient == null) start();
                 ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
-                handleDetectedActivities(result.getProbableActivities(), true, 0);
+                final int topCondfidence = handleDetectedActivities(result.getProbableActivities(), true, 0);
                 last_data = JoH.ts();
+                received++;
+                if (d)
+                    Log.d(TAG, JoH.hourMinuteString() + " :: Packets received: " + received + " Top confidence: " + topCondfidence);
+                if ((received > MAX_RECEIVED) || (topCondfidence > 90))
+                    stopUpdates(); // one hit only
             } else {
                 // spoof from intent
                 final String payload = intent.getStringExtra(INCOMING_ACTIVITY_ACTION);
@@ -324,7 +353,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         }
     }
 
-    private void handleDetectedActivities(List<DetectedActivity> probableActivities, boolean from_local, long timestamp) {
+    private int handleDetectedActivities(List<DetectedActivity> probableActivities, boolean from_local, long timestamp) {
         DetectedActivity topActivity = null;
         int topConfidence = 0;
 
@@ -393,6 +422,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                 lastactivity = topActivity;
             }
         }
+        return topConfidence;
     }
 
     public static SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {

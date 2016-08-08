@@ -112,7 +112,7 @@ public class UserError extends Model {
         for (int level : levels) {
             levelsString += level + ",";
         }
-        Log.d("TEST", "severity in ("+levelsString.substring(0,levelsString.length() - 1)+")");
+        Log.d("UserError", "severity in ("+levelsString.substring(0,levelsString.length() - 1)+")");
         return new Select()
                 .from(UserError.class)
                 .where("severity in ("+levelsString.substring(0,levelsString.length() - 1)+")")
