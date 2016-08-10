@@ -51,6 +51,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
     private static final String TAG = "ActivityRecognizer";
     private static final boolean d = true;
     private static PowerManager.WakeLock wl_global;
+    private static PowerManager.WakeLock wl_start;
     public static double last_data = -1;
     private static final double vehicle_mode_adjust_mgdl = 18;
     private static final int FREQUENCY = 1000;
@@ -108,6 +109,8 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
             return;
         }
         if ((no_rate_limit) || (JoH.ratelimit("recognizer-start", 60))) {
+            release_wl_start();
+            wl_start = JoH.getWakeLock("recognizer-start",60000);
             UserError.Log.e(TAG, "Restarting API");
             mApiClient = new GoogleApiClient.Builder(this)
                     .addApi(ActivityRecognition.API)
@@ -269,7 +272,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
             if (d) Log.d(TAG, "stopUpdates called");
             ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mApiClient, get_pending_intent());
             if (wl_global != null) {
-                if (d) Log.d(TAG, "release wakelock");
+                if (d) Log.d(TAG, "release wl_global");
                 JoH.releaseWakeLock(wl_global);
                 wl_global = null;
             }
@@ -291,10 +294,19 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         }
     }
 
+    private void release_wl_start() {
+        if (wl_start != null) {
+            if (d) Log.d(TAG,"release wl_start");
+            JoH.releaseWakeLock(wl_start);
+            wl_start = null;
+        }
+    }
+
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         UserError.Log.e(TAG, "onConnected");
         requestUpdates(FREQUENCY);
+        release_wl_start();
     }
 
 
@@ -408,7 +420,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                                 break;
                         }
 
-                        if ((from_local) && (Home.getPreferencesBoolean("act_as_motion_master", false))) {
+                        if ((from_local) && Home.getPreferencesBoolean("motion_tracking_enabled",false) && (Home.getPreferencesBoolean("act_as_motion_master", false))) {
                             Log.d(TAG, "Sending update: " + activityState.getType());
                             GcmActivity.sendMotionUpdate(JoH.tsl(), activityState.getType());
                         }
@@ -429,7 +441,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
     public static SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
 
-            Log.d(TAG, "Preference change listener fired");
+            //if (d) Log.d(TAG, "Preference change listener fired: "+key);
             if (key.equals("motion_tracking_enabled")) {
                 if (!prefs.getBoolean("motion_tracking_enabled", false)) {
                     if (d) Log.d(TAG, "Shutting down on preference change");
@@ -443,8 +455,8 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                         && prefs.getBoolean("use_remote_motion", false)) {
                     if (d) Log.d(TAG, "Turning off remote motion");
                     prefs.edit().putBoolean("use_remote_motion", false).apply();
-
                 }
+                reStartActivityRecogniser(xdrip.getAppContext());
             } else if (key.equals("use_remote_motion")) {
                 if (prefs.getBoolean("use_remote_motion", false)
                         && prefs.getBoolean("act_as_motion_master", false)) {
@@ -452,6 +464,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                     prefs.edit().putBoolean("act_as_motion_master", false).apply();
 
                 }
+                reStartActivityRecogniser(xdrip.getAppContext());
             }
 
         }

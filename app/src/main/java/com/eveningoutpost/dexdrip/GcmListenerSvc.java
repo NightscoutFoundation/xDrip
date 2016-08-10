@@ -184,10 +184,13 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                     }
                 }
             } else if (action.equals("amu")) {
-                if (!Home.getPreferencesBoolean("act_as_motion_master", false)) {
-                    ActivityRecognizedService.spoofActivityRecogniser(getApplicationContext(), payload);
-                } else {
-                    Home.toaststaticnext("Receiving motion updates from a different master! Make only one the master!");
+                if ((Home.getPreferencesBoolean("motion_tracking_enabled",false)) && (Home.getPreferencesBoolean("use_remote_motion", false)))
+                 {
+                    if (!Home.getPreferencesBoolean("act_as_motion_master", false)) {
+                        ActivityRecognizedService.spoofActivityRecogniser(getApplicationContext(), payload);
+                    } else {
+                        Home.toaststaticnext("Receiving motion updates from a different master! Make only one the master!");
+                    }
                 }
             }
             else if (action.equals("bgs")) {
