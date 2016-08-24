@@ -117,22 +117,21 @@ public class BgToSpeech {
         });
     }
 
-    private void speakInternal(final double value, long timestamp){
+    private void speakInternal(final double value, long timestamp) {
 
         // SHIELDING
-        if(timestamp < System.currentTimeMillis()-4*60*1000){
+        if (timestamp < System.currentTimeMillis() - 4 * 60 * 1000) {
             // don't read old values.
             return;
         }
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (! prefs.getBoolean("bg_to_speech", false) || isOngoingCall()){
+        if (!prefs.getBoolean("bg_to_speech", false) || isOngoingCall()) {
             return;
         }
 
-        if (tts == null)
-        {
-            Log.wtf(TAG,"TTS is null in speakInternal");
+        if (tts == null) {
+            Log.wtf(TAG, "TTS is null in speakInternal");
             return;
         }
         // ACTUAL TTS:
@@ -145,6 +144,8 @@ public class BgToSpeech {
             }
         } catch (IllegalStateException e) {
             Log.e(TAG, "IllegalStateException in TTS: " + e.toString());
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "IllegalArgumentException in TTS: " + e.toString());
         }
     }
 
