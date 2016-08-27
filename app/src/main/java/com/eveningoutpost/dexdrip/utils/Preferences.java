@@ -18,11 +18,13 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceGroup;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.text.InputFilter;
 import android.text.TextUtils;
+import android.widget.BaseAdapter;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
@@ -79,6 +81,9 @@ public class Preferences extends PreferenceActivity {
     private static String static_units;
     private static Preference profile_insulin_sensitivity_default;
     private static Preference profile_carb_ratio_default;
+
+    private static ListPreference locale_choice;
+    private static Preference force_english;
 
 
     private void refreshFragments() {
@@ -589,12 +594,28 @@ public class Preferences extends PreferenceActivity {
             //do_format_insulin_sensitivity(profile_insulin_sensitivity_default, this.prefs, false, null);
 
 
-            final Preference force_english = findPreference("force_english");
+            locale_choice = (ListPreference) findPreference("forced_language");
+            force_english = findPreference("force_english");
+
+
+            update_force_english_title("");
             force_english.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                                                             @Override
                                                             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                                                                prefs.edit().putBoolean("force_english",(boolean)newValue).commit();
+                                                                prefs.edit().putBoolean("force_english", (boolean) newValue).commit();
                                                                 SdcardImportExport.hardReset();
+                                                                return true;
+                                                            }
+                                                        }
+            );
+            locale_choice.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                                                            @Override
+                                                            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                                                                prefs.edit().putString("forced_language", (String) newValue).commit();
+                                                                update_force_english_title((String)newValue);
+                                                                if (prefs.getBoolean("force_english", false)) {
+                                                                    SdcardImportExport.hardReset();
+                                                                }
                                                                 return true;
                                                             }
                                                         }
@@ -1214,6 +1235,32 @@ public class Preferences extends PreferenceActivity {
             });
         }
 
+        private void update_force_english_title(String param) {
+            String word;
+            if (param.length() == 0) {
+                word = locale_choice.getEntry().toString();
+            } else {
+                try {
+                    word = (locale_choice.getEntries()[locale_choice.findIndexOfValue(param)]).toString();
+                } catch (Exception e) {
+                    word = "Unknown";
+                }
+            }
+            force_english.setTitle("Force " + word + " Text");
+        }
+
+        private static void recursive_notify_all_preference_screens(PreferenceGroup preferenceGroup) {
+            if (preferenceGroup instanceof PreferenceScreen) {
+                ((BaseAdapter) ((PreferenceScreen) preferenceGroup).getRootAdapter()).notifyDataSetChanged();
+            } else {
+                for (int index = 0; index < preferenceGroup.getPreferenceCount(); index++) {
+                    final Preference pref = preferenceGroup.getPreference(index);
+                    if (pref instanceof PreferenceGroup) {
+                        recursive_notify_all_preference_screens((PreferenceGroup) pref);
+                    }
+                }
+            }
+        }
 
         private void installPebbleWatchface(final int pebbleType, Preference preference) {
 

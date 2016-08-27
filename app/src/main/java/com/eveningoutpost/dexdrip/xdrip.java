@@ -93,21 +93,22 @@ public class xdrip extends Application {
     }
 
     public static void checkForcedEnglish(Context context) {
-        if (Locale.getDefault() != Locale.ENGLISH) {
-            Log.d(TAG, "Locale is non-english");
-            if (Home.getPreferencesBoolean("force_english", false)) {
-                Log.i(TAG, "Forcing english");
-                Locale.setDefault(Locale.ENGLISH);
-                Configuration config = context.getResources().getConfiguration();
-                config.locale = Locale.ENGLISH;
-                try {
-                    ((Application) context).getBaseContext().getResources().updateConfiguration(config, ((Application) context).getBaseContext().getResources().getDisplayMetrics());
-                } catch (ClassCastException e) {
-                    Log.i(TAG,"Using activity context instead of base for Locale change");
-                    context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
-                }
+        //    if (Locale.getDefault() != Locale.ENGLISH) {
+        //       Log.d(TAG, "Locale is non-english");
+        if (Home.getPreferencesBoolean("force_english", false)) {
+            final String forced_language = Home.getPreferencesStringWithDefault("forced_language", "en");
+            Log.i(TAG, "Forcing locale: " + forced_language);
+            final Locale LOCALE = new Locale(forced_language, "", "");
+            Locale.setDefault(LOCALE);
+            Configuration config = context.getResources().getConfiguration();
+            config.locale = LOCALE;
+            try {
+                ((Application) context).getBaseContext().getResources().updateConfiguration(config, ((Application) context).getBaseContext().getResources().getDisplayMetrics());
+            } catch (ClassCastException e) {
+                Log.i(TAG, "Using activity context instead of base for Locale change");
+                context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
             }
         }
     }
-
+    //}
 }

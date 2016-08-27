@@ -195,9 +195,17 @@
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:defaultValue="false"
                 android:title="Force English Text"
-                android:summary="Do not use crowd-sourced local language text within xDrip+"
+                android:summary="Currently using your device's local language"
+                android:summaryOn="Currently forcing use of alternate language"
                 android:key="force_english">
             </SwitchPreference>
+            <ListPreference
+                android:key="forced_language"
+                android:title="Choose a specific language"
+                android:summary="If you need an alternate language translation within xDrip+"
+                android:entries="@array/LocaleChoices"
+                android:entryValues="@array/LocaleChoicesValues"
+                android:defaultValue="en"/>
 
             <SwitchPreference
                 android:switchTextOff="@string/short_off_text_for_switches"

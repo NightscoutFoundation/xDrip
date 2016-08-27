@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="LocaleChoices">
+        <item>English</item>
+        <item>Français</item>
+        <item>Deutsch</item>
+        <item>русский</item>
+        <item>Español</item>
+        <item>Svenska</item>
+        <item>Norsk</item>
+        <item>Română</item>
+        <item>Polski</item>
+        <item>한국어</item>
+        <item>Português</item>
+        <item>čeština</item>
+    </string-array>
+    <string-array name="LocaleChoicesValues">
+        <item>en</item>
+        <item>fr</item>
+        <item>de</item>
+        <item>ru</item>
+        <item>es</item>
+        <item>sv</item>
+        <item>no</item>
+        <item>ro</item>
+        <item>pl</item>
+        <item>ko</item>
+        <item>pt</item>
+        <item>cs</item>
+    </string-array>
+</resources>
