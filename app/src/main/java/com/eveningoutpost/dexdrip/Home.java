@@ -92,6 +92,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -930,24 +931,26 @@ public class Home extends ActivityWithMenu {
                 Log.d(TAG, "processing time keyword");
                 if ((timeset == false) && (thisnumber > 0)) {
 
-                    DecimalFormat df = new DecimalFormat("#");
+                    final NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
+                    final DecimalFormat df = (DecimalFormat)nf;
+                    //DecimalFormat df = new DecimalFormat("#");
                     df.setMinimumIntegerDigits(2);
                     df.setMinimumFractionDigits(2);
                     df.setMaximumFractionDigits(2);
                     df.setMaximumIntegerDigits(2);
 
-                    Calendar c = Calendar.getInstance();
+                    final Calendar c = Calendar.getInstance();
 
-                    SimpleDateFormat simpleDateFormat1 =
-                            new SimpleDateFormat("dd/M/yyyy ");
-                    SimpleDateFormat simpleDateFormat2 =
-                            new SimpleDateFormat("dd/M/yyyy hh.mm"); // TODO double check 24 hour 12.00 etc
-                    String datenew = simpleDateFormat1.format(c.getTime()) + df.format(thisnumber);
+                    final SimpleDateFormat simpleDateFormat1 =
+                            new SimpleDateFormat("dd/M/yyyy ",Locale.US);
+                    final SimpleDateFormat simpleDateFormat2 =
+                            new SimpleDateFormat("dd/M/yyyy hh.mm",Locale.US); // TODO double check 24 hour 12.00 etc
+                    final String datenew = simpleDateFormat1.format(c.getTime()) + df.format(thisnumber);
 
                     Log.d(TAG, "Time Timing data datenew: " + datenew);
 
-                    Date datethen;
-                    Date datenow = new Date();
+                    final Date datethen;
+                    final Date datenow = new Date();
 
                     try {
                         datethen = simpleDateFormat2.parse(datenew);
@@ -1013,6 +1016,7 @@ public class Home extends ActivityWithMenu {
 
     public static void toaststaticnext(final String msg) {
         nexttoast = msg;
+        Log.e(TAG,"Toast next: "+msg);
     }
 
     public void toast(final String msg) {
