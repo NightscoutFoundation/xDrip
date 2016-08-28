@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,7 +27,7 @@ import java.util.UUID;
 public class NSClientReceiver extends BroadcastReceiver {
 
     private static final String TAG = "jamorham nsreceiver";
-    private static final boolean debug = true;
+    private static final boolean debug = false;
     private static SharedPreferences prefs;
 
     @Override
@@ -53,28 +54,40 @@ public class NSClientReceiver extends BroadcastReceiver {
 
         switch (action) {
             case Intents.ACTION_NEW_SGV:
-                if (bundle==null) break;
-                String sgv_json = bundle.getString("sgv", "");
+                if (bundle == null) break;
+                final String sgvs_json = bundle.getString("sgvs", "");
+                if (sgvs_json.length() > 0) {
+                    try {
+                        final JSONArray jsonArray = new JSONArray(sgvs_json);
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            process_SGV_json(jsonArray.getString(i));
+                        }
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Json exception with sgvs: " + e.toString());
+                    }
+                }
+                final String sgv_json = bundle.getString("sgv", "");
                 if (sgv_json.length() > 0) {
-                    HashMap<String, Object> sgv_map = JoH.JsonStringtoMap(sgv_json);
-                    //  if (prefs.getString("dex_collection_method", "").equals("Follower")) {
-                    BgReading.bgReadingInsertFromJson(toBgReadingJSON(sgv_map));
-                    //  } else {
-                    //      Log.i(TAG, "Received nightscout SGV intent but we are not a follower");
-                    //  }
+                    process_SGV_json(sgv_json);
                 }
 
                 break;
 
             case Intents.ACTION_NEW_TREATMENT:
-                if (bundle==null) break;
-                String treatment_json = bundle.getString("treatment", "");
+                if (bundle == null) break;
+                final String treatment_json = bundle.getString("treatment", "");
                 if (treatment_json.length() > 0) {
+                    process_TREATMENT_json(treatment_json);
+                }
+                final String treatments_json = bundle.getString("treatments", "");
+                if (treatments_json.length() > 0) {
                     try {
-                        Log.i(TAG, "Processing treatment from NS");
-                        Treatments.pushTreatmentFromJson(toTreatmentJSON(JoH.JsonStringtoMap(treatment_json)));
-                    } catch (Exception e) {
-                        Log.e(TAG, "Got exception processing treatment from NS client " + e.toString());
+                        final JSONArray jsonArray = new JSONArray(treatments_json);
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            process_TREATMENT_json(jsonArray.getString(i));
+                        }
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Json exception with sgvs: " + e.toString());
                     }
                 }
                 break;
@@ -83,7 +96,24 @@ public class NSClientReceiver extends BroadcastReceiver {
                 Log.e(TAG, "Unknown action! " + action);
                 break;
         }
+    }
 
+    private void process_TREATMENT_json(String treatment_json) {
+        try {
+            Log.i(TAG, "Processing treatment from NS");
+            Treatments.pushTreatmentFromJson(toTreatmentJSON(JoH.JsonStringtoMap(treatment_json)));
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception processing treatment from NS client " + e.toString());
+        }
+    }
+
+    private void process_SGV_json(String sgv_json) {
+        final HashMap<String, Object> sgv_map = JoH.JsonStringtoMap(sgv_json);
+        //  if (prefs.getString("dex_collection_method", "").equals("Follower")) {
+        BgReading.bgReadingInsertFromJson(toBgReadingJSON(sgv_map));
+        //  } else {
+        //      Log.i(TAG, "Received nightscout SGV intent but we are not a follower");
+        //  }
     }
 
     private String toBgReadingJSON(HashMap<String, Object> sgv_map) {
@@ -98,9 +128,8 @@ public class NSClientReceiver extends BroadcastReceiver {
                 double myslope = (double) sgv_map.get("unfiltered") / (double) sgv_map.get("mgdl");
                 double filtered_calculated_value = (double) sgv_map.get("filtered") / myslope;
                 jsonObject.put("filtered_calculated_value", filtered_calculated_value);
-            }
-            catch (NullPointerException e) {
-                Log.i(TAG,"Cannot calculate raw slope due to null pointer on unfiltered?");
+            } catch (NullPointerException e) {
+                Log.i(TAG, "Cannot calculate raw slope due to null pointer on unfiltered?");
                 jsonObject.put("filtered_calculated_value", sgv_map.get("mgdl")); // use mgdl
             }
 
