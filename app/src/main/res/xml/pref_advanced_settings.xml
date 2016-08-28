@@ -93,6 +93,11 @@
                 android:summary="@string/displays_the_slope_arrows"
                 android:title="@string/display_slope_arrows"/>
             <CheckBoxPreference
+               android:title="Vibrate on Alerts"
+               android:key="pebble_vibe_alerts"
+               android:summary="Vibrate watch on active glucose alerts"
+               android:defaultValue="false"/>
+            <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="broadcast_to_pebble"
                 android:key="pebble_vibrate_no_signal"

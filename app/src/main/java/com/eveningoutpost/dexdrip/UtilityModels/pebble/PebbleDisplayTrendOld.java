@@ -5,6 +5,7 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -160,11 +161,15 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
                     this.dictionary.addInt8(VIBE_KEY, (byte) (getBooleanValue("pebble_vibrate_no_signal") ? 0x01 : 0x00)); // not sure what this does exactly
                 } else {
                     this.dictionary.addString(BG_KEY, "?RF");
-                    this.dictionary.addInt8(VIBE_KEY, (byte)(getBooleanValue("pebble_vibrate_no_signal") ? 0x01 : 0x00));
+                    this.dictionary.addInt8(VIBE_KEY, (byte) (getBooleanValue("pebble_vibrate_no_signal") ? 0x01 : 0x00));
                 }
             } else {
                 this.dictionary.addString(BG_KEY, bgReadingS);
-                this.dictionary.addInt8(VIBE_KEY, (byte) 0x00);
+                if (getBooleanValue("pebble_vibe_alerts", false) && ActiveBgAlert.currentlyAlerting()) {
+                    dictionary.addInt8(VIBE_KEY, (byte) 0x03);
+                } else {
+                    this.dictionary.addInt8(VIBE_KEY, (byte) 0x00);
+                }
                 this.lastBfReadingSent = bgReadingS;
             }
 

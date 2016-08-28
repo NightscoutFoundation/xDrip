@@ -23,6 +23,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
+import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 
 import java.io.IOException;
 import java.util.Date;
@@ -426,6 +427,12 @@ public class AlertPlayer {
         NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(Notifications.exportAlertNotificationId);
         mNotifyMgr.notify(Notifications.exportAlertNotificationId, builder.build());
+
+        if (Home.getPreferencesBooleanDefaultFalse("broadcast_to_pebble") && (Home.getPreferencesBooleanDefaultFalse("pebble_vibe_alerts"))) {
+            if (JoH.ratelimit("pebble_vibe_start", 59)) {
+                ctx.startService(new Intent(ctx, PebbleWatchSync.class));
+            }
+        }
     }
 
     private void notificationDismiss(Context ctx) {
