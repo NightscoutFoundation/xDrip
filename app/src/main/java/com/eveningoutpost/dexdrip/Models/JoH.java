@@ -1,16 +1,15 @@
 package com.eveningoutpost.dexdrip.Models;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.Color;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
@@ -28,16 +27,18 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.CRC32;
+import java.util.zip.Checksum;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -45,7 +46,7 @@ import java.util.zip.Inflater;
 
 /**
  * Created by jamorham on 06/01/16.
- * <p/>
+ * <p>
  * lazy helper class for utilities
  */
 public class JoH {
@@ -64,14 +65,13 @@ public class JoH {
 
     public static String qs(double x, int digits) {
 
-        if (digits==-1)
-        {
-            digits=0;
-            if (((int)x != x)) {
+        if (digits == -1) {
+            digits = 0;
+            if (((int) x != x)) {
                 digits++;
-                if ((((int)x*10)/10 != x)) {
+                if ((((int) x * 10) / 10 != x)) {
                     digits++;
-                    if ((((int)x*100)/100 != x)) digits++;
+                    if ((((int) x * 100) / 100 != x)) digits++;
                 }
             }
         }
@@ -189,6 +189,15 @@ public class JoH {
         }
     }
 
+    public static String base64encode(String input) {
+        try {
+            return new String(Base64.encode(input.getBytes("UTF-8"), Base64.NO_WRAP), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            Log.e(TAG, "Got unsupported encoding: " + e);
+            return "encode-error";
+        }
+    }
+
     public static String ucFirst(String input) {
         return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
     }
@@ -255,39 +264,58 @@ public class JoH {
     }
 
     // return true if below rate limit
-    public static synchronized boolean ratelimit(String name, int seconds)
-    {
-            // check if over limit
-            if ((rateLimits.containsKey(name)) && (JoH.ts()-rateLimits.get(name)<(seconds*1000))) {
-                Log.d(TAG,name+" rate limited: "+seconds+" seconds");
-                return false;
-            }
-            // not over limit
-            rateLimits.put(name,JoH.ts());
-            return true;
-    }
-
-    // return true if below rate limit
-    public static synchronized boolean ratelimitmilli(String name, int milliseconds)
-    {
+    public static synchronized boolean ratelimit(String name, int seconds) {
         // check if over limit
-        if ((rateLimits.containsKey(name)) && (JoH.ts()-rateLimits.get(name)<(milliseconds))) {
-            Log.d(TAG,name+" rate limited: "+milliseconds+" milliseconds");
+        if ((rateLimits.containsKey(name)) && (JoH.ts() - rateLimits.get(name) < (seconds * 1000))) {
+            Log.d(TAG, name + " rate limited: " + seconds + " seconds");
             return false;
         }
         // not over limit
-        rateLimits.put(name,JoH.ts());
+        rateLimits.put(name, JoH.ts());
         return true;
     }
 
-    public static boolean getWifiSleepPolicyNever()
-    {
+    // return true if below rate limit
+    public static synchronized boolean ratelimitmilli(String name, int milliseconds) {
+        // check if over limit
+        if ((rateLimits.containsKey(name)) && (JoH.ts() - rateLimits.get(name) < (milliseconds))) {
+            Log.d(TAG, name + " rate limited: " + milliseconds + " milliseconds");
+            return false;
+        }
+        // not over limit
+        rateLimits.put(name, JoH.ts());
+        return true;
+    }
+
+    public static String getDeviceDetails() {
+        final String manufacturer = Build.MANUFACTURER.replace(" ", "_");
+        final String model = Build.MODEL.replace(" ", "_");
+        final String version = Integer.toString(Build.VERSION.SDK_INT) + " " + Build.VERSION.RELEASE + " " + Build.VERSION.INCREMENTAL;
+        return manufacturer + " " + model + " " + version;
+    }
+
+    public static boolean isOldVersion(Context context) {
+        try {
+            final Signature[] pinfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES).signatures;
+            if (pinfo.length == 1) {
+                final Checksum s = new CRC32();
+                final byte[] ba = pinfo[0].toByteArray();
+                s.update(ba, 0, ba.length);
+                if (s.getValue() == 2009579833) return true;
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "exception: " + e);
+        }
+        return false;
+    }
+
+    public static boolean getWifiSleepPolicyNever() {
         try {
             int policy = Settings.Global.getInt(xdrip.getAppContext().getContentResolver(), android.provider.Settings.Global.WIFI_SLEEP_POLICY);
-            Log.d(TAG,"Current WifiPolicy: "+ ((policy == Settings.Global.WIFI_SLEEP_POLICY_NEVER) ? "Never" : Integer.toString(policy))+" "+Settings.Global.WIFI_SLEEP_POLICY_DEFAULT+" "+Settings.Global.WIFI_SLEEP_POLICY_NEVER_WHILE_PLUGGED);
+            Log.d(TAG, "Current WifiPolicy: " + ((policy == Settings.Global.WIFI_SLEEP_POLICY_NEVER) ? "Never" : Integer.toString(policy)) + " " + Settings.Global.WIFI_SLEEP_POLICY_DEFAULT + " " + Settings.Global.WIFI_SLEEP_POLICY_NEVER_WHILE_PLUGGED);
             return (policy == Settings.Global.WIFI_SLEEP_POLICY_NEVER);
         } catch (Exception e) {
-            Log.e(TAG,"Exception during global settings policy");
+            Log.e(TAG, "Exception during global settings policy");
             return true; // we don't know anything
         }
     }
@@ -322,15 +350,13 @@ public class JoH {
         }.getType());
     }
 
-    public static String hourMinuteString()
-    {
+    public static String hourMinuteString() {
         Date date = new Date();
         SimpleDateFormat sd = new SimpleDateFormat("HH:mm");
         return sd.format(date);
     }
 
-    public static String dateTimeText(long timestamp)
-    {
+    public static String dateTimeText(long timestamp) {
         return android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", timestamp).toString();
     }
 
@@ -347,9 +373,8 @@ public class JoH {
         return wl;
     }
 
-    public static void releaseWakeLock(PowerManager.WakeLock wl)
-    {
-        if (debug_wakelocks) Log.d(TAG,"releaseWakeLock: "+wl.toString());
+    public static void releaseWakeLock(PowerManager.WakeLock wl) {
+        if (debug_wakelocks) Log.d(TAG, "releaseWakeLock: " + wl.toString());
         if (wl.isHeld()) wl.release();
     }
 
@@ -361,13 +386,22 @@ public class JoH {
                 activeNetwork.isConnected();
         return isConnected && ((activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) || (activeNetwork.getType() == ConnectivityManager.TYPE_ETHERNET));
     }
+
     public static boolean isMobileDataOrEthernetConnected() {
-        ConnectivityManager cm =
+        final ConnectivityManager cm =
                 (ConnectivityManager) xdrip.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         final boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnected();
         return isConnected && ((activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) || (activeNetwork.getType() == ConnectivityManager.TYPE_ETHERNET));
+    }
+
+    public static boolean isAnyNetworkConnected() {
+        final ConnectivityManager cm =
+                (ConnectivityManager) xdrip.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnected();
     }
 
     public static boolean isScreenOn() {
@@ -380,7 +414,7 @@ public class JoH {
         }
     }
 
-    public static boolean isOngoingCall(){
+    public static boolean isOngoingCall() {
         try {
             AudioManager manager = (AudioManager) xdrip.getAppContext().getSystemService(Context.AUDIO_SERVICE);
             return (manager.getMode() == AudioManager.MODE_IN_CALL);
@@ -390,38 +424,44 @@ public class JoH {
         }
     }
 
+    public static boolean runOnUiThread(Runnable theRunnable) {
+        final Handler mainHandler = new Handler(xdrip.getAppContext().getMainLooper());
+        return mainHandler.post(theRunnable);
+    }
+
     public static void static_toast(final Context context, final String msg, final int length) {
         try {
-            Activity activity = (Activity) context;
-            activity.runOnUiThread(new Runnable() {
+            if (!runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(context, msg, length).show();
-                }
-            });
-            Log.d(TAG, "Toast msg: " + msg);
-        } catch (ClassCastException e) {
-            if (Home.mActivity != null) {
-                Activity activity = Home.mActivity;
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+                    try {
                         Toast.makeText(context, msg, length).show();
+                        Log.i(TAG, "Displaying toast using fallback");
+                    } catch (Exception e) {
+                        Log.e(TAG, "Exception processing runnable toast ui thread: " + e);
+                        Home.toaststatic(msg);
                     }
-                });
-                Log.d(TAG, "Toast msg fallback: " + msg);
-            } else {
-                Log.e(TAG, "Couldn't display toast via fallback: " + msg + " e: " + e.toString());
+                }
+            })) {
+                Log.e(TAG, "Couldn't display toast via ui thread: " + msg);
                 Home.toaststatic(msg);
             }
         } catch (Exception e) {
-            Log.e(TAG, "Couldn't display toast: " + msg + " e: " + e.toString());
+            Log.e(TAG, "Couldn't display toast due to exception: " + msg + " e: " + e.toString());
             Home.toaststatic(msg);
         }
     }
 
     public static void static_toast_long(final String msg) {
-        static_toast((Home.mActivity != null) ? Home.mActivity : xdrip.getAppContext(), msg, Toast.LENGTH_LONG);
+        static_toast(xdrip.getAppContext(), msg, Toast.LENGTH_LONG);
+    }
+
+    public static void static_toast_short(final String msg) {
+        static_toast(xdrip.getAppContext(), msg, Toast.LENGTH_SHORT);
+    }
+
+    public static void static_toast_long(Context context, final String msg) {
+        static_toast(context, msg, Toast.LENGTH_LONG);
     }
 
     public static String urlEncode(String source) {
@@ -445,8 +485,7 @@ public class JoH {
         }
     }
 
-    public synchronized static void setBluetoothEnabled(Context context,boolean state)
-    {
+    public synchronized static void setBluetoothEnabled(Context context, boolean state) {
         try {
             if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2) {
 
@@ -473,10 +512,9 @@ public class JoH {
                     UserError.Log.e(TAG, "Exception when enabling/disabling bluetooth: " + e);
                 }
             } else {
-                UserError.Log.e(TAG,"Bluetooth low energy not supported");
+                UserError.Log.e(TAG, "Bluetooth low energy not supported");
             }
-        }
-        finally {
+        } finally {
             //
         }
     }

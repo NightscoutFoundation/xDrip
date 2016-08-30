@@ -472,4 +472,6 @@
 	<string name="glucose_number_from_filtered">Numéro Glucose de Filtrée</string>
 	<string name="if_the_phone_has_text_to_speech">Si le téléphone a des capacités text-to-speech, il prendra la parole chaque nouvelle lecture.</string>
 	<string name="upload_logs">Télécharger Logs</string>
+	<string name="short_off_text_for_switches">DE</string>
+	<string name="short_on_text_for_switches">SUR</string>
 </resources>

@@ -15,11 +15,10 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.google.android.gms.gcm.GcmNetworkManager;
-import com.google.android.gms.gcm.GcmPubSub;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
-import com.google.android.gms.iid.InstanceID;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.IOException;
 
@@ -34,18 +33,16 @@ public class RegistrationIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        final PowerManager.WakeLock wl = JoH.getWakeLock("registration-intent",120000);
+        final PowerManager.WakeLock wl = JoH.getWakeLock("registration-intent", 120000);
         try {
-            InstanceID instanceID = InstanceID.getInstance(this);
             GcmActivity.senderid = getString(R.string.gcm_defaultSenderId);
-            String token = instanceID.getToken(GcmActivity.senderid,
-                    GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
+            final String token = FirebaseInstanceId.getInstance().getToken();
             Log.i(TAG, "GCM Registration Token: " + token);
             GcmActivity.token = token;
             subscribeTpcs(token);
             sendRegistrationToServer(token);
             sharedPreferences.edit().putBoolean(PreferencesNames.SENT_TOKEN_TO_SERVER, true).apply();
-            Intent registrationComplete = new Intent(PreferencesNames.REGISTRATION_COMPLETE);
+            final Intent registrationComplete = new Intent(PreferencesNames.REGISTRATION_COMPLETE);
             LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
         } catch (Exception e) {
             Log.e(TAG, "Failed to complete token refresh", e);
@@ -67,19 +64,17 @@ public class RegistrationIntentService extends IntentService {
 
             GcmNetworkManager.getInstance(this).cancelAllTasks(TaskService.class);
             GcmNetworkManager.getInstance(this).schedule(task);
-            PlusSyncService.startSyncService(getApplicationContext(),"RegistrationToServer");
+            PlusSyncService.startSyncService(getApplicationContext(), "RegistrationToServer");
             GcmActivity.queueCheckOld(getApplicationContext());
-        } catch (Exception e)
-        {
-            Log.e(TAG,"Exception in sendRegistration: "+e.toString());
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in sendRegistration: " + e.toString());
         }
-        }
+    }
 
     private void subscribeTpcs(String token) throws IOException {
-        GcmPubSub pubSub = GcmPubSub.getInstance(this);
-        pubSub.subscribe(token, getString(R.string.gcmtpcs) + GcmActivity.myIdentity(), null);
+        FirebaseMessaging.getInstance().subscribeToTopic(GcmActivity.myIdentity());
         for (String tpc : PREDEF) {
-            pubSub.subscribe(token, getString(R.string.gcmstpcs) + tpc, null);
+            FirebaseMessaging.getInstance().subscribeToTopic(tpc);
         }
     }
 }

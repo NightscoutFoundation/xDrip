@@ -27,21 +27,21 @@
                 android:dialogTitle="@string/pref_dialog_mongodb_uri"
                 android:inputType="textUri"
                 android:key="cloud_storage_mongodb_uri"
-                android:title="Mongo DB Uri"></EditTextPreference>
+                android:title="Mongo DB Uri"/>
             <EditTextPreference
                 android:defaultValue="@string/pref_default_mongodb_collection"
                 android:dependency="cloud_storage_mongodb_enable"
                 android:dialogMessage="@string/pref_message_mongodb_collection"
                 android:dialogTitle="@string/pref_dialog_mongodb_collection"
                 android:key="cloud_storage_mongodb_collection"
-                android:title="@string/pref_title_mongodb_collection"></EditTextPreference>
+                android:title="@string/pref_title_mongodb_collection"/>
             <EditTextPreference
                 android:defaultValue="@string/pref_default_mongodb_device_status_collection"
                 android:dependency="cloud_storage_mongodb_enable"
                 android:dialogMessage="@string/pref_message_mongodb_device_status_collection"
                 android:dialogTitle="@string/pref_dialog_mongodb_device_status_collection"
                 android:key="cloud_storage_mongodb_device_status_collection"
-                android:title="@string/pref_title_mongodb_device_status_collection"></EditTextPreference>
+                android:title="@string/pref_title_mongodb_device_status_collection"/>
 
         </PreferenceScreen>
 
@@ -54,7 +54,7 @@
                 android:disableDependentsState="false"
                 android:key="cloud_storage_api_enable"
                 android:summary="@string/pref_summary_api_enabled"
-                android:title="@string/pref_title_api_enabled"></SwitchPreference>
+                android:title="@string/pref_title_api_enabled"/>
             <EditTextPreference
                 android:defaultValue="@string/pref_default_api_url"
                 android:dependency="cloud_storage_api_enable"
@@ -62,7 +62,7 @@
                 android:dialogTitle="@string/pref_dialog_api_url"
                 android:inputType="textUri"
                 android:key="cloud_storage_api_base"
-                android:title="@string/pref_title_api_url"></EditTextPreference>
+                android:title="@string/pref_title_api_url"/>
 
         </PreferenceScreen>
 

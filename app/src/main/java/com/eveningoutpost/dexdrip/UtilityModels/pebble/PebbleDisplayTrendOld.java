@@ -394,6 +394,7 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
         this.dictionary.remove(PHONE_TIME_KEY);
         this.dictionary.remove(RECORD_TIME_KEY);
         this.dictionary.remove(UPLOADER_BATTERY_KEY);
+        this.dictionary.remove(VIBE_KEY);
     }
 
 

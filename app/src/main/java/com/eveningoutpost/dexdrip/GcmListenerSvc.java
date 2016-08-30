@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v7.app.NotificationCompat;
@@ -28,12 +29,15 @@ import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.WebAppHelper;
-import com.google.android.gms.gcm.GcmPubSub;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Date;
+import java.util.Map;
 
 
-public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerService {
+public class GcmListenerSvc extends FirebaseMessagingService {
 
     private static final String TAG = "jamorham GCMlis";
     private static SharedPreferences prefs;
@@ -41,16 +45,27 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
     public static double lastMessageReceived = 0;
 
     @Override
-    public void onMessageReceived(String from, Bundle data) {
+    public void onMessageReceived(RemoteMessage rmessage) {
+        if (rmessage == null) return;
+        String from = rmessage.getFrom();
+
+        Bundle data = new Bundle();
+        for (Map.Entry<String, String> entry : rmessage.getData().entrySet()) {
+            data.putString(entry.getKey(), entry.getValue());
+        }
 
         if (data == null) return;
-        final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-onMsgRec",120000);
+        final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-onMsgRec", 120000);
 
-        if (from == null) from="null";
+        if (from == null) from = "null";
         String message = data.getString("message");
 
         Log.d(TAG, "From: " + from);
-        if (message != null) { Log.d(TAG, "Message: " + message); } else { message = "null"; }
+        if (message != null) {
+            Log.d(TAG, "Message: " + message);
+        } else {
+            message = "null";
+        }
 
         Bundle notification = data.getBundle("notification");
         if (notification != null) {
@@ -68,7 +83,7 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
             String payload = data.getString("datum");
             String action = data.getString("action");
 
-            if ((xfrom!=null) && (xfrom.equals(GcmActivity.token))) {
+            if ((xfrom != null) && (xfrom.equals(GcmActivity.token))) {
                 GcmActivity.queueAction(action + payload);
                 JoH.releaseWakeLock(wl);
                 return;
@@ -79,7 +94,7 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                 Log.e(TAG, "Received invalid channel: " + from + " instead of: " + GcmActivity.myIdentity());
                 if ((GcmActivity.myIdentity() != null) && (GcmActivity.myIdentity().length() > 30)) {
                     try {
-                        GcmPubSub.getInstance(this).unsubscribe(GcmActivity.token, from);
+                        FirebaseMessaging.getInstance().unsubscribeFromTopic(tpca[2]);
                     } catch (Exception e) {
                         Log.e(TAG, "Exception unsubscribing: " + e.toString());
                     }
@@ -88,7 +103,7 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                 return;
             }
 
-            if (payload == null) payload="";
+            if (payload == null) payload = "";
 
             if (payload.length() > 16) {
                 if (GoogleDriveInterface.keyInitialized()) {
@@ -109,7 +124,7 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
             Log.i(TAG, "Got action: " + action + " with payload: " + payload);
             lastMessageReceived = JoH.ts();
 
-            if (action==null) action="null";
+            if (action == null) action = "null";
             // new treatment
             if (action.equals("nt") && (payload != null)) {
                 Log.i(TAG, "Attempting GCM push to Treatment");
@@ -120,9 +135,8 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
             } else if (action.equals("dt")) {
                 Log.i(TAG, "Attempting GCM delete specific treatment");
                 Treatments.delete_by_uuid(filter(payload));
-            } else if (action.equals("clc"))
-            {
-                Log.i(TAG,"Attempting to clear last calibration");
+            } else if (action.equals("clc")) {
+                Log.i(TAG, "Attempting to clear last calibration");
                 Calibration.clearLastCalibration();
             } else if (action.equals("cal")) {
                 String[] message_array = filter(payload).split("\\s+");
@@ -170,7 +184,7 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                     Home.setPreferencesInt("bridge_battery", Integer.parseInt(payload));
                 }
             } else if (action.equals("sbr")) {
-                if ((Home.get_master())  && JoH.ratelimit("gcm-sbr",300)) {
+                if ((Home.get_master()) && JoH.ratelimit("gcm-sbr", 300)) {
                     Log.i(TAG, "Received sensor battery request");
                     try {
                         TransmitterData td = TransmitterData.last();
@@ -179,21 +193,19 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                         } else {
                             GcmActivity.sendSensorBattery(Sensor.currentSensor().latest_battery_level);
                         }
-                    } catch (NullPointerException e ) {
-                        Log.e(TAG,"Cannot send sensor battery as sensor is null");
+                    } catch (NullPointerException e) {
+                        Log.e(TAG, "Cannot send sensor battery as sensor is null");
                     }
                 }
             } else if (action.equals("amu")) {
-                if ((Home.getPreferencesBoolean("motion_tracking_enabled",false)) && (Home.getPreferencesBoolean("use_remote_motion", false)))
-                 {
+                if ((Home.getPreferencesBoolean("motion_tracking_enabled", false)) && (Home.getPreferencesBoolean("use_remote_motion", false))) {
                     if (!Home.getPreferencesBoolean("act_as_motion_master", false)) {
                         ActivityRecognizedService.spoofActivityRecogniser(getApplicationContext(), payload);
                     } else {
                         Home.toaststaticnext("Receiving motion updates from a different master! Make only one the master!");
                     }
                 }
-            }
-            else if (action.equals("bgs")) {
+            } else if (action.equals("bgs")) {
                 Log.i(TAG, "Received BG packet(s)");
                 if (Home.get_follower()) {
                     String bgs[] = payload.split("\\^");
@@ -201,16 +213,27 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
                         BgReading.bgReadingInsertFromJson(bgr);
                     }
                 } else {
-                    Log.e(TAG,"Received remote BG packet but we are not set as a follower");
+                    Log.e(TAG, "Received remote BG packet but we are not set as a follower");
                 }
-               // Home.staticRefreshBGCharts();
+                // Home.staticRefreshBGCharts();
             } else if (action.equals("bfb")) {
                 initprefs();
-                String bfb[] = payload.split("\\^");
+                final String bfb[] = payload.split("\\^");
                 if (prefs.getString("dex_collection_method", "").equals("Follower")) {
                     Log.i(TAG, "Processing backfill location packet as we are a follower");
                     staticKey = CipherUtils.hexToBytes(bfb[1]);
-                    new WebAppHelper(new GcmListenerSvc.ServiceCallback()).executeOnExecutor(xdrip.executor,getString(R.string.wserviceurl) + "/joh-getsw/" + bfb[0]);
+                    final Handler mainHandler = new Handler(getMainLooper());
+                    final Runnable myRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                new WebAppHelper(new GcmListenerSvc.ServiceCallback()).executeOnExecutor(xdrip.executor, getString(R.string.wserviceurl) + "/joh-getsw/" + bfb[0]);
+                            } catch (Exception e) {
+                                Log.e(TAG, "Exception processing run on ui thread: " + e);
+                            }
+                        }
+                    };
+                    mainHandler.post(myRunnable);
                 } else {
                     Log.i(TAG, "Ignoring backfill location packet as we are not follower");
                 }
@@ -234,7 +257,7 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
     public class ServiceCallback implements Preferences.OnServiceTaskCompleted {
         @Override
         public void onTaskCompleted(byte[] result) {
-            final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-gcm-callback",60000);
+            final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-gcm-callback", 60000);
             try {
                 if (result.length > 0) {
                     if ((staticKey == null) || (staticKey.length != 16)) {
@@ -266,9 +289,8 @@ public class GcmListenerSvc extends com.google.android.gms.gcm.GcmListenerServic
         }
     }
 
-    public static int lastMessageMinutesAgo()
-    {
-        return (int)((JoH.ts() - GcmListenerSvc.lastMessageReceived) / 60000);
+    public static int lastMessageMinutesAgo() {
+        return (int) ((JoH.ts() - GcmListenerSvc.lastMessageReceived) / 60000);
     }
 
     private void sendNotification(String body, String title) {

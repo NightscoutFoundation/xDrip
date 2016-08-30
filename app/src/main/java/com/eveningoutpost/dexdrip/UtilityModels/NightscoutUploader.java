@@ -11,6 +11,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
@@ -30,6 +31,7 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -288,11 +290,16 @@ public class NightscoutUploader {
             format.setTimeZone(TimeZone.getDefault());
 
             final String dbURI = prefs.getString("cloud_storage_mongodb_uri", null);
-
-            if ((dbURI != null) && (dbURI.startsWith("192.168.")) && (!JoH.isLANConnected()))
-            {
-                Log.d(TAG,"Skipping mongo upload to: "+dbURI+" due to no LAN connection");
-                return false;
+            if (dbURI != null) {
+                try {
+                    final URI uri = new URI(dbURI.trim());
+                    if ((uri.getHost().startsWith("192.168.")) && (!JoH.isLANConnected())) {
+                        Log.d(TAG, "Skipping mongo upload to: " + dbURI + " due to no LAN connection");
+                        return false;
+                    }
+                } catch (URISyntaxException e) {
+                    UserError.Log.e(TAG, "Invalid mongo URI: " + e);
+                }
             }
 
             final String collectionName = prefs.getString("cloud_storage_mongodb_collection", null);

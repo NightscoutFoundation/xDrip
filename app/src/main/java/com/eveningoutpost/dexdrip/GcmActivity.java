@@ -55,6 +55,8 @@ public class GcmActivity extends Activity {
     public static boolean cease_all_activity = false;
     public static double last_ack = -1;
     public static double last_send = -1;
+    public static double last_send_previous = -1;
+    private static long MAX_ACK_OUTSTANDING_MS = 3600000;
     private static int recursion_depth = 0;
     private static int last_bridge_battery = -1;
     private static final int MAX_RECURSION = 30;
@@ -153,23 +155,23 @@ public class GcmActivity extends Activity {
         }
     }
 
-    public static void sendLocation(final String location)
-    {
-        GcmActivity.sendMessage("plu",location);
+    public static void sendLocation(final String location) {
+        if (JoH.ratelimit("gcm-plu", 180)) {
+            GcmActivity.sendMessage("plu", location);
+        }
     }
 
-    public static void sendSensorBattery(final int battery)
-    {
-        if (JoH.ratelimit("gcm-sbu",300)) {
+    public static void sendSensorBattery(final int battery) {
+        if (JoH.ratelimit("gcm-sbu", 300)) {
             GcmActivity.sendMessage("sbu", Integer.toString(battery));
         }
     }
-    public static void sendBridgeBattery(final int battery)
-    {
+
+    public static void sendBridgeBattery(final int battery) {
         if (battery != last_bridge_battery) {
             if (JoH.ratelimit("gcm-bbu", 1800)) {
                 GcmActivity.sendMessage("bbu", Integer.toString(battery));
-                last_bridge_battery=battery;
+                last_bridge_battery = battery;
             }
         }
     }
@@ -183,12 +185,12 @@ public class GcmActivity extends Activity {
 
     public static void requestBGsync() {
         if (token != null) {
-            if ((JoH.ts() - last_sync_request) > (60 * 1000 * ( 5 + bg_sync_backoff ))) {
+            if ((JoH.ts() - last_sync_request) > (60 * 1000 * (5 + bg_sync_backoff))) {
                 last_sync_request = JoH.ts();
                 GcmActivity.sendMessage("bfr", "");
                 bg_sync_backoff++;
             } else {
-                Log.d(TAG, "Already requested BGsync recently, backoff: "+bg_sync_backoff);
+                Log.d(TAG, "Already requested BGsync recently, backoff: " + bg_sync_backoff);
                 if (JoH.ratelimit("check-queue", 20)) {
                     queueCheckOld(xdrip.getAppContext());
                 }
@@ -202,8 +204,8 @@ public class GcmActivity extends Activity {
         new Thread() {
             @Override
             public void run() {
-                final PowerManager.WakeLock wl = JoH.getWakeLock("syncBGTable",300000);
-                if ((JoH.ts() - last_sync_fill) > (60 * 1000 * ( 5 + bg_sync_backoff))) {
+                final PowerManager.WakeLock wl = JoH.getWakeLock("syncBGTable", 300000);
+                if ((JoH.ts() - last_sync_fill) > (60 * 1000 * (5 + bg_sync_backoff))) {
                     last_sync_fill = JoH.ts();
                     bg_sync_backoff++;
 
@@ -219,15 +221,15 @@ public class GcmActivity extends Activity {
                     }
                     final String mypacket = stringBuilder.toString();
                     Log.d(TAG, "Total BGreading sync packet size: " + mypacket.length());
-                    if (mypacket.length()>0) {
+                    if (mypacket.length() > 0) {
                         if (DisplayQRCode.mContext == null)
                             DisplayQRCode.mContext = xdrip.getAppContext();
                         DisplayQRCode.uploadBytes(mypacket.getBytes(Charset.forName("UTF-8")), 2);
                     } else {
-                        Log.i(TAG,"Not uploading data due to zero length");
+                        Log.i(TAG, "Not uploading data due to zero length");
                     }
                 } else {
-                    Log.d(TAG, "Ignoring recent sync request, backoff: "+bg_sync_backoff);
+                    Log.d(TAG, "Ignoring recent sync request, backoff: " + bg_sync_backoff);
                 }
                 JoH.releaseWakeLock(wl);
             }
@@ -236,7 +238,7 @@ public class GcmActivity extends Activity {
 
     // callback function
     public static void backfillLink(String id, String key) {
-        Log.d(TAG,"sending bfb message: " + id);
+        Log.d(TAG, "sending bfb message: " + id);
         sendMessage("bfb", id + "^" + key);
         DisplayQRCode.mContext = null;
     }
@@ -244,18 +246,16 @@ public class GcmActivity extends Activity {
     public static void processBFPbundle(String bundle) {
         String[] bundlea = bundle.split("\\^");
         for (String bgr : bundlea) {
-            BgReading.bgReadingInsertFromJson(bgr,false);
+            BgReading.bgReadingInsertFromJson(bgr, false);
         }
         GcmActivity.requestSensorBatteryUpdate();
         Home.staticRefreshBGCharts();
     }
 
-    public static void requestSensorBatteryUpdate()
-    {
-        if (Home.get_follower() && JoH.ratelimit("SensorBatteryUpdateRequest",300))
-        {
-            Log.d(TAG,"Requesting Sensor Battery Update");
-            GcmActivity.sendMessage("sbr",""); // request sensor battery update
+    public static void requestSensorBatteryUpdate() {
+        if (Home.get_follower() && JoH.ratelimit("SensorBatteryUpdateRequest", 300)) {
+            Log.d(TAG, "Requesting Sensor Battery Update");
+            GcmActivity.sendMessage("sbr", ""); // request sensor battery update
         }
     }
 
@@ -319,10 +319,10 @@ public class GcmActivity extends Activity {
             data.putString("action", action);
             data.putString("identity", identity);
 
-            if (payload.length()>0) {
+            if (payload.length() > 0) {
                 data.putString("payload", CipherUtils.encryptString(payload));
             } else {
-                data.putString("payload","");
+                data.putString("payload", "");
             }
 
             if (xdrip.getAppContext() == null) {
@@ -345,7 +345,8 @@ public class GcmActivity extends Activity {
                 return "";
             }
             gcm.send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), data);
-            if (last_ack==-1) last_ack=0;
+            if (last_ack == -1) last_ack = JoH.ts();
+            last_send_previous = last_send;
             last_send = JoH.ts();
             msg = "Sent message OK";
         } catch (IOException ex) {
@@ -379,7 +380,7 @@ public class GcmActivity extends Activity {
             startService(intent);
         } else {
             cease_all_activity = true;
-            final String msg = "xDrip ERROR: Connecting to Google Services";
+            final String msg = "ERROR: Connecting to Google Services - try reboot?";
             JoH.static_toast(this, msg, Toast.LENGTH_LONG);
             Home.toaststaticnext(msg);
         }
@@ -425,38 +426,42 @@ public class GcmActivity extends Activity {
     }
 
     public static void checkSync(final Context context) {
-        if ((GcmActivity.last_ack > -1) && (GcmActivity.last_send > 0)) {
-            if (GcmActivity.last_send > GcmActivity.last_ack) {
+        if ((GcmActivity.last_ack > -1) && (GcmActivity.last_send_previous > 0)) {
+            if (GcmActivity.last_send_previous > GcmActivity.last_ack) {
                 if (Home.getPreferencesLong("sync_warning_never", 0) == 0) {
-                    if (PreferencesNames.SYNC_VERSION.equals("1")) {
-                        final double ack_outstanding = JoH.ts() - GcmActivity.last_send;
-                        if (ack_outstanding > 600000) {
-                            if (JoH.ratelimit("ack-failure", 7200)) {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                                builder.setTitle("Possible Sync Problem");
-                                builder.setMessage("It appears we haven't been able to send/receive sync data for the last: " + JoH.qs(ack_outstanding / 60000, 0) + " minutes\n\nDo you want to perform a reset of the sync system?");
-
-                                builder.setNeutralButton("Maybe Later", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
+                    if (PreferencesNames.SYNC_VERSION.equals("1") && JoH.isOldVersion(context)) {
+                        final double since_send = JoH.ts() - GcmActivity.last_send_previous;
+                        if (since_send > 60000) {
+                            final double ack_outstanding = JoH.ts() - GcmActivity.last_ack;
+                            if (ack_outstanding > MAX_ACK_OUTSTANDING_MS) {
+                                if (JoH.ratelimit("ack-failure", 7200)) {
+                                    if (JoH.isAnyNetworkConnected()) {
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                        builder.setTitle("Possible Sync Problem");
+                                        builder.setMessage("It appears we haven't been able to send/receive sync data for the last: " + JoH.qs(ack_outstanding / 60000, 0) + " minutes\n\nDo you want to perform a reset of the sync system?");
+                                        builder.setPositiveButton("YES, Do it!", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                                JoH.static_toast(context, "Resetting...", Toast.LENGTH_LONG);
+                                                SdcardImportExport.forceGMSreset();
+                                            }
+                                        });
+                                        builder.setNeutralButton("Maybe Later", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                        builder.setNegativeButton("NO, Never", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                                Home.setPreferencesLong("sync_warning_never", (long) JoH.ts());
+                                            }
+                                        });
+                                        AlertDialog alert = builder.create();
+                                        alert.show();
                                     }
-                                });
-                                builder.setPositiveButton("YES, Do it!", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        JoH.static_toast(context, "Resetting...", Toast.LENGTH_LONG);
-                                        SdcardImportExport.forceGMSreset();
-                                    }
-                                });
-                                builder.setNegativeButton("NO, don't ask me again", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        Home.setPreferencesLong("sync_warning_never", (long) JoH.ts());
-                                    }
-                                });
-                                AlertDialog alert = builder.create();
-                                alert.show();
+                                }
                             }
                         }
                     }
@@ -470,19 +475,34 @@ public class GcmActivity extends Activity {
      * it doesn't, display a dialog that allows users to download the APK from
      * the Google Play Store or enable it in the device's system settings.
      */
+
     private boolean checkPlayServices() {
+        return checkPlayServices(this, null);
+    }
+
+    public static boolean checkPlayServices(Context context, Activity activity) {
         if (cease_all_activity) return false;
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        final GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(context);
         if (resultCode != ConnectionResult.SUCCESS) {
             try {
                 if (apiAvailability.isUserResolvableError(resultCode)) {
-                    apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-                            .show();
+                    if (activity != null) {
+                        apiAvailability.getErrorDialog(activity, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                                .show();
+                    } else {
+                        if (JoH.ratelimit(Home.GCM_RESOLUTION_ACTIVITY, 60)) {
+                            Home.startHomeWithExtra(context, Home.GCM_RESOLUTION_ACTIVITY, "1");
+                        } else {
+                            Log.e(TAG, "Ratelimit exceeded for " + Home.GCM_RESOLUTION_ACTIVITY);
+                        }
+                    }
                 } else {
-                    Log.i(TAG, "This device is not supported for play services.");
+                    final String msg = "This device is not supported for play services.";
+                    Log.i(TAG, msg);
+                    JoH.static_toast_long(msg);
                     cease_all_activity = true;
-                    finish();
+                    return false;
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error resolving google play - probably no google");

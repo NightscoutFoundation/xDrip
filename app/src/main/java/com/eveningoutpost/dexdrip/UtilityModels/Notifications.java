@@ -103,7 +103,7 @@ public class Notifications extends IntentService {
 
     public Notifications() {
         super("Notifications");
-        Log.i("Notifications", "Running Notifications Intent Service");
+        Log.i("Notifications", "Creating Notifications Intent Service");
     }
 
     @Override

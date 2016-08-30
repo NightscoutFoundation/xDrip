@@ -472,4 +472,6 @@
 	<string name="glucose_number_from_filtered">Glukose tall fra Filtrert</string>
 	<string name="if_the_phone_has_text_to_speech">Hvis telefonen har tekst-til-tale evner det vil si hver ny lesning.</string>
 	<string name="upload_logs">Last opp Logger</string>
+	<string name="short_off_text_for_switches">AV</string>
+	<string name="short_on_text_for_switches">PÅ</string>
 </resources>

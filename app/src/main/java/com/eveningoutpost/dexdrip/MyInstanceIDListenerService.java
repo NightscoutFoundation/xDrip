@@ -6,9 +6,9 @@ package com.eveningoutpost.dexdrip;
 
 import android.content.Intent;
 
-import com.google.android.gms.iid.InstanceIDListenerService;
+import com.google.firebase.iid.FirebaseInstanceIdService;
 
-public class MyInstanceIDListenerService extends InstanceIDListenerService {
+public class MyInstanceIDListenerService extends FirebaseInstanceIdService {
     private static final String TAG = "jamorham MyInstanceIDLS";
 
     /**

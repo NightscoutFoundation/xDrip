@@ -172,7 +172,7 @@ public class ParakeetHelper {
                  //   .setSound(defaultSoundUri)
                     .setContentIntent(pendingIntent);
 
-            if (!((PowerStateReceiver.power_connected) && (Home.getPreferencesBooleanDefaultFalse("parakeet_charge_silent"))))
+            if (!((PowerStateReceiver.is_power_connected()) && (Home.getPreferencesBooleanDefaultFalse("parakeet_charge_silent"))))
             {
                 notificationBuilder.setSound(defaultSoundUri);
             }

@@ -1,35 +1,48 @@
 {
   "project_info": {
-    "project_id": "xdrip-plus",
     "project_number": "10591810485",
-    "name": "xDrip plus"
+    "firebase_url": "https://xdrip-plus.firebaseio.com",
+    "project_id": "xdrip-plus",
+    "storage_bucket": "xdrip-plus.appspot.com"
   },
   "client": [
     {
       "client_info": {
         "mobilesdk_app_id": "1:10591810485:android:b70845957aa2e415",
-        "client_id": "android:com.eveningoutpost.dexdrip",
-        "client_type": 1,
         "android_client_info": {
           "package_name": "com.eveningoutpost.dexdrip"
         }
       },
-      "oauth_client": [],
-      "api_key": [],
+      "oauth_client": [
+        {
+          "client_id": "10591810485-upgrnlqjblrcuad3bu80ouvr7osfoh4i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.eveningoutpost.dexdrip"
+          }
+        },
+        {
+          "client_id": "10591810485-0quj31nt2aac7jkt7odbmg2nme2dqar3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgbeeITUidfer8MkMffMZRN_ueXfhAxzc"
+        }
+      ],
       "services": {
         "analytics_service": {
           "status": 1
         },
-        "cloud_messaging_service": {
-          "status": 2,
-          "apns_config": []
-        },
         "appinvite_service": {
           "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "google_signin_service": {
-          "status": 1
+          "other_platform_oauth_client": [
+            {
+              "client_id": "10591810485-0quj31nt2aac7jkt7odbmg2nme2dqar3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 1
@@ -37,6 +50,5 @@
       }
     }
   ],
-  "client_info": [],
-  "ARTIFACT_VERSION": "1"
+  "configuration_version": "1"
 }

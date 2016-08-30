@@ -10,6 +10,7 @@ import android.widget.RatingBar;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Interceptor;
@@ -84,7 +85,7 @@ public class SendFeedBack extends AppCompatActivity {
         try {
             final RequestBody formBody = new FormEncodingBuilder()
                     .add("contact", contact.getText().toString())
-                    .add("body", yourtext.getText().toString())
+                    .add("body", yourtext.getText().toString()+"\n\n"+ JoH.getDeviceDetails())
                     .add("rating", String.valueOf(myrating.getRating()))
                     .build();
             new Thread(new Runnable() {

@@ -472,4 +472,6 @@
 	<string name="glucose_number_from_filtered">Glukos nummer från filtrerad</string>
 	<string name="if_the_phone_has_text_to_speech">Om telefonen har text-till-tal funktioner det kommer att tala varje ny läsning.</string>
 	<string name="upload_logs">Uppladdningsloggar</string>
+	<string name="short_off_text_for_switches">AV</string>
+	<string name="short_on_text_for_switches">PÅ</string>
 </resources>

@@ -20,7 +20,8 @@ public class InstallPebbleTrendWatchFace extends InstallPebbleWatchFace {
 
 
     protected InputStream openRawResource() {
-        return getResources().openRawResource(R.raw.xdrip_pebble_trend);
+        // unified version for pebble classic and pebble time
+        return getResources().openRawResource(R.raw.xdrip_pebble_classic_trend);
     }
 
     protected String getOutputFilename() {

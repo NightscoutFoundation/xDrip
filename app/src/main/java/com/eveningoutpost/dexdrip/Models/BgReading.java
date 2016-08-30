@@ -790,6 +790,8 @@ public class BgReading extends Model implements ShareUploadableBg {
             } catch (Exception e) {
                 Log.d(TAG, "Could not save BGR: " + e.toString());
             }
+        } else {
+            Log.e(TAG,"Got null bgr from json");
         }
     }
 

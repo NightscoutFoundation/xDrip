@@ -3,8 +3,6 @@
     package="com.eveningoutpost.dexdrip">
 
 
-    <permission android:name="com.eveningoutpost.dexdrip.permission.C2D_MESSAGE" />
-
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
@@ -95,12 +93,15 @@
 
         <activity
             android:name=".Tables.BgReadingTable"
+            android:configChanges="orientation|screenSize"
             android:label="@string/bg_readings_table" />
         <activity
             android:name=".Tables.SensorDataTable"
+            android:configChanges="orientation|screenSize"
             android:label="@string/sensor_table" />
         <activity
             android:name=".ImportDatabaseActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/import_database" />
         <activity
             android:name=".GoogleDriveInterface"
@@ -112,18 +113,23 @@
             android:theme="@android:style/Theme.NoDisplay" />
         <activity
             android:name=".AddCalibration"
+            android:configChanges="orientation|screenSize"
             android:label="@string/add_calibration" />
         <activity
             android:name=".StartNewSensor"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_start_new_sensor" />
         <activity
             android:name=".NewSensorLocation"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_new_sensor_location" />
         <activity
             android:name=".StopSensor"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_stop_sensor" />
         <activity
             android:name=".BGHistory"
+            android:configChanges="orientation|screenSize"
             android:label="@string/glucose_history" />
         <activity
             android:name=".PhoneKeypadInputActivity"
@@ -146,29 +152,16 @@
             android:name=".Tables.CalibrationDataTable"
             android:label="@string/calibration_data_table" />
 
-        <receiver
-            android:name="com.google.android.gms.gcm.GcmReceiver"
-            android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-
-                <category android:name="com.eveningoutpost.dexdrip" />
-            </intent-filter>
-        </receiver>
-
         <service
-            android:name=".GcmListenerSvc"
-            android:exported="false">
+            android:name=".GcmListenerSvc">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <service
-            android:name=".MyInstanceIDListenerService"
-            android:exported="false">
+            android:name=".MyInstanceIDListenerService">
             <intent-filter>
-                <action android:name="com.google.android.gms.iid.InstanceID" />
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
         <service
@@ -193,9 +186,11 @@
         <activity
             android:name=".stats.StatsActivity"
             android:label="Statistics"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".SnoozeActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/snooze" />
         <activity
             android:name=".FakeNumbers"
@@ -206,18 +201,22 @@
             android:label="@string/title_activity_edit_alert" />
         <activity
             android:name=".DoubleCalibrationActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_double_calibration" />
         <activity
             android:name=".CalibrationOverride"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_calibration_override" />
         <activity
             android:name=".CalibrationGraph"
+            android:configChanges="orientation|screenSize"
             android:label="@string/calibration_graph" />
         <activity
             android:name=".LicenseAgreementActivity"
             android:label="@string/end_user_license_agreement" />
         <activity
             android:name=".CalibrationCheckInActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_calibration_check_in" />
         <activity
             android:name=".UtilityModels.pebble.watchface.InstallPebbleWatchFace"
@@ -254,10 +253,12 @@
             android:label="@string/title_activity_share_test" />
         <activity
             android:name=".SystemStatus"
+            android:configChanges="orientation|screenSize"
             android:label="@string/system_status" />
         <activity
             android:name=".utils.Preferences"
             android:label="@string/settings"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/OldAppTheme" />
 
         <receiver android:name=".xDripWidget">
@@ -284,12 +285,15 @@
             android:label="@string/title_activity_alert_list" />
         <activity
             android:name=".ErrorsActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_error" />
         <activity
             android:name=".MissedReadingActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/configure_missed_readings" />
         <activity
             android:name=".FollowerManagementActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/manage_followers" />
 
         <service
@@ -363,9 +367,11 @@
 
         <activity
             android:name=".UtilityModels.UpdateActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_update" />
         <activity
             android:name=".utils.DisplayQRCode"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_display_qrcode"
             android:noHistory="true" />
         <activity
@@ -381,6 +387,7 @@
         </activity>
         <activity
             android:name=".utils.SdcardImportExport"
+            android:configChanges="orientation|screenSize"
             android:label="@string/settings_on_external_storage" />
 
         <!--
@@ -397,6 +404,7 @@
 
         <activity
             android:name=".MapsActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_maps"
             android:noHistory="true" />
 

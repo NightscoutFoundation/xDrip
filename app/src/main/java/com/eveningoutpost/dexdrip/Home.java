@@ -119,10 +119,10 @@ public class Home extends ActivityWithMenu {
     public final static String START_TEXT_RECOGNITION = "START_APP_TEXT_RECOGNITION";
     public final static String CREATE_TREATMENT_NOTE = "CREATE_TREATMENT_NOTE";
     public final static String HOME_FULL_WAKEUP = "HOME_FULL_WAKEUP";
+    public final static String GCM_RESOLUTION_ACTIVITY = "GCM_RESOLUTION_ACTIVITY";
     public static String menu_name = "Home Screen";
     public static boolean activityVisible = false;
     public static boolean invalidateMenu = false;
-    public static Context staticContext;
     private static boolean is_follower = false;
     private static boolean is_follower_set = false;
     private static boolean is_holo = true;
@@ -187,12 +187,11 @@ public class Home extends ActivityWithMenu {
 
     private static final boolean oneshot = true;
     private static ShowcaseView myShowcase;
-    public static Activity mActivity;
+    private static Activity mActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mActivity = this;
-        staticContext = getApplicationContext();
 
         if (!xdrip.checkAppContext(getApplicationContext())) {
             toast("Unusual internal context problem - please report");
@@ -214,7 +213,7 @@ public class Home extends ActivityWithMenu {
             }
         }
         xdrip.checkForcedEnglish(Home.this);
-        menu_name=staticContext.getString(R.string.home_screen);
+        menu_name=getString(R.string.home_screen);
 
         super.onCreate(savedInstanceState);
         setTheme(R.style.AppThemeToolBarLite); // for toolbar mode
@@ -234,7 +233,6 @@ public class Home extends ActivityWithMenu {
         setSupportActionBar(mToolbar);
 
         //findViewById(R.id.home_layout_holder).setBackgroundColor(getCol(X.color_home_chart_background));
-
         this.dexbridgeBattery = (TextView) findViewById(R.id.textBridgeBattery);
         this.parakeetBattery = (TextView) findViewById(R.id.parakeetbattery);
         this.extraStatusLineText = (TextView) findViewById(R.id.extraStatusLine);
@@ -542,7 +540,7 @@ public class Home extends ActivityWithMenu {
                             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
                             WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
                             WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
-                    Timer t = new Timer();
+                    final Timer t = new Timer();
                     t.schedule(new TimerTask() {
                         @Override
                         public void run() {
@@ -550,9 +548,11 @@ public class Home extends ActivityWithMenu {
                             finish();
                         }
                     }, timeout);
+                } else {
+                    Log.d(TAG, "Screen is already on so not turning on");
                 }
-            } else {
-                Log.d(TAG,"Screen is already on so not turning on");
+            } else if (bundle.getString(Home.GCM_RESOLUTION_ACTIVITY) != null) {
+                GcmActivity.checkPlayServices(this, this);
             }
         }
     }
@@ -1024,7 +1024,7 @@ public class Home extends ActivityWithMenu {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(staticContext, msg, Toast.LENGTH_LONG).show();
+                    Toast.makeText(mActivity, msg, Toast.LENGTH_LONG).show();
                 }
             });
             Log.d(TAG, "toast: " + msg);
@@ -1035,7 +1035,7 @@ public class Home extends ActivityWithMenu {
 
     public static void toastStaticFromUI(final String msg) {
         try {
-            Toast.makeText(staticContext, msg, Toast.LENGTH_LONG).show();
+            Toast.makeText(mActivity, msg, Toast.LENGTH_LONG).show();
             Log.d(TAG, "toast: " + msg);
         } catch (Exception e) {
             toaststaticnext(msg);
@@ -1160,12 +1160,13 @@ public class Home extends ActivityWithMenu {
         reset_viewport = true;
         if (activityVisible || override) {
             Intent updateIntent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA);
-            staticContext.sendBroadcast(updateIntent);
+            mActivity.sendBroadcast(updateIntent);
         }
     }
 
     @Override
     protected void onResume() {
+        xdrip.checkForcedEnglish(xdrip.getAppContext());
         super.onResume();
         checkEula();
         set_is_follower();

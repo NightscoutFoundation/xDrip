@@ -19,7 +19,7 @@ public class WebAppHelper extends AsyncTask<String, Integer, Integer> {
 
     private final String TAG = "jamorham webapphelper";
     private final OkHttpClient client = new OkHttpClient();
-    private Preferences.OnServiceTaskCompleted listener;
+    private final Preferences.OnServiceTaskCompleted listener;
     private byte[] body = new byte[0];
 
     public WebAppHelper(Preferences.OnServiceTaskCompleted listener) {
@@ -28,7 +28,7 @@ public class WebAppHelper extends AsyncTask<String, Integer, Integer> {
 
     protected void onPostExecute(Integer result) {
         Log.d(TAG, "OnPostExecute: body: " + result);
-        listener.onTaskCompleted(this.body);
+        if (listener != null) listener.onTaskCompleted(this.body);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class WebAppHelper extends AsyncTask<String, Integer, Integer> {
             client.setReadTimeout(30, TimeUnit.SECONDS);
             client.setWriteTimeout(30, TimeUnit.SECONDS);
 
-            Response response = client.newCall(request).execute();
+            final Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
             body = response.body().bytes();
         } catch (Exception e) {

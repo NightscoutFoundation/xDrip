@@ -12,7 +12,7 @@
     <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/scrollView7"
+        android:id="@+id/updateScrollView"
         android:layout_above="@+id/imageButton2"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
@@ -55,6 +55,16 @@
                 android:layout_gravity="center_horizontal"
                 />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Lorem ipsum dolor sit amet, cu porro dissentiunt eos. Sed ea modus mundi vocent, id duo timeam civibus. Dicit deserunt explicari in usu, elit corrumpit per ex."
+                android:id="@+id/updatemessage"
+                android:layout_marginTop="5dp"
+                android:layout_gravity="center_horizontal"
+                android:textColor="#f9fbe7" />
+
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -63,7 +73,7 @@
                 android:layout_below="@+id/autoupdate"
 
                 android:onClick="downloadNow"
-                android:layout_marginTop="53dp"
+                android:layout_marginTop="20dp"
                 android:layout_gravity="center_horizontal" />
 
             <Switch
@@ -76,6 +86,34 @@
 
                 android:checked="true" />
 
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Use internal downloader"
+                android:id="@+id/internaldownloadercheckBox"
+                android:layout_gravity="center_horizontal"
+                android:checked="true"
+                android:layout_marginTop="10dp" />
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar"
+                android:layout_alignBottom="@+id/internaldownloadercheckBox"
+                android:layout_alignParentStart="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="progress"
+                android:id="@+id/progresstext"
+                android:layout_marginTop="10dp"
+                android:layout_alignBottom="@+id/progressBar"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="right" />
+
         </LinearLayout>
     </ScrollView>
 
@@ -86,7 +124,7 @@
         android:onClick="closeActivity"
         android:src="@android:drawable/ic_delete"
         android:layout_alignParentBottom="true"
-        android:layout_alignEnd="@+id/scrollView7" />
+        android:layout_alignEnd="@+id/updateScrollView" />
 
 
 </RelativeLayout>

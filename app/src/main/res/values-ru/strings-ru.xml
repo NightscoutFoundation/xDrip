@@ -14,9 +14,9 @@
 	<string name="connecting_to_device">Подключение к устройству</string>
 	<string name="title_activity_raw_data_table">Сырье Таблица данных</string>
 	<string name="title_activity_calculated_data_table">Расчетные таблицы данных</string>
-	<string name="title_activity_start_new_sensor">Начать новый датчик</string>
-	<string name="title_activity_new_sensor_location">Новый датчик Расположение</string>
-	<string name="title_activity_stop_sensor">Стоп Датчик</string>
+	<string name="title_activity_start_new_sensor">Запуск нового датчика</string>
+	<string name="title_activity_new_sensor_location">Расположение нового датчика</string>
+	<string name="title_activity_stop_sensor">Остановка датчика</string>
 	<string name="title_activity_nav_drawer">Nav ящика</string>
 	<string name="navigation_drawer_open">Открыть панель навигации</string>
 	<string name="navigation_drawer_close">Закрыть панель навигации</string>
@@ -27,7 +27,7 @@
 	<string name="ok">ОК</string>
 	<string name="cancel">Отмена</string>
 	<string name="no">Нет</string>
-	<string name="pref_sensor_location_dont_ask_again"> Не спрашивайте меня, что снова</string>
+	<string name="pref_sensor_location_dont_ask_again"> Не спрашивайте меня, более</string>
 	<string name="title_activity_error">"Ошибка и списка событий"</string>
 	<string name="title_activity_main">Основная деятельность</string>
 	<string name="title_activity_fake_numbers">Поддельные номера</string>
@@ -100,7 +100,7 @@
 	<string name="first_use_menu_to_scan">Сначала используйте меню для сканирования для BT устройства или изменить источник данных в настройках!</string>
 	<string name="first_configure_ip_address">Во-первых настроить Wi-Fi считыватель Wixel IP-адреса или URL Parakeet</string>
 	<string name="now_start_your_sensor">Теперь запустите ваш датчик или проверьте настройки</string>
-	<string name="please_wait_while_sensor_warms_up">Пожалуйста, подождите, пока датчик нагреется! (</string>
+	<string name="please_wait_while_sensor_warms_up">Пожалуйста, подождите, пока датчик разогреется! (</string>
 	<string name="minutes_with_bracket"> минут)</string>
 	<string name="possible_bad_calibration">Возможно плохой наклон калибровки, пожалуйста, стакан воды, мыть руки, а затем откалибровать в несколько!</string>
 	<string name="please_wait_need_two_readings_first">Пожалуйста, подождите, нужно 2 показания передатчика в первую очередь.</string>
@@ -287,7 +287,7 @@
 	<string name="xdrip_plus_security_key_settings_only">Только xDrip Plus Security Settings Ключевые</string>
 	<string name="show_general_and_collection_settings">Показать Общие и Настройки Коллекция</string>
 	<string name="copy_all_settings">Копирование всех настроек</string>
-	<string name="sensor_is_ready_please_enter_double_calibration">Датчик готов, пожалуйста, введите двойной калибровки</string>
+	<string name="sensor_is_ready_please_enter_double_calibration">Датчик готов, пожалуйста, введите двойную калибровку</string>
 	<string name="in_order_to_get_started_please_perform_two_finger">Для того, чтобы начать работу, пожалуйста, выполнить два прокола пальца тесты и введите значения здесь!</string>
 	<string name="enter_first_bg_value">Введите первый BG Value</string>
 	<string name="enter_second_bg_value">Введите второе значение BG</string>
@@ -298,7 +298,7 @@
 	<string name="install_pebble_watchface">Установить Pebble Watchface</string>
 	<string name="glucose_history">История глюкозы</string>
 	<string name="import_database">Импорт базы данных</string>
-	<string name="sensor_table">Датчик Таблица</string>
+	<string name="sensor_table">Таблица датчика</string>
 	<string name="bg_readings_table">Таблица чтения глюкозы</string>
 	<string name="long_press_to_split_or_delete">Длительное нажатие Сплит или Удалить</string>
 	<string name="press_and_hold_on_the_background_to_split_or_delete">Нажмите и удерживайте на фоне Сплит или удалить блок времени</string>
@@ -387,7 +387,7 @@
 	<string name="show_on_widget">Показать на виджет</string>
 	<string name="calibration_data_long">Данные калибровки (длинные)</string>
 	<string name="calibration_data_short">Данные калибровки (короткие)</string>
-	<string name="store_sensor_location_to_help">Датчик магазин за вход, чтобы помочь улучшению алгоритма</string>
+	<string name="store_sensor_location_to_help">Хранить расположение датчика, чтобы помочь улучшенить алгоритм</string>
 	<string name="help_the_developers_improve_the_algorithm">Помогите разработчикам улучшить алгоритм xDrip.</string>
 	<string name="help_the_community">Помощь сообществу</string>
 	<string name="double_tap_or_pinch_to_zoom">Дважды нажмите или ущипнуть, чтобы увеличить.</string>
@@ -472,4 +472,6 @@
 	<string name="glucose_number_from_filtered">Глюкоза число от Filtered</string>
 	<string name="if_the_phone_has_text_to_speech">Если телефон имеет текста в речь возможности он будет говорить каждое новое чтение.</string>
 	<string name="upload_logs">Загрузить журналы</string>
+	<string name="short_off_text_for_switches">OFF</string>
+	<string name="short_on_text_for_switches">НА</string>
 </resources>

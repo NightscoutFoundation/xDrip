@@ -30,7 +30,9 @@ public class xdrip extends Application {
     private static final String TAG = "xdrip.java";
     private static Context context;
     private static boolean fabricInited = false;
+    private static Locale LOCALE;
     public static PlusAsyncExecutor executor;
+
 
     @Override
     public void onCreate() {
@@ -51,7 +53,7 @@ public class xdrip extends Application {
         PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_defaults, true);
         PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_prefs, true);
 
-        checkForcedEnglish(this);
+        checkForcedEnglish(xdrip.context);
 
 
         JoH.ratelimit("policy-never", 3600); // don't on first load
@@ -97,17 +99,20 @@ public class xdrip extends Application {
         //       Log.d(TAG, "Locale is non-english");
         if (Home.getPreferencesBoolean("force_english", false)) {
             final String forced_language = Home.getPreferencesStringWithDefault("forced_language", "en");
-            Log.i(TAG, "Forcing locale: " + forced_language);
-            final Locale LOCALE = new Locale(forced_language, "", "");
-            Locale.setDefault(LOCALE);
-            Configuration config = context.getResources().getConfiguration();
-            config.locale = LOCALE;
-            try {
-                ((Application) context).getBaseContext().getResources().updateConfiguration(config, ((Application) context).getBaseContext().getResources().getDisplayMetrics());
-            } catch (ClassCastException e) {
-                Log.i(TAG, "Using activity context instead of base for Locale change");
-                context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
-            }
+            final String current_language = Locale.getDefault().getLanguage();
+            if (!current_language.equals(forced_language)) {
+                Log.i(TAG, "Forcing locale: " + forced_language + " was: " + current_language);
+                LOCALE = new Locale(forced_language, "", "");
+                Locale.setDefault(LOCALE);
+                Configuration config = context.getResources().getConfiguration();
+                config.locale = LOCALE;
+                try {
+                    ((Application) context).getBaseContext().getResources().updateConfiguration(config, ((Application) context).getBaseContext().getResources().getDisplayMetrics());
+                } catch (ClassCastException e) {
+                    Log.i(TAG, "Using activity context instead of base for Locale change");
+                    context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
+                }
+            } Log.d(TAG,"Already set to locale: " + forced_language);
         }
     }
     //}
