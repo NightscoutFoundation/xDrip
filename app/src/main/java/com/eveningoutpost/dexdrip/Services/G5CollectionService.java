@@ -684,9 +684,13 @@ public class G5CollectionService extends Service {
     }
 
     public synchronized void authenticate() {
-        mGatt.setCharacteristicNotification(authCharacteristic, true);
-        if (!mGatt.readCharacteristic(authCharacteristic)) {
-            android.util.Log.e(TAG, "onCharacteristicRead : ReadCharacteristicError");
+        try {
+            mGatt.setCharacteristicNotification(authCharacteristic, true);
+            if (!mGatt.readCharacteristic(authCharacteristic)) {
+                android.util.Log.e(TAG, "onCharacteristicRead : ReadCharacteristicError");
+            }
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Got Nullpointer exception in authenticate(): " + e);
         }
     }
 
