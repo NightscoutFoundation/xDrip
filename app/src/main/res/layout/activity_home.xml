@@ -13,7 +13,8 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="#212121"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="0dp">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/my_toolbar"
@@ -27,7 +28,7 @@
             android:id="@+id/home_layout_holder"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="0dp"
+            android:layout_marginTop="-5dp"
             android:layout_weight="0.80"
             android:paddingLeft="0dp"
             android:paddingRight="0dp"
@@ -41,11 +42,12 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentStart="false"
-                android:layout_marginTop="55dp" />
+                android:layout_marginTop="45dp"
+                android:padding="0dp" />
 
             <TextView
                 android:id="@+id/notices"
-                android:layout_width="900dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
@@ -53,7 +55,7 @@
                 android:gravity="left|top"
                 android:paddingEnd="10dp"
                 android:paddingStart="10dp"
-                android:text="Alerts and messages"
+                android:text="Alerts"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="#C30909" />
 
@@ -67,7 +69,10 @@
                 android:gravity="right"
                 android:paddingEnd="20dp"
                 android:paddingTop="0dp"
-                android:textSize="50dp" />
+                android:textSize="50sp"
+                android:text=""
+                android:layout_marginTop="-11dp"
+                android:layout_marginBottom="1dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -80,6 +85,10 @@
                 android:text="Extra status line"
                 android:background="@android:color/transparent"
                 android:layout_below="@+id/notices"
+                android:shadowColor="#ff212121"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="14"
                 android:layout_alignParentStart="true" />
 
             <TextView
@@ -109,6 +118,10 @@
                 android:paddingStart="35dp"
                 android:paddingEnd="30dp"
                 android:text="Low prediction"
+                android:shadowColor="#ff212121"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="14"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textStyle="bold"
                 android:textColor="#C30909" />
@@ -243,7 +256,7 @@
                 android:background="@android:color/transparent"
                 android:text="102 mg/dl"
                 android:textColor="@android:color/holo_green_light"
-                android:textSize="22dp"
+                android:textSize="22sp"
                 android:textStyle="bold" />
 
             <ImageButton

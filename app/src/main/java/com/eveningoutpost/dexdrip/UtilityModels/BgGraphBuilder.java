@@ -1195,16 +1195,18 @@ public class BgGraphBuilder {
 
                 if (d)
                     Log.i(TAG, "Predictive Bolus Wizard suggestion: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
-                if (evaluation[0] > Profile.minimum_carb_recommendation) {
-                    PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));
-                    iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));
-                    annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
-                }
-                if (evaluation[1] > Profile.minimum_insulin_recommendation) {
-                    PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (11 * bgScale));
-                    iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
-                    annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
-                }
+               if (Home.getPreferencesBooleanDefaultFalse("show_bwp")) {
+                   if (evaluation[0] > Profile.minimum_carb_recommendation) {
+                       PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));
+                       iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));
+                       annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
+                   }
+                   if (evaluation[1] > Profile.minimum_insulin_recommendation) {
+                       PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (11 * bgScale));
+                       iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
+                       annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
+                   }
+               }
             }
 
         } catch (Exception e) {

@@ -171,6 +171,9 @@ public class Home extends ActivityWithMenu {
     private boolean alreadyDisplayedBgInfoCommon = false;
     private boolean recognitionRunning = false;
     private String display_delta = "";
+    private boolean small_width = false;
+    private boolean small_height = false;
+    private boolean small_screen = false;
     double thisnumber = -1;
     double thisglucosenumber = 0;
     double thiscarbsnumber = 0;
@@ -395,6 +398,22 @@ public class Home extends ActivityWithMenu {
                 }
             }
         });
+
+
+        final DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int screen_width = dm.widthPixels;
+        int screen_height = dm.heightPixels;
+
+
+
+        if (screen_width <= 320) { small_width =true; small_screen = true; }
+        if (screen_height <= 320) { small_height = true; small_screen = true; }
+        final int refdpi = 320;
+        Log.d(TAG, "Width height: " + screen_width + " " + screen_height+" DPI:"+dm.densityDpi);
+
+
+
 
         JoH.fixActionBar(this);
         try {
@@ -993,6 +1012,38 @@ public class Home extends ActivityWithMenu {
         if (insulinset || glucoseset || carbsset) {
             btnApprove.setVisibility(View.VISIBLE);
             btnCancel.setVisibility(View.VISIBLE);
+
+            if (small_screen)
+            {
+                final float button_scale_factor = 0.60f;
+                ((ViewGroup.MarginLayoutParams) btnApprove.getLayoutParams()).leftMargin=0;
+                ((ViewGroup.MarginLayoutParams) btnBloodGlucose.getLayoutParams()).leftMargin=0;
+                ((ViewGroup.MarginLayoutParams) btnBloodGlucose.getLayoutParams()).setMarginStart(0);
+                ((ViewGroup.MarginLayoutParams) btnCancel.getLayoutParams()).setMarginStart(0);
+                ((ViewGroup.MarginLayoutParams) btnApprove.getLayoutParams()).rightMargin=0;
+                ((ViewGroup.MarginLayoutParams) btnCancel.getLayoutParams()).rightMargin=0;
+                btnApprove.setScaleX(button_scale_factor);
+                btnApprove.setScaleY(button_scale_factor);
+                btnCancel.setScaleX(button_scale_factor);
+                btnCancel.setScaleY(button_scale_factor);
+                btnInsulinDose.setScaleX(button_scale_factor);
+                btnCarbohydrates.setScaleX(button_scale_factor);
+                btnCarbohydrates.setScaleY(button_scale_factor);
+                btnBloodGlucose.setScaleX(button_scale_factor);
+                btnBloodGlucose.setScaleY(button_scale_factor);
+                btnInsulinDose.setScaleY(button_scale_factor);
+                btnTime.setScaleX(button_scale_factor);
+                btnTime.setScaleY(button_scale_factor);
+
+                final int small_text_size = 12;
+
+                textCarbohydrates.setTextSize(small_text_size);
+                textInsulinDose.setTextSize(small_text_size);
+                textBloodGlucose.setTextSize(small_text_size);
+                textTime.setTextSize(small_text_size);
+
+            }
+
         }
 
         if (insulinset || glucoseset || carbsset || timeset) {
@@ -1294,11 +1345,13 @@ public class Home extends ActivityWithMenu {
             chart.setBackground(background);
         }
         previewChart = (PreviewLineChartView) findViewById(R.id.chart_preview);
-        previewChart.setBackgroundColor(getCol(X.color_home_chart_background));
-        previewChart.setZoomType(ZoomType.HORIZONTAL);
 
         chart.setLineChartData(bgGraphBuilder.lineData());
         chart.setOnValueTouchListener(bgGraphBuilder.getOnValueSelectTooltipListener());
+
+        previewChart.setBackgroundColor(getCol(X.color_home_chart_background));
+        previewChart.setZoomType(ZoomType.HORIZONTAL);
+
         previewChart.setLineChartData(bgGraphBuilder.previewLineData(chart.getLineChartData()));
         updateStuff = true;
 
@@ -1308,9 +1361,27 @@ public class Home extends ActivityWithMenu {
         chart.setViewportChangeListener(new ChartViewPortListener());
         setViewport();
 
+        if (small_height)
+        {
+            previewChart.setVisibility(View.GONE);
+
+            // quick test
+            Viewport moveViewPort = new Viewport(chart.getMaximumViewport());
+            float tempwidth = (float) moveViewPort.width()/4;
+            holdViewport.left=moveViewPort.right - tempwidth;
+            holdViewport.right=moveViewPort.right + (moveViewPort.width()/24);
+            holdViewport.top=moveViewPort.top;
+            holdViewport.bottom=moveViewPort.bottom;
+            chart.setCurrentViewport(holdViewport);
+            previewChart.setCurrentViewport(holdViewport);
+        } else {
+            previewChart.setVisibility(View.VISIBLE);
+        }
+
         if (insulinset || glucoseset || carbsset || timeset) {
             if (chart != null) {
                 chart.setAlpha((float) 0.10);
+                // TODO also set buttons alpha
             }
         }
 
@@ -1456,6 +1527,7 @@ public class Home extends ActivityWithMenu {
         // TODO we need to consider noise level?
         // when to raise the alarm
         lowPredictText.setText("");
+        lowPredictText.setVisibility(View.INVISIBLE);
         if (BgGraphBuilder.low_occurs_at > 0) {
             final double low_predicted_alarm_minutes = Double.parseDouble(prefs.getString("low_predict_alarm_level", "50"));
             final double now = JoH.ts();
@@ -1473,6 +1545,7 @@ public class Home extends ActivityWithMenu {
                         lowPredictText.setTextColor(Color.YELLOW); // low front is getting nearer!
                     }
                 }
+                lowPredictText.setVisibility(View.VISIBLE);
             }
             BgGraphBuilder.previous_low_occurs_at = BgGraphBuilder.low_occurs_at;
         }
@@ -1830,7 +1903,21 @@ public class Home extends ActivityWithMenu {
                 currentBgValueText.setText(extrastring + currentBgValueText.getText());
         }
         int minutes = (int) (System.currentTimeMillis() - lastBgReading.timestamp) / (60 * 1000);
-        notificationText.append("\n" + minutes + ((minutes == 1) ? getString(R.string.space_minute_ago) : getString(R.string.space_minutes_ago)));
+
+        if (notificationText.length()>0) notificationText.append("\n");
+        if (!small_width) {
+            notificationText.append(minutes + ((minutes == 1) ? getString(R.string.space_minute_ago) : getString(R.string.space_minutes_ago)));
+        } else {
+            // small screen
+            notificationText.append(minutes + getString(R.string.space_mins));
+            currentBgValueText.setPadding(0,0,0,0);
+        }
+
+        if (small_screen)
+        {
+           if (currentBgValueText.getText().length()>4)
+            currentBgValueText.setTextSize(25);
+        }
 
         // do we actually need to do this query here if we again do it in unitizedDeltaString
         List<BgReading> bgReadingList = BgReading.latest(2, is_follower);

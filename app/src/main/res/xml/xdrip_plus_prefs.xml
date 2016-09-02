@@ -275,6 +275,12 @@
                 android:summary="Delayed but more stable when noisy (not recommended)"
                 android:title="@string/glucose_number_from_filtered" />
             <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="show_bwp"
+                android:summary="Display Insulin/Carb calculations"
+                android:title="Show Bolus Wizard Preview" />
+            <CheckBoxPreference
+                android:dependency="show_bwp"
                 android:defaultValue="false"
                 android:key="always_show_bwp"
                 android:summary="Display Insulin/Carb calculations at all times"
