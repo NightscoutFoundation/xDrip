@@ -316,6 +316,7 @@
     <string name="enter_second_bg_value">Enter Second BG Value</string>
     <string name="language_editor">Language Editor</string>
     <string name="configure_missed_readings">Configure Missed Readings</string>
+    <string name="install_pebble_snooze_control_app">Install Pebble Snooze Control App</string>
     <string name="install_pebble_classic_trend_watchface">Install Pebble Classic Trend Watchface</string>
     <string name="install_pebble_trend_watchface">Install Pebble Trend Watchface</string>
     <string name="install_pebble_watchface">Install Pebble Watchface</string>
@@ -497,5 +498,6 @@
     <string name="upload_logs">Upload Logs</string>
     <string name="short_off_text_for_switches">OFF</string>
     <string name="short_on_text_for_switches">ON</string>
+    <string name="install_pebble_apps">Install Pebble Apps</string>
 
 </resources>

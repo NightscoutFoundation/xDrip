@@ -43,6 +43,10 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
         // default no implementation
     }
 
+    public void receiveAppData(int transactionId, PebbleDictionary data) {
+        // default no implementation
+    }
+
     @Override
     public void initDisplay(Context context, PebbleWatchSync pebbleWatchSync, BgGraphBuilder bgGraphBuilder) {
         this.context = context;

@@ -117,6 +117,18 @@
                 android:summary="@string/message_to_display_when_bgl_hits"
                 android:title="@string/text_to_display_when_hitting_special_value" />
         </PreferenceCategory>
+        <PreferenceCategory
+            android:key="pebble_installers"
+            android:title="@string/install_pebble_apps">
+            <Preference
+                android:key="install_pebble_snooze_control"
+                android:title="@string/install_pebble_snooze_control_app">
+            <intent
+                android:action="android.intent.action.MAIN"
+                android:targetClass="com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleSnoozeControlApp"
+                android:targetPackage="@string/local_target_package" />
+            </Preference>
+        </PreferenceCategory>
     </PreferenceScreen>
 
     <PreferenceCategory

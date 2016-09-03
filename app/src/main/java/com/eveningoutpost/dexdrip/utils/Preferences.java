@@ -44,6 +44,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleClassicTrendWatchface;
+import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleSnoozeControlApp;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleTrendWatchFace;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleWatchFace;
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
@@ -1303,8 +1304,30 @@ public class Preferences extends PreferenceActivity {
                             break;
                     }
 
-                }
-            });
+                    JoH.runOnUiThreadDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            builder.setTitle("Snooze Control Install");
+                            builder.setMessage("Install Pebble Snooze Button App?");
+                            // inner
+                            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    context.startActivity(new Intent(context, InstallPebbleSnoozeControlApp.class));
+                                }
+                            });
+                            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                            AlertDialog alert = builder.create();
+                            alert.show();
+                        }},3000);
+                // outer
+                }});
 
             builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
                 @Override

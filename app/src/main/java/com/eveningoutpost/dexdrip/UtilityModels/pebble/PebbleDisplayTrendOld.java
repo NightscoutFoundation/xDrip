@@ -9,9 +9,11 @@ import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.SimpleImageEncoder;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
@@ -124,6 +126,17 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
         messageInTransit = false;
         sendStep = 5;
         sendData();
+    }
+
+
+    @Override
+    public void receiveAppData(int transactionId, PebbleDictionary data) {
+        Log.d(TAG, "receiveAppData: transactionId is " + String.valueOf(transactionId));
+
+        AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
+
+        PebbleKit.sendAckToPebble(this.context, transactionId);
+        JoH.static_toast_long("Alarm snoozed by pebble");
     }
 
     private String lastBfReadingSent;

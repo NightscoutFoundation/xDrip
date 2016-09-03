@@ -21,6 +21,11 @@ public interface PebbleDisplayInterface {
     void receiveData(int transactionId, PebbleDictionary data);
 
     /**
+     * For receiveData event
+     */
+    void receiveAppData(int transactionId, PebbleDictionary data);
+
+    /**
      * For receiveNack event
      */
     void receiveNack(int transactionId);

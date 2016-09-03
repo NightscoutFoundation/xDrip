@@ -1,18 +1,25 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.media.AudioManager;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.NotificationCompat;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
 import android.util.Base64;
@@ -294,6 +301,14 @@ public class JoH {
         return manufacturer + " " + model + " " + version;
     }
 
+    public static String getVersionDetails() {
+        try {
+            return xdrip.getAppContext().getPackageManager().getPackageInfo(xdrip.getAppContext().getPackageName(), PackageManager.GET_META_DATA).versionName;
+        } catch (Exception e) {
+            return "Unknown version";
+        }
+    }
+
     public static boolean isOldVersion(Context context) {
         try {
             final Signature[] pinfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES).signatures;
@@ -429,6 +444,11 @@ public class JoH {
         return mainHandler.post(theRunnable);
     }
 
+    public static boolean runOnUiThreadDelayed(Runnable theRunnable, long delay) {
+        final Handler mainHandler = new Handler(xdrip.getAppContext().getMainLooper());
+        return mainHandler.postDelayed(theRunnable, delay);
+    }
+
     public static void static_toast(final Context context, final String msg, final int length) {
         try {
             if (!runOnUiThread(new Runnable() {
@@ -484,6 +504,34 @@ public class JoH {
             return null;
         }
     }
+
+    public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, boolean onetime) {
+        final NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);
+        final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
+        if (vibrate) mBuilder.setVibrate(vibratePattern);
+        mBuilder.setLights(0xff00ff00, 300, 1000);
+        if (sound)
+        {
+            Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            mBuilder.setSound(soundUri);
+        }
+
+        final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        if (!onetime) mNotifyMgr.cancel(notificationId);
+
+        mNotifyMgr.notify(notificationId, mBuilder.build());
+    }
+
+    private static NotificationCompat.Builder notificationBuilder(String title, String content, PendingIntent intent) {
+        return new NotificationCompat.Builder(xdrip.getAppContext())
+                .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
+                .setContentTitle(title)
+                .setContentText(content)
+                .setContentIntent(intent);
+    }
+
+
+
 
     public synchronized static void setBluetoothEnabled(Context context, boolean state) {
         try {

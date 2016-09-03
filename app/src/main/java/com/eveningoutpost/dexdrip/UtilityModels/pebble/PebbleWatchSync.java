@@ -25,6 +25,7 @@ import java.util.UUID;
 public class PebbleWatchSync extends Service {
 
     public static final UUID PEBBLEAPP_UUID = UUID.fromString("79f8ecb3-7214-4bfc-b996-cb95148ee6d3");
+    public static final UUID PEBBLE_CONTROL_APP_UUID = UUID.fromString("aa14a012-96c8-4ce6-9466-4bfdf0d5a74e");
 
     private final static String TAG = PebbleWatchSync.class.getSimpleName();
 
@@ -132,6 +133,16 @@ public class PebbleWatchSync extends Service {
                 getActivePebbleDisplay().receiveNack(transactionId);
             }
         });
+
+        // control app
+        PebbleKit.registerReceivedDataHandler(context, new PebbleKit.PebbleDataReceiver(PEBBLE_CONTROL_APP_UUID) {
+            @Override
+            public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
+                getActivePebbleDisplay().receiveAppData(transactionId, data);
+            }
+        });
+
+
 
     }
 

@@ -148,13 +148,24 @@ public class AlertPlayer {
         }
     }
 
-    public synchronized  void Snooze(Context ctx, int repeatTime) {
+    public synchronized void Snooze(Context ctx, int repeatTime) {
         Log.i(TAG, "Snooze called repeatTime = " + repeatTime);
         stopAlert(ctx, false, false);
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
-        if (activeBgAlert  == null) {
+        if (activeBgAlert == null) {
             Log.e(TAG, "Error, snooze was called but no alert is active. alert was probably removed in ui ");
             return;
+        }
+        if (repeatTime == -1) {
+            // try to work out default
+            AlertType alert = ActiveBgAlert.alertTypegetOnly();
+            if (alert != null) {
+                repeatTime = alert.default_snooze;
+                Log.d(TAG, "Selecting default snooze time: " + repeatTime);
+            } else {
+                repeatTime = 30; // pick a number if we cannot even find the default
+                Log.e(TAG, "Cannot even find default snooze time so going with: " + repeatTime);
+            }
         }
         activeBgAlert.snooze(repeatTime);
     }
