@@ -42,6 +42,10 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
     public static final int MESSAGE_KEY = 10;
     public static final int VIBE_KEY = 11;
 
+    public static final int SYNC_KEY = 1000;
+    public static final int PLATFORM_KEY = 1001;
+    public static final int VERSION_KEY = 1002;
+
     public static final int CHUNK_SIZE = 100;
     public static final boolean d = false;
 
@@ -59,6 +63,12 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
     private static final boolean debugPNG = false;
     private static boolean didTrend = false;
     private static final ReentrantLock lock = new ReentrantLock();
+
+    private static long pebble_platform = -1;
+    private static String pebble_app_version = "";
+    private static long pebble_sync_value = 0;
+    private static boolean sentInitialSync = false;
+
     private static short sendStep = 5;
     private PebbleDictionary dictionary = new PebbleDictionary();
 
@@ -121,6 +131,7 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
         this.pebbleWatchSync.lastTransactionId = transactionId;
         Log.d(TAG, "Received Query. data: " + data.size() + ".");
         PebbleKit.sendAckToPebble(this.context, transactionId);
+        evaluateDataFromPebble(data);
         transactionFailed = false;
         transactionOk = false;
         messageInTransit = false;
@@ -128,6 +139,29 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
         sendData();
     }
 
+    private void evaluateDataFromPebble(PebbleDictionary data) {
+
+        if (data.size() > 0) {
+            pebble_sync_value = data.getUnsignedIntegerAsLong(SYNC_KEY);
+            pebble_platform = data.getUnsignedIntegerAsLong(PLATFORM_KEY);
+            pebble_app_version = data.getString(VERSION_KEY);
+            Log.d(TAG, "receiveData: pebble_sync_value=" + pebble_sync_value + ", pebble_platform=" + pebble_platform + ", pebble_app_version=" + pebble_app_version);
+
+            switch ((int)pebble_platform) {
+                case 0:
+                    if (PebbleUtil.pebbleDisplayType != PebbleDisplayType.TrendClassic) {
+                        PebbleUtil.pebbleDisplayType = PebbleDisplayType.TrendClassic;
+                        //JoH.static_toast_short("Switching to Pebble Classic Trend");
+                        Log.d(TAG,"Changing to Classic Trend due to platform id");
+                    }
+                    break;
+
+            }
+
+        } else {
+            Log.d(TAG, "receiveData: pebble_app_version not known");
+        }
+    }
 
     @Override
     public void receiveAppData(int transactionId, PebbleDictionary data) {

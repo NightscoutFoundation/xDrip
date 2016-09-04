@@ -334,9 +334,20 @@ public class SystemStatus extends ActivityWithMenu {
 
     private void restartButtonListener() {
         restart_collection_service.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+            public void onClick(final View v) {
+                v.setEnabled(false);
+                JoH.static_toast_short("Restarting Collector!");
+                v.setAlpha(0.2f);
                 CollectionServiceStarter.restartCollectionService(getApplicationContext());
                 set_current_values();
+                JoH.runOnUiThreadDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        v.setEnabled(true);
+                        v.setAlpha(1.0f);
+                        set_current_values();
+                    }
+                }, 2000);
             }
         });
     }

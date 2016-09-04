@@ -714,7 +714,7 @@ public class DexShareCollectionService extends Service {
                     state_authInProgress = true;
                     bondDevice();
                 } else {
-                    Log.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug? Have the dexcom forget whatever device it was previously paired to");
+                    Log.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug? Have the dexcom forget whatever device it was previously paired to: ondescriptorwrite code: "+status+ "bond: "+gatt.getDevice().getBondState());
                 }
             } else {
                 Log.e(TAG, "Unknown error writing descriptor");
@@ -736,7 +736,7 @@ public class DexShareCollectionService extends Service {
                     state_authInProgress = true;
                     bondDevice();
                 } else {
-                    Log.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug? Have the dexcom forget whatever device it was previously paired to");
+                    Log.e(TAG, "The phone is trying to read from paired device without encryption. Android Bug? Have the dexcom forget whatever device it was previously paired to: oncharacteristicwrite code: "+status+ "bond: "+gatt.getDevice().getBondState());
                 }
             } else {
                 Log.e(TAG, "Unknown error writing Characteristic");

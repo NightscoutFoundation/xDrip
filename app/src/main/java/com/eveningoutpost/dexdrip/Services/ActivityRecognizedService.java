@@ -206,42 +206,57 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                 }
             } else if (requested == 15) {
                 if ((received < 4) && (PowerStateReceiver.is_power_connected())) {
-                    Home.toaststaticnext("DISABLED MOTION TRACKING DUE TO FAILURES! See Error Log!");
-                    final String msg = "Had to disable motion tracking feature as it did not seem to be working and may be incompatible with your phone. Please report this to the developers using the send logs feature: " + requested + " vs " + received + " " + JoH.getDeviceDetails();
-                    UserError.Log.wtf(TAG, msg);
-                    UserError.Log.ueh(TAG, msg);
-                    Home.setPreferencesBoolean("motion_tracking_enabled", false);
-                    evaluateRequestReceivedCounters(true);
-                    setInternalPrefsLong(REQUESTED, 0);
-                    setInternalPrefsLong(RECEIVED, 0);
-                    final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-                    builder.setContentText("Shut down motion detection! See Error Logs - Please report to developer" + JoH.dateTimeText(JoH.tsl()));
-                    builder.setSmallIcon(R.drawable.ic_launcher);
-                    builder.setContentTitle("Problem with motion detection!");
-                    NotificationManagerCompat.from(context).notify(VEHICLE_NOTIFICATION_ERROR_ID, builder.build());
+               disableMotionTrackingDueToErrors(context);
                 }
             }
 
             if (requested > 20) {
-                evaluateRequestReceivedCounters(false);
+                evaluateRequestReceivedCounters(false,context);
                 resetRequestedReceivedCounters();
             }
         }
     }
 
-    private static void evaluateRequestReceivedCounters(boolean disable) {
+    private static void disableMotionTrackingDueToErrors(Context context)
+    {
+        final long requested = getInternalPrefsLong(REQUESTED);
+        final long received = getInternalPrefsLong(RECEIVED);
+        Home.toaststaticnext("DISABLED MOTION TRACKING DUE TO FAILURES! See Error Log!");
+        final String msg = "Had to disable motion tracking feature as it did not seem to be working and may be incompatible with your phone. Please report this to the developers using the send logs feature: " + requested + " vs " + received + " " + JoH.getDeviceDetails();
+        UserError.Log.wtf(TAG, msg);
+        UserError.Log.ueh(TAG, msg);
+        Home.setPreferencesBoolean("motion_tracking_enabled", false);
+        evaluateRequestReceivedCounters(true,context); // mark for disable
+        setInternalPrefsLong(REQUESTED, 0);
+        setInternalPrefsLong(RECEIVED, 0);
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        builder.setContentText("Shut down motion detection! See Error Logs - Please report to developer" + JoH.dateTimeText(JoH.tsl()));
+        builder.setSmallIcon(R.drawable.ic_launcher);
+        builder.setContentTitle("Problem with motion detection!");
+        NotificationManagerCompat.from(context).notify(VEHICLE_NOTIFICATION_ERROR_ID, builder.build());
+    }
+
+    private static void evaluateRequestReceivedCounters(boolean disable,Context context) {
         final long requested_all_time = addInternalPrefsLong(REQUESTED, REQUESTED_ALL_TIME);
         final long received_all_time = addInternalPrefsLong(RECEIVED, RECEIVED_ALL_TIME);
         // TODO check connectivity
         // TODO use preferences for last send time - don't report more than once every 3 days
-        final double ratio = ((received_all_time*100) / requested_all_time);
+
+        final double ratio = ((received_all_time * 100) / requested_all_time);
         if (d)
             Log.d(TAG, "evaluteRequestReceived: " + requested_all_time + "/" + received_all_time + " " + JoH.qs(ratio, 2));
-        if (JoH.ratelimit("evalute-request-received", 60)) {
+        // TODO use persistent rate limit
+        if (JoH.ratelimit("evalute-request-received", 86400) || (disable)) {
             if (Home.getPreferencesBoolean("enable_crashlytics", true)) {
                 new WebAppHelper(null).executeOnExecutor(xdrip.executor, xdrip.getAppContext().getString(R.string.wserviceurl) + "/joh-mreport/" + (disable ? 1 : 0) + "/" + requested_all_time + "/" + received_all_time + "/" + JoH.qs(ratio, 0) + "/" + JoH.base64encode(JoH.getDeviceDetails()));
             }
         }
+
+        // mutually exclusive logic
+        if ((!disable) && (requested_all_time > 100) && (ratio < 90 ) && (PowerStateReceiver.is_power_connected()) && (JoH.isAnyNetworkConnected()) && (JoH.ratelimit("disable_motion", 86400))) {
+            disableMotionTrackingDueToErrors(context);
+        }
+
     }
 
     private static void resetRequestedReceivedCounters() {
@@ -458,7 +473,14 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
             }
         } else {
             if (connectionResult.getErrorCode() == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED) {
-                JoH.static_toast_long("Google Play update needed for Motion");
+                JoH.static_toast_long("Google Play Services update download needed for Motion");
+                Intent notificationIntent = new Intent(Intent.ACTION_VIEW);
+                notificationIntent.setData(Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.gms"));
+                final PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+                JoH.showNotification("Google Update Needed","Google Play Services update download needed for Motion. Download update via Google Play Store and try motion again after installed.",contentIntent,60302,true,true,true);
+                UserError.Log.ueh(TAG,"Google Play Services updated needed for motion - disabling motion for now");
+                Home.setPreferencesBoolean("motion_tracking_enabled", false);
+
             }
             start();
         }
@@ -479,15 +501,19 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
             } else if (intent.getStringExtra(RECHECK_VEHICLE_MODE) != null) {
                 checkVehicleRepeatNotification();
             } else if (ActivityRecognitionResult.hasResult(intent)) {
-                if (mApiClient == null) start();
-                ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
-                final int topConfidence = handleDetectedActivities(result.getProbableActivities(), true, 0);
-                last_data = JoH.ts();
-                received++;
-                if (d)
-                    Log.d(TAG, JoH.hourMinuteString() + " :: Packets received: " + received + " Top confidence: " + topConfidence);
-                if ((received > MAX_RECEIVED) || (topConfidence > 90))
-                    stopUpdates(); // one hit only
+                if ((Home.getPreferencesBooleanDefaultFalse("motion_tracking_enabled"))) {
+                    if (mApiClient == null) start();
+                    ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
+                    final int topConfidence = handleDetectedActivities(result.getProbableActivities(), true, 0);
+                    last_data = JoH.ts();
+                    received++;
+                    if (d)
+                        Log.d(TAG, JoH.hourMinuteString() + " :: Packets received: " + received + " Top confidence: " + topConfidence);
+                    if ((received > MAX_RECEIVED) || (topConfidence > 90))
+                        stopUpdates(); // one hit only
+                } else {
+                    UserError.Log.wtf(TAG, "Received ActivityRecognition we were not expecting!"); /// DEEEBUG
+                }
             } else {
                 // spoof from intent
                 final String payload = intent.getStringExtra(INCOMING_ACTIVITY_ACTION);
@@ -596,8 +622,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         NotificationManagerCompat.from(this).notify(VEHICLE_NOTIFICATION_ID, builder.build());
     }
 
-    private void cancel_vehicle_notification()
-    {
+    private void cancel_vehicle_notification() {
         NotificationManagerCompat.from(this).cancel(VEHICLE_NOTIFICATION_ID);
     }
 

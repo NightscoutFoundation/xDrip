@@ -14,6 +14,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
+import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
@@ -55,6 +56,15 @@ public class MissedReadingService extends IntentService {
         if (!bg_missed_alerts) {
         	// we should not do anything in this case. if the ui, changes will be called again
         	return;
+        }
+
+        if (prefs.getBoolean("aggressive_service_restart", false)) {
+            if (!BgReading.last_within_minutes(11)) {
+                if (JoH.ratelimit("aggressive-restart", 120)) {
+                    Log.e(TAG, "Aggressively restarting collector service due to lack of reception");
+                    CollectionServiceStarter.restartCollectionService(context);
+                }
+            }
         }
 
         if (BgReading.getTimeSinceLastReading() >= (bg_missed_minutes * 1000 * 60) &&

@@ -122,6 +122,7 @@
             android:title="@string/install_pebble_apps">
             <Preference
                 android:key="install_pebble_snooze_control"
+                android:summary="Attach it to a pebble button to instantly Snooze any active alert from your watch"
                 android:title="@string/install_pebble_snooze_control_app">
             <intent
                 android:action="android.intent.action.MAIN"
@@ -190,6 +191,11 @@
                 android:key="bluetooth_frequent_reset"
                 android:summary="Reset Bluetooth by turning it off and on every few minutes! Only select if you are testing. It may disrupt anything else using bluetooth."
                 android:title="Constantly reset bluetooth" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="aggressive_service_restart"
+                android:summary="Repeatedly restart the collection service at any hint of missing data. Enable only if you are getting data loss."
+                android:title="Aggressive service restarts" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="broadcast_data_through_intents_without_permission"

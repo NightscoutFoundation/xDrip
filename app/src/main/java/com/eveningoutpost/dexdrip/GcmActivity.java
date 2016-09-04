@@ -380,7 +380,7 @@ public class GcmActivity extends Activity {
             startService(intent);
         } else {
             cease_all_activity = true;
-            final String msg = "ERROR: Connecting to Google Services - try reboot?";
+            final String msg = "ERROR: Connecting to Google Services - check google login or reboot?";
             JoH.static_toast(this, msg, Toast.LENGTH_LONG);
             Home.toaststaticnext(msg);
         }
