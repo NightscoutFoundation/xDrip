@@ -902,9 +902,16 @@ public class Preferences extends PreferenceActivity {
                 collectionCategory.removePreference(runOnMain);
             }
 
-            if (!this.prefs.getBoolean("engineering_mode",false)) getPreferenceScreen().removePreference(motionScreen);
+            if (!this.prefs.getBoolean("engineering_mode",false)) {
+                getPreferenceScreen().removePreference(motionScreen);
 
-            DecimalFormat df = new DecimalFormat("#.#");
+            } else {
+                ListPreference update_channel = (ListPreference)findPreference("update_channel");
+                update_channel.setEntryValues(getResources().getStringArray(R.array.UpdateChannelE));
+                update_channel.setEntries(getResources().getStringArray(R.array.UpdateChannelDetailE));
+            }
+
+            final DecimalFormat df = new DecimalFormat("#.#");
 
             if (this.prefs.getString("units", "mgdl").compareTo("mmol") != 0) {
                 df.setMaximumFractionDigits(0);

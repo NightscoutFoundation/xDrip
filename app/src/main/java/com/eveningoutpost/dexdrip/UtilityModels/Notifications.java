@@ -672,8 +672,12 @@ public class Notifications extends IntentService {
 
     public static void lowPredictAlert(Context context, boolean on, String msg) {
         final String type = "bg_predict_alert";
-        if(on) {
-            OtherAlert(context, type, msg, lowPredictAlertNotificationId, 20);
+        if (on) {
+            if ((Home.getPreferencesLong("alerts_disabled_until", 0) < JoH.tsl()) && (Home.getPreferencesLong("low_alerts_disabled_until", 0) < JoH.tsl())) {
+                OtherAlert(context, type, msg, lowPredictAlertNotificationId, 20);
+            } else {
+                Log.ueh(TAG, "Not Low predict alerting due to snooze: " + msg);
+            }
         } else {
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyMgr.cancel(lowPredictAlertNotificationId);
@@ -683,8 +687,12 @@ public class Notifications extends IntentService {
 
     public static void persistentHighAlert(Context context, boolean on, String msg) {
         final String type = "persistent_high_alert";
-        if(on) {
-            OtherAlert(context, type, msg, persistentHighAlertNotificationId, 20);
+        if (on) {
+            if ((Home.getPreferencesLong("alerts_disabled_until", 0) < JoH.tsl()) && (Home.getPreferencesLong("high_alerts_disabled_until", 0) < JoH.tsl())) {
+                OtherAlert(context, type, msg, persistentHighAlertNotificationId, 20);
+            } else {
+                Log.ueh(TAG, "Not persistent high alerting due to snooze: " + msg);
+            }
         } else {
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyMgr.cancel(persistentHighAlertNotificationId);

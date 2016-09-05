@@ -27,7 +27,7 @@
 
     <string-array name="SendToPebbleChoice">
 
-        <item>Standard Watchface</item>
+        <item>Standard Watchface (old)</item>
         <item>Color Trend Watchface</item>
         <item>Pebble Classic Trend Watchface</item>
     </string-array>
@@ -61,7 +61,21 @@
     <string-array name="UpdateChannelDetail">
         <item>Stable - tried and tested versions</item>
         <item>Beta - new features but not fully tested </item>
-        <item>Alpha - nightlies, raw latest versions</item>
+        <item>Alpha - versions for early testing</item>
+    </string-array>
+
+    <string-array name="UpdateChannelE">
+        <item>stable</item>
+        <item>beta</item>
+        <item>alpha</item>
+        <item>nightly</item>
+    </string-array>
+
+    <string-array name="UpdateChannelDetailE">
+        <item>Stable - tried and tested versions</item>
+        <item>Beta - new features but not fully tested </item>
+        <item>Alpha - versions for early testing</item>
+        <item>Nightly - untested raw nightly code</item>
     </string-array>
 
     <string-array name="bgUnitEntries">
