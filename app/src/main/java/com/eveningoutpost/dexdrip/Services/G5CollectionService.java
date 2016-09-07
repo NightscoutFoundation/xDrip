@@ -445,7 +445,7 @@ public class G5CollectionService extends Service {
                     Log.w(TAG, "scan cycle start");
                 }
                 isScanning = true;
-            } catch (IllegalStateException is) {
+            } catch (IllegalStateException | NullPointerException is) {
                 setupBluetooth();
             }
 

@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -40,25 +41,16 @@ public class MissedReadingService extends IntentService {
         
         context = getApplicationContext();
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        bg_missed_alerts =  prefs.getBoolean("bg_missed_alerts", false);
-        bg_missed_minutes =  readPerfsInt(prefs, "bg_missed_minutes", 30);
-        otherAlertSnooze =  readPerfsInt(prefs, "other_alerts_snooze", 20);
-        final long now = new Date().getTime();
+
         Log.d(TAG, "MissedReadingService onHandleIntent");
 
         // send to pebble
         if (prefs.getBoolean("broadcast_to_pebble", false) && (PebbleUtil.getCurrentPebbleSyncType(prefs) != 1) && !BgReading.last_within_minutes(11)) {
-            Log.d(TAG,"Would update pebble for missed reading");
             if (JoH.ratelimit("peb-miss",120)) context.startService(new Intent(context, PebbleWatchSync.class));
             // update pebble even when we don't have data to ensure missed readings show
         }
 
-        if (!bg_missed_alerts) {
-        	// we should not do anything in this case. if the ui, changes will be called again
-        	return;
-        }
-
-        if (prefs.getBoolean("aggressive_service_restart", false)) {
+        if (prefs.getBoolean("aggressive_service_restart", false) || DexCollectionType.isFlakey()) {
             if (!BgReading.last_within_minutes(11)) {
                 if (JoH.ratelimit("aggressive-restart", 120)) {
                     Log.e(TAG, "Aggressively restarting collector service due to lack of reception");
@@ -66,6 +58,16 @@ public class MissedReadingService extends IntentService {
                 }
             }
         }
+
+        bg_missed_alerts =  prefs.getBoolean("bg_missed_alerts", false);
+        if (!bg_missed_alerts) {
+            // we should not do anything in this case. if the ui, changes will be called again
+            return;
+        }
+
+        bg_missed_minutes =  readPerfsInt(prefs, "bg_missed_minutes", 30);
+        otherAlertSnooze =  readPerfsInt(prefs, "other_alerts_snooze", 20);
+        final long now = new Date().getTime();
 
         if (BgReading.getTimeSinceLastReading() >= (bg_missed_minutes * 1000 * 60) &&
                 prefs.getLong("alerts_disabled_until", 0) <= now &&
