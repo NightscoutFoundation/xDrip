@@ -847,6 +847,8 @@ public class Home extends ActivityWithMenu {
         } else if (allWords.contentEquals("vehicle mode walk")) {
             ActivityRecognizedService.spoofActivityRecogniser(mActivity, JoH.tsl() + "^" + 2);
             staticRefreshBGCharts();
+        } else if (allWords.contentEquals("delete all glucose data")) {
+            deleteAllBG(null);
         }
 
         if (allWords.contentEquals("clear battery warning")) {
@@ -1492,6 +1494,8 @@ public class Home extends ActivityWithMenu {
         } else if (is_follower) {
             displayCurrentInfo();
             getApplicationContext().startService(new Intent(getApplicationContext(), Notifications.class));
+        } else if (!alreadyDisplayedBgInfoCommon && DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) {
+            updateCurrentBgInfoCommon(notificationText);
         }
         if (prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
             notificationText.append("\n ALL ALERTS CURRENTLY DISABLED");
@@ -1691,7 +1695,8 @@ public class Home extends ActivityWithMenu {
         final boolean hasBtWixel = DexCollectionType.hasBtWixel();
         final boolean isLimitter = CollectionServiceStarter.isLimitter();
         //boolean isWifiWixel = CollectionServiceStarter.isWifiandBTWixel(getApplicationContext()) | CollectionServiceStarter.isWifiWixel(getApplicationContext());
-        if (isDexbridge||isLimitter||hasBtWixel||is_follower) {
+      //  if (isDexbridge||isLimitter||hasBtWixel||is_follower) {
+        if (DexCollectionType.hasBattery()) {
             final int bridgeBattery = prefs.getInt("bridge_battery", 0);
 
             if (bridgeBattery < 1) {
@@ -1835,13 +1840,19 @@ public class Home extends ActivityWithMenu {
 
     }
 
+    public static long stale_data_millis()
+    {
+        if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) return (60000 * 13);
+        return (60000 * 11);
+    }
+
     private void displayCurrentInfoFromReading(BgReading lastBgReading, boolean predictive) {
         double estimate = 0;
         double estimated_delta = 0;
 
         String slope_arrow = lastBgReading.slopeArrow();
         String extrastring = "";
-        if ((new Date().getTime()) - (60000 * 11) - lastBgReading.timestamp > 0) {
+        if ((new Date().getTime()) - stale_data_millis() - lastBgReading.timestamp > 0) {
             notificationText.setText(R.string.signal_missed);
             if (!predictive) {
                 estimate = lastBgReading.calculated_value;

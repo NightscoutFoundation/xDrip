@@ -346,6 +346,11 @@
                 <action android:name="info.nightscout.client.NEW_PROFILE" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".LibreAlarmReceiver">
+            <intent-filter>
+                <action android:name="com.eveningoutpost.dexdrip.FROM_LIBRE_ALARM" />
+            </intent-filter>
+        </receiver>
         <receiver
             android:name=".localeTasker.receiver.FireReceiver"
             android:exported="true"

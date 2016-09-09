@@ -105,7 +105,7 @@ public class xDripWidget extends AppWidgetProvider {
 
 
 
-            if ((new Date().getTime()) - (60000 * 11) - lastBgreading.timestamp > 0) {
+            if ((new Date().getTime()) - Home.stale_data_millis() - lastBgreading.timestamp > 0) {
 //                estimate = lastBgreading.calculated_value;
                 Log.d(TAG, "old value, estimate " + estimate);
                  stringEstimate = bgGraphBuilder.unitized_string(estimate);

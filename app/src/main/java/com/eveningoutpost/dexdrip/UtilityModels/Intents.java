@@ -28,5 +28,6 @@ public interface Intents {
 
     // Listen on
     String ACTION_DATABASE = "info.nightscout.client.DBACCESS";
+    String LIBRE_ALARM_TO_XDRIP_PLUS = "com.eveningoutpost.dexdrip.FROM_LIBRE_ALARM";
 
 }

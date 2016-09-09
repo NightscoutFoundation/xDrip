@@ -22,6 +22,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -590,9 +591,12 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static boolean last_within_minutes(final int mins) {
-        final BgReading reading = last();
-        return reading != null && ((JoH.tsl() - reading.timestamp) < (mins * 60000));
+        return last_within_millis(mins * 60000);
+    }
 
+    public static boolean last_within_millis(final long millis) {
+        final BgReading reading = last();
+        return reading != null && ((JoH.tsl() - reading.timestamp) < millis);
     }
 
     public static BgReading last()
@@ -795,6 +799,48 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    // TODO this method shares some code with above.. merge
+    public static void bgReadingInsertFromInt(int value, long timestamp, boolean do_notification) {
+        // TODO sanity check data!
+
+        if ((value <= 0) || (timestamp <= 0)) {
+            Log.e(TAG, "Invalid data fed to InsertFromInt");
+            return;
+        }
+
+        BgReading bgr = new BgReading();
+
+        if (bgr != null) {
+            bgr.uuid = UUID.randomUUID().toString();
+
+            bgr.timestamp = timestamp;
+            bgr.calculated_value = value;
+
+            // rough code for testing!
+            bgr.filtered_calculated_value = value;
+            bgr.raw_data = value*1000;
+            bgr.filtered_data = value*1000;
+
+            try {
+                if (readingNearTimeStamp(bgr.timestamp) == null) {
+                    bgr.save();
+                    bgr.find_slope();
+                    if (do_notification) {
+                        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
+                        BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), true); // pebble and widget
+                    }
+                } else {
+                    Log.d(TAG, "Ignoring duplicate bgr record due to timestamp: " + timestamp);
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "Could not save BGR: " + e.toString());
+            }
+        } else {
+            Log.e(TAG,"Got null bgr from create");
+        }
+    }
+
+
     public static BgReading fromJSON(String json) {
         if (json.length()==0)
         {
@@ -925,7 +971,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
     public void calculateAgeAdjustedRawValue(){
         final double adjust_for = AGE_ADJUSTMENT_TIME - time_since_sensor_started;
-        if ((adjust_for > 0) && (!CollectionServiceStarter.isLimitter())) {
+        if ((adjust_for > 0) && (!DexCollectionType.hasLibre())) {
             age_adjusted_raw_value = ((AGE_ADJUSTMENT_FACTOR * (adjust_for / AGE_ADJUSTMENT_TIME)) * raw_data) + raw_data;
             Log.i(TAG, "calculateAgeAdjustedRawValue: RAW VALUE ADJUSTMENT FROM:" + raw_data + " TO: " + age_adjusted_raw_value);
         } else {

@@ -709,7 +709,11 @@ public class G5CollectionService extends Service {
     private synchronized void connectToDevice(BluetoothDevice device) {
         if (mGatt != null) {
             Log.i(TAG, "BGatt isnt null, Closing.");
-            mGatt.close();
+            try {
+                mGatt.close();
+            } catch (NullPointerException e) {
+                // concurrency related null pointer 
+            }
             mGatt = null;
         }
         android.util.Log.i(TAG, "Request Connect");

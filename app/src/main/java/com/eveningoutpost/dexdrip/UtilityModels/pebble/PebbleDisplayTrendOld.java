@@ -193,7 +193,7 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
             Log.v(TAG, "buildDictionary: slopeOrdinal-" + slopeOrdinal + " bgReading-" + bgReadingS + //
                     " now-" + (int) now.getTime() / 1000 + " bgTime-" + (int) (this.bgReading.timestamp / 1000) + //
                     " phoneTime-" + (int) (new Date().getTime() / 1000) + " getBgDelta-" + getBgDelta());
-            no_signal = ((new Date().getTime()) - (60000 * 11) - this.bgReading.timestamp > 0);
+            no_signal = ((new Date().getTime()) - Home.stale_data_millis() - this.bgReading.timestamp > 0);
 
             if (!getBooleanValue("pebble_show_arrows") || no_signal) {
                 this.dictionary.addString(ICON_KEY, "0");

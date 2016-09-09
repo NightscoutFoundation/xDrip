@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -44,14 +45,16 @@ public class MissedReadingService extends IntentService {
 
         Log.d(TAG, "MissedReadingService onHandleIntent");
 
+        final long stale_millis = Home.stale_data_millis();
+
         // send to pebble
-        if (prefs.getBoolean("broadcast_to_pebble", false) && (PebbleUtil.getCurrentPebbleSyncType(prefs) != 1) && !BgReading.last_within_minutes(11)) {
+        if (prefs.getBoolean("broadcast_to_pebble", false) && (PebbleUtil.getCurrentPebbleSyncType(prefs) != 1) && !BgReading.last_within_millis(stale_millis)) {
             if (JoH.ratelimit("peb-miss",120)) context.startService(new Intent(context, PebbleWatchSync.class));
             // update pebble even when we don't have data to ensure missed readings show
         }
 
         if (prefs.getBoolean("aggressive_service_restart", false) || DexCollectionType.isFlakey()) {
-            if (!BgReading.last_within_minutes(11)) {
+            if (!BgReading.last_within_millis(stale_millis)) {
                 if (JoH.ratelimit("aggressive-restart", 120)) {
                     Log.e(TAG, "Aggressively restarting collector service due to lack of reception");
                     CollectionServiceStarter.restartCollectionService(context);

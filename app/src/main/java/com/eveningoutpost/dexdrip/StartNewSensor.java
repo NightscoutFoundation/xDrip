@@ -13,10 +13,12 @@ import android.widget.DatePicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.LocationHelper;
 
 import java.util.Calendar;
@@ -49,14 +51,16 @@ public class StartNewSensor extends ActivityWithMenu {
     public String getMenuName() {
         return getString(R.string.start_sensor);
     }
+
     public void addListenerOnButton() {
-        button = (Button)findViewById(R.id.startNewSensor);
+        button = (Button) findViewById(R.id.startNewSensor);
 
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // TODO do we only need this permission with G5 ?
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && DexCollectionType.hasBluetooth()) {
                     if (!LocationHelper.locationPermission(StartNewSensor.this)) {
+                        JoH.static_toast_long("Location permission needed to use Bluetooth!");
                         requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 0);
                     } else {
                         sensorButtonClick();

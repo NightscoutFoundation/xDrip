@@ -10,6 +10,7 @@
         <item>G5 Transmitter (test)</item>
         <item>LimiTTer</item>
         <item>xDrip+ Sync Follower</item>
+        <item>LibreAlarm</item>
     </string-array>
 
     <string-array name="DexCollectionMethodValues">
@@ -22,6 +23,7 @@
         <item>DexcomG5</item>
         <item>LimiTTer</item>
         <item>Follower</item>
+        <item>LibreAlarm</item>
 
     </string-array>
 

@@ -33,7 +33,12 @@ public enum DexCollectionType {
     private static final HashSet<DexCollectionType> usesXbridge = new HashSet<>();
     private static final HashSet<DexCollectionType> usesFiltered = new HashSet<>();
     private static final HashSet<DexCollectionType> usesLibre = new HashSet<>();
+    private static final HashSet<DexCollectionType> usesBattery = new HashSet<>();
+
+    private static final String DEX_COLLECTION_METHOD = "dex_collection_method";
+
     public static boolean does_have_filtered = false; // TODO this could get messy with GC
+
 
     static {
         mapToInternalName = new HashMap<>();
@@ -48,6 +53,7 @@ public enum DexCollectionType {
         Collections.addAll(usesXbridge, DexbridgeWixel,WifiDexBridgeWixel);
         Collections.addAll(usesFiltered, DexbridgeWixel, WifiDexBridgeWixel, DexcomG5, WifiWixel, Follower); // Bluetooth and Wifi+Bluetooth need dynamic mode
         Collections.addAll(usesLibre, LimiTTer, LibreAlarm);
+        Collections.addAll(usesBattery, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel, Follower, LimiTTer, LibreAlarm); // parakeet separate
     }
 
 
@@ -65,7 +71,11 @@ public enum DexCollectionType {
     }
 
     public static DexCollectionType getDexCollectionType() {
-        return getType(Home.getPreferencesStringWithDefault("dex_collection_method", "BluetoothWixel"));
+        return getType(Home.getPreferencesStringWithDefault(DEX_COLLECTION_METHOD, "BluetoothWixel"));
+    }
+
+    public static void setDexCollectionType(DexCollectionType t) {
+        Home.setPreferencesString(DEX_COLLECTION_METHOD, t.internalName);
     }
 
     public static boolean hasBluetooth() {
@@ -83,6 +93,8 @@ public enum DexCollectionType {
     }
 
     public static boolean hasLibre() { return usesLibre.contains(getDexCollectionType()); }
+
+    public static boolean hasBattery() { return usesBattery.contains(getDexCollectionType()); }
 
     public static boolean hasSensor() {
         return getDexCollectionType() != DexCollectionType.Manual;
