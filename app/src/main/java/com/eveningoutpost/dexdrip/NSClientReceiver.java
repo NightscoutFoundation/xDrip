@@ -72,7 +72,7 @@ public class NSClientReceiver extends BroadcastReceiver {
                         process_SGV_json(sgv_json);
                     }
                 } else {
-                    Log.e(TAG,"Ignoring SGV data as we are not a follower");
+                    Log.e(TAG, "Ignoring SGV data as we are not a follower");
                 }
                 break;
 
@@ -137,19 +137,19 @@ public class NSClientReceiver extends BroadcastReceiver {
             }
 
             //jsonObject.put("calibration_flag", calibration_flag);
-            jsonObject.put("filtered_data", sgv_map.get("filtered"));
+            jsonObject.put("filtered_data", (sgv_map.get("filtered") != null) ? sgv_map.get("filtered") : 1);
             //jsonObject.put("raw_calculated", raw_calculated);
-            jsonObject.put("raw_data", sgv_map.get("unfiltered"));
+            jsonObject.put("raw_data", (sgv_map.get("unfiltered") != null) ? sgv_map.get("unfiltered") : 1);
             Double slope = BgReading.slopefromName(sgv_map.get("direction").toString());
             jsonObject.put("calculated_value_slope", slope);
             if (BgReading.isSlopeNameInvalid(sgv_map.get("direction").toString())) {
                 jsonObject.put("hide_slope", true);
             }
             jsonObject.put("noise", sgv_map.get("noise"));
+            //if (d) Log.d(TAG, "deebug: " + jsonObject.toString());
             return jsonObject.toString();
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Log.e(TAG, "JSON Exception in toBgReadingJSON: " + e);
             return "";
         }
     }
