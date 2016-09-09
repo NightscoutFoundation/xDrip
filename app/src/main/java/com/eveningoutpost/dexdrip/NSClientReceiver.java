@@ -54,23 +54,26 @@ public class NSClientReceiver extends BroadcastReceiver {
 
         switch (action) {
             case Intents.ACTION_NEW_SGV:
-                if (bundle == null) break;
-                final String sgvs_json = bundle.getString("sgvs", "");
-                if (sgvs_json.length() > 0) {
-                    try {
-                        final JSONArray jsonArray = new JSONArray(sgvs_json);
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            process_SGV_json(jsonArray.getString(i));
+                if (Home.get_follower()) {
+                    if (bundle == null) break;
+                    final String sgvs_json = bundle.getString("sgvs", "");
+                    if (sgvs_json.length() > 0) {
+                        try {
+                            final JSONArray jsonArray = new JSONArray(sgvs_json);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                process_SGV_json(jsonArray.getString(i));
+                            }
+                        } catch (JSONException e) {
+                            Log.e(TAG, "Json exception with sgvs: " + e.toString());
                         }
-                    } catch (JSONException e) {
-                        Log.e(TAG, "Json exception with sgvs: " + e.toString());
                     }
+                    final String sgv_json = bundle.getString("sgv", "");
+                    if (sgv_json.length() > 0) {
+                        process_SGV_json(sgv_json);
+                    }
+                } else {
+                    Log.e(TAG,"Ignoring SGV data as we are not a follower");
                 }
-                final String sgv_json = bundle.getString("sgv", "");
-                if (sgv_json.length() > 0) {
-                    process_SGV_json(sgv_json);
-                }
-
                 break;
 
             case Intents.ACTION_NEW_TREATMENT:
