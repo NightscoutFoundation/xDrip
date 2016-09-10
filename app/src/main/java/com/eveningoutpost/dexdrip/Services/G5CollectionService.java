@@ -696,12 +696,18 @@ public class G5CollectionService extends Service {
 
     public synchronized void getSensorData() {
         android.util.Log.i(TAG, "Request Sensor Data");
-        mGatt.setCharacteristicNotification(controlCharacteristic, true);
-        BluetoothGattDescriptor descriptor = controlCharacteristic.getDescriptor(BluetoothServices.CharacteristicUpdateNotification);
-        descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
-        SensorTxMessage sensorTx = new SensorTxMessage();
-        controlCharacteristic.setValue(sensorTx.byteSequence);
-        mGatt.writeDescriptor(descriptor);
+        try {
+            if (mGatt != null) {
+                mGatt.setCharacteristicNotification(controlCharacteristic, true);
+                BluetoothGattDescriptor descriptor = controlCharacteristic.getDescriptor(BluetoothServices.CharacteristicUpdateNotification);
+                descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+                SensorTxMessage sensorTx = new SensorTxMessage();
+                controlCharacteristic.setValue(sensorTx.byteSequence);
+                mGatt.writeDescriptor(descriptor);
+            }
+        } catch (NullPointerException e) {
+            Log.d(TAG, "Got null pointer in getSensorData() " + e);
+        }
     }
 
     private BluetoothAdapter.LeScanCallback mLeScanCallback = null;
@@ -712,7 +718,7 @@ public class G5CollectionService extends Service {
             try {
                 mGatt.close();
             } catch (NullPointerException e) {
-                // concurrency related null pointer 
+                // concurrency related null pointer
             }
             mGatt = null;
         }
