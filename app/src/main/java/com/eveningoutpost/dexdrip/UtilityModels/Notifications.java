@@ -505,13 +505,18 @@ public class Notifications extends IntentService {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    NotificationManagerCompat
-                            .from(mContext)
-                            .notify(ongoingNotificationId, createOngoingNotification(bgGraphBuilder, mContext));
-                    if (iconBitmap != null)
-                        iconBitmap.recycle();
-                    if (notifiationBitmap != null)
-                        notifiationBitmap.recycle();
+                    try {
+                        NotificationManagerCompat
+                                .from(mContext)
+                                .notify(ongoingNotificationId, createOngoingNotification(bgGraphBuilder, mContext));
+                        if (iconBitmap != null)
+                            iconBitmap.recycle();
+                        if (notifiationBitmap != null)
+                            notifiationBitmap.recycle();
+                    } catch (RuntimeException e) {
+                        Log.e(TAG, "Got runtime exception in bgOngoingNotification runnable: ", e);
+                        Home.toaststaticnext("Problem displaying ongoing notification");
+                    }
                 }
             });
         } catch (RuntimeException e) {
