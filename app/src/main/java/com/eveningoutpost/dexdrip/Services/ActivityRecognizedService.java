@@ -15,6 +15,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.ErrorsActivity;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -217,8 +218,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         }
     }
 
-    private static void disableMotionTrackingDueToErrors(Context context)
-    {
+    private static void disableMotionTrackingDueToErrors(Context context) {
         final long requested = getInternalPrefsLong(REQUESTED);
         final long received = getInternalPrefsLong(RECEIVED);
         Home.toaststaticnext("DISABLED MOTION TRACKING DUE TO FAILURES! See Error Log!");
@@ -226,11 +226,17 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         UserError.Log.wtf(TAG, msg);
         UserError.Log.ueh(TAG, msg);
         Home.setPreferencesBoolean("motion_tracking_enabled", false);
-        evaluateRequestReceivedCounters(true,context); // mark for disable
+        evaluateRequestReceivedCounters(true, context); // mark for disable
         setInternalPrefsLong(REQUESTED, 0);
         setInternalPrefsLong(RECEIVED, 0);
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+
+        Intent intent = new Intent(xdrip.getAppContext(), ErrorsActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(xdrip.getAppContext(), 0 /* Request code */, intent,
+                PendingIntent.FLAG_ONE_SHOT);
         builder.setContentText("Shut down motion detection! See Error Logs - Please report to developer" + JoH.dateTimeText(JoH.tsl()));
+        builder.setContentIntent(pendingIntent);
         builder.setSmallIcon(R.drawable.ic_launcher);
         builder.setContentTitle("Problem with motion detection!");
         NotificationManagerCompat.from(context).notify(VEHICLE_NOTIFICATION_ERROR_ID, builder.build());

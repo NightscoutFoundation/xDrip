@@ -1,6 +1,5 @@
 package com.eveningoutpost.dexdrip;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -58,6 +57,7 @@ public class xdrip extends Application {
 
         JoH.ratelimit("policy-never", 3600); // don't on first load
         new IdempotentMigrations(getApplicationContext()).performAll();
+        NFCReaderX.handleHomeScreenScanPreference(getApplicationContext());
         AlertType.fromSettings(getApplicationContext());
         new CollectionServiceStarter(getApplicationContext()).start(getApplicationContext());
         PlusSyncService.startSyncService(context, "xdrip.java");

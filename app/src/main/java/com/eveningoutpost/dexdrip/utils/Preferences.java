@@ -22,6 +22,7 @@ import android.preference.PreferenceGroup;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
+import android.preference.SwitchPreference;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.widget.BaseAdapter;
@@ -32,6 +33,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
@@ -671,6 +673,7 @@ public class Preferences extends PreferenceActivity {
             final Preference predictiveBG = findPreference("predictive_bg");
             final Preference interpretRaw = findPreference("interpret_raw");
 
+            final Preference nfcSettings = findPreference("xdrip_plus_nfc_settings");
             //DexCollectionType collectionType = DexCollectionType.getType(findPreference("dex_collection_method").)
 
 
@@ -866,6 +869,56 @@ public class Preferences extends PreferenceActivity {
                 otherCategory.removePreference(predictiveBG);
                 alertsCategory.removePreference(calibrationAlertsScreen);
                 this.prefs.edit().putBoolean("calibration_notifications", false).apply();
+            }
+
+            try {
+                findPreference("nfc_scan_homescreen").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), (boolean) newValue && (NFCReaderX.useNFC()));
+                        return true;
+                    }
+                });
+            } catch (NullPointerException e) {
+                Log.d(TAG, "Nullpointer looking for nfc_scan_homescreen");
+            }
+            try {
+                findPreference("use_nfc_scan").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(preference.getContext());
+                        if ((boolean) newValue) {
+                            builder.setTitle("Stop! Are you sure?");
+                            builder.setMessage("This can sometimes crash / break a sensor!\nWith some phones there can be problems, try on expiring sensor first for safety. You have been warned.");
+
+                            builder.setPositiveButton("I AM SURE", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    preference.getEditor().putBoolean("use_nfc_scan", true).commit();
+                                    ((SwitchPreference)preference).setChecked(true);
+                                    NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), (boolean) newValue && prefs.getBoolean("nfc_scan_homescreen", false));
+                                }
+                            });
+                            builder.setNegativeButton("NOPE", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                            final AlertDialog alert = builder.create();
+                            alert.show();
+                            return false;
+                        } else {
+                            NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), (boolean) newValue && prefs.getBoolean("nfc_scan_homescreen", false));
+                        }
+                        return true;
+                    }
+                });
+            } catch (NullPointerException e) {
+                Log.d(TAG, "Nullpointer looking for nfc_scan");
+            }
+
+            if (!DexCollectionType.hasLibre(collectionType)) {
+                collectionCategory.removePreference(nfcSettings);
             }
 
 
@@ -1131,7 +1184,9 @@ public class Preferences extends PreferenceActivity {
 
             bindPreferenceSummaryToValue(transmitterId);
             transmitterId.getEditText().setFilters(new InputFilter[]{new InputFilter.AllCaps()});
-            collectionMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+
+
+                    collectionMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
 
@@ -1152,6 +1207,16 @@ public class Preferences extends PreferenceActivity {
                         AllPrefsFragment.this.prefs.edit().putBoolean("calibration_notifications", false).apply();
                     }
 
+                    if (DexCollectionType.hasLibre(collectionType))
+                    {
+                        collectionCategory.addPreference(nfcSettings);
+                        NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), prefs.getBoolean("nfc_scan_homescreen",false) && prefs.getBoolean("use_nfc_scan",false));
+                    } else {
+                        collectionCategory.removePreference(nfcSettings);
+                        NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), false); // always disable
+                    }
+
+
                     if (collectionType != DexCollectionType.BluetoothWixel
                             && collectionType != DexCollectionType.DexcomShare
                             && collectionType != DexCollectionType.WifiWixel
@@ -1160,6 +1225,7 @@ public class Preferences extends PreferenceActivity {
                             && collectionType != DexCollectionType.DexcomG5
                             && collectionType != DexCollectionType.WifiBlueToothWixel
                             && collectionType != DexCollectionType.WifiDexBridgeWixel
+                            && collectionType != DexCollectionType.LibreAlarm
                             ) {
                         collectionCategory.removePreference(runInForeground);
                     } else {

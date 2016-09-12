@@ -8,6 +8,7 @@
         android:required="true" />
     <uses-feature android:name="android.hardware.usb.host" />
 
+    <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="com.google.android.permission.PROVIDE_BACKGROUND" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -241,7 +242,24 @@
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
         </activity>
-
+        <activity
+            android:name=".NFCFilterX"
+            android:launchMode="singleTask"
+            android:configChanges="orientation|screenSize"
+            android:label="xDrip+ NFC">
+            <intent-filter>
+                <action android:name="android.nfc.action.TECH_DISCOVERED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/nfc_tech_list" />
+        </activity>
+        <activity
+            android:name=".NFCScanningX"
+            android:launchMode="singleTask"
+            android:configChanges="orientation|screenSize"
+            android:label="NFC Scanning">
+        </activity>
         <service
             android:name=".Services.DexShareCollectionService"
             android:enabled="true"

@@ -57,6 +57,8 @@ public class StopSensor extends ActivityWithMenu {
 
                 Toast.makeText(getApplicationContext(), "Sensor stopped", Toast.LENGTH_LONG).show();
 
+                LibreAlarmReceiver.clearSensorStats();
+
                 //If Sensor is stopped for G5, we need to prevent further BLE scanning.
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");

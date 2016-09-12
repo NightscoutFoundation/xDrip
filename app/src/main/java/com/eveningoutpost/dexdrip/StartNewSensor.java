@@ -91,6 +91,8 @@ public class StartNewSensor extends ActivityWithMenu {
         // TODO add link pickers feature
         //prefs.edit().putBoolean("start_sensor_link_pickers", linkPickers.isChecked()).apply();
 
+       LibreAlarmReceiver.clearSensorStats();
+
         CollectionServiceStarter.newStart(getApplicationContext());
         Intent intent;
         if(prefs.getBoolean("store_sensor_location",true)) {

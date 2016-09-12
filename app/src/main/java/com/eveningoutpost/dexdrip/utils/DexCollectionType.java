@@ -94,6 +94,8 @@ public enum DexCollectionType {
 
     public static boolean hasLibre() { return usesLibre.contains(getDexCollectionType()); }
 
+    public static boolean hasLibre(DexCollectionType t) { return usesLibre.contains(t); }
+
     public static boolean hasBattery() { return usesBattery.contains(getDexCollectionType()); }
 
     public static boolean hasSensor() {

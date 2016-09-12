@@ -1194,8 +1194,8 @@ public class BgGraphBuilder {
                 }
 
                 if (d)
-                    Log.i(TAG, "Predictive Bolus Wizard suggestion: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
-               if (Home.getPreferencesBooleanDefaultFalse("show_bwp")) {
+                    Log.i(TAG, "Predictive BWP: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
+               if ((low_occurs_at >0) && (Home.getPreferencesBooleanDefaultFalse("show_bwp"))) {
                    if (evaluation[0] > Profile.minimum_carb_recommendation) {
                        PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));
                        iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));

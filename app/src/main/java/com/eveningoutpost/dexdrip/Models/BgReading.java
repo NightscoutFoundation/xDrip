@@ -351,6 +351,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp) {
+        return create(raw_data, filtered_data, context, timestamp, false);
+    }
+
+    public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp, boolean quick) {
         BgReading bgReading = new BgReading();
         Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
@@ -418,9 +422,13 @@ public class BgReading extends Model implements ShareUploadableBg {
             }
 
             bgReading.save();
-            bgReading.perform_calculations();
-            context.startService(new Intent(context, Notifications.class));
-            BgSendQueue.handleNewBgReading(bgReading, "create", context);
+
+            // used when we are not fast inserting data
+            if (!quick) {
+                bgReading.perform_calculations();
+                context.startService(new Intent(context, Notifications.class));
+                BgSendQueue.handleNewBgReading(bgReading, "create", context);
+            }
         }
 
         Log.i("BG GSON: ", bgReading.toS());

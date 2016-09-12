@@ -27,7 +27,7 @@ import java.util.Date;
 public class MissedReadingService extends IntentService {
     int otherAlertSnooze;
     private final static String TAG = MissedReadingService.class.getSimpleName();
-
+    private static int aggressive_backoff_timer = 120;
     public MissedReadingService() {
         super("MissedReadingService");
     }
@@ -55,9 +55,12 @@ public class MissedReadingService extends IntentService {
 
         if (prefs.getBoolean("aggressive_service_restart", false) || DexCollectionType.isFlakey()) {
             if (!BgReading.last_within_millis(stale_millis)) {
-                if (JoH.ratelimit("aggressive-restart", 120)) {
-                    Log.e(TAG, "Aggressively restarting collector service due to lack of reception");
+                if (JoH.ratelimit("aggressive-restart", aggressive_backoff_timer)) {
+                    Log.e(TAG, "Aggressively restarting collector service due to lack of reception: backoff: "+aggressive_backoff_timer);
+                    if (aggressive_backoff_timer < 1200) aggressive_backoff_timer+=60;
                     CollectionServiceStarter.restartCollectionService(context);
+                } else {
+                    aggressive_backoff_timer = 120; // reset
                 }
             }
         }

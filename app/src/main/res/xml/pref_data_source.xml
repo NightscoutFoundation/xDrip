@@ -12,6 +12,35 @@
             android:key="dex_collection_method"
             android:summary="How are you going to receive data from your Dexcom/Transmitter?"
             android:title="@string/hardware_data_source" />
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:icon="@drawable/ic_nfc_grey600_48dp"
+            android:key="xdrip_plus_nfc_settings"
+            android:summary="Options for scanning NFC based sensors with the phone handset"
+            android:title="NFC Scan features">
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="use_nfc_scan"
+                android:summary="Allow sensors to be scanned when app is open. Historic data will be back-filled. Highly experiemental! Beware this can maybe break a sensor. Test phone compatibility with an almost expired sensor first. You have been warned!"
+                android:title="Use NFC feature" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="use_nfc_scan"
+                android:key="nfc_scan_homescreen"
+                android:summaryOff="NFC scanning will only occur when xDrip+ app is visible"
+                android:summaryOn="NFC scanning will also work from your app launcher screen"
+                android:title="Scan when not in xDrip+" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="use_nfc_scan"
+                android:key="nfc_scan_vibrate"
+                android:summary="Vibrate to indicate scanning status" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="engineering_mode"
+                android:key="nfc_scan_beep"
+                android:summary="Beep when scanning within xDrip+ app" />
+        </PreferenceScreen>
+
         <EditTextPreference
             android:defaultValue="SM00000000"
             android:key="share_key"

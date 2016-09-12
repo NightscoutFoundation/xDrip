@@ -71,7 +71,7 @@
                 android:paddingTop="0dp"
                 android:textSize="50sp"
                 android:text=""
-                android:layout_marginTop="-11dp"
+                android:layout_marginTop="-10dp"
                 android:layout_marginBottom="1dp" />
 
             <TextView
@@ -335,6 +335,20 @@
                 android:layout_marginLeft="10dp"
                 android:layout_below="@+id/extraStatusLine"
                 android:layout_toEndOf="@+id/textBridgeBattery" />
+
+            <TextView
+                android:id="@+id/libstatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:inputType="none"
+                android:text="Sensor Age"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textSize="12sp"
+                android:textStyle="normal"
+                android:layout_marginLeft="10dp"
+                android:layout_below="@+id/extraStatusLine"
+                android:layout_toEndOf="@+id/parakeetbattery" />
 
             <ImageButton
                 android:layout_width="wrap_content"

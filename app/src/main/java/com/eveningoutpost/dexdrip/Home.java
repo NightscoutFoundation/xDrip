@@ -39,6 +39,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -123,6 +124,7 @@ public class Home extends ActivityWithMenu {
     public static String menu_name = "Home Screen";
     public static boolean activityVisible = false;
     public static boolean invalidateMenu = false;
+    public static boolean blockTouches = false;
     private static boolean is_follower = false;
     private static boolean is_follower_set = false;
     private static boolean is_holo = true;
@@ -165,6 +167,7 @@ public class Home extends ActivityWithMenu {
     private PreviewLineChartView previewChart;
     private TextView dexbridgeBattery;
     private TextView parakeetBattery;
+    private TextView sensorAge;
     private TextView currentBgValueText;
     private TextView notificationText;
     private TextView extraStatusLineText;
@@ -238,12 +241,14 @@ public class Home extends ActivityWithMenu {
         //findViewById(R.id.home_layout_holder).setBackgroundColor(getCol(X.color_home_chart_background));
         this.dexbridgeBattery = (TextView) findViewById(R.id.textBridgeBattery);
         this.parakeetBattery = (TextView) findViewById(R.id.parakeetbattery);
+        this.sensorAge = (TextView) findViewById(R.id.libstatus);
         this.extraStatusLineText = (TextView) findViewById(R.id.extraStatusLine);
         this.currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
 
         extraStatusLineText.setText("");
         dexbridgeBattery.setText("");
         parakeetBattery.setText("");
+        sensorAge.setText("");
 
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             this.currentBgValueText.setTextSize(100);
@@ -849,6 +854,7 @@ public class Home extends ActivityWithMenu {
             staticRefreshBGCharts();
         } else if (allWords.contentEquals("delete all glucose data")) {
             deleteAllBG(null);
+            LibreAlarmReceiver.clearSensorStats();
         }
 
         if (allWords.contentEquals("clear battery warning")) {
@@ -1160,6 +1166,13 @@ public class Home extends ActivityWithMenu {
                 recognitionRunning = false;
                 break;
             }
+            case NFCReaderX.REQ_CODE_NFC_TAG_FOUND:
+            {
+                if (NFCReaderX.useNFC()) {
+                    NFCReaderX nfcReader = new NFCReaderX();
+                    nfcReader.tagFound(this, data);
+                }
+            }
 
         }
     }
@@ -1288,6 +1301,12 @@ public class Home extends ActivityWithMenu {
             }
         }
 
+        if (NFCReaderX.useNFC()) {
+            NFCReaderX.doNFC(this);
+        } else {
+            NFCReaderX.disableNFC(this);
+        }
+
         if (get_follower() || get_master()) {
           GcmActivity.checkSync(this);
         }
@@ -1401,6 +1420,7 @@ public class Home extends ActivityWithMenu {
     public void onPause() {
         activityVisible = false;
         super.onPause();
+        NFCReaderX.stopNFC(this);
         if (_broadcastReceiver != null) {
             try {
                 unregisterReceiver(_broadcastReceiver);
@@ -1743,6 +1763,22 @@ public class Home extends ActivityWithMenu {
             parakeetBattery.setVisibility(View.INVISIBLE);
         }
 
+        final int sensor_age = prefs.getInt("nfc_sensor_age", 0);
+        if ((sensor_age > 0) && (DexCollectionType.hasLibre())) {
+            sensorAge.setText("Age: " + JoH.qs(((double) sensor_age) / 1440, 1) + "d"+(Home.getPreferencesBooleanDefaultFalse("nfc_age_problem") ? " \u26A0\u26A0\u26A0" : ""));
+            sensorAge.setVisibility(View.VISIBLE);
+            if (sensor_age < 1440) {
+                sensorAge.setTextColor(Color.YELLOW);
+            } else if (sensor_age < (1440 * 12)) {
+                sensorAge.setTextColor(Color.GREEN);
+            } else {
+                sensorAge.setTextColor(Color.RED);
+            }
+        } else {
+            sensorAge.setVisibility(View.GONE);
+        }
+        if (blockTouches) { sensorAge.setText("SCANNING.. DISPLAY LOCKED!"); sensorAge.setVisibility(View.VISIBLE); sensorAge.setTextColor(Color.GREEN); }
+
         if ((currentBgValueText.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) > 0) {
             currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
             dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
@@ -1915,7 +1951,7 @@ public class Home extends ActivityWithMenu {
         }
         int minutes = (int) (System.currentTimeMillis() - lastBgReading.timestamp) / (60 * 1000);
 
-        if (notificationText.length()>0) notificationText.append("\n");
+        if ((!small_width) || (notificationText.length()>0)) notificationText.append("\n");
         if (!small_width) {
             notificationText.append(minutes + ((minutes == 1) ? getString(R.string.space_minute_ago) : getString(R.string.space_minutes_ago)));
         } else {
@@ -1969,6 +2005,12 @@ public class Home extends ActivityWithMenu {
             notificationText.append("\n");
         }
         notificationText.append(display_delta);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev){
+        if (blockTouches) return true;
+        return super.dispatchTouchEvent(ev);
     }
 
     @Override
@@ -2457,7 +2499,14 @@ public class Home extends ActivityWithMenu {
                 .show();
     }
 
-
+    public static void staticBlockUI(Activity context, boolean state) {
+        blockTouches = state;
+        if (state) {
+            JoH.lockOrientation(context);
+        } else {
+            JoH.releaseOrientation(context);
+        }
+    }
 
     // classes
     private class ChartViewPortListener implements ViewportChangeListener {
