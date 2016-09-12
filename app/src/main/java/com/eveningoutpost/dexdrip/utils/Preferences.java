@@ -894,8 +894,8 @@ public class Preferences extends PreferenceActivity {
                             builder.setPositiveButton("I AM SURE", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
-                                    preference.getEditor().putBoolean("use_nfc_scan", true).commit();
                                     ((SwitchPreference)preference).setChecked(true);
+                                    preference.getEditor().putBoolean("use_nfc_scan", true).apply();
                                     NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), (boolean) newValue && prefs.getBoolean("nfc_scan_homescreen", false));
                                 }
                             });

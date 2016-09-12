@@ -228,6 +228,7 @@ public class NFCReaderX {
                         @Override
                         public void run() {
                             LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult));
+                            Home.staticRefreshBGCharts();
                         }
                     }.start();
                 } else {
