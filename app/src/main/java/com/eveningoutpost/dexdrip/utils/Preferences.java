@@ -954,11 +954,11 @@ public class Preferences extends PreferenceActivity {
                 collectionCategory.removePreference(reBond);
                 collectionCategory.removePreference(runOnMain);
             }
-
-            if (!this.prefs.getBoolean("engineering_mode",false)) {
+            final boolean engineering_mode = this.prefs.getBoolean("engineering_mode",false);
+            if (!engineering_mode) {
                 getPreferenceScreen().removePreference(motionScreen);
-
-            } else {
+            }
+            if (engineering_mode || this.prefs.getString("update_channel","").matches("alpha|nightly")) {
                 ListPreference update_channel = (ListPreference)findPreference("update_channel");
                 update_channel.setEntryValues(getResources().getStringArray(R.array.UpdateChannelE));
                 update_channel.setEntries(getResources().getStringArray(R.array.UpdateChannelDetailE));

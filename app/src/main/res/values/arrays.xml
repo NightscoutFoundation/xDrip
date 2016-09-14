@@ -77,7 +77,7 @@
         <item>Stable - tried and tested versions</item>
         <item>Beta - new features but not fully tested </item>
         <item>Alpha - versions for early testing</item>
-        <item>Nightly - untested raw nightly code</item>
+        <item>Nightly - untested raw code - experts only!</item>
     </string-array>
 
     <string-array name="bgUnitEntries">
