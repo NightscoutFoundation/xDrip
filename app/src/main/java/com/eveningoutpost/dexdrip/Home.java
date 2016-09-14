@@ -265,11 +265,11 @@ public class Home extends ActivityWithMenu {
             if (!pm.isIgnoringBatteryOptimizations(packageName) &&
                     !prefs.getBoolean("requested_ignore_battery_optimizations", false)) {
                 Log.d(TAG, "Requesting ignore battery optimization");
-
-                prefs.edit().putBoolean("requested_ignore_battery_optimizations", true).apply();
+               // prefs.edit().putBoolean("requested_ignore_battery_optimizations", true).apply();
                 intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
                 intent.setData(Uri.parse("package:" + packageName));
                 startActivity(intent);
+                JoH.static_toast_long("Select YES for best performance!");
             }
         }
 
