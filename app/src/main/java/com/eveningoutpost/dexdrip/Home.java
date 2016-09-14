@@ -263,7 +263,7 @@ public class Home extends ActivityWithMenu {
             Log.d(TAG, "Maybe ignoring battery optimization");
             PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
             if (!pm.isIgnoringBatteryOptimizations(packageName) &&
-                    !prefs.getBoolean("requested_ignore_battery_optimizations", false)) {
+                    !prefs.getBoolean("requested_ignore_battery_optimizations_new", false)) {
                 Log.d(TAG, "Requesting ignore battery optimization");
                // prefs.edit().putBoolean("requested_ignore_battery_optimizations", true).apply();
                 intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);

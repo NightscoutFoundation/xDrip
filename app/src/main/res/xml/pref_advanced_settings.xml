@@ -168,7 +168,7 @@
                 android:title="Speak Readings Shortcut" />
             <CheckBoxPreference
                 android:defaultValue="false"
-                android:key="requested_ignore_battery_optimizations"
+                android:key="requested_ignore_battery_optimizations_new"
                 android:summaryOff="On Android 6+ ensure battery optimization is switched off. Recommended"
                 android:summaryOn="Don't keep asking about battery optimization. Not recommended"
                 android:title="Battery Optimization prompt" />
