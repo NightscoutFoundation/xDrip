@@ -256,11 +256,11 @@ public class NFCReaderX {
 
                 try {
                     Tag tag = params[0];
-                    try {
-                        Thread.sleep(50);
-                    } catch (InterruptedException e) {
-                        //
-                    }
+                    // try {
+                    //     Thread.sleep(50);
+                    //  } catch (InterruptedException e) {
+                    //      //
+                    //  }
                     NfcV nfcvTag = NfcV.get(tag);
                     if (d) Log.d(TAG, "Attempting to read tag data");
                     try {
@@ -273,6 +273,33 @@ public class NFCReaderX {
                             nfcvTag.connect();
                         }
                         final byte[] uid = tag.getId();
+
+                        try {
+                            final byte[] diag = JoH.hexStringToByteArray(Home.getPreferencesStringDefaultBlank("nfc_test_diagnostic"));
+                            if ((diag != null) && (diag.length > 0)) {
+                                Log.d(TAG, "Diagnostic ->: " + HexDump.dumpHexString(diag, 0, diag.length).trim() + " len: " + diag.length);
+                                Long time = System.currentTimeMillis();
+                                byte[] replyBlock;
+                                while (true) {
+                                    try {
+                                        replyBlock = nfcvTag.transceive(diag);
+                                        break;
+                                    } catch (IOException e) {
+                                        if ((System.currentTimeMillis() > time + 2000)) {
+                                            Log.e(TAG, "tag diagnostic read timeout");
+                                            JoH.static_toast_short("NFC diag timeout");
+                                            vibrate(context, 3);
+                                            return null;
+                                        }
+                                        Thread.sleep(100);
+                                    }
+                                }
+                                Log.d(TAG, "Diagnostic <-: " + HexDump.dumpHexString(replyBlock, 0, replyBlock.length).trim() + " len: " + replyBlock.length);
+                            }
+                        } catch (Exception e) {
+                            Log.e(TAG, "Exception in NFC Diagnostic: " + e);
+                            Home.setPreferencesString("nfc_test_diagnostic", "");
+                        }
 
                         final boolean multiblock = Home.getPreferencesBoolean("use_nfc_multiblock", true);
                         final boolean addressed = !Home.getPreferencesBoolean("use_nfc_any_tag", true);
@@ -307,8 +334,10 @@ public class NFCReaderX {
                                     }
                                 }
 
-                                if (d) Log.d(TAG, "Received multiblock reply, offset: " + i + " sized: " + replyBlock.length);
-                                if (d) Log.d(TAG, HexDump.dumpHexString(replyBlock, 0, replyBlock.length));
+                                if (d)
+                                    Log.d(TAG, "Received multiblock reply, offset: " + i + " sized: " + replyBlock.length);
+                                if (d)
+                                    Log.d(TAG, HexDump.dumpHexString(replyBlock, 0, replyBlock.length));
                                 if (replyBlock.length != correct_reply_size) {
                                     Log.e(TAG, "Incorrect block size: " + replyBlock.length + " vs " + correct_reply_size);
                                     JoH.static_toast_short("NFC invalid data");
@@ -349,7 +378,8 @@ public class NFCReaderX {
                                         Thread.sleep(100);
                                     }
                                 }
-                                if (d) Log.d(TAG, HexDump.dumpHexString(oneBlock, 0, oneBlock.length));
+                                if (d)
+                                    Log.d(TAG, HexDump.dumpHexString(oneBlock, 0, oneBlock.length));
                                 if (oneBlock.length != correct_reply_size) {
                                     Log.e(TAG, "Incorrect block size: " + oneBlock.length + " vs " + correct_reply_size);
                                     JoH.static_toast_short("NFC invalid data");

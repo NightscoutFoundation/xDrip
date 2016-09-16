@@ -49,6 +49,11 @@
                 android:dependency="use_nfc_scan"
                 android:key="use_nfc_any_tag"
                 android:summary="Use any-tag optimized reading method" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:dependency="engineering_mode"
+                android:key="nfc_test_diagnostic"
+                android:summary="Low level diagnostic/prototype value" />
 
         </PreferenceScreen>
 

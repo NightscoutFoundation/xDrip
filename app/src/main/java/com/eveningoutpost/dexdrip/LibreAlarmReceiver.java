@@ -44,14 +44,12 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     private static final Object lock = new Object();
     private static long sensorAge = 0;
 
-    public static void clearSensorStats()
-    {
-        Home.setPreferencesInt("nfc_sensor_age",0); // reset for nfc sensors
-        sensorAge=0;
+    public static void clearSensorStats() {
+        Home.setPreferencesInt("nfc_sensor_age", 0); // reset for nfc sensors
+        sensorAge = 0;
     }
 
-    private static double convert_for_dex(int lib_raw_value)
-    {
+    private static double convert_for_dex(int lib_raw_value) {
         return (lib_raw_value * 117.64705); // to match (raw/8.5)*1000
     }
 
@@ -62,21 +60,22 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
         } else {
             converted = 12; // RF error message - might be something else like unconstrained spline
         }
-        if (gd.realDate>0) {
-       //   Log.d(TAG, "Raw debug: " + JoH.dateTimeText(gd.realDate) + " raw: " + gd.glucoseLevelRaw + " converted: " + converted);
-            if ((newest_cmp == -1) || (oldest_cmp == -1) || (gd.realDate<oldest_cmp) || (gd.realDate>newest_cmp)) {
+        if (gd.realDate > 0) {
+            //   Log.d(TAG, "Raw debug: " + JoH.dateTimeText(gd.realDate) + " raw: " + gd.glucoseLevelRaw + " converted: " + converted);
+            if ((newest_cmp == -1) || (oldest_cmp == -1) || (gd.realDate < oldest_cmp) || (gd.realDate > newest_cmp)) {
                 if (BgReading.readingNearTimeStamp(gd.realDate) == null) {
                     BgReading.create(converted, converted, xdrip.getAppContext(), gd.realDate, quick); // quick lite insert
                     if ((gd.realDate < oldest) || (oldest == -1)) oldest = gd.realDate;
                     if ((gd.realDate > newest) || (newest == -1)) newest = gd.realDate;
                 } else {
-                    if (d) Log.d(TAG, "Ignoring duplicate timestamp for: " + JoH.dateTimeText(gd.realDate));
+                    if (d)
+                        Log.d(TAG, "Ignoring duplicate timestamp for: " + JoH.dateTimeText(gd.realDate));
                 }
             } else {
-                Log.d(TAG,"Already processed from date range: "+JoH.dateTimeText(gd.realDate));
+                Log.d(TAG, "Already processed from date range: " + JoH.dateTimeText(gd.realDate));
             }
         } else {
-            Log.e(TAG,"Fed a zero or negative date");
+            Log.e(TAG, "Fed a zero or negative date");
         }
     }
 
@@ -150,40 +149,39 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                         JoH.releaseWakeLock(wl);
                     }
                 } // lock
-            }}.start();
+            }
+        }.start();
     }
 
-    public static void processReadingDataTransferObject(ReadingData.TransferObject object)
-    {
+    public static void processReadingDataTransferObject(ReadingData.TransferObject object) {
         // insert any recent data we can
         final List<GlucoseData> mTrend = object.data.trend;
         if (mTrend != null) {
             Collections.sort(mTrend);
-            final long thisSensorAge = mTrend.get(mTrend.size()-1).sensorTime;
-            sensorAge=Home.getPreferencesInt("nfc_sensor_age",0);
-            if (thisSensorAge>sensorAge) {
-                sensorAge=thisSensorAge;
-                Home.setPreferencesInt("nfc_sensor_age",(int)sensorAge);
-                Home.setPreferencesBoolean("nfc_age_problem",false);
-            Log.d(TAG,"Sensor age advanced to: "+thisSensorAge);
-            }
-            else if (thisSensorAge == sensorAge){
-                Log.wtf(TAG,"Sensor age has not advanced: "+sensorAge);
+            final long thisSensorAge = mTrend.get(mTrend.size() - 1).sensorTime;
+            sensorAge = Home.getPreferencesInt("nfc_sensor_age", 0);
+            if (thisSensorAge > sensorAge) {
+                sensorAge = thisSensorAge;
+                Home.setPreferencesInt("nfc_sensor_age", (int) sensorAge);
+                Home.setPreferencesBoolean("nfc_age_problem", false);
+                Log.d(TAG, "Sensor age advanced to: " + thisSensorAge);
+            } else if (thisSensorAge == sensorAge) {
+                Log.wtf(TAG, "Sensor age has not advanced: " + sensorAge);
                 JoH.static_toast_long("Sensor clock has not advanced!");
-                Home.setPreferencesBoolean("nfc_age_problem",true);
+                Home.setPreferencesBoolean("nfc_age_problem", true);
                 return; // do not try to insert again
             } else {
-                Log.wtf(TAG,"Sensor age has gone backwards!!! "+sensorAge);
+                Log.wtf(TAG, "Sensor age has gone backwards!!! " + sensorAge);
                 JoH.static_toast_long("Sensor age has gone backwards!!");
-                sensorAge=thisSensorAge;
-                Home.setPreferencesInt("nfc_sensor_age",(int)sensorAge);
-                Home.setPreferencesBoolean("nfc_age_problem",true);
+                sensorAge = thisSensorAge;
+                Home.setPreferencesInt("nfc_sensor_age", (int) sensorAge);
+                Home.setPreferencesBoolean("nfc_age_problem", true);
             }
             for (GlucoseData gd : mTrend) {
-                Log.d(TAG,"DEBUG: sensor time: "+gd.sensorTime);
+                Log.d(TAG, "DEBUG: sensor time: " + gd.sensorTime);
 
                 if (use_raw) {
-                    createBGfromGD(gd,false); // not quick for recent
+                    createBGfromGD(gd, false); // not quick for recent
                 } else {
                     BgReading.bgReadingInsertFromInt(gd.glucoseLevel, gd.realDate, false);
                 }
@@ -202,7 +200,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                 polyxList.add((double) gd.realDate);
                 if (use_raw) {
                     polyyList.add((double) gd.glucoseLevelRaw);
-                    createBGfromGD(gd,true);
+                    createBGfromGD(gd, true);
                 } else {
                     polyyList.add((double) gd.glucoseLevel);
                     // add in the actual value
@@ -214,21 +212,25 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
             //ConstrainedSplineInterpolator splineInterp = new ConstrainedSplineInterpolator();
             SplineInterpolator splineInterp = new SplineInterpolator();
 
-            PolynomialSplineFunction polySplineF = splineInterp.interpolate(
-                    Forecast.PolyTrendLine.toPrimitiveFromList(polyxList),
-                    Forecast.PolyTrendLine.toPrimitiveFromList(polyyList));
+            try {
+                PolynomialSplineFunction polySplineF = splineInterp.interpolate(
+                        Forecast.PolyTrendLine.toPrimitiveFromList(polyxList),
+                        Forecast.PolyTrendLine.toPrimitiveFromList(polyyList));
 
-            final long startTime = mHistory.get(0).realDate;
-            final long endTime = mHistory.get(mHistory.size() - 1).realDate;
+                final long startTime = mHistory.get(0).realDate;
+                final long endTime = mHistory.get(mHistory.size() - 1).realDate;
 
-            for (long ptime = startTime; ptime <= endTime; ptime += 300000) {
-                if (d)
-                    Log.d(TAG, "Spline: " + JoH.dateTimeText((long) ptime) + " value: " + (int) polySplineF.value(ptime));
-                if (use_raw) {
-                    createBGfromGD(new GlucoseData((int) polySplineF.value(ptime), ptime),true);
-                } else {
-                    BgReading.bgReadingInsertFromInt((int) polySplineF.value(ptime), ptime, false);
+                for (long ptime = startTime; ptime <= endTime; ptime += 300000) {
+                    if (d)
+                        Log.d(TAG, "Spline: " + JoH.dateTimeText((long) ptime) + " value: " + (int) polySplineF.value(ptime));
+                    if (use_raw) {
+                        createBGfromGD(new GlucoseData((int) polySplineF.value(ptime), ptime), true);
+                    } else {
+                        BgReading.bgReadingInsertFromInt((int) polySplineF.value(ptime), ptime, false);
+                    }
                 }
+            } catch (org.apache.commons.math3.exception.NonMonotonicSequenceException e) {
+                Log.e(TAG, "NonMonotonicSequenceException: " + e);
             }
 
         } else {

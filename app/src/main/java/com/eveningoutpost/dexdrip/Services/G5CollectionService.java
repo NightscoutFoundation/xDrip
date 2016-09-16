@@ -675,12 +675,17 @@ public class G5CollectionService extends Service {
         if (alwaysUnbond()) {
             forgetDevice();
         }
-
-        android.util.Log.i(TAG, "Start Auth Process(fullAuthenticate)");
-        authRequest = new AuthRequestTxMessage();
-        authCharacteristic.setValue(authRequest.byteSequence);
-        android.util.Log.i(TAG, authRequest.byteSequence.toString());
-        mGatt.writeCharacteristic(authCharacteristic);
+        try {
+            android.util.Log.i(TAG, "Start Auth Process(fullAuthenticate)");
+            authRequest = new AuthRequestTxMessage();
+            if (authCharacteristic != null) {
+                authCharacteristic.setValue(authRequest.byteSequence);
+                android.util.Log.i(TAG, authRequest.byteSequence.toString());
+                mGatt.writeCharacteristic(authCharacteristic);
+            }
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Got null pointer in fullAuthenticate: " + e);
+        }
     }
 
     public synchronized void authenticate() {

@@ -730,6 +730,7 @@ public class Preferences extends PreferenceActivity {
             final Preference CustomSyncKey = findPreference("custom_sync_key");
             final PreferenceCategory collectionCategory = (PreferenceCategory) findPreference("collection_category");
             final PreferenceScreen motionScreen = (PreferenceScreen) findPreference("xdrip_plus_motion_settings");
+            final PreferenceScreen nfcScreen = (PreferenceScreen) findPreference("xdrip_plus_nfc_settings");
             final PreferenceCategory otherCategory = (PreferenceCategory) findPreference("other_category");
             final PreferenceScreen calibrationAlertsScreen = (PreferenceScreen) findPreference("calibration_alerts_screen");
             final PreferenceCategory alertsCategory = (PreferenceCategory) findPreference("alerts_category");
@@ -957,6 +958,7 @@ public class Preferences extends PreferenceActivity {
             final boolean engineering_mode = this.prefs.getBoolean("engineering_mode",false);
             if (!engineering_mode) {
                 getPreferenceScreen().removePreference(motionScreen);
+                nfcScreen.removePreference(findPreference("nfc_test_diagnostic"));
             }
             if (engineering_mode || this.prefs.getString("update_channel","").matches("alpha|nightly")) {
                 ListPreference update_channel = (ListPreference)findPreference("update_channel");
