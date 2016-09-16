@@ -39,6 +39,17 @@
                 android:dependency="engineering_mode"
                 android:key="nfc_scan_beep"
                 android:summary="Beep when scanning within xDrip+ app" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="use_nfc_scan"
+                android:key="use_nfc_multiblock"
+                android:summary="Use faster multi-block reading method" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="use_nfc_scan"
+                android:key="use_nfc_any_tag"
+                android:summary="Use any-tag optimized reading method" />
+
         </PreferenceScreen>
 
         <EditTextPreference
