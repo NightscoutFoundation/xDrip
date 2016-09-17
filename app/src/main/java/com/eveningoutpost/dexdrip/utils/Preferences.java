@@ -918,8 +918,17 @@ public class Preferences extends PreferenceActivity {
                 Log.d(TAG, "Nullpointer looking for nfc_scan");
             }
 
+            final boolean engineering_mode = this.prefs.getBoolean("engineering_mode",false);
+
             if (!DexCollectionType.hasLibre(collectionType)) {
                 collectionCategory.removePreference(nfcSettings);
+            } else {
+                if (!engineering_mode)
+                    try {
+                        nfcScreen.removePreference(findPreference("nfc_test_diagnostic"));
+                    } catch (NullPointerException e) {
+                        //
+                    }
             }
 
 
@@ -955,10 +964,9 @@ public class Preferences extends PreferenceActivity {
                 collectionCategory.removePreference(reBond);
                 collectionCategory.removePreference(runOnMain);
             }
-            final boolean engineering_mode = this.prefs.getBoolean("engineering_mode",false);
+
             if (!engineering_mode) {
                 getPreferenceScreen().removePreference(motionScreen);
-                nfcScreen.removePreference(findPreference("nfc_test_diagnostic"));
             }
             if (engineering_mode || this.prefs.getString("update_channel","").matches("alpha|nightly")) {
                 ListPreference update_channel = (ListPreference)findPreference("update_channel");
@@ -1209,10 +1217,15 @@ public class Preferences extends PreferenceActivity {
                         AllPrefsFragment.this.prefs.edit().putBoolean("calibration_notifications", false).apply();
                     }
 
-                    if (DexCollectionType.hasLibre(collectionType))
-                    {
+                    if (DexCollectionType.hasLibre(collectionType)) {
                         collectionCategory.addPreference(nfcSettings);
-                        NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), prefs.getBoolean("nfc_scan_homescreen",false) && prefs.getBoolean("use_nfc_scan",false));
+                        NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), prefs.getBoolean("nfc_scan_homescreen", false) && prefs.getBoolean("use_nfc_scan", false));
+                        if (!engineering_mode)
+                            try {
+                                nfcScreen.removePreference(findPreference("nfc_test_diagnostic"));
+                            } catch (NullPointerException e) {
+                                //
+                            }
                     } else {
                         collectionCategory.removePreference(nfcSettings);
                         NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), false); // always disable
