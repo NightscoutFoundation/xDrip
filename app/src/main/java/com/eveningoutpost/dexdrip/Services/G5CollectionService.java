@@ -378,10 +378,14 @@ public class G5CollectionService extends Service {
     private synchronized void stopLogic() {
         try {
             Log.e(TAG, "stopScan");
-            mLEScanner.stopScan(mScanCallback);
+            try {
+                mLEScanner.stopScan(mScanCallback);
+            } catch (NullPointerException | IllegalStateException e) {
+                Log.e(TAG, "Exception in stopLogic: " + e);
+            }
             isScanning = false;
         } catch (IllegalStateException is) {
-
+            //
         }
     }
 
