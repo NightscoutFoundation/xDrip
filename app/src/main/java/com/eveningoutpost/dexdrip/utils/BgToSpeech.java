@@ -7,6 +7,9 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
+
+import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -88,11 +91,23 @@ public class BgToSpeech {
                 if (status == TextToSpeech.SUCCESS && tts != null) {
 
                     //try local language
+
                     Locale loc = Locale.getDefault();
-                    Log.d(TAG, "status == TextToSpeech.SUCCESS + loc" + loc);
+                    try {
+                        final String tts_language = Home.getPreferencesStringDefaultBlank("speak_readings_custom_language").trim();
+                        if (tts_language.length() > 1) {
+                            final String[] lang_components = tts_language.split("_");
+                            String country = (lang_components.length > 1) ? lang_components[1] : "";
+                            loc = new Locale(lang_components[0], country, "");
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Exception trying to use custom language: " + e);
+                    }
+
+                    Log.d(TAG, "status == TextToSpeech.SUCCESS + loc " + loc);
                     int result;
                     try {
-                        result = tts.setLanguage(Locale.getDefault());
+                        result = tts.setLanguage(loc);
                     } catch (IllegalArgumentException e) {
                         // can end up here with Locales like "OS"
                         Log.e(TAG, "Got TTS set language error: " + e.toString());
@@ -141,6 +156,17 @@ public class BgToSpeech {
                 Log.d(TAG, "successfully spoken");
             } else {
                 Log.d(TAG, "error " + result + ". trying again with new tts-object.");
+                JoH.runOnUiThreadDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            tts.speak(calculateText(value, prefs), TextToSpeech.QUEUE_FLUSH, null);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Got exception TTS delayed: " + e);
+                        }
+                    }
+                }, 2000);
+
             }
         } catch (IllegalStateException e) {
             Log.e(TAG, "IllegalStateException in TTS: " + e.toString());
@@ -150,8 +176,8 @@ public class BgToSpeech {
     }
 
     private String calculateText(double value, SharedPreferences prefs) {
-        boolean doMgdl = (prefs.getString("units", "mgdl").equals("mgdl"));
-
+        final boolean doMgdl = (prefs.getString("units", "mgdl").equals("mgdl"));
+        final boolean bg_to_speech_repeat_twice = (prefs.getBoolean("bg_to_speech_repeat_twice", false));
         String text = "";
 
         DecimalFormat df = new DecimalFormat("#");
@@ -170,6 +196,7 @@ public class BgToSpeech {
                         // in case the text has a comma in current locale but TTS defaults to English
                         text = text.replace(",", ".");
                     }
+                    if (bg_to_speech_repeat_twice) text = text + " ... ... ... " + text;
                 } catch (NullPointerException e) {
                     Log.e(TAG, "Null pointer for TTS in calculateText");
                 }

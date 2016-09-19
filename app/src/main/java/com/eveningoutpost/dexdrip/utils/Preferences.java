@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -1492,7 +1493,7 @@ public class Preferences extends PreferenceActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     if ((Boolean) newValue) {
-                        prefs.edit().putBoolean("bg_to_speech",true).commit(); // early write before we exit method
+                        prefs.edit().putBoolean("bg_to_speech", true).commit(); // early write before we exit method
                         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
                         alertDialog.setTitle("Install Text-To-Speech Data?");
                         alertDialog.setMessage("Install Text-To-Speech Data?\n(After installation of languages you might have to press \"Restart Collector\" in System Status.)");
@@ -1506,7 +1507,15 @@ public class Preferences extends PreferenceActivity {
                         alertDialog.setNegativeButton(R.string.no, null);
                         AlertDialog alert = alertDialog.create();
                         alert.show();
-                        BgToSpeech.setupTTS(preference.getContext()); // try to initialize now
+                        try {
+                            BgToSpeech.setupTTS(preference.getContext()); // try to initialize now
+                            BgReading bgReading = BgReading.last();
+                            if (bgReading != null) {
+                                BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp+1200000);
+                            }
+                        } catch (Exception e) {
+                            Log.e(TAG, "Got exception with TTS: " + e);
+                        }
                     } else {
                         BgToSpeech.tearDownTTS();
                     }
