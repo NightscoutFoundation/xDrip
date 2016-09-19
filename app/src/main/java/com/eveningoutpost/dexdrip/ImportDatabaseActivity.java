@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.FileUtils;
@@ -36,6 +38,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
     private Handler mHandler;
     private ArrayList<String> databaseNames;
     private ArrayList<File> databases;
+    private final static int MY_PERMISSIONS_REQUEST_STORAGE = 132;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +57,10 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
             sortDatabasesAlphabetically();
             showDatabasesInList();
         } else if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            JoH.static_toast_long("Need permission for saved files");
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    0);
+                    MY_PERMISSIONS_REQUEST_STORAGE);
         } else {
             postImportDB("\'xdrip\' is not a directory... aborting.");
         }
@@ -137,8 +141,9 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                 return pathname.getPath().endsWith(".sqlite");
             }
         });
-
-        Collections.addAll(databases, files);
+        if ((databases != null) && (files != null)) {
+            Collections.addAll(databases, files);
+        }
     }
 
     @Override
@@ -171,6 +176,18 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
     @Override
     public String getMenuName() {
         return menu_name;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MY_PERMISSIONS_REQUEST_STORAGE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                generateDBGui();
+            } else {
+                finish();
+            }
+        }
     }
 
     public int getDBVersion() {
