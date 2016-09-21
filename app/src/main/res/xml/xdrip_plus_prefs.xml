@@ -225,6 +225,11 @@
                 android:summary="@string/after_calibration_rewrite_history"
                 android:title="@string/rewrite_history" />
             <CheckBoxPreference
+                android:key="widget_range_lines"
+                android:title="Widget Range Lines"
+                android:summary="Show a high and low line on the widget."
+                android:defaultValue="false" />
+            <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="show_graph_grid_time"
                 android:summary="@string/grid_time_lines_visible"
