@@ -73,7 +73,7 @@ public class UpdateActivity extends AppCompatActivity {
         if (!prefs.getBoolean(autoUpdatePrefsName, true)) return;
         if (last_check_time == 0)
             last_check_time = (double) prefs.getLong(last_update_check_time, 0);
-        if (((JoH.ts() - last_check_time) > 86400000) || (debug)) {
+        if (((JoH.ts() - last_check_time) > 86300000) || (debug)) {
             last_check_time = JoH.ts();
             prefs.edit().putLong(last_update_check_time, (long) last_check_time).apply();
 
