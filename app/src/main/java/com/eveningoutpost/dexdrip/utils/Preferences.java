@@ -48,6 +48,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleClassicTrendWatchface;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleSnoozeControlApp;
+import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleTrendClayWatchFace;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleTrendWatchFace;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleWatchFace;
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
@@ -1016,7 +1017,7 @@ public class Preferences extends PreferenceActivity {
                 watchCategory.removePreference(pebbleSpecialText);
             }
 
-            if ((currentPebbleSync != 3) && (currentPebbleSync != 4)) {
+            if ((currentPebbleSync != 3) && (currentPebbleSync != 4) && (currentPebbleSync != 5)) {
                 watchCategory.removePreference(pebbleTrend);
                 watchCategory.removePreference(pebbleFilteredLine);
                 watchCategory.removePreference(pebbleTinyDots);
@@ -1088,7 +1089,7 @@ public class Preferences extends PreferenceActivity {
                         }
 
                         // Add New one
-                        if ((pebbleType == 3) || (pebbleType == 4)) {
+                        if ((pebbleType == 3) || (pebbleType == 4) || (pebbleType == 5)) {
                             watchCategory.addPreference(pebbleTrend);
                             watchCategory.addPreference(pebbleFilteredLine);
                             watchCategory.addPreference(pebbleTinyDots);
@@ -1389,6 +1390,9 @@ public class Preferences extends PreferenceActivity {
                     case 4:
                         builder.setMessage("Install Pebble Classic Trend Watchface?");
                         break;
+                    case 5:
+                        builder.setMessage("Install Pebble Clay Trend Watchface?");
+                        break;
                 }
 
 
@@ -1405,6 +1409,9 @@ public class Preferences extends PreferenceActivity {
                             break;
                         case 4:
                             context.startActivity(new Intent(context, InstallPebbleClassicTrendWatchface.class));
+                            break;
+                        case 5:
+                            context.startActivity(new Intent(context, InstallPebbleTrendClayWatchFace.class));
                             break;
                     }
 
@@ -1450,6 +1457,7 @@ public class Preferences extends PreferenceActivity {
             Log.d(TAG,"enablePebble called with: "+newValueInt+" "+enabled);
             if (pebbleType == 1) {
                 if (enabled && (newValueInt != 1)) {
+                    context.stopService(new Intent(context, PebbleWatchSync.class));
                     context.startService(new Intent(context, PebbleWatchSync.class));
                     Log.d(TAG,"Starting pebble service type: "+newValueInt);
                 }

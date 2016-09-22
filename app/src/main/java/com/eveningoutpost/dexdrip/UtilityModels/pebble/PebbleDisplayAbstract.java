@@ -14,6 +14,8 @@ import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
+import java.util.UUID;
+
 /**
  * Created by andy on 02/06/16.
  */
@@ -44,7 +46,13 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
     }
 
     public void receiveAppData(int transactionId, PebbleDictionary data) {
-        // default no implementation
+        // handle app incoming data
+        PebbleWatchSync.receiveAppData(transactionId, data);
+    }
+
+    public UUID watchfaceUUID()
+    {
+        return PebbleWatchSync.PEBBLEAPP_UUID;
     }
 
     @Override
@@ -137,7 +145,7 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
 
 
     public void sendDataToPebble(PebbleDictionary data) {
-        PebbleKit.sendDataToPebble(this.context, PebbleWatchSync.PEBBLEAPP_UUID, data);
+        PebbleKit.sendDataToPebble(this.context, watchfaceUUID(), data);
     }
 
 
@@ -158,6 +166,7 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
         }
 
     }
+
 
 
     public String getBgReading() {

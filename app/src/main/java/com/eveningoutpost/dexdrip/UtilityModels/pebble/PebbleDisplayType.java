@@ -8,6 +8,7 @@ public enum PebbleDisplayType {
     None,
     Standard,
     Trend,
-    TrendClassic;
+    TrendClassic,
+    TrendClay;
 
 }

@@ -131,6 +131,7 @@ public class InstallPebbleWatchFace extends AppCompatActivity {
 
         } catch (Exception e) {
             UserError.Log.e(getTag(), " Got exception: " + e.toString());
+            toast("Error: "+e.getLocalizedMessage());
         }
         return true;
     }
