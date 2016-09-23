@@ -25,6 +25,7 @@ import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.PredictionData;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.io.IOException;
@@ -340,10 +341,12 @@ public class NFCReaderX {
                                     Log.d(TAG, HexDump.dumpHexString(replyBlock, 0, replyBlock.length));
                                 if (replyBlock.length != correct_reply_size) {
                                     Log.e(TAG, "Incorrect block size: " + replyBlock.length + " vs " + correct_reply_size);
-                                    JoH.static_toast_short("NFC invalid data");
+                                    JoH.static_toast_short("NFC invalid data - try again");
                                     if (!addressed) {
-                                        Home.setPreferencesBoolean("use_nfc_any_tag", false);
-                                        JoH.static_toast_short("Turned off any-tag feature");
+                                        if (PersistentStore.incrementLong("nfc-address-failures") > 2) {
+                                            Home.setPreferencesBoolean("use_nfc_any_tag", false);
+                                            JoH.static_toast_short("Turned off any-tag feature");
+                                        }
                                     }
                                     vibrate(context, 3);
                                     return null;
@@ -395,6 +398,7 @@ public class NFCReaderX {
                         succeeded = true;
                         vibrate(context, 1);
                         JoH.static_toast_short("Scanned OK!");
+                        PersistentStore.setLongZeroIfSet("nfc-address-failures");
 
                     } catch (IOException e) {
                         JoH.static_toast_short("NFC IO Error");
@@ -447,7 +451,7 @@ public class NFCReaderX {
 
         int indexTrend = data[26] & 0xFF;
 
-        int indexHistory = data[27] & 0xFF;
+        int indexHistory = data[27] & 0xFF; // double check this bitmask? should be lower?
 
         final int sensorTime = 256 * (data[317] & 0xFF) + (data[316] & 0xFF);
 

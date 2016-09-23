@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -68,7 +69,7 @@ public class JoH {
 
     private static double benchmark_time = 0;
     private static Map<String, Double> benchmarks = new HashMap<String, Double>();
-    private static final Map<String, Double> rateLimits = new HashMap<String, Double>();
+    private static final Map<String, Long> rateLimits = new HashMap<String, Long>();
 
     // qs = quick string conversion of double for printing
     public static String qs(double x) {
@@ -293,27 +294,47 @@ public class JoH {
         }
     }
 
-    // return true if below rate limit
-    public static synchronized boolean ratelimit(String name, int seconds) {
+    // return true if below rate limit (persistent version)
+    public static synchronized boolean pratelimit(String name, int seconds) {
         // check if over limit
-        if ((rateLimits.containsKey(name)) && (JoH.ts() - rateLimits.get(name) < (seconds * 1000))) {
+        final long time_now = JoH.tsl();
+        final long rate_time;
+        if (!rateLimits.containsKey(name)) {
+            rate_time = PersistentStore.getLong(name); // 0 if undef
+        } else {
+            rate_time = rateLimits.get(name);
+        }
+        if ((rate_time > 0) && (time_now - rate_time) < (seconds * 1000)) {
             Log.d(TAG, name + " rate limited: " + seconds + " seconds");
             return false;
         }
         // not over limit
-        rateLimits.put(name, JoH.ts());
+        rateLimits.put(name, time_now);
+        PersistentStore.setLong(name, time_now);
+        return true;
+    }
+
+    // return true if below rate limit
+    public static synchronized boolean ratelimit(String name, int seconds) {
+        // check if over limit
+        if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (seconds * 1000))) {
+            Log.d(TAG, name + " rate limited: " + seconds + " seconds");
+            return false;
+        }
+        // not over limit
+        rateLimits.put(name, JoH.tsl());
         return true;
     }
 
     // return true if below rate limit
     public static synchronized boolean ratelimitmilli(String name, int milliseconds) {
         // check if over limit
-        if ((rateLimits.containsKey(name)) && (JoH.ts() - rateLimits.get(name) < (milliseconds))) {
+        if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (milliseconds))) {
             Log.d(TAG, name + " rate limited: " + milliseconds + " milliseconds");
             return false;
         }
         // not over limit
-        rateLimits.put(name, JoH.ts());
+        rateLimits.put(name, JoH.tsl());
         return true;
     }
 
