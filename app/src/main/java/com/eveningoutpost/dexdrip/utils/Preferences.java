@@ -935,43 +935,49 @@ public class Preferences extends PreferenceActivity {
                     }
             }
 
+            try {
 
-            if ((collectionType != DexCollectionType.WifiWixel)
-                    && (collectionType != DexCollectionType.WifiBlueToothWixel)
-                    && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
-                String receiversIpAddresses;
-                receiversIpAddresses = this.prefs.getString("wifi_recievers_addresses", "");
-                // only hide if non wifi wixel mode and value not previously set to cope with
-                // dynamic mode changes. jamorham
-                if (receiversIpAddresses == null || receiversIpAddresses.equals("")) {
-                    collectionCategory.removePreference(wifiRecievers);
+                if ((collectionType != DexCollectionType.WifiWixel)
+                        && (collectionType != DexCollectionType.WifiBlueToothWixel)
+                        && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
+                    String receiversIpAddresses;
+                    receiversIpAddresses = this.prefs.getString("wifi_recievers_addresses", "");
+                    // only hide if non wifi wixel mode and value not previously set to cope with
+                    // dynamic mode changes. jamorham
+                    if (receiversIpAddresses == null || receiversIpAddresses.equals("")) {
+                        collectionCategory.removePreference(wifiRecievers);
+                    }
                 }
+
+                if ((collectionType != DexCollectionType.DexbridgeWixel)
+                        && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
+                    collectionCategory.removePreference(transmitterId);
+                    // collectionCategory.removePreference(closeGatt);
+                }
+
+
+                if (collectionType == DexCollectionType.DexcomG5) {
+                    collectionCategory.addPreference(transmitterId);
+                    collectionCategory.addPreference(scanConstantly);
+                    collectionCategory.addPreference(reAuth);
+                    collectionCategory.addPreference(reBond);
+                    collectionCategory.addPreference(runOnMain);
+                } else {
+                    // collectionCategory.removePreference(transmitterId);
+                    collectionCategory.removePreference(scanConstantly);
+                    collectionCategory.removePreference(reAuth);
+                    collectionCategory.removePreference(reBond);
+                    collectionCategory.removePreference(runOnMain);
+                }
+
+                if (!engineering_mode) {
+                    getPreferenceScreen().removePreference(motionScreen);
+                }
+
+            } catch (NullPointerException e) {
+                Log.wtf(TAG, "Got null pointer exception removing pref: " + e);
             }
 
-            if ((collectionType != DexCollectionType.DexbridgeWixel)
-                    && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
-                collectionCategory.removePreference(transmitterId);
-               // collectionCategory.removePreference(closeGatt);
-            }
-
-
-            if (collectionType == DexCollectionType.DexcomG5) {
-                collectionCategory.addPreference(transmitterId);
-                collectionCategory.addPreference(scanConstantly);
-                collectionCategory.addPreference(reAuth);
-                collectionCategory.addPreference(reBond);
-                collectionCategory.addPreference(runOnMain);
-            } else {
-               // collectionCategory.removePreference(transmitterId);
-                collectionCategory.removePreference(scanConstantly);
-                collectionCategory.removePreference(reAuth);
-                collectionCategory.removePreference(reBond);
-                collectionCategory.removePreference(runOnMain);
-            }
-
-            if (!engineering_mode) {
-                getPreferenceScreen().removePreference(motionScreen);
-            }
             if (engineering_mode || this.prefs.getString("update_channel","").matches("alpha|nightly")) {
                 ListPreference update_channel = (ListPreference)findPreference("update_channel");
                 update_channel.setEntryValues(getResources().getStringArray(R.array.UpdateChannelE));
