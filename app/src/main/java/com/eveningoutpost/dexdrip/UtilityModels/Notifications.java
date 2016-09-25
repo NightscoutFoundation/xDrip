@@ -487,6 +487,7 @@ public class Notifications extends IntentService {
                     .setBgGraphBuilder(bgGraphBuilder)
                     .showHighLine()
                     .showLowLine()
+                    .setStart(System.currentTimeMillis() - 60000 * 60 * 3)
                     .showAxes(true)
                     .setBackgroundColor(getCol(X.color_notification_chart_background))
                     .setShowFiltered(DexCollectionType.hasFiltered() && Home.getPreferencesBooleanDefaultFalse("show_filtered_curve"))
@@ -624,7 +625,7 @@ public class Notifications extends IntentService {
         UserNotification userNotification = UserNotification.lastCalibrationAlert();
         if ((userNotification == null) || (userNotification.timestamp <= ((new Date().getTime()) - (60000 * calibration_snooze)))) {
             if (userNotification != null) { userNotification.delete(); }
-            UserNotification.create("12 hours since last Calibration", "calibration_alert");
+            UserNotification.create("12 hours since last Calibration  (@" + JoH.hourMinuteString() + ")", "calibration_alert");
             String title = "Calibration Needed";
             String content = "12 hours since last calibration";
             Intent intent = new Intent(mContext, AddCalibration.class);
@@ -638,7 +639,7 @@ public class Notifications extends IntentService {
             if (userNotification != null) { userNotification.delete(); }
             UserNotification.create("Double Calibration", "double_calibration_alert");
             String title = "Sensor is ready";
-            String content = getString(R.string.sensor_is_ready_please_enter_double_calibration);
+            String content = getString(R.string.sensor_is_ready_please_enter_double_calibration) + "  (@" + JoH.hourMinuteString() + ")";
             Intent intent = new Intent(mContext, DoubleCalibrationActivity.class);
             calibrationNotificationCreate(title, content, intent, calibrationNotificationId);
         }
@@ -650,7 +651,7 @@ public class Notifications extends IntentService {
             if (userNotification != null) { userNotification.delete(); }
             UserNotification.create("Extra Calibration Requested", "extra_calibration_alert");
             String title = "Calibration Needed";
-            String content = "A calibration entered now will GREATLY increase performance";
+            String content = "A calibration entered now will GREATLY increase performance" + "  (@" + JoH.hourMinuteString() + ")";
             Intent intent = new Intent(mContext, AddCalibration.class);
             calibrationNotificationCreate(title, content, intent, extraCalibrationNotificationId);
         }
@@ -659,20 +660,20 @@ public class Notifications extends IntentService {
     public static void bgUnclearAlert(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         int otherAlertSnooze = MissedReadingService.readPerfsInt(prefs, "other_alerts_snooze", 20);
-        OtherAlert(context, "bg_unclear_readings_alert", "Unclear Sensor Readings", uncleanAlertNotificationId,  otherAlertSnooze);
+        OtherAlert(context, "bg_unclear_readings_alert", "Unclear Sensor Readings" + "  (@" + JoH.hourMinuteString() + ")", uncleanAlertNotificationId, otherAlertSnooze);
     }
 
     public static void bgMissedAlert(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         int otherAlertSnooze = MissedReadingService.readPerfsInt(prefs, "other_alerts_snooze", 20);
-        OtherAlert(context, "bg_missed_alerts", "BG Readings Missed", missedAlertNotificationId, otherAlertSnooze);
+        OtherAlert(context, "bg_missed_alerts", "BG Readings Missed" + "  (@" + JoH.hourMinuteString() + ")", missedAlertNotificationId, otherAlertSnooze);
     }
 
     public static void RisingAlert(Context context, boolean on) {
-        RiseDropAlert(context, on, "bg_rise_alert", "bg rising fast", riseAlertNotificationId);
+        RiseDropAlert(context, on, "bg_rise_alert", "bg rising fast" + "  (@" + JoH.hourMinuteString() + ")", riseAlertNotificationId);
     }
     public static void DropAlert(Context context, boolean on) {
-        RiseDropAlert(context, on, "bg_fall_alert", "bg falling fast", failAlertNotificationId);
+        RiseDropAlert(context, on, "bg_fall_alert", "bg falling fast" + "  (@" + JoH.hourMinuteString() + ")", failAlertNotificationId);
     }
 
     public static void lowPredictAlert(Context context, boolean on, String msg) {
