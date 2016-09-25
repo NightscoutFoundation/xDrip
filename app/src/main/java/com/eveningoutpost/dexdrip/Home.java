@@ -121,6 +121,7 @@ public class Home extends ActivityWithMenu {
     public final static String CREATE_TREATMENT_NOTE = "CREATE_TREATMENT_NOTE";
     public final static String HOME_FULL_WAKEUP = "HOME_FULL_WAKEUP";
     public final static String GCM_RESOLUTION_ACTIVITY = "GCM_RESOLUTION_ACTIVITY";
+    public final static String SNOOZE_CONFIRM_DIALOG = "SNOOZE_CONFIRM_DIALOG";
     public static String menu_name = "Home Screen";
     public static boolean activityVisible = false;
     public static boolean invalidateMenu = false;
@@ -577,6 +578,8 @@ public class Home extends ActivityWithMenu {
                 }
             } else if (bundle.getString(Home.GCM_RESOLUTION_ACTIVITY) != null) {
                 GcmActivity.checkPlayServices(this, this);
+            } else if (bundle.getString(Home.SNOOZE_CONFIRM_DIALOG) != null) {
+                GcmActivity.sendSnoozeToRemoteWithConfirm(this);
             }
         }
     }
@@ -2008,9 +2011,14 @@ public class Home extends ActivityWithMenu {
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev){
+    public boolean dispatchTouchEvent(MotionEvent ev) {
         if (blockTouches) return true;
-        return super.dispatchTouchEvent(ev);
+        try {
+            return super.dispatchTouchEvent(ev);
+        } catch (Exception e) {
+            // !?
+            return false;
+        }
     }
 
     @Override

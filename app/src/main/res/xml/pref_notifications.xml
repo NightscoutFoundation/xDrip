@@ -246,6 +246,11 @@
                         android:key="parakeet_charge_silent"
                         android:summary="@string/raise_parakeet_notification_silently_when_charging"
                         android:title="@string/silent_alert_when_charging" />
+                    <SwitchPreference
+                        android:defaultValue="false"
+                        android:key="follower_chime"
+                        android:summary="Notify when data arrives from the master if the interval is > 20 mins."
+                        android:title="Follower Chime New" />
                 </PreferenceCategory>
             </PreferenceScreen>
         </PreferenceCategory>

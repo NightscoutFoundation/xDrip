@@ -15,6 +15,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 
 import com.eveningoutpost.dexdrip.EditAlertActivity;
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
@@ -148,12 +149,18 @@ public class AlertPlayer {
         }
     }
 
+    //  default signature for user initiated interactive snoozes only
     public synchronized void Snooze(Context ctx, int repeatTime) {
+        Snooze(ctx, repeatTime, true);
+    }
+
+    public synchronized void Snooze(Context ctx, int repeatTime, boolean from_interactive) {
         Log.i(TAG, "Snooze called repeatTime = " + repeatTime);
         stopAlert(ctx, false, false);
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
         if (activeBgAlert == null) {
-            Log.e(TAG, "Error, snooze was called but no alert is active. alert was probably removed in ui ");
+            Log.e(TAG, "Error, snooze was called but no alert is active.");
+            if (from_interactive) GcmActivity.sendSnoozeToRemote();
             return;
         }
         if (repeatTime == -1) {
@@ -168,6 +175,7 @@ public class AlertPlayer {
             }
         }
         activeBgAlert.snooze(repeatTime);
+        if (from_interactive) GcmActivity.sendSnoozeToRemote();
     }
 
     public synchronized  void PreSnooze(Context ctx, String uuid, int repeatTime) {
@@ -389,7 +397,7 @@ public class AlertPlayer {
         }
 
         String title = bgValue + " " + alert.name;
-        String content = "BG LEVEL ALERT: " + bgValue;
+        String content = "BG LEVEL ALERT: " + bgValue + "  (@" + JoH.hourMinuteString() + ")";
         Intent intent = new Intent(ctx, SnoozeActivity.class);
 
         NotificationCompat.Builder  builder = new NotificationCompat.Builder(ctx)
