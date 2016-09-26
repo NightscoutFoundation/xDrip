@@ -85,7 +85,7 @@
 
                     android:defaultValue="content://settings/system/notification_sound"
                     android:key="calibration_notification_sound"
-                    android:ringtoneType="notification"
+                    android:ringtoneType="all"
                     android:showSilent="true"
                     android:summary="Set sound used for calibration requests."
                     android:title="@string/calibration_request_sound" />
@@ -159,7 +159,7 @@
                     <RingtonePreference
                         android:defaultValue="content://settings/system/alarm_alert"
                         android:key="other_alerts_sound"
-                        android:ringtoneType="alarm"
+                        android:ringtoneType="all"
                         android:showSilent="true"
                         android:summary="Set sound used for BG Alerts."
                         android:title="Alert Sound" />
@@ -197,7 +197,7 @@
                         android:defaultValue="content://settings/system/notification_sound"
                         android:dependency="persistent_high_alert_enabled"
                         android:key="persistent_high_alert_sound"
-                        android:ringtoneType="notification"
+                        android:ringtoneType="all"
                         android:showSilent="true"
                         android:summary="@string/choose_sound_used_for_persistent_high_alarm"
                         android:title="@string/persistent_high_sound" />
@@ -229,7 +229,7 @@
                         android:defaultValue="content://settings/system/notification_sound"
                         android:dependency="predict_lows"
                         android:key="bg_predict_alert_sound"
-                        android:ringtoneType="notification"
+                        android:ringtoneType="all"
                         android:showSilent="true"
                         android:summary="@string/choose_sound_used_for_predicted_low_alarm"
                         android:title="@string/predicted_low_sound" />
