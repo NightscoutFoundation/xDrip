@@ -208,7 +208,7 @@
 	<string name="message_to_display_when_bgl_hits">Nachricht, die angezeigt werden soll, wenn der Zucker den besonderen Wert erreicht</string>
 	<string name="text_to_display_when_hitting_special_value">Text, der angezeigt wird, wenn der besondere Wert erreicht wird</string>
 	<string name="special_value">Besonderer Wert</string>
-	<string name="history">BG-Historie</string>
+	<string name="history">Historie</string>
 	<string name="statistics">Statistiken</string>
 	<string name="snooze_alert">Snooze Alarm</string>
 	<string name="less_common_settings">Erweiterte Einstellungen</string>
