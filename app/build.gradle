@@ -92,7 +92,7 @@ def generateVersionName = { ->
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '23.0.3'
+    buildToolsVersion '22.0.1'
 
     defaultConfig {
         applicationId "com.eveningoutpost.dexdrip"
@@ -177,7 +177,7 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
     compile 'com.getpebble:pebblekit:3.0.0'
     compile 'io.reactivex:rxjava:1.0.0'
-    compile 'com.github.lecho:hellocharts-android:v1.5.8'
+    //compile 'com.github.lecho:hellocharts-android:v1.5.5'
     compile 'com.google.guava:guava:18.0'
     compile 'com.embarkmobile:zxing-android-minimal:2.0.0@aar'
     compile 'com.embarkmobile:zxing-android-integration:2.0.0@aar'
