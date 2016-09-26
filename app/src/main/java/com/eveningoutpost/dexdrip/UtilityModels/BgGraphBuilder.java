@@ -1537,13 +1537,18 @@ public class BgGraphBuilder {
 
     }
 
-    public OnValueSelectTooltipListener getOnValueSelectTooltipListener() {
-        return new OnValueSelectTooltipListener();
+    public OnValueSelectTooltipListener getOnValueSelectTooltipListener(boolean interactive) {
+        return new OnValueSelectTooltipListener(interactive);
     }
 
     public class OnValueSelectTooltipListener implements LineChartOnValueSelectListener {
 
         private Toast tooltip;
+        private boolean interactive;
+
+        public OnValueSelectTooltipListener(boolean interactive) {
+            this.interactive = interactive;
+        }
 
         @Override
         public synchronized void onValueSelected(int i, int i1, PointValue pointValue) {
@@ -1574,26 +1579,25 @@ public class BgGraphBuilder {
             } else {
                 message = timeFormat.format(time) + "      " + (Math.round(pointValue.getY() * 10) / 10d) + " "+unit() +  filtered;
             }
-
-            final View.OnClickListener mOnClickListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Home.startHomeWithExtra(xdrip.getAppContext(), Home.CREATE_TREATMENT_NOTE, time.toString(), Double.toString(ypos) );
-                }
-            };
-          Home.snackBar(message,mOnClickListener);
-
-           /* if (tooltip != null) {
-                tooltip.cancel();
-            }
-            if (alternate.length()>0) {
-                tooltip = Toast.makeText(context, timeFormat.format(time) + ": "+alternate, Toast.LENGTH_LONG);
+            if (interactive) {
+                final View.OnClickListener mOnClickListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Home.startHomeWithExtra(xdrip.getAppContext(), Home.CREATE_TREATMENT_NOTE, time.toString(), Double.toString(ypos));
+                    }
+                };
+                Home.snackBar(message, mOnClickListener);
             } else {
-                tooltip = Toast.makeText(context, timeFormat.format(time) + ": " + Math.round(pointValue.getY() * 10) / 10d + filtered, Toast.LENGTH_LONG);
+
+                if (tooltip != null) {
+                    tooltip.cancel();
+                }
+
+                tooltip = Toast.makeText(context, message, Toast.LENGTH_LONG);
+                View view = tooltip.getView();
+                view.setBackgroundColor(getCol(X.color_home_chart_background));
+                tooltip.show();
             }
-            View view = tooltip.getView();
-            view.setBackgroundColor(getCol(X.color_home_chart_background));
-            tooltip.show();*/
         }
 
         @Override
