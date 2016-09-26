@@ -10,6 +10,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import android.util.TypedValue;
@@ -40,6 +42,7 @@ public class SnoozeActivity extends ActivityWithMenu {
     Button clearLowDisabled;
     Button disableHighAlerts;
     Button clearHighDisabled;
+    Button sendRemoteSnooze;
     SharedPreferences prefs;
     boolean doMgdl;
 
@@ -147,6 +150,8 @@ public class SnoozeActivity extends ActivityWithMenu {
         //all alerts
         disableAlerts = (Button)findViewById(R.id.button_disable_alerts);
         clearDisabled = (Button)findViewById(R.id.enable_alerts);
+        sendRemoteSnooze = (Button)findViewById(R.id.send_remote_snooze);
+
         buttonSnooze.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 int intValue = getTimeFromSnoozeValue(snoozeValue.getValue());
@@ -321,7 +326,7 @@ public class SnoozeActivity extends ActivityWithMenu {
         }
         long now = new Date().getTime();
         if(activeBgAlert == null ) {
-
+            sendRemoteSnooze.setVisibility(Home.getPreferencesBooleanDefaultFalse("send_snooze_to_remote") ? View.VISIBLE : View.GONE);
             if (prefs.getLong("alerts_disabled_until", 0) > now
                     ||
                     (prefs.getLong("low_alerts_disabled_until", 0) > now
@@ -337,6 +342,7 @@ public class SnoozeActivity extends ActivityWithMenu {
             buttonSnooze.setVisibility(View.GONE);
             snoozeValue.setVisibility(View.GONE);
         } else {
+            sendRemoteSnooze.setVisibility(View.GONE);
             if(!aba.ready_to_alarm()) {
                 status = "Active alert exists named \"" + activeBgAlert.name
                         + (aba.is_snoozed?"\" Alert snoozed until ":"\" Alert will rerise at ")
@@ -371,6 +377,11 @@ public class SnoozeActivity extends ActivityWithMenu {
 
         alertStatus.setText(status);
 
+    }
+
+    public void setSendRemoteSnoozeOnClick(View v) {
+        JoH.static_toast_short("Remote snooze..");
+        AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
     }
 
 }

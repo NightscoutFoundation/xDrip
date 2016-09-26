@@ -98,6 +98,13 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/re_enable_all_alerts"/>
+                    <Button
+                        android:id="@+id/send_remote_snooze"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:onClick="setSendRemoteSnoozeOnClick"
+                        android:text="Send Remote Snooze"
+                        android:backgroundTint="@color/colorPrimaryDark" />
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
