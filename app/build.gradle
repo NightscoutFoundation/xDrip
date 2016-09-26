@@ -103,6 +103,7 @@ android {
         versionCode 1603091400
         versionName generateVersionName()
         buildConfigField "int", "buildVersion", generateVersionNumberString()
+        multiDexEnabled true
     }
 
     lintOptions {
@@ -115,8 +116,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro'
         }
