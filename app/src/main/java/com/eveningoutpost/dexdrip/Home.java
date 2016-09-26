@@ -1371,7 +1371,7 @@ public class Home extends ActivityWithMenu {
         previewChart = (PreviewLineChartView) findViewById(R.id.chart_preview);
 
         chart.setLineChartData(bgGraphBuilder.lineData());
-        chart.setOnValueTouchListener(bgGraphBuilder.getOnValueSelectTooltipListener());
+        chart.setOnValueTouchListener(bgGraphBuilder.getOnValueSelectTooltipListener(true));
 
         previewChart.setBackgroundColor(getCol(X.color_home_chart_background));
         previewChart.setZoomType(ZoomType.HORIZONTAL);
