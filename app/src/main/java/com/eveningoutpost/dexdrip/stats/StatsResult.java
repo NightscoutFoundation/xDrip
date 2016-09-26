@@ -35,25 +35,25 @@ public class StatsResult {
         long today = DBSearchUtil.getTodayTimestamp();
         SQLiteDatabase db = Cache.openDatabase();
 
-        Cursor cursor= db.rawQuery("select count(*) from bgreadings  where timestamp >= " + today + " AND calculated_value >= " + low + " AND calculated_value <= " + high, null);
+        Cursor cursor= db.rawQuery("select count(*) from bgreadings  where timestamp >= " + today + " AND calculated_value >= " + low + " AND calculated_value <= " + high + " AND snyced == 0", null);
         cursor.moveToFirst();
         in = cursor.getInt(0);
         cursor.close();
 
-        cursor= db.rawQuery("select count(*) from bgreadings  where timestamp >= " + today + " AND calculated_value > " + DBSearchUtil.CUTOFF + " AND calculated_value < " + low, null);
+        cursor= db.rawQuery("select count(*) from bgreadings  where timestamp >= " + today + " AND calculated_value > " + DBSearchUtil.CUTOFF + " AND calculated_value < " + low + " AND snyced == 0", null);
         cursor.moveToFirst();
         below = cursor.getInt(0);
         cursor.close();
 
-        cursor= db.rawQuery("select count(*) from bgreadings  where timestamp >= " + today + " AND calculated_value > " + high, null);
+        cursor= db.rawQuery("select count(*) from bgreadings  where timestamp >= " + today + " AND calculated_value > " + high + " AND snyced == 0", null);
         cursor.moveToFirst();
         above = cursor.getInt(0);
         cursor.close();
 
         if(getTotalReadings() > 0){
-            cursor= db.rawQuery("select avg(calculated_value) from bgreadings  where timestamp >= " + today + " AND calculated_value > " + DBSearchUtil.CUTOFF, null);
+            cursor= db.rawQuery("select avg(calculated_value) from bgreadings  where timestamp >= " + today + " AND calculated_value > " + DBSearchUtil.CUTOFF + " AND snyced == 0", null);
             cursor.moveToFirst();
-            avg = cursor.getInt(0);
+            avg = cursor.getDouble(0);
             cursor.close();
         } else {
             avg = 0;

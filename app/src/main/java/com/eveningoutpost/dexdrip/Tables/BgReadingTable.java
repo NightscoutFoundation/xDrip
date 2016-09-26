@@ -1,8 +1,9 @@
 package com.eveningoutpost.dexdrip.Tables;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.app.ListActivity;
 import android.content.Context;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
@@ -88,12 +89,41 @@ public class BgReadingTable extends ListActivity implements NavigationDrawerFrag
             return view;
         }
 
-        public void bindView(View view, Context context, BgReading bgReading) {
+        public void bindView(View view, final Context context, final BgReading bgReading) {
             final BgReadingCursorAdapterViewHolder tag = (BgReadingCursorAdapterViewHolder) view.getTag();
             tag.raw_data_id.setText(Double.toString(bgReading.calculated_value));
             tag.raw_data_value.setText(Double.toString(bgReading.age_adjusted_raw_value));
             tag.raw_data_slope.setText(Double.toString(bgReading.raw_data));
             tag.raw_data_timestamp.setText(new Date(bgReading.timestamp).toString());
+
+            view.setLongClickable(true);
+            view.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which){
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    bgReading.ignoreForStats = true;
+                                    bgReading.save();
+                                    break;
+
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    bgReading.ignoreForStats = false;
+                                    bgReading.save();
+                                    break;
+                            }
+                        }
+                    };
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setMessage("Flag reading as \"bad\".\nFlagged readings have no impact on the statistics.").setPositiveButton("Yes", dialogClickListener)
+                            .setNegativeButton("No", dialogClickListener).show();
+                    return true;
+                }
+            });
+
         }
 
         @Override
