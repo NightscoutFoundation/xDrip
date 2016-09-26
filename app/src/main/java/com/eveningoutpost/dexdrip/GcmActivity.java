@@ -179,7 +179,9 @@ public class GcmActivity extends Activity {
 
     private static void sendRealSnoozeToRemote() {
         if (JoH.pratelimit("gcm-sra", 60)) {
-            sendMessage("sra", Long.toString(JoH.tsl()));
+            String wifi_ssid = JoH.getWifiSSID();
+            if (wifi_ssid == null) wifi_ssid = "";
+            sendMessage("sra", Long.toString(JoH.tsl()) + "^" + JoH.base64encode(wifi_ssid));
         }
     }
 

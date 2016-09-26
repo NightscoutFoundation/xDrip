@@ -17,6 +17,8 @@ import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -226,6 +228,15 @@ public class JoH {
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Got unsupported encoding: " + e);
             return "encode-error";
+        }
+    }
+
+    public static String base64decode(String input) {
+        try {
+            return new String(Base64.decode(input.getBytes("UTF-8"), Base64.NO_WRAP), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            Log.e(TAG, "Got unsupported encoding: " + e);
+            return "decode-error";
         }
     }
 
@@ -481,6 +492,51 @@ public class JoH {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static String getWifiSSID() {
+        try {
+            final WifiManager wifi_manager = (WifiManager) xdrip.getAppContext().getSystemService(Context.WIFI_SERVICE);
+            if (wifi_manager.isWifiEnabled()) {
+                final WifiInfo wifiInfo = wifi_manager.getConnectionInfo();
+                if (wifiInfo != null) {
+                    final NetworkInfo.DetailedState wifi_state = WifiInfo.getDetailedStateOf(wifiInfo.getSupplicantState());
+                    if (wifi_state == NetworkInfo.DetailedState.CONNECTED
+                            || wifi_state == NetworkInfo.DetailedState.OBTAINING_IPADDR
+                            || wifi_state == NetworkInfo.DetailedState.CAPTIVE_PORTAL_CHECK) {
+                        String ssid = wifiInfo.getSSID();
+                        if (ssid.equals("<unknown ssid>")) return null; // WifiSsid.NONE;
+                        if (ssid.charAt(0)=='"') ssid=ssid.substring(1);
+                        if (ssid.charAt(ssid.length()-1)=='"') ssid=ssid.substring(0,ssid.length()-1);
+                        return ssid;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception in getWifiSSID: " + e);
+        }
+        return null;
+    }
+
+    public static boolean getWifiFuzzyMatch(String local, String remote) {
+        if ((local == null) || (remote == null) || (local.length() == 0) || (remote.length() == 0))
+            return false;
+        final int slen = Math.min(local.length(), remote.length());
+        final int llen = Math.max(local.length(), remote.length());
+        int matched = 0;
+        for (int i = 0; i < slen; i++) {
+            if (local.charAt(i) == (remote.charAt(i))) matched++;
+        }
+        boolean result = false;
+        if (matched == slen) result = true; // shorter string is substring
+        final double quota = (double) matched / (double) llen;
+        final int dmatch = llen - matched;
+        if (slen > 2) {
+            if (dmatch < 3) result = true;
+            if (quota > 0.80) result = true;
+        }
+        //Log.d(TAG, "l:" + local + " r:" + remote + " slen:" + slen + " llen:" + llen + " matched:" + matched + "  q:" + JoH.qs(quota, 2) + "  dm:" + dmatch + " RESULT: " + result);
+        return result;
     }
 
     public static boolean runOnUiThread(Runnable theRunnable) {
