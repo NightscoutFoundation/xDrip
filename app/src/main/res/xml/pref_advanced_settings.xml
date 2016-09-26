@@ -232,7 +232,7 @@
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="interpret_raw"
-                android:summary="If using Share, DexDrip will show values when they are normally hidden on the receiver."
+                android:summary="If using Share, xDrip will show values when they are normally hidden on the receiver."
                 android:title="Interpret Raw Values" />
             <CheckBoxPreference
                 android:defaultValue="true"
