@@ -974,7 +974,7 @@ public class Home extends ActivityWithMenu {
                     final SimpleDateFormat simpleDateFormat1 =
                             new SimpleDateFormat("dd/M/yyyy ",Locale.US);
                     final SimpleDateFormat simpleDateFormat2 =
-                            new SimpleDateFormat("dd/M/yyyy hh.mm",Locale.US); // TODO double check 24 hour 12.00 etc
+                            new SimpleDateFormat("dd/M/yyyy HH.mm",Locale.US); // TODO double check 24 hour 12.00 etc
                     final String datenew = simpleDateFormat1.format(c.getTime()) + df.format(thisnumber);
 
                     Log.d(TAG, "Time Timing data datenew: " + datenew);
