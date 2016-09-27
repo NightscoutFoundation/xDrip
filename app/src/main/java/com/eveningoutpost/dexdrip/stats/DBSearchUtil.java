@@ -22,7 +22,7 @@ import java.util.Vector;
  */
 public class DBSearchUtil {
 
-    public static final String CUTOFF = "13";
+    public static final String CUTOFF = "39";
 
 
     public static int noReadingsAboveRange(Context context) {
@@ -41,7 +41,8 @@ public class DBSearchUtil {
                 .where("timestamp >= " + bounds.start)
                 .where("timestamp <= " + bounds.stop)
                 .where("calculated_value > " + CUTOFF)
-                .where("calculated_value > " + high).count();
+                .where("calculated_value > " + high)
+                .where("snyced == 0").count();
         Log.d("DrawStats", "High count: " + count);
         return count;
     }
@@ -53,7 +54,7 @@ public class DBSearchUtil {
         String orderBy = ordered ? "calculated_value desc" : null;
 
         SQLiteDatabase db = Cache.openDatabase();
-        Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, "timestamp >= ? AND timestamp <=  ? AND calculated_value > ?", new String[]{"" + bounds.start, "" + bounds.stop, CUTOFF}, null, null, orderBy);
+        Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, "timestamp >= ? AND timestamp <=  ? AND calculated_value > ? AND snyced == 0", new String[]{"" + bounds.start, "" + bounds.stop, CUTOFF}, null, null, orderBy);
         List<BgReadingStats> readings = new Vector<BgReadingStats>();
         BgReadingStats reading;
         if (cur.moveToFirst()) {
@@ -89,6 +90,7 @@ public class DBSearchUtil {
                 .where("calculated_value > " + CUTOFF)
                 .where("calculated_value <= " + high)
                 .where("calculated_value >= " + low)
+                .where("snyced == 0")
                 .count();
         Log.d("DrawStats", "In count: " + count);
 
@@ -112,6 +114,7 @@ public class DBSearchUtil {
                 .where("timestamp <= " + bounds.stop)
                 .where("calculated_value > " + CUTOFF)
                 .where("calculated_value < " + low)
+                .where("snyced == 0")
                 .count();
         Log.d("DrawStats", "Low count: " + count);
 
