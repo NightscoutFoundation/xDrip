@@ -959,7 +959,7 @@ public class Home extends ActivityWithMenu {
 
             case "time":
                 Log.d(TAG, "processing time keyword");
-                if ((timeset == false) && (thisnumber > 0)) {
+                if ((timeset == false) && (thisnumber >= 0)) {
 
                     final NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
                     final DecimalFormat df = (DecimalFormat)nf;
