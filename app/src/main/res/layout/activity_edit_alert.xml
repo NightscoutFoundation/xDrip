@@ -323,6 +323,30 @@
                             android:textSize="15sp"/>
 
                     </LinearLayout>
+                    
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="20dp">
+
+                        <TextView
+                            android:id="@+id/view_alert_disable"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="left"
+                            android:text="disable alert"
+                            android:textSize="15sp"
+                            />
+
+                        <CheckBox
+                            android:id="@+id/view_alert_check_disable"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textSize="15sp"/>
+
+                    </LinearLayout>
                 </LinearLayout>
             <LinearLayout
                 android:id="@+id/linear_layout_test_buttons"
