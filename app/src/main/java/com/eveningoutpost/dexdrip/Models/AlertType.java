@@ -339,11 +339,6 @@ public class AlertType extends Model {
             boolean vibrate,
             boolean active) {
 
-        if(uuid.equals(LOW_ALERT_55)) {
-            // This alert can not be removed/updated
-            return;
-        }
-
         fixUpTable();
 
         AlertType at = get_alert(uuid);
