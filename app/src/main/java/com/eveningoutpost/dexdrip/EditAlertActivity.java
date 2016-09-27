@@ -18,7 +18,6 @@ import android.provider.MediaStore;
 import android.text.InputType;
 import android.text.format.DateFormat;
 import android.text.method.DigitsKeyListener;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -90,7 +89,8 @@ public class EditAlertActivity extends ActivityWithMenu {
     private String uuid;
     private Context mContext;
     private boolean above;
-    private final int CHOOSE_FILE = 1;
+    private final int REQUEST_CODE_CHOOSE_FILE = 1;
+    
     private final int MIN_ALERT = 40;
     private final int MAX_ALERT = 400;
 
@@ -114,7 +114,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         	return defaultVal;
         }
     }
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -458,7 +458,7 @@ public class EditAlertActivity extends ActivityWithMenu {
     }
 
     public void addListenerOnButtons() {
-
+      
         buttonSave.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Check that values are ok.
@@ -563,7 +563,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                                     Intent fileIntent = new Intent();
                                     fileIntent.setType("audio/mpeg3");
                                     fileIntent.setAction(Intent.ACTION_GET_CONTENT);
-                                    startActivityForResult(Intent.createChooser(fileIntent, "Select File for Alert"), CHOOSE_FILE);
+                                    startActivityForResult(Intent.createChooser(fileIntent, "Select File for Alert"), REQUEST_CODE_CHOOSE_FILE);
                                 } else {
                                     // Xdrip default was chossen, we live the file name as empty.
                                     audioPath = "";
@@ -651,7 +651,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                 audioPath = uri.toString();
                 alertMp3File.setText(shortPath(audioPath));
             } else {
-                if (requestCode == CHOOSE_FILE) {
+                if (requestCode == REQUEST_CODE_CHOOSE_FILE) {
                     Uri selectedImageUri = data.getData();
 
                     // Todo this code is very flacky. Probably need a much better understanding of how the different programs

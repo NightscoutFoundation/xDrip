@@ -1,6 +1,8 @@
 package com.eveningoutpost.dexdrip;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.Ringtone;
@@ -171,9 +173,36 @@ public class AlertList extends ActivityWithMenu {
         });
     }
 
+    void displayWarning() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                if (!isFinishing()){
+                    new AlertDialog.Builder(AlertList.this)
+                      .setTitle("Warnining !")
+                      .setMessage("No active low alert exists, it is highly recomended that you will add a low an alert.")
+                      .setCancelable(false)
+                      .setPositiveButton(
+                              "Ok",
+                              new DialogInterface.OnClickListener() {
+                                  public void onClick(DialogInterface dialog, int id) {
+                                      dialog.cancel();
+                                  }
+                              })
+                    .create().show();
+                }
+            }
+        });
+ 
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActivityResult called ");
+        Log.d(TAG, "onActivityResult called request code  = " + requestCode + " result code " + resultCode);
+        if(!AlertType.activeLowAlertExists()) {
+            displayWarning();
+        }
         if (requestCode == ADD_ALERT || requestCode == EDIT_ALERT) {
             if(resultCode == RESULT_OK) {
                 Log.d(TAG, "onActivityResult called invalidating...");

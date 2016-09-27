@@ -408,7 +408,18 @@ public class AlertType extends Model {
         return alerts;
     }
 
-
+    public static boolean activeLowAlertExists() {
+        List<AlertType> alerts = getAll(false);
+        if(alerts == null) {
+            return false;
+        }
+        for (AlertType alert : alerts) {
+            if(alert.active) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     // This function is used to make sure that we always have a static alert on 55 low.
     // This alert will not be editable/removable.
