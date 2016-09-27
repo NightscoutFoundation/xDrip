@@ -181,7 +181,7 @@ public class AlertList extends ActivityWithMenu {
                 if (!isFinishing()){
                     new AlertDialog.Builder(AlertList.this)
                       .setTitle("Warnining !")
-                      .setMessage("No active low alert exists, it is highly recomended that you will add a low an alert.")
+                      .setMessage("No active low alert exists, it is highly recomended that you will add a low alert.")
                       .setCancelable(false)
                       .setPositiveButton(
                               "Ok",

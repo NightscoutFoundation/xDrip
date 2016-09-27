@@ -335,7 +335,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="left"
-                            android:text="disable alert"
+                            android:text="@string/disable_alert"
                             android:textSize="15sp"
                             />
 
