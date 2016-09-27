@@ -1810,7 +1810,7 @@ public class Home extends ActivityWithMenu {
     }
 
     @NonNull
-    private String extraStatusLine() {
+    public static String extraStatusLine() {
         StringBuilder extraline = new StringBuilder();
         Calibration lastCalibration = Calibration.lastValid();
         if (prefs.getBoolean("status_line_calibration_long", false) && lastCalibration != null) {

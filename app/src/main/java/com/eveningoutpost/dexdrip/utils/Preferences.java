@@ -1200,7 +1200,7 @@ public class Preferences extends PreferenceActivity {
             });
             // Pebble Trend -- END
 
-            //bindWidgetUpdater();
+            bindWidgetUpdater();
 
 
             widgetRangeLines.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -1345,6 +1345,21 @@ public class Preferences extends PreferenceActivity {
                     return true;
                 }
             });
+        }
+
+        private void bindWidgetUpdater() {
+            findPreference("widget_range_lines").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("extra_status_line").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("widget_status_line").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("status_line_calibration_long").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("status_line_calibration_short").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("status_line_avg").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("status_line_a1c_dcct").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("status_line_a1c_ifcc").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("status_line_in").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("status_line_high").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("status_line_low").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("extra_status_line").setOnPreferenceChangeListener(new WidgetListener());
         }
 
         private void update_force_english_title(String param) {
@@ -1568,6 +1583,8 @@ public class Preferences extends PreferenceActivity {
             findPreference("other_alerts_snooze").setOnPreferenceChangeListener(sBgMissedAlertsHandler);
         }
 
+
+        // Will update the widget if any setting relevant to the widget gets changed.
         private static class WidgetListener implements Preference.OnPreferenceChangeListener {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
