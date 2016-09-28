@@ -1811,6 +1811,12 @@ public class Home extends ActivityWithMenu {
 
     @NonNull
     public static String extraStatusLine() {
+
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs==null) return "";
+
         StringBuilder extraline = new StringBuilder();
         Calibration lastCalibration = Calibration.lastValid();
         if (prefs.getBoolean("status_line_calibration_long", false) && lastCalibration != null) {
