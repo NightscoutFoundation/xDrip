@@ -358,10 +358,6 @@ public class AlertType extends Model {
         at.save();
     }
     public static void remove_alert(String uuid) {
-        if(uuid.equals(LOW_ALERT_55)) {
-            // This alert can not be removed/updated
-            return;
-        }
         AlertType alert = get_alert(uuid);
 		if(alert != null) {
 	        alert.delete();
