@@ -945,9 +945,11 @@ public class G5CollectionService extends Service {
                         if (status == BluetoothGatt.GATT_SUCCESS) {
                             if (mGatt != null) {
                                 cgmService = mGatt.getService(BluetoothServices.CGMService);
-                                authCharacteristic = cgmService.getCharacteristic(BluetoothServices.Authentication);
-                                controlCharacteristic = cgmService.getCharacteristic(BluetoothServices.Control);
-                                commCharacteristic = cgmService.getCharacteristic(BluetoothServices.Communication);
+                                if (cgmService != null) {
+                                    authCharacteristic = cgmService.getCharacteristic(BluetoothServices.Authentication);
+                                    controlCharacteristic = cgmService.getCharacteristic(BluetoothServices.Control);
+                                    commCharacteristic = cgmService.getCharacteristic(BluetoothServices.Communication);
+                                }
                                 mBluetoothAdapter.cancelDiscovery();
                             }
 
@@ -973,9 +975,11 @@ public class G5CollectionService extends Service {
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     if (mGatt != null) {
                         cgmService = mGatt.getService(BluetoothServices.CGMService);
-                        authCharacteristic = cgmService.getCharacteristic(BluetoothServices.Authentication);
-                        controlCharacteristic = cgmService.getCharacteristic(BluetoothServices.Control);
-                        commCharacteristic = cgmService.getCharacteristic(BluetoothServices.Communication);
+                        if (cgmService != null) {
+                            authCharacteristic = cgmService.getCharacteristic(BluetoothServices.Authentication);
+                            controlCharacteristic = cgmService.getCharacteristic(BluetoothServices.Control);
+                            commCharacteristic = cgmService.getCharacteristic(BluetoothServices.Communication);
+                        }
                         mBluetoothAdapter.cancelDiscovery();
                     }
 
