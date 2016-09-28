@@ -134,7 +134,7 @@ public class CalibrationGraph extends ActivityWithMenu {
     public boolean onCreateOptionsMenu(Menu menu) {
 
         //Just generate the menu in engineering mode
-        if (Home.getPreferencesBooleanDefaultFalse("engineering_mode")){
+        if (!Home.getPreferencesBooleanDefaultFalse("engineering_mode")){
             return false;
         }
 
