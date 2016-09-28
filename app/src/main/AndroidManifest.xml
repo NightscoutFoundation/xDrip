@@ -37,7 +37,7 @@
 
     <application
         android:name=".xdrip"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
