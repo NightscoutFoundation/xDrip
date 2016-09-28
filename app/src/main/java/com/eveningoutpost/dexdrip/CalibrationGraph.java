@@ -133,11 +133,8 @@ public class CalibrationGraph extends ActivityWithMenu {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
-
-
         //Just generate the menu in engineering mode
-        if (!prefs.getBoolean("engineering_mode", false)){
+        if (Home.getPreferencesBooleanDefaultFalse("engineering_mode")){
             return false;
         }
 
@@ -179,7 +176,7 @@ public class CalibrationGraph extends ActivityWithMenu {
                     public void onClick(DialogInterface dialog, int which) {
                         String text = editText.getText().toString();
                         if (!TextUtils.isEmpty(text)) {
-                            double doubleValue = Double.parseDouble(text);
+                            double doubleValue = JoH.tolerantParseDouble(text);
                             Calibration calibration = Calibration.lastValid();
                             calibration.intercept = doubleValue;
                             calibration.save();
@@ -211,7 +208,7 @@ public class CalibrationGraph extends ActivityWithMenu {
                     public void onClick(DialogInterface dialog, int which) {
                         String text = editText.getText().toString();
                         if (!TextUtils.isEmpty(text)) {
-                            double doubleValue = Double.parseDouble(text);
+                            double doubleValue = JoH.tolerantParseDouble(text);
                             Calibration calibration = Calibration.lastValid();
                             calibration.slope = doubleValue;
                             calibration.save();
