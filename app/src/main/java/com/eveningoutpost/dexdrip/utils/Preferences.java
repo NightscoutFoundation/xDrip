@@ -555,6 +555,7 @@ public class Preferences extends PreferenceActivity {
             addPreferencesFromResource(R.xml.xdrip_plus_prefs);
 
             bindPreferenceSummaryToValue(findPreference("persistent_high_threshold_mins"));
+            bindPreferenceSummaryToValue(findPreference("persistent_high_repeat_mins"));
 
             bindPreferenceTitleAppendToValueUpdateChannel(findPreference("update_channel"));
 

@@ -193,6 +193,13 @@
                         android:key="persistent_high_threshold_mins"
                         android:numeric="integer"
                         android:title="@string/for_longer_than_minutes" />
+                    <EditTextPreference
+                        android:defaultValue="20"
+                        android:dependency="persistent_high_alert_enabled"
+                        android:inputType="number"
+                        android:key="persistent_high_repeat_mins"
+                        android:numeric="integer"
+                        android:title="Repeating max every (minutes)" />
                     <RingtonePreference
                         android:defaultValue="content://settings/system/notification_sound"
                         android:dependency="persistent_high_alert_enabled"

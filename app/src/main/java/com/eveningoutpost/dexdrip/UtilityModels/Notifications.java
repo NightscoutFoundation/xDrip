@@ -695,7 +695,15 @@ public class Notifications extends IntentService {
         final String type = "persistent_high_alert";
         if (on) {
             if ((Home.getPreferencesLong("alerts_disabled_until", 0) < JoH.tsl()) && (Home.getPreferencesLong("high_alerts_disabled_until", 0) < JoH.tsl())) {
-                OtherAlert(context, type, msg, persistentHighAlertNotificationId, 20);
+                int snooze_time = 20;
+                try {
+                    snooze_time = Integer.parseInt(Home.getPreferencesStringWithDefault("persistent_high_repeat_mins", "20"));
+                } catch (NumberFormatException e) {
+                    Log.e(TAG, "Invalid snooze time for persistent high");
+                }
+                if (snooze_time < 1) snooze_time = 1;       // not less than 1 minute
+                if (snooze_time > 1440) snooze_time = 1440; // not more than 1 day
+                OtherAlert(context, type, msg, persistentHighAlertNotificationId, snooze_time);
             } else {
                 Log.ueh(TAG, "Not persistent high alerting due to snooze: " + msg);
             }
