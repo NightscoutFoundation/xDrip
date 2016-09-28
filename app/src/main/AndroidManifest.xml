@@ -308,6 +308,7 @@
 
         <activity
             android:name=".AlertList"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_alert_list" />
         <activity
             android:name=".ErrorsActivity"
