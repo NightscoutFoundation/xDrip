@@ -305,7 +305,8 @@ public class AlertType extends Model {
             int end_time_minutes,
             boolean override_silent_mode,
             int snooze,
-            boolean vibrate) {
+            boolean vibrate,
+            boolean active) {
         AlertType at = new AlertType();
         at.name = name;
         at.above = above;
@@ -313,7 +314,7 @@ public class AlertType extends Model {
         at.all_day = all_day;
         at.minutes_between = minutes_between;
         at.uuid = uuid != null? uuid : UUID.randomUUID().toString();
-        at.active = true;
+        at.active = active;
         at.mp3_file = mp3_file;
         at.start_time_minutes = start_time_minutes;
         at.end_time_minutes = end_time_minutes;
@@ -335,12 +336,8 @@ public class AlertType extends Model {
             int end_time_minutes,
             boolean override_silent_mode,
             int snooze,
-            boolean vibrate) {
-
-/*        if(uuid.equals(LOW_ALERT_55)) {
-            // This alert can not be removed/updated
-            return;
-        }*/
+            boolean vibrate,
+            boolean active) {
 
         fixUpTable();
 
@@ -351,7 +348,7 @@ public class AlertType extends Model {
         at.all_day = all_day;
         at.minutes_between = minutes_between;
         at.uuid = uuid;
-        at.active = true;
+        at.active = active;
         at.mp3_file = mp3_file;
         at.start_time_minutes = start_time_minutes;
         at.end_time_minutes = end_time_minutes;
@@ -361,10 +358,6 @@ public class AlertType extends Model {
         at.save();
     }
     public static void remove_alert(String uuid) {
-  /*      if(uuid.equals(LOW_ALERT_55)) {
-            // This alert can not be removed/updated
-            return;
-        }*/
         AlertType alert = get_alert(uuid);
 		if(alert != null) {
 	        alert.delete();
@@ -411,13 +404,24 @@ public class AlertType extends Model {
         return alerts;
     }
 
-
+    public static boolean activeLowAlertExists() {
+        List<AlertType> alerts = getAll(false);
+        if(alerts == null) {
+            return false;
+        }
+        for (AlertType alert : alerts) {
+            if(alert.active) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     // This function is used to make sure that we always have a static alert on 55 low.
     // This alert will not be editable/removable.
     public static void CreateStaticAlerts() {
         if(get_alert(LOW_ALERT_55) == null) {
-            add_alert(LOW_ALERT_55, "low alert ", false, 55, true, 1, null, 0, 0, true, 20, true);
+            add_alert(LOW_ALERT_55, "low alert ", false, 55, true, 1, null, 0, 0, true, 20, true, true);
         }
     }
 
@@ -425,9 +429,9 @@ public class AlertType extends Model {
     public static void testAll(Context context) {
 
         remove_all();
-        add_alert(null, "high alert 1", true, 180, true, 10, null, 0, 0, true, 20, true);
-        add_alert(null, "high alert 2", true, 200, true, 10, null, 0, 0, true, 20, true);
-        add_alert(null, "high alert 3", true, 220, true, 10, null, 0, 0, true, 20, true);
+        add_alert(null, "high alert 1", true, 180, true, 10, null, 0, 0, true, 20, true, true);
+        add_alert(null, "high alert 2", true, 200, true, 10, null, 0, 0, true, 20, true, true);
+        add_alert(null, "high alert 3", true, 220, true, 10, null, 0, 0, true, 20, true, true);
         print_all();
         AlertType a1 = get_highest_active_alert(context, 190);
         Log.d(TAG, "a1 = " + a1.toString());
@@ -438,8 +442,8 @@ public class AlertType extends Model {
         AlertType a3 = get_alert(a1.uuid);
         Log.d(TAG, "a1 == a3 ? need to see true " + (a1==a3) + a1 + " " + a3);
 
-        add_alert(null, "low alert 1", false, 80, true, 10, null, 0, 0, true, 20, true);
-        add_alert(null, "low alert 2", false, 60, true, 10, null, 0, 0, true, 20, true);
+        add_alert(null, "low alert 1", false, 80, true, 10, null, 0, 0, true, 20, true, true);
+        add_alert(null, "low alert 2", false, 60, true, 10, null, 0, 0, true, 20, true, true);
 
         AlertType al1 = get_highest_active_alert(context, 90);
         Log.d(TAG, "al1 should be null  " + al1);
