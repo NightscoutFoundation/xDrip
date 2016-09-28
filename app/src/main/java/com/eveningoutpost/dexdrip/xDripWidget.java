@@ -5,10 +5,12 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -77,6 +79,7 @@ public class xDripWidget extends AppWidgetProvider {
         BgReading lastBgreading = BgReading.lastNoSenssor();
 
         final boolean showLines = Home.getPreferencesBoolean("widget_range_lines", false);
+        final boolean showExstraStatus = Home.getPreferencesBoolean("extra_status_line", false) && Home.getPreferencesBoolean("widget_status_line", false);
 
         if (lastBgreading != null) {
             double estimate = 0;
@@ -160,6 +163,13 @@ public class xDripWidget extends AppWidgetProvider {
                     views.setTextColor(R.id.readingAge, Color.WHITE);
                 }
 
+                if(showExstraStatus) {
+                    views.setTextViewText(R.id.widgetStatusLine, Home.extraStatusLine());
+                    views.setViewVisibility(R.id.widgetStatusLine, View.VISIBLE);
+                } else {
+                    views.setTextViewText(R.id.widgetStatusLine, "");
+                    views.setViewVisibility(R.id.widgetStatusLine, View.GONE);
+                }
                 if (bgGraphBuilder.unitized(estimate) <= bgGraphBuilder.lowMark) {
                     views.setTextColor(R.id.widgetBg, Color.parseColor("#C30909"));
                     views.setTextColor(R.id.widgetDelta, Color.parseColor("#C30909"));
