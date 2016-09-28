@@ -126,7 +126,15 @@ public class UndoRedo {
                     return true;
                 }
 
-                // TODO do same for calibrations
+                // TODO do same for calibrations - not complete yet
+                if (item.Calibration_uuid != null) {
+                    JoH.static_toast_short("Cannot Redo calibrations yet :(");
+                    //undo_queue.add(item);
+                    redo_queue.remove(location);
+                    return true;
+                }
+
+
             }
             return false;
         }  else { return false; }

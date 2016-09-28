@@ -484,7 +484,8 @@ public class Home extends ActivityWithMenu {
             //calintent.setClassName("com.eveningoutpost.dexdrip", "com.eveningoutpost.dexdrip.AddCalibration");
             calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             calintent.putExtra("bg_string", JoH.qs(glucosenumber));
-            calintent.putExtra("bg_age", Long.toString((long) (glucosenumber / 1000)));
+            calintent.putExtra("bg_age", Long.toString((long) (timeoffset / 1000)));
+            calintent.putExtra("allow_undo", "true");
             getApplicationContext().startActivity(calintent);
             Log.d(TAG, "ProcessCalibrationNoUI number: " + glucosenumber + " offset: " + timeoffset);
         }
@@ -1363,7 +1364,7 @@ public class Home extends ActivityWithMenu {
 
                 @Override
                 public int getOpacity() {
-                    return 0;
+                    return 0; // TODO Which pixel format should this be?
                 }
             };
             chart.setBackground(background);
