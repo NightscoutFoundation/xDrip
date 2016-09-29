@@ -50,6 +50,26 @@ class DexParameters extends SlopeParameters {
 
 }
 
+class DexParametersAdrian extends SlopeParameters {
+
+    /*
+    * Other default vlaues and thresholds that can be only activated in settings, when in engineering mode.
+    * */
+
+    DexParametersAdrian() {
+        LOW_SLOPE_1 = 0.75;
+        LOW_SLOPE_2 = 0.70;
+        HIGH_SLOPE_1 = 1.3;
+        HIGH_SLOPE_2 = 1.4;
+        DEFAULT_LOW_SLOPE_LOW = 75;
+        DEFAULT_LOW_SLOPE_HIGH = 70;
+        DEFAULT_SLOPE = 1;
+        DEFAULT_HIGH_SLOPE_HIGH = 1.3;
+        DEFAUL_HIGH_SLOPE_LOW = 1.2;
+    }
+
+}
+
 class LiParameters extends SlopeParameters {
     LiParameters() {
         LOW_SLOPE_1 = 1;
@@ -593,7 +613,17 @@ public class Calibration extends Model {
 
     @NonNull
     private static SlopeParameters getSlopeParameters() {
-        return CollectionServiceStarter.isLimitter() ? new LiParameters() : new DexParameters();
+
+        if (CollectionServiceStarter.isLimitter()) {
+            return new LiParameters();
+        }
+
+        if (Home.getPreferencesBooleanDefaultFalse("engineering_mode") && Home.getPreferencesBooleanDefaultFalse("adrian_calibration_mode")) {
+            JoH.static_toast_long("Using possibly UNSAFE Adrian calibration mode!");
+            return new DexParametersAdrian();
+        }
+
+        return new DexParameters();
     }
 
     private double slopeOOBHandler(int status) {
