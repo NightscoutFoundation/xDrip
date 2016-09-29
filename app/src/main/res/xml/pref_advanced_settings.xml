@@ -154,6 +154,13 @@
                     android:targetClass="com.eveningoutpost.dexdrip.ErrorsActivity"
                     android:targetPackage="@string/local_target_package" />
             </Preference>
+            <EditTextPreference
+            android:defaultValue=""
+            android:dialogMessage="@string/extra_tags_dialog_message"
+            android:dialogTitle="@string/extra_tags_dialog_title"
+            android:inputType="textUri"
+            android:key="extra_tags_for_logging"
+            android:title="@string/extra_tags_for_logging"/>
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_speak_readings_settings"
             android:icon="@drawable/ic_speak_reading_grey600_48dp"
