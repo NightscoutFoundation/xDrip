@@ -943,11 +943,15 @@ public class G5CollectionService extends Service {
                         android.util.Log.i(TAG, "onServicesDiscovered On Main Thread? " + isOnMainThread());
                         Log.e(TAG, "onServicesDiscovered: " + status);
                         if (status == BluetoothGatt.GATT_SUCCESS) {
-                            cgmService = mGatt.getService(BluetoothServices.CGMService);
-                            authCharacteristic = cgmService.getCharacteristic(BluetoothServices.Authentication);
-                            controlCharacteristic = cgmService.getCharacteristic(BluetoothServices.Control);
-                            commCharacteristic = cgmService.getCharacteristic(BluetoothServices.Communication);
-                            mBluetoothAdapter.cancelDiscovery();
+                            if (mGatt != null) {
+                                cgmService = mGatt.getService(BluetoothServices.CGMService);
+                                if (cgmService != null) {
+                                    authCharacteristic = cgmService.getCharacteristic(BluetoothServices.Authentication);
+                                    controlCharacteristic = cgmService.getCharacteristic(BluetoothServices.Control);
+                                    commCharacteristic = cgmService.getCharacteristic(BluetoothServices.Communication);
+                                }
+                                mBluetoothAdapter.cancelDiscovery();
+                            }
 
                             //TODO : ADD option in settings!
                             if (alwaysAuthenticate() || alwaysUnbond()) {
@@ -969,11 +973,15 @@ public class G5CollectionService extends Service {
                 android.util.Log.i(TAG, "onServicesDiscovered On Main Thread? " + isOnMainThread());
                 Log.e(TAG, "onServicesDiscovered: " + status);
                 if (status == BluetoothGatt.GATT_SUCCESS) {
-                    cgmService = mGatt.getService(BluetoothServices.CGMService);
-                    authCharacteristic = cgmService.getCharacteristic(BluetoothServices.Authentication);
-                    controlCharacteristic = cgmService.getCharacteristic(BluetoothServices.Control);
-                    commCharacteristic = cgmService.getCharacteristic(BluetoothServices.Communication);
-                    mBluetoothAdapter.cancelDiscovery();
+                    if (mGatt != null) {
+                        cgmService = mGatt.getService(BluetoothServices.CGMService);
+                        if (cgmService != null) {
+                            authCharacteristic = cgmService.getCharacteristic(BluetoothServices.Authentication);
+                            controlCharacteristic = cgmService.getCharacteristic(BluetoothServices.Control);
+                            commCharacteristic = cgmService.getCharacteristic(BluetoothServices.Communication);
+                        }
+                        mBluetoothAdapter.cancelDiscovery();
+                    }
 
                     //TODO : ADD option in settings!
                     if (alwaysAuthenticate() || alwaysUnbond()) {

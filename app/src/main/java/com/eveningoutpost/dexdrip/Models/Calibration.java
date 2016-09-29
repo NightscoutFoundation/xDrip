@@ -22,6 +22,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -60,6 +61,20 @@ class LiParameters extends SlopeParameters {
         DEFAULT_SLOPE = 1;
         DEFAULT_HIGH_SLOPE_HIGH = 1;
         DEFAUL_HIGH_SLOPE_LOW = 1;
+    }
+}
+
+class TestParameters extends SlopeParameters {
+    TestParameters() {
+        LOW_SLOPE_1 = 0.85; //0.95
+        LOW_SLOPE_2 = 0.80; //0.85
+        HIGH_SLOPE_1 = 1.3;
+        HIGH_SLOPE_2 = 1.4;
+        DEFAULT_LOW_SLOPE_LOW = 0.9; //1.08
+        DEFAULT_LOW_SLOPE_HIGH = 0.95; //1.15
+        DEFAULT_SLOPE = 1;
+        DEFAULT_HIGH_SLOPE_HIGH = 1.3;
+        DEFAUL_HIGH_SLOPE_LOW = 1.2;
     }
 }
 
@@ -181,7 +196,7 @@ public class Calibration extends Model {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String unit = prefs.getString("units", "mgdl");
 
-        if(unit.compareTo("mgdl") != 0 ) {
+        if (unit.compareTo("mgdl") != 0) {
             bg1 = bg1 * Constants.MMOLL_TO_MGDL;
             bg2 = bg2 * Constants.MMOLL_TO_MGDL;
         }
@@ -247,7 +262,7 @@ public class Calibration extends Model {
         calibrations.add(lowerCalibration);
         calibrations.add(higherCalibration);
 
-        for(Calibration calibration : calibrations) {
+        for (Calibration calibration : calibrations) {
             calibration.timestamp = new Date().getTime();
             calibration.sensor_uuid = sensor.uuid;
             calibration.slope_confidence = .5;
@@ -268,8 +283,14 @@ public class Calibration extends Model {
     }
 
     //Create Calibration Checkin
-    public static void create(CalRecord[] calRecords, long addativeOffset, Context context) { create(calRecords, context, false, addativeOffset); }
-    public static void create(CalRecord[] calRecords, Context context) { create(calRecords, context, false, 0); }
+    public static void create(CalRecord[] calRecords, long addativeOffset, Context context) {
+        create(calRecords, context, false, addativeOffset);
+    }
+
+    public static void create(CalRecord[] calRecords, Context context) {
+        create(calRecords, context, false, 0);
+    }
+
     public static void create(CalRecord[] calRecords, Context context, boolean override, long addativeOffset) {
         //TODO: Change calibration.last and other queries to order calibrations by timestamp rather than ID
         Log.i("CALIBRATION-CHECK-IN: ", "Creating Calibration Record");
@@ -282,7 +303,7 @@ public class Calibration extends Model {
 
         double calIntercept = (((secondCalRecord.getScale() * secondCalRecord.getIntercept()) / secondCalRecord.getSlope()) + ((3 * firstCalRecord.getScale() * firstCalRecord.getIntercept()) / firstCalRecord.getSlope())) / -4;
         if (sensor != null) {
-            for(int i = 0; i < firstCalRecord.getCalSubrecords().length - 1; i++) {
+            for (int i = 0; i < firstCalRecord.getCalSubrecords().length - 1; i++) {
                 if (((firstCalRecord.getCalSubrecords()[i] != null && Calibration.is_new(firstCalRecord.getCalSubrecords()[i], addativeOffset))) || (i == 0 && override)) {
                     CalSubrecord calSubrecord = firstCalRecord.getCalSubrecords()[i];
 
@@ -324,8 +345,8 @@ public class Calibration extends Model {
                     Calibration.requestCalibrationIfRangeTooNarrow();
                 }
             }
-            if(firstCalRecord.getCalSubrecords()[0] != null && firstCalRecord.getCalSubrecords()[2] == null) {
-                if(Calibration.latest(2).size() == 1) {
+            if (firstCalRecord.getCalSubrecords()[0] != null && firstCalRecord.getCalSubrecords()[2] == null) {
+                if (Calibration.latest(2).size() == 1) {
                     Calibration.create(calRecords, context, true, 0);
                 }
             }
@@ -341,7 +362,7 @@ public class Calibration extends Model {
                 .where("timestamp <= ?", calSubrecord.getDateEntered().getTime() + addativeOffset + (1000 * 60 * 2))
                 .orderBy("timestamp desc")
                 .executeSingle();
-        if(calibration != null && Math.abs(calibration.timestamp - (calSubrecord.getDateEntered().getTime() + addativeOffset)) < (4*60*1000)) {
+        if (calibration != null && Math.abs(calibration.timestamp - (calSubrecord.getDateEntered().getTime() + addativeOffset)) < (4 * 60 * 1000)) {
             Log.d("CAL CHECK IN ", "Already have that calibration!");
             return false;
         } else {
@@ -349,6 +370,7 @@ public class Calibration extends Model {
             return true;
         }
     }
+
     public static Calibration getForTimestamp(double timestamp) {
         Sensor sensor = Sensor.currentSensor();
         return new Select()
@@ -362,18 +384,21 @@ public class Calibration extends Model {
     }
 
     // without timeoffset
-    public static Calibration create(double bg,  Context context) {
+    public static Calibration create(double bg, Context context) {
         return create(bg, 0, context);
 
     }
 
-
     public static Calibration create(double bg, long timeoffset, Context context) {
+        return create(bg, timeoffset, context, false);
+    }
+
+    public static Calibration create(double bg, long timeoffset, Context context, boolean note_only) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final String unit = prefs.getString("units", "mgdl");
         final boolean adjustPast = prefs.getBoolean("rewrite_history", true);
 
-        if(unit.compareTo("mgdl") != 0 ) {
+        if (unit.compareTo("mgdl") != 0) {
             bg = bg * Constants.MMOLL_TO_MGDL;
         }
 
@@ -383,7 +408,7 @@ public class Calibration extends Model {
             return null;
         }
 
-        CalibrationRequest.clearAll();
+        if (!note_only) CalibrationRequest.clearAll();
         Calibration calibration = new Calibration();
         Sensor sensor = Sensor.currentSensor();
 
@@ -420,32 +445,38 @@ public class Calibration extends Model {
                     calibration.estimate_raw_at_time_of_calibration = estimated_raw_bg;
                 }
                 calibration.distance_from_estimate = Math.abs(calibration.bg - bgReading.calculated_value);
-                calibration.sensor_confidence = Math.max(((-0.0018 * bg * bg) + (0.6657 * bg) + 36.7505) / 100, 0);
+                if (!note_only) {
+                    calibration.sensor_confidence = Math.max(((-0.0018 * bg * bg) + (0.6657 * bg) + 36.7505) / 100, 0);
+                } else {
+                    calibration.sensor_confidence = 0; // exclude from calibrations but show on graph
+                }
                 calibration.sensor_age_at_time_of_estimation = calibration.timestamp - sensor.started_at;
                 calibration.uuid = UUID.randomUUID().toString();
                 calibration.save();
 
-                bgReading.calibration = calibration;
-                bgReading.calibration_flag = true;
-                bgReading.save();
+                if (!note_only) {
+                    bgReading.calibration = calibration;
+                    bgReading.calibration_flag = true;
+                    bgReading.save();
+                }
 
                 if (!is_follower) {
                     BgSendQueue.handleNewBgReading(bgReading, "update", context);
                     // TODO probably should add a more fine grained prefs option in future
-                    calculate_w_l_s(prefs.getBoolean("infrequent_calibration",false));
+                    calculate_w_l_s(prefs.getBoolean("infrequent_calibration", false));
                     adjustRecentBgReadings(adjustPast ? 30 : 2);
                     CalibrationSendQueue.addToQueue(calibration, context);
                     context.startService(new Intent(context, Notifications.class));
                     Calibration.requestCalibrationIfRangeTooNarrow();
                 } else {
-                    Log.d(TAG,"Follower so not processing calibration deeply");
+                    Log.d(TAG, "Follower so not processing calibration deeply");
                 }
             } else {
                 // we couldn't get a reading close enough to the calibration timestamp
                 if (!is_follower) {
                     JoH.static_toast(context, "No close enough reading for Calib (15 min)", Toast.LENGTH_LONG);
-                    }
                 }
+            }
         } else {
             Log.d("CALIBRATION", "No sensor, cant save!");
         }
@@ -454,7 +485,9 @@ public class Calibration extends Model {
 
     public static List<Calibration> allForSensorInLastFiveDays() {
         Sensor sensor = Sensor.currentSensor();
-        if (sensor == null) { return null; }
+        if (sensor == null) {
+            return null;
+        }
         return new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())
@@ -482,16 +515,14 @@ public class Calibration extends Model {
 
             List<Calibration> calibrations = allForSensorInLastFourDays(); //5 days was a bit much, dropped this to 4
 
-            if (calibrations == null)
-            {
-                Log.e(TAG,"Somehow ended up with null calibration list!");
+            if (calibrations == null) {
+                Log.e(TAG, "Somehow ended up with null calibration list!");
                 Home.toaststatic("Somehow ended up with null calibration list!");
                 return;
             }
 
             // less than 5 calibrations in last 4 days? cast the net wider if in extended mode
-            if ((calibrations.size() < 5) && extended)
-            {
+            if ((calibrations.size() < 5) && extended) {
                 calibrations = allForSensorLimited(5);
                 if (calibrations.size() >= 5) {
                     Home.toaststaticnext("Calibrated using data beyond last 4 days");
@@ -528,21 +559,24 @@ public class Calibration extends Model {
                 calibration.slope = ((l * q) - (m * p)) / d;
                 if ((calibrations.size() == 2 && calibration.slope < sParams.getLowSlope1()) || (calibration.slope < sParams.getLowSlope2())) { // I have not seen a case where a value below 7.5 proved to be accurate but we should keep an eye on this
                     calibration.slope = calibration.slopeOOBHandler(0);
-                    if(calibrations.size() > 2) { calibration.possible_bad = true; }
+                    if (calibrations.size() > 2) {
+                        calibration.possible_bad = true;
+                    }
                     calibration.intercept = calibration.bg - (calibration.estimate_raw_at_time_of_calibration * calibration.slope);
                     CalibrationRequest.createOffset(calibration.bg, 25);
                 }
                 if ((calibrations.size() == 2 && calibration.slope > sParams.getHighSlope1()) || (calibration.slope > sParams.getHighSlope2())) {
                     calibration.slope = calibration.slopeOOBHandler(1);
-                    if(calibrations.size() > 2) { calibration.possible_bad = true; }
+                    if (calibrations.size() > 2) {
+                        calibration.possible_bad = true;
+                    }
                     calibration.intercept = calibration.bg - (calibration.estimate_raw_at_time_of_calibration * calibration.slope);
                     CalibrationRequest.createOffset(calibration.bg, 25);
                 }
                 Log.d(TAG, "Calculated Calibration Slope: " + calibration.slope);
                 Log.d(TAG, "Calculated Calibration intercept: " + calibration.intercept);
 
-                if ((calibration.slope == 0) && (calibration.intercept == 0))
-                {
+                if ((calibration.slope == 0) && (calibration.intercept == 0)) {
                     calibration.sensor_confidence = 0;
                     calibration.slope_confidence = 0;
                     Home.toaststaticnext("Got invalid zero slope calibration!");
@@ -566,10 +600,10 @@ public class Calibration extends Model {
 
         SlopeParameters sParams = getSlopeParameters();
 
-    // If the last slope was reasonable and reasonably close, use that, otherwise use a slope that may be a little steep, but its best to play it safe when uncertain
+        // If the last slope was reasonable and reasonably close, use that, otherwise use a slope that may be a little steep, but its best to play it safe when uncertain
         List<Calibration> calibrations = Calibration.latest(3);
         Calibration thisCalibration = calibrations.get(0);
-        if(status == 0) {
+        if (status == 0) {
             if (calibrations.size() == 3) {
                 if ((Math.abs(thisCalibration.bg - thisCalibration.estimate_bg_at_time_of_calibration) < 30) && (calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad == true)) {
                     return calibrations.get(1).slope;
@@ -605,8 +639,8 @@ public class Calibration extends Model {
     }
 
     private double calculateWeight() {
-        double firstTimeStarted =   Calibration.first().sensor_age_at_time_of_estimation;
-        double lastTimeStarted =   Calibration.last().sensor_age_at_time_of_estimation;
+        double firstTimeStarted = Calibration.first().sensor_age_at_time_of_estimation;
+        double lastTimeStarted = Calibration.last().sensor_age_at_time_of_estimation;
         double time_percentage = Math.min(((sensor_age_at_time_of_estimation - firstTimeStarted) / (lastTimeStarted - firstTimeStarted)) / (.85), 1);
         time_percentage = (time_percentage + .01);
         Log.i(TAG, "CALIBRATIONS TIME PERCENTAGE WEIGHT: " + time_percentage);
@@ -697,7 +731,7 @@ public class Calibration extends Model {
         CalibrationRequest.clearAll();
         List<Calibration> pastCalibrations = Calibration.allForSensor();
         if (pastCalibrations != null) {
-            for(Calibration calibration : pastCalibrations){
+            for (Calibration calibration : pastCalibrations) {
                 calibration.slope_confidence = 0;
                 calibration.sensor_confidence = 0;
                 calibration.save();
@@ -709,15 +743,14 @@ public class Calibration extends Model {
     public static void clearLastCalibration() {
         CalibrationRequest.clearAll();
         Log.d(TAG, "Trying to clear last calibration");
-                Calibration calibration = Calibration.last();
-                        if (calibration != null) {
-                            calibration.slope_confidence = 0;
-                            calibration.sensor_confidence = 0;
-                            calibration.save();
-                            CalibrationSendQueue.addToQueue(calibration, xdrip.getAppContext());
-                        }
-            }
-
+        Calibration calibration = Calibration.last();
+        if (calibration != null) {
+            calibration.slope_confidence = 0;
+            calibration.sensor_confidence = 0;
+            calibration.save();
+            CalibrationSendQueue.addToQueue(calibration, xdrip.getAppContext());
+        }
+    }
 
 
     public String toS() {
@@ -738,18 +771,15 @@ public class Calibration extends Model {
                 .executeSingle();
     }
 
-    public static void clear_byuuid(String uuid,boolean from_interactive)
-    {
+    public static void clear_byuuid(String uuid, boolean from_interactive) {
         if (uuid == null) return;
         Calibration calibration = byuuid(uuid);
-        if (calibration!=null)
-        {
+        if (calibration != null) {
             calibration.slope_confidence = 0;
             calibration.sensor_confidence = 0;
             calibration.save();
             CalibrationSendQueue.addToQueue(calibration, xdrip.getAppContext());
-            if (from_interactive)
-            {
+            if (from_interactive) {
                 GcmActivity.clearLastCalibration();
             }
         }
@@ -758,7 +788,7 @@ public class Calibration extends Model {
     //COMMON SCOPES!
     public static Calibration last() {
         Sensor sensor = Sensor.currentSensor();
-        if(sensor == null) {
+        if (sensor == null) {
             return null;
         }
         return new Select()
@@ -770,7 +800,7 @@ public class Calibration extends Model {
 
     public static Calibration lastValid() {
         Sensor sensor = Sensor.currentSensor();
-        if(sensor == null) {
+        if (sensor == null) {
             return null;
         }
         return new Select()
@@ -793,6 +823,7 @@ public class Calibration extends Model {
                 .orderBy("timestamp asc")
                 .executeSingle();
     }
+
     public static double max_recent() {
         Sensor sensor = Sensor.currentSensor();
         Calibration calibration = new Select()
@@ -803,7 +834,7 @@ public class Calibration extends Model {
                 .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 4)))
                 .orderBy("bg desc")
                 .executeSingle();
-        if(calibration != null) {
+        if (calibration != null) {
             return calibration.bg;
         } else {
             return 120;
@@ -820,7 +851,7 @@ public class Calibration extends Model {
                 .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 4)))
                 .orderBy("bg asc")
                 .executeSingle();
-        if(calibration != null) {
+        if (calibration != null) {
             return calibration.bg;
         } else {
             return 100;
@@ -829,7 +860,9 @@ public class Calibration extends Model {
 
     public static List<Calibration> latest(int number) {
         Sensor sensor = Sensor.currentSensor();
-        if (sensor == null) { return null; }
+        if (sensor == null) {
+            return null;
+        }
         return new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())
@@ -850,7 +883,9 @@ public class Calibration extends Model {
 
     public static List<Calibration> allForSensor() {
         Sensor sensor = Sensor.currentSensor();
-        if (sensor == null) { return null; }
+        if (sensor == null) {
+            return null;
+        }
         return new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())
@@ -862,7 +897,9 @@ public class Calibration extends Model {
 
     public static List<Calibration> allForSensorInLastFourDays() {
         Sensor sensor = Sensor.currentSensor();
-        if (sensor == null) { return null; }
+        if (sensor == null) {
+            return null;
+        }
         return new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())
@@ -875,7 +912,9 @@ public class Calibration extends Model {
 
     public static List<Calibration> allForSensorLimited(int limit) {
         Sensor sensor = Sensor.currentSensor();
-        if (sensor == null) { return null; }
+        if (sensor == null) {
+            return null;
+        }
         return new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())

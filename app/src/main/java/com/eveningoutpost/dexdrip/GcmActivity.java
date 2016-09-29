@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
@@ -174,6 +175,55 @@ public class GcmActivity extends Activity {
                 last_bridge_battery = battery;
             }
         }
+    }
+
+    private static void sendRealSnoozeToRemote() {
+        if (JoH.pratelimit("gcm-sra", 60)) {
+            String wifi_ssid = JoH.getWifiSSID();
+            if (wifi_ssid == null) wifi_ssid = "";
+            sendMessage("sra", Long.toString(JoH.tsl()) + "^" + JoH.base64encode(wifi_ssid));
+        }
+    }
+
+    public static void sendSnoozeToRemote() {
+        if ((Home.get_master() || Home.get_follower()) && (Home.getPreferencesBooleanDefaultFalse("send_snooze_to_remote"))
+                && (JoH.pratelimit("gcm-sra-maybe", 5))) {
+            if (Home.getPreferencesBooleanDefaultFalse("confirm_snooze_to_remote")) {
+                Home.startHomeWithExtra(xdrip.getAppContext(), Home.HOME_FULL_WAKEUP, "1");
+                Home.startHomeWithExtra(xdrip.getAppContext(), Home.SNOOZE_CONFIRM_DIALOG, "");
+            } else {
+                sendRealSnoozeToRemote();
+                UserError.Log.ueh(TAG, "Sent snooze to remote");
+            }
+        }
+    }
+
+    public static void sendSnoozeToRemoteWithConfirm(final Context context) {
+        final long when = JoH.tsl();
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Confirm Remote Snooze");
+        builder.setMessage("Are you sure you wish to snooze all other devices in your sync group?");
+        builder.setPositiveButton("YES, send it!", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                if ((JoH.tsl() - when) < 120000) {
+                    sendRealSnoozeToRemote();
+                    UserError.Log.ueh(TAG, "Sent snooze to remote after confirmation");
+                } else {
+                    JoH.static_toast_long("Took too long to confirm! Ignoring!");
+                    UserError.Log.ueh(TAG, "Ignored snooze confirmation as took > 2 minutes to confirm!");
+                }
+            }
+        });
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     public static void sendMotionUpdate(final long timestamp, final int activity) {

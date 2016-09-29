@@ -5,6 +5,8 @@ import android.content.Context;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
+import java.util.UUID;
+
 /**
  * Created by andy on 02/06/16.
  */
@@ -39,5 +41,11 @@ public interface PebbleDisplayInterface {
      * Init
      */
     void initDisplay(Context context, PebbleWatchSync pebbleWatchSync, BgGraphBuilder bgGraphBuilder);
+
+    /**
+     *
+     * Current UUID
+     */
+    UUID watchfaceUUID();
 
 }

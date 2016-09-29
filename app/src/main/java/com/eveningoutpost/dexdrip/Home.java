@@ -121,6 +121,7 @@ public class Home extends ActivityWithMenu {
     public final static String CREATE_TREATMENT_NOTE = "CREATE_TREATMENT_NOTE";
     public final static String HOME_FULL_WAKEUP = "HOME_FULL_WAKEUP";
     public final static String GCM_RESOLUTION_ACTIVITY = "GCM_RESOLUTION_ACTIVITY";
+    public final static String SNOOZE_CONFIRM_DIALOG = "SNOOZE_CONFIRM_DIALOG";
     public static String menu_name = "Home Screen";
     public static boolean activityVisible = false;
     public static boolean invalidateMenu = false;
@@ -483,7 +484,8 @@ public class Home extends ActivityWithMenu {
             //calintent.setClassName("com.eveningoutpost.dexdrip", "com.eveningoutpost.dexdrip.AddCalibration");
             calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             calintent.putExtra("bg_string", JoH.qs(glucosenumber));
-            calintent.putExtra("bg_age", Long.toString((long) (glucosenumber / 1000)));
+            calintent.putExtra("bg_age", Long.toString((long) (timeoffset / 1000)));
+            calintent.putExtra("allow_undo", "true");
             getApplicationContext().startActivity(calintent);
             Log.d(TAG, "ProcessCalibrationNoUI number: " + glucosenumber + " offset: " + timeoffset);
         }
@@ -577,6 +579,8 @@ public class Home extends ActivityWithMenu {
                 }
             } else if (bundle.getString(Home.GCM_RESOLUTION_ACTIVITY) != null) {
                 GcmActivity.checkPlayServices(this, this);
+            } else if (bundle.getString(Home.SNOOZE_CONFIRM_DIALOG) != null) {
+                GcmActivity.sendSnoozeToRemoteWithConfirm(this);
             }
         }
     }
@@ -956,7 +960,7 @@ public class Home extends ActivityWithMenu {
 
             case "time":
                 Log.d(TAG, "processing time keyword");
-                if ((timeset == false) && (thisnumber > 0)) {
+                if ((timeset == false) && (thisnumber >= 0)) {
 
                     final NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
                     final DecimalFormat df = (DecimalFormat)nf;
@@ -971,7 +975,7 @@ public class Home extends ActivityWithMenu {
                     final SimpleDateFormat simpleDateFormat1 =
                             new SimpleDateFormat("dd/M/yyyy ",Locale.US);
                     final SimpleDateFormat simpleDateFormat2 =
-                            new SimpleDateFormat("dd/M/yyyy hh.mm",Locale.US); // TODO double check 24 hour 12.00 etc
+                            new SimpleDateFormat("dd/M/yyyy HH.mm",Locale.US); // TODO double check 24 hour 12.00 etc
                     final String datenew = simpleDateFormat1.format(c.getTime()) + df.format(thisnumber);
 
                     Log.d(TAG, "Time Timing data datenew: " + datenew);
@@ -1360,7 +1364,7 @@ public class Home extends ActivityWithMenu {
 
                 @Override
                 public int getOpacity() {
-                    return 0;
+                    return 0; // TODO Which pixel format should this be?
                 }
             };
             chart.setBackground(background);
@@ -1368,7 +1372,7 @@ public class Home extends ActivityWithMenu {
         previewChart = (PreviewLineChartView) findViewById(R.id.chart_preview);
 
         chart.setLineChartData(bgGraphBuilder.lineData());
-        chart.setOnValueTouchListener(bgGraphBuilder.getOnValueSelectTooltipListener());
+        chart.setOnValueTouchListener(bgGraphBuilder.getOnValueSelectTooltipListener(true));
 
         previewChart.setBackgroundColor(getCol(X.color_home_chart_background));
         previewChart.setZoomType(ZoomType.HORIZONTAL);
@@ -1807,7 +1811,13 @@ public class Home extends ActivityWithMenu {
     }
 
     @NonNull
-    private String extraStatusLine() {
+    public static String extraStatusLine() {
+
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs==null) return "";
+
         StringBuilder extraline = new StringBuilder();
         Calibration lastCalibration = Calibration.lastValid();
         if (prefs.getBoolean("status_line_calibration_long", false) && lastCalibration != null) {
@@ -2008,9 +2018,14 @@ public class Home extends ActivityWithMenu {
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev){
+    public boolean dispatchTouchEvent(MotionEvent ev) {
         if (blockTouches) return true;
-        return super.dispatchTouchEvent(ev);
+        try {
+            return super.dispatchTouchEvent(ev);
+        } catch (Exception e) {
+            // !?
+            return false;
+        }
     }
 
     @Override
@@ -2268,8 +2283,11 @@ public class Home extends ActivityWithMenu {
     }
 
     public void checkForUpdate(MenuItem myitem) {
-        toast(getString(R.string.checking_for_update));
-        UpdateActivity.checkForAnUpdate(getApplicationContext());
+        if (JoH.ratelimit("manual-update-check",5)) {
+            toast(getString(R.string.checking_for_update));
+            UpdateActivity.last_check_time = -1;
+            UpdateActivity.checkForAnUpdate(getApplicationContext());
+        }
     }
 
     public void sendFeedback(MenuItem myitem) {

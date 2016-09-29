@@ -30,13 +30,14 @@
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
 
     <application
         android:name=".xdrip"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
@@ -230,6 +231,9 @@
             android:name=".UtilityModels.pebble.watchface.InstallPebbleClassicTrendWatchface"
             android:label="@string/install_pebble_classic_trend_watchface" />
         <activity
+            android:name=".UtilityModels.pebble.watchface.InstallPebbleTrendClayWatchFace"
+            android:label="Install Pebble Clay Watchface" />
+        <activity
             android:name=".UtilityModels.pebble.watchface.InstallPebbleSnoozeControlApp"
             android:label="@string/install_pebble_snooze_control_app" />
         <activity
@@ -304,6 +308,7 @@
 
         <activity
             android:name=".AlertList"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_alert_list" />
         <activity
             android:name=".ErrorsActivity"

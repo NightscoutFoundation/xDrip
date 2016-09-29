@@ -133,13 +133,23 @@ android {
     }
 }
 
-// jamorham auto test rig
-task jamorhamAutoInstall(type: Exec) {
-    // just comment out the line below if it causes compile problems
+// auto test rig
+task AutoInstall(type: Exec) {
     commandLine "bash", "$projectDir/autoinstallviausb"
 }
-assembleRelease.doLast {
-    jamorhamAutoInstall.execute()
+
+// auto tester
+tasks.whenTaskAdded { task ->
+    if (task.name == 'assembleRelease') {
+        if (System.getenv('USERDOMAIN') == "PC-PC") {
+            task.finalizedBy 'AutoTestRig'
+            AutoTestRig.outputs.upToDateWhen { false }
+        }
+    }
+}
+
+task AutoTestRig() << {
+    AutoInstall.execute()
 }
 
 dependencies {
@@ -182,6 +192,7 @@ dependencies {
     }
     compile 'uk.com.robust-it:cloning:1.9.2'
     compile 'com.github.amlcurran.showcaseview:library:5.4.3'
+   // compile 'com.itextpdf:itextg:5.5.9'
 
     // Pebble-Trend, needs to be checked if really needed
     //compile 'com.android.support:multidex:1.0.1'

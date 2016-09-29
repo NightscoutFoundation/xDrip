@@ -244,7 +244,7 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        if (mDrawerToggle != null) mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override

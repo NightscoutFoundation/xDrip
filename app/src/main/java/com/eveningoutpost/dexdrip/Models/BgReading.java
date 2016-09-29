@@ -129,9 +129,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     @Column(name = "sensor_uuid", index = true)
     public String sensor_uuid;
 
+    // mapped to the no longer used "synced" to keep DB Scheme compatible
     @Expose
     @Column(name = "snyced")
-    public boolean synced;
+    public boolean ignoreForStats;
 
     @Expose
     @Column(name = "raw_calculated")
@@ -254,7 +255,6 @@ public class BgReading extends Model implements ShareUploadableBg {
                 }
                 bgReading.uuid = UUID.randomUUID().toString();
                 bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
-                bgReading.synced = false;
                 bgReading.calculateAgeAdjustedRawValue();
                 bgReading.save();
             }
@@ -372,7 +372,6 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgReading.timestamp = timestamp;
             bgReading.uuid = UUID.randomUUID().toString();
             bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
-            bgReading.synced = false;
             bgReading.calibration_flag = false;
 
             bgReading.calculateAgeAdjustedRawValue();
@@ -390,7 +389,6 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgReading.timestamp = timestamp;
             bgReading.uuid = UUID.randomUUID().toString();
             bgReading.time_since_sensor_started = bgReading.timestamp - sensor.started_at;
-            bgReading.synced = false;
 
             bgReading.calculateAgeAdjustedRawValue();
 
@@ -427,8 +425,8 @@ public class BgReading extends Model implements ShareUploadableBg {
             if (!quick) {
                 bgReading.perform_calculations();
                 context.startService(new Intent(context, Notifications.class));
-                BgSendQueue.handleNewBgReading(bgReading, "create", context);
             }
+            BgSendQueue.handleNewBgReading(bgReading, "create", context, Home.get_follower(), quick);
         }
 
         Log.i("BG GSON: ", bgReading.toS());
@@ -835,7 +833,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     bgr.find_slope();
                     if (do_notification) {
                         xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
-                        BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), true); // pebble and widget
+                        BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), true, !do_notification); // pebble and widget
                     }
                 } else {
                     Log.d(TAG, "Ignoring duplicate bgr record due to timestamp: " + timestamp);

@@ -32,12 +32,14 @@
         <item>Standard Watchface (old)</item>
         <item>Color Trend Watchface</item>
         <item>Pebble Classic Trend Watchface</item>
+        <item>Pebble Trend Clay Version (test)</item>
     </string-array>
     <string-array name="SendToPebbleChoiceValues">
 
         <item>2</item>
         <item>3</item>
         <item>4</item>
+        <item>5</item>
     </string-array>
 
 

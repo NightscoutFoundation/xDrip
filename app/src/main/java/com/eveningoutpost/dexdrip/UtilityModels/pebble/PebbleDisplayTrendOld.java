@@ -163,15 +163,7 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
         }
     }
 
-    @Override
-    public void receiveAppData(int transactionId, PebbleDictionary data) {
-        Log.d(TAG, "receiveAppData: transactionId is " + String.valueOf(transactionId));
 
-        AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
-
-        PebbleKit.sendAckToPebble(this.context, transactionId);
-        JoH.static_toast_long("Alarm snoozed by pebble");
-    }
 
     private String lastBfReadingSent;
 

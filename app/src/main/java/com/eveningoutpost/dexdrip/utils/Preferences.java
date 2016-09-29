@@ -48,6 +48,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleClassicTrendWatchface;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleSnoozeControlApp;
+import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleTrendClayWatchFace;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleTrendWatchFace;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleWatchFace;
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
@@ -554,6 +555,7 @@ public class Preferences extends PreferenceActivity {
             addPreferencesFromResource(R.xml.xdrip_plus_prefs);
 
             bindPreferenceSummaryToValue(findPreference("persistent_high_threshold_mins"));
+            bindPreferenceSummaryToValue(findPreference("persistent_high_repeat_mins"));
 
             bindPreferenceTitleAppendToValueUpdateChannel(findPreference("update_channel"));
 
@@ -736,6 +738,8 @@ public class Preferences extends PreferenceActivity {
             final PreferenceScreen calibrationAlertsScreen = (PreferenceScreen) findPreference("calibration_alerts_screen");
             final PreferenceCategory alertsCategory = (PreferenceCategory) findPreference("alerts_category");
             final Preference disableAlertsStaleDataMinutes = findPreference("disable_alerts_stale_data_minutes");
+            final Preference widgetRangeLines = findPreference("widget_range_lines");
+
             disableAlertsStaleDataMinutes.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -932,43 +936,49 @@ public class Preferences extends PreferenceActivity {
                     }
             }
 
+            try {
 
-            if ((collectionType != DexCollectionType.WifiWixel)
-                    && (collectionType != DexCollectionType.WifiBlueToothWixel)
-                    && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
-                String receiversIpAddresses;
-                receiversIpAddresses = this.prefs.getString("wifi_recievers_addresses", "");
-                // only hide if non wifi wixel mode and value not previously set to cope with
-                // dynamic mode changes. jamorham
-                if (receiversIpAddresses == null || receiversIpAddresses.equals("")) {
-                    collectionCategory.removePreference(wifiRecievers);
+                if ((collectionType != DexCollectionType.WifiWixel)
+                        && (collectionType != DexCollectionType.WifiBlueToothWixel)
+                        && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
+                    String receiversIpAddresses;
+                    receiversIpAddresses = this.prefs.getString("wifi_recievers_addresses", "");
+                    // only hide if non wifi wixel mode and value not previously set to cope with
+                    // dynamic mode changes. jamorham
+                    if (receiversIpAddresses == null || receiversIpAddresses.equals("")) {
+                        collectionCategory.removePreference(wifiRecievers);
+                    }
                 }
+
+                if ((collectionType != DexCollectionType.DexbridgeWixel)
+                        && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
+                    collectionCategory.removePreference(transmitterId);
+                    // collectionCategory.removePreference(closeGatt);
+                }
+
+
+                if (collectionType == DexCollectionType.DexcomG5) {
+                    collectionCategory.addPreference(transmitterId);
+                    collectionCategory.addPreference(scanConstantly);
+                    collectionCategory.addPreference(reAuth);
+                    collectionCategory.addPreference(reBond);
+                    collectionCategory.addPreference(runOnMain);
+                } else {
+                    // collectionCategory.removePreference(transmitterId);
+                    collectionCategory.removePreference(scanConstantly);
+                    collectionCategory.removePreference(reAuth);
+                    collectionCategory.removePreference(reBond);
+                    collectionCategory.removePreference(runOnMain);
+                }
+
+                if (!engineering_mode) {
+                    getPreferenceScreen().removePreference(motionScreen);
+                }
+
+            } catch (NullPointerException e) {
+                Log.wtf(TAG, "Got null pointer exception removing pref: " + e);
             }
 
-            if ((collectionType != DexCollectionType.DexbridgeWixel)
-                    && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
-                collectionCategory.removePreference(transmitterId);
-               // collectionCategory.removePreference(closeGatt);
-            }
-
-
-            if (collectionType == DexCollectionType.DexcomG5) {
-                collectionCategory.addPreference(transmitterId);
-                collectionCategory.addPreference(scanConstantly);
-                collectionCategory.addPreference(reAuth);
-                collectionCategory.addPreference(reBond);
-                collectionCategory.addPreference(runOnMain);
-            } else {
-               // collectionCategory.removePreference(transmitterId);
-                collectionCategory.removePreference(scanConstantly);
-                collectionCategory.removePreference(reAuth);
-                collectionCategory.removePreference(reBond);
-                collectionCategory.removePreference(runOnMain);
-            }
-
-            if (!engineering_mode) {
-                getPreferenceScreen().removePreference(motionScreen);
-            }
             if (engineering_mode || this.prefs.getString("update_channel","").matches("alpha|nightly")) {
                 ListPreference update_channel = (ListPreference)findPreference("update_channel");
                 update_channel.setEntryValues(getResources().getStringArray(R.array.UpdateChannelE));
@@ -1014,7 +1024,7 @@ public class Preferences extends PreferenceActivity {
                 watchCategory.removePreference(pebbleSpecialText);
             }
 
-            if ((currentPebbleSync != 3) && (currentPebbleSync != 4)) {
+            if ((currentPebbleSync != 3) && (currentPebbleSync != 4) && (currentPebbleSync != 5)) {
                 watchCategory.removePreference(pebbleTrend);
                 watchCategory.removePreference(pebbleFilteredLine);
                 watchCategory.removePreference(pebbleTinyDots);
@@ -1046,6 +1056,7 @@ public class Preferences extends PreferenceActivity {
                     return true;
                 }
             });
+
 
             // Pebble Trend (just major change)
             pebbleSync2.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -1085,7 +1096,7 @@ public class Preferences extends PreferenceActivity {
                         }
 
                         // Add New one
-                        if ((pebbleType == 3) || (pebbleType == 4)) {
+                        if ((pebbleType == 3) || (pebbleType == 4) || (pebbleType == 5)) {
                             watchCategory.addPreference(pebbleTrend);
                             watchCategory.addPreference(pebbleFilteredLine);
                             watchCategory.addPreference(pebbleTinyDots);
@@ -1190,7 +1201,19 @@ public class Preferences extends PreferenceActivity {
             });
             // Pebble Trend -- END
 
-            //bindWidgetUpdater();
+            bindWidgetUpdater();
+
+
+            widgetRangeLines.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    Context context = preference.getContext();
+                    if(AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, xDripWidget.class)).length > 0){
+                        context.startService(new Intent(context, WidgetUpdateService.class));
+                    }
+                    return true;
+                }
+            });
 
 
             bindPreferenceSummaryToValue(transmitterId);
@@ -1325,6 +1348,21 @@ public class Preferences extends PreferenceActivity {
             });
         }
 
+        private void bindWidgetUpdater() {
+            findPreference("widget_range_lines").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("extra_status_line").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("widget_status_line").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("status_line_calibration_long").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("status_line_calibration_short").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("status_line_avg").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("status_line_a1c_dcct").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("status_line_a1c_ifcc").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("status_line_in").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("status_line_high").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("status_line_low").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("extra_status_line").setOnPreferenceChangeListener(new WidgetListener());
+        }
+
         private void update_force_english_title(String param) {
             String word;
             if (param.length() == 0) {
@@ -1374,6 +1412,9 @@ public class Preferences extends PreferenceActivity {
                     case 4:
                         builder.setMessage("Install Pebble Classic Trend Watchface?");
                         break;
+                    case 5:
+                        builder.setMessage("Install Pebble Clay Trend Watchface?");
+                        break;
                 }
 
 
@@ -1390,6 +1431,9 @@ public class Preferences extends PreferenceActivity {
                             break;
                         case 4:
                             context.startActivity(new Intent(context, InstallPebbleClassicTrendWatchface.class));
+                            break;
+                        case 5:
+                            context.startActivity(new Intent(context, InstallPebbleTrendClayWatchFace.class));
                             break;
                     }
 
@@ -1435,6 +1479,7 @@ public class Preferences extends PreferenceActivity {
             Log.d(TAG,"enablePebble called with: "+newValueInt+" "+enabled);
             if (pebbleType == 1) {
                 if (enabled && (newValueInt != 1)) {
+                    context.stopService(new Intent(context, PebbleWatchSync.class));
                     context.startService(new Intent(context, PebbleWatchSync.class));
                     Log.d(TAG,"Starting pebble service type: "+newValueInt);
                 }
@@ -1539,6 +1584,8 @@ public class Preferences extends PreferenceActivity {
             findPreference("other_alerts_snooze").setOnPreferenceChangeListener(sBgMissedAlertsHandler);
         }
 
+
+        // Will update the widget if any setting relevant to the widget gets changed.
         private static class WidgetListener implements Preference.OnPreferenceChangeListener {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {

@@ -3,7 +3,7 @@
 
     <PreferenceCategory
         android:key="xdrip_plus_category"
-        android:title="@string/xdrip_plus_extra_settings"/>
+        android:title="@string/xdrip_plus_extra_settings" />
     <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
         android:icon="@drawable/ic_chart_areaspline_grey600_48dp"
         android:key="xdrip_plus_display_settings"
@@ -191,28 +191,27 @@
             </PreferenceScreen>
 
             <SwitchPreference
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
                 android:defaultValue="false"
-                android:title="Force English Text"
+                android:key="force_english"
                 android:summary="Currently using your device's local language"
                 android:summaryOn="Currently forcing use of alternate language"
-                android:key="force_english">
-            </SwitchPreference>
-            <ListPreference
-                android:key="forced_language"
-                android:title="Choose a specific language"
-                android:summary="If you need an alternate language translation within xDrip+"
-                android:entries="@array/LocaleChoices"
-                android:entryValues="@array/LocaleChoicesValues"
-                android:defaultValue="en"/>
-
-            <SwitchPreference
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="Force English Text"></SwitchPreference>
+            <ListPreference
+                android:defaultValue="en"
+                android:entries="@array/LocaleChoices"
+                android:entryValues="@array/LocaleChoicesValues"
+                android:key="forced_language"
+                android:summary="If you need an alternate language translation within xDrip+"
+                android:title="Choose a specific language" />
+
+            <SwitchPreference
                 android:defaultValue="true"
                 android:key="bg_compensate_noise"
                 android:summary="@string/try_to_work_around_noisy_readings"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="\u26A0 Smooth sensor noise" />
             <CheckBoxPreference
                 android:defaultValue="true"
@@ -224,6 +223,11 @@
                 android:key="rewrite_history"
                 android:summary="@string/after_calibration_rewrite_history"
                 android:title="@string/rewrite_history" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="widget_range_lines"
+                android:summary="Show a high and low line on the widget."
+                android:title="Widget Range Lines" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="show_graph_grid_time"
@@ -275,13 +279,13 @@
                 android:summary="Delayed but more stable when noisy (not recommended)"
                 android:title="@string/glucose_number_from_filtered" />
             <CheckBoxPreference
-                android:defaultValue="true"
+                android:defaultValue="false"
                 android:key="show_bwp"
                 android:summary="Display Insulin/Carb calculations"
                 android:title="Show Bolus Wizard Preview" />
             <CheckBoxPreference
-                android:dependency="show_bwp"
                 android:defaultValue="false"
+                android:dependency="show_bwp"
                 android:key="always_show_bwp"
                 android:summary="Display Insulin/Carb calculations at all times"
                 android:title="Always show Bolus Wizard Preview" />
@@ -313,7 +317,7 @@
                 <intent
                     android:action="android.intent.action.MAIN"
                     android:targetClass="com.eveningoutpost.dexdrip.profileeditor.ProfileEditor"
-                    android:targetPackage="@string/local_target_package"/>
+                    android:targetPackage="@string/local_target_package" />
             </Preference>
             <Preference
                 android:key="profile_insulin_sensitivity_default"
@@ -322,7 +326,7 @@
                 <intent
                     android:action="android.intent.action.MAIN"
                     android:targetClass="com.eveningoutpost.dexdrip.profileeditor.ProfileEditor"
-                    android:targetPackage="@string/local_target_package"/>
+                    android:targetPackage="@string/local_target_package" />
             </Preference>
             <EditTextPreference
                 android:defaultValue="35"
@@ -421,6 +425,33 @@
                 android:key="plus_follow_geolocation"
                 android:summary="@string/send_parakeet_map_location_to_followers"
                 android:title="@string/sync_parakeet_geolocation" />
+            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                android:key="xdrip_plus_remote_snooze_settings"
+                android:summary="Sending and receiving remote snoozes"
+                android:title="Remote Snoozing">
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="send_snooze_to_remote"
+                    android:summary="Snoozes will silence all handsets in group with the accept setting below enabled on them"
+                    android:title="Send snooze to all" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="send_snooze_to_remote"
+                    android:key="confirm_snooze_to_remote"
+                    android:summary="Pop up a dialog to confirm sending each remote snooze"
+                    android:title="Confirm sending snooze" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="accept_remote_snoozes"
+                    android:summary="Allow remote handsets to silence alarms on this one"
+                    android:title="Accept remote snoozes" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:dependency="accept_remote_snoozes"
+                    android:key="remote_snoozes_wifi_match"
+                    android:summary="Only accept if the remote wifi network name starts with the same letters as ours and matches very closely"
+                    android:title="Wifi name must match" />
+            </PreferenceScreen>
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="disable_all_sync"
@@ -435,53 +466,53 @@
         android:summary="Movement detection and vehicle mode"
         android:title="xDrip+ Motion Tracking">
         <SwitchPreference
-            android:switchTextOff="@string/short_off_text_for_switches"
-            android:switchTextOn="@string/short_on_text_for_switches"
             android:defaultValue="false"
             android:key="motion_tracking_enabled"
             android:summary="Use sensors to detect types of motion"
+            android:switchTextOff="@string/short_off_text_for_switches"
+            android:switchTextOn="@string/short_on_text_for_switches"
             android:title="Enable Motion Tracking" />
-         <CheckBoxPreference
-            android:dependency="motion_tracking_enabled"
+        <CheckBoxPreference
             android:defaultValue="true"
+            android:dependency="motion_tracking_enabled"
             android:key="plot_motion"
             android:summary="Store recent motion types and plot these on the main graph"
             android:title="Log and Plot motion" />
         <CheckBoxPreference
-            android:dependency="motion_tracking_enabled"
             android:defaultValue="false"
+            android:dependency="motion_tracking_enabled"
             android:key="use_remote_motion"
             android:summary="Motion data taken from remote rather than local handset source"
             android:title="Use remote motion" />
         <CheckBoxPreference
-            android:dependency="motion_tracking_enabled"
             android:defaultValue="false"
+            android:dependency="motion_tracking_enabled"
             android:key="act_as_motion_master"
             android:summary="Be the master for motion data even if we are a follower. Set this on only one handset!"
             android:title="Act as motion master" />
         <SwitchPreference
-            android:switchTextOff="@string/short_off_text_for_switches"
-            android:switchTextOn="@string/short_on_text_for_switches"
             android:defaultValue="false"
             android:dependency="motion_tracking_enabled"
             android:key="vehicle_mode_enabled"
             android:summary="When vehicle motion is detected enable extra features"
+            android:switchTextOff="@string/short_off_text_for_switches"
+            android:switchTextOn="@string/short_on_text_for_switches"
             android:title="Enable Vehicle Mode" />
         <CheckBoxPreference
-            android:dependency="vehicle_mode_enabled"
             android:defaultValue="false"
+            android:dependency="vehicle_mode_enabled"
             android:key="raise_low_limit_in_vehicle_mode"
             android:summary="Increase the level at which Low alarms will be triggered when in vehicle mode"
             android:title="Raise 'Low' threshold" />
         <CheckBoxPreference
-            android:dependency="vehicle_mode_enabled"
             android:defaultValue="true"
+            android:dependency="vehicle_mode_enabled"
             android:key="play_sound_in_vehicle_mode"
             android:summary="Notification sound when vehicle mode detected"
             android:title="Play sound" />
         <CheckBoxPreference
-            android:dependency="vehicle_mode_enabled"
             android:defaultValue="true"
+            android:dependency="vehicle_mode_enabled"
             android:key="repeat_sound_in_vehicle_mode"
             android:summary="Repeat notification sound every 90 minutes if still in vehicle mode"
             android:title="Repeat sound" />
@@ -494,12 +525,12 @@
         android:summary="@string/automatic_updates_crash_reports_and_feedback"
         android:title="@string/xdrip_plus_update_settings">
         <SwitchPreference
-            android:switchTextOff="@string/short_off_text_for_switches"
-            android:switchTextOn="@string/short_on_text_for_switches"
             android:defaultValue="true"
             android:key="auto_update_download"
-            android:summaryOn="@string/get_notified_of_new_apk_releases"
             android:summaryOff="New releases often have bugs fixed. It is recommended to switch on update notifications!"
+            android:summaryOn="@string/get_notified_of_new_apk_releases"
+            android:switchTextOff="@string/short_off_text_for_switches"
+            android:switchTextOn="@string/short_on_text_for_switches"
             android:title="@string/automatic_update_check" />
         <ListPreference
             android:defaultValue="beta"

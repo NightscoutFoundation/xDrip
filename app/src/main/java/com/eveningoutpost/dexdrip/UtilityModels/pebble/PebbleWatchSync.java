@@ -6,8 +6,11 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
@@ -24,8 +27,12 @@ import java.util.UUID;
  */
 public class PebbleWatchSync extends Service {
 
+    // watch faces
     public static final UUID PEBBLEAPP_UUID = UUID.fromString("79f8ecb3-7214-4bfc-b996-cb95148ee6d3");
+
+    // apps
     public static final UUID PEBBLE_CONTROL_APP_UUID = UUID.fromString("aa14a012-96c8-4ce6-9466-4bfdf0d5a74e");
+
 
     private final static String TAG = PebbleWatchSync.class.getSimpleName();
 
@@ -35,6 +42,8 @@ public class PebbleWatchSync extends Service {
     private static Context context;
     private static BgGraphBuilder bgGraphBuilder;
     private static Map<PebbleDisplayType, PebbleDisplayInterface> pebbleDisplays;
+
+    private UUID currentWatchFaceUUID;
 
 
     public static void setPebbleType(int pebbleType) {
@@ -49,8 +58,10 @@ public class PebbleWatchSync extends Service {
         bgGraphBuilder = new BgGraphBuilder(context);
 
         initPebbleDisplays();
-
         PebbleUtil.pebbleDisplayType = getCurrentBroadcastToPebbleSetting();
+        Log.d(TAG,"onCreate for: "+PebbleUtil.pebbleDisplayType.toString());
+
+        currentWatchFaceUUID = getActivePebbleDisplay().watchfaceUUID();
 
         init();
     }
@@ -63,7 +74,7 @@ public class PebbleWatchSync extends Service {
             pebbleDisplays.put(PebbleDisplayType.Standard, new PebbleDisplayStandard());
             pebbleDisplays.put(PebbleDisplayType.Trend, new PebbleDisplayTrendOld());
             pebbleDisplays.put(PebbleDisplayType.TrendClassic, new PebbleDisplayTrendOld());
-            //pebbleDisplays.put(PebbleDisplayType.Trend, new PebbleDisplayTrend());
+            pebbleDisplays.put(PebbleDisplayType.TrendClay, new PebbleDisplayTrend());
         }
 
         for (PebbleDisplayInterface pdi : pebbleDisplays.values()) {
@@ -111,23 +122,24 @@ public class PebbleWatchSync extends Service {
 
     protected void init() {
         Log.i(TAG, "Initialising...");
-        Log.i(TAG, "configuring PebbleDataReceiver");
+        Log.i(TAG, "configuring PebbleDataReceiver for: "+currentWatchFaceUUID.toString());
 
-        PebbleKit.registerReceivedDataHandler(context, new PebbleKit.PebbleDataReceiver(PEBBLEAPP_UUID) {
+
+        PebbleKit.registerReceivedDataHandler(context, new PebbleKit.PebbleDataReceiver(currentWatchFaceUUID) {
             @Override
             public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
                 getActivePebbleDisplay().receiveData(transactionId, data);
             }
         });
 
-        PebbleKit.registerReceivedAckHandler(context, new PebbleKit.PebbleAckReceiver(PebbleWatchSync.PEBBLEAPP_UUID) {
+        PebbleKit.registerReceivedAckHandler(context, new PebbleKit.PebbleAckReceiver(currentWatchFaceUUID) {
             @Override
             public void receiveAck(Context context, int transactionId) {
                 getActivePebbleDisplay().receiveAck(transactionId);
             }
         });
 
-        PebbleKit.registerReceivedNackHandler(context, new PebbleKit.PebbleNackReceiver(PebbleWatchSync.PEBBLEAPP_UUID) {
+        PebbleKit.registerReceivedNackHandler(context, new PebbleKit.PebbleNackReceiver(currentWatchFaceUUID) {
             @Override
             public void receiveNack(Context context, int transactionId) {
                 getActivePebbleDisplay().receiveNack(transactionId);
@@ -145,6 +157,16 @@ public class PebbleWatchSync extends Service {
 
 
     }
+
+    public static void receiveAppData(int transactionId, PebbleDictionary data) {
+        Log.d(TAG, "receiveAppData: transactionId is " + String.valueOf(transactionId));
+
+        AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
+
+        PebbleKit.sendAckToPebble(xdrip.getAppContext(), transactionId);
+        JoH.static_toast_long("Alarm snoozed by pebble");
+    }
+
 
 
 }

@@ -85,7 +85,7 @@
 
                     android:defaultValue="content://settings/system/notification_sound"
                     android:key="calibration_notification_sound"
-                    android:ringtoneType="notification"
+                    android:ringtoneType="all"
                     android:showSilent="true"
                     android:summary="Set sound used for calibration requests."
                     android:title="@string/calibration_request_sound" />
@@ -159,7 +159,7 @@
                     <RingtonePreference
                         android:defaultValue="content://settings/system/alarm_alert"
                         android:key="other_alerts_sound"
-                        android:ringtoneType="alarm"
+                        android:ringtoneType="all"
                         android:showSilent="true"
                         android:summary="Set sound used for BG Alerts."
                         android:title="Alert Sound" />
@@ -193,11 +193,18 @@
                         android:key="persistent_high_threshold_mins"
                         android:numeric="integer"
                         android:title="@string/for_longer_than_minutes" />
+                    <EditTextPreference
+                        android:defaultValue="20"
+                        android:dependency="persistent_high_alert_enabled"
+                        android:inputType="number"
+                        android:key="persistent_high_repeat_mins"
+                        android:numeric="integer"
+                        android:title="Repeating max every (minutes)" />
                     <RingtonePreference
                         android:defaultValue="content://settings/system/notification_sound"
                         android:dependency="persistent_high_alert_enabled"
                         android:key="persistent_high_alert_sound"
-                        android:ringtoneType="notification"
+                        android:ringtoneType="all"
                         android:showSilent="true"
                         android:summary="@string/choose_sound_used_for_persistent_high_alarm"
                         android:title="@string/persistent_high_sound" />
@@ -229,7 +236,7 @@
                         android:defaultValue="content://settings/system/notification_sound"
                         android:dependency="predict_lows"
                         android:key="bg_predict_alert_sound"
-                        android:ringtoneType="notification"
+                        android:ringtoneType="all"
                         android:showSilent="true"
                         android:summary="@string/choose_sound_used_for_predicted_low_alarm"
                         android:title="@string/predicted_low_sound" />
@@ -246,6 +253,11 @@
                         android:key="parakeet_charge_silent"
                         android:summary="@string/raise_parakeet_notification_silently_when_charging"
                         android:title="@string/silent_alert_when_charging" />
+                    <SwitchPreference
+                        android:defaultValue="false"
+                        android:key="follower_chime"
+                        android:summary="Notify when data arrives from the master if the interval is > 20 mins."
+                        android:title="Follower Chime New" />
                 </PreferenceCategory>
             </PreferenceScreen>
         </PreferenceCategory>

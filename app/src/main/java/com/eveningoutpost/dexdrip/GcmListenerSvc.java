@@ -26,6 +26,7 @@ import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
+import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.WebAppHelper;
@@ -205,12 +206,50 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                         Home.toaststaticnext("Receiving motion updates from a different master! Make only one the master!");
                     }
                 }
+            } else if (action.equals("sra")) {
+                if ((Home.get_follower() || Home.get_master())) {
+                    if (Home.getPreferencesBooleanDefaultFalse("accept_remote_snoozes")) {
+                        try {
+                            long snoozed_time = 0;
+                            String sender_ssid = "";
+                            try {
+                                snoozed_time = Long.parseLong(payload);
+                            } catch (NumberFormatException e) {
+                                String ii[] = payload.split("\\^");
+                                snoozed_time = Long.parseLong(ii[0]);
+                                if (ii.length > 1) sender_ssid = JoH.base64decode(ii[1]);
+                            }
+                            if (!Home.getPreferencesBooleanDefaultFalse("remote_snoozes_wifi_match") || JoH.getWifiFuzzyMatch(sender_ssid,JoH.getWifiSSID())) {
+                                if (Math.abs(JoH.tsl() - snoozed_time) < 300000) {
+                                    if (JoH.pratelimit("received-remote-snooze", 30)) {
+                                        AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1, false);
+                                        UserError.Log.ueh(TAG, "Accepted remote snooze");
+                                        JoH.static_toast_long("Received remote snooze!");
+                                    } else {
+                                        Log.e(TAG, "Rate limited remote snooze");
+                                    }
+                                } else {
+                                    UserError.Log.uel(TAG, "Ignoring snooze as outside 5 minute window, sync lag or clock difference");
+                                }
+                            } else {
+                                UserError.Log.uel(TAG,"Ignoring snooze as wifi network names do not match closely enough");
+                            }
+                        } catch (Exception e) {
+                            UserError.Log.e(TAG, "Exception processing remote snooze: " + e);
+                        }
+                    } else {
+                        UserError.Log.uel(TAG, "Rejecting remote snooze");
+                    }
+                }
             } else if (action.equals("bgs")) {
                 Log.i(TAG, "Received BG packet(s)");
                 if (Home.get_follower()) {
                     String bgs[] = payload.split("\\^");
                     for (String bgr : bgs) {
                         BgReading.bgReadingInsertFromJson(bgr);
+                    }
+                    if (Home.getPreferencesBooleanDefaultFalse("follower_chime") && JoH.pratelimit("bgs-notify", 1200)) {
+                        JoH.showNotification("New glucose data @" + JoH.hourMinuteString(), "Follower Chime: will alert whenever it has been more than 20 minutes since last", null, 60311, true, true, true);
                     }
                 } else {
                     Log.e(TAG, "Received remote BG packet but we are not set as a follower");

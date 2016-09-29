@@ -40,6 +40,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -56,6 +59,7 @@ public class UpdateActivity extends AppCompatActivity {
     private static SharedPreferences prefs;
     private static int versionnumber = 0;
     private static int newversion = 0;
+    private static String lastDigest = "";
     private final static int MY_PERMISSIONS_REQUEST_STORAGE_DOWNLOAD = 105;
     private static boolean downloading = false;
     private static final boolean debug = false;
@@ -67,13 +71,14 @@ public class UpdateActivity extends AppCompatActivity {
     private static String DOWNLOAD_URL = "";
     private static int FILE_SIZE = -1;
     private static String MESSAGE = "";
+    private static String CHECKSUM = "";
 
     public static void checkForAnUpdate(final Context context) {
         if (prefs == null) prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (!prefs.getBoolean(autoUpdatePrefsName, true)) return;
         if (last_check_time == 0)
             last_check_time = (double) prefs.getLong(last_update_check_time, 0);
-        if (((JoH.ts() - last_check_time) > 86400000) || (debug)) {
+        if (((JoH.ts() - last_check_time) > 86300000) || (debug)) {
             last_check_time = JoH.ts();
             prefs.edit().putLong(last_update_check_time, (long) last_check_time).apply();
 
@@ -144,7 +149,13 @@ public class UpdateActivity extends AppCompatActivity {
                                             } else {
                                                 MESSAGE = "";
                                             }
-                                            Intent intent = new Intent(context, UpdateActivity.class);
+                                            if (lines.length > 4) {
+                                                CHECKSUM = lines[4];
+                                            } else {
+                                                CHECKSUM = "";
+                                            }
+
+                                            final Intent intent = new Intent(context, UpdateActivity.class);
                                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                             context.startActivity(intent);
 
@@ -182,12 +193,8 @@ public class UpdateActivity extends AppCompatActivity {
     private static void getVersionInformation(Context context) {
         // try {
         if (versionnumber == 0) {
-            //versionnumber = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_META_DATA).versionCode;
             versionnumber = BuildConfig.buildVersion;
         }
-        // } catch (PackageManager.NameNotFoundException e) {
-        //    Log.e(TAG, "PackageManager.NameNotFoundException:" + e.getMessage());
-        // }
     }
 
     @Override
@@ -331,9 +338,11 @@ public class UpdateActivity extends AppCompatActivity {
 
                 Log.d(TAG, "Filename: " + filename);
                 if (response.code() == 200) {
+                    lastDigest = "";
                     InputStream inputStream = null;
                     FileOutputStream outputStream = null;
                     try {
+
                         dest_file = new File(getDownloadFolder(), filename);
                         try {
                             if (dest_file.exists())
@@ -341,9 +350,17 @@ public class UpdateActivity extends AppCompatActivity {
                         } catch (Exception e) {
                             Log.e(TAG, "Got exception deleting existing file: " + e);
                         }
-                        ;
+
                         outputStream = new FileOutputStream(dest_file);
                         inputStream = response.body().byteStream();
+                        MessageDigest messageDigest = null;
+                        DigestInputStream digestInputStream = null;
+                        try {
+                            messageDigest = MessageDigest.getInstance("SHA256");
+                            digestInputStream = new DigestInputStream(inputStream, messageDigest);
+                        } catch (NoSuchAlgorithmException e) {
+                            //
+                        }
                         byte[] buff = new byte[1024 * 4];
                         long downloaded = 0;
                         long target = response.body().contentLength();
@@ -351,7 +368,8 @@ public class UpdateActivity extends AppCompatActivity {
                             target = FILE_SIZE; // get this from update server alternately
                         publishProgress(0L, target);
                         while (true) {
-                            int last_read = inputStream.read(buff);
+
+                            int last_read = (digestInputStream != null) ? digestInputStream.read(buff) : inputStream.read(buff);
                             if (last_read == -1) {
                                 break;
                             }
@@ -362,7 +380,10 @@ public class UpdateActivity extends AppCompatActivity {
                                 return false;
                             }
                         }
+                        if (messageDigest != null)
+                            lastDigest = JoH.bytesToHex(messageDigest.digest()).toLowerCase();
                         return downloaded == target;
+
                     } catch (IOException e) {
                         Log.e(TAG, "Download error: " + e.toString());
                         JoH.static_toast_long(getApplicationContext(), "Data error: ");
@@ -409,16 +430,26 @@ public class UpdateActivity extends AppCompatActivity {
             downloading = false;
             if (result) {
                 if ((filename != null) && (filename.length() > 5) && (dest_file != null)) {
-                    try {
-                        final Intent installapk = new Intent(Intent.ACTION_VIEW);
-                        installapk.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        installapk.setDataAndType(Uri.fromFile(dest_file), "application/vnd.android.package-archive");
-                        startActivity(installapk);
+                    if ((CHECKSUM.length() == 0) || (lastDigest.length() == 0) || (CHECKSUM.equals(lastDigest))) {
+                        try {
+                            final Intent installapk = new Intent(Intent.ACTION_VIEW);
+                            installapk.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            installapk.setDataAndType(Uri.fromFile(dest_file), "application/vnd.android.package-archive");
+                            startActivity(installapk);
+                            finish();
+                        } catch (Exception e) {
+                            Log.e(TAG, "Got exception trying to install apk: " + e);
+                            JoH.static_toast_long(getApplicationContext(), "Update is in your downloads folder");
+                        }
+                    } else {
+                        Log.e(TAG, "Checksum doesn't match: " + lastDigest + " vs " + CHECKSUM);
+                        try {
+                            dest_file.delete();
+                        } catch (Exception e) {
+                            Log.e(TAG, "Got exception deleting corrupt file: " + e);
+                        }
+                        JoH.static_toast_long("File appears corrupt!");
                         finish();
-                    } catch (Exception e) {
-                        Log.e(TAG, "Got exception trying to install apk: " + e);
-                        JoH.static_toast_long(getApplicationContext(), "Update is in your downloads folder");
-                        prefs.edit().putBoolean(useInternalDownloaderPrefsName, false).apply(); // turn off as borked
                     }
                 }
             } else {

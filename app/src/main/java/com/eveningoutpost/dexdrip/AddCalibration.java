@@ -63,6 +63,8 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
             final String string_value = extras.getString("bg_string");
             final String bg_age = extras.getString("bg_age");
             final String from_external = extras.getString("from_external", "false");
+            final String note_only = extras.getString("note_only", "false");
+            final String allow_undo = extras.getString("allow_undo", "false");
 
             if ((Sensor.isActive()
                     || PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("dex_collection_method", "").equals("Follower"))) {
@@ -89,7 +91,10 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                 if (calValue > 0) {
                                     if (calValue != lastExternalCalibrationValue) {
                                         lastExternalCalibrationValue = calValue;
-                                        Calibration calibration = Calibration.create(calValue, bgAgeNumber, getApplicationContext());
+                                        Calibration calibration = Calibration.create(calValue, bgAgeNumber, getApplicationContext(), (note_only.equals("true")));
+                                        if ((calibration != null) && allow_undo.equals("true")) {
+                                            UndoRedo.addUndoCalibration(calibration.uuid);
+                                        }
                                     } else {
                                         Log.w(TAG, "Ignoring Remote calibration value as identical to last one: " + calValue);
                                     }

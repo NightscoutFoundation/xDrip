@@ -1,14 +1,14 @@
-# Jamorham xDrip+
-> My enhanced personal research version of xDrip
+# Nightscout xDrip+
+> Enhanced personal research version of xDrip
 
  Info page and APK download: https://jamorham.github.io/#xdrip-plus
 
 ##Features
-* Natural language voice and text input of Treatments (Insulin/Carbs)
-* Tasker plugin support including remote calibrations
+* Voice, Keypad or Watch input of Treatments (Insulin/Carbs/Notes)
+* Visualization of Insulin and Carb action curves + Undo/Redo
+* Improved alerts and predictive low forecasting feature
 * Instant data synchronization between phones and tablets
-* Visualization of Insulin and Carb action curves.
-* Forward prediction with live "Bolus Wizard"
+* Synchronize or follow with Nightscout NSclient
 <img align="middle" src="https://jamorham.github.io/images/jamorham-natural-language-treatments-two-web.png">
 
 ##Ethos
@@ -18,14 +18,14 @@
 * Community testing and collaboration appreciated!
 
 ##Roadmap
-* Code clean up
-* Extensible Profile configuration
+* Calibration improvements
+* ~~Extensible Profile configuration~~
 * Increase automation and data backup and sync options
 * More Nightscout integration
 
 ##Collaboration
-I am very happy if people want to collaborate on this project. There is significant room for improvement in the code and in an ideal world changes could be cherry picked back to xDrip mainline. Please contact me if you want to get involved.
+We are very happy if people want to collaborate with this project. Please contact us if you want to get involved and study the collaboration guidelines before submitting any patches or pull requests.
 
 ##Thanks
-None of this would be possible without all the hard work of the xDrip and Nightscout communities who have developed such excellent software and allowed me to build upon it.
+None of this would be possible without all the hard work of the xDrip and Nightscout communities who have developed such excellent software and allowed us to build upon it.
 
