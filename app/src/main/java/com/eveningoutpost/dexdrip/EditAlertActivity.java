@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class EditAlertActivity extends ActivityWithMenu {
-    public static String menu_name = "Edit Alert";
+    //public static String menu_name = "Edit Alert";
 
     private TextView viewHeader;
 
@@ -114,9 +114,16 @@ public class EditAlertActivity extends ActivityWithMenu {
         	return defaultVal;
         }
     }
-    
+
+    @Override
+    protected void onResume() {
+        xdrip.checkForcedEnglish(xdrip.getAppContext());
+        super.onResume();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        xdrip.checkForcedEnglish(xdrip.getAppContext());
         super.onCreate(savedInstanceState);
         mContext = this;
         setContentView(R.layout.activity_edit_alert);
@@ -285,7 +292,7 @@ public class EditAlertActivity extends ActivityWithMenu {
 
     @Override
     public String getMenuName() {
-        return menu_name;
+        return getString(R.string.title_activity_edit_alert);
     }
 
 
