@@ -346,8 +346,12 @@
                     android:summary="Show slope and intercept in short form."
                     android:title="@string/calibration_data_short" />
             </PreferenceScreen>
-
-
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="engineering_mode"
+                android:key="adrian_calibration_mode"
+                android:summary="Wider range of allowed slopes. Less failsafes! (engineering mode only)"
+                android:title="Adrian calibration mode" />
             <PreferenceCategory
                 android:key="community_help_category"
                 android:title="@string/help_the_community">
