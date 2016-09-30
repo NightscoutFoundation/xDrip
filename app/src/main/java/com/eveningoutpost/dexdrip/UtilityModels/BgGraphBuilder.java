@@ -666,7 +666,7 @@ public class BgGraphBuilder {
         return lines;
     }
 
-    private void addBgReadingValues() {
+    public void addBgReadingValues() {
        //UserError.Log.i(TAG, "ADD BG READINGS START");
         filteredValues.clear();
         rawInterpretedValues.clear();
