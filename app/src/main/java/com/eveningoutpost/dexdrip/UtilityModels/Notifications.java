@@ -276,7 +276,10 @@ public class Notifications extends IntentService {
 
     private void notificationSetter(Context context) {
         ReadPerfs(context);
-        BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
+        final long end = System.currentTimeMillis() + (60000 * 5);
+        final long start = end - (60000 * 60 * 3) - (60000 * 10);
+        BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context, start, end);
+        //BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context);
         if (bg_ongoing && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)) {
             bgOngoingNotification(bgGraphBuilder);
         }
