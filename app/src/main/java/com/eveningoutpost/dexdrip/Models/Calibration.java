@@ -449,6 +449,8 @@ public class Calibration extends Model {
                     calibration.sensor_confidence = Math.max(((-0.0018 * bg * bg) + (0.6657 * bg) + 36.7505) / 100, 0);
                 } else {
                     calibration.sensor_confidence = 0; // exclude from calibrations but show on graph
+                    calibration.slope = 0;
+                    calibration.intercept = 0;
                 }
                 calibration.sensor_age_at_time_of_estimation = calibration.timestamp - sensor.started_at;
                 calibration.uuid = UUID.randomUUID().toString();
@@ -460,7 +462,7 @@ public class Calibration extends Model {
                     bgReading.save();
                 }
 
-                if (!is_follower) {
+                if ((!is_follower) && (!note_only)) {
                     BgSendQueue.handleNewBgReading(bgReading, "update", context);
                     // TODO probably should add a more fine grained prefs option in future
                     calculate_w_l_s(prefs.getBoolean("infrequent_calibration", false));
