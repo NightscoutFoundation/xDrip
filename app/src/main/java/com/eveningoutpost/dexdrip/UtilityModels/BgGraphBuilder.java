@@ -93,6 +93,7 @@ public class BgGraphBuilder {
     public final static double NOISE_FORGIVE = 100;
     public static double low_occurs_at = -1;
     public static double previous_low_occurs_at = -1;
+    private static double low_occurs_at_processed_till_timestamp = -1;
     private final static String TAG = "jamorham graph";
     final int pointSize;
     final int axisTextSize;
@@ -685,15 +686,16 @@ public class BgGraphBuilder {
 
         final double bgScale = bgScale();
         final double now = JoH.ts();
-
+        long highest_bgreading_timestamp = -1;
         double trend_start_working = now-(1000*60*12); // 10 minutes // TODO MAKE PREFERENCE?
         if (bgReadings.size()>0)
         {
-            final double ms_since_last_reading = now-bgReadings.get(0).timestamp;
+            highest_bgreading_timestamp = bgReadings.get(0).timestamp;
+            final double ms_since_last_reading = now-highest_bgreading_timestamp;
             if (ms_since_last_reading<500000)
             {
                 trend_start_working -= ms_since_last_reading; // push back start of trend calc window
-                Log.d(TAG,"Pushed back trend start by: "+JoH.qs(ms_since_last_reading/1000)+" secs - last reading: "+JoH.dateTimeText(bgReadings.get(0).timestamp));
+                Log.d(TAG,"Pushed back trend start by: "+JoH.qs(ms_since_last_reading/1000)+" secs - last reading: "+JoH.dateTimeText(highest_bgreading_timestamp));
             }
         }
 
@@ -919,6 +921,7 @@ public class BgGraphBuilder {
                 double plow_timestamp = plow_now + (1000 * 60 * 99); // max look-ahead
                 double polyPredicty = poly.predict(plow_timestamp);
                 Log.d(TAG, "Low predictor at max lookahead is: " + JoH.qs(polyPredicty));
+                low_occurs_at_processed_till_timestamp = highest_bgreading_timestamp; // store that we have processed up to this timestamp
                 if (polyPredicty <= (lowMark+offset)) {
                     low_occurs_at = plow_timestamp;
                     final double lowMarkIndicator = (lowMark - (lowMark / 4));
@@ -1212,6 +1215,22 @@ public class BgGraphBuilder {
         } catch (Exception e) {
             Log.e(TAG, "Exception doing iob values in bggraphbuilder: " + e.toString());
         }
+    }
+
+    public static double getCurrentLowOccursAt() {
+        try {
+            final long last_bg_reading_timestamp = BgReading.last().timestamp;
+            if (low_occurs_at_processed_till_timestamp < last_bg_reading_timestamp) {
+                Log.d(TAG, "Recalculating lowOccursAt: " + JoH.dateTimeText((long) low_occurs_at_processed_till_timestamp) + " vs " + JoH.dateTimeText(last_bg_reading_timestamp));
+                // new only the last hour worth of data for this
+                (new BgGraphBuilder(xdrip.getAppContext(), System.currentTimeMillis() - 60 * 60 * 1000, System.currentTimeMillis() + 5 * 60 * 1000, 12, true)).addBgReadingValues();
+            } else {
+                Log.d(TAG, "Cached current low timestamp ok: " +  JoH.dateTimeText((long) low_occurs_at_processed_till_timestamp) + " vs " + JoH.dateTimeText(last_bg_reading_timestamp));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception in getCurrentLowOccursAt() " + e);
+        }
+        return low_occurs_at;
     }
 
     public Line avg1Line() {
