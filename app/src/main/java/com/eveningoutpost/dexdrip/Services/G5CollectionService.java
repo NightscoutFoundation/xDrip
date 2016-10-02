@@ -944,11 +944,15 @@ public class G5CollectionService extends Service {
                         Log.e(TAG, "onServicesDiscovered: " + status);
                         if (status == BluetoothGatt.GATT_SUCCESS) {
                             if (mGatt != null) {
-                                cgmService = mGatt.getService(BluetoothServices.CGMService);
-                                if (cgmService != null) {
-                                    authCharacteristic = cgmService.getCharacteristic(BluetoothServices.Authentication);
-                                    controlCharacteristic = cgmService.getCharacteristic(BluetoothServices.Control);
-                                    commCharacteristic = cgmService.getCharacteristic(BluetoothServices.Communication);
+                                try {
+                                    cgmService = mGatt.getService(BluetoothServices.CGMService);
+                                    if (cgmService != null) {
+                                        authCharacteristic = cgmService.getCharacteristic(BluetoothServices.Authentication);
+                                        controlCharacteristic = cgmService.getCharacteristic(BluetoothServices.Control);
+                                        commCharacteristic = cgmService.getCharacteristic(BluetoothServices.Communication);
+                                    }
+                                } catch (NullPointerException e) {
+                                    Log.e(TAG, "Got null point exception onService Discovered");
                                 }
                                 mBluetoothAdapter.cancelDiscovery();
                             }
@@ -974,11 +978,15 @@ public class G5CollectionService extends Service {
                 Log.e(TAG, "onServicesDiscovered: " + status);
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     if (mGatt != null) {
-                        cgmService = mGatt.getService(BluetoothServices.CGMService);
-                        if (cgmService != null) {
-                            authCharacteristic = cgmService.getCharacteristic(BluetoothServices.Authentication);
-                            controlCharacteristic = cgmService.getCharacteristic(BluetoothServices.Control);
-                            commCharacteristic = cgmService.getCharacteristic(BluetoothServices.Communication);
+                        try {
+                            cgmService = mGatt.getService(BluetoothServices.CGMService);
+                            if (cgmService != null) {
+                                authCharacteristic = cgmService.getCharacteristic(BluetoothServices.Authentication);
+                                controlCharacteristic = cgmService.getCharacteristic(BluetoothServices.Control);
+                                commCharacteristic = cgmService.getCharacteristic(BluetoothServices.Communication);
+                            }
+                        } catch (NullPointerException e) {
+                            Log.e(TAG, "Got Null pointer in OnServices discovered 2");
                         }
                         mBluetoothAdapter.cancelDiscovery();
                     }
