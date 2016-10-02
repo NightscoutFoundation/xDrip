@@ -61,8 +61,8 @@ class DexParametersAdrian extends SlopeParameters {
         LOW_SLOPE_2 = 0.70;
         HIGH_SLOPE_1 = 1.3;
         HIGH_SLOPE_2 = 1.4;
-        DEFAULT_LOW_SLOPE_LOW = 75;
-        DEFAULT_LOW_SLOPE_HIGH = 70;
+        DEFAULT_LOW_SLOPE_LOW = 0.75;
+        DEFAULT_LOW_SLOPE_HIGH = 0.70;
         DEFAULT_SLOPE = 1;
         DEFAULT_HIGH_SLOPE_HIGH = 1.3;
         DEFAUL_HIGH_SLOPE_LOW = 1.2;
