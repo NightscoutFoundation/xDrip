@@ -2,16 +2,20 @@ package com.eveningoutpost.dexdrip;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 import java.text.DateFormat;
@@ -39,11 +43,15 @@ public class BGHistory extends ActivityWithMenu {
     private Button dateButton1;
     private Spinner daysSpinner;
     private int noDays = 1;
+    private SharedPreferences prefs;
+    private TextView statisticsTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bghistory);
+        this.statisticsTextView = (TextView) findViewById(R.id.historystats);
+
 
         date1 = new GregorianCalendar();
         date1.set(Calendar.HOUR_OF_DAY, 0);
@@ -68,7 +76,7 @@ public class BGHistory extends ActivityWithMenu {
         prevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                date1.add(Calendar.DATE, - noDays);
+                date1.add(Calendar.DATE, -noDays);
                 setupCharts();
             }
         });
@@ -76,7 +84,7 @@ public class BGHistory extends ActivityWithMenu {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                date1.add(Calendar.DATE, + noDays);
+                date1.add(Calendar.DATE, +noDays);
                 setupCharts();
             }
         });
@@ -101,7 +109,7 @@ public class BGHistory extends ActivityWithMenu {
             vals[i] = (i+1) + " days";
         }
 
-        daysSpinner.setAdapter(new ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line,  vals));
+        daysSpinner.setAdapter(new ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, vals));
         daysSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -144,8 +152,39 @@ public class BGHistory extends ActivityWithMenu {
         chart.setViewportCalculationEnabled(true);
         previewChart.setViewportChangeListener(new ViewportListener());
         chart.setViewportChangeListener(new ChartViewPortListener());
+
+        setupStatistics(date1.getTimeInMillis(), endDate.getTimeInMillis());
     }
-    
+
+    private void setupStatistics(long from, long to) {
+
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs==null) return;
+
+        StatsResult statsResult = new StatsResult(PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()), from, to);
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(statsResult.getAverageUnitised());
+        sb.append(' ');
+        sb.append(statsResult.getA1cDCCT());
+        sb.append(" | ");
+        sb.append(statsResult.getA1cIFCC(true));
+        sb.append('\n');
+        sb.append(statsResult.getInPercentage());
+        sb.append(' ');
+        sb.append(statsResult.getHighPercentage());
+        sb.append(' ');
+        sb.append(statsResult.getLowPercentage());
+        sb.append('\n');
+        sb.append(statsResult.getCapturePercentage(true));
+        sb.append(' ');
+
+        statisticsTextView.setText(sb);
+    }
+
 
     private class ChartViewPortListener implements ViewportChangeListener {
         @Override
