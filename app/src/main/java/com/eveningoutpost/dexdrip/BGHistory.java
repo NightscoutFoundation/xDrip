@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -158,31 +160,32 @@ public class BGHistory extends ActivityWithMenu {
 
     private void setupStatistics(long from, long to) {
 
-        if ((prefs == null) && (xdrip.getAppContext() != null)) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        if (Home.getPreferencesBoolean("show_history_stats", true)) {
+            StatsResult statsResult = new StatsResult(PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()), from, to);
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.append(statsResult.getAverageUnitised());
+            sb.append(' ');
+            sb.append(statsResult.getA1cDCCT());
+            sb.append(" | ");
+            sb.append(statsResult.getA1cIFCC(true));
+            sb.append('\n');
+            sb.append(statsResult.getInPercentage());
+            sb.append(' ');
+            sb.append(statsResult.getHighPercentage());
+            sb.append(' ');
+            sb.append(statsResult.getLowPercentage());
+            sb.append('\n');
+            sb.append(statsResult.getCapturePercentage(true));
+            sb.append(' ');
+
+            statisticsTextView.setText(sb);
+            statisticsTextView.setVisibility(View.VISIBLE);
+
+        } else {
+            statisticsTextView.setVisibility(View.GONE);
         }
-        if (prefs==null) return;
-
-        StatsResult statsResult = new StatsResult(PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()), from, to);
-
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(statsResult.getAverageUnitised());
-        sb.append(' ');
-        sb.append(statsResult.getA1cDCCT());
-        sb.append(" | ");
-        sb.append(statsResult.getA1cIFCC(true));
-        sb.append('\n');
-        sb.append(statsResult.getInPercentage());
-        sb.append(' ');
-        sb.append(statsResult.getHighPercentage());
-        sb.append(' ');
-        sb.append(statsResult.getLowPercentage());
-        sb.append('\n');
-        sb.append(statsResult.getCapturePercentage(true));
-        sb.append(' ');
-
-        statisticsTextView.setText(sb);
     }
 
 
@@ -228,4 +231,28 @@ public class BGHistory extends ActivityWithMenu {
         return days;
     }
 
-}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_history, menu);
+
+        MenuItem menuItem = menu.findItem(R.id.action_toggle_historystats);
+        menuItem.setChecked(Home.getPreferencesBoolean("show_history_stats", true));
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_toggle_historystats) {
+            Home.setPreferencesBoolean("show_history_stats", !Home.getPreferencesBoolean("show_history_stats", true));
+            invalidateOptionsMenu();
+            setupCharts();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
+    }
