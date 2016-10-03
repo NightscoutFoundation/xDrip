@@ -33,6 +33,23 @@
                     android:layout_height="match_parent"
                     android:layout_below="@+id/buttonlayout"/>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:id="@+id/historystats"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:gravity="left|top"
+                    android:text="History Statistics"
+                    android:background="@android:color/transparent"
+                    android:layout_below="@+id/buttonlayout"
+                    android:shadowColor="#ff212121"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="14"
+                    android:layout_alignParentStart="true" />
+
                 <LinearLayout
                     android:id="@+id/buttonlayout"
                     android:orientation="horizontal"

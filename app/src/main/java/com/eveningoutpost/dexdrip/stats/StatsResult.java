@@ -21,8 +21,17 @@ public class StatsResult {
     private final int above;
     private final double avg;
     private final boolean mgdl;
+    private final long from;
+    private final long to;
 
-    public StatsResult(SharedPreferences settings){
+
+    public StatsResult(SharedPreferences settings) {
+        this(settings, DBSearchUtil.getTodayTimestamp(), System.currentTimeMillis());
+    }
+
+        public StatsResult(SharedPreferences settings, long from, long to){
+            this.from = from;
+            this.to = to;
 
         mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
 
@@ -32,26 +41,25 @@ public class StatsResult {
             high *= Constants.MMOLL_TO_MGDL;
             low *= Constants.MMOLL_TO_MGDL;
         }
-        long today = DBSearchUtil.getTodayTimestamp();
         SQLiteDatabase db = Cache.openDatabase();
 
-        Cursor cursor= db.rawQuery("select count(*) from bgreadings  where timestamp >= " + today + " AND calculated_value >= " + low + " AND calculated_value <= " + high + " AND snyced == 0", null);
+        Cursor cursor= db.rawQuery("select count(*) from bgreadings  where timestamp >= " + from + " AND timestamp <= " + to + " AND calculated_value >= " + low + " AND calculated_value <= " + high + " AND snyced == 0", null);
         cursor.moveToFirst();
         in = cursor.getInt(0);
         cursor.close();
 
-        cursor= db.rawQuery("select count(*) from bgreadings  where timestamp >= " + today + " AND calculated_value > " + DBSearchUtil.CUTOFF + " AND calculated_value < " + low + " AND snyced == 0", null);
+        cursor= db.rawQuery("select count(*) from bgreadings  where timestamp >= " + from + " AND timestamp <= " + to + " AND calculated_value > " + DBSearchUtil.CUTOFF + " AND calculated_value < " + low + " AND snyced == 0", null);
         cursor.moveToFirst();
         below = cursor.getInt(0);
         cursor.close();
 
-        cursor= db.rawQuery("select count(*) from bgreadings  where timestamp >= " + today + " AND calculated_value > " + high + " AND snyced == 0", null);
+        cursor= db.rawQuery("select count(*) from bgreadings  where timestamp >= " + from + " AND timestamp <= " + to + " AND calculated_value > " + high + " AND snyced == 0", null);
         cursor.moveToFirst();
         above = cursor.getInt(0);
         cursor.close();
 
         if(getTotalReadings() > 0){
-            cursor= db.rawQuery("select avg(calculated_value) from bgreadings  where timestamp >= " + today + " AND calculated_value > " + DBSearchUtil.CUTOFF + " AND snyced == 0", null);
+            cursor= db.rawQuery("select avg(calculated_value) from bgreadings  where timestamp >= " + from + " AND timestamp <= " + to + " AND calculated_value > " + DBSearchUtil.CUTOFF + " AND snyced == 0", null);
             cursor.moveToFirst();
             avg = cursor.getDouble(0);
             cursor.close();
@@ -108,6 +116,12 @@ public class StatsResult {
         if(getTotalReadings()==0) return "Avg:?";
         if(mgdl) return "Avg:" + Math.round(avg);
         return "Avg:" + (new DecimalFormat("#.0")).format(avg*Constants.MGDL_TO_MMOLL);
+    }
+
+    public String getCapturePercentage(){
+        //while already in the first 5 minutes, a package could already have arrived.
+        long possibleCaptures = (to - from) / 5*60*1000 + 1;
+        return "Cap:" +  ((possibleCaptures>0)?Math.round(getTotalReadings()*100d/possibleCaptures) + "%":"-%");
     }
 
 }
