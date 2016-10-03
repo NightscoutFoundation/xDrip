@@ -277,6 +277,14 @@
                     android:key="extra_status_line"
                     android:summary="@string/additional_text_status"
                     android:title="@string/extra_status_line" />
+                <SwitchPreference
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:defaultValue="false"
+                    android:dependency="extra_status_line"
+                    android:key="extra_status_stats_24h"
+                    android:summary="@string/sliding_24_hour_window_summary"
+                    android:title="@string/sliding_24_hour_window" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"

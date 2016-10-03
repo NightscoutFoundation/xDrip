@@ -26,9 +26,14 @@ public class StatsResult {
     private long possibleCaptures;
 
 
-    public StatsResult(SharedPreferences settings) {
-        this(settings, DBSearchUtil.getTodayTimestamp(), System.currentTimeMillis());
+    public StatsResult(SharedPreferences settings, boolean sliding24Hours) {
+        this(settings, sliding24Hours, System.currentTimeMillis());
     }
+
+    public StatsResult(SharedPreferences settings, boolean sliding24Hours, long to) {
+        this(settings, sliding24Hours?DBSearchUtil.getTodayTimestamp():to-(24*60*60*1000), to);
+    }
+
 
     public StatsResult(SharedPreferences settings, long from, long to){
         this.from = from;
@@ -73,6 +78,8 @@ public class StatsResult {
         if ((to - from) % (5*60*1000) != 0) possibleCaptures += 1;
 
     }
+
+
 
     public int getAbove() {
         return above;

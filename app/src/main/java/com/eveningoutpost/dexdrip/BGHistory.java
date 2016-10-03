@@ -138,7 +138,7 @@ public class BGHistory extends ActivityWithMenu {
 
         Calendar endDate = (GregorianCalendar) date1.clone();
         endDate.add(Calendar.DATE, noDays);
-        int numValues = noDays * (60 / 5) * 24;
+        int numValues = noDays * (60 / 2) * 24; // LimiTTer sample rate 1 per 2 minutes
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(this, date1.getTimeInMillis(), endDate.getTimeInMillis(), numValues, false);
 
         chart = (LineChartView) findViewById(R.id.chart);

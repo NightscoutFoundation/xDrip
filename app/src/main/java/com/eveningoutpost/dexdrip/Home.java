@@ -1843,9 +1843,10 @@ public class Home extends ActivityWithMenu {
                 || prefs.getBoolean("status_line_a1c_ifcc", false
                 || prefs.getBoolean("status_line_in", false))
                 || prefs.getBoolean("status_line_high", false)
-                || prefs.getBoolean("status_line_low", false)) {
+                || prefs.getBoolean("status_line_low", false)
+                || prefs.getBoolean("status_line_capture_percentage", false)) {
 
-            StatsResult statsResult = new StatsResult(prefs);
+            StatsResult statsResult = new StatsResult(prefs, getPreferencesBooleanDefaultFalse("extra_status_stats_24h"));
 
             if (prefs.getBoolean("status_line_avg", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
@@ -1871,11 +1872,10 @@ public class Home extends ActivityWithMenu {
                 if (extraline.length() != 0) extraline.append(' ');
                 extraline.append(statsResult.getLowPercentage());
             }
-        }
-        if (prefs.getBoolean("status_line_capture_percentage", false)) {
-            if (extraline.length() != 0) extraline.append(' ');
-            if (BgGraphBuilder.capturePercentage>-1)
-                extraline.append("Cap: "+JoH.qs(BgGraphBuilder.capturePercentage)+"%");
+            if (prefs.getBoolean("status_line_capture_percentage", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                extraline.append(statsResult.getCapturePercentage(false));
+            }
         }
         if (prefs.getBoolean("status_line_time", false)) {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
