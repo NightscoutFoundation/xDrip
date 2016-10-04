@@ -20,8 +20,8 @@ import java.util.List;
 @Table(name = "UserErrors", id = BaseColumns._ID)
 public class UserError extends Model {
 
-	private final static String TAG = UserError.class.getSimpleName();
-	
+    private final static String TAG = UserError.class.getSimpleName();
+    
     @Column(name = "shortError")
     public String shortError; // Short error message to be displayed on table
 
@@ -193,49 +193,48 @@ public class UserError extends Model {
 
         public static void d(String tag, String b){
             android.util.Log.d(tag, b);
-        	if(ExtraLogTags.shouldLogTag(tag, android.util.Log.DEBUG)) {
-        		UserErrorLow(tag, b);
-        	}
+            if(ExtraLogTags.shouldLogTag(tag, android.util.Log.DEBUG)) {
+                UserErrorLow(tag, b);
+            }
         }
 
         public static void v(String tag, String b){
             android.util.Log.v(tag, b);
-        	if(ExtraLogTags.shouldLogTag(tag, android.util.Log.VERBOSE)) {
-        		UserErrorLow(tag, b);
-        	}           
+            if(ExtraLogTags.shouldLogTag(tag, android.util.Log.VERBOSE)) {
+                UserErrorLow(tag, b);
+            }           
         }
 
         public static void i(String tag, String b){
             android.util.Log.i(tag, b);
-        	if(ExtraLogTags.shouldLogTag(tag, android.util.Log.INFO)) {
-        		UserErrorLow(tag, b);
-        	}
+            if(ExtraLogTags.shouldLogTag(tag, android.util.Log.INFO)) {
+                UserErrorLow(tag, b);
+            }
         }
         
         static ExtraLogTags extraLogTags = new ExtraLogTags();
     }
     
     public static class ExtraLogTags {
-    	
-    	
-    	static Hashtable <String, Integer> extraTags;
-    	ExtraLogTags () {
-    		extraTags = new Hashtable <String, Integer>();
-    		String extraLogs = Home.getPreferencesStringDefaultBlank("extra_tags_for_logging");
-    		readPreference(extraLogs);
-    	}
-    	
-    	/*
-    	 * This function reads a string representing tags that the user wants to log
-    	 * Format of string is tag1:level1,tag2,level2
-    	 * Example of string is Alerts:i,BG:W
-    	 * 
-    	 */
-    	public static void readPreference(String extraLogs) {
-    		Log.e("dddd", "called " +  extraLogs);
-    		extraTags.clear();
-    		
-    		String []tags = extraLogs.split(",");
+
+        static Hashtable <String, Integer> extraTags;
+        ExtraLogTags () {
+            extraTags = new Hashtable <String, Integer>();
+            String extraLogs = Home.getPreferencesStringDefaultBlank("extra_tags_for_logging");
+            readPreference(extraLogs);
+        }
+        
+        /*
+         * This function reads a string representing tags that the user wants to log
+         * Format of string is tag1:level1,tag2,level2
+         * Example of string is Alerts:i,BG:W
+         * 
+         */
+        public static void readPreference(String extraLogs) {
+            Log.e("dddd", "called " +  extraLogs);
+            extraTags.clear();
+            
+            String []tags = extraLogs.split(",");
             if(tags.length == 0) {
                 Log.e("dddd", "Error no tags were found " + extraLogs);
                 return;
@@ -243,51 +242,51 @@ public class UserError extends Model {
             
             // go over all tags and parse them
             for(String tag : tags) {
-            	parseTag(tag);
+                parseTag(tag);
             }
-    	}
-    	
-    	static void parseTag(String tag) {
-    		// Format is tag:level for example  Alerts:i
-    		String[] tagAndLevel = tag.split(":");
-    		if(tagAndLevel.length != 2) {
-    			Log.e(TAG, "Failed to parse " + tag);
-    			return;
-    		}
-    		String level =  tagAndLevel[1];
-    		String tagName = tagAndLevel[0].toLowerCase();
-    		if (level.compareTo("d") == 0) {
-    			extraTags.put(tagName, android.util.Log.DEBUG);
-    			android.util.Log.e("dddd","Adding tag with DEBUG " + tagAndLevel[0] );
-    			return;
-    		}
-    		if (level.compareTo("v") == 0) {
-    			extraTags.put(tagName, android.util.Log.VERBOSE);
-    			android.util.Log.e("dddd","Adding tag with VERBOSE " + tagAndLevel[0] );
-    			return;
-    		}
-    		if (level.compareTo("i") == 0) {
-    			extraTags.put(tagName, android.util.Log.INFO);
-    			android.util.Log.e("dddd","Adding tag with info " + tagAndLevel[0] );
-    			return;
-    		}
-    		android.util.Log.e(TAG, "Unknown level for tag " + tag + " please use d v or i");
+        }
+        
+        static void parseTag(String tag) {
+            // Format is tag:level for example  Alerts:i
+            String[] tagAndLevel = tag.split(":");
+            if(tagAndLevel.length != 2) {
+                Log.e(TAG, "Failed to parse " + tag);
+                return;
+            }
+            String level =  tagAndLevel[1];
+            String tagName = tagAndLevel[0].toLowerCase();
+            if (level.compareTo("d") == 0) {
+                extraTags.put(tagName, android.util.Log.DEBUG);
+                android.util.Log.e("dddd","Adding tag with DEBUG " + tagAndLevel[0] );
+                return;
+            }
+            if (level.compareTo("v") == 0) {
+                extraTags.put(tagName, android.util.Log.VERBOSE);
+                android.util.Log.e("dddd","Adding tag with VERBOSE " + tagAndLevel[0] );
+                return;
+            }
+            if (level.compareTo("i") == 0) {
+                extraTags.put(tagName, android.util.Log.INFO);
+                android.util.Log.e("dddd","Adding tag with info " + tagAndLevel[0] );
+                return;
+            }
+            android.util.Log.e(TAG, "Unknown level for tag " + tag + " please use d v or i");
 
-    	}
-    	
-    	static boolean shouldLogTag(String tag, int level) {
-    		Integer levelForTag = extraTags.get(tag.toLowerCase());
-    		if(levelForTag == null) {
-    			android.util.Log.e("dddd", "Tag not found returning false" + tag);
-    			return false;
-    		}
-    		
-    		if(level >= levelForTag) {
-    			return true;
-    		}
-    		
-    		return false;
-    	}
-    	
+        }
+        
+        static boolean shouldLogTag(String tag, int level) {
+            Integer levelForTag = extraTags.get(tag.toLowerCase());
+            if(levelForTag == null) {
+                android.util.Log.e("dddd", "Tag not found returning false" + tag);
+                return false;
+            }
+            
+            if(level >= levelForTag) {
+                return true;
+            }
+            
+            return false;
+        }
+        
     }
 }

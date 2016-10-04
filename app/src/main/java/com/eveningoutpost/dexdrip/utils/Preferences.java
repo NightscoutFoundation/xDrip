@@ -1210,7 +1210,7 @@ public class Preferences extends PreferenceActivity {
             extraTagsForLogs.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                	ExtraLogTags.readPreference((String)newValue);
+                    ExtraLogTags.readPreference((String)newValue);
                     return true;
                 }
             });
