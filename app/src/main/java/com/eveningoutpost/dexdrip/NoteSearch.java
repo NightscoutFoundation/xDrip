@@ -54,7 +54,29 @@ public class NoteSearch extends ListActivityWithMenu {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notesearch);
 
+
+
+
+
+
+
+
        //TODO setup List adapter
+
+
+        /*editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    //TODO: query
+                    return true;
+                }
+                return false;
+            }
+        });*/
+
+
+
     }
 
 
