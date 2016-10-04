@@ -9,22 +9,22 @@
             android:key="watch_integration"
             android:title="@string/wear_integration">
             <SwitchPreference
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
                 android:defaultValue="false"
                 android:key="wear_sync"
                 android:summary="@string/send_data_to_android_wear_watch"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/android_wear_integration" />
         </PreferenceCategory>
         <PreferenceCategory
             android:key="pebble_integration"
             android:title="@string/pebble_integration">
             <SwitchPreference
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
                 android:defaultValue="false"
                 android:key="broadcast_to_pebble"
                 android:summary="@string/send_data_to_pebble_watchface"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/pebble_watch_integration" />
             <ListPreference
                 android:defaultValue="2"
@@ -33,7 +33,7 @@
                 android:entryValues="@array/SendToPebbleChoiceValues"
                 android:key="broadcast_to_pebble_type"
                 android:summary="@string/standard_or_trend_pebble_watchface"
-                android:title="@string/choose_pebble_watchface"/>
+                android:title="@string/choose_pebble_watchface" />
 
 
             <CheckBoxPreference
@@ -41,31 +41,31 @@
                 android:dependency="broadcast_to_pebble"
                 android:key="pebble_display_trend"
                 android:summary="@string/pref_summary_display_trend"
-                android:title="@string/pref_pebble_display_trend"/>
+                android:title="@string/pref_pebble_display_trend" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="broadcast_to_pebble"
                 android:key="pebble_filtered_line"
                 android:summary="Also show the filtered data on the trend"
-                android:title="@string/display_filtered_line"/>
+                android:title="@string/display_filtered_line" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="broadcast_to_pebble"
                 android:key="pebble_tiny_dots"
                 android:summary="@string/show_tiny_dots_instead"
-                android:title="Use Tiny dot size"/>
+                android:title="Use Tiny dot size" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="broadcast_to_pebble"
                 android:key="pebble_high_line"
                 android:summary="@string/displays_the_high_line"
-                android:title="@string/pref_pebble_display_high_line"/>
+                android:title="@string/pref_pebble_display_high_line" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="broadcast_to_pebble"
                 android:key="pebble_low_line"
                 android:summary="@string/displays_the_low_line"
-                android:title="@string/pref_pebble_display_low_line"/>
+                android:title="@string/pref_pebble_display_low_line" />
             <ListPreference
                 android:defaultValue="3"
                 android:dependency="broadcast_to_pebble"
@@ -73,36 +73,36 @@
                 android:entryValues="@array/PebbleTrendPeriodValues"
                 android:key="pebble_trend_period"
                 android:summary="@string/set_the_trend_period_to_display"
-                android:title="@string/trend_time_period"/>
+                android:title="@string/trend_time_period" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="broadcast_to_pebble"
                 android:key="pebble_show_delta"
                 android:summary="@string/displays_the_delta_value"
-                android:title="@string/display_delta"/>
+                android:title="@string/display_delta" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="broadcast_to_pebble"
                 android:key="pebble_show_delta_units"
                 android:summary="@string/displays_the_delta_units"
-                android:title="@string/display_delta_units"/>
+                android:title="@string/display_delta_units" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="broadcast_to_pebble"
                 android:key="pebble_show_arrows"
                 android:summary="@string/displays_the_slope_arrows"
-                android:title="@string/display_slope_arrows"/>
+                android:title="@string/display_slope_arrows" />
             <CheckBoxPreference
-               android:title="Vibrate on Alerts"
-               android:key="pebble_vibe_alerts"
-               android:summary="Vibrate watch on active glucose alerts"
-               android:defaultValue="false"/>
+                android:defaultValue="false"
+                android:key="pebble_vibe_alerts"
+                android:summary="Vibrate watch on active glucose alerts"
+                android:title="Vibrate on Alerts" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="broadcast_to_pebble"
                 android:key="pebble_vibrate_no_signal"
                 android:summary="@string/vibrate_watch_to_alert_no_data"
-                android:title="@string/vibrate_when_missed_signal"/>
+                android:title="@string/vibrate_when_missed_signal" />
 
             <EditTextPreference
                 android:defaultValue="99"
@@ -124,10 +124,10 @@
                 android:key="install_pebble_snooze_control"
                 android:summary="Attach it to a pebble button to instantly Snooze any active alert from your watch"
                 android:title="@string/install_pebble_snooze_control_app">
-            <intent
-                android:action="android.intent.action.MAIN"
-                android:targetClass="com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleSnoozeControlApp"
-                android:targetPackage="@string/local_target_package" />
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleSnoozeControlApp"
+                    android:targetPackage="@string/local_target_package" />
             </Preference>
         </PreferenceCategory>
     </PreferenceScreen>
@@ -136,11 +136,11 @@
         android:key="other_category"
         android:title="@string/other_settings">
         <SwitchPreference
-            android:switchTextOff="@string/short_off_text_for_switches"
-            android:switchTextOn="@string/short_on_text_for_switches"
             android:defaultValue="false"
             android:key="broadcast_data_through_intents"
             android:summary="@string/pref_summary_broadcast_enabled"
+            android:switchTextOff="@string/short_off_text_for_switches"
+            android:switchTextOn="@string/short_on_text_for_switches"
             android:title="@string/pref_title_broadcast_enabled" />
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_less_common_settings"
@@ -154,33 +154,33 @@
                     android:targetClass="com.eveningoutpost.dexdrip.ErrorsActivity"
                     android:targetPackage="@string/local_target_package" />
             </Preference>
-        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-            android:key="xdrip_speak_readings_settings"
-            android:icon="@drawable/ic_speak_reading_grey600_48dp"
-            android:summary="@string/if_the_phone_has_text_to_speech"
-            android:title="@string/speak_readings">
-            <SwitchPreference
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
-                android:defaultValue="false"
-                android:key="bg_to_speech"
+            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                android:icon="@drawable/ic_speak_reading_grey600_48dp"
+                android:key="xdrip_speak_readings_settings"
                 android:summary="@string/if_the_phone_has_text_to_speech"
-                android:title="@string/speak_readings" />
-            <EditTextPreference
-                android:key="speak_readings_custom_language"
-                android:dependency="bg_to_speech"
-                android:defaultValue=""
-                android:summary="Custom Locale for Spoken Readings, eg: de or en_IN"/>
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="bg_to_speech_repeat_twice"
-                android:dependency="bg_to_speech"
-                android:summary="Speak the glucose value twice each time"/>
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="bg_to_speech_shortcut"
-                android:summary="Show a shortcut in the \u2630 menu to toggle Speak Readings"
-                android:title="Speak Readings Shortcut" />
+                android:title="@string/speak_readings">
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="bg_to_speech"
+                    android:summary="@string/if_the_phone_has_text_to_speech"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="@string/speak_readings" />
+                <EditTextPreference
+                    android:defaultValue=""
+                    android:dependency="bg_to_speech"
+                    android:key="speak_readings_custom_language"
+                    android:summary="Custom Locale for Spoken Readings, eg: de or en_IN" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="bg_to_speech"
+                    android:key="bg_to_speech_repeat_twice"
+                    android:summary="Speak the glucose value twice each time" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="bg_to_speech_shortcut"
+                    android:summary="Show a shortcut in the \u2630 menu to toggle Speak Readings"
+                    android:title="Speak Readings Shortcut" />
             </PreferenceScreen>
             <CheckBoxPreference
                 android:defaultValue="false"
@@ -240,8 +240,8 @@
                 android:summary="If needed, use calibrations from longer ago, eg if calibrations are supplied infrequently."
                 android:title="Infrequent Calibration" />
             <CheckBoxPreference
-                android:dependency="engineering_mode"
                 android:defaultValue="false"
+                android:dependency="engineering_mode"
                 android:key="store_logs"
                 android:summary="Only enable if you are having trouble with the app."
                 android:title="Store logs for troubleshooting" />
@@ -271,12 +271,20 @@
                 android:summary="Options for the extra line"
                 android:title="@string/extra_status_line">
                 <SwitchPreference
-                    android:switchTextOff="@string/short_off_text_for_switches"
-                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:defaultValue="false"
                     android:key="extra_status_line"
                     android:summary="@string/additional_text_status"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/extra_status_line" />
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:dependency="extra_status_line"
+                    android:key="extra_status_stats_24h"
+                    android:summary="@string/sliding_24_hour_window_summary"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="@string/sliding_24_hour_window" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
@@ -326,12 +334,12 @@
                     android:summary="@string/the_current_time"
                     android:title="@string/time" />
                 <SwitchPreference
-                    android:switchTextOff="@string/short_off_text_for_switches"
-                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="widget_status_line"
                     android:summary="Also show the extra status line on the widget"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/show_on_widget" />
                 <CheckBoxPreference
                     android:defaultValue="true"
@@ -358,14 +366,14 @@
                     android:shouldDisableView="true"
                     android:summary="Choose whether to calibrate with the BG value in a Treatment entry"
                     android:title="Use Treatment BG values" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:dependency="engineering_mode"
-                android:key="adrian_calibration_mode"
-                android:summary="Wider range of allowed slopes. Less failsafes! (engineering mode only)"
-                android:title="Adrian calibration mode" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="engineering_mode"
+                    android:key="adrian_calibration_mode"
+                    android:summary="Wider range of allowed slopes. Less failsafes! (engineering mode only)"
+                    android:title="Adrian calibration mode" />
             </PreferenceScreen>
-                <PreferenceCategory
+            <PreferenceCategory
                 android:key="community_help_category"
                 android:title="@string/help_the_community">
                 <CheckBoxPreference

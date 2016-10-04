@@ -500,5 +500,7 @@
     <string name="short_off_text_for_switches">OFF</string>
     <string name="short_on_text_for_switches">ON</string>
     <string name="install_pebble_apps">Install Pebble Apps</string>
+    <string name="sliding_24_hour_window_summary">Use last 24 hours instead of time since midnight for statistics.</string>
+    <string name="sliding_24_hour_window">Sliding Window</string>
 
 </resources>
