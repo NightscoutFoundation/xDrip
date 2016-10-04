@@ -231,12 +231,11 @@ public class UserError extends Model {
          * 
          */
         public static void readPreference(String extraLogs) {
-            Log.e("dddd", "called " +  extraLogs);
+            UserErrorLow(TAG, "called with string " +  extraLogs);
             extraTags.clear();
             
             String []tags = extraLogs.split(",");
             if(tags.length == 0) {
-                Log.e("dddd", "Error no tags were found " + extraLogs);
                 return;
             }
             
@@ -257,27 +256,26 @@ public class UserError extends Model {
             String tagName = tagAndLevel[0].toLowerCase();
             if (level.compareTo("d") == 0) {
                 extraTags.put(tagName, android.util.Log.DEBUG);
-                android.util.Log.e("dddd","Adding tag with DEBUG " + tagAndLevel[0] );
+                UserErrorLow(TAG, "Adding tag with DEBUG " + tagAndLevel[0] );
                 return;
             }
             if (level.compareTo("v") == 0) {
                 extraTags.put(tagName, android.util.Log.VERBOSE);
-                android.util.Log.e("dddd","Adding tag with VERBOSE " + tagAndLevel[0] );
+                UserErrorLow(TAG,"Adding tag with VERBOSE " + tagAndLevel[0] );
                 return;
             }
             if (level.compareTo("i") == 0) {
                 extraTags.put(tagName, android.util.Log.INFO);
-                android.util.Log.e("dddd","Adding tag with info " + tagAndLevel[0] );
+                UserErrorLow(TAG, "Adding tag with info " + tagAndLevel[0] );
                 return;
             }
-            android.util.Log.e(TAG, "Unknown level for tag " + tag + " please use d v or i");
+            Log.e(TAG, "Unknown level for tag " + tag + " please use d v or i");
 
         }
         
         static boolean shouldLogTag(String tag, int level) {
             Integer levelForTag = extraTags.get(tag.toLowerCase());
             if(levelForTag == null) {
-                android.util.Log.e("dddd", "Tag not found returning false" + tag);
                 return false;
             }
             
