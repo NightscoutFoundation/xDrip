@@ -103,6 +103,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.RunnableFuture;
 
 import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.listener.ViewportChangeListener;
@@ -473,22 +474,72 @@ public class Home extends ActivityWithMenu {
     }
 
     // handle sending the intent
-    private void processCalibrationNoUI(double glucosenumber, double timeoffset) {
-        if (timeoffset < 0) {
-            toaststaticnext("Got calibration in the future - cannot process!");
-            return;
-        }
-        if (glucosenumber > 0) {
-            Intent calintent = new Intent(getApplicationContext(), AddCalibration.class);
-            // TODO fix up class names
-            //calintent.setClassName("com.eveningoutpost.dexdrip", "com.eveningoutpost.dexdrip.AddCalibration");
-            calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            calintent.putExtra("bg_string", JoH.qs(glucosenumber));
-            calintent.putExtra("bg_age", Long.toString((long) (timeoffset / 1000)));
-            calintent.putExtra("allow_undo", "true");
-            getApplicationContext().startActivity(calintent);
-            Log.d(TAG, "ProcessCalibrationNoUI number: " + glucosenumber + " offset: " + timeoffset);
-        }
+    private void processCalibrationNoUI(final double glucosenumber, final double timeoffset) {
+
+                if (timeoffset < 0) {
+                    toaststaticnext("Got calibration in the future - cannot process!");
+                    return;
+                }
+                if (glucosenumber > 0) {
+                    final Intent calintent = new Intent(getApplicationContext(), AddCalibration.class);
+
+                    calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    calintent.putExtra("bg_string", JoH.qs(glucosenumber));
+                    calintent.putExtra("bg_age", Long.toString((long) (timeoffset / 1000)));
+                    calintent.putExtra("allow_undo", "true");
+                    Log.d(TAG, "ProcessCalibrationNoUI number: " + glucosenumber + " offset: " + timeoffset);
+
+                    final String calibration_type = getPreferencesStringWithDefault("treatment_fingerstick_calibration_usage","ask");
+                    if (calibration_type.equals("ask"))
+                    {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setTitle("Use BG for Calibration?");
+                        builder.setMessage("Do you want to use this entered finger-stick blood glucose test to calibrate with?\n\n(you can change when this dialog is displayed in Settings)");
+
+                        builder.setPositiveButton("YES, Calibrate", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                calintent.putExtra("note_only","false");
+                                startIntentThreadWithDelayedRefresh(calintent);
+                                dialog.dismiss();
+                            }
+                        });
+
+                        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                calintent.putExtra("note_only","true");
+                                startIntentThreadWithDelayedRefresh(calintent);
+                                dialog.dismiss();
+                            }
+                        });
+
+                        AlertDialog alert = builder.create();
+                        alert.show();
+
+                    } else {
+                        // if use for calibration == "no" then this is a "note_only" type, otherwise it isn't
+                        calintent.putExtra("note_only", calibration_type.equals("never") ? "true" : "false");
+                        startIntentThreadWithDelayedRefresh(calintent);
+                    }
+                }
+    }
+
+    private void startIntentThreadWithDelayedRefresh(final Intent intent)
+    {
+        new Thread() {
+            @Override
+            public void run() {
+                getApplicationContext().startActivity(intent);
+                staticRefreshBGCharts();
+            }
+        }.start();
+
+        JoH.runOnUiThreadDelayed(new Runnable() {
+            @Override
+            public void run() {
+                staticRefreshBGCharts();
+            }
+        }, 4000);
     }
 
     private void processCalibration() {
@@ -524,14 +575,7 @@ public class Home extends ActivityWithMenu {
         if (hideTreatmentButtonsIfAllDone()) {
             updateCurrentBgInfo("approve button");
         }
-        new Thread() {
-            @Override
-            public void run() {
-                // possibly this should have some delay
-                processCalibrationNoUI(myglucosenumber, mytimeoffset);
-                staticRefreshBGCharts();
-            }
-        }.start();
+        processCalibrationNoUI(myglucosenumber, mytimeoffset);
     }
 
     private void processIncomingBundle(Bundle bundle) {

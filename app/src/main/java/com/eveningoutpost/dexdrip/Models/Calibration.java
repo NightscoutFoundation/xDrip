@@ -469,6 +469,7 @@ public class Calibration extends Model {
                     calibration.sensor_confidence = Math.max(((-0.0018 * bg * bg) + (0.6657 * bg) + 36.7505) / 100, 0);
                 } else {
                     calibration.sensor_confidence = 0; // exclude from calibrations but show on graph
+                    calibration.slope_confidence = 0.000001d; // this is a bit ugly
                     calibration.slope = 0;
                     calibration.intercept = 0;
                 }
@@ -491,7 +492,7 @@ public class Calibration extends Model {
                     context.startService(new Intent(context, Notifications.class));
                     Calibration.requestCalibrationIfRangeTooNarrow();
                 } else {
-                    Log.d(TAG, "Follower so not processing calibration deeply");
+                    Log.d(TAG, "Follower mode or note so not processing calibration deeply");
                 }
             } else {
                 // we couldn't get a reading close enough to the calibration timestamp
