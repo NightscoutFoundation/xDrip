@@ -738,8 +738,8 @@ public class Preferences extends PreferenceActivity {
             final PreferenceScreen calibrationAlertsScreen = (PreferenceScreen) findPreference("calibration_alerts_screen");
             final PreferenceCategory alertsCategory = (PreferenceCategory) findPreference("alerts_category");
             final Preference disableAlertsStaleDataMinutes = findPreference("disable_alerts_stale_data_minutes");
-            final Preference widgetRangeLines = findPreference("widget_range_lines");
-            final Preference adrian_calibration_mode = findPreference("xdrip_plus_motion_settings");
+            final PreferenceScreen lessCommonScreen = (PreferenceScreen) findPreference("xdrip_less_common_settings");
+            final Preference adrian_calibration_mode = findPreference("adrian_calibration_mode");
 
             disableAlertsStaleDataMinutes.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -974,7 +974,7 @@ public class Preferences extends PreferenceActivity {
 
                 if (!engineering_mode) {
                     getPreferenceScreen().removePreference(motionScreen);
-                    getPreferenceScreen().removePreference(adrian_calibration_mode);
+                    lessCommonScreen.removePreference(adrian_calibration_mode);
                 }
 
             } catch (NullPointerException e) {
