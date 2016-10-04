@@ -426,6 +426,10 @@ public class JoH {
         return sd.format(date);
     }
 
+    public static String hourMinuteString(long timestamp) {
+        return android.text.format.DateFormat.format("HH:mm", timestamp).toString();
+    }
+
     public static String dateTimeText(long timestamp) {
         return android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", timestamp).toString();
     }

@@ -1,11 +1,8 @@
 package com.eveningoutpost.dexdrip;
 
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
@@ -17,8 +14,8 @@ import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
-import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -38,8 +35,11 @@ public class CalibrationGraph extends ActivityWithMenu {
     //public static String menu_name = "Calibration Graph";
     private LineChartView chart;
     private LineChartData data;
-    public double start_x = 50;
-    public double end_x = 300;
+    private NavigationDrawerFragment mNavigationDrawerFragment;
+    private final boolean doMgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
+    private final boolean show_days_since = true; // could make this switchable if desired
+    private final double start_x = 50; // raw range
+    private final double end_x = 300; //  raw range
 
     TextView GraphHeader;
 
@@ -47,6 +47,7 @@ public class CalibrationGraph extends ActivityWithMenu {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calibration_graph);
+        JoH.fixActionBar(this);
         GraphHeader = (TextView) findViewById(R.id.CalibrationGraphHeader);
     }
 
@@ -76,8 +77,10 @@ public class CalibrationGraph extends ActivityWithMenu {
 
             //red line
             List<PointValue> lineValues = new ArrayList<PointValue>();
-            lineValues.add(new PointValue((float) start_x, (float) (start_x * calibration.slope + calibration.intercept)));
-            lineValues.add(new PointValue((float) end_x, (float) (end_x * calibration.slope + calibration.intercept)));
+            final float conversion_factor = (float) (doMgdl ? 1 : Constants.MGDL_TO_MMOLL);
+
+            lineValues.add(new PointValue((float) start_x, (conversion_factor * (float) (start_x * calibration.slope + calibration.intercept))));
+            lineValues.add(new PointValue((float) end_x, (conversion_factor * (float) (end_x * calibration.slope + calibration.intercept))));
             Line calibrationLine = new Line(lineValues);
             calibrationLine.setColor(ChartUtils.COLOR_RED);
             calibrationLine.setHasLines(true);
@@ -98,7 +101,7 @@ public class CalibrationGraph extends ActivityWithMenu {
         Axis axisX = new Axis();
         Axis axisY = new Axis().setHasLines(true);
         axisX.setName("Raw Value");
-        axisY.setName("BG");
+        axisY.setName("Glucose " + (doMgdl ? "mg/dl" : "mmol/l"));
 
 
         data = new LineChartData(lines);
@@ -108,13 +111,25 @@ public class CalibrationGraph extends ActivityWithMenu {
 
     }
 
+    private static int daysAgo(long when) {
+        return (int) (JoH.tsl() - when) / 86400000;
+    }
+
     @NonNull
     public Line getCalibrationsLine(List<Calibration> calibrations, int color) {
         List<PointValue> values = new ArrayList<PointValue>();
         for (Calibration calibration : calibrations) {
-            PointValue point = new PointValue((float) calibration.estimate_raw_at_time_of_calibration, (float) calibration.bg);
-            String time = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date((long) calibration.raw_timestamp));
-            point.setLabel(time.toCharArray());
+            PointValue point = new PointValue((float) calibration.estimate_raw_at_time_of_calibration,
+                    doMgdl ? (float) calibration.bg : ((float) calibration.bg) * (float) Constants.MGDL_TO_MMOLL);
+            String time;
+            if (show_days_since) {
+                final int days_ago = daysAgo(calibration.raw_timestamp);
+                time = (days_ago > 0) ? Integer.toString(days_ago) + "d  " : "";
+                time = time + (JoH.hourMinuteString(calibration.raw_timestamp));
+            } else {
+                time = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date((long) calibration.raw_timestamp));
+            }
+            point.setLabel(time);
             values.add(point);
         }
 
@@ -128,20 +143,18 @@ public class CalibrationGraph extends ActivityWithMenu {
     }
 
 
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
         //Just generate the menu in engineering mode
-        if (!Home.getPreferencesBooleanDefaultFalse("engineering_mode")){
+        if (!Home.getPreferencesBooleanDefaultFalse("engineering_mode")) {
             return false;
         }
 
         getMenuInflater().inflate(R.menu.menu_calibrationgraph, menu);
 
         // Only show elements if there is a calibration to overwrite
-        if(Calibration.lastValid()!= null){
+        if (Calibration.lastValid() != null) {
             menu.findItem(R.id.action_overwrite_intercept).setVisible(true);
             menu.findItem(R.id.action_overwrite_slope).setVisible(true);
             menu.findItem(R.id.action_overwrite_calibration_impossible).setVisible(false);
@@ -156,12 +169,14 @@ public class CalibrationGraph extends ActivityWithMenu {
         switch (item.getItemId()) {
             case R.id.action_overwrite_intercept:
                 overWriteIntercept();
-                break;
+                return true;
+            //break;
             case R.id.action_overwrite_slope:
                 overWriteSlope();
+                return true;
         }
 
-        return true; //consume event
+        return super.onOptionsItemSelected(item);
     }
 
     private void overWriteIntercept() {
@@ -227,7 +242,6 @@ public class CalibrationGraph extends ActivityWithMenu {
                 })
                 .show();
     }
-
 
 
 }
