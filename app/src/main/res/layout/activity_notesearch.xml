@@ -23,7 +23,7 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/searchTestField"
+            android:id="@+id/searchTextField"
             android:textSize="18sp"
             android:maxLines="1"
             android:hint="search phrase"
