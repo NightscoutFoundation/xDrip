@@ -139,6 +139,10 @@
             android:label="Keypad Input"
             android:theme="@style/PopUpKeypad" />
 
+        <activity
+            android:name=".NoteSearch"
+            android:label="Note Search" />
+
         <receiver android:name=".AutoStart">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
