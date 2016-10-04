@@ -245,6 +245,13 @@
                 android:key="store_logs"
                 android:summary="Only enable if you are having trouble with the app."
                 android:title="Store logs for troubleshooting" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:dialogMessage="@string/extra_tags_dialog_message"
+                android:dialogTitle="@string/extra_tags_dialog_title"
+                android:inputType="textUri"
+                android:key="extra_tags_for_logging"
+                android:title="@string/extra_tags_for_logging"/>
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="show_data_tables"
