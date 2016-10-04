@@ -21,8 +21,23 @@ public class StatsResult {
     private final int above;
     private final double avg;
     private final boolean mgdl;
+    private final long from;
+    private final long to;
+    private long possibleCaptures;
 
-    public StatsResult(SharedPreferences settings){
+
+    public StatsResult(SharedPreferences settings, boolean sliding24Hours) {
+        this(settings, sliding24Hours, System.currentTimeMillis());
+    }
+
+    public StatsResult(SharedPreferences settings, boolean sliding24Hours, long to) {
+        this(settings, sliding24Hours?to-(24*60*60*1000):DBSearchUtil.getTodayTimestamp(), to);
+    }
+
+
+    public StatsResult(SharedPreferences settings, long from, long to){
+        this.from = from;
+        this.to = to;
 
         mgdl = "mgdl".equals(settings.getString("units", "mgdl"));
 
@@ -32,26 +47,25 @@ public class StatsResult {
             high *= Constants.MMOLL_TO_MGDL;
             low *= Constants.MMOLL_TO_MGDL;
         }
-        long today = DBSearchUtil.getTodayTimestamp();
         SQLiteDatabase db = Cache.openDatabase();
 
-        Cursor cursor= db.rawQuery("select count(*) from bgreadings  where timestamp >= " + today + " AND calculated_value >= " + low + " AND calculated_value <= " + high + " AND snyced == 0", null);
+        Cursor cursor= db.rawQuery("select count(*) from bgreadings  where timestamp >= " + from + " AND timestamp <= " + to + " AND calculated_value >= " + low + " AND calculated_value <= " + high + " AND snyced == 0", null);
         cursor.moveToFirst();
         in = cursor.getInt(0);
         cursor.close();
 
-        cursor= db.rawQuery("select count(*) from bgreadings  where timestamp >= " + today + " AND calculated_value > " + DBSearchUtil.CUTOFF + " AND calculated_value < " + low + " AND snyced == 0", null);
+        cursor= db.rawQuery("select count(*) from bgreadings  where timestamp >= " + from + " AND timestamp <= " + to + " AND calculated_value > " + DBSearchUtil.CUTOFF + " AND calculated_value < " + low + " AND snyced == 0", null);
         cursor.moveToFirst();
         below = cursor.getInt(0);
         cursor.close();
 
-        cursor= db.rawQuery("select count(*) from bgreadings  where timestamp >= " + today + " AND calculated_value > " + high + " AND snyced == 0", null);
+        cursor= db.rawQuery("select count(*) from bgreadings  where timestamp >= " + from + " AND timestamp <= " + to + " AND calculated_value > " + high + " AND snyced == 0", null);
         cursor.moveToFirst();
         above = cursor.getInt(0);
         cursor.close();
 
         if(getTotalReadings() > 0){
-            cursor= db.rawQuery("select avg(calculated_value) from bgreadings  where timestamp >= " + today + " AND calculated_value > " + DBSearchUtil.CUTOFF + " AND snyced == 0", null);
+            cursor= db.rawQuery("select avg(calculated_value) from bgreadings  where timestamp >= " + from + " AND timestamp <= " + to + " AND calculated_value > " + DBSearchUtil.CUTOFF + " AND snyced == 0", null);
             cursor.moveToFirst();
             avg = cursor.getDouble(0);
             cursor.close();
@@ -59,8 +73,13 @@ public class StatsResult {
             avg = 0;
         }
 
+        possibleCaptures = (to - from) / (5*60*1000);
+        //while already in the next 5 minutes, a package could already have arrived.
+        if ((to - from) % (5*60*1000) != 0) possibleCaptures += 1;
 
     }
+
+
 
     public int getAbove() {
         return above;
@@ -82,6 +101,8 @@ public class StatsResult {
         return in + above + below;
     }
 
+    public long getPossibleCaptures() {return possibleCaptures;}
+
     public String getInPercentage(){
         return "in:" +  ((getTotalReadings()>0)?(in*100/getTotalReadings()) + "%":"-%");
     }
@@ -99,15 +120,29 @@ public class StatsResult {
         return "A1c:" + (Math.round(10 * (avg + 46.7) / 28.7) / 10d) + "%";
     }
 
-    public String getA1cIFCC(){
-        if(getTotalReadings()==0) return "A1c:?%";
-        return "A1c:" + ((int) Math.round(((avg + 46.7) / 28.7 - 2.15) * 10.929));
+    public String getA1cIFCC() {
+        return getA1cIFCC(false);
+    }
+
+        public String getA1cIFCC(boolean shortVersion){
+        if(getTotalReadings()==0) return "A1c:?";
+        return (shortVersion?"":"A1c:") + ((int) Math.round(((avg + 46.7) / 28.7 - 2.15) * 10.929));
     }
 
     public String getAverageUnitised(){
         if(getTotalReadings()==0) return "Avg:?";
         if(mgdl) return "Avg:" + Math.round(avg);
         return "Avg:" + (new DecimalFormat("#.0")).format(avg*Constants.MGDL_TO_MMOLL);
+    }
+
+    public String getCapturePercentage(boolean extended){
+        String result =  "Cap:" + ((possibleCaptures>0)?Math.round(getTotalReadings()*100d/possibleCaptures) + "%":"-%");
+
+        if (extended) {
+            result += " (" + getTotalReadings() +  "/" +  getPossibleCaptures() + ")";
+        }
+
+        return result;
     }
 
 }

@@ -738,8 +738,8 @@ public class Preferences extends PreferenceActivity {
             final PreferenceScreen calibrationAlertsScreen = (PreferenceScreen) findPreference("calibration_alerts_screen");
             final PreferenceCategory alertsCategory = (PreferenceCategory) findPreference("alerts_category");
             final Preference disableAlertsStaleDataMinutes = findPreference("disable_alerts_stale_data_minutes");
-            final Preference widgetRangeLines = findPreference("widget_range_lines");
-            final Preference adrian_calibration_mode = (Preference) findPreference("xdrip_plus_motion_settings");
+            final PreferenceScreen lessCommonScreen = (PreferenceScreen) findPreference("xdrip_less_common_settings");
+            final Preference adrian_calibration_mode = findPreference("adrian_calibration_mode");
 
             disableAlertsStaleDataMinutes.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -974,7 +974,7 @@ public class Preferences extends PreferenceActivity {
 
                 if (!engineering_mode) {
                     getPreferenceScreen().removePreference(motionScreen);
-                    getPreferenceScreen().removePreference(adrian_calibration_mode);
+                    lessCommonScreen.removePreference(adrian_calibration_mode);
                 }
 
             } catch (NullPointerException e) {
@@ -1205,19 +1205,6 @@ public class Preferences extends PreferenceActivity {
 
             bindWidgetUpdater();
 
-
-            widgetRangeLines.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    Context context = preference.getContext();
-                    if(AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, xDripWidget.class)).length > 0){
-                        context.startService(new Intent(context, WidgetUpdateService.class));
-                    }
-                    return true;
-                }
-            });
-
-
             bindPreferenceSummaryToValue(transmitterId);
             transmitterId.getEditText().setFilters(new InputFilter[]{new InputFilter.AllCaps()});
 
@@ -1363,6 +1350,9 @@ public class Preferences extends PreferenceActivity {
             findPreference("status_line_high").setOnPreferenceChangeListener(new WidgetListener());
             findPreference("status_line_low").setOnPreferenceChangeListener(new WidgetListener());
             findPreference("extra_status_line").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("status_line_capture_percentage").setOnPreferenceChangeListener(new WidgetListener());
+            findPreference("extra_status_stats_24h").setOnPreferenceChangeListener(new WidgetListener());
+
         }
 
         private void update_force_english_title(String param) {

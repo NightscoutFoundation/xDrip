@@ -2,16 +2,22 @@ package com.eveningoutpost.dexdrip;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 import java.text.DateFormat;
@@ -39,11 +45,15 @@ public class BGHistory extends ActivityWithMenu {
     private Button dateButton1;
     private Spinner daysSpinner;
     private int noDays = 1;
+    private SharedPreferences prefs;
+    private TextView statisticsTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bghistory);
+        this.statisticsTextView = (TextView) findViewById(R.id.historystats);
+
 
         date1 = new GregorianCalendar();
         date1.set(Calendar.HOUR_OF_DAY, 0);
@@ -68,7 +78,7 @@ public class BGHistory extends ActivityWithMenu {
         prevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                date1.add(Calendar.DATE, - noDays);
+                date1.add(Calendar.DATE, -noDays);
                 setupCharts();
             }
         });
@@ -76,7 +86,7 @@ public class BGHistory extends ActivityWithMenu {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                date1.add(Calendar.DATE, + noDays);
+                date1.add(Calendar.DATE, +noDays);
                 setupCharts();
             }
         });
@@ -101,7 +111,7 @@ public class BGHistory extends ActivityWithMenu {
             vals[i] = (i+1) + " days";
         }
 
-        daysSpinner.setAdapter(new ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line,  vals));
+        daysSpinner.setAdapter(new ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, vals));
         daysSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -128,7 +138,7 @@ public class BGHistory extends ActivityWithMenu {
 
         Calendar endDate = (GregorianCalendar) date1.clone();
         endDate.add(Calendar.DATE, noDays);
-        int numValues = noDays * (60 / 5) * 24;
+        int numValues = noDays * (60 / 2) * 24; // LimiTTer sample rate 1 per 2 minutes
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(this, date1.getTimeInMillis(), endDate.getTimeInMillis(), numValues, false);
 
         chart = (LineChartView) findViewById(R.id.chart);
@@ -144,8 +154,40 @@ public class BGHistory extends ActivityWithMenu {
         chart.setViewportCalculationEnabled(true);
         previewChart.setViewportChangeListener(new ViewportListener());
         chart.setViewportChangeListener(new ChartViewPortListener());
+
+        setupStatistics(date1.getTimeInMillis(), endDate.getTimeInMillis());
     }
-    
+
+    private void setupStatistics(long from, long to) {
+
+        if (Home.getPreferencesBoolean("show_history_stats", true)) {
+            StatsResult statsResult = new StatsResult(PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()), from, to);
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.append(statsResult.getAverageUnitised());
+            sb.append(' ');
+            sb.append(statsResult.getA1cDCCT());
+            sb.append(" | ");
+            sb.append(statsResult.getA1cIFCC(true));
+            sb.append('\n');
+            sb.append(statsResult.getInPercentage());
+            sb.append(' ');
+            sb.append(statsResult.getHighPercentage());
+            sb.append(' ');
+            sb.append(statsResult.getLowPercentage());
+            sb.append('\n');
+            sb.append(statsResult.getCapturePercentage(true));
+            sb.append(' ');
+
+            statisticsTextView.setText(sb);
+            statisticsTextView.setVisibility(View.VISIBLE);
+
+        } else {
+            statisticsTextView.setVisibility(View.GONE);
+        }
+    }
+
 
     private class ChartViewPortListener implements ViewportChangeListener {
         @Override
@@ -189,4 +231,28 @@ public class BGHistory extends ActivityWithMenu {
         return days;
     }
 
-}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_history, menu);
+
+        MenuItem menuItem = menu.findItem(R.id.action_toggle_historystats);
+        menuItem.setChecked(Home.getPreferencesBoolean("show_history_stats", true));
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_toggle_historystats) {
+            Home.setPreferencesBoolean("show_history_stats", !Home.getPreferencesBoolean("show_history_stats", true));
+            invalidateOptionsMenu();
+            setupCharts();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
+    }
