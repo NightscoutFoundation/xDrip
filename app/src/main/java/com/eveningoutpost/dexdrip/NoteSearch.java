@@ -39,11 +39,8 @@ import lecho.lib.hellocharts.util.ChartUtils;
  * Created by adrian on 04/10/16.
  */
 public class NoteSearch extends ListActivityWithMenu {
+    public static final int RESTRICT_SEARCH = 8;
     private static final int DEFAULT_TIMEFRAME = 7;
-    private static final String LOAD_MORE = "load more";
-    public static String menu_name = "Note Search";
-
-    public static final int RESTRICT_SEARCH = 2;
     private Button dateButton1;
     private Button dateButton2;
     private EditText searchTextField;
@@ -53,10 +50,57 @@ public class NoteSearch extends ListActivityWithMenu {
     private SearchResultAdapter resultListAdapter;
     private Cursor dbCursor;
 
+    //Strings TODO: move to strings.xml (omitted during dev to avoid merge conflicts)
+    private static final String LOAD_MORE = "load more";
+    public static String menu_name = "Note Search";
+    private static final String SEARCHING = "searching...";
+    private static final String COLLECTING = "collecting...";
+    private static final String CARBS = "carbs";
+    private static final String INSULIN = "insulin";
+
+
+
 
     @Override
     public String getMenuName() {
         return menu_name;
+    }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.OldAppTheme); // or null actionbar
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_notesearch);
+
+        date1 = new GregorianCalendar();
+        date1.set(Calendar.HOUR_OF_DAY, 0);
+        date1.set(Calendar.MINUTE, 0);
+        date1.set(Calendar.SECOND, 0);
+        date1.set(Calendar.MILLISECOND, 0);
+        date1.add(Calendar.DATE, -DEFAULT_TIMEFRAME);
+
+
+        date2 = new GregorianCalendar();
+        date2.set(Calendar.HOUR_OF_DAY, 0);
+        date2.set(Calendar.MINUTE, 0);
+        date2.set(Calendar.SECOND, 0);
+        date2.set(Calendar.MILLISECOND, 0);
+
+        resultListAdapter = new SearchResultAdapter();
+        setListAdapter(resultListAdapter);
+        this.getListView().setLongClickable(true);
+        this.getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
+                SearchResult sResult = (SearchResult) resultListAdapter.getItem(position);
+                // here a long-click action can be added later. (edit mode e.g.)
+                return true;
+            }
+        });
+
+
+        setupGui();
+
     }
 
     @Override
@@ -87,11 +131,11 @@ public class NoteSearch extends ListActivityWithMenu {
 
 
         resultListAdapter.clear();
-        JoH.static_toast_long("collecting...");
+        JoH.static_toast_short(COLLECTING);
 
         SQLiteDatabase db = Cache.openDatabase();
 
-        if (dbCursor != null && !dbCursor.isClosed()){
+        if (dbCursor != null && !dbCursor.isClosed()) {
             dbCursor.close();
         }
 
@@ -101,10 +145,10 @@ public class NoteSearch extends ListActivityWithMenu {
         endDate.add(Calendar.DATE, 1);
         long to = endDate.getTimeInMillis();
 
-        dbCursor = db.rawQuery("select timestamp, notes, carbs, insulin from Treatments where notes IS NOT NULL AND timestamp < " + to + " AND timestamp >= " + from +  " ORDER BY timestamp DESC", null);
+        dbCursor = db.rawQuery("select timestamp, notes, carbs, insulin from Treatments where notes IS NOT NULL AND timestamp < " + to + " AND timestamp >= " + from + " ORDER BY timestamp DESC", null);
         dbCursor.moveToFirst();
 
-        for (int i = 0; i< RESTRICT_SEARCH && !dbCursor.isAfterLast(); i++) {
+        for (int i = 0; i < RESTRICT_SEARCH && !dbCursor.isAfterLast(); i++) {
             SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3));
             resultListAdapter.addSingle(result);
             dbCursor.moveToNext();
@@ -118,23 +162,22 @@ public class NoteSearch extends ListActivityWithMenu {
             resultListAdapter.addSingle(result);
         }
 
-        JoH.static_toast_long("collecting...");
     }
 
     private void doSearch() {
 
-        if(searchTextField.getText() == null || "".equals(searchTextField.getText().toString())){
+        if (searchTextField.getText() == null || "".equals(searchTextField.getText().toString())) {
             JoH.static_toast_long("No search term found");
             return;
         }
 
 
         resultListAdapter.clear();
-        JoH.static_toast_long("searching...");
+        JoH.static_toast_short(SEARCHING);
 
         SQLiteDatabase db = Cache.openDatabase();
 
-        if (dbCursor != null && !dbCursor.isClosed()){
+        if (dbCursor != null && !dbCursor.isClosed()) {
             dbCursor.close();
         }
 
@@ -149,10 +192,10 @@ public class NoteSearch extends ListActivityWithMenu {
         long to = endDate.getTimeInMillis();
 
 
-        dbCursor = db.rawQuery("select timestamp, notes, carbs, insulin from Treatments where notes IS NOT NULL AND timestamp < " + to + " AND timestamp >= " + from +  " AND notes like '%" + searchTerm + "%' ORDER BY timestamp DESC", null);
+        dbCursor = db.rawQuery("select timestamp, notes, carbs, insulin from Treatments where notes IS NOT NULL AND timestamp < " + to + " AND timestamp >= " + from + " AND notes like '%" + searchTerm + "%' ORDER BY timestamp DESC", null);
         dbCursor.moveToFirst();
 
-        for (int i = 0; i< RESTRICT_SEARCH && !dbCursor.isAfterLast(); i++) {
+        for (int i = 0; i < RESTRICT_SEARCH && !dbCursor.isAfterLast(); i++) {
             SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3));
             resultListAdapter.addSingle(result);
             dbCursor.moveToNext();
@@ -168,46 +211,10 @@ public class NoteSearch extends ListActivityWithMenu {
 
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.OldAppTheme); // or null actionbar
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notesearch);
-
-        date1 = new GregorianCalendar();
-        date1.set(Calendar.HOUR_OF_DAY, 0);
-        date1.set(Calendar.MINUTE, 0);
-        date1.set(Calendar.SECOND, 0);
-        date1.set(Calendar.MILLISECOND, 0);
-        date1.add(Calendar.DATE, -DEFAULT_TIMEFRAME);
-
-
-        date2 = new GregorianCalendar();
-        date2.set(Calendar.HOUR_OF_DAY, 0);
-        date2.set(Calendar.MINUTE, 0);
-        date2.set(Calendar.SECOND, 0);
-        date2.set(Calendar.MILLISECOND, 0);
-
-        resultListAdapter = new SearchResultAdapter();
-        setListAdapter(resultListAdapter);
-        this.getListView().setLongClickable(true);
-        this.getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
-                SearchResult sResult = (SearchResult) resultListAdapter.getItem(position);
-                //JoH.static_toast_long("long pressed: " + sResult.note);
-                // TODO: here a long-click action can be added later. (edit mode e.g.)
-                return true;
-            }
-        });
-
-
-        setupGui();
-
-    }
 
     @Override
-    protected void onDestroy(){
-        if (dbCursor != null && !dbCursor.isClosed()){
+    protected void onDestroy() {
+        if (dbCursor != null && !dbCursor.isClosed()) {
             dbCursor.close();
         }
         super.onDestroy();
@@ -267,12 +274,57 @@ public class NoteSearch extends ListActivityWithMenu {
         dateButton2.setText(dateFormatter.format(date2.getTime()));
     }
 
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        SearchResult sResult = (SearchResult) resultListAdapter.getItem(position);
+
+        if (!sResult.isLoadMoreAction) {
+            Intent myIntent = new Intent(this, BGHistory.class);
+            myIntent.putExtra(BGHistory.OPEN_ON_TIME_KEY, sResult.timestamp);
+            startActivity(myIntent);
+            finish();
+        } else {
+            loadMore();
+        }
+
+    }
+
+    private void loadMore() {
+        //remove last item (the action)
+        resultListAdapter.removeLoadMoreAction();
+
+        //check if cursor open
+        if (dbCursor == null || dbCursor.isClosed()) return;
+
+        //load more
+        for (int i = 0; i < RESTRICT_SEARCH && !dbCursor.isAfterLast(); i++) {
+            SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3));
+            resultListAdapter.addSingle(result);
+            dbCursor.moveToNext();
+        }
+        //add action if needed
+        if (dbCursor.isAfterLast()) {
+            dbCursor.close();
+        } else {
+            SearchResult result = new SearchResult(0, LOAD_MORE, 0, 0);
+            result.setLoadMoreActionFlag();
+            resultListAdapter.addSingle(result);
+        }
+    }
+
+    static class ViewHolder {
+        boolean modified;
+        TextView note;
+        TextView time;
+        TextView treatments;
+
+    }
 
     private class SearchResultAdapter extends BaseAdapter {
 
         private Vector<SearchResult> noteList;
 
-        public SearchResultAdapter(){
+        public SearchResultAdapter() {
             noteList = new Vector<SearchResult>(30);
         }
 
@@ -296,7 +348,7 @@ public class NoteSearch extends ListActivityWithMenu {
             notifyDataSetChanged();
         }
 
-        public void addSingle(SearchResult searchResult){
+        public void addSingle(SearchResult searchResult) {
             noteList.add(searchResult);
             notifyDataSetChanged();
         }
@@ -319,7 +371,7 @@ public class NoteSearch extends ListActivityWithMenu {
             SearchResult searchResult = noteList.get(position);
 
 
-            if(searchResult.isLoadMoreAction) {
+            if (searchResult.isLoadMoreAction) {
                 viewHolder.note.setTextColor(ChartUtils.COLOR_BLUE);
                 viewHolder.note.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
                 viewHolder.treatments.setVisibility(View.GONE);
@@ -327,7 +379,7 @@ public class NoteSearch extends ListActivityWithMenu {
                 viewHolder.modified = true;
             }
             viewHolder.note.setText(searchResult.note);
-            if (! "". equals(searchResult.otherTreatments)){
+            if (!"".equals(searchResult.otherTreatments)) {
                 viewHolder.treatments.setText(searchResult.otherTreatments);
 
             } else {
@@ -346,53 +398,6 @@ public class NoteSearch extends ListActivityWithMenu {
         }
     }
 
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        SearchResult sResult = (SearchResult) resultListAdapter.getItem(position);
-
-        if(!sResult.isLoadMoreAction){
-            Intent myIntent = new Intent(this, BGHistory.class);
-            myIntent.putExtra(BGHistory.OPEN_ON_TIME_KEY, sResult.timestamp);
-            startActivity(myIntent);
-            finish();
-        } else {
-            loadMore();
-        }
-
-    }
-
-    private void loadMore() {
-        //remove last item (the action)
-        resultListAdapter.removeLoadMoreAction();
-
-        //check if cursor open
-        if (dbCursor==null || dbCursor.isClosed()) return;
-
-        //load more
-        for (int i = 0; i< RESTRICT_SEARCH && !dbCursor.isAfterLast(); i++) {
-            SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3));
-            resultListAdapter.addSingle(result);
-            dbCursor.moveToNext();
-        }
-        //add action if needed
-        if (dbCursor.isAfterLast()) {
-            dbCursor.close();
-        } else {
-            SearchResult result = new SearchResult(0, LOAD_MORE, 0, 0);
-            result.setLoadMoreActionFlag();
-            resultListAdapter.addSingle(result);
-        }
-    }
-
-    static class ViewHolder {
-        boolean modified;
-        TextView note;
-        TextView time;
-        TextView treatments;
-
-    }
-
-
     private class SearchResult {
         long timestamp;
         String note;
@@ -403,16 +408,16 @@ public class NoteSearch extends ListActivityWithMenu {
             this.timestamp = timestamp;
             this.note = note;
             this.otherTreatments = "";
-            if(carbs != 0) {
-                otherTreatments += "carbs: "  + carbs;
+            if (carbs != 0) {
+                otherTreatments += CARBS + ": " + carbs;
             }
-            if(insulin != 0) {
-                otherTreatments += " insulin: "  + carbs;
+            if (insulin != 0) {
+                otherTreatments += " " + INSULIN + ": " + carbs;
             }
         }
 
         /*Used to add elements like "Press for more results"*/
-        public void setLoadMoreActionFlag(){
+        public void setLoadMoreActionFlag() {
             isLoadMoreAction = true;
         }
 
