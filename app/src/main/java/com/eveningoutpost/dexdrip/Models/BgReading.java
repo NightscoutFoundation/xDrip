@@ -19,7 +19,6 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.ShareModels.ShareUploadableBg;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -32,14 +31,14 @@ import com.google.gson.internal.bind.DateTypeAdapter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
+
+import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newCloseSensorData;
 
 @Table(name = "BgReadings", id = BaseColumns._ID)
 public class BgReading extends Model implements ShareUploadableBg {
@@ -404,6 +403,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                 if (lastBgReading != null && lastBgReading.calibration != null) {
                     if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp) && ((lastBgReading.calibration.timestamp + (60000 * 20)) > bgReading.timestamp)) {
                         lastBgReading.calibration.rawValueOverride(BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value), context);
+                        newCloseSensorData();
                     }
                 }
                 bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);

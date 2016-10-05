@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.calibrations;
 
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.UserError;
 
 /**
  * Created by jamorham on 04/10/2016.
@@ -27,8 +28,32 @@ public class XDripOriginal extends CalibrationAbstract {
     @Override
     public CalibrationData getCalibrationData() {
 
-        final Calibration calibration = Calibration.lastValid();
-        if (calibration == null) return null;
-        return new CalibrationData(calibration.slope, calibration.intercept);
+        CalibrationData cd = loadDataFromCache(TAG);
+        if (cd == null) {
+            UserError.Log.d(TAG, "Regenerating Calibration data cache");
+            final Calibration calibration = Calibration.lastValid();
+            if (calibration != null) {
+
+                // produce the CalibrationData result
+                cd = new CalibrationData(calibration.slope, calibration.intercept);
+
+                saveDataToCache(TAG, cd);
+            }
+        //} else {
+        //    UserError.Log.d(TAG, "Using cached data");
+        }
+        return cd; // null if invalid
+    }
+
+    @Override
+    public boolean invalidateCache() {
+        return saveDataToCache(TAG, null);
+    }
+
+    // xDrip classic algorithm overrides raw interpolated sensor data near
+    // to a calibration
+    @Override
+    public boolean newCloseSensorData() {
+        return invalidateCache();
     }
 }

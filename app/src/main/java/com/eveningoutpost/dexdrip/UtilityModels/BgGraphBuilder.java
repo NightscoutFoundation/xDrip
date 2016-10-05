@@ -178,6 +178,7 @@ public class BgGraphBuilder {
 
         if ((end - start) > 80000000) {
             try {
+                // TODO something about this means it never seems to get to 100% maybe int rounding or timing related.
                 capturePercentage = ((bgReadings.size() * 100) / ((end - start) / 300000));
                 //Log.d(TAG, "CPTIMEPERIOD: " + Long.toString(end - start) + " percentage: " + JoH.qs(capturePercentage));
             } catch (Exception e) {
@@ -1455,6 +1456,10 @@ public class BgGraphBuilder {
     }
 
     public String unitized_string(double value) {
+        return unitized_string(value, doMgdl);
+    }
+
+    public static String unitized_string(double value, boolean doMgdl) {
         DecimalFormat df = new DecimalFormat("#");
         if (value >= 400) {
             return "HIGH";
@@ -1548,12 +1553,15 @@ public class BgGraphBuilder {
     }
 
     public String unit() {
+        return unit(doMgdl);
+    }
+
+    public static String unit(boolean doMgdl) {
         if (doMgdl) {
             return "mg/dl";
         } else {
             return "mmol";
         }
-
     }
 
     public OnValueSelectTooltipListener getOnValueSelectTooltipListener(boolean interactive) {

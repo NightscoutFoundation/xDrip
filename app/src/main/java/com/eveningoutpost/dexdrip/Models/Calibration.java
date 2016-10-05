@@ -22,7 +22,6 @@ import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
-import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -33,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newFingerStickData;
 
 
 class DexParameters extends SlopeParameters {
@@ -295,6 +296,7 @@ public class Calibration extends Model {
             calibration.save();
 
             calculate_w_l_s();
+            newFingerStickData();
             CalibrationSendQueue.addToQueue(calibration, context);
         }
         adjustRecentBgReadings(5);
@@ -363,6 +365,7 @@ public class Calibration extends Model {
                     calibration.save();
                     CalibrationSendQueue.addToQueue(calibration, context);
                     Calibration.requestCalibrationIfRangeTooNarrow();
+                    newFingerStickData();
                 }
             }
             if (firstCalRecord.getCalSubrecords()[0] != null && firstCalRecord.getCalSubrecords()[2] == null) {
@@ -491,6 +494,7 @@ public class Calibration extends Model {
                     CalibrationSendQueue.addToQueue(calibration, context);
                     context.startService(new Intent(context, Notifications.class));
                     Calibration.requestCalibrationIfRangeTooNarrow();
+                    newFingerStickData();
                 } else {
                     Log.d(TAG, "Follower mode or note so not processing calibration deeply");
                 }
@@ -558,6 +562,7 @@ public class Calibration extends Model {
                 calibration.intercept = calibration.bg - (calibration.raw_value * calibration.slope);
                 calibration.save();
                 CalibrationRequest.createOffset(calibration.bg, 25);
+                newFingerStickData();
             } else {
                 for (Calibration calibration : calibrations) {
                     w = calibration.calculateWeight();
@@ -604,9 +609,11 @@ public class Calibration extends Model {
                     calibration.slope_confidence = 0;
                     Home.toaststaticnext("Got invalid zero slope calibration!");
                     calibration.save(); // Save nulled record, lastValid should protect from bad calibrations
+                    newFingerStickData();
 
                 } else {
                     calibration.save();
+                    newFingerStickData();
                 }
             }
         } else {
@@ -768,6 +775,7 @@ public class Calibration extends Model {
                 calibration.slope_confidence = 0;
                 calibration.sensor_confidence = 0;
                 calibration.save();
+                newFingerStickData();
             }
         }
 
@@ -782,6 +790,7 @@ public class Calibration extends Model {
             calibration.sensor_confidence = 0;
             calibration.save();
             CalibrationSendQueue.addToQueue(calibration, xdrip.getAppContext());
+            newFingerStickData();
         }
     }
 
@@ -812,6 +821,7 @@ public class Calibration extends Model {
             calibration.sensor_confidence = 0;
             calibration.save();
             CalibrationSendQueue.addToQueue(calibration, xdrip.getAppContext());
+            newFingerStickData();
             if (from_interactive) {
                 GcmActivity.clearLastCalibration();
             }

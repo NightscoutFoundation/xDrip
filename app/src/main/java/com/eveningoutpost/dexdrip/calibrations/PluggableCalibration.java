@@ -95,4 +95,21 @@ public class PluggableCalibration {
         return getCalibrationPluginByName(Home.getPreferencesStringWithDefault("current_calibration_plugin", "None"));
     }
 
+    // lazy helper function
+    public static boolean newCloseSensorData() {
+        try {
+            return PluggableCalibration.getCalibrationPluginFromPreferences().newCloseSensorData();
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
+
+    // lazy helper function
+    public static boolean newFingerStickData() {
+        try {
+            return PluggableCalibration.getCalibrationPluginFromPreferences().newFingerStickData();
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
 }
