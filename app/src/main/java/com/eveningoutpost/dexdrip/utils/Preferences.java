@@ -934,6 +934,15 @@ public class Preferences extends PreferenceActivity {
             if (engineering_mode) {
                 // populate the list
                 PluggableCalibration.setListPreferenceData(currentCalibrationPlugin);
+
+                currentCalibrationPlugin.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        PluggableCalibration.invalidateCache(); // current
+                        PluggableCalibration.invalidateCache(newValue.toString()); // next
+                        return true;
+                    }
+                });
             }
 
             if (!DexCollectionType.hasLibre(collectionType)) {

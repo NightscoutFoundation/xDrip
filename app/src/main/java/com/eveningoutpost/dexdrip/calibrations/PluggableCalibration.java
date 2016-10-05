@@ -112,4 +112,22 @@ public class PluggableCalibration {
             return false;
         }
     }
+
+    // lazy helper function
+    public static boolean invalidateCache() {
+        try {
+            return PluggableCalibration.getCalibrationPluginFromPreferences().invalidateCache();
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
+
+    // lazy helper function
+    public static boolean invalidateCache(String tag) {
+        try {
+            return PluggableCalibration.getCalibrationPluginByName(tag).invalidateCache();
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
 }

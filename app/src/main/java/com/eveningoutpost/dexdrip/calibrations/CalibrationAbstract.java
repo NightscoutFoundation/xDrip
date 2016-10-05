@@ -1,10 +1,14 @@
 package com.eveningoutpost.dexdrip.calibrations;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by jamorham on 04/10/2016.
@@ -16,6 +20,8 @@ import com.google.gson.annotations.Expose;
  */
 
 public abstract class CalibrationAbstract {
+
+    private static Map<String, CalibrationData> memory_cache = new HashMap<>();
 
     /* Overridable methods */
 
@@ -112,7 +118,7 @@ public abstract class CalibrationAbstract {
         } catch (Exception e) {
             return null;
         }
-        }
+    }
 
     protected static String dataToJsonString(CalibrationData data) {
         final Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
@@ -124,12 +130,18 @@ public abstract class CalibrationAbstract {
     }
 
     protected static boolean saveDataToCache(String tag, CalibrationData data) {
-        PersistentStore.setString("CalibrationDataCache-" + tag, dataToJsonString(data));
+        final String lookup_tag = "CalibrationDataCache-" + tag;
+        memory_cache.put(lookup_tag, data);
+        PersistentStore.setString(lookup_tag, dataToJsonString(data));
         return true;
     }
 
     protected static CalibrationData loadDataFromCache(String tag) {
-        return jsonStringToData(PersistentStore.getString("CalibrationDataCache-" + tag));
+        final String lookup_tag = "CalibrationDataCache-" + tag;
+        if (!memory_cache.containsKey(lookup_tag)) {
+            memory_cache.put(lookup_tag, jsonStringToData(PersistentStore.getString(lookup_tag)));
+        }
+        return memory_cache.get(lookup_tag);
     }
 
     /* Data Exchange Class */
