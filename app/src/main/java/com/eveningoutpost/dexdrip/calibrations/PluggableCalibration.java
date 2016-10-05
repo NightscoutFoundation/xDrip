@@ -23,6 +23,8 @@ public class PluggableCalibration {
                 return new Datricsae();
             case FixedSlopeExample:
                 return new FixedSlopeExample();
+            case xDripOriginal:
+                return new XDripOriginal();
 
             // add new plugins here and also to the enum below
 
@@ -37,7 +39,8 @@ public class PluggableCalibration {
 
         None("None"),
         Datricsae("Datricsae"),
-        FixedSlopeExample("FixedSlopeExample");
+        FixedSlopeExample("FixedSlopeExample"),
+        xDripOriginal("xDripOriginal");
 
         // add new algorithms here and also in to getCalibrationPlugin() above
 

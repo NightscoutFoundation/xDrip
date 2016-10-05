@@ -90,6 +90,7 @@ public class CalibrationGraph extends ActivityWithMenu {
             calibrationLine.setColor(ChartUtils.COLOR_RED);
             calibrationLine.setHasLines(true);
             calibrationLine.setHasPoints(false);
+            lines.add(calibrationLine);
 
             // calibration plugin
             final CalibrationAbstract plugin = getCalibrationPluginFromPreferences();
@@ -102,7 +103,7 @@ public class CalibrationGraph extends ActivityWithMenu {
                 plineValues.add(new PointValue((float) end_x, (conversion_factor * (float) (plugin.getGlucoseFromSensorValue(end_x, pcalibration)))));
 
                 final Line pcalibrationLine = new Line(plineValues);
-                pcalibrationLine.setColor(ChartUtils.COLOR_GREEN);
+                pcalibrationLine.setColor(Color.parseColor("#88CCFF00"));
                 pcalibrationLine.setHasLines(true);
                 pcalibrationLine.setHasPoints(false);
                 lines.add(pcalibrationLine);
@@ -118,7 +119,7 @@ public class CalibrationGraph extends ActivityWithMenu {
             //add lines in order
             lines.add(greyLine);
             lines.add(blueLine);
-            lines.add(calibrationLine);
+
 
         }
         Axis axisX = new Axis();

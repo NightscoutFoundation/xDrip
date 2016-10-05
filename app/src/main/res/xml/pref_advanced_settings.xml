@@ -360,6 +360,12 @@
                     android:key="status_line_calibration_short"
                     android:summary="Show slope and intercept in short form."
                     android:title="@string/calibration_data_short" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="extra_status_line"
+                    android:key="extra_status_calibration_plugin"
+                    android:summary="Show slope and glucose data from the active plugin"
+                    android:title="Calibration Plugin" />
             </PreferenceScreen>
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_plus_calibration_settings"

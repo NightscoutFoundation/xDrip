@@ -71,6 +71,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
+import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.languageeditor.LanguageEditor;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
@@ -112,6 +113,7 @@ import lecho.lib.hellocharts.view.PreviewLineChartView;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
+import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
 
 
 public class Home extends ActivityWithMenu {
@@ -1920,6 +1922,20 @@ public class Home extends ActivityWithMenu {
                 extraline.append(statsResult.getCapturePercentage(false));
             }
         }
+        if (prefs.getBoolean("extra_status_calibration_plugin", false)) {
+            final CalibrationAbstract plugin = getCalibrationPluginFromPreferences(); // make sure do this only once
+            if (plugin != null) {
+                final CalibrationAbstract.CalibrationData pcalibration = plugin.getCalibrationData();
+                if (extraline.length() > 0) extraline.append("\n"); // not tested on the widget yet
+                extraline.append("(" + plugin.getAlgorithmName() + ") s:" + JoH.qs(pcalibration.slope, 2) + " i:" + JoH.qs(pcalibration.intercept, 2));
+                BgReading bgReading = BgReading.last();
+                if (bgReading != null) {
+                    final boolean doMgdl = prefs.getString("units", "mgdl").equals("mgdl");
+                    extraline.append(" \u21D2 " + BgGraphBuilder.unitized_string(plugin.getGlucoseFromSensorValue(bgReading.raw_data), doMgdl) + " " + BgGraphBuilder.unit(doMgdl));
+                }
+            }
+        }
+
         if (prefs.getBoolean("status_line_time", false)) {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
             if (extraline.length() != 0) extraline.append(' ');
