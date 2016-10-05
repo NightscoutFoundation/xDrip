@@ -373,6 +373,14 @@
                     android:shouldDisableView="true"
                     android:summary="Choose whether to calibrate with the BG value in a Treatment entry"
                     android:title="Use Treatment BG values" />
+                <ListPreference
+                    android:key="current_calibration_plugin"
+                    android:defaultValue="None"
+                    android:title="Calibration Plugin"
+                    android:summary="Experimental secondary calibration plugin"
+                    android:shouldDisableView="true"
+                    android:dependency="engineering_mode"
+                    />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="engineering_mode"

@@ -53,6 +53,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleTr
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleTrendWatchFace;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface.InstallPebbleWatchFace;
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
+import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.xDripWidget;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -680,6 +681,8 @@ public class Preferences extends PreferenceActivity {
             final Preference nfcSettings = findPreference("xdrip_plus_nfc_settings");
             //DexCollectionType collectionType = DexCollectionType.getType(findPreference("dex_collection_method").)
 
+            final ListPreference currentCalibrationPlugin = (ListPreference)findPreference("current_calibration_plugin");
+
 
             final Preference shareKey = findPreference("share_key");
             shareKey.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -927,6 +930,11 @@ public class Preferences extends PreferenceActivity {
             }
 
             final boolean engineering_mode = this.prefs.getBoolean("engineering_mode",false);
+
+            if (engineering_mode) {
+                // populate the list
+                PluggableCalibration.setListPreferenceData(currentCalibrationPlugin);
+            }
 
             if (!DexCollectionType.hasLibre(collectionType)) {
                 collectionCategory.removePreference(nfcSettings);

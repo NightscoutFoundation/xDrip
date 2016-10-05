@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 import java.text.DateFormat;
@@ -30,6 +31,8 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
 
+import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
+
 
 public class CalibrationGraph extends ActivityWithMenu {
     //public static String menu_name = "Calibration Graph";
@@ -42,6 +45,7 @@ public class CalibrationGraph extends ActivityWithMenu {
     private final double end_x = 300; //  raw range
 
     TextView GraphHeader;
+    TextView PluginHeader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,8 @@ public class CalibrationGraph extends ActivityWithMenu {
         setContentView(R.layout.activity_calibration_graph);
         JoH.fixActionBar(this);
         GraphHeader = (TextView) findViewById(R.id.CalibrationGraphHeader);
+        PluginHeader = (TextView) findViewById(R.id.calibrationPluginHeader);
+        PluginHeader.setText("");
     }
 
     @Override
@@ -65,7 +71,6 @@ public class CalibrationGraph extends ActivityWithMenu {
     public void setupCharts() {
         chart = (LineChartView) findViewById(R.id.chart);
         List<Line> lines = new ArrayList<Line>();
-
         Calibration calibration = Calibration.lastValid();
         if (calibration != null) {
             //set header
@@ -85,6 +90,24 @@ public class CalibrationGraph extends ActivityWithMenu {
             calibrationLine.setColor(ChartUtils.COLOR_RED);
             calibrationLine.setHasLines(true);
             calibrationLine.setHasPoints(false);
+
+            // calibration plugin
+            final CalibrationAbstract plugin = getCalibrationPluginFromPreferences();
+            if (plugin != null) {
+                final CalibrationAbstract.CalibrationData pcalibration = plugin.getCalibrationData();
+
+                final List<PointValue> plineValues = new ArrayList<PointValue>();
+
+                plineValues.add(new PointValue((float) start_x, (conversion_factor * (float) (plugin.getGlucoseFromSensorValue(start_x, pcalibration)))));
+                plineValues.add(new PointValue((float) end_x, (conversion_factor * (float) (plugin.getGlucoseFromSensorValue(end_x, pcalibration)))));
+
+                final Line pcalibrationLine = new Line(plineValues);
+                pcalibrationLine.setColor(ChartUtils.COLOR_GREEN);
+                pcalibrationLine.setHasLines(true);
+                pcalibrationLine.setHasPoints(false);
+                lines.add(pcalibrationLine);
+                PluginHeader.setText("(" + plugin.getAlgorithmName() + ")  " + "s = " + df.format(pcalibration.slope) + "  i = " + df.format(pcalibration.intercept));
+            }
 
             //calibration values
             List<Calibration> calibrations = Calibration.allForSensor();
