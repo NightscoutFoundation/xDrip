@@ -244,14 +244,18 @@ public class NoteSearch extends ListActivityWithMenu {
 
             if(searchResult.flagInteractionItem) {
                 viewHolder.note.setTextColor(ChartUtils.COLOR_BLUE);
+                viewHolder.treatments.setVisibility(View.GONE);
+                viewHolder.time.setVisibility(View.GONE);
+
             }
             viewHolder.note.setText(searchResult.note);
-            viewHolder.treatments.setText(searchResult.otherTreatments);
+            if (! "". equals(searchResult.otherTreatments)){
+                viewHolder.treatments.setText(searchResult.otherTreatments);
 
-            //TODO: better format timestamp
+            } else {
+                viewHolder.treatments.setVisibility(View.GONE);
+            }
             viewHolder.time.setText(new Date(searchResult.timestamp).toString());
-
-
             return convertView;
         }
     }
