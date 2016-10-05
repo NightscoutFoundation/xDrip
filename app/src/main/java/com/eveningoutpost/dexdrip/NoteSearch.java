@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -9,10 +10,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -112,6 +115,16 @@ public class NoteSearch extends ListActivityWithMenu {
 
         reslutListAdapter = new SearchResultAdapter();
         setListAdapter(reslutListAdapter);
+        this.getListView().setLongClickable(true);
+        this.getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
+                SearchResult sResult = (SearchResult) reslutListAdapter.getItem(position);
+                //JoH.static_toast_long("long pressed: " + sResult.note);
+                // TODO: here a long-click action can be added later. (edit mode e.g.)
+                return true;
+            }
+        });
+
 
         setupGui();
 
@@ -241,6 +254,21 @@ public class NoteSearch extends ListActivityWithMenu {
 
             return convertView;
         }
+    }
+
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        SearchResult sResult = (SearchResult) reslutListAdapter.getItem(position);
+
+        if(!sResult.flagInteractionItem){
+            Intent myIntent = new Intent(this, BGHistory.class);
+            myIntent.putExtra(BGHistory.OPEN_ON_TIME_KEY, sResult.timestamp);
+            startActivity(myIntent);
+            finish();
+        } else {
+            // do some interaction later
+        }
+
     }
 
     static class ViewHolder {
