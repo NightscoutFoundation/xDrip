@@ -3,6 +3,9 @@ package com.eveningoutpost.dexdrip;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -18,11 +21,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.activeandroid.Cache;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -44,7 +47,8 @@ public class NoteSearch extends ListActivityWithMenu {
     private GregorianCalendar date1;
     private GregorianCalendar date2;
     private DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.DEFAULT, Locale.getDefault());
-    private SearchResultAdapter reslutListAdapter;
+    private SearchResultAdapter resultListAdapter;
+    private Cursor dbCursor;
 
 
     @Override
@@ -80,7 +84,7 @@ public class NoteSearch extends ListActivityWithMenu {
         //TODO do something
 
         for(int i = 0; i < 30; i++){
-            reslutListAdapter.addSingle(new SearchResult(System.currentTimeMillis() - (i*1000*60*60*24), "A note text " + i, i, i ));
+            resultListAdapter.addSingle(new SearchResult(System.currentTimeMillis() - (i * 1000 * 60 * 60 * 24), "A note text " + i, i, i));
         }
 
 
@@ -89,8 +93,30 @@ public class NoteSearch extends ListActivityWithMenu {
     }
 
     private void doSearch() {
-        //TODO do something
+        resultListAdapter.clear();
         JoH.static_toast_long("searching...");
+
+        SQLiteDatabase db = Cache.openDatabase();
+
+        if (dbCursor != null && !dbCursor.isClosed()){
+            dbCursor.close();
+        }
+
+
+        String searchTerm = "ei";
+        DatabaseUtils.sqlEscapeString(searchTerm);
+
+
+        dbCursor = db.rawQuery("select timestamp, notes, carbs, insulin from Treatments where notes IS NOT NULL AND notes like '%" + searchTerm + "%' ORDER BY timestamp DESC", null);
+        dbCursor.moveToFirst();
+        while (!dbCursor.isAfterLast()){
+            SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3));
+            resultListAdapter.addSingle(result);
+            dbCursor.moveToNext();
+        }
+
+        dbCursor.close();
+
     }
 
     @Override
@@ -113,12 +139,12 @@ public class NoteSearch extends ListActivityWithMenu {
         date2.set(Calendar.SECOND, 0);
         date2.set(Calendar.MILLISECOND, 0);
 
-        reslutListAdapter = new SearchResultAdapter();
-        setListAdapter(reslutListAdapter);
+        resultListAdapter = new SearchResultAdapter();
+        setListAdapter(resultListAdapter);
         this.getListView().setLongClickable(true);
         this.getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
-                SearchResult sResult = (SearchResult) reslutListAdapter.getItem(position);
+                SearchResult sResult = (SearchResult) resultListAdapter.getItem(position);
                 //JoH.static_toast_long("long pressed: " + sResult.note);
                 // TODO: here a long-click action can be added later. (edit mode e.g.)
                 return true;
@@ -262,7 +288,7 @@ public class NoteSearch extends ListActivityWithMenu {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        SearchResult sResult = (SearchResult) reslutListAdapter.getItem(position);
+        SearchResult sResult = (SearchResult) resultListAdapter.getItem(position);
 
         if(!sResult.flagInteractionItem){
             Intent myIntent = new Intent(this, BGHistory.class);
