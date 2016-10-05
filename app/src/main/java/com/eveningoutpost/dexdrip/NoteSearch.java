@@ -7,7 +7,9 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -17,9 +19,14 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.Vector;
+
+import lecho.lib.hellocharts.util.ChartUtils;
 
 /**
  * Created by adrian on 04/10/16.
@@ -34,7 +41,7 @@ public class NoteSearch extends ListActivityWithMenu {
     private GregorianCalendar date1;
     private GregorianCalendar date2;
     private DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.DEFAULT, Locale.getDefault());
-
+    private SearchResultAdapter reslutListAdapter;
 
 
     @Override
@@ -68,6 +75,13 @@ public class NoteSearch extends ListActivityWithMenu {
 
     private void doAll() {
         //TODO do something
+
+        for(int i = 0; i < 30; i++){
+            reslutListAdapter.addSingle(new SearchResult(System.currentTimeMillis() - (i*1000*60*60*24), "A note text " + i, i, i ));
+        }
+
+
+
         JoH.static_toast_long("collecting...");
     }
 
@@ -95,6 +109,9 @@ public class NoteSearch extends ListActivityWithMenu {
         date2.set(Calendar.MINUTE, 0);
         date2.set(Calendar.SECOND, 0);
         date2.set(Calendar.MILLISECOND, 0);
+
+        reslutListAdapter = new SearchResultAdapter();
+        setListAdapter(reslutListAdapter);
 
         setupGui();
 
@@ -161,4 +178,101 @@ public class NoteSearch extends ListActivityWithMenu {
     }
 
 
+    private class SearchResultAdapter extends BaseAdapter {
+
+        private Vector<SearchResult> noteList;
+
+        public SearchResultAdapter(){
+            noteList = new Vector<SearchResult>(30);
+        }
+
+        @Override
+        public int getCount() {
+            return noteList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return noteList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        public void clear() {
+            noteList.clear();
+            notifyDataSetChanged();
+        }
+
+        public void addSingle(SearchResult searchResult){
+            noteList.add(searchResult);
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder;
+            // General ListView optimization code.
+            if (convertView == null) {
+                convertView = NoteSearch.this.getLayoutInflater().inflate(R.layout.notesearch_list_item, null);
+                viewHolder = new ViewHolder();
+                viewHolder.note = (TextView) convertView.findViewById(R.id.notesearch_note_id);
+                viewHolder.time = (TextView) convertView.findViewById(R.id.notesearch_time_id);
+                viewHolder.treatments = (TextView) convertView.findViewById(R.id.notesearch_treatments_id);
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+
+            SearchResult searchResult = noteList.get(position);
+
+
+            if(searchResult.flagInteractionItem) {
+                viewHolder.note.setTextColor(ChartUtils.COLOR_BLUE);
+            }
+            viewHolder.note.setText(searchResult.note);
+            viewHolder.treatments.setText(searchResult.otherTreatments);
+
+            //TODO: better format timestamp
+            viewHolder.time.setText(new Date(searchResult.timestamp).toString());
+
+
+            return convertView;
+        }
+    }
+
+    static class ViewHolder {
+        TextView note;
+        TextView time;
+        TextView treatments;
+
+    }
+
+
+    private class SearchResult {
+        long timestamp;
+        String note;
+        String otherTreatments;
+        boolean flagInteractionItem;
+
+        public SearchResult(long timestamp, String note, double carbs, double insulin) {
+            this.timestamp = timestamp;
+            this.note = note;
+            this.otherTreatments = "";
+            if(carbs != 0) {
+                otherTreatments += "carbs: "  + carbs;
+            }
+            if(insulin != 0) {
+                otherTreatments += " insulin: "  + carbs;
+            }
+        }
+
+        /*Used to add elements like "Press for more results"*/
+        public void flagInteractionItem(){
+            flagInteractionItem = true;
+        }
+
+    }
 }
