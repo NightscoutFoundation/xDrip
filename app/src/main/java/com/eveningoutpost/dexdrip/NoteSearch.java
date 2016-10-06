@@ -57,6 +57,8 @@ public class NoteSearch extends ListActivityWithMenu {
     private static final String COLLECTING = "collecting...";
     private static final String CARBS = "carbs";
     private static final String INSULIN = "insulin";
+    private static final String NOTHING = "nothing found";
+
 
 
 
@@ -148,12 +150,16 @@ public class NoteSearch extends ListActivityWithMenu {
         dbCursor = db.rawQuery("select timestamp, notes, carbs, insulin from Treatments where notes IS NOT NULL AND timestamp < " + to + " AND timestamp >= " + from + " ORDER BY timestamp DESC", null);
         dbCursor.moveToFirst();
 
-        for (int i = 0; i < RESTRICT_SEARCH && !dbCursor.isAfterLast(); i++) {
+        int i = 0;
+        for (; i < RESTRICT_SEARCH && !dbCursor.isAfterLast(); i++) {
             SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3));
             resultListAdapter.addSingle(result);
             dbCursor.moveToNext();
         }
 
+        if (i == 0){
+            JoH.static_toast_short(NOTHING);
+        }
         if (dbCursor.isAfterLast()) {
             dbCursor.close();
         } else {
@@ -167,7 +173,7 @@ public class NoteSearch extends ListActivityWithMenu {
     private void doSearch() {
 
         if (searchTextField.getText() == null || "".equals(searchTextField.getText().toString())) {
-            JoH.static_toast_long("No search term found");
+            JoH.static_toast_short("No search term found");
             return;
         }
 
@@ -195,12 +201,16 @@ public class NoteSearch extends ListActivityWithMenu {
         dbCursor = db.rawQuery("select timestamp, notes, carbs, insulin from Treatments where notes IS NOT NULL AND timestamp < " + to + " AND timestamp >= " + from + " AND notes like '%" + searchTerm + "%' ORDER BY timestamp DESC", null);
         dbCursor.moveToFirst();
 
-        for (int i = 0; i < RESTRICT_SEARCH && !dbCursor.isAfterLast(); i++) {
+        int i = 0;
+        for (; i < RESTRICT_SEARCH && !dbCursor.isAfterLast(); i++) {
             SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3));
             resultListAdapter.addSingle(result);
             dbCursor.moveToNext();
         }
 
+        if (i == 0){
+            JoH.static_toast_short(NOTHING);
+        }
         if (dbCursor.isAfterLast()) {
             dbCursor.close();
         } else {
