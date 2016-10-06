@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.Tables;
 
 import android.app.ListActivity;
 import android.content.Context;
-import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.activeandroid.Cache;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
 import com.eveningoutpost.dexdrip.R;
@@ -94,6 +93,18 @@ public class CalibrationDataTable extends ListActivity implements NavigationDraw
             tag.raw_data_value.setText(Double.toString(calibration.estimate_raw_at_time_of_calibration));
             tag.raw_data_slope.setText(Double.toString(calibration.slope));
             tag.raw_data_timestamp.setText(Double.toString(calibration.intercept));
+
+            if (calibration.isNote()) {
+                // green note
+                view.setBackgroundColor(Color.parseColor("#004400"));
+            } else if (!calibration.isValid()) {
+                // red invalid/cancelled/overridden
+                view.setBackgroundColor(Color.parseColor("#660000"));
+            } else {
+                // normal grey
+                view.setBackgroundColor(Color.parseColor("#212121"));
+            }
+
         }
 
         @Override
