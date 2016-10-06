@@ -22,7 +22,7 @@ import java.util.List;
  * Created by stephenblack on 11/5/14.
  */
 public class NavDrawerBuilder {
-    public List<Calibration> last_two_calibrations = Calibration.latest(2);
+    public List<Calibration> last_two_calibrations = Calibration.latestValid(2);
     public List<BgReading> last_two_bgReadings = BgReading.latestUnCalculated(2);
     public List<BgReading> bGreadings_in_last_30_mins = BgReading.last30Minutes();
     public boolean is_active_sensor = Sensor.isActive();
