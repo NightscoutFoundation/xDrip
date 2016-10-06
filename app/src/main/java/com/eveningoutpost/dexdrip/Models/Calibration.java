@@ -852,7 +852,7 @@ public class Calibration extends Model {
                 .where("Sensor = ? ", sensor.getId())
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
-                .where("( slope !=0 and intercept !=0 )")
+                .where("slope != 0")
                 .orderBy("timestamp desc")
                 .executeSingle();
     }

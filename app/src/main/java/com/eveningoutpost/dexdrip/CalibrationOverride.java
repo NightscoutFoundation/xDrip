@@ -51,7 +51,7 @@ public class CalibrationOverride extends ActivityWithMenu {
                     if (!TextUtils.isEmpty(string_value)){
                         final double calValue = JoH.tolerantParseDouble(string_value);
 
-                        Calibration last_calibration = Calibration.last();
+                        Calibration last_calibration = Calibration.lastValid();
                         last_calibration.sensor_confidence = 0;
                         last_calibration.slope_confidence = 0;
                         last_calibration.save();

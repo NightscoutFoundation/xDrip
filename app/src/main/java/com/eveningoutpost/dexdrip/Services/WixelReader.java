@@ -493,7 +493,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         // How many packets should we read? we look at the maximum time between last calibration and last reading time
         // and calculate how much are needed.
         
-        Calibration lastCalibration = Calibration.last();
+        Calibration lastCalibration = Calibration.lastValid();
         if(lastCalibration != null) {
             startReadTime = Math.max(startReadTime, (long)(lastCalibration.timestamp));
         }
