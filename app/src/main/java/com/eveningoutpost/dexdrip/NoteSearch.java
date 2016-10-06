@@ -1,12 +1,17 @@
 package com.eveningoutpost.dexdrip;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -24,7 +29,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.activeandroid.Cache;
+import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
 
 import java.text.DateFormat;
@@ -51,6 +58,7 @@ public class NoteSearch extends ListActivityWithMenu {
     private SearchResultAdapter resultListAdapter;
     private Cursor dbCursor;
 
+    private static final String TAG = "NoteSearch";
     //Strings TODO: move to strings.xml (omitted during dev to avoid merge conflicts)
     private static final String LOAD_MORE = "load more";
     public static String menu_name = "Note Search";
@@ -59,7 +67,8 @@ public class NoteSearch extends ListActivityWithMenu {
     private static final String CARBS = "carbs";
     private static final String INSULIN = "insulin";
     private static final String NOTHING = "nothing found";
-
+    private long last_keypress_time = -1;
+    private static final long KEY_PAUSE = 500; // latency we use to initiate searches
 
 
 
@@ -92,17 +101,44 @@ public class NoteSearch extends ListActivityWithMenu {
 
         resultListAdapter = new SearchResultAdapter();
         setListAdapter(resultListAdapter);
+
+        final Activity activity = this;
+
         this.getListView().setLongClickable(true);
         this.getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             public boolean onItemLongClick(AdapterView<?> parent, View v, int position, long id) {
-                SearchResult sResult = (SearchResult) resultListAdapter.getItem(position);
-                // here a long-click action can be added later. (edit mode e.g.)
+                final SearchResult sResult = (SearchResult) resultListAdapter.getItem(position);
+
+                // edit treatment
+                if (sResult != null) {
+                    final EditText treatmentText = new EditText(activity);
+                    if (sResult.note == null) sResult.note = "";
+                    treatmentText.setText(sResult.note);
+
+                    new AlertDialog.Builder(activity)
+                            .setTitle("Edit Note")
+                            .setMessage("Adjust note text here. There is no undo of this")
+                            .setView(treatmentText)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    final String noteText = treatmentText.getText().toString().trim();
+                                    sResult.note = noteText;
+                                    resultListAdapter.notifyDataSetChanged();
+                                    SQLiteUtils.execSql("update Treatments set notes = ? where uuid = ?", new String[]{sResult.note, sResult.uuid});
+                                }
+                            })
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                }
+                            })
+                            .show();
+                }
                 return true;
             }
         });
 
-
         setupGui();
+        doAll(false);
 
     }
 
@@ -117,11 +153,11 @@ public class NoteSearch extends ListActivityWithMenu {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_searchnote:
-                doSearch();
+                doSearch(true);
                 return true;
 
             case R.id.menu_allnote:
-                doAll();
+                doAll(true);
                 return true;
 
             default:
@@ -130,11 +166,13 @@ public class NoteSearch extends ListActivityWithMenu {
 
     }
 
-    private void doAll() {
+    private void doAll(boolean from_interactive) {
 
-        hideKeyboard();
+        if (!JoH.ratelimit("NoteSearch-All",2)) return;
+
+        if (from_interactive) hideKeyboard();
         resultListAdapter.clear();
-        JoH.static_toast_short(COLLECTING);
+        if (from_interactive) JoH.static_toast_short(COLLECTING);
 
         SQLiteDatabase db = Cache.openDatabase();
 
@@ -148,41 +186,48 @@ public class NoteSearch extends ListActivityWithMenu {
         endDate.add(Calendar.DATE, 1);
         long to = endDate.getTimeInMillis();
 
-        dbCursor = db.rawQuery("select timestamp, notes, carbs, insulin from Treatments where notes IS NOT NULL AND timestamp < " + to + " AND timestamp >= " + from + " ORDER BY timestamp DESC", null);
+        dbCursor = db.rawQuery("select timestamp, notes, carbs, insulin, uuid from Treatments where notes IS NOT NULL AND timestamp < " + to + " AND timestamp >= " + from + " ORDER BY timestamp DESC", null);
         dbCursor.moveToFirst();
 
         int i = 0;
         for (; i < RESTRICT_SEARCH && !dbCursor.isAfterLast(); i++) {
-            SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3));
+            SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3), dbCursor.getString(4));
             resultListAdapter.addSingle(result);
             dbCursor.moveToNext();
         }
 
         if (i == 0){
-            JoH.static_toast_short(NOTHING);
+            if (from_interactive) JoH.static_toast_short(NOTHING);
         }
         if (dbCursor.isAfterLast()) {
             dbCursor.close();
         } else {
-            SearchResult result = new SearchResult(0, LOAD_MORE, 0, 0);
+            SearchResult result = new SearchResult(0, LOAD_MORE, 0, 0, null);
             result.setLoadMoreActionFlag();
             resultListAdapter.addSingle(result);
         }
 
     }
 
-    private void doSearch() {
+    private void doSearch(boolean from_interactive) {
 
-        hideKeyboard();
+        //UserError.Log.d(TAG,"Do search: "+from_interactive);
+        if (from_interactive) hideKeyboard();
 
-        if (searchTextField.getText() == null || "".equals(searchTextField.getText().toString())) {
-            JoH.static_toast_short("No search term found");
+        // filter whitespace
+        final String searchTerm = searchTextField.getText().toString().trim();
+
+        if ("".equals(searchTerm)) {
+            if (from_interactive) JoH.static_toast_short("No search term found");
             return;
         }
 
+        // only automatically update when we have 2 chars or more
+        if ((!from_interactive) && (searchTerm.length()<2)) return;
+
 
         resultListAdapter.clear();
-        JoH.static_toast_short(SEARCHING);
+        if (from_interactive) JoH.static_toast_short(SEARCHING);
 
         SQLiteDatabase db = Cache.openDatabase();
 
@@ -191,7 +236,6 @@ public class NoteSearch extends ListActivityWithMenu {
         }
 
 
-        String searchTerm = searchTextField.getText().toString();
         DatabaseUtils.sqlEscapeString(searchTerm);
 
         long from = date1.getTimeInMillis();
@@ -201,23 +245,23 @@ public class NoteSearch extends ListActivityWithMenu {
         long to = endDate.getTimeInMillis();
 
 
-        dbCursor = db.rawQuery("select timestamp, notes, carbs, insulin from Treatments where notes IS NOT NULL AND timestamp < " + to + " AND timestamp >= " + from + " AND notes like '%" + searchTerm + "%' ORDER BY timestamp DESC", null);
+        dbCursor = db.rawQuery("select timestamp, notes, carbs, insulin, uuid from Treatments where notes IS NOT NULL AND timestamp < " + to + " AND timestamp >= " + from + " AND notes like '%" + searchTerm + "%' ORDER BY timestamp DESC", null);
         dbCursor.moveToFirst();
 
         int i = 0;
         for (; i < RESTRICT_SEARCH && !dbCursor.isAfterLast(); i++) {
-            SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3));
+            SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3), dbCursor.getString(4));
             resultListAdapter.addSingle(result);
             dbCursor.moveToNext();
         }
 
-        if (i == 0){
+        if (i == 0 && from_interactive){
             JoH.static_toast_short(NOTHING);
         }
         if (dbCursor.isAfterLast()) {
             dbCursor.close();
         } else {
-            SearchResult result = new SearchResult(0, LOAD_MORE, 0, 0);
+            SearchResult result = new SearchResult(0, LOAD_MORE, 0, 0, null);
             result.setLoadMoreActionFlag();
             resultListAdapter.addSingle(result);
         }
@@ -251,10 +295,33 @@ public class NoteSearch extends ListActivityWithMenu {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    doSearch();
+                    doSearch(true);
                     return true;
                 }
                 return false;
+            }
+        });
+
+        searchTextField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            last_keypress_time = JoH.tsl();
+                JoH.runOnUiThreadDelayed(new Runnable(){
+                    @Override
+                    public void run() {
+                        searchOnKeyPress();
+                    }
+                },KEY_PAUSE);
             }
         });
 
@@ -308,6 +375,13 @@ public class NoteSearch extends ListActivityWithMenu {
 
     }
 
+    private void searchOnKeyPress() {
+        if ((last_keypress_time > 0) && ((JoH.tsl() - last_keypress_time) > (KEY_PAUSE - 1))) {
+            last_keypress_time = -1;
+            doSearch(false);
+        }
+    }
+
     private void loadMore() {
         //remove last item (the action)
         resultListAdapter.removeLoadMoreAction();
@@ -317,7 +391,7 @@ public class NoteSearch extends ListActivityWithMenu {
 
         //load more
         for (int i = 0; i < RESTRICT_SEARCH && !dbCursor.isAfterLast(); i++) {
-            SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3));
+            SearchResult result = new SearchResult(dbCursor.getLong(0), dbCursor.getString(1), dbCursor.getDouble(2), dbCursor.getDouble(3), dbCursor.getString(4));
             resultListAdapter.addSingle(result);
             dbCursor.moveToNext();
         }
@@ -325,7 +399,7 @@ public class NoteSearch extends ListActivityWithMenu {
         if (dbCursor.isAfterLast()) {
             dbCursor.close();
         } else {
-            SearchResult result = new SearchResult(0, LOAD_MORE, 0, 0);
+            SearchResult result = new SearchResult(0, LOAD_MORE, 0, 0, null);
             result.setLoadMoreActionFlag();
             resultListAdapter.addSingle(result);
         }
@@ -419,13 +493,16 @@ public class NoteSearch extends ListActivityWithMenu {
 
     private class SearchResult {
         long timestamp;
+        String uuid;
         String note;
         String otherTreatments;
         boolean isLoadMoreAction;
 
-        public SearchResult(long timestamp, String note, double carbs, double insulin) {
+
+        public SearchResult(long timestamp, String note, double carbs, double insulin, String uuid) {
             this.timestamp = timestamp;
             this.note = note;
+            this.uuid = uuid;
             this.otherTreatments = "";
             if (carbs != 0) {
                 otherTreatments += CARBS + ": " + carbs;
