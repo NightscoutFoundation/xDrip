@@ -577,6 +577,7 @@ public class Home extends ActivityWithMenu {
             updateCurrentBgInfo("approve button");
         }
         processCalibrationNoUI(myglucosenumber, mytimeoffset);
+        staticRefreshBGCharts();
     }
 
     private void processIncomingBundle(Bundle bundle) {
