@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -131,7 +132,7 @@ public class NoteSearch extends ListActivityWithMenu {
 
     private void doAll() {
 
-
+        hideKeyboard();
         resultListAdapter.clear();
         JoH.static_toast_short(COLLECTING);
 
@@ -171,6 +172,8 @@ public class NoteSearch extends ListActivityWithMenu {
     }
 
     private void doSearch() {
+
+        hideKeyboard();
 
         if (searchTextField.getText() == null || "".equals(searchTextField.getText().toString())) {
             JoH.static_toast_short("No search term found");
@@ -219,6 +222,12 @@ public class NoteSearch extends ListActivityWithMenu {
             resultListAdapter.addSingle(result);
         }
 
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) this
+                .getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(searchTextField.getWindowToken(), 0);
     }
 
 
