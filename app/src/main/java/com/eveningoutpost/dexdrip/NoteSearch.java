@@ -431,7 +431,7 @@ public class NoteSearch extends ListActivityWithMenu {
                 otherTreatments += CARBS + ": " + carbs;
             }
             if (insulin != 0) {
-                otherTreatments += " " + INSULIN + ": " + carbs;
+                otherTreatments += " " + INSULIN + ": " + insulin;
             }
         }
 
