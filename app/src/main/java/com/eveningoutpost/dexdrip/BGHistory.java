@@ -22,6 +22,7 @@ import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
@@ -34,7 +35,8 @@ import lecho.lib.hellocharts.view.PreviewLineChartView;
 // by AdrianLxM
 
 public class BGHistory extends ActivityWithMenu {
-   // public static String menu_name = "History";
+    public static final java.lang.String OPEN_ON_TIME_KEY = "BGHistory.open_on_time";
+    // public static String menu_name = "History";
     static String TAG = BGHistory.class.getName();
     private boolean updatingPreviewViewport = false;
     private boolean updatingChartViewport = false;
@@ -55,7 +57,14 @@ public class BGHistory extends ActivityWithMenu {
         this.statisticsTextView = (TextView) findViewById(R.id.historystats);
 
 
+        Bundle bundle = getIntent().getExtras();
+        long initTime = System.currentTimeMillis()-1000*60*60*24; //yesterday
+        if (bundle != null) {
+            initTime = bundle.getLong(OPEN_ON_TIME_KEY,initTime);
+        }
+
         date1 = new GregorianCalendar();
+        date1.setTimeInMillis(initTime);
         date1.set(Calendar.HOUR_OF_DAY, 0);
         date1.set(Calendar.MINUTE, 0);
         date1.set(Calendar.SECOND, 0);

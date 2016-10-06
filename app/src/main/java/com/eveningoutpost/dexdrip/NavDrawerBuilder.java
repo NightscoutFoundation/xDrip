@@ -114,6 +114,9 @@ public class NavDrawerBuilder {
         this.nav_drawer_options.add(aContext.getString(R.string.snooze_alert));
         this.nav_drawer_intents.add(new Intent(context, SnoozeActivity.class));
 
+        this.nav_drawer_options.add(NoteSearch.menu_name);
+        this.nav_drawer_intents.add(new Intent(context, NoteSearch.class));
+
         this.nav_drawer_options.add(aContext.getString(R.string.statistics));
         this.nav_drawer_intents.add(new Intent(context, StatsActivity.class));
 
