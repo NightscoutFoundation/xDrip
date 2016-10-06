@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/notesearch_list_item">
+
+    <TextView android:id="@+id/notesearch_note_id"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="18sp" />
+
+    <TextView android:id="@+id/notesearch_treatments_id"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="12sp"/>
+
+    <TextView android:id="@+id/notesearch_time_id"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="12sp"/>
+
+</LinearLayout>
