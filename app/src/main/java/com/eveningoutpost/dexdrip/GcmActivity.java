@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
@@ -144,6 +145,10 @@ public class GcmActivity extends Activity {
 
     public static void syncBGReading(BgReading bgReading) {
         GcmActivity.sendMessage(GcmActivity.myIdentity(), "bgs", bgReading.toJSON());
+    }
+
+    public static void syncSensor(Sensor sensor) {
+        GcmActivity.sendMessage(GcmActivity.myIdentity(), "sensorupdate", sensor.toJSON());
     }
 
     public static void requestPing() {
