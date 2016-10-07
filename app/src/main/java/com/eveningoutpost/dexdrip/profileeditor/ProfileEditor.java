@@ -7,11 +7,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -93,8 +95,8 @@ public class ProfileEditor extends AppCompatActivity {
         adjustallSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                adjustmentFactor=1+((progress-25)*0.02);
-                adjustPercentage.setText(JoH.qs(adjustmentFactor*100,0)+"%");
+                adjustmentFactor = 1 + ((progress - 25) * 0.02);
+                adjustPercentage.setText(JoH.qs(adjustmentFactor * 100, 0) + "%");
             }
 
             @Override
@@ -113,7 +115,6 @@ public class ProfileEditor extends AppCompatActivity {
                 forceRefresh(true); // does temporary save
             }
         });
-
 
 
         recyclerView = (RecyclerView) findViewById(R.id.profile_recycler_view);
@@ -141,7 +142,7 @@ public class ProfileEditor extends AppCompatActivity {
                     @Override
                     public void onChanged() {
                         super.onChanged();
-                      //  Log.d(TAG, "onChanged");
+                        //  Log.d(TAG, "onChanged");
 
                     }
 
@@ -179,10 +180,19 @@ public class ProfileEditor extends AppCompatActivity {
                             // split or delete
                         } else if (payload.toString().equals("long-split")) {
 
+                            final DisplayMetrics dm = new DisplayMetrics();
+                            getWindowManager().getDefaultDisplay().getMetrics(dm);
+                            final int screen_width = dm.widthPixels;
+                            final int screen_height = dm.heightPixels;
+                            boolean small_screen = false;
+                            // smaller screens or lower version don't seem to play well with long dialog button names
+                            if ((screen_width < 720) || (screen_height < 720) || ((Build.VERSION.SDK_INT < Build.VERSION_CODES.M)))
+                                small_screen = true;
+
                             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
                             alertDialogBuilder.setMessage(R.string.split_delete_or_do_nothing);
 
-                            alertDialogBuilder.setPositiveButton(R.string.split_this_block_in_two, new DialogInterface.OnClickListener() {
+                            alertDialogBuilder.setPositiveButton(small_screen ? getString(R.string.split) : getString(R.string.split_this_block_in_two), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface arg0, int arg1) {
 
@@ -203,7 +213,7 @@ public class ProfileEditor extends AppCompatActivity {
                                 }
                             });
                             if (profileItemList.size() > 1) {
-                                alertDialogBuilder.setNeutralButton(R.string.delete_this_time_block, new DialogInterface.OnClickListener() {
+                                alertDialogBuilder.setNeutralButton(small_screen ? getString(R.string.delete) : getString(R.string.delete_this_time_block), new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         profileItemList.remove(positionStart);
@@ -212,7 +222,7 @@ public class ProfileEditor extends AppCompatActivity {
                                 });
                             }
 
-                            alertDialogBuilder.setNegativeButton(R.string.cancel_do_nothing, new DialogInterface.OnClickListener() {
+                            alertDialogBuilder.setNegativeButton(small_screen ? getString(R.string.cancel) : getString(R.string.cancel_do_nothing), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
 
@@ -225,7 +235,6 @@ public class ProfileEditor extends AppCompatActivity {
 
                             forceRefresh(); // for other non special changes
                         }
-
 
 
                     }
@@ -260,12 +269,11 @@ public class ProfileEditor extends AppCompatActivity {
         }
     }
 
-    private static void updateAdjustmentFactor(double factor)
-    {
-        adjustmentFactor=factor;
+    private static void updateAdjustmentFactor(double factor) {
+        adjustmentFactor = factor;
         adjustPercentage.setText(JoH.qs(adjustmentFactor * 100, 0) + "%");
 
-        int position = (int)((adjustmentFactor-1) /0.02 )+25;
+        int position = (int) ((adjustmentFactor - 1) / 0.02) + 25;
         adjustallSeekBar.setProgress(position > 0 ? position : 0);
 
     }
@@ -273,36 +281,32 @@ public class ProfileEditor extends AppCompatActivity {
     private void saveData(boolean for_real) {
         final Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
-                        //.registerTypeAdapter(Date.class, new DateTypeAdapter())
+                //.registerTypeAdapter(Date.class, new DateTypeAdapter())
                 .serializeSpecialFloatingPointValues()
                 .create();
 
         final List<ProfileItem> profileItemListTmp = new ArrayList<>();
 
 
-        if (!for_real)
-        {
-            Log.d(TAG,"Saving for real with adjustment factor: "+adjustmentFactor);
+        if (!for_real) {
+            Log.d(TAG, "Saving for real with adjustment factor: " + adjustmentFactor);
             // save working set clean of adjustment factor to avoid stacking
-            for (ProfileItem item : profileItemList)
-            {
+            for (ProfileItem item : profileItemList) {
                 profileItemListTmp.add(item.clone());
             }
 
-            for (ProfileItem item : profileItemListTmp)
-            {
-                item.carb_ratio = item.carb_ratio/adjustmentFactor;
-                item.sensitivity = item.sensitivity*adjustmentFactor;
-          }
+            for (ProfileItem item : profileItemListTmp) {
+                item.carb_ratio = item.carb_ratio / adjustmentFactor;
+                item.sensitivity = item.sensitivity * adjustmentFactor;
+            }
 
         } else {
             // for real save
             profileItemListTmp.addAll(profileItemList); // no need to clone
 
-            for (ProfileItem item : profileItemListTmp)
-            {
+            for (ProfileItem item : profileItemListTmp) {
                 item.carb_ratio = Math.round(item.carb_ratio); // round to nearest g
-                item.sensitivity = (double)(Math.round(item.sensitivity*10))/10;
+                item.sensitivity = (double) (Math.round(item.sensitivity * 10)) / 10;
             }
         }
 
@@ -312,7 +316,7 @@ public class ProfileEditor extends AppCompatActivity {
             Home.setPreferencesString("saved_profile_list_json", data);
             Home.setPreferencesString("saved_profile_list_json_working", "");
             Log.d(TAG, "Saved final data");
-            UserError.Log.uel(TAG,"Saved Treatment Profile data, timeblocks:"+profileItemListTmp.size());
+            UserError.Log.uel(TAG, "Saved Treatment Profile data, timeblocks:" + profileItemListTmp.size());
             updateAdjustmentFactor(1.0); // reset it
             dataChanged = true;
             Profile.invalidateProfile();
@@ -341,7 +345,7 @@ public class ProfileEditor extends AppCompatActivity {
 
     public void profileUndoButton(View myview) {
         clearWorkingData();
-        adjustmentFactor=1;
+        adjustmentFactor = 1;
         adjustallSeekBar.setProgress(25);
         profileItemList.clear();
         // we must preserve the existing object reference used by the adapter
@@ -394,10 +398,9 @@ public class ProfileEditor extends AppCompatActivity {
         ProfileItem[] restored = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(data, ProfileItem[].class);
         if (restored != null) {
             // process adjustment factor
-            for (ProfileItem item : restored)
-            {
-                item.carb_ratio = item.carb_ratio*adjustmentFactor;
-                item.sensitivity = item.sensitivity/adjustmentFactor;
+            for (ProfileItem item : restored) {
+                item.carb_ratio = item.carb_ratio * adjustmentFactor;
+                item.sensitivity = item.sensitivity / adjustmentFactor;
             }
             Collections.addAll(myprofileItemList, restored);
         }

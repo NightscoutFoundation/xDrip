@@ -505,5 +505,7 @@
     <string name="install_pebble_apps">Install Pebble Apps</string>
     <string name="sliding_24_hour_window_summary">Use last 24 hours instead of time since midnight for statistics.</string>
     <string name="sliding_24_hour_window">Sliding Window</string>
+    <string name="split">Split</string>
+    <string name="delete">Delete</string>
 
 </resources>
