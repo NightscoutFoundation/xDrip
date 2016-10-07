@@ -122,7 +122,7 @@
             android:title="@string/install_pebble_apps">
             <Preference
                 android:key="install_pebble_snooze_control"
-                android:summary="Attach it to a pebble button to instantly Snooze any active alert from your watch"
+                android:summary="Attach it to a pebble button to instantly Snooze any active alert from your watch. Also for Remote Snooze feature."
                 android:title="@string/install_pebble_snooze_control_app">
                 <intent
                     android:action="android.intent.action.MAIN"

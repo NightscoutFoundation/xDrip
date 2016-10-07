@@ -160,12 +160,13 @@ public class Home extends ActivityWithMenu {
     private TextView textBloodGlucose;
     private TextView textInsulinDose;
     private TextView textTime;
-    private final int REQ_CODE_SPEECH_INPUT = 1994;
-    private final int REQ_CODE_SPEECH_NOTE_INPUT = 1995;
-    private final int SHOWCASE_UNDO = 4;
-    private final int SHOWCASE_REDO = 5;
-    private final int SHOWCASE_NOTE_LONG = 6;
-    private final int SHOWCASE_VARIANT = 7;
+    private static final int REQ_CODE_SPEECH_INPUT = 1994;
+    private static final int REQ_CODE_SPEECH_NOTE_INPUT = 1995;
+    private static final int SHOWCASE_UNDO = 4;
+    private static final int SHOWCASE_REDO = 5;
+    private static final int SHOWCASE_NOTE_LONG = 6;
+    private static final int SHOWCASE_VARIANT = 7;
+    public static final int SHOWCASE_STATISTICS = 8;
     private static double last_speech_time = 0;
     private PreviewLineChartView previewChart;
     private TextView dexbridgeBattery;
@@ -2471,6 +2472,13 @@ public class Home extends ActivityWithMenu {
         }
         if ((prefs != null) && (prefs.getBoolean(pref, def))) return true;
         return false;
+    }
+
+    public static void togglePreferencesBoolean(final String pref) {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs != null) prefs.edit().putBoolean(pref, !prefs.getBoolean(pref, false)).apply();
     }
 
     public static String getPreferencesStringDefaultBlank(final String pref) {

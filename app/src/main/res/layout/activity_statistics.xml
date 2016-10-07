@@ -80,6 +80,23 @@
                 android:paddingBottom="1dp"
                 android:minHeight="1dp"
                 android:minWidth="1dp"/>
+
+            <ImageButton
+                android:layout_width="35dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_fullscreen_exit_grey600_24dp"
+                android:id="@+id/imageButton3"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:onClick="statisticsDisableFullScreen" />
+            <ImageButton
+                android:layout_width="35dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_share_variant_grey600_24dp"
+                android:id="@+id/imageButton4"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:onClick="statisticsShare" />
         </LinearLayout>
         <LinearLayout
             android:orientation="horizontal"

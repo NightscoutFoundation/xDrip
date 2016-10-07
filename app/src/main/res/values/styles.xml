@@ -10,6 +10,12 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
+    <style name="StatisticsWhiteTheme" parent="Theme.AppCompat.Light">
+        <item name="android:background">@android:color/white</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+
     <style name="AppThemeToolBar" parent="Theme.AppCompat.NoActionBar">
     <item name="android:background">#212121</item>
 
@@ -94,5 +100,19 @@
         parent="@android:style/Widget.Holo.ActionBar">
         <item name="android:background">#212121</item>
         <!--<item name="android:color">#616161</item>-->
+    </style>
+    <style name="WhiteActionBar"
+        parent="@android:style/Widget.Holo.ActionBar">
+        <item name="android:colorForeground">@style/WhiteActionBar.Title</item>
+        <item name="android:background">#212121</item>
+        <item name="android:titleTextStyle">@style/WhiteActionBar.Title</item>
+        <item name="android:subtitleTextStyle">@style/WhiteActionBar.Subtitle</item>
+        <!--<item name="android:color">#616161</item>-->
+    </style>
+    <style name="WhiteActionBar.Title">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+    <style name="WhiteActionBar.Subtitle">
+        <item name="android:textColor">@android:color/black</item>
     </style>
 </resources>

@@ -6,11 +6,16 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.media.AudioManager;
 import android.media.RingtoneManager;
@@ -23,14 +28,15 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
+import android.view.View;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Home;
@@ -42,6 +48,8 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
@@ -58,6 +66,8 @@ import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.Inflater;
+
+import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
 
 /**
  * Created by jamorham on 06/01/16.
@@ -434,6 +444,10 @@ public class JoH {
         return android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", timestamp).toString();
     }
 
+    public static String dateText(long timestamp) {
+        return android.text.format.DateFormat.format("yyyy-MM-dd", timestamp).toString();
+    }
+
     public static double tolerantParseDouble(String str) throws NumberFormatException {
         return Double.parseDouble(str.replace(",", "."));
 
@@ -608,6 +622,126 @@ public class JoH {
             return null;
         }
     }
+
+    public static void goFullScreen(boolean fullScreen, View decorView) {
+
+        if (fullScreen) {
+            if (Build.VERSION.SDK_INT >= 19) {
+                decorView.setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            } else {
+                decorView.setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_FULLSCREEN);
+            }
+        } else {
+            decorView.setSystemUiVisibility(0); // TODO will this need revisiting in later android vers?
+        }
+    }
+
+
+    public static Bitmap screenShot(View view, String annotation) {
+
+        if (view == null) {
+            static_toast_long("View is null in screenshot!");
+            return null;
+        }
+        final int width = view.getWidth();
+        final int height = view.getHeight();
+        Log.d(TAG, "Screenshot called: " + width + "," + height);
+        final Bitmap bitmap = Bitmap.createBitmap(width,
+                height, Bitmap.Config.ARGB_8888);
+
+        final Canvas canvas = new Canvas(bitmap);
+        if (Home.getPreferencesBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
+            Paint paint = new Paint();
+            paint.setColor(Color.WHITE);
+            paint.setStyle(Paint.Style.FILL);
+            canvas.drawRect(0, 0, width, height, paint);
+        }
+
+
+        view.destroyDrawingCache();
+        view.layout(0, 0, width, height);
+        view.draw(canvas);
+
+        if (annotation != null) {
+            final int offset = (annotation != null) ? 40 : 0;
+            final Bitmap bitmapf = Bitmap.createBitmap(width,
+                    height + offset, Bitmap.Config.ARGB_8888);
+            final Canvas canvasf = new Canvas(bitmapf);
+
+            Paint paint = new Paint();
+            if (Home.getPreferencesBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
+                paint.setColor(Color.WHITE);
+                paint.setStyle(Paint.Style.FILL);
+                canvasf.drawRect(0, 0, width, offset, paint);
+                paint.setColor(Color.BLACK);
+            } else {
+                paint.setColor(Color.GRAY);
+            }
+            paint.setTextSize(20);
+            // paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));
+            canvasf.drawBitmap(bitmap, 0, offset, paint);
+            canvasf.drawText(annotation, 50, (offset / 2) + 5, paint);
+            bitmap.recycle();
+            return bitmapf;
+        }
+
+        return bitmap;
+    }
+
+    public static Bitmap screenShot2(View view) {
+        Log.d(TAG, "Screenshot2 called: " + view.getWidth() + "," + view.getHeight());
+        view.setDrawingCacheEnabled(true);
+        view.buildDrawingCache(true);
+        final Bitmap bitmap = view.getDrawingCache(true);
+        return bitmap;
+    }
+
+
+    public static void bitmapToFile(Bitmap bitmap, String path, String fileName) {
+
+        if (bitmap == null) return;
+        Log.d(TAG, "bitmapToFile: " + bitmap.getWidth() + "x" + bitmap.getHeight());
+        File dir = new File(path);
+        if (!dir.exists())
+            dir.mkdirs();
+        final File file = new File(path, fileName);
+        try {
+            FileOutputStream output = new FileOutputStream(file);
+            final boolean result = bitmap.compress(Bitmap.CompressFormat.PNG, 80, output);
+            output.flush();
+            output.close();
+            Log.d(TAG, "Bitmap compress result: " + result);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception writing bitmap to file: " + e);
+        }
+    }
+
+    public static void shareImage(Context context, File file) {
+        Uri uri = Uri.fromFile(file);
+        final Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.setType("image/*");
+        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "");
+        intent.putExtra(android.content.Intent.EXTRA_TEXT, "");
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        try {
+            context.startActivity(Intent.createChooser(intent, "Share"));
+        } catch (ActivityNotFoundException e) {
+            static_toast_long("No suitable app to show an image!");
+        }
+    }
+
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, boolean onetime) {
         final NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);
