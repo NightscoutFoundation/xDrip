@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -173,6 +174,10 @@ public class GcmActivity extends Activity {
                 }
             }, 5000);
         }
+    }
+
+    public static void syncSensor(Sensor sensor) {
+        GcmActivity.sendMessage(GcmActivity.myIdentity(), "sensorupdate", sensor.toJSON());
     }
 
     public static void requestPing() {
