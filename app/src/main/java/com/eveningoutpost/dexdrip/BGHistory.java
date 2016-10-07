@@ -156,7 +156,7 @@ public class BGHistory extends ActivityWithMenu {
         previewChart.setZoomType(ZoomType.HORIZONTAL);
 
         chart.setLineChartData(bgGraphBuilder.lineData());
-        chart.setOnValueTouchListener(bgGraphBuilder.getOnValueSelectTooltipListener(false));
+        chart.setOnValueTouchListener(bgGraphBuilder.getOnValueSelectTooltipListener(this));
         previewChart.setLineChartData(bgGraphBuilder.previewLineData(chart.getLineChartData()));
 
         previewChart.setViewportCalculationEnabled(true);

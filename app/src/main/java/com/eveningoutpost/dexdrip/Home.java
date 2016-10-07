@@ -1418,7 +1418,7 @@ public class Home extends ActivityWithMenu {
         previewChart = (PreviewLineChartView) findViewById(R.id.chart_preview);
 
         chart.setLineChartData(bgGraphBuilder.lineData());
-        chart.setOnValueTouchListener(bgGraphBuilder.getOnValueSelectTooltipListener(true));
+        chart.setOnValueTouchListener(bgGraphBuilder.getOnValueSelectTooltipListener(mActivity));
 
         previewChart.setBackgroundColor(getCol(X.color_home_chart_background));
         previewChart.setZoomType(ZoomType.HORIZONTAL);
@@ -2299,7 +2299,7 @@ public class Home extends ActivityWithMenu {
                             Home.startHomeWithExtra(xdrip.getAppContext(), Home.CREATE_TREATMENT_NOTE, Long.toString(timestamp), Double.toString(position));
                         }
                     };
-                    Home.snackBar(getString(R.string.added)+":    " + treatment_text, mOnClickListener);
+                    Home.snackBar(getString(R.string.added)+":    " + treatment_text, mOnClickListener, mActivity);
                 }
 
                 if (getPreferencesBooleanDefaultFalse("default_to_voice_notes")) showcasemenu(SHOWCASE_NOTE_LONG);
@@ -2566,11 +2566,11 @@ public class Home extends ActivityWithMenu {
         }
     }
 
-    public static void snackBar(String message, View.OnClickListener mOnClickListener) {
+    public static void snackBar(String message, View.OnClickListener mOnClickListener, Activity activity) {
 
         android.support.design.widget.Snackbar.make(
 
-                mActivity.findViewById(android.R.id.content),
+                activity.findViewById(android.R.id.content),
                 message, android.support.design.widget.Snackbar.LENGTH_LONG)
                 .setAction(R.string.add_note, mOnClickListener)
                 //.setActionTextColor(Color.RED)
