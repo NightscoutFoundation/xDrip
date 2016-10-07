@@ -53,6 +53,8 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
     public static final int CHUNK_SIZE = 100;
 
     private static final String WATCHAPP_FILENAME = "xDrip-Pebble2";
+    private static boolean watchFaceInstalled = false;
+    private static boolean faceInactive=false;
 
     private static boolean messageInTransit = false;
     private static boolean transactionFailed = false;
@@ -106,13 +108,17 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
             dictionary.addInt32(SYNC_KEY, 0);
             sendDataToPebble(dictionary);
             dictionary.remove(SYNC_KEY);
-            if (pebble_app_version.isEmpty() && sentInitialSync) {
-                Log.d(TAG, "onStartCommand: No watch app version, sideloading");
+            if(!faceInactive && !watchFaceInstalled && pebble_app_version.isEmpty() && sentInitialSync){
+                Log.d(TAG,"onStartCommand: No watch app version, sideloading");
                 sideloadInstall(mContext, WATCHAPP_FILENAME);
             }
-            if (!pebble_app_version.contentEquals("xDrip-Pebble2") && sentInitialSync) {
-                Log.d(TAG, "onStartCommand: Wrong watch app version, sideloading");
+            else if(!faceInactive && !watchFaceInstalled && !pebble_app_version.contentEquals("xDrip-Pebble2") && sentInitialSync){
+                Log.d(TAG,"onStartCommand: Wrong watch app version, sideloading");
                 sideloadInstall(mContext, WATCHAPP_FILENAME);
+            }
+            else if(!faceInactive && !watchFaceInstalled && pebble_app_version.contentEquals("xDrip-Pebble2")&& sentInitialSync) {
+                Log.d(TAG,"onStartCommand: Watch face is installed");
+                watchFaceInstalled=true;
             }
             sentInitialSync = true;
         } else {
@@ -215,10 +221,6 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
         transactionOk = false;
         messageInTransit = false;
         sendStep = 5;
-                /*if (pebble_app_version.isEmpty()) {
-                    Log.i(TAG,"receiveData: Side Loading Pebble App");
-                    //sideloadInstall(mContext, WATCHAPP_FILENAME);
-                }*/
         sendData();
     }
 
@@ -339,8 +341,8 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
                             .setWidthPx(84)
                             .showHighLine(highLine)
                             .showLowLine(lowLine)
-                            .setTinyDots(false)
-                            .setSmallDots(true)
+                            .setTinyDots(true)
+                            .setSmallDots(false)
                             .build();
                 } else {
                     bgTrend = new BgSparklineBuilder(mContext)
