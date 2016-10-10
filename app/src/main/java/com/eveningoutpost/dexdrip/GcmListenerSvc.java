@@ -282,6 +282,16 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                     Log.i(TAG, "Processing backfill location request as we are master");
                     GcmActivity.syncBGTable2();
                 }
+            } else if (action.equals("sensorupdate")) {
+                Log.i(TAG, "Received sensorupdate packet(s)");
+                if (Home.get_follower()) {
+                    String sensors[] = payload.split("\\^");
+                    for (String sensor : sensors) {
+                        Sensor.UpsertFromJson(sensor);
+                    }
+                } else {
+                    Log.e(TAG, "Received sensorupdate packets but we are not set as a follower");
+                }
             } else {
                 Log.e(TAG, "Received message action we don't know about: " + action);
             }
