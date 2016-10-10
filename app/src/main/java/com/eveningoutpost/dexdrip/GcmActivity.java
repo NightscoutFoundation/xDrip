@@ -303,7 +303,7 @@ public class GcmActivity extends Activity {
     }
 
     public static void requestSensorBatteryUpdate() {
-        if (Home.get_follower() && JoH.ratelimit("SensorBatteryUpdateRequest", 300)) {
+        if (Home.get_follower() && JoH.ratelimit("SensorBatteryUpdateRequest", 1200)) {
             Log.d(TAG, "Requesting Sensor Battery Update");
             GcmActivity.sendMessage("sbr", ""); // request sensor battery update
         }
@@ -440,6 +440,10 @@ public class GcmActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
+            if (Home.getPreferencesBooleanDefaultFalse("disable_all_sync")) {
+                cease_all_activity = true;
+                Log.d(TAG, "Sync services disabled");
+            }
             if (cease_all_activity) {
                 finish();
                 return;

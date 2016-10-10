@@ -1933,7 +1933,7 @@ public class Home extends ActivityWithMenu {
                 BgReading bgReading = BgReading.last();
                 if (bgReading != null) {
                     final boolean doMgdl = prefs.getString("units", "mgdl").equals("mgdl");
-                    extraline.append(" \u21D2 " + BgGraphBuilder.unitized_string(plugin.getGlucoseFromSensorValue(bgReading.raw_data), doMgdl) + " " + BgGraphBuilder.unit(doMgdl));
+                    extraline.append(" \u21D2 " + BgGraphBuilder.unitized_string(plugin.getGlucoseFromSensorValue(bgReading.age_adjusted_raw_value), doMgdl) + " " + BgGraphBuilder.unit(doMgdl));
                 }
             }
         }
