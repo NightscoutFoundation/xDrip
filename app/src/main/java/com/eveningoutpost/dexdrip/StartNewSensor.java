@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.LocationHelper;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -91,7 +92,13 @@ public class StartNewSensor extends ActivityWithMenu {
         // TODO add link pickers feature
         //prefs.edit().putBoolean("start_sensor_link_pickers", linkPickers.isChecked()).apply();
 
-       LibreAlarmReceiver.clearSensorStats();
+        final boolean wear_integration = Home.getPreferencesBoolean("wear_sync", false);//KS
+        if (wear_integration) {
+            android.util.Log.d("StartNewSensor", "start WatchUpdaterService with ACTION_SYNC_SENSOR");
+            startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_SENSOR));
+        }
+
+        LibreAlarmReceiver.clearSensorStats();
 
         CollectionServiceStarter.newStart(getApplicationContext());
         Intent intent;

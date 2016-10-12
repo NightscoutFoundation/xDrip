@@ -9,12 +9,24 @@
             android:key="watch_integration"
             android:title="@string/wear_integration">
             <SwitchPreference
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:defaultValue="false"
                 android:key="wear_sync"
                 android:summary="@string/send_data_to_android_wear_watch"
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/android_wear_integration" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="wear_sync"
+                android:key="wear_connectG5"
+                android:summary="@string/pref_summary_wear_connectG5"
+                android:title="@string/pref_wear_connectG5"/>
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="wear_connectG5"
+                android:key="use_wear_connectG5"
+                android:summary="@string/pref_summary_use_wear_connectG5"
+                android:title="@string/pref_use_wear_connectG5"/>
         </PreferenceCategory>
         <PreferenceCategory
             android:key="pebble_integration"

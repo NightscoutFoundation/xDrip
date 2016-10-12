@@ -263,6 +263,18 @@ public class G5CollectionService extends Service {
     public void onDestroy() {
         super.onDestroy();
         stopScan();
+
+        Log.d(TAG, "onDestroy");
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if (sharedPrefs.getBoolean("use_wear_connectG5", false)) {//KS
+            scan_interval_timer.cancel();
+            if (pendingIntent != null) {
+                Log.d(TAG, "onDestroy stop Alarm pendingIntent");
+                AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+                alarm.cancel(pendingIntent);
+            }
+        }
+
 //        close();
 //        setRetryTimer();
 //        foregroundServiceStarter.stop();
@@ -385,7 +397,7 @@ public class G5CollectionService extends Service {
             }
             isScanning = false;
         } catch (IllegalStateException is) {
-            //
+
         }
     }
 
@@ -1357,6 +1369,12 @@ public class G5CollectionService extends Service {
         android.util.Log.i("timestamp create", Long.toString(transmitterData.timestamp));
 
         BgReading.create(transmitterData.raw_data, filtered_data, this, transmitterData.timestamp);
+
+        Log.d("Dex raw_data ", Double.toString(transmitterData.raw_data));//KS
+        Log.d("Dex filtered_data ", Double.toString(transmitterData.filtered_data));//KS
+        Log.d("Dex sensor_battery_level ", Double.toString(transmitterData.sensor_battery_level));//KS
+        Log.d("Dex timestamp ", Double.toString(transmitterData.timestamp));//KS
+
     }
 
     @SuppressLint("GetInstance")

@@ -223,7 +223,7 @@ public class DatabaseUtil {
                 SQLiteDatabase db = Cache.openDatabase();
                 //Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, "timestamp >= ? AND timestamp <=  ? AND calculated_value > ?", new String[]{"" + bounds.start, "" + bounds.stop, CUTOFF}, null, null, orderBy);
 
-                Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, null, null, null, null, null);
+                Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, null, null, null, null, "timestamp ASC");//KS
 
                 double value;
                 long timestamp;

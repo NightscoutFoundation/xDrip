@@ -199,11 +199,13 @@ public class NightscoutUploader {
                 populateV1APICalibrationEntry(array, record);
             }
 
-            RequestBody body = RequestBody.create(MediaType.parse("application/json"), array.toString());
-            Response<ResponseBody> r = nightscoutService.upload(secret, body).execute();
-            if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
+            if (array != null) {//KS
+                RequestBody body = RequestBody.create(MediaType.parse("application/json"), array.toString());
+                Response<ResponseBody> r = nightscoutService.upload(secret, body).execute();
+                if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
 
-            postDeviceStatus(nightscoutService, secret);
+                postDeviceStatus(nightscoutService, secret);
+            }
         }
 
     private void populateV1APIBGEntry(JSONArray array, BgReading record) throws Exception {
@@ -211,17 +213,21 @@ public class NightscoutUploader {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
         format.setTimeZone(TimeZone.getDefault());
         json.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
-        json.put("date", record.timestamp);
-        json.put("dateString", format.format(record.timestamp));
-        json.put("sgv", (int) record.calculated_value);
-        json.put("direction", record.slopeName());
-        json.put("type", "sgv");
-        json.put("filtered", record.ageAdjustedFiltered() * 1000);
-        json.put("unfiltered", record.usedRaw() * 1000);
-        json.put("rssi", 100);
-        json.put("noise", record.noiseValue());
-        json.put("delta", new BigDecimal(record.currentSlope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP)); // jamorham for automation
-        array.put(json);
+        if (record != null) {//KS
+            json.put("date", record.timestamp);
+            json.put("dateString", format.format(record.timestamp));
+            json.put("sgv", (int) record.calculated_value);
+            json.put("direction", record.slopeName());
+            json.put("type", "sgv");
+            json.put("filtered", record.ageAdjustedFiltered() * 1000);
+            json.put("unfiltered", record.usedRaw() * 1000);
+            json.put("rssi", 100);
+            json.put("noise", record.noiseValue());
+            json.put("delta", new BigDecimal(record.currentSlope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP)); // jamorham for automation
+            array.put(json);
+        }
+        else
+            Log.e(TAG, "doRESTUploadTo BG record is null.");
     }
 
         private RequestBody populateLegacyAPIEntry(BgReading record) throws Exception {
@@ -324,16 +330,20 @@ public class NightscoutUploader {
                             // make db object
                             BasicDBObject testData = new BasicDBObject();
                             testData.put("device", "xDrip-" + prefs.getString("dex_collection_method", "BluetoothWixel"));
-                            testData.put("date", record.timestamp);
-                            testData.put("dateString", format.format(record.timestamp));
-                            testData.put("sgv", Math.round(record.calculated_value));
-                            testData.put("direction", record.slopeName());
-                            testData.put("type", "sgv");
-                            testData.put("filtered", record.ageAdjustedFiltered() * 1000);
-                            testData.put("unfiltered", record.usedRaw() * 1000);
-                            testData.put("rssi", 100);
-                            testData.put("noise", record.noiseValue());
-                            dexcomData.insert(testData, WriteConcern.UNACKNOWLEDGED);
+                            if (record != null) {//KS
+                                testData.put("date", record.timestamp);
+                                testData.put("dateString", format.format(record.timestamp));
+                                testData.put("sgv", Math.round(record.calculated_value));
+                                testData.put("direction", record.slopeName());
+                                testData.put("type", "sgv");
+                                testData.put("filtered", record.ageAdjustedFiltered() * 1000);
+                                testData.put("unfiltered", record.usedRaw() * 1000);
+                                testData.put("rssi", 100);
+                                testData.put("noise", record.noiseValue());
+                                dexcomData.insert(testData, WriteConcern.UNACKNOWLEDGED);
+                            }
+                            else
+                                Log.e(TAG, "MongoDB BG record is null.");
                         }
 
                         Log.i(TAG, "The number of MBG records being sent to MongoDB is " + meterRecords.size());
