@@ -39,4 +39,25 @@
     <string name="call">Call</string>
     <string name="erase">Erase</string>
 
+    <string name="location_permission_not_approved">&lt;br&gt;&lt;br&gt;&lt;br&gt;WatchFace requires Location permission. Click on this WatchFace or visit Settings &gt; Permissions to approve.</string>
+    <string name="title_activity_location_permission">Location Permission Activity</string>
+    <string name="location_permission_text">WatchFace requires Location access.</string>
+    <string name="app_name_permissions">.xdripwear</string>
+    <string name="notify_title">Location Permission</string>
+    <string name="notify_text">xDrip requires Location access permission</string>
+
+    <string name="pref_connectG5">Connect to G5</string>
+    <string name="pref_summary_connectG5">Connect directly to G5</string>
+    <string name="pref_use_connectG5">Use Wear G5</string>
+    <string name="pref_summary_use_connectG5">Force phone to use Wear G5 Collection Service</string>
+
+    <!-- Location Settings -->
+    <string name="location_not_found_title">Location Is Not Enabled</string>
+    <string name="location_not_found_message">For Bluetooth discovery to work on newer devices, location must be enabled. xDrip does not track your location and it can be disabled after pairing is successful.</string>
+    <string name="location_yes">Enable</string>
+    <string name="no">No</string>
+
+    <string name="persistent_high_for_greater_than">Persistent High for > </string>
+    <string name="space_mins">" mins"</string>
+
 </resources>

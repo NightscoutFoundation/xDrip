@@ -38,7 +38,7 @@ import com.ustwo.clockwise.WatchShape;
 import java.util.ArrayList;
 import java.util.Date;
 
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
 
 /**
@@ -380,8 +380,8 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         if (getCurrentWatchMode() == WatchMode.INTERACTIVE) {
             mRelativeLayout.setBackgroundColor(Color.WHITE);
             if (sgvLevel == 1) {
-                mSgv.setTextColor(Utils.COLOR_ORANGE);
-                mDelta.setTextColor(Utils.COLOR_ORANGE);
+                mSgv.setTextColor(ChartUtils.COLOR_ORANGE);
+                mDelta.setTextColor(ChartUtils.COLOR_ORANGE);
             } else if (sgvLevel == 0) {
                 mSgv.setTextColor(Color.BLACK);
                 mDelta.setTextColor(Color.BLACK);
@@ -399,7 +399,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
 
             mTime.setTextColor(Color.BLACK);
             if (chart != null) {
-                highColor = Utils.COLOR_ORANGE;
+                highColor = ChartUtils.COLOR_ORANGE;
                 midColor = Color.BLUE;
                 lowColor = Color.RED;
                 singleLine = false;

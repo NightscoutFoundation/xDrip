@@ -1,13 +1,26 @@
 package com.eveningoutpost.dexdrip;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.ustwo.clockwise.WatchMode;
 
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 
 public class Home extends BaseWatchFace {
+    //KS the following were copied from app/home
+    private static Context context;//KS
+    private static final String TAG = "wearHome";//KS
+    private static String nexttoast;//KS
+    private static boolean is_follower = false;
+    private static boolean is_follower_set = false;
+    private static SharedPreferences prefs;
 
     @Override
     public void onCreate() {
@@ -64,9 +77,9 @@ public class Home extends BaseWatchFace {
             mRelativeLayout.setBackgroundColor(Color.WHITE);
             mLinearLayout.setBackgroundColor(Color.BLACK);
             if (sgvLevel == 1) {
-                mSgv.setTextColor(Utils.COLOR_ORANGE);
-                mDirection.setTextColor(Utils.COLOR_ORANGE);
-                mDelta.setTextColor(Utils.COLOR_ORANGE);
+                mSgv.setTextColor(ChartUtils.COLOR_ORANGE);
+                mDirection.setTextColor(ChartUtils.COLOR_ORANGE);
+                mDelta.setTextColor(ChartUtils.COLOR_ORANGE);
             } else if (sgvLevel == 0) {
                 mSgv.setTextColor(Color.BLACK);
                 mDirection.setTextColor(Color.BLACK);
@@ -91,7 +104,7 @@ public class Home extends BaseWatchFace {
             mRaw.setTextColor(Color.WHITE);
             mTime.setTextColor(Color.BLACK);
             if (chart != null) {
-                highColor = Utils.COLOR_ORANGE;
+                highColor = ChartUtils.COLOR_ORANGE;
                 midColor = Color.BLUE;
                 lowColor = Color.RED;
                 singleLine = false;
@@ -130,4 +143,107 @@ public class Home extends BaseWatchFace {
         }
 
     }
+
+    public static Context getAppContext() {
+        return Home.context;
+    }//KS from app / xdrip.java
+
+    public static void setAppContext(Context context) {
+        Home.context = context;
+    }//KS
+
+    //KS Toast Messages from app / Home
+    public static void toaststatic(final String msg) {
+        nexttoast = msg;
+        //KS staticRefreshBGCharts();
+        toastStaticFromUI(msg);//KS
     }
+
+    public static void toaststaticnext(final String msg) {
+        nexttoast = msg;
+        Log.e(TAG, "Toast next: " + msg);
+    }
+
+    public void toast(final String msg) {
+        try {
+            Context context = getApplicationContext();
+            Toast toast = Toast.makeText(context, msg, Toast.LENGTH_SHORT);
+            toast.show();
+            Log.d(TAG, "toast: " + msg);
+        } catch (Exception e) {
+            Log.d(TAG, "Couldn't display toast: " + msg + " / " + e.toString());
+        }
+    }
+
+    public static void toastStaticFromUI(final String msg) {
+        try {
+            Toast.makeText(Home.context, msg, Toast.LENGTH_LONG).show();//mActivity
+            Log.d(TAG, "toast: " + msg);
+        } catch (Exception e) {
+            toaststaticnext(msg);
+            Log.d(TAG, "Couldn't display toast (rescheduling): " + msg + " / " + e.toString());
+        }
+    }
+
+    private static void set_is_follower() {
+        is_follower = PreferenceManager.getDefaultSharedPreferences(Home.getAppContext()).getString("dex_collection_method", "").equals("Follower");
+        is_follower_set = true;
+    }
+
+    public static boolean get_follower() {
+        if (!is_follower_set) set_is_follower();
+        return Home.is_follower;
+    }
+
+    public static long getPreferencesLong(final String pref, final long def) {
+        if ((prefs == null) && (Home.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(Home.getAppContext());
+        }
+        if (prefs != null) {
+            return prefs.getLong(pref, def);
+        }
+        return def;
+    }
+
+    public static boolean getPreferencesBooleanDefaultFalse(final String pref) {
+        if ((prefs == null) && (Home.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(Home.getAppContext());
+        }
+        if ((prefs != null) && (prefs.getBoolean(pref, false))) {
+            return true;
+        }
+        return false;
+    }
+
+    public static String getPreferencesStringWithDefault(final String pref, final String def) {
+        if ((prefs == null) && (Home.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(Home.getAppContext());
+        }
+        if (prefs != null) {
+            return prefs.getString(pref, def);
+        }
+        return "";
+    }
+
+    public static double convertToMgDlIfMmol(double value) {
+        if (!getPreferencesStringWithDefault("units", "mgdl").equals("mgdl")) {
+            return value * com.eveningoutpost.dexdrip.UtilityModels.Constants.MMOLL_TO_MGDL;
+        } else {
+            return value; // no conversion needed
+        }
+    }
+
+
+    public static boolean setPreferencesLong(final String pref, final long lng) {
+        if ((prefs == null) && (Home.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(Home.getAppContext());
+        }
+        if (prefs != null) {
+            prefs.edit().putLong(pref, lng).apply();
+            return true;
+        }
+        return false;
+    }
+
+}
+
