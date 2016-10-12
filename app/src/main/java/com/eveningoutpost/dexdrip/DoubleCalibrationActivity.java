@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 
 public class DoubleCalibrationActivity extends ActivityWithMenu {
@@ -63,6 +64,13 @@ public class DoubleCalibrationActivity extends ActivityWithMenu {
                                 JoH.static_toast_long("Calibration out of range");
                             } else {
                                 Calibration.initialCalibration(calValue_1, calValue_2, getApplicationContext());
+
+                                final boolean wear_integration = Home.getPreferencesBoolean("wear_sync", false);//KS
+                                if (wear_integration) {
+                                    android.util.Log.d("DoubleCalibration", "start WatchUpdaterService with ACTION_SYNC_CALIBRATION");
+                                    startService(new Intent(v.getContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_CALIBRATION));
+                                }
+
                                 Intent tableIntent = new Intent(v.getContext(), Home.class);
                                 startActivity(tableIntent);
                                 finish();

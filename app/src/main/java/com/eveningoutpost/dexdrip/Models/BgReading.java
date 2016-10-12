@@ -715,6 +715,22 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .execute();
     }
 
+    public static List<BgReading> latestForGraphAsc(int number, long startTime) {//KS
+        return latestForGraphAsc(number, startTime, Long.MAX_VALUE);
+    }
+
+    public static List<BgReading> latestForGraphAsc(int number, long startTime, long endTime) {//KS
+        return new Select()
+                .from(BgReading.class)
+                .where("timestamp >= " + Math.max(startTime, 0))
+                .where("timestamp <= " + endTime)
+                .where("calculated_value != 0")
+                .where("raw_data != 0")
+                .orderBy("timestamp asc")
+                .limit(number)
+                .execute();
+    }
+
     public static BgReading readingNearTimeStamp(double startTime) {
         final double margin = (4 * 60*1000);
         final DecimalFormat df = new DecimalFormat("#");

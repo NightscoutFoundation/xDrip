@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 
 public class AddCalibration extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -95,6 +96,12 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                         if ((calibration != null) && allow_undo.equals("true")) {
                                             UndoRedo.addUndoCalibration(calibration.uuid);
                                         }
+                                        final boolean wear_integration = Home.getPreferencesBoolean("wear_sync", false);//KS
+                                        if (wear_integration) {
+                                            android.util.Log.d("AddCalibration", "start WatchUpdaterService with ACTION_SYNC_CALIBRATION");
+                                            startService(new Intent(getApplicationContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_CALIBRATION));
+                                        }
+
                                     } else {
                                         Log.w(TAG, "Ignoring Remote calibration value as identical to last one: " + calValue);
                                     }
@@ -150,6 +157,13 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                             if (calibration != null) {
                                 UndoRedo.addUndoCalibration(calibration.uuid);
                                 GcmActivity.pushCalibration(string_value, "0");
+
+                                final boolean wear_integration = Home.getPreferencesBoolean("wear_sync", false);//KS
+                                if (wear_integration) {
+                                    android.util.Log.d("AddCalibration", "start WatchUpdaterService with ACTION_SYNC_CALIBRATION");
+                                    startService(new Intent(v.getContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_CALIBRATION));
+                                }
+
                             } else {
                                 Log.e(TAG, "Calibration creation resulted in null");
                                 JoH.static_toast_long("Could not create calibration!");

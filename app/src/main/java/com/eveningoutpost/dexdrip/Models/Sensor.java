@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 
 import com.activeandroid.Model;
@@ -10,6 +12,9 @@ import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.util.Date;
 import java.util.UUID;
@@ -53,6 +58,17 @@ public class Sensor extends Model {
         return sensor;
     }
 
+    public static Sensor create(long started_at, String uuid) {//KS
+        Sensor sensor = new Sensor();
+        sensor.started_at = started_at;
+        sensor.uuid = uuid;
+
+        sensor.save();
+        SensorSendQueue.addToQueue(sensor);
+        Log.d("SENSOR MODEL:", sensor.toString());
+        return sensor;
+    }
+
     // Used by xDripViewer
     public static void createUpdate(long started_at, long stopped_at,  int latest_battery_level, String uuid) {
 
@@ -80,6 +96,16 @@ public class Sensor extends Model {
         sensor.save();
         SensorSendQueue.addToQueue(sensor);
 
+    }
+
+    public String toS() {//KS
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                .serializeSpecialFloatingPointValues()
+                .create();
+        Log.d("SENSOR", "Sensor toS uuid=" + this.uuid + " started_at=" + this.started_at + " active=" + this.isActive() + " battery=" + this.latest_battery_level + " location=" + this.sensor_location + " stopped_at=" + this.stopped_at);
+        return gson.toJson(this);
     }
 
     public static Sensor currentSensor() {
