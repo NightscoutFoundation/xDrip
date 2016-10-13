@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -1564,17 +1565,17 @@ public class BgGraphBuilder {
         }
     }
 
-    public OnValueSelectTooltipListener getOnValueSelectTooltipListener(boolean interactive) {
-        return new OnValueSelectTooltipListener(interactive);
+    public OnValueSelectTooltipListener getOnValueSelectTooltipListener(Activity callerActivity) {
+        return new OnValueSelectTooltipListener(callerActivity);
     }
 
     public class OnValueSelectTooltipListener implements LineChartOnValueSelectListener {
 
         private Toast tooltip;
-        private boolean interactive;
+        private Activity callerActivity;
 
-        public OnValueSelectTooltipListener(boolean interactive) {
-            this.interactive = interactive;
+        public OnValueSelectTooltipListener(Activity callerActivity) {
+            this.callerActivity = callerActivity;
         }
 
         @Override
@@ -1606,25 +1607,15 @@ public class BgGraphBuilder {
             } else {
                 message = timeFormat.format(time) + "      " + (Math.round(pointValue.getY() * 10) / 10d) + " "+unit() +  filtered;
             }
-            if (interactive) {
-                final View.OnClickListener mOnClickListener = new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Home.startHomeWithExtra(xdrip.getAppContext(), Home.CREATE_TREATMENT_NOTE, time.toString(), Double.toString(ypos));
-                    }
-                };
-                Home.snackBar(message, mOnClickListener);
-            } else {
 
-                if (tooltip != null) {
-                    tooltip.cancel();
+            final View.OnClickListener mOnClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Home.startHomeWithExtra(xdrip.getAppContext(), Home.CREATE_TREATMENT_NOTE, time.toString(), Double.toString(ypos));
                 }
+            };
+            Home.snackBar(message, mOnClickListener, callerActivity);
 
-                tooltip = Toast.makeText(context, message, Toast.LENGTH_LONG);
-                View view = tooltip.getView();
-                view.setBackgroundColor(getCol(X.color_home_chart_background));
-                tooltip.show();
-            }
         }
 
         @Override
