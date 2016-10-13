@@ -25,6 +25,8 @@ public class PluggableCalibration {
                 return new FixedSlopeExample();
             case xDripOriginal:
                 return new XDripOriginal();
+            case Last6UnweightedA:
+                return new LastSixUnweightedA();
 
             // add new plugins here and also to the enum below
 
@@ -40,7 +42,8 @@ public class PluggableCalibration {
         None("None"),
         Datricsae("Datricsae"),
         FixedSlopeExample("FixedSlopeExample"),
-        xDripOriginal("xDripOriginal");
+        xDripOriginal("xDripOriginal"),
+        Last6UnweightedA("Last6UnweightedA");
 
         // add new algorithms here and also in to getCalibrationPlugin() above
 

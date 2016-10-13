@@ -3,7 +3,6 @@ package com.eveningoutpost.dexdrip.calibrations;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.Calibration;
-import com.eveningoutpost.dexdrip.Models.Forecast;
 import com.eveningoutpost.dexdrip.Models.Forecast.PolyTrendLine;
 import com.eveningoutpost.dexdrip.Models.Forecast.TrendLine;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -12,6 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This is an example calibration algorithm which takes the last 6 calibrations
+ * and produces a best fit line through them (Linear regression)
+ * <p>
+ * It has no weighting but uses the age adjusted raw value for certain data sources
+ * <p>
+ * If there is insufficient calibration data then it defaults to the xDrip-Original
+ * algorithm. So you will only see a divergence with 4 or more calibrations.
+ * <p>
+ * This algorithm has no sanity checks and so could easily produce wildly inaccurate slopes.
+ * <p>
  * Created by jamorham on 04/10/2016.
  * <p>
  * Maintained by jamorham
@@ -20,9 +29,9 @@ import java.util.List;
  * please create a new one and make the modifications there
  */
 
-public class Datricsae extends CalibrationAbstract {
+public class LastSixUnweightedA extends CalibrationAbstract {
 
-    private static final String TAG = "Datricsae";
+    private static final String TAG = "Last6Ua";
 
     @Override
     public String getAlgorithmName() {
@@ -31,7 +40,7 @@ public class Datricsae extends CalibrationAbstract {
 
     @Override
     public String getAlgorithmDescription() {
-        return "pronounced: da-trix-ee - place holder only - do not use";
+        return "Unweighted last 6 calibrations. Example only";
     }
 
     @Override
@@ -46,10 +55,11 @@ public class Datricsae extends CalibrationAbstract {
             // have we got enough data to have a go
             if (calibrations.size() < 4) {
                 // just use whatever xDrip original would have come up with at this point
+                Log.d(TAG, "Falling back to xDrip-original values");
                 cd = new CalibrationData(calibrations.get(0).slope, calibrations.get(0).intercept);
             } else {
                 // TODO sanity checks
-                final TrendLine bg_to_raw = new Forecast.PolyTrendLine(1);
+                final TrendLine bg_to_raw = new PolyTrendLine(1);
 
                 final List<Double> raws = new ArrayList<>();
                 final List<Double> bgs = new ArrayList<>();
