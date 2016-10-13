@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -45,6 +46,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 
 public class WatchUpdaterService extends WearableListenerService implements
         GoogleApiClient.ConnectionCallbacks,
@@ -365,10 +368,14 @@ public class WatchUpdaterService extends WearableListenerService implements
 
     private void startBtG5Service() {//KS
         Log.d(TAG, "startBtG5Service");
-        Context myContext = getApplicationContext();
-        Log.d(TAG, "startBtG5Service start G5CollectionService");
-        myContext.startService(new Intent(myContext, G5CollectionService.class));
-        Log.d(TAG, "startBtG5Service AFTER startService G5CollectionService");
+        if (getDexCollectionType() == DexCollectionType.DexcomG5) {
+            Context myContext = getApplicationContext();
+            Log.d(TAG, "startBtG5Service start G5CollectionService");
+            myContext.startService(new Intent(myContext, G5CollectionService.class));
+            Log.d(TAG, "startBtG5Service AFTER startService G5CollectionService");
+        } else {
+            Log.d(TAG, "Not starting any G5 service as it is not our data source");
+        }
     }
 
     private void stopBtG5Service() {//KS
@@ -758,11 +765,13 @@ public class WatchUpdaterService extends WearableListenerService implements
     }
 
     private void sendWearBgData(Integer count) {//KS
-        if(googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) { googleApiConnect(); }
+        if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
+            googleApiConnect();
+        }
         Log.d(TAG, "sendWearBgData");
         BgReading last = BgReading.last();
         List<BgReading> lastest = BgReading.latest(count);
-        if (lastest != null && !lastest.isEmpty()) {
+        if ((last != null) && (lastest != null && !lastest.isEmpty())) {
             Log.d(TAG, "sendWearBgData lastest count = " + lastest.size());
             DataMap entries = dataMap(last);
             final ArrayList<DataMap> dataMaps = new ArrayList<>(lastest.size());
@@ -776,9 +785,9 @@ public class WatchUpdaterService extends WearableListenerService implements
             }
             entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
             entries.putDataMapArrayList("entries", dataMaps);
-            new SendToDataLayerThread(WEARABLE_BG_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, entries);
-        }
-        else
+            if (googleApiClient != null)
+                new SendToDataLayerThread(WEARABLE_BG_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, entries);
+        } else
             Log.d(TAG, "sendWearBgData lastest count = 0");
     }
 
