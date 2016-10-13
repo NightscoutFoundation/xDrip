@@ -1929,7 +1929,7 @@ public class Home extends ActivityWithMenu {
             if (plugin != null) {
                 final CalibrationAbstract.CalibrationData pcalibration = plugin.getCalibrationData();
                 if (extraline.length() > 0) extraline.append("\n"); // not tested on the widget yet
-                extraline.append("(" + plugin.getAlgorithmName() + ") s:" + JoH.qs(pcalibration.slope, 2) + " i:" + JoH.qs(pcalibration.intercept, 2));
+                if (pcalibration != null) extraline.append("(" + plugin.getAlgorithmName() + ") s:" + JoH.qs(pcalibration.slope, 2) + " i:" + JoH.qs(pcalibration.intercept, 2));
                 BgReading bgReading = BgReading.last();
                 if (bgReading != null) {
                     final boolean doMgdl = prefs.getString("units", "mgdl").equals("mgdl");
@@ -2098,6 +2098,7 @@ public class Home extends ActivityWithMenu {
         if (!prefs.getBoolean("wear_sync", false)) {
             menu.removeItem(R.id.action_open_watch_settings);
             menu.removeItem(R.id.action_resend_last_bg);
+            menu.removeItem(R.id.action_sync_watch_db);//KS
         }
 
         //speak readings
@@ -2365,6 +2366,10 @@ public class Home extends ActivityWithMenu {
                 break;
             case R.id.action_open_watch_settings:
                 startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_OPEN_SETTINGS));
+            case R.id.action_sync_watch_db://KS
+                Log.d(TAG, "start WatchUpdaterService with ACTION_SYNC_DB");
+                startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_DB));
+                break;
         }
 
         if (item.getItemId() == R.id.action_export_database) {
