@@ -5,10 +5,22 @@
         android:key="category"
         android:selectable="false">
 
-    <CheckBoxPreference android:title="Dark"
-        android:defaultValue="true"
-        android:summary="Dark theme"
-        android:key="dark" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="connectG5"
+            android:summary="@string/pref_summary_connectG5"
+            android:title="@string/pref_connectG5"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="connectG5"
+            android:key="use_connectG5"
+            android:summary="@string/pref_summary_use_connectG5"
+            android:title="@string/pref_use_connectG5"/>
+
+        <CheckBoxPreference android:title="Dark"
+            android:defaultValue="true"
+            android:summary="Dark theme"
+            android:key="dark" />
 
         <!-- TODO: reenable raw
         <CheckBoxPreference android:title="Show Raw"
