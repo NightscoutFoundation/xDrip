@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.calibrations;
 
+import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -110,6 +111,16 @@ public abstract class CalibrationAbstract {
         if (data == null) return -1;
         return raw * data.slope + data.intercept;
     }
+
+    // faster method when CalibrationData is passed - could be overridden for non-linear algs
+
+    public double getGlucoseFromBgReading(BgReading bgReading, CalibrationData data) {
+        if (data == null) return -1;
+        if (bgReading == null) return -1;
+        // algorithm can override to decide whether or not to be using age_adjusted_raw
+        return bgReading.age_adjusted_raw_value * data.slope + data.intercept;
+    }
+
 
 
     protected static CalibrationData jsonStringToData(String json) {

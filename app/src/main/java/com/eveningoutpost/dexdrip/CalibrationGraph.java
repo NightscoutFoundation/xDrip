@@ -42,7 +42,7 @@ public class CalibrationGraph extends ActivityWithMenu {
     private final boolean doMgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
     private final boolean show_days_since = true; // could make this switchable if desired
     private final double start_x = 50; // raw range
-    private final double end_x = 300; //  raw range
+    private double end_x = 300; //  raw range
 
     TextView GraphHeader;
     TextView PluginHeader;
@@ -71,6 +71,13 @@ public class CalibrationGraph extends ActivityWithMenu {
     public void setupCharts() {
         chart = (LineChartView) findViewById(R.id.chart);
         List<Line> lines = new ArrayList<Line>();
+
+        //calibration values
+        List<Calibration> calibrations = Calibration.allForSensor();
+        List<Line> greyLines = getCalibrationsLine(calibrations, Color.parseColor("#66FFFFFF"));
+        calibrations = Calibration.allForSensorInLastFourDays();
+        List<Line> blueLines = getCalibrationsLine(calibrations, ChartUtils.COLOR_BLUE);
+
         Calibration calibration = Calibration.lastValid();
         if (calibration != null) {
             //set header
@@ -110,16 +117,13 @@ public class CalibrationGraph extends ActivityWithMenu {
                 PluginHeader.setText("(" + plugin.getAlgorithmName() + ")  " + "s = " + df.format(pcalibration.slope) + "  i = " + df.format(pcalibration.intercept));
             }
 
-            //calibration values
-            List<Calibration> calibrations = Calibration.allForSensor();
-            Line greyLine = getCalibrationsLine(calibrations, Color.parseColor("#66FFFFFF"));
-            calibrations = Calibration.allForSensorInLastFourDays();
-            Line blueLine = getCalibrationsLine(calibrations, ChartUtils.COLOR_BLUE);
-
             //add lines in order
-            lines.add(greyLine);
-            lines.add(blueLine);
-
+            for (Line greyLine : greyLines) {
+                lines.add(greyLine);
+            }
+            for (Line blueLine : blueLines) {
+                lines.add(blueLine);
+            }
 
         }
         Axis axisX = new Axis();
@@ -140,10 +144,18 @@ public class CalibrationGraph extends ActivityWithMenu {
     }
 
     @NonNull
-    public Line getCalibrationsLine(List<Calibration> calibrations, int color) {
+    public List<Line> getCalibrationsLine(List<Calibration> calibrations, int color) {
         List<PointValue> values = new ArrayList<PointValue>();
+        List<PointValue> valuesb = new ArrayList<PointValue>();
+        List<PointValue> valuesc = new ArrayList<PointValue>();
         for (Calibration calibration : calibrations) {
+            if (calibration.estimate_raw_at_time_of_calibration > end_x)
+                end_x = calibration.estimate_bg_at_time_of_calibration;
             PointValue point = new PointValue((float) calibration.estimate_raw_at_time_of_calibration,
+                    doMgdl ? (float) calibration.bg : ((float) calibration.bg) * (float) Constants.MGDL_TO_MMOLL);
+            PointValue pointb = new PointValue((float) calibration.raw_value,
+                    doMgdl ? (float) calibration.bg : ((float) calibration.bg) * (float) Constants.MGDL_TO_MMOLL);
+            PointValue pointc = new PointValue((float) calibration.adjusted_raw_value,
                     doMgdl ? (float) calibration.bg : ((float) calibration.bg) * (float) Constants.MGDL_TO_MMOLL);
             String time;
             if (show_days_since) {
@@ -155,7 +167,13 @@ public class CalibrationGraph extends ActivityWithMenu {
             }
             point.setLabel(time);
             values.add(point);
+
+            // extra points showing real raw and age_adjusted raw for each calbration point
+
+            valuesb.add(pointb);
+            valuesc.add(pointc);
         }
+
 
         Line line = new Line(values);
         line.setColor(color);
@@ -163,7 +181,32 @@ public class CalibrationGraph extends ActivityWithMenu {
         line.setPointRadius(4);
         line.setHasPoints(true);
         line.setHasLabels(true);
-        return line;
+
+        List<Line> lines = new ArrayList<>();
+        lines.add(line);
+
+        if (Home.getPreferencesBooleanDefaultFalse("engineering_mode")) {
+
+            // actual raw
+            Line lineb = new Line(valuesb);
+            lineb.setColor(Color.RED);
+            lineb.setHasLines(false);
+            lineb.setPointRadius(1);
+            lineb.setHasPoints(true);
+            lineb.setHasLabels(false);
+
+            // age adjusted raw
+            Line linec = new Line(valuesc);
+            linec.setColor(Color.YELLOW);
+            linec.setHasLines(false);
+            linec.setPointRadius(1);
+            linec.setHasPoints(true);
+            linec.setHasLabels(false);
+
+            lines.add(lineb);
+            lines.add(linec);
+        }
+        return lines;
     }
 
 
