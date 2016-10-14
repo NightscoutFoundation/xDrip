@@ -629,6 +629,16 @@ public class Preferences extends PreferenceActivity {
                                                         }
             );
 
+            findPreference("disable_all_sync").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    prefs.edit().putBoolean("disable_all_sync", (boolean) newValue).commit();
+                    SdcardImportExport.hardReset();
+                    return true;
+                }
+
+            });
+
             final Preference profile_carb_absorption_default = findPreference("profile_carb_absorption_default");
             profile_carb_absorption_default.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -940,6 +950,7 @@ public class Preferences extends PreferenceActivity {
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         PluggableCalibration.invalidateCache(); // current
                         PluggableCalibration.invalidateCache(newValue.toString()); // next
+                        PluggableCalibration.invalidatePluginCache(); // reset the object cache
                         return true;
                     }
                 });

@@ -399,6 +399,15 @@
                     android:shouldDisableView="true"
                     android:dependency="engineering_mode"
                     />
+                <SwitchPreference
+                    android:key="plugin_plot_on_graph"
+                    android:defaultValue="false"
+                    android:title="Plugin plot on graph"
+                    android:summary="Show glucose results from the plugin on the main graph"
+                    android:dependency="engineering_mode"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="engineering_mode"

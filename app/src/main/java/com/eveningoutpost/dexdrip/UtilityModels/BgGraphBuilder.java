@@ -26,6 +26,8 @@ import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
+import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
+import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.location.DetectedActivity;
@@ -96,6 +98,8 @@ public class BgGraphBuilder {
     public static double previous_low_occurs_at = -1;
     private static double low_occurs_at_processed_till_timestamp = -1;
     private final static String TAG = "jamorham graph";
+    private final static int pluginColor = Color.parseColor("#AA00FFFF"); // temporary
+    private final static int pluginSize = 1;
     final int pointSize;
     final int axisTextSize;
     final int previewAxisTextSize;
@@ -131,20 +135,21 @@ public class BgGraphBuilder {
     //private final int numValues =(60/5)*24;
     private final List<BgReading> bgReadings;
     private final List<Calibration> calibrations;
-    private List<PointValue> inRangeValues = new ArrayList<PointValue>();
-    private List<PointValue> highValues = new ArrayList<PointValue>();
-    private List<PointValue> lowValues = new ArrayList<PointValue>();
-    private List<PointValue> rawInterpretedValues = new ArrayList<PointValue>();
-    private List<PointValue> filteredValues = new ArrayList<PointValue>();
-    private List<PointValue> calibrationValues = new ArrayList<PointValue>();
-    private List<PointValue> treatmentValues = new ArrayList<PointValue>();
-    private List<PointValue> iobValues = new ArrayList<PointValue>();
-    private List<PointValue> cobValues = new ArrayList<PointValue>();
-    private List<PointValue> predictedBgValues = new ArrayList<PointValue>();
-    private List<PointValue> polyBgValues = new ArrayList<PointValue>();
-    private List<PointValue> noisePolyBgValues = new ArrayList<PointValue>();
-    private List<PointValue> activityValues = new ArrayList<PointValue>();
-    private List<PointValue> annotationValues = new ArrayList<>();
+    private final List<PointValue> inRangeValues = new ArrayList<PointValue>();
+    private final List<PointValue> highValues = new ArrayList<PointValue>();
+    private final List<PointValue> lowValues = new ArrayList<PointValue>();
+    private final List<PointValue> pluginValues = new ArrayList<PointValue>();
+    private final List<PointValue> rawInterpretedValues = new ArrayList<PointValue>();
+    private final List<PointValue> filteredValues = new ArrayList<PointValue>();
+    private final List<PointValue> calibrationValues = new ArrayList<PointValue>();
+    private final List<PointValue> treatmentValues = new ArrayList<PointValue>();
+    private final List<PointValue> iobValues = new ArrayList<PointValue>();
+    private final List<PointValue> cobValues = new ArrayList<PointValue>();
+    private final List<PointValue> predictedBgValues = new ArrayList<PointValue>();
+    private final List<PointValue> polyBgValues = new ArrayList<PointValue>();
+    private final List<PointValue> noisePolyBgValues = new ArrayList<PointValue>();
+    private final List<PointValue> activityValues = new ArrayList<PointValue>();
+    private final List<PointValue> annotationValues = new ArrayList<>();
     public static double last_noise = -99999;
     public static double best_bg_estimate = -99999;
     public static double last_bg_estimate = -99999;
@@ -340,7 +345,11 @@ public class BgGraphBuilder {
         previewLineData.setAxisYLeft(yAxis());
         previewLineData.setAxisXBottom(previewXAxis());
 
+        final List<Line> removeItems = new ArrayList<>();
         for (Line lline : previewLineData.getLines()) {
+            if ((lline.getPointRadius() == pluginSize) && (lline.getPointColor() == pluginColor)) {
+                removeItems.add(lline); // remove plugin plot from preview graph
+            }
             if ((lline.hasLabels() && (lline.getPointRadius() > 0))) {
 
                 lline.setPointRadius(3); // preserve size for treatments
@@ -350,6 +359,11 @@ public class BgGraphBuilder {
             }
             lline.setHasLabels(false);
         }
+
+        for (Line item : removeItems) {
+            previewLineData.getLines().remove(item);
+        }
+
         // needs more adjustments - foreach
         return previewLineData;
     }
@@ -414,6 +428,11 @@ public class BgGraphBuilder {
             lines.add(inRangeValuesLine());
             lines.add(lowValuesLine());
             lines.add(highValuesLine());
+
+            List<Line> extra_lines = extraLines();
+            for (Line eline : extra_lines) {
+                lines.add(eline);
+            }
 
             // check show debug option here - drawn on top of others
             lines.add(treatments[8]); // noise poly predict
@@ -552,6 +571,18 @@ public class BgGraphBuilder {
         return line;
     }
 
+    public List<Line> extraLines()
+    {
+        final List<Line> lines = new ArrayList<>();
+        Line line = new Line(pluginValues);
+        line.setHasLines(false);
+        line.setPointRadius(pluginSize);
+        line.setHasPoints(true);
+        line.setColor(pluginColor);
+        lines.add(line);
+        return lines;
+    }
+
     public Line[] calibrationValuesLine() {
         Line[] lines = new Line[2];
         lines[0] = new Line(calibrationValues);
@@ -685,6 +716,7 @@ public class BgGraphBuilder {
         lowValues.clear();
         inRangeValues.clear();
         calibrationValues.clear();
+        pluginValues.clear();
 
         final double bgScale = bgScale();
         final double now = JoH.ts();
@@ -714,10 +746,10 @@ public class BgGraphBuilder {
         polys[3] = new Forecast.PowerTrendLine();
         TrendLine poly = null;
 
-        List<Double> polyxList = new ArrayList<Double>();
-        List<Double> polyyList = new ArrayList<Double>();
-        List<Double> noise_polyxList = new ArrayList<Double>();
-        List<Double> noise_polyyList = new ArrayList<Double>();
+        final List<Double> polyxList = new ArrayList<Double>();
+        final List<Double> polyyList = new ArrayList<Double>();
+        final List<Double> noise_polyxList = new ArrayList<Double>();
+        final List<Double> noise_polyyList = new ArrayList<Double>();
 
         final double avg1start = now-(1000*60*60*8); // 8 hours
         final double momentum_illustration_start = now-(1000*60*60*2); // 8 hours
@@ -755,12 +787,14 @@ public class BgGraphBuilder {
         final boolean interpret_raw = prefs.getBoolean("interpret_raw", false);
         final boolean show_filtered = prefs.getBoolean("show_filtered_curve", false) && has_filtered;
         final boolean predict_lows = prefs.getBoolean("predict_lows", true);
-
+        final boolean show_plugin = prefs.getBoolean("plugin_plot_on_graph", false);
 
         if ((Home.get_follower()) && (bgReadings.size() < 3)) {
             GcmActivity.requestBGsync();
         }
 
+        final CalibrationAbstract plugin = (show_plugin) ? PluggableCalibration.getCalibrationPluginFromPreferences() : null;
+        final CalibrationAbstract.CalibrationData cd = (plugin != null) ? plugin.getCalibrationData() : null;
 
 
         for (BgReading bgReading : bgReadings) {
@@ -770,6 +804,9 @@ public class BgGraphBuilder {
             }
             if ((interpret_raw && (bgReading.raw_calculated > 0))) {
                 rawInterpretedValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.raw_calculated)));
+            }
+            if ((plugin != null) && (cd != null)) {
+                pluginValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(plugin.getGlucoseFromBgReading(bgReading, cd))));
             }
             if (bgReading.calculated_value >= 400) {
                 highValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(400)));

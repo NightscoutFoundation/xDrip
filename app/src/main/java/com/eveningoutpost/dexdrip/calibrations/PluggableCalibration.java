@@ -1,8 +1,10 @@
 package com.eveningoutpost.dexdrip.calibrations;
 
 import android.preference.ListPreference;
+import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.BgReading;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,23 +18,38 @@ import java.util.Map;
 
 public class PluggableCalibration {
 
+    private static final String TAG = "PluggableCalibration";
+    private static final Map<Type, CalibrationAbstract> memory_cache = new HashMap<>();
+    private static CalibrationAbstract current_plugin_cache = null;
+
     // get calibration plugin instance by type
     public static CalibrationAbstract getCalibrationPlugin(Type t) {
+        if (memory_cache.containsKey(t)) {
+            return memory_cache.get(t);
+        }
+        CalibrationAbstract plugin = null;
         switch (t) {
             case Datricsae:
-                return new Datricsae();
+                plugin = new Datricsae();
+                break;
             case FixedSlopeExample:
-                return new FixedSlopeExample();
+                plugin = new FixedSlopeExample();
+                break;
             case xDripOriginal:
-                return new XDripOriginal();
+                plugin = new XDripOriginal();
+                break;
             case Last6UnweightedA:
-                return new LastSixUnweightedA();
+                plugin = new LastSixUnweightedA();
+                break;
 
             // add new plugins here and also to the enum below
 
             default:
-                return null;
+                Log.e(TAG, "Unhandled plugin type: " + t.toString());
+                break;
         }
+        memory_cache.put(t, plugin);
+        return plugin;
     }
 
 
@@ -95,13 +112,42 @@ public class PluggableCalibration {
 
     // get calibration plugin instance from preference setting
     public static CalibrationAbstract getCalibrationPluginFromPreferences() {
-        return getCalibrationPluginByName(Home.getPreferencesStringWithDefault("current_calibration_plugin", "None"));
+        if (current_plugin_cache == null) {
+            current_plugin_cache = getCalibrationPluginByName(Home.getPreferencesStringWithDefault("current_calibration_plugin", "None"));
+        }
+        return current_plugin_cache;
+    }
+
+    public static void invalidatePluginCache() {
+        current_plugin_cache = null;
+        memory_cache.clear();
+        Log.d(TAG, "Invalidated Plugin Cache");
+    }
+
+    // lazy helper function
+    public static CalibrationAbstract.CalibrationData getCalibrationData() {
+        try {
+            return getCalibrationPluginFromPreferences().getCalibrationData();
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
+
+    // lazy helper function
+    public static double getGlucoseFromBgReading(BgReading bgReading) {
+        try {
+            final CalibrationAbstract plugin = getCalibrationPluginFromPreferences();
+            final CalibrationAbstract.CalibrationData cd = plugin.getCalibrationData();
+            return plugin.getGlucoseFromBgReading(bgReading, cd);
+        } catch (NullPointerException e) {
+            return -1;
+        }
     }
 
     // lazy helper function
     public static boolean newCloseSensorData() {
         try {
-            return PluggableCalibration.getCalibrationPluginFromPreferences().newCloseSensorData();
+            return getCalibrationPluginFromPreferences().newCloseSensorData();
         } catch (NullPointerException e) {
             return false;
         }
@@ -110,7 +156,7 @@ public class PluggableCalibration {
     // lazy helper function
     public static boolean newFingerStickData() {
         try {
-            return PluggableCalibration.getCalibrationPluginFromPreferences().newFingerStickData();
+            return getCalibrationPluginFromPreferences().newFingerStickData();
         } catch (NullPointerException e) {
             return false;
         }
@@ -119,7 +165,7 @@ public class PluggableCalibration {
     // lazy helper function
     public static boolean invalidateCache() {
         try {
-            return PluggableCalibration.getCalibrationPluginFromPreferences().invalidateCache();
+            return getCalibrationPluginFromPreferences().invalidateCache();
         } catch (NullPointerException e) {
             return false;
         }
@@ -128,7 +174,7 @@ public class PluggableCalibration {
     // lazy helper function
     public static boolean invalidateCache(String tag) {
         try {
-            return PluggableCalibration.getCalibrationPluginByName(tag).invalidateCache();
+            return getCalibrationPluginByName(tag).invalidateCache();
         } catch (NullPointerException e) {
             return false;
         }
