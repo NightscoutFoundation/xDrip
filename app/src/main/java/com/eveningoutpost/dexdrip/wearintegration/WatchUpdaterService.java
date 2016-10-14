@@ -284,11 +284,13 @@ public class WatchUpdaterService extends WearableListenerService implements
     @Override
     public void onCreate() {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        listenForChangeInSettings();
-        setSettings();
+        wear_integration = mPrefs.getBoolean("wear_sync", false);
         if (wear_integration) {
             googleApiConnect();
         }
+        listenForChangeInSettings();
+        setSettings();
+
     }
 
     public void listenForChangeInSettings() {
@@ -302,13 +304,13 @@ public class WatchUpdaterService extends WearableListenerService implements
 
     public void setSettings() {
         Log.d(TAG, "setSettings enter");
-        wear_integration = mPrefs.getBoolean("wear_sync", false);
+        //wear_integration = mPrefs.getBoolean("wear_sync", false); // if mPrefs is set so will this be already
         pebble_integration = mPrefs.getBoolean("pebble_sync", false);
         boolean connectG5 = mPrefs.getBoolean("wear_connectG5", false);
         boolean use_connectG5 = mPrefs.getBoolean("use_wear_connectG5", false);
         processConnectG5();
         if (wear_integration) {
-            googleApiConnect();
+            if (googleApiClient == null) googleApiConnect();
             Log.d(TAG, "setSettings wear_sync changed to True.");
             sendPrefSettings();
         } else {
