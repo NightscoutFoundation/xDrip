@@ -416,7 +416,9 @@ public class WatchUpdaterService extends WearableListenerService implements
                     Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_CALIBRATION + " Path=" + WEARABLE_CALIBRATION_DATA_PATH);
                     sendWearCalibrationData(sendCalibrationCount);
                 } else {
-                    if (!mPrefs.getBoolean("use_wear_connectG5", false)) { //KS only send BGs if using Phone's G5 Collector Server
+                    if (!mPrefs.getBoolean("use_wear_connectG5", false)
+                            || !mPrefs.getBoolean("wear_connectG5",false)
+                            || (getDexCollectionType() != DexCollectionType.DexcomG5)) { //KS only send BGs if using Phone's G5 Collector Server
                         sendData();
                         sendWearBgData(1);
                         Log.d(TAG, "onStartCommand Action=" + " Path=" + WEARABLE_BG_DATA_PATH);
@@ -517,7 +519,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             if (event.getType() == DataEvent.TYPE_CHANGED) {
 
                 String path = event.getDataItem().getUri().getPath();
-                String nodeId = event.getDataItem().getUri().getHost();
+                //String nodeId = event.getDataItem().getUri().getHost();
 
                 switch (path) {
                     case WEARABLE_PREF_DATA_PATH:
