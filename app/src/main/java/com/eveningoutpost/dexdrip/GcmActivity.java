@@ -13,20 +13,27 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
+import android.util.Base64;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
+import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -38,6 +45,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by jamorham on 11/01/16.
  */
+class SensorCalibrations {
+    @Expose
+    Sensor sensor;
+    
+    @Expose
+    List <Calibration> calibrations;
+}
+
 public class GcmActivity extends Activity {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -64,6 +79,42 @@ public class GcmActivity extends Activity {
     private static final int MAX_RECURSION = 30;
     private static final int MAX_QUEUE_SIZE = 500;
 
+
+    public static SensorCalibrations []  getSensorCalibrations(String json) {
+        SensorCalibrations[] sensorCalibrations = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(json, SensorCalibrations[].class);
+        Log.d(TAG, "After fromjson sensorCalibrations arrrre " + sensorCalibrations.toString());
+        return sensorCalibrations;
+    }
+    
+    public static String sensorAndCalibrationsToJson(Sensor sensor) {
+        SensorCalibrations []sensorCalibrations = new SensorCalibrations[1];
+        sensorCalibrations[0] = new SensorCalibrations(); 
+        sensorCalibrations[0].sensor = sensor;
+        sensorCalibrations[0].calibrations = Calibration.getCalibrationsForSensor(sensor);
+        Log.d(TAG, "calibrations size " + sensorCalibrations[0].calibrations.size() );
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                .serializeSpecialFloatingPointValues()
+                .create();
+        
+        String output =  gson.toJson(sensorCalibrations);
+        Log.d(TAG, "Created the string " + output);
+        return output;
+    }
+    
+    public static void upsertSensorCalibratonsFromJson(String json) {
+        Log.i(TAG, "upsertSensorCalibratonsFromJson called");
+        SensorCalibrations [] sensorCalibrations = getSensorCalibrations(json);
+        for (SensorCalibrations SensorCalibration : sensorCalibrations ) {
+            Sensor.upsertFromMaster(SensorCalibration.sensor);
+            for (Calibration calibration : SensorCalibration.calibrations) {
+                Log.d(TAG, "upsertSensorCalibratonsFromJson updating calibration");
+                Calibration.upsertFromMaster(calibration);
+            }
+        }
+    }
+    
     public static synchronized void queueAction(String reference) {
         synchronized (queue_lock) {
             Log.d(TAG, "Received ACK, Queue Size: " + GcmActivity.gcm_queue.size() + " " + reference);
@@ -148,7 +199,13 @@ public class GcmActivity extends Activity {
     }
 
     public static void syncSensor(Sensor sensor) {
-        GcmActivity.sendMessage(GcmActivity.myIdentity(), "sensorupdate", sensor.toJSON());
+        Log.i(TAG, "syncSensor called");
+        if(sensor == null) {
+            Log.e(TAG, "syncSensor sensor is null");
+            return;
+        }
+        String json = sensorAndCalibrationsToJson(sensor);
+        GcmActivity.sendMessage(GcmActivity.myIdentity(), "sensorupdate", json);
     }
 
     public static void requestPing() {
@@ -374,12 +431,18 @@ public class GcmActivity extends Activity {
             data.putString("action", action);
             data.putString("identity", identity);
 
-            if (payload.length() > 0) {
-                data.putString("payload", CipherUtils.encryptString(payload));
+            if(action.equals("sensorupdate") ) {
+                byte[] inbytes =  JoH.compressStringToBytes(payload);
+                String str1 =  Base64.encodeToString(inbytes, Base64.NO_WRAP);
+                data.putString("payload", str1);
+                Log.d(TAG, "sending data len " + str1.length()+ " " + str1);
             } else {
-                data.putString("payload", "");
+                if (payload.length() > 0) {
+                    data.putString("payload", CipherUtils.encryptString(payload));
+                } else {
+                    data.putString("payload", "");
+                }
             }
-
             if (xdrip.getAppContext() == null) {
                 Log.e(TAG, "mContext is null cannot sendMessage");
                 return "";
@@ -399,11 +462,12 @@ public class GcmActivity extends Activity {
                 Log.e(TAG, "GCM token is null - cannot sendMessage");
                 return "";
             }
-            gcm.send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), data);
+            String messageid = Integer.toString(msgId.incrementAndGet());
+            gcm.send(senderid + "@gcm.googleapis.com", messageid, data);
             if (last_ack == -1) last_ack = JoH.ts();
             last_send_previous = last_send;
             last_send = JoH.ts();
-            msg = "Sent message OK";
+            msg = "Sent message OK " + messageid;
         } catch (IOException ex) {
             msg = "Error :" + ex.getMessage();
         }
