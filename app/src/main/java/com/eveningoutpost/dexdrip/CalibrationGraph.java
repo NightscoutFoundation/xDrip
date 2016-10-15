@@ -39,6 +39,7 @@ public class CalibrationGraph extends ActivityWithMenu {
     private LineChartView chart;
     private LineChartData data;
     private NavigationDrawerFragment mNavigationDrawerFragment;
+    private final static String plugin_color = "#88CCFF00";
     private final boolean doMgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
     private final boolean show_days_since = true; // could make this switchable if desired
     private final double start_x = 50; // raw range
@@ -110,11 +111,12 @@ public class CalibrationGraph extends ActivityWithMenu {
                 plineValues.add(new PointValue((float) end_x, (conversion_factor * (float) (plugin.getGlucoseFromSensorValue(end_x, pcalibration)))));
 
                 final Line pcalibrationLine = new Line(plineValues);
-                pcalibrationLine.setColor(Color.parseColor("#88CCFF00"));
+                pcalibrationLine.setColor(Color.parseColor(plugin_color));
                 pcalibrationLine.setHasLines(true);
                 pcalibrationLine.setHasPoints(false);
                 lines.add(pcalibrationLine);
                 PluginHeader.setText("(" + plugin.getAlgorithmName() + ")  " + "s = " + df.format(pcalibration.slope) + "  i = " + df.format(pcalibration.intercept));
+                PluginHeader.setTextColor(Color.parseColor(plugin_color));
             }
 
             //add lines in order
@@ -149,8 +151,9 @@ public class CalibrationGraph extends ActivityWithMenu {
         List<PointValue> valuesb = new ArrayList<PointValue>();
         List<PointValue> valuesc = new ArrayList<PointValue>();
         for (Calibration calibration : calibrations) {
-            if (calibration.estimate_raw_at_time_of_calibration > end_x)
-                end_x = calibration.estimate_bg_at_time_of_calibration;
+            if (calibration.estimate_raw_at_time_of_calibration > end_x) {
+                end_x = calibration.estimate_raw_at_time_of_calibration;
+            }
             PointValue point = new PointValue((float) calibration.estimate_raw_at_time_of_calibration,
                     doMgdl ? (float) calibration.bg : ((float) calibration.bg) * (float) Constants.MGDL_TO_MMOLL);
             PointValue pointb = new PointValue((float) calibration.raw_value,
