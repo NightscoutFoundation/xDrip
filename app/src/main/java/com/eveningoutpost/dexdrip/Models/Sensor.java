@@ -204,19 +204,18 @@ public class Sensor extends Model {
         sensor.save();
     }
     
-    public static void UpsertFromJson(String json) {
-        Sensor jsonSensor = fromJSON(json);
+    public static void upsertFromMaster(Sensor jsonSensor) {
         if (jsonSensor == null) {
-            Log.e(TAG,"Got null sensor from json");
+            Log.wtf(TAG,"Got null sensor from json");
             return;
         }
         try {
             Sensor existingSensor = getByUuid(jsonSensor.uuid);
             if (existingSensor == null) {
-                Log.d(TAG, "saving new sensor record: " + json);
+                Log.d(TAG, "saving new sensor record.");
                 jsonSensor.save();
             } else {
-                Log.d(TAG, "updating existing sensor record: " + json);
+                Log.d(TAG, "updating existing sensor record.");
                 existingSensor.started_at = jsonSensor.started_at;
                 existingSensor.stopped_at = jsonSensor.stopped_at;
                 existingSensor.latest_battery_level = jsonSensor.latest_battery_level;
