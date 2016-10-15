@@ -10,6 +10,8 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import java.util.List;
 
@@ -18,6 +20,7 @@ import java.util.List;
  */
 @Table(name = "CalibrationSendQueue", id = BaseColumns._ID)
 public class CalibrationSendQueue extends Model {
+    private final static String TAG = CalibrationSendQueue.class.getSimpleName();
 
     @Column(name = "calibration", index = true)
     public Calibration calibration;
@@ -51,6 +54,8 @@ public class CalibrationSendQueue extends Model {
         calibrationSendQueue.success = false;
         calibrationSendQueue.mongo_success = false;
         calibrationSendQueue.save();
+        Log.i(TAG, "calling SensorSendQueue.SendToFollower");
+        SensorSendQueue.SendToFollower(Sensor.getByUuid(calibration.sensor_uuid));
     }
 
     public void markMongoSuccess() {

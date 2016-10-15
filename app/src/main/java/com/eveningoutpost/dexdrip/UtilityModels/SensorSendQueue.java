@@ -55,7 +55,7 @@ public class SensorSendQueue extends Model {
         sensorSendQueue.save();
     }
     
-    private static void SendToFollower(Sensor sensor) {
+    public static void SendToFollower(Sensor sensor) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         if ((!Home.get_follower()) && (prefs.getBoolean("plus_follow_master", false))) {
             GcmActivity.syncSensor(sensor);
