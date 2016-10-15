@@ -80,6 +80,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static Integer sendBgCount = 4;//KS
     boolean wear_integration = false;
     boolean pebble_integration = false;
+    boolean is_using_g5 = false;
     SharedPreferences mPrefs;
     SharedPreferences.OnSharedPreferenceChangeListener mPreferencesListener;
 
@@ -285,6 +286,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     public void onCreate() {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         wear_integration = mPrefs.getBoolean("wear_sync", false);
+        is_using_g5 = (getDexCollectionType() == DexCollectionType.DexcomG5);
         if (wear_integration) {
             googleApiConnect();
         }
@@ -370,7 +372,7 @@ public class WatchUpdaterService extends WearableListenerService implements
 
     private void startBtG5Service() {//KS
         Log.d(TAG, "startBtG5Service");
-        if (getDexCollectionType() == DexCollectionType.DexcomG5) {
+        if (is_using_g5) {
             Context myContext = getApplicationContext();
             Log.d(TAG, "startBtG5Service start G5CollectionService");
             myContext.startService(new Intent(myContext, G5CollectionService.class));
@@ -400,6 +402,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
 
         if (wear_integration) {
+            is_using_g5 = (getDexCollectionType() == DexCollectionType.DexcomG5); // refresh
             if (googleApiClient.isConnected()) {
                 if (ACTION_RESEND.equals(action)) {
                     resendData();
@@ -418,7 +421,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                 } else {
                     if (!mPrefs.getBoolean("use_wear_connectG5", false)
                             || !mPrefs.getBoolean("wear_connectG5",false)
-                            || (getDexCollectionType() != DexCollectionType.DexcomG5)) { //KS only send BGs if using Phone's G5 Collector Server
+                            || (!is_using_g5)) { //KS only send BGs if using Phone's G5 Collector Server
                         sendData();
                         sendWearBgData(1);
                         Log.d(TAG, "onStartCommand Action=" + " Path=" + WEARABLE_BG_DATA_PATH);
@@ -686,47 +689,58 @@ public class WatchUpdaterService extends WearableListenerService implements
     }
 
     public void sendSensorData() {//KS
-        if(googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) { googleApiConnect(); }
-        Sensor sensor = Sensor.currentSensor();
-        if (sensor != null) {
-            if (wear_integration) {
-                DataMap dataMap = new DataMap();
-                Log.d(TAG, "Sensor sendSensorData uuid=" + sensor.uuid + " started_at=" + sensor.started_at + " active=" + sensor.isActive() + " battery=" + sensor.latest_battery_level + " location=" + sensor.sensor_location + " stopped_at=" + sensor.stopped_at);
-                String json = sensor.toS();
-                Log.d(TAG, "dataMap sendSensorData GSON: " + json);
-                //dataMap.putString("data", json);
-
-                dataMap.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
-
-                dataMap.putString("dex_txid", mPrefs.getString("dex_txid", "ABCDEF"));//KS
-                dataMap.putLong("started_at", sensor.started_at);
-                dataMap.putString("uuid", sensor.uuid);
-                dataMap.putInt("latest_battery_level", sensor.latest_battery_level);
-                dataMap.putString("sensor_location", sensor.sensor_location);
-
-                new SendToDataLayerThread(WEARABLE_SENSOR_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap);
+        if (is_using_g5) {
+            if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
+                googleApiConnect();
             }
+            Sensor sensor = Sensor.currentSensor();
+            if (sensor != null) {
+                if (wear_integration) {
+                    DataMap dataMap = new DataMap();
+                    Log.d(TAG, "Sensor sendSensorData uuid=" + sensor.uuid + " started_at=" + sensor.started_at + " active=" + sensor.isActive() + " battery=" + sensor.latest_battery_level + " location=" + sensor.sensor_location + " stopped_at=" + sensor.stopped_at);
+                    String json = sensor.toS();
+                    Log.d(TAG, "dataMap sendSensorData GSON: " + json);
+                    //dataMap.putString("data", json);
+
+                    dataMap.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
+
+                    dataMap.putString("dex_txid", mPrefs.getString("dex_txid", "ABCDEF"));//KS
+                    dataMap.putLong("started_at", sensor.started_at);
+                    dataMap.putString("uuid", sensor.uuid);
+                    dataMap.putInt("latest_battery_level", sensor.latest_battery_level);
+                    dataMap.putString("sensor_location", sensor.sensor_location);
+
+                    new SendToDataLayerThread(WEARABLE_SENSOR_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap);
+                }
+            }
+        } else {
+            Log.d(TAG, "Not sending sensor data as we are not using G5");
         }
     }
 
     private void sendWearCalibrationData(Integer count) {//KS
-        if(googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) { googleApiConnect(); }
-        Log.d(TAG, "sendWearCalibrationData");
-        Calibration last = Calibration.last();
-        List<Calibration> lastest = Calibration.latest(count);
-        if (lastest != null && !lastest.isEmpty()) {
-            Log.d(TAG, "sendWearCalibrationData lastest count = " + lastest.size());
-            DataMap entries = dataMap(last);
-            final ArrayList<DataMap> dataMaps = new ArrayList<>(lastest.size());
-            for (Calibration cal : lastest) {
-                dataMaps.add(dataMap(cal));
+        if (is_using_g5) {
+            if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
+                googleApiConnect();
             }
-            entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
-            entries.putDataMapArrayList("entries", dataMaps);
-            new SendToDataLayerThread(WEARABLE_CALIBRATION_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, entries);
+            Log.d(TAG, "sendWearCalibrationData");
+            Calibration last = Calibration.last();
+            List<Calibration> lastest = Calibration.latest(count);
+            if (lastest != null && !lastest.isEmpty()) {
+                Log.d(TAG, "sendWearCalibrationData lastest count = " + lastest.size());
+                DataMap entries = dataMap(last);
+                final ArrayList<DataMap> dataMaps = new ArrayList<>(lastest.size());
+                for (Calibration cal : lastest) {
+                    dataMaps.add(dataMap(cal));
+                }
+                entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
+                entries.putDataMapArrayList("entries", dataMaps);
+                new SendToDataLayerThread(WEARABLE_CALIBRATION_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, entries);
+            } else
+                Log.d(TAG, "sendWearCalibrationData lastest count = 0");
+        } else {
+            Log.d(TAG, "Not sending calibration data as G5 is not our data source");
         }
-        else
-            Log.d(TAG, "sendWearCalibrationData lastest count = 0");
     }
 
     private DataMap dataMap(Calibration cal) {//KS
@@ -769,30 +783,35 @@ public class WatchUpdaterService extends WearableListenerService implements
     }
 
     private void sendWearBgData(Integer count) {//KS
-        if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
-            googleApiConnect();
-        }
-        Log.d(TAG, "sendWearBgData");
-        BgReading last = BgReading.last();
-        List<BgReading> lastest = BgReading.latest(count);
-        if ((last != null) && (lastest != null && !lastest.isEmpty())) {
-            Log.d(TAG, "sendWearBgData lastest count = " + lastest.size());
-            DataMap entries = dataMap(last);
-            final ArrayList<DataMap> dataMaps = new ArrayList<>(lastest.size());
-            Sensor sensor = Sensor.currentSensor();
-            if (sensor != null) {
-                for (BgReading bg : lastest) {
-                    if (bg.sensor_uuid.equals(sensor.uuid)) {
-                        dataMaps.add(dataMap(bg));
+        try {
+            if (count == null) return;
+            if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
+                googleApiConnect();
+            }
+            Log.d(TAG, "sendWearBgData");
+            final BgReading last = BgReading.last();
+            final List<BgReading> lastest = BgReading.latest(count);
+            if ((last != null) && (lastest != null && !lastest.isEmpty())) {
+                Log.d(TAG, "sendWearBgData lastest count = " + lastest.size());
+                final DataMap entries = dataMap(last);
+                final ArrayList<DataMap> dataMaps = new ArrayList<>(lastest.size());
+                final Sensor sensor = Sensor.currentSensor();
+                if ((sensor != null) && (sensor.uuid != null)) {
+                    for (BgReading bg : lastest) {
+                        if ((bg != null) && (bg.sensor_uuid != null) && (bg.sensor_uuid.equals(sensor.uuid))) {
+                            dataMaps.add(dataMap(bg));
+                        }
                     }
                 }
-            }
-            entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
-            entries.putDataMapArrayList("entries", dataMaps);
-            if (googleApiClient != null)
-                new SendToDataLayerThread(WEARABLE_BG_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, entries);
-        } else
-            Log.d(TAG, "sendWearBgData lastest count = 0");
+                entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
+                entries.putDataMapArrayList("entries", dataMaps);
+                if (googleApiClient != null)
+                    new SendToDataLayerThread(WEARABLE_BG_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, entries);
+            } else
+                Log.d(TAG, "sendWearBgData lastest count = 0");
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Nullpointer exception in sendWearBgData: " + e);
+        }
     }
 
     private DataMap dataMap(BgReading bg) {//KS
@@ -804,10 +823,14 @@ public class WatchUpdaterService extends WearableListenerService implements
     }
 
     private void initWearData() {
-        Log.d(TAG, "***initWearData***");
-        sendSensorData();
-        sendWearCalibrationData(sendCalibrationCount);
-        sendWearBgData(sendBgCount);
+        if (is_using_g5) {
+            Log.d(TAG, "***initWearData***");
+            sendSensorData();
+            sendWearCalibrationData(sendCalibrationCount);
+            sendWearBgData(sendBgCount);
+        } else {
+            Log.d(TAG, "Not doing initWearData as we are not using G5 as data source");
+        }
     }
 
     public long sgvLevel(double sgv_double, SharedPreferences prefs, BgGraphBuilder bgGB) {
