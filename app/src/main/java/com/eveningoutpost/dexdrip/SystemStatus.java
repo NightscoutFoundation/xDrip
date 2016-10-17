@@ -211,7 +211,7 @@ public class SystemStatus extends ActivityWithMenu {
             mBluetoothAdapter = mBluetoothManager.getAdapter();
 
             Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-            if (pairedDevices.size() > 0) {
+            if ((pairedDevices != null) && (pairedDevices.size() > 0)) {
                 for (BluetoothDevice device : pairedDevices) {
                     if (device.getName() != null) {
 
@@ -394,7 +394,7 @@ public class SystemStatus extends ActivityWithMenu {
                     mBluetoothAdapter = mBluetoothManager.getAdapter();
 
                     Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-                    if (pairedDevices.size() > 0) {
+                    if ((pairedDevices != null) && (pairedDevices.size() > 0)) {
                         for (BluetoothDevice device : pairedDevices) {
                             if (device.getName() != null) {
 
