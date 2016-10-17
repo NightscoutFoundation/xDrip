@@ -1,6 +1,6 @@
 # Add project specific ProGuard rules here.
 # By default, the flags in this file are appended to flags specified
-# in /Users/stephenblack/Library/Android/sdk/tools/proguard/proguard-android.txt
+# in /Users/stephenblack/adt-bundle-mac-x86_64-20140702 2/sdk/tools/proguard/proguard-android.txt
 # You can edit the include path and order by changing the proguardFiles
 # directive in build.gradle.
 #
@@ -15,3 +15,43 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-dontwarn retrofit.**
+-keep class retrofit.** { *; }
+-keepattributes Signature
+-keepattributes Exceptions
+-keepattributes InnerClasses
+-keepattributes *Annotation*
+
+-dontobfuscate
+
+-dontwarn com.nightscout.**
+-dontwarn com.squareup.**
+-dontwarn net.tribe7.**
+-dontwarn com.mongodb.**
+-dontwarn com.google.common.**
+-dontwarn okio.**
+-dontwarn org.bson.**
+-dontwarn org.slf4j.**
+-dontwarn rx.internal.util.**
+-dontwarn org.apache.commons.**
+-dontwarn uk.com.robust-it.**
+-dontwarn com.rits.cloning.**
+-dontwarn obj.objenesis.instantiator.sun.**
+-dontwarn obj.objenesis.instantiator.sun.UnsafeFactoryInstantiator
+-dontwarn sun.misc.Unsafe
+-dontwarn ar.com.hjg.pngj.**
+
+-keep class com.nightscout.** { *; }
+-keep class com.squareup.** { *; }
+-keep class net.tribe7.** { *; }
+-keep class com.mongodb.** { *; }
+-keep class com.google.common.** { *; }
+-keep class okay.** { *; }
+-keep class org.bson.** { *; }
+-keep class org.slf4j.** { *; }
+-keep class rx.internal.util.** { *; }
+-keep class sun.misc.Unsafe { *; }
+-keep class com.eveningoutpost.dexdrip.Models.** { *; }
+-keep class ar.com.hjg.pngj.** { *; }
+-keep class android.support.v7.widget.SearchView { *; }
