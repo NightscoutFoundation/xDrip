@@ -42,6 +42,16 @@ public class PersistentStore {
         prefs.edit().putString(name, value).apply(); // TODO check if commit needed
     }
 
+    public static void appendString(String name, String value) {
+        setString(name, getString(name) + value);
+    }
+
+    public static void appendString(String name, String value, String delimiter) {
+        String current = getString(name);
+        if (current.length() > 0) current += delimiter;
+        setString(name, current + value);
+    }
+
     public static long getLong(String name) {
         init_prefs();
         return prefs.getLong(name, 0);

@@ -113,8 +113,13 @@ public class JoH {
         return new Date().getTime();
     }
 
+    // TODO can we optimize this with System.currentTimeMillis ?
     public static long tsl() {
         return new Date().getTime();
+    }
+
+    public static long msSince(long when) {
+        return (tsl() - when);
     }
 
     public static String bytesToHex(byte[] bytes) {

@@ -48,6 +48,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage rmessage) {
         if (rmessage == null) return;
+        if (GcmActivity.cease_all_activity) return;
         String from = rmessage.getFrom();
 
         Bundle data = new Bundle();
@@ -187,15 +188,19 @@ public class GcmListenerSvc extends FirebaseMessagingService {
             } else if (action.equals("sbr")) {
                 if ((Home.get_master()) && JoH.ratelimit("gcm-sbr", 300)) {
                     Log.i(TAG, "Received sensor battery request");
-                    try {
-                        TransmitterData td = TransmitterData.last();
-                        if ((td != null) && (td.sensor_battery_level != 0)) {
-                            GcmActivity.sendSensorBattery(td.sensor_battery_level);
-                        } else {
-                            GcmActivity.sendSensorBattery(Sensor.currentSensor().latest_battery_level);
+                    if (Sensor.currentSensor() != null) {
+                        try {
+                            TransmitterData td = TransmitterData.last();
+                            if ((td != null) && (td.sensor_battery_level != 0)) {
+                                GcmActivity.sendSensorBattery(td.sensor_battery_level);
+                            } else {
+                                GcmActivity.sendSensorBattery(Sensor.currentSensor().latest_battery_level);
+                            }
+                        } catch (NullPointerException e) {
+                            Log.e(TAG, "Cannot send sensor battery as sensor is null");
                         }
-                    } catch (NullPointerException e) {
-                        Log.e(TAG, "Cannot send sensor battery as sensor is null");
+                    } else {
+                        Log.d(TAG,"No active sensor so not sending anything.");
                     }
                 }
             } else if (action.equals("amu")) {
