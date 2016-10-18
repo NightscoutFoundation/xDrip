@@ -11,6 +11,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
@@ -784,11 +785,22 @@ public class BgReading extends Model implements ShareUploadableBg {
         bgReadingInsertFromJson(json, true);
     }
 
+    private static void FixCalibration(BgReading bgr) {
+        Calibration calibration = Calibration.byuuid(bgr.calibration_uuid);
+        if(calibration == null) {
+            Log.i(TAG, "recieved Unknown calibration, asking for sensor upate..." );
+            GcmActivity.requestSensorCalibrationsUpdate();
+        } else {
+            bgr.calibration = calibration;
+        }
+    }
+    
     public static void bgReadingInsertFromJson(String json, boolean do_notification) {
         BgReading bgr = fromJSON(json);
         if (bgr != null) {
             try {
                 if (readingNearTimeStamp(bgr.timestamp) == null) {
+                    bgr.FixCalibration(bgr);
                     bgr.save();
                     if (do_notification) {
                         xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
