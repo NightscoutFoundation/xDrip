@@ -227,12 +227,17 @@ public class GcmActivity extends Activity {
         }
     }
 
-    public static void syncSensor(Sensor sensor) {
+    public static void syncSensor(Sensor sensor, boolean forceSend) {
         Log.i(TAG, "syncSensor called");
         if(sensor == null) {
             Log.e(TAG, "syncSensor sensor is null");
             return;
         }
+        if((!forceSend) && JoH.pratelimit("GcmSensorCalibrationsUpdate", 300) == false) {
+            Log.i(TAG, "syncSensor not sending data, because of rate limiter");
+            return;
+        }
+
         String json = sensorAndCalibrationsToJson(sensor);
         GcmActivity.sendMessage(GcmActivity.myIdentity(), "sensorupdate", json);
     }
@@ -342,6 +347,8 @@ public class GcmActivity extends Activity {
     }
 
     public static void syncBGTable2() {
+        // Since this is a big update, also update sensor and calibrations
+        syncSensor(Sensor.currentSensor(), true);
         new Thread() {
             @Override
             public void run() {
@@ -399,6 +406,13 @@ public class GcmActivity extends Activity {
             GcmActivity.sendMessage("sbr", ""); // request sensor battery update
         }
     }
+    
+    public static void requestSensorCalibrationsUpdate() {
+        if (Home.get_follower() && JoH.pratelimit("SensorCalibrationsUpdateRequest", 300)) {
+            Log.d(TAG, "Requesting Sensor and calibrations Update");
+            GcmActivity.sendMessage("sensor_calibrations_update", "");
+        }
+    }
 
     public static void pushTreatmentAsync(final Treatments thistreatment) {
         new Thread() {
@@ -442,6 +456,10 @@ public class GcmActivity extends Activity {
 
     public static void pushCalibration(String bg_value, String seconds_ago) {
         if ((bg_value.length() == 0) || (seconds_ago.length() == 0)) return;
+        if (Home.get_master()) {
+            // For master, we now send the entire table, no need to send this specific table each time
+            return;
+        }
         String currenttime = Double.toString(new Date().getTime());
         String tosend = currenttime + " " + bg_value + " " + seconds_ago;
         sendMessage(myIdentity(), "cal", tosend);

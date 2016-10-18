@@ -325,6 +325,11 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                 } else {
                     Log.e(TAG, "Received sensorupdate packets but we are not set as a follower");
                 }
+            } else if (action.equals("sensor_calibrations_update")) {
+                if (Home.get_master()) {
+                    Log.i(TAG, "Received request for sensor calibration update");
+                    GcmActivity.syncSensor(Sensor.currentSensor() ,false);
+                }
             } else {
                 Log.e(TAG, "Received message action we don't know about: " + action);
             }
