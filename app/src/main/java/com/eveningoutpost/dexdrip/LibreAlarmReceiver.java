@@ -15,6 +15,7 @@ import com.eveningoutpost.dexdrip.Models.Forecast;
 import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
+import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.gson.Gson;
@@ -64,7 +65,8 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
             //   Log.d(TAG, "Raw debug: " + JoH.dateTimeText(gd.realDate) + " raw: " + gd.glucoseLevelRaw + " converted: " + converted);
             if ((newest_cmp == -1) || (oldest_cmp == -1) || (gd.realDate < oldest_cmp) || (gd.realDate > newest_cmp)) {
                 if (BgReading.readingNearTimeStamp(gd.realDate) == null) {
-                    BgReading.create(converted, converted, xdrip.getAppContext(), gd.realDate, quick); // quick lite insert
+                    BgReading bgReading = BgReading.create(converted, converted, xdrip.getAppContext(), gd.realDate, quick);// quick lite insert
+                    BgSendQueue.handleNewBgReading(bgReading, "create", xdrip.getAppContext(), true, true);
                     if ((gd.realDate < oldest) || (oldest == -1)) oldest = gd.realDate;
                     if ((gd.realDate > newest) || (newest == -1)) newest = gd.realDate;
                 } else {
