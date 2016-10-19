@@ -480,7 +480,8 @@ public class GcmActivity extends Activity {
 
             if(action.equals("sensorupdate") ) {
                 byte[] inbytes =  JoH.compressStringToBytes(payload);
-                String str1 =  Base64.encodeToString(inbytes, Base64.NO_WRAP);
+                String str1 =  Base64.encodeToString(CipherUtils.encryptBytes(inbytes), Base64.NO_WRAP);
+                Log.i(TAG, "sensor length inbytes " + inbytes.length  + " CipherUtils.encryptBytes " + CipherUtils.encryptBytes(inbytes).length + " str1 " + str1.length());
                 data.putString("payload", str1);
                 Log.d(TAG, "sending data len " + str1.length()+ " " + str1);
             } else {
