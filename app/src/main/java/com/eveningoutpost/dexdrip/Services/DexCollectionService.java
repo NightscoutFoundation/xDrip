@@ -229,8 +229,12 @@ public class DexCollectionService extends Service {
         }
 
         if (!mBluetoothAdapter.isEnabled()) {
-            Log.i(TAG,"Turning bluetooth on as appears disabled");
-            JoH.setBluetoothEnabled(getApplicationContext(), true);
+            if (Home.getPreferencesBoolean("automatically_turn_bluetooth_on",true)) {
+                Log.i(TAG, "Turning bluetooth on as appears disabled");
+                JoH.setBluetoothEnabled(getApplicationContext(), true);
+            } else {
+                Log.d(TAG,"Not automatically turning on bluetooth due to preferences");
+            }
         }
 
         if (device != null) {

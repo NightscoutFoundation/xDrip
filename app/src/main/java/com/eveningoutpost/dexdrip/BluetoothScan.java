@@ -77,8 +77,12 @@ public class BluetoothScan extends ListActivityWithMenu {
             return;
         }
         if (!bluetooth_manager.getAdapter().isEnabled()) {
-            JoH.setBluetoothEnabled(getApplicationContext(),true);
-            Toast.makeText(this, "Trying to turn Bluetooth on", Toast.LENGTH_LONG).show();
+            if (Home.getPreferencesBoolean("automatically_turn_bluetooth_on",true)) {
+                JoH.setBluetoothEnabled(getApplicationContext(),true);
+                Toast.makeText(this, "Trying to turn Bluetooth on", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Please turn Bluetooth on!", Toast.LENGTH_LONG).show();
+            }
         } else {
             if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
                 Toast.makeText(this, "The android version of this device is not compatible with Bluetooth Low Energy", Toast.LENGTH_LONG).show();

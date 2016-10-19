@@ -821,8 +821,18 @@ public class JoH {
         }
     }
 
+    public static boolean isAirplaneModeEnabled(Context context) {
+        return Settings.Global.getInt(context.getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
+    }
+
     public synchronized static void setBluetoothEnabled(Context context, boolean state) {
         try {
+
+            if (isAirplaneModeEnabled(context)) {
+                UserError.Log.e(TAG, "Not setting bluetooth to state: " + state + " due to airplane mode being enabled");
+                return;
+            }
+
             if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2) {
 
                 final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);

@@ -205,6 +205,16 @@
                 android:key="excessive_wakelocks"
                 android:summary="@string/older_gratuitous_wakelocks"
                 android:title="@string/use_excessive_wakelocks" />
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:icon="@drawable/ic_bluetooth_settings_grey600_48dp"
+            android:key="xdrip_bluetooth_adv_settings"
+            android:summary="Advanced Bluetooth Settings"
+            android:title="Bluetooth Settings">
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="automatically_turn_bluetooth_on"
+                android:summary="Automatically enable bluetooth if it is switched off when we try to connect to a bluetooth device"
+                android:title="Turn Bluetooth on" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="bluetooth_watchdog"
@@ -225,6 +235,7 @@
                 android:key="bluetooth_frequent_reset"
                 android:summary="Reset Bluetooth by turning it off and on every few minutes! Only select if you are testing. It may disrupt anything else using bluetooth."
                 android:title="Constantly reset bluetooth" />
+            </PreferenceScreen>
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="aggressive_service_restart"
@@ -404,6 +415,25 @@
                     android:defaultValue="false"
                     android:title="Plugin plot on graph"
                     android:summary="Show glucose results from the plugin on the main graph"
+                    android:dependency="engineering_mode"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    />
+                <SwitchPreference
+                    android:key="display_glucose_from_plugin"
+                    android:defaultValue="false"
+                    android:title="Use Plugin Glucose"
+                    android:summary="Main glucose display number comes from plugin!"
+                    android:dependency="engineering_mode"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    />
+                <SwitchPreference
+                    android:key="use_pluggable_alg_as_primary"
+                    android:defaultValue="false"
+                    android:title="Plugin Override ALL"
+                    android:enabled="false"
+                    android:summary="ALL new glucose data will be calculated and saved from the selected plugin and not from the standard xDrip algorithm. This is untested and may be inaccurate and buggy. Use with extreme caution."
                     android:dependency="engineering_mode"
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
