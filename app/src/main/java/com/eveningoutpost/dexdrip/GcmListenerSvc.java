@@ -131,7 +131,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                         try {
                             Log.i(TAG, "payload for sensorupdate " + payload);
                             byte[] inbytes = Base64.decode(payload, Base64.NO_WRAP);
-                            byte[] inbytes1 = JoH.decompressBytesToBytes(inbytes);
+                            byte[] inbytes1 = JoH.decompressBytesToBytes(CipherUtils.decryptBytes(inbytes));
                             payload = new String(inbytes1, "UTF-8");
                             Log.d(TAG, "inbytes size = " + inbytes.length + " inbytes1 size " + inbytes1.length + "payload len " +payload.length());
                         } catch (UnsupportedEncodingException e) {
