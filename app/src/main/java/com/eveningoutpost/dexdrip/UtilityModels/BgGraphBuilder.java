@@ -234,6 +234,10 @@ public class BgGraphBuilder {
     static public boolean isXLargeTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
     }
+    
+    static public boolean isLargeTablet(Context context) {
+        return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
 
     public static double mmolConvert(double mgdl) {
         return mgdl * Constants.MGDL_TO_MMOLL;
@@ -346,6 +350,10 @@ public class BgGraphBuilder {
         previewLineData.setAxisXBottom(previewXAxis());
 
         final List<Line> removeItems = new ArrayList<>();
+        int unlabledLinesSize = 1;
+        if (isXLargeTablet(context)) {
+            unlabledLinesSize = 2;
+        }
         for (Line lline : previewLineData.getLines()) {
             if ((lline.getPointRadius() == pluginSize) && (lline.getPointColor() == pluginColor)) {
                 removeItems.add(lline); // remove plugin plot from preview graph
@@ -355,7 +363,7 @@ public class BgGraphBuilder {
                 lline.setPointRadius(3); // preserve size for treatments
                 lline.setPointColor(Color.parseColor("#FFFFFF"));
             } else if (lline.getPointRadius() > 0) {
-                lline.setPointRadius(1);
+                lline.setPointRadius(unlabledLinesSize);
             }
             lline.setHasLabels(false);
         }
