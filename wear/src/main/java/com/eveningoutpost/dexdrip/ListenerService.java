@@ -412,11 +412,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 } else if (path.equals(WEARABLE_CALIBRATION_DATA_PATH)) {//KS
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
-                    syncCalibrationData(dataMap);
+                    syncCalibrationData(dataMap, getApplicationContext());
                 } else if (path.equals(WEARABLE_BG_DATA_PATH)) {//KS
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
-                    syncBgData(dataMap);
+                    syncBgData(dataMap, getApplicationContext());
                 } else if (path.equals(WEARABLE_PREF_DATA_PATH)) {//KS
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
@@ -511,16 +511,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         Date date = new Date();
         if (dataMap != null) {
 
-            //Get Transmittor ID required to connect to sensor via Bluetooth
-            /*
-            String dex_txid = dataMap.getString("dex_txid", "ABCDEF");//KS 4023GU
-            Log.d(TAG, "syncSensorData dataMap dex_txid=" + dex_txid);
-            SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(this).edit();
-            prefs.putString("dex_txid", dex_txid);
-            prefs.commit();
-            Log.d(TAG, "syncSensorData prefs set dex_txid=" + mPrefs.getString("dex_txid", "ABCDEF"));
-            */
-
             String uuid = dataMap.getString("uuid");
             Log.d(TAG, "syncSensorData add Sensor for uuid=" + uuid);
             long started_at = dataMap.getLong("started_at");
@@ -545,13 +535,14 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
     }
 
-    public void syncCalibrationData(DataMap dataMap) {//KS
+    public void syncCalibrationData(DataMap dataMap, Context context) {//KS
         Log.d(TAG, "syncCalibrationData");
         java.text.DateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
         Date date = new Date();
         ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
         if (entries != null) {
             Log.d(TAG, "syncCalibrationData add Calibration Table entries count=" + entries.size());
+            Sensor.InitDb(context);//ensure database has already been initialized
             Sensor sensor = Sensor.currentSensor();
             if (sensor != null) {
                 for (DataMap entry : entries) {
@@ -608,7 +599,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
     }
 
-    public void syncBgData(DataMap dataMap) {//KS
+    public void syncBgData(DataMap dataMap, Context context) {//KS
         Log.d(TAG, "syncBGData");
         java.text.DateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
         Date date = new Date();
@@ -624,6 +615,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     .create();
 
             Log.d(TAG, "syncBGData add BgReading Table entries count=" + entries.size());
+            Sensor.InitDb(context);//ensure database has already been initialized
             Sensor sensor = Sensor.currentSensor();
             for (DataMap entry : entries) {
                 if (entry != null) {
