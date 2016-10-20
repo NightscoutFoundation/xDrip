@@ -7,6 +7,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 
@@ -144,6 +145,18 @@ public class PluggableCalibration {
         }
     }
 
+    public static BgReading mungeBgReading(BgReading bgReading) {
+        try {
+            final CalibrationAbstract plugin = getCalibrationPluginFromPreferences();
+            final CalibrationAbstract.CalibrationData cd = plugin.getCalibrationData();
+            bgReading.calculated_value = plugin.getGlucoseFromBgReading(bgReading, cd);
+            bgReading.filtered_calculated_value = plugin.getGlucoseFromFilteredBgReading(bgReading, cd);
+            return bgReading;
+        } catch (NullPointerException e) {
+            return bgReading;
+        }
+    }
+
     // lazy helper function
     public static boolean newCloseSensorData() {
         try {
@@ -165,6 +178,25 @@ public class PluggableCalibration {
     // lazy helper function
     public static boolean invalidateCache() {
         try {
+            return getCalibrationPluginFromPreferences().invalidateCache();
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
+
+    // lazy helper function
+    public static boolean invalidateAllCaches() {
+        try {
+            for (Object o : memory_cache.entrySet()) {
+                Map.Entry entry = (Map.Entry) o;
+                try {
+                    final CalibrationAbstract ca = (CalibrationAbstract) entry.getValue();
+                    ca.invalidateCache();
+                    Log.d(TAG,"Invalidate cache for plugin: "+ca.getAlgorithmName());
+                } catch (Exception e) {
+                    //
+                }
+            }
             return getCalibrationPluginFromPreferences().invalidateCache();
         } catch (NullPointerException e) {
             return false;

@@ -16,6 +16,7 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -28,9 +29,11 @@ import com.eveningoutpost.dexdrip.ShareModels.Models.ShareUploadPayload;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
+import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xDripWidget;
+import com.rits.cloning.Cloner;
 
 import java.util.List;
 
@@ -192,7 +195,15 @@ public class BgSendQueue extends Model {
             }
 
             if ((!is_follower) && (prefs.getBoolean("plus_follow_master", false))) {
-                GcmActivity.syncBGReading(bgReading);
+                if (prefs.getBoolean("display_glucose_from_plugin", false))
+                {
+                    // munge bgReading for follower TODO will probably want extra option for this in future
+                    // TODO we maybe don't need deep clone for this! Check how value will be used below
+                    GcmActivity.syncBGReading(PluggableCalibration.mungeBgReading(new Cloner().deepClone(bgReading)));
+                } else {
+                    // send as is
+                    GcmActivity.syncBGReading(bgReading);
+                }
             }
 
             if ((!is_follower) && (!quick) && (prefs.getBoolean("share_upload", false))) {
@@ -212,6 +223,7 @@ public class BgSendQueue extends Model {
             //Log.d("BgToSpeech", "gonna call speak");
             if ((!quick) && (prefs.getBoolean("bg_to_speech", false)))
             {
+                // TODO Use BestGlucose
                 BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp);
             }
 

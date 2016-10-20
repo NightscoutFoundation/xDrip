@@ -19,6 +19,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSparklineBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.ColorCache;
+import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 
 import java.util.Date;
 import java.util.List;
@@ -98,6 +99,7 @@ public class xDripWidget extends AppWidgetProvider {
                 String slope_arrow = lastBgreading.slopeArrow();
                 String stringEstimate;
 
+                // TODO use BestGlucose
                 if ((BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER)
                         && (BgGraphBuilder.best_bg_estimate > 0)
                         && (BgGraphBuilder.last_bg_estimate > 0)
@@ -106,8 +108,12 @@ public class xDripWidget extends AppWidgetProvider {
                     estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
                     slope_arrow = BgReading.slopeToArrowSymbol(estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000)); // delta by minute
                     //currentBgValueText.setTypeface(null, Typeface.ITALIC);
-                    extrastring = " \u26A0 "; // warning symbol !
+                    extrastring = " \u26A0"; // warning symbol !
 
+                }
+                // TODO functionize this check as it is in multiple places
+                if (Home.getPreferencesBooleanDefaultFalse("display_glucose_from_plugin") && (PluggableCalibration.getCalibrationPluginFromPreferences() != null)){
+                    extrastring += " \u24C5";
                 }
 
 

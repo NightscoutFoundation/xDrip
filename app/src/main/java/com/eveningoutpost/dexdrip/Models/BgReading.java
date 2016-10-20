@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
@@ -38,6 +39,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newCloseSensorData;
 
 @Table(name = "BgReadings", id = BaseColumns._ID)
@@ -406,8 +408,19 @@ public class BgReading extends Model implements ShareUploadableBg {
                         newCloseSensorData();
                     }
                 }
-                bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
-                bgReading.filtered_calculated_value = ((calibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept);
+
+                final CalibrationAbstract.CalibrationData pcalibration;
+                final CalibrationAbstract plugin = getCalibrationPluginFromPreferences(); // make sure do this only once
+
+                if ((plugin != null) && ((pcalibration = plugin.getCalibrationData()) != null) && (Home.getPreferencesBoolean("use_pluggable_alg_as_primary", false)))
+                {
+                    Log.d(TAG,"USING CALIBRATION PLUGIN AS PRIMARY!!!");
+                    bgReading.calculated_value = (pcalibration.slope * bgReading.age_adjusted_raw_value) + pcalibration.intercept;
+                    bgReading.filtered_calculated_value = (pcalibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept;
+                } else {
+                    bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
+                    bgReading.filtered_calculated_value = ((calibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept);
+                }
             }
 
             updateCalculatedValue(bgReading);

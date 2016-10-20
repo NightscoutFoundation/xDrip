@@ -67,9 +67,9 @@ public abstract class CalibrationAbstract {
 
 
     // called when new blood glucose data is available or there is a change in existing data
-    // by default this invalidates the cache
+    // by default this invalidates the caches
     public boolean newFingerStickData() {
-        return invalidateCache();
+        return PluggableCalibration.invalidateAllCaches();
     }
 
 
@@ -119,6 +119,13 @@ public abstract class CalibrationAbstract {
         if (bgReading == null) return -1;
         // algorithm can override to decide whether or not to be using age_adjusted_raw
         return bgReading.age_adjusted_raw_value * data.slope + data.intercept;
+    }
+
+    public double getGlucoseFromFilteredBgReading(BgReading bgReading, CalibrationData data) {
+        if (data == null) return -1;
+        if (bgReading == null) return -1;
+        // algorithm can override to decide whether or not to be using age_adjusted_raw
+        return bgReading.ageAdjustedFiltered() * data.slope + data.intercept;
     }
 
 

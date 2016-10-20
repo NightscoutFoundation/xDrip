@@ -72,6 +72,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
+import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.languageeditor.LanguageEditor;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
@@ -113,6 +114,7 @@ import lecho.lib.hellocharts.view.PreviewLineChartView;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
+import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPlugin;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
 
 
@@ -1587,7 +1589,9 @@ public class Home extends ActivityWithMenu {
             if ((BgGraphBuilder.best_bg_estimate > 0) && (BgGraphBuilder.last_bg_estimate > 0)) {
                 final double estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
 
-                notificationText.append("\nBG Original: " + bgGraphBuilder.unitized_string(BgReading.lastNoSenssor().calculated_value)
+                // TODO pull from BestGlucose? Check Slope + arrow etc TODO Original slope needs fixing when using plugin
+               // notificationText.append("\nBG Original: " + bgGraphBuilder.unitized_string(BgReading.lastNoSenssor().calculated_value)
+                notificationText.append("\nBG Original: " + bgGraphBuilder.unitized_string(BgGraphBuilder.original_value)
                         + " \u0394 " + bgGraphBuilder.unitizedDeltaString(false, true, true)
                         + " " + BgReading.lastNoSenssor().slopeArrow());
 
@@ -1936,6 +1940,24 @@ public class Home extends ActivityWithMenu {
                     extraline.append(" \u21D2 " + BgGraphBuilder.unitized_string(plugin.getGlucoseFromSensorValue(bgReading.age_adjusted_raw_value), doMgdl) + " " + BgGraphBuilder.unit(doMgdl));
                 }
             }
+
+            // If we are using the plugin as the primary then show xdrip original as well
+            if (Home.getPreferencesBooleanDefaultFalse("display_glucose_from_plugin") || Home.getPreferencesBooleanDefaultFalse("use_pluggable_alg_as_primary")) {
+                final CalibrationAbstract plugin_xdrip = getCalibrationPlugin(PluggableCalibration.Type.xDripOriginal); // make sure do this only once
+                if (plugin_xdrip != null) {
+                    final CalibrationAbstract.CalibrationData pcalibration = plugin_xdrip.getCalibrationData();
+                    if (extraline.length() > 0)
+                        extraline.append("\n"); // not tested on the widget yet
+                    if (pcalibration != null)
+                        extraline.append("(" + plugin_xdrip.getAlgorithmName() + ") s:" + JoH.qs(pcalibration.slope, 2) + " i:" + JoH.qs(pcalibration.intercept, 2));
+                    BgReading bgReading = BgReading.last();
+                    if (bgReading != null) {
+                        final boolean doMgdl = prefs.getString("units", "mgdl").equals("mgdl");
+                        extraline.append(" \u21D2 " + BgGraphBuilder.unitized_string(plugin_xdrip.getGlucoseFromSensorValue(bgReading.age_adjusted_raw_value), doMgdl) + " " + BgGraphBuilder.unit(doMgdl));
+                    }
+                }
+            }
+
         }
 
         if (prefs.getBoolean("status_line_time", false)) {
@@ -1956,13 +1978,16 @@ public class Home extends ActivityWithMenu {
     private void displayCurrentInfoFromReading(BgReading lastBgReading, boolean predictive) {
         double estimate = 0;
         double estimated_delta = 0;
-
-        String slope_arrow = lastBgReading.slopeArrow();
+        final BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
+        //String slope_arrow = lastBgReading.slopeArrow();
+        String slope_arrow = dg.delta_arrow;
         String extrastring = "";
+        // when stale
         if ((new Date().getTime()) - stale_data_millis() - lastBgReading.timestamp > 0) {
             notificationText.setText(R.string.signal_missed);
             if (!predictive) {
-                estimate = lastBgReading.calculated_value;
+                //  estimate = lastBgReading.calculated_value;
+                estimate = dg.mgdl;
             } else {
                 estimate = BgReading.estimated_bg(lastBgReading.timestamp + (6000 * 7));
             }
@@ -1970,22 +1995,23 @@ public class Home extends ActivityWithMenu {
             currentBgValueText.setPaintFlags(currentBgValueText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             dexbridgeBattery.setPaintFlags(dexbridgeBattery.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
+            // not stale
             if (notificationText.getText().length() == 0) {
                 notificationText.setTextColor(Color.WHITE);
             }
             boolean bg_from_filtered = prefs.getBoolean("bg_from_filtered", false);
             if (!predictive) {
-
-                estimate = lastBgReading.calculated_value; // normal
+                //estimate = lastBgReading.calculated_value; // normal
+                estimate = dg.mgdl;
                 currentBgValueText.setTypeface(null, Typeface.NORMAL);
 
                 // if noise has settled down then switch off filtered mode
                 if ((bg_from_filtered) && (BgGraphBuilder.last_noise < BgGraphBuilder.NOISE_FORGIVE) && (prefs.getBoolean("bg_compensate_noise", false))) {
                     bg_from_filtered = false;
                     prefs.edit().putBoolean("bg_from_filtered", false).apply();
-
                 }
 
+                // TODO this should be partially already be covered by dg - recheck
                 if ((BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER)
                         && (BgGraphBuilder.best_bg_estimate > 0)
                         && (BgGraphBuilder.last_bg_estimate > 0)
@@ -1995,10 +2021,10 @@ public class Home extends ActivityWithMenu {
                     slope_arrow = BgReading.slopeToArrowSymbol(estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000)); // delta by minute
                     currentBgValueText.setTypeface(null, Typeface.ITALIC);
                     extrastring = "\u26A0"; // warning symbol !
-                }
 
-                if ((BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_HIGH) && (DexCollectionType.hasFiltered())) {
-                    bg_from_filtered = true; // force filtered mode
+                    if ((BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_HIGH) && (DexCollectionType.hasFiltered())) {
+                        bg_from_filtered = true; // force filtered mode
+                    }
                 }
 
                 if (bg_from_filtered) {
@@ -2013,6 +2039,7 @@ public class Home extends ActivityWithMenu {
                 }
                 currentBgValueText.setText(stringEstimate + " " + slope_arrow);
             } else {
+                // old depreciated prediction
                 estimate = BgReading.activePrediction();
                 String stringEstimate = bgGraphBuilder.unitized_string(estimate);
                 currentBgValueText.setText(stringEstimate + " " + BgReading.activeSlopeArrow());
@@ -2022,19 +2049,18 @@ public class Home extends ActivityWithMenu {
         }
         int minutes = (int) (System.currentTimeMillis() - lastBgReading.timestamp) / (60 * 1000);
 
-        if ((!small_width) || (notificationText.length()>0)) notificationText.append("\n");
+        if ((!small_width) || (notificationText.length() > 0)) notificationText.append("\n");
         if (!small_width) {
             notificationText.append(minutes + ((minutes == 1) ? getString(R.string.space_minute_ago) : getString(R.string.space_minutes_ago)));
         } else {
             // small screen
             notificationText.append(minutes + getString(R.string.space_mins));
-            currentBgValueText.setPadding(0,0,0,0);
+            currentBgValueText.setPadding(0, 0, 0, 0);
         }
 
-        if (small_screen)
-        {
-           if (currentBgValueText.getText().length()>4)
-            currentBgValueText.setTextSize(25);
+        if (small_screen) {
+            if (currentBgValueText.getText().length() > 4)
+                currentBgValueText.setTextSize(25);
         }
 
         // do we actually need to do this query here if we again do it in unitizedDeltaString
@@ -2066,6 +2092,11 @@ public class Home extends ActivityWithMenu {
             currentBgValueText.setTextColor(Color.parseColor("#FFBB33"));
         } else {
             currentBgValueText.setTextColor(Color.WHITE);
+        }
+
+        // TODO this should be made more efficient probably
+        if (Home.getPreferencesBooleanDefaultFalse("display_glucose_from_plugin") && (PluggableCalibration.getCalibrationPluginFromPreferences() != null)) {
+            currentBgValueText.setText("\u24C5" + currentBgValueText.getText()); // adds warning P in circle icon
         }
     }
 

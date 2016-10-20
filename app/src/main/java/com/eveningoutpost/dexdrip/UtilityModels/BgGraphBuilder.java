@@ -151,6 +151,7 @@ public class BgGraphBuilder {
     private final List<PointValue> activityValues = new ArrayList<PointValue>();
     private final List<PointValue> annotationValues = new ArrayList<>();
     public static double last_noise = -99999;
+    public static double original_value = -99999;
     public static double best_bg_estimate = -99999;
     public static double last_bg_estimate = -99999;
 
@@ -700,7 +701,7 @@ public class BgGraphBuilder {
         return lines;
     }
 
-    public void addBgReadingValues() {
+    private synchronized void addBgReadingValues() {
        //UserError.Log.i(TAG, "ADD BG READINGS START");
         filteredValues.clear();
         rawInterpretedValues.clear();
@@ -788,6 +789,7 @@ public class BgGraphBuilder {
         final boolean show_filtered = prefs.getBoolean("show_filtered_curve", false) && has_filtered;
         final boolean predict_lows = prefs.getBoolean("predict_lows", true);
         final boolean show_plugin = prefs.getBoolean("plugin_plot_on_graph", false);
+        final boolean glucose_from_plugin = prefs.getBoolean("display_glucose_from_plugin",false);
 
         if ((Home.get_follower()) && (bgReadings.size() < 3)) {
             GcmActivity.requestBGsync();
@@ -799,13 +801,24 @@ public class BgGraphBuilder {
 
         for (BgReading bgReading : bgReadings) {
             // jamorham special
+
+            // swap main and plugin plot if display glucose is from plugin
+            if ((glucose_from_plugin) && (cd != null))
+            {
+                // original values
+                pluginValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
+                // recalculate from plugin
+                bgReading.calculated_value = plugin.getGlucoseFromBgReading(bgReading, cd);
+                bgReading.filtered_calculated_value = plugin.getGlucoseFromFilteredBgReading(bgReading, cd);
+            }
+
             if ((show_filtered) && (bgReading.filtered_calculated_value > 0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
                 filteredValues.add(new PointValue((float) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(bgReading.filtered_calculated_value)));
             }
             if ((interpret_raw && (bgReading.raw_calculated > 0))) {
                 rawInterpretedValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.raw_calculated)));
             }
-            if ((plugin != null) && (cd != null)) {
+            if ((!glucose_from_plugin) && (plugin != null) && (cd != null)) {
                 pluginValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(plugin.getGlucoseFromBgReading(bgReading, cd))));
             }
             if (bgReading.calculated_value >= 400) {
@@ -844,7 +857,7 @@ public class BgGraphBuilder {
                 }
                 if (bgReading.calculated_value>0) {
                     if (bgReading.timestamp < oldest_noise_timestamp) oldest_noise_timestamp = bgReading.timestamp;
-                    if (bgReading.timestamp > newest_noise_timestamp) newest_noise_timestamp = bgReading.timestamp;
+                    if (bgReading.timestamp > newest_noise_timestamp) { newest_noise_timestamp = bgReading.timestamp; original_value = bgReading.calculated_value; }
                     noise_polyxList.add((double) bgReading.timestamp);
                     noise_polyyList.add((bgReading.calculated_value));
                     if (d) Log.d(TAG, "raw noise poly Added: " + noise_polyxList.size() + " " + JoH.qs(noise_polyxList.get(noise_polyxList.size() - 1)) + " / " + JoH.qs(noise_polyyList.get(noise_polyyList.size() - 1), 2));
@@ -1256,7 +1269,7 @@ public class BgGraphBuilder {
         }
     }
 
-    public static double getCurrentLowOccursAt() {
+    public static synchronized double getCurrentLowOccursAt() {
         try {
             final long last_bg_reading_timestamp = BgReading.last().timestamp;
             if (low_occurs_at_processed_till_timestamp < last_bg_reading_timestamp) {
@@ -1493,6 +1506,15 @@ public class BgGraphBuilder {
         }
     }
 
+    public static double unitized(double value, boolean doMgdl) {
+        if (doMgdl) {
+            return value;
+        } else {
+            return mmolConvert(value);
+        }
+    }
+
+
     public String unitized_string(double value) {
         return unitized_string(value, doMgdl);
     }
@@ -1540,7 +1562,12 @@ public class BgGraphBuilder {
     public String unitizedDeltaString(boolean showUnit, boolean highGranularity) {
     return unitizedDeltaString( showUnit, highGranularity,Home.get_follower());
     }
+
     public String unitizedDeltaString(boolean showUnit, boolean highGranularity, boolean is_follower) {
+        return unitizedDeltaString(showUnit, highGranularity, is_follower, doMgdl);
+    }
+
+    public static String unitizedDeltaString(boolean showUnit, boolean highGranularity, boolean is_follower, boolean doMgdl) {
 
         List<BgReading> last2 = BgReading.latest(2,is_follower);
         if (last2.size() < 2 || last2.get(0).timestamp - last2.get(1).timestamp > 20 * 60 * 1000) {
@@ -1550,10 +1577,14 @@ public class BgGraphBuilder {
 
         double value = BgReading.currentSlope(is_follower) * 5 * 60 * 1000;
 
-       return unitizedDeltaStringRaw(showUnit, highGranularity, value);
+       return unitizedDeltaStringRaw(showUnit, highGranularity, value, doMgdl);
     }
 
-    public String unitizedDeltaStringRaw(boolean showUnit, boolean highGranularity,double value) {
+    public String unitizedDeltaStringRaw(boolean showUnit, boolean highGranularity, double value) {
+        return unitizedDeltaStringRaw(showUnit, highGranularity, value, doMgdl);
+    }
+
+    public static String unitizedDeltaStringRaw(boolean showUnit, boolean highGranularity,double value, boolean doMgdl) {
 
 
         if (Math.abs(value) > 100) {
@@ -1575,7 +1606,7 @@ public class BgGraphBuilder {
                 df.setMaximumFractionDigits(0);
             }
 
-            return delta_sign + df.format(unitized(value)) + (showUnit ? " mg/dl" : "");
+            return delta_sign + df.format(unitized(value,doMgdl)) + (showUnit ? " mg/dl" : "");
         } else {
             // only show 2 decimal places on mmol/l delta when less than 0.1 mmol/l
             if (highGranularity && (Math.abs(value) < (Constants.MMOLL_TO_MGDL * 0.1))) {
@@ -1586,7 +1617,7 @@ public class BgGraphBuilder {
 
             df.setMinimumFractionDigits(1);
             df.setMinimumIntegerDigits(1);
-            return delta_sign + df.format(unitized(value)) + (showUnit ? " mmol/l" : "");
+            return delta_sign + df.format(unitized(value,doMgdl)) + (showUnit ? " mmol/l" : "");
         }
     }
 

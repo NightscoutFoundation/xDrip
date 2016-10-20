@@ -15,6 +15,7 @@ import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
 import com.eveningoutpost.dexdrip.UtilityModels.PlusAsyncExecutor;
+import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 
 import java.util.Locale;
 
@@ -64,6 +65,7 @@ public class xdrip extends Application {
         if (Home.getPreferencesBoolean("motion_tracking_enabled", false)) {
             ActivityRecognizedService.startActivityRecogniser(getApplicationContext());
         }
+        PluggableCalibration.invalidateCache();
 
     }
 
