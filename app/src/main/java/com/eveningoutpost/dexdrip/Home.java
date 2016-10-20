@@ -1289,6 +1289,18 @@ public class Home extends ActivityWithMenu {
         super.onResume();
         checkEula();
         set_is_follower();
+        
+        if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
+            this.currentBgValueText.setTextSize(100);
+            this.notificationText.setTextSize(40);
+            this.extraStatusLineText.setTextSize(40);
+        }
+        else if(BgGraphBuilder.isLargeTablet(getApplicationContext())) {
+            this.currentBgValueText.setTextSize(70);
+            this.notificationText.setTextSize(34); // 35 too big 33 works 
+            this.extraStatusLineText.setTextSize(35);
+        }
+        
         _broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context ctx, Intent intent) {
@@ -1526,6 +1538,7 @@ public class Home extends ActivityWithMenu {
         final TextView lowPredictText = (TextView) findViewById(R.id.lowpredict);
         if (BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             notificationText.setTextSize(40);
+            lowPredictText.setTextSize(30);
         }
         notificationText.setText("");
         notificationText.setTextColor(Color.RED);
