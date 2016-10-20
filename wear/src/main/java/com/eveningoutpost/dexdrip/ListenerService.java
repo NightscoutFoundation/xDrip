@@ -4,7 +4,6 @@ import com.eveningoutpost.dexdrip.Models.BgReading;//KS
 import com.eveningoutpost.dexdrip.Models.Calibration;//KS
 import com.eveningoutpost.dexdrip.Models.Sensor;//KS
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
-import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;//KS
 
 import android.Manifest;
@@ -45,7 +44,6 @@ import java.text.SimpleDateFormat;//KS
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -277,55 +275,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     }
 
     private DataMap dataMap(TransmitterData bg) {//KS
-        DataMap dataMap = new DataMap();
-        String json = bg.toS();
-        Log.d(TAG, "dataMap BG GSON: " + json);
-        dataMap.putString("bgs", json);
-        return dataMap;
-    }
-
-    private DataMap getWearBGData(int count) {//KS
-        java.text.DateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
-        Date date = new Date();
-        if(googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) { googleApiConnect(); }
-        long currentTime = new Date().getTime() - (60000 * 60 * 24);
-
-        date.setTime(last_send_previous);
-        Log.d(TAG, "getWearBGData last_send_previous:" + df.format(date));
-
-        BgReading last_bg = BgReading.last();
-        if (last_bg != null) {
-            date.setTime(last_bg.timestamp);
-            Log.d(TAG, "getWearBGData last_bg.timestamp:" + df.format(date));
-        }
-
-        if (last_bg != null && last_send_previous <= last_bg.timestamp) {//startTime
-            date.setTime(last_bg.timestamp);
-            Log.d(TAG, "getWearBGData last_send_previous < last_bg.timestamp:" + df.format(date));
-            List<BgReading> graph_bgs = BgReading.latestForGraphAsc(count, last_send_previous);
-            if (!graph_bgs.isEmpty()) {
-                Log.d(TAG, "getWearBGData graph_bgs count = " + graph_bgs.size());
-                DataMap entries = dataMap(last_bg);
-                final ArrayList<DataMap> dataMaps = new ArrayList<>(graph_bgs.size());
-                for (BgReading bg : graph_bgs) {
-                    dataMaps.add(dataMap(bg));
-                    date.setTime(bg.timestamp);
-                    Log.d(TAG, "getWearBGData bg.timestamp:" + df.format(date));
-                    last_send_previous = bg.timestamp + 1;
-                    date.setTime(last_send_previous);
-                    Log.d(TAG, "getWearBGData set last_send_previous:" + df.format(date));
-                }
-                entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
-                entries.putDataMapArrayList("entries", dataMaps);
-                return entries;
-            }
-            else
-                Log.d(TAG, "getWearBGData graph_bgs count = 0");
-        }
-        return null;
-    }
-
-    private DataMap dataMap(BgReading bg) {//KS
         DataMap dataMap = new DataMap();
         String json = bg.toS();
         Log.d(TAG, "dataMap BG GSON: " + json);
@@ -602,18 +551,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         Date date = new Date();
         ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
         if (entries != null) {
-            Gson gson = new GsonBuilder()
-                    .excludeFieldsWithoutExposeAnnotation()
-                    .registerTypeAdapter(Date.class, new DateTypeAdapter())
-                    .serializeSpecialFloatingPointValues()
-                    .create();
             Log.d(TAG, "syncCalibrationData add Calibration Table entries count=" + entries.size());
             Sensor sensor = Sensor.currentSensor();
             if (sensor != null) {
                 for (DataMap entry : entries) {
                     if (entry != null) {
                         Log.d(TAG, "syncCalibrationData add Calibration Table entry=" + entry);
-                        Calibration calibration = new Calibration();
 
                         Calibration uuidexists = Calibration.byuuid(entry.getString("uuid"));//entry.getLong("timestamp")
                         if (uuidexists == null) {
@@ -685,7 +628,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             for (DataMap entry : entries) {
                 if (entry != null) {
                     Log.d(TAG, "syncBGData add BgReading Table entry=" + entry);
-                    BgReading bgReading = new BgReading();
                     String bgrecord = entry.getString("bgs");
                     if (bgrecord != null) {
                         Log.d(TAG, "syncBGData add BgReading Table bgrecord=" + bgrecord);
