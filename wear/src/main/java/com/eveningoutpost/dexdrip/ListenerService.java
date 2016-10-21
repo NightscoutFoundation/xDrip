@@ -19,6 +19,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -75,6 +76,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     public static boolean mLocationPermissionApproved;//KS
     public static long last_send_previous = 0;//KS
     public static long last_send_sucess = 0;//KS
+    public static String pref_last_send_previous = "last_send_previous";
 
     GoogleApiClient googleApiClient;
     private static long lastRequest = 0;
@@ -379,6 +381,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand entered");
         Home.setAppContext(getApplicationContext());
+        xdrip.checkAppContext(getApplicationContext());
+        last_send_previous = PersistentStore.getLong(pref_last_send_previous); // 0 if undef
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());//KS
         listenForChangeInSettings();//KS
         //sendPrefSettings();
@@ -450,7 +454,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     getApplicationContext().startActivity(intent);
                 } else if (path.equals(SYNC_DB_PATH)) {//KS
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH=" + path);
-                    Sensor.DeleteAndInitDb(getApplicationContext());//KS TODO test
+                    Sensor.DeleteAndInitDb(getApplicationContext());
+                    PersistentStore.setLong(pref_last_send_previous, 0);
                 } else if (path.equals(WEARABLE_SENSOR_DATA_PATH)) {//KS
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
@@ -479,6 +484,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         date.setTime(timeOfLastBG);
                         Log.d(TAG, "onDataChanged received from sendDataReceived timeOfLastBG=" + df.format(date) + " Path=" + path);
                         last_send_previous = timeOfLastBG;
+                        PersistentStore.setLong(pref_last_send_previous, last_send_previous);
                         date.setTime(last_send_previous);
                         Log.d(TAG, "onDataChanged received from sendDataReceived update last_send_previous=" + df.format(date));
                     }
