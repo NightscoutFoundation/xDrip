@@ -61,6 +61,7 @@ public class BestGlucose {
         List<BgReading> last_2 = BgReading.latest(2);
 
         final BgReading lastBgReading = BgReading.last();
+        if (lastBgReading == null) return null;
 
         final CalibrationAbstract.CalibrationData pcalibration;
         final CalibrationAbstract plugin = getCalibrationPluginFromPreferences();

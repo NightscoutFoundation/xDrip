@@ -51,7 +51,7 @@ public class Datricsae extends CalibrationAbstract {
 
             // first is most recent
             final List<Calibration> calibrations = Calibration.latestValid(CALIBRATIONS_TO_USE);
-            if (calibrations == null) return null;
+            if ((calibrations == null) || (calibrations.size() == 0)) return null;
             // have we got enough data to have a go
             if (calibrations.size() < FALLBACK_TO_ORIGINAL_CALIBRATIONS_MINIMUM) {
                 // just use whatever xDrip original would have come up with at this point
