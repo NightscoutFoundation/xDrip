@@ -23,8 +23,8 @@
     <string name="importanttext">Do NOT use or rely on this software or any associated materials for any medical purpose or decision.\n\nDo NOT rely on this system for any real-time alarms or time critical data.\n\nDo NOT use or rely on this system for treatment decisions or use as a substitute for professional healthcare judgement.\n\nAll software and materials have been provided for informational purposes only as a proof of concept to assist possibilities for further research.\n\nNo claims at all are made about fitness for any purpose and everything is provided \"AS IS\". Any part of the system can fail at any time.\n\nAlways seek the advice of a qualified healthcare professional for any medical questions.\n\nAlways follow your glucose-sensor manufacturers\' instructions when using any equipment; do not discontinue use of accompanying reader or receiver, other than as advised by your doctor.\n\nThis software is not associated with or endorsed by any equipment manufacturer and all trademarks are those of their respective owners.\n\nYour use of this software is entirely at your own risk.\n\nNo charge has been made by the developers for the use of this software.\n\nThis is an open-source project which has been created by volunteers. The source code is published free and open-source for you to inspect and evaluate.\n\nBy using this software and/or website you agree that you are over 18 years of age and have read, understood and agree to all of the above.\n</string>
 
 
-    <string name="local_target_package">com.eveningoutpost.dexdrip</string>
-    <string name="app_name">xDrip+</string>
+    <string name="local_target_package">com.eveningoutpost.dexdripplus</string>
+    <string name="app_name">xDrip+viewer</string>
     <string name="app_name_launcher">xDrip+</string>
     <string name="wserviceurl">https://xdrip-plus-updates.appspot.com</string>
     <string name="all_settings_wizard">all_settings_wizard</string>
