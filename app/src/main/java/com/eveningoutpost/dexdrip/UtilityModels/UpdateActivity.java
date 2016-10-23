@@ -264,7 +264,7 @@ public class UpdateActivity extends AppCompatActivity {
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == MY_PERMISSIONS_REQUEST_STORAGE_DOWNLOAD) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 downloadNow(null);
             } else {
                 JoH.static_toast_long(this, "Cannot download without storage permission");

@@ -238,15 +238,14 @@ public class Notifications extends IntentService {
                 // We should not do anything if we are snoozed for the 80...
                 // If one allert was high and the second one is low however, we alarm in any case (snoozing ignored).
                 boolean opositeDirection = AlertType.OpositeDirection(activeBgAlert, newAlert);
+                if(!opositeDirection) {
                 AlertType newHigherAlert = AlertType.HigherAlert(activeBgAlert, newAlert);
-                if ((newHigherAlert == activeBgAlert) && (!opositeDirection)) {
-                    // the existing alert is the higher, we should check if to play it
-                    Log.d(TAG, "FileBasedNotifications The existing alert has the same direcotion, checking if to playit newHigherAlert = " + newHigherAlert.name +
-                            "activeBgAlert = " + activeBgAlert.name);
-
-                    boolean trendingToAlertEnd = trendingToAlertEnd(context, false, newHigherAlert);
-                    AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
-                    return;
+                    if ((newHigherAlert == activeBgAlert)) {
+                        // the existing (snoozed) alert is the higher, No need to play it since it is snoozed.
+                        Log.d(TAG, "FileBasedNotifications The new alert has the same direcotion, it is lower than the one snoozed, not playing it." +
+                              " newHigherAlert = " + newHigherAlert.name + "activeBgAlert = " + activeBgAlert.name);
+                        return;
+                    }
                 }
             }
             // For now, we are stopping the old alert and starting a new one.
