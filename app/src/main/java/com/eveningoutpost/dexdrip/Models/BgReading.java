@@ -1145,14 +1145,21 @@ public class BgReading extends Model implements ShareUploadableBg {
                         if (high_since == 0) {
                             // no previous persistent high so set start as now
                             Home.setPreferencesLong(PERSISTENT_HIGH_SINCE, now);
-                            Log.d(TAG,"Registering start of persistent high at time now");
+                            Log.d(TAG, "Registering start of persistent high at time now");
                         } else {
                             final long high_for_mins = (now - high_since) / (1000 * 60);
-                            if (high_for_mins > Long.parseLong(Home.getPreferencesStringWithDefault("persistent_high_threshold_mins","60")))  {
+                            long threshold_mins;
+                            try {
+                                threshold_mins = Long.parseLong(Home.getPreferencesStringWithDefault("persistent_high_threshold_mins", "60"));
+                            } catch (NumberFormatException e) {
+                                threshold_mins = 60;
+                                Home.toaststaticnext("Invalid persistent high for longer than minutes setting: using 60 mins instead");
+                            }
+                            if (high_for_mins > threshold_mins) {
                                 // we have been high for longer than the threshold - raise alert
 
                                 // except if alerts are disabled
-                                if(Home.getPreferencesLong("alerts_disabled_until", 0) > new Date().getTime()) {
+                                if (Home.getPreferencesLong("alerts_disabled_until", 0) > new Date().getTime()) {
                                     Log.i(TAG, "checkforPersistentHigh: Notifications are currently disabled cannot alert!!");
                                     return false;
                                 }
