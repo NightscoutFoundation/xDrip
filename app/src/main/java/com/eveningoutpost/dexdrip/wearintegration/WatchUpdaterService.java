@@ -168,6 +168,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         else {
             Log.d(TAG, "processConnectG5 wear_integration=false - startBtG5Service");
             startBtG5Service();
+            //this.stopService(new Intent(this, WatchUpdaterService.class));
         }
     }
 
@@ -290,15 +291,18 @@ public class WatchUpdaterService extends WearableListenerService implements
         if (wear_integration) {
             googleApiConnect();
         }
-        listenForChangeInSettings();
         setSettings();
+        listenForChangeInSettings();
 
     }
 
     public void listenForChangeInSettings() {
         mPreferencesListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                setSettings();
+                Log.d(TAG, "onSharedPreferenceChanged enter key=" + key);
+                pebble_integration = mPrefs.getBoolean("pebble_sync", false);
+                sendPrefSettings();
+                processConnectG5();
             }
         };
         mPrefs.registerOnSharedPreferenceChangeListener(mPreferencesListener);
@@ -308,15 +312,11 @@ public class WatchUpdaterService extends WearableListenerService implements
         Log.d(TAG, "setSettings enter");
         //wear_integration = mPrefs.getBoolean("wear_sync", false); // if mPrefs is set so will this be already
         pebble_integration = mPrefs.getBoolean("pebble_sync", false);
-        boolean connectG5 = mPrefs.getBoolean("wear_connectG5", false);
-        boolean use_connectG5 = mPrefs.getBoolean("use_wear_connectG5", false);
         processConnectG5();
         if (wear_integration) {
             if (googleApiClient == null) googleApiConnect();
             Log.d(TAG, "setSettings wear_sync changed to True.");
             sendPrefSettings();
-        } else {
-            this.stopService(new Intent(this, WatchUpdaterService.class));
         }
     }
 
@@ -343,6 +343,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         String id = peer.getId();
         String name = peer.getDisplayName();
         Log.d(TAG, "onPeerConnected peer name & ID: " + name + "|" + id);
+        sendPrefSettings();
         if (mPrefs.getBoolean("wear_connectG5", false)) {//watch_integration
             Log.d(TAG, "onPeerConnected call initWearData for node=" + peer.getDisplayName());
             initWearData();
@@ -372,6 +373,7 @@ public class WatchUpdaterService extends WearableListenerService implements
 
     private void startBtG5Service() {//KS
         Log.d(TAG, "startBtG5Service");
+        is_using_g5 = (getDexCollectionType() == DexCollectionType.DexcomG5);
         if (is_using_g5) {
             Context myContext = getApplicationContext();
             Log.d(TAG, "startBtG5Service start G5CollectionService");
@@ -671,21 +673,29 @@ public class WatchUpdaterService extends WearableListenerService implements
 
     private void sendPrefSettings() {//KS
         if(googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) { googleApiConnect(); }
+        String dexCollector = "None";
+        boolean connectG5 = false;
+        boolean use_connectG5 = false;
+        wear_integration = mPrefs.getBoolean("wear_sync", false);
         if (wear_integration) {
-            Double highMark = Double.parseDouble(mPrefs.getString("highValue", "170"));
-            Double lowMark = Double.parseDouble(mPrefs.getString("lowValue", "70"));
-            DataMap dataMap = new DataMap();
-            boolean connectG5 = mPrefs.getBoolean("wear_connectG5", false);
-            boolean use_connectG5 = mPrefs.getBoolean("use_wear_connectG5", false);
-            Log.d(TAG, "sendPrefSettings connectG5: " + connectG5 + " use_connectG5:" + use_connectG5);
-            dataMap.putBoolean("connectG5", connectG5);
-            dataMap.putBoolean("use_connectG5", use_connectG5);
-            dataMap.putString("dex_txid", mPrefs.getString("dex_txid", "ABCDEF"));
-            dataMap.putString("units", mPrefs.getString("units", "mgdl"));
-            dataMap.putDouble("high", inMgdl(highMark, mPrefs));
-            dataMap.putDouble("low", inMgdl(lowMark, mPrefs));
-            new SendToDataLayerThread(WEARABLE_PREF_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap);
+            Log.d(TAG, "sendPrefSettings wear_sync=true");
+            dexCollector = mPrefs.getString("dex_collection_method", "DexcomG5");
+            connectG5 = mPrefs.getBoolean("wear_connectG5", false);
+            use_connectG5 = mPrefs.getBoolean("use_wear_connectG5", false);
         }
+
+        Double highMark = Double.parseDouble(mPrefs.getString("highValue", "170"));
+        Double lowMark = Double.parseDouble(mPrefs.getString("lowValue", "70"));
+        DataMap dataMap = new DataMap();
+        Log.d(TAG, "sendPrefSettings connectG5: " + connectG5 + " use_connectG5:" + use_connectG5 + " dex_collection_method:" + dexCollector);
+        dataMap.putString("dex_collection_method", dexCollector);
+        dataMap.putBoolean("connectG5", connectG5);
+        dataMap.putBoolean("use_connectG5", use_connectG5);
+        dataMap.putString("dex_txid", mPrefs.getString("dex_txid", "ABCDEF"));
+        dataMap.putString("units", mPrefs.getString("units", "mgdl"));
+        dataMap.putDouble("high", inMgdl(highMark, mPrefs));
+        dataMap.putDouble("low", inMgdl(lowMark, mPrefs));
+        new SendToDataLayerThread(WEARABLE_PREF_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap);
     }
 
     public void sendSensorData() {//KS

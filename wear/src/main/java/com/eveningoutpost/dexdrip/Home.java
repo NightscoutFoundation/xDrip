@@ -8,10 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.Models.UserError;
 import com.ustwo.clockwise.WatchMode;
 
 import lecho.lib.hellocharts.util.ChartUtils;
+
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 public class Home extends BaseWatchFace {
     //KS the following were copied from app/home
@@ -231,6 +232,17 @@ public class Home extends BaseWatchFace {
         return "";
     }
 
+    public static boolean setPreferencesString(final String pref, final String str) {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs != null) {
+            prefs.edit().putString(pref, str).apply();
+            return true;
+        }
+        return false;
+    }
+
     public static double convertToMgDlIfMmol(double value) {
         if (!getPreferencesStringWithDefault("units", "mgdl").equals("mgdl")) {
             return value * com.eveningoutpost.dexdrip.UtilityModels.Constants.MMOLL_TO_MGDL;
@@ -238,7 +250,6 @@ public class Home extends BaseWatchFace {
             return value; // no conversion needed
         }
     }
-
 
     public static boolean setPreferencesLong(final String pref, final long lng) {
         if ((prefs == null) && (Home.getAppContext() != null)) {
@@ -249,6 +260,12 @@ public class Home extends BaseWatchFace {
             return true;
         }
         return false;
+    }
+
+    public static long stale_data_millis()
+    {
+        if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) return (60000 * 13);
+        return (60000 * 11);
     }
 
 }

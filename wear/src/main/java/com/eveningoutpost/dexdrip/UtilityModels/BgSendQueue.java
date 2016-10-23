@@ -244,6 +244,14 @@ public class BgSendQueue extends Model {
         }
     }
 
+    public static void sendToPhone(Context context) {//KS
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        if (prefs.getBoolean("connectG5", false) && prefs.getBoolean("use_connectG5", false)) {
+            ListenerService.requestData(context);
+        }
+    }
+
     //KS start from WatchUpdaterService
     private static void resendData(Context context) {//KS
         long startTime = new Date().getTime() - (60000 * 60 * 24);

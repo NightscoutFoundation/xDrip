@@ -249,13 +249,11 @@ public class G5CollectionService extends Service {
 
         Log.d(TAG, "onDestroy");
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        if (!sharedPrefs.getBoolean("use_connectG5", false)) {//KS
-            scan_interval_timer.cancel();
-            if (pendingIntent != null) {
-                Log.d(TAG, "onDestroy stop Alarm pendingIntent");
-                AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-                alarm.cancel(pendingIntent);
-            }
+        scan_interval_timer.cancel();
+        if (pendingIntent != null) {
+            Log.d(TAG, "onDestroy stop Alarm pendingIntent");
+            AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+            alarm.cancel(pendingIntent);
         }
 //        close();
 //        setRetryTimer();

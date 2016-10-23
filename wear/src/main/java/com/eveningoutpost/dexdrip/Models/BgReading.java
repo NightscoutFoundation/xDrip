@@ -377,6 +377,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
             bgReading.save();
             bgReading.perform_calculations();
+            BgSendQueue.sendToPhone(context);//KS send back to phone
         } else {
             Log.d(TAG, "Calibrations, so doing everything: " + calibration.uuid);
             bgReading.sensor = sensor;
