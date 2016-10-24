@@ -264,18 +264,25 @@ public class Home extends ActivityWithMenu {
             this.notificationText.setTextSize(40);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Intent intent = new Intent();
-            String packageName = getPackageName();
-            Log.d(TAG, "Maybe ignoring battery optimization");
-            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            final String packageName = getPackageName();
+            //Log.d(TAG, "Maybe ignoring battery optimization");
+            final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
             if (!pm.isIgnoringBatteryOptimizations(packageName) &&
                     !prefs.getBoolean("requested_ignore_battery_optimizations_new", false)) {
                 Log.d(TAG, "Requesting ignore battery optimization");
-               // prefs.edit().putBoolean("requested_ignore_battery_optimizations", true).apply();
-                intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-                intent.setData(Uri.parse("package:" + packageName));
-                startActivity(intent);
-                JoH.static_toast_long("Select YES for best performance!");
+                try {
+                    // ignoring battery optimizations required for constant connection
+                    // to peripheral device - eg CGM transmitter.
+                    final Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                    intent.setData(Uri.parse("package:" + packageName));
+                    startActivity(intent);
+                    JoH.static_toast_long("Select YES for best performance!");
+                } catch (ActivityNotFoundException e) {
+                    final String msg = "Device does not appear to support battery optimization whitelisting!";
+                    JoH.static_toast_short(msg);
+                    UserError.Log.wtf(TAG, msg);
+                }
             }
         }
 
@@ -367,6 +374,7 @@ public class Home extends ActivityWithMenu {
                 textInsulinDose.setVisibility(View.INVISIBLE);
                 btnInsulinDose.setVisibility(View.INVISIBLE);
                 Treatments.create(0, thisinsulinnumber, Treatments.getTimeStampWithOffset(thistimeoffset));
+                thisinsulinnumber=0;
                 reset_viewport = true;
                 if (hideTreatmentButtonsIfAllDone()) {
                     updateCurrentBgInfo("insulin button");
@@ -382,6 +390,7 @@ public class Home extends ActivityWithMenu {
                 btnCarbohydrates.setVisibility(View.INVISIBLE);
                 reset_viewport = true;
                 Treatments.create(thiscarbsnumber, 0, Treatments.getTimeStampWithOffset(thistimeoffset));
+                thiscarbsnumber=0;
                 if (hideTreatmentButtonsIfAllDone()) {
                     updateCurrentBgInfo("carbs button");
                 }
@@ -1128,7 +1137,7 @@ public class Home extends ActivityWithMenu {
 
     public static void toaststaticnext(final String msg) {
         nexttoast = msg;
-        Log.e(TAG,"Toast next: "+msg);
+        UserError.Log.uel(TAG,"Home toast message next: "+msg);
     }
 
     public void toast(final String msg) {
@@ -1991,6 +2000,7 @@ public class Home extends ActivityWithMenu {
     private void displayCurrentInfoFromReading(BgReading lastBgReading, boolean predictive) {
         double estimate = 0;
         double estimated_delta = 0;
+        if (lastBgReading == null) return;
         final BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
         //String slope_arrow = lastBgReading.slopeArrow();
         String slope_arrow = dg.delta_arrow;

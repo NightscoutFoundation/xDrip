@@ -68,11 +68,11 @@ public class Treatments extends Model {
     @Column(name = "created_at")
     public String created_at;
 
-    public static synchronized Treatments create(double carbs, double insulin, long timestamp) {
+    public static synchronized Treatments create(final double carbs, final double insulin, long timestamp) {
         return create(carbs, insulin, timestamp, -1);
     }
 
-    public static synchronized Treatments create(double carbs, double insulin, long timestamp, double position) {
+    public static synchronized Treatments create(final double carbs, final double insulin, long timestamp, double position) {
         // TODO sanity check values
         Log.d(TAG, "Creating treatment: Insulin: " + Double.toString(insulin) + " / Carbs: " + Double.toString(carbs));
 
