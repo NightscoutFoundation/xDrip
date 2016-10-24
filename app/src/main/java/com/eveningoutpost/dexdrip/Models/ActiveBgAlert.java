@@ -72,18 +72,23 @@ public class ActiveBgAlert extends Model {
 
     public String toString() {
 
-        String alert_uuid = "alert_uuid: " + this.alert_uuid;
-        String is_snoozed = "is_snoozed: " + this.is_snoozed;
-        String last_alerted_at = "last_alerted_at: " + DateFormat.getDateTimeInstance(
-                DateFormat.LONG, DateFormat.LONG).format(new Date(this.last_alerted_at));
-        String next_alert_at = "next_alert_at: " + DateFormat.getDateTimeInstance(
-                DateFormat.LONG, DateFormat.LONG).format(new Date(this.next_alert_at));
+        try {
+            String alert_uuid = "alert_uuid: " + this.alert_uuid;
+            String is_snoozed = "is_snoozed: " + this.is_snoozed;
+            String last_alerted_at = "last_alerted_at: " + DateFormat.getDateTimeInstance(
+                    DateFormat.LONG, DateFormat.LONG).format(new Date(this.last_alerted_at));
+            String next_alert_at = "next_alert_at: " + DateFormat.getDateTimeInstance(
+                    DateFormat.LONG, DateFormat.LONG).format(new Date(this.next_alert_at));
 
-        String alert_started_at = "alert_started_at: " + DateFormat.getDateTimeInstance(
-                DateFormat.LONG, DateFormat.LONG).format(new Date(this.alert_started_at));
+            String alert_started_at = "alert_started_at: " + DateFormat.getDateTimeInstance(
+                    DateFormat.LONG, DateFormat.LONG).format(new Date(this.alert_started_at));
 
-        return alert_uuid + " " + is_snoozed + " " + last_alerted_at + " "+ next_alert_at + " " + alert_started_at;
+            return alert_uuid + " " + is_snoozed + " " + last_alerted_at + " " + next_alert_at + " " + alert_started_at;
 
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Got Nullpointer exception in toString()! " + e);
+            return "Nullpointer exception in toString!";
+        }
     }
 
     // We should only have at most one active alert at any given time.
