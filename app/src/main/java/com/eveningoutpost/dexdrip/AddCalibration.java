@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
+import java.util.UUID;
 
 public class AddCalibration extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     Button button;
@@ -146,28 +147,30 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                     final String string_value = value.getText().toString();
                     if (!TextUtils.isEmpty(string_value)) {
 
-                        //new Thread() {
-                        //    @Override
-                        //    public void run() {
-
                         try {
                             final double calValue = JoH.tolerantParseDouble(string_value);
 
-                            Calibration calibration = Calibration.create(calValue, getApplicationContext());
-                            if (calibration != null) {
-                                UndoRedo.addUndoCalibration(calibration.uuid);
-                                GcmActivity.pushCalibration(string_value, "0");
-
-                                final boolean wear_integration = Home.getPreferencesBoolean("wear_sync", false);//KS
-                                if (wear_integration) {
-                                    android.util.Log.d("AddCalibration", "start WatchUpdaterService with ACTION_SYNC_CALIBRATION");
-                                    startService(new Intent(v.getContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_CALIBRATION));
+                            if(Home.get_master()) {
+                                Calibration calibration = Calibration.create(calValue, getApplicationContext());
+                                if (calibration != null) {
+                                    UndoRedo.addUndoCalibration(calibration.uuid);
+                                    final boolean wear_integration = Home.getPreferencesBoolean("wear_sync", false);//KS
+                                    if (wear_integration) {
+                                        android.util.Log.d("AddCalibration", "start WatchUpdaterService with ACTION_SYNC_CALIBRATION");
+                                        startService(new Intent(v.getContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_CALIBRATION));
+                                    }
+    
+                                } else {
+                                    Log.e(TAG, "Calibration creation resulted in null");
+                                    JoH.static_toast_long("Could not create calibration!");
+                                    // TODO probably follower must ensure it has a valid sensor regardless..
                                 }
-
-                            } else {
-                                Log.e(TAG, "Calibration creation resulted in null");
-                                JoH.static_toast_long("Could not create calibration!");
-                                // TODO probably follower must ensure it has a valid sensor regardless..
+                            } else if (Home.get_follower()) {
+                                // Sending the data for the master to update the main tables.
+                                String uuid = UUID.randomUUID().toString();
+                                GcmActivity.pushCalibration2(calValue, uuid);
+                                UndoRedo.addUndoCalibration(uuid);
+                                JoH.static_toast_long("Calibration sent to master for processing");
                             }
                             Intent tableIntent = new Intent(v.getContext(), Home.class);
                             startActivity(tableIntent);

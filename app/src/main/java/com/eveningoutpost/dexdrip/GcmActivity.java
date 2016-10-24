@@ -22,6 +22,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
@@ -54,6 +55,20 @@ class SensorCalibrations {
     List <Calibration> calibrations;
 }
 
+class NewCalibration {
+    @Expose
+    double bgValue; // Always in mgdl
+    
+    @Expose
+    long timestamp;
+    
+    @Expose
+    double offset;
+    
+    @Expose
+    String uuid;
+}
+
 public class GcmActivity extends Activity {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -83,7 +98,7 @@ public class GcmActivity extends Activity {
 
     public static SensorCalibrations []  getSensorCalibrations(String json) {
         SensorCalibrations[] sensorCalibrations = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(json, SensorCalibrations[].class);
-        Log.d(TAG, "After fromjson sensorCalibrations arrrre " + sensorCalibrations.toString());
+        Log.d(TAG, "After fromjson sensorCalibrations are " + sensorCalibrations.toString());
         return sensorCalibrations;
     }
     
@@ -100,10 +115,34 @@ public class GcmActivity extends Activity {
                 .create();
         
         String output =  gson.toJson(sensorCalibrations);
-        Log.d(TAG, "Created the string " + output);
+        Log.d(TAG, "sensorAndCalibrationsToJson created the string " + output);
         return output;
     }
     
+    public static NewCalibration getNewCalibration(String json) {
+        NewCalibration newCalibration = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(json, NewCalibration.class);
+        Log.d(TAG, "After fromjson NewCalibration are " + newCalibration.toString());
+        return newCalibration;
+    }
+    
+    public static String newCalibrationToJson(double bgValue, String uuid) {
+        NewCalibration newCalibration = new NewCalibration();
+        newCalibration.bgValue = bgValue;
+        newCalibration.uuid = uuid;
+        newCalibration.timestamp = JoH.tsl();
+        newCalibration.offset = 0;
+        
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                .serializeSpecialFloatingPointValues()
+                .create();
+        
+        String output =  gson.toJson(newCalibration);
+        Log.d(TAG, "newCalibrationToJson Created the string " + output);
+        return output;
+    }
+
     public static void upsertSensorCalibratonsFromJson(String json) {
         Log.i(TAG, "upsertSensorCalibratonsFromJson called");
         SensorCalibrations [] sensorCalibrations = getSensorCalibrations(json);
@@ -463,6 +502,25 @@ public class GcmActivity extends Activity {
         String currenttime = Double.toString(new Date().getTime());
         String tosend = currenttime + " " + bg_value + " " + seconds_ago;
         sendMessage(myIdentity(), "cal", tosend);
+    }
+    
+    public static void pushCalibration2(double bgValue, String uuid) {
+        Log.i(TAG, "pushCalibration2 called");
+
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        final String unit = prefs.getString("units", "mgdl");
+        
+        if (unit.compareTo("mgdl") != 0) {
+            bgValue = bgValue * Constants.MMOLL_TO_MGDL;
+        }
+        
+        if ((bgValue < 40) || (bgValue > 400)) {
+            Log.wtf(TAG, "Invalid out of range calibration glucose mg/dl value of: " + bgValue);
+            JoH.static_toast_long("Calibration out of range: " + bgValue + " mg/dl");
+            return ;
+        }
+        String json = newCalibrationToJson(bgValue, uuid);
+        GcmActivity.sendMessage(myIdentity(), "cal2", json);
     }
 
     public static void clearLastCalibration() {
