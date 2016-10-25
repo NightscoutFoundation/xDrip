@@ -149,8 +149,8 @@ public class MissedReadingService extends IntentService {
     
     static public long getOtherAlertReraiseSec(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean disableAlertsReraise = prefs.getBoolean("disable_alerts_reraise", false);
-        if(disableAlertsReraise) {
+        boolean enableAlertsReraise = prefs.getBoolean("enable_alerts_reraise", false);
+        if(enableAlertsReraise) {
             return readPerfsInt(prefs, "other_alerts_reraise_sec", 60);
         } else {
             return 60 * readPerfsInt(prefs, "other_alerts_snooze", 20);

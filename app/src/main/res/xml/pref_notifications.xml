@@ -174,12 +174,12 @@
                         android:summary="Number of minutes before raising the same alert after snooze."
                         android:title="Alert Snooze" />
                     <CheckBoxPreference
-                        android:key="disable_alerts_reraise"
+                        android:key="enable_alerts_reraise"
                         android:title="Reraise alerts before snooze time"
                         android:summary="Reraise the alert if not snoozed sooner"
                         android:defaultValue="false" />
 	                <EditTextPreference
-	                    android:dependency="disable_alerts_reraise"
+	                    android:dependency="enable_alerts_reraise"
 	                    android:key="other_alerts_reraise_sec"
 	                    android:title="Alert Reraise time"
 	                    android:numeric="integer"
