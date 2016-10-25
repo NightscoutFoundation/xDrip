@@ -40,7 +40,12 @@ public class SnoozeOnNotificationDismissService extends IntentService {
            alertType.equals("bg_missed_alerts") ||
            alertType.equals("bg_predict_alert") ||
            alertType.equals("persistent_high_alert")) {
-            snoozeOtherAlert(alertType);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            boolean disableAlertsReraise = prefs.getBoolean("disable_alerts_reraise", false);
+            if(disableAlertsReraise) {
+                // Only snooze these alert if it the reraise function is enabled. 
+                snoozeOtherAlert(alertType);
+            }
             return;
         }
         Log.e(TAG, "SnoozeOnNotificationDismissService called for unknown source = " + alertType);
