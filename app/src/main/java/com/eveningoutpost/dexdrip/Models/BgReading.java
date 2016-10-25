@@ -534,7 +534,7 @@ public class BgReading extends Model implements ShareUploadableBg {
         return slopeToArrowSymbol(this.calculated_value_slope * 60000);
     }
 
-    public String slopeName() {
+    public  String slopeName() {
         double slope_by_minute = calculated_value_slope * 60000;
         String arrow = "NONE";
         if (slope_by_minute <= (-3.5)) {
@@ -554,6 +554,26 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
         if (hide_slope) {
             arrow = "NOT COMPUTABLE";
+        }
+        return arrow;
+    }
+
+    public static String slopeName(double slope_by_minute) {
+        String arrow = "NONE";
+        if (slope_by_minute <= (-3.5)) {
+            arrow = "DoubleDown";
+        } else if (slope_by_minute <= (-2)) {
+            arrow = "SingleDown";
+        } else if (slope_by_minute <= (-1)) {
+            arrow = "FortyFiveDown";
+        } else if (slope_by_minute <= (1)) {
+            arrow = "Flat";
+        } else if (slope_by_minute <= (2)) {
+            arrow = "FortyFiveUp";
+        } else if (slope_by_minute <= (3.5)) {
+            arrow = "SingleUp";
+        } else if (slope_by_minute <= (40)) {
+            arrow = "DoubleUp";
         }
         return arrow;
     }

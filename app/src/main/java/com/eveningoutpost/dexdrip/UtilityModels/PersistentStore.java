@@ -39,7 +39,7 @@ public class PersistentStore {
 
     public static void setString(String name, String value) {
         init_prefs();
-        prefs.edit().putString(name, value).apply(); // TODO check if commit needed
+        prefs.edit().putString(name, value).apply();
     }
 
     public static void appendString(String name, String value) {
@@ -60,6 +60,16 @@ public class PersistentStore {
     public static void setLong(String name, long value) {
         init_prefs();
         prefs.edit().putLong(name, value).apply();
+    }
+
+    public static boolean getBoolean(String name) {
+        init_prefs();
+        return prefs.getBoolean(name, false);
+    }
+
+    public static void setBoolean(String name, boolean value) {
+        init_prefs();
+        prefs.edit().putBoolean(name, value).apply();
     }
 
     public static long incrementLong(String name) {

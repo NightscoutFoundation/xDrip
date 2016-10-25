@@ -112,14 +112,14 @@ public class PluggableCalibration {
     }
 
     // get calibration plugin instance from preference setting
-    public static CalibrationAbstract getCalibrationPluginFromPreferences() {
+    public static synchronized CalibrationAbstract getCalibrationPluginFromPreferences() {
         if (current_plugin_cache == null) {
             current_plugin_cache = getCalibrationPluginByName(Home.getPreferencesStringWithDefault("current_calibration_plugin", "None"));
         }
         return current_plugin_cache;
     }
 
-    public static void invalidatePluginCache() {
+    public static synchronized void invalidatePluginCache() {
         current_plugin_cache = null;
         memory_cache.clear();
         Log.d(TAG, "Invalidated Plugin Cache");
@@ -185,7 +185,7 @@ public class PluggableCalibration {
     }
 
     // lazy helper function
-    public static boolean invalidateAllCaches() {
+    public static synchronized boolean invalidateAllCaches() {
         try {
             for (Object o : memory_cache.entrySet()) {
                 Map.Entry entry = (Map.Entry) o;
@@ -204,7 +204,7 @@ public class PluggableCalibration {
     }
 
     // lazy helper function
-    public static boolean invalidateCache(String tag) {
+    public static synchronized boolean invalidateCache(String tag) {
         try {
             return getCalibrationPluginByName(tag).invalidateCache();
         } catch (NullPointerException e) {
