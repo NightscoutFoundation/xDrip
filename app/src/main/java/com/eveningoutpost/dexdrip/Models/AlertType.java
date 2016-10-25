@@ -153,7 +153,7 @@ public class AlertType extends Model {
      * In the case of "unclear state" for more than predefined time, return the "55" alert
      * In case that alerts are turned off, only return the 55.
      */
-    public static AlertType get_highest_active_alert(Context context, double bg, AtomicBoolean unclearReading) {
+    public static AlertType get_highest_active_alert(Context context, double bg) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
             Log.d("NOTIFICATIONS", "Notifications are currently disabled!!");
@@ -164,21 +164,7 @@ public class AlertType extends Model {
             return null;
         }
 
-        Boolean bg_unclear_readings_alerts = prefs.getBoolean("bg_unclear_readings_alerts", false);
-        Long UnclearTimeSetting = Long.parseLong(prefs.getString("bg_unclear_readings_minutes", "90")) * 60000;
-
-        Long UnclearTime = BgReading.getUnclearTime(UnclearTimeSetting);
-
         AlertType at;
-        if (UnclearTime >= UnclearTimeSetting && bg_unclear_readings_alerts ) {
-            Log.d("NOTIFICATIONS", "Readings have been unclear for too long!!");
-            unclearReading.set(true);
-            Notifications.bgUnclearAlert(context);
-        }
-        if ((UnclearTime > 0 ) && bg_unclear_readings_alerts) {
-            Log.d(TAG_ALERT, "We are in an clear state, but not for too long. Alerts are disabled");
-            return null;
-        }
         at = get_highest_active_alert_helper(bg, prefs);
         if (at != null) {
             Log.d(TAG_ALERT, "get_highest_active_alert_helper returned alert uuid = " + at.uuid + " alert name = " + at.name);
@@ -429,15 +415,14 @@ public class AlertType extends Model {
 
 
     public static void testAll(Context context) {
-        AtomicBoolean unclearReading = new AtomicBoolean(false);
         remove_all();
         add_alert(null, "high alert 1", true, 180, true, 10, null, 0, 0, true, 20, true, true);
         add_alert(null, "high alert 2", true, 200, true, 10, null, 0, 0, true, 20, true, true);
         add_alert(null, "high alert 3", true, 220, true, 10, null, 0, 0, true, 20, true, true);
         print_all();
-        AlertType a1 = get_highest_active_alert(context, 190, unclearReading);
+        AlertType a1 = get_highest_active_alert(context, 190);
         Log.d(TAG, "a1 = " + a1.toString());
-        AlertType a2 = get_highest_active_alert(context, 210, unclearReading);
+        AlertType a2 = get_highest_active_alert(context, 210);
         Log.d(TAG, "a2 = " + a2.toString());
 
 
@@ -447,11 +432,11 @@ public class AlertType extends Model {
         add_alert(null, "low alert 1", false, 80, true, 10, null, 0, 0, true, 20, true, true);
         add_alert(null, "low alert 2", false, 60, true, 10, null, 0, 0, true, 20, true, true);
 
-        AlertType al1 = get_highest_active_alert(context, 90, unclearReading);
+        AlertType al1 = get_highest_active_alert(context, 90);
         Log.d(TAG, "al1 should be null  " + al1);
-        al1 = get_highest_active_alert(context, 80, unclearReading);
+        al1 = get_highest_active_alert(context, 80);
         Log.d(TAG, "al1 = " + al1.toString());
-        AlertType al2 = get_highest_active_alert(context, 50, unclearReading);
+        AlertType al2 = get_highest_active_alert(context, 50);
         Log.d(TAG, "al2 = " + al2.toString());
 
         Log.d(TAG, "HigherAlert(a1, a2) = a1?" +  (HigherAlert(a1,a2) == a2));

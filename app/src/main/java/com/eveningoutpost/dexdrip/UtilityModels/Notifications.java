@@ -112,7 +112,7 @@ public class Notifications extends IntentService {
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "NotificationsIntent");
         wl.acquire(60000);
-        AtomicBoolean unclearReading = new AtomicBoolean(false);
+        boolean unclearReading = false;
         try {
             Log.d("Notifications", "Running Notifications Intent Service");
             final Context context = getApplicationContext();
@@ -122,8 +122,8 @@ public class Notifications extends IntentService {
             }
 
             ReadPerfs(context);
-            notificationSetter(context, unclearReading);
-            ArmTimer(context, unclearReading.get());
+            unclearReading = notificationSetter(context);
+            ArmTimer(context, unclearReading);
             context.startService(new Intent(context, MissedReadingService.class));
 
 
@@ -168,7 +168,7 @@ public class Notifications extends IntentService {
  */
 
 
-    private void FileBasedNotifications(Context context, AtomicBoolean unclearReading) {
+    private void FileBasedNotifications(Context context) {
         ReadPerfs(context);
         Sensor sensor = Sensor.currentSensor();
 
@@ -187,7 +187,7 @@ public class Notifications extends IntentService {
         // In all this cases, bgReading.calculated_value should be 0.
         // TODO Tzachi: remove sensor != null once sensor data code is checked in.
         if (((sensor != null) || (Home.get_follower())) && bgReading != null && bgReading.calculated_value != 0) {
-            AlertType newAlert = AlertType.get_highest_active_alert(context, bgReading.calculated_value, unclearReading);
+            AlertType newAlert = AlertType.get_highest_active_alert(context, bgReading.calculated_value);
 
             if (newAlert == null) {
                 Log.d(TAG, "FileBasedNotifications - No active notifcation exists, stopping all alerts");
@@ -276,7 +276,8 @@ public class Notifications extends IntentService {
  * *****************************************************************************************************************
  */
 
-    private void notificationSetter(Context context, AtomicBoolean unclearReading) {
+    // returns weather unclear bg reading was detected
+    private boolean notificationSetter(Context context) {
         ReadPerfs(context);
         final long end = System.currentTimeMillis() + (60000 * 5);
         final long start = end - (60000 * 60 * 3) - (60000 * 10);
@@ -287,11 +288,19 @@ public class Notifications extends IntentService {
         }
         if (prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
             Log.d("NOTIFICATIONS", "Notifications are currently disabled!!");
-            return;
+            return false;
         }
-        FileBasedNotifications(context, unclearReading);
-        BgReading.checkForDropAllert(context);
-        BgReading.checkForRisingAllert(context);
+        
+        boolean unclearReading = BgReading.getAndRaiseUnclearReading(context);
+        
+        if (unclearReading) {
+            AlertPlayer.getPlayer().stopAlert(context, false, true);
+        } else {
+            FileBasedNotifications(context);
+            BgReading.checkForDropAllert(context);
+            BgReading.checkForRisingAllert(context);
+        }
+        // TODO: Add this alerts as well to depend on unclear sensor reading.
         BgReading.checkForPersistentHigh();
         evaluateLowPredictionAlarm();
         reportNoiseChanges();
@@ -303,10 +312,10 @@ public class Notifications extends IntentService {
         List<BgReading> bgReadings = BgReading.latest(3);
         List<Calibration> calibrations = Calibration.allForSensorInLastFourDays();
         if (bgReadings == null || bgReadings.size() < 3) {
-            return;
+            return unclearReading;
         }
         if (calibrations == null || calibrations.size() < 2) {
-            return;
+            return unclearReading;
         }
         BgReading bgReading = bgReadings.get(0);
 
@@ -339,6 +348,7 @@ public class Notifications extends IntentService {
         } else {
             clearAllCalibrationNotifications();
         }
+        return unclearReading;
     }
 
     // This is the absolute time, not time from now.
@@ -435,7 +445,7 @@ public class Notifications extends IntentService {
         long wakeTime = calcuatleArmTime(ctx, now, unclearAlert);
 
         
-        if(wakeTime < now || wakeTime == Long.MAX_VALUE) {
+        if(wakeTime < now || wakeTime >=  now + 6 * 60000 ) {
           Log.e("Notifications" , "ArmTimer recieved a negative time, will fire in 6 minutes");
           wakeTime = now + 6 * 60000;
         }
