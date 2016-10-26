@@ -44,7 +44,7 @@ public class Datricsae extends CalibrationAbstract {
     }
 
     @Override
-    public CalibrationData getCalibrationData() {
+    public synchronized CalibrationData getCalibrationData() {
 
         CalibrationData cd = loadDataFromCache(TAG);
         if (cd == null) {

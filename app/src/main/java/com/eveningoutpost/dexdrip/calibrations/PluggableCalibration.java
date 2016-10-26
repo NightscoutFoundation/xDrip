@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.JoH;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,6 +31,8 @@ public class PluggableCalibration {
         }
         CalibrationAbstract plugin = null;
         switch (t) {
+            case None:
+                break;
             case Datricsae:
                 plugin = new Datricsae();
                 break;
@@ -46,7 +49,7 @@ public class PluggableCalibration {
             // add new plugins here and also to the enum below
 
             default:
-                Log.e(TAG, "Unhandled plugin type: " + t.toString());
+                Log.e(TAG, "Unhandled plugin type: " + t.toString()+" "+ JoH.backTrace());
                 break;
         }
         memory_cache.put(t, plugin);
