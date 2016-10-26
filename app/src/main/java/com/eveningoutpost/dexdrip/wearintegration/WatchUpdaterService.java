@@ -180,7 +180,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
     }
 
-    private void syncTransmitterData(DataMap dataMap) {//KS
+    private synchronized void syncTransmitterData(DataMap dataMap) {//KS
         Log.d(TAG, "syncTransmitterData");
         java.text.DateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
         Date date = new Date();

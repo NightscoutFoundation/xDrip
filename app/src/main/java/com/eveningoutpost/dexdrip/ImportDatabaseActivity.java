@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,9 +12,11 @@ import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -24,6 +27,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.FileUtils;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -39,11 +43,13 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
     private ArrayList<String> databaseNames;
     private ArrayList<File> databases;
     private final static int MY_PERMISSIONS_REQUEST_STORAGE = 132;
+    private SharedPreferences mPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.OldAppTheme); // or null actionbar
         super.onCreate(savedInstanceState);
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mHandler = new Handler();
         setContentView(R.layout.activity_import_db);
 
@@ -217,6 +223,12 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
     }
 
     protected void postImportDB(String result) {
+
+        if (mPrefs.getBoolean("wear_sync", false)) {//KS
+            Log.d(TAG, "start WatchUpdaterService with ACTION_SYNC_DB");
+            startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_DB));
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
