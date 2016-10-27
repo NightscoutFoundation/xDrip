@@ -1397,17 +1397,21 @@ public class Preferences extends PreferenceActivity {
         }
 
         private void update_force_english_title(String param) {
-            String word;
-            if (param.length() == 0) {
-                word = locale_choice.getEntry().toString();
-            } else {
-                try {
-                    word = (locale_choice.getEntries()[locale_choice.findIndexOfValue(param)]).toString();
-                } catch (Exception e) {
-                    word = "Unknown";
+            try {
+                String word;
+                if (param.length() == 0) {
+                    word = locale_choice.getEntry().toString();
+                } else {
+                    try {
+                        word = (locale_choice.getEntries()[locale_choice.findIndexOfValue(param)]).toString();
+                    } catch (Exception e) {
+                        word = "Unknown";
+                    }
                 }
+                force_english.setTitle("Force " + word + " Text");
+            } catch (NullPointerException e) {
+                Log.e(TAG, "Nullpointer in update_force_english_title: " + e);
             }
-            force_english.setTitle("Force " + word + " Text");
         }
 
         private static void recursive_notify_all_preference_screens(PreferenceGroup preferenceGroup) {

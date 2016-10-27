@@ -852,7 +852,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                 timeEnd == AlertType.toTime(24, 0)) {
             allDay = true;
         }
-        if (timeStart == timeEnd && (allDay==false)) {
+        if (timeStart == timeEnd && (!allDay)) {
             Toast.makeText(getApplicationContext(), "start time and end time of alert can not be equal",Toast.LENGTH_LONG).show();
             return;
         }
@@ -862,8 +862,11 @@ public class EditAlertActivity extends ActivityWithMenu {
         boolean vibrate = checkboxVibrate.isChecked();
         boolean overrideSilentMode = checkboxAlertOverride.isChecked();
         String mp3_file = audioPath;
-        int defaultSnooze = parseInt(editSnooze.getText().toString());
-        AlertType.testAlert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, vibrate, mContext);
-
+        try {
+            int defaultSnooze = parseInt(editSnooze.getText().toString());
+            AlertType.testAlert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, vibrate, mContext);
+        } catch (NullPointerException e) {
+            JoH.static_toast_long("Snooze value is not a number - cannot test");
+        }
     }
 }

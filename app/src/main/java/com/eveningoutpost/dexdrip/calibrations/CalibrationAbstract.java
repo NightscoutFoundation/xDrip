@@ -31,7 +31,7 @@ public abstract class CalibrationAbstract {
 
     // get the calibration data (caching is handled internally)
 
-    public CalibrationData getCalibrationData() {
+    public synchronized CalibrationData getCalibrationData() {
         // default no implementation
         return null;
     }
