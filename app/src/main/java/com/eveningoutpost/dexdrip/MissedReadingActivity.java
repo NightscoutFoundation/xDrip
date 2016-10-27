@@ -27,6 +27,7 @@ public class MissedReadingActivity extends ActivityWithMenu {
     
     private CheckBox checkboxEnableAlert;
     private CheckBox checkboxAllDay;
+    private CheckBox checkboxEnableReraise;
     
     private LinearLayout layoutTimeBetween;
     private LinearLayout timeInstructions;
@@ -35,9 +36,13 @@ public class MissedReadingActivity extends ActivityWithMenu {
     private TextView timeInstructionsStart;
     private TextView timeInstructionsEnd;
     private EditText bgMissedMinutes;
+    private EditText bgMissedSnoozeMin;
+    private EditText bgMissedReraiseSec;
     
     private TextView viewAlertTime;
-    private TextView vieSelectTime;
+    private TextView viewSelectTime;
+    private TextView viewSnoozeTime;
+    private TextView viewReraiseTime;
     
     
     private int startHour = 0;
@@ -57,14 +62,20 @@ public class MissedReadingActivity extends ActivityWithMenu {
         viewTimeEnd = (TextView) findViewById(R.id.missed_reading_time_end);
         checkboxAllDay = (CheckBox) findViewById(R.id.missed_reading_all_day);
         checkboxEnableAlert = (CheckBox) findViewById(R.id.missed_reading_enable_alert);
+        checkboxEnableReraise = (CheckBox) findViewById(R.id.missed_reading_enable_alerts_reraise);
         
         layoutTimeBetween = (LinearLayout) findViewById(R.id.missed_reading_time_between);
         timeInstructions = (LinearLayout) findViewById(R.id.missed_reading_instructions);
         timeInstructionsStart = (TextView) findViewById(R.id.missed_reading_instructions_start);
         timeInstructionsEnd = (TextView) findViewById(R.id.missed_reading_instructions_end);
         bgMissedMinutes = (EditText) findViewById(R.id.missed_reading_bg_minutes);
+        bgMissedSnoozeMin = (EditText) findViewById(R.id.missed_reading_bg_snooze);
+        bgMissedReraiseSec = (EditText) findViewById(R.id.missed_reading_reraise_sec);
         viewAlertTime = (TextView) findViewById(R.id.missed_reading_text_alert_time);
-        vieSelectTime = (TextView) findViewById(R.id.missed_reading_text_select_time);
+        viewSelectTime = (TextView) findViewById(R.id.missed_reading_text_select_time);
+        viewSnoozeTime = (TextView) findViewById(R.id.missed_reading_bg_snooze_text);
+        viewReraiseTime = (TextView) findViewById(R.id.missed_reading_reraise_sec_text);
+
         
         // Set the different controls
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -72,15 +83,20 @@ public class MissedReadingActivity extends ActivityWithMenu {
         int endMinutes = prefs.getInt("missed_readings_end", 0);
         boolean enableAlert = prefs.getBoolean("bg_missed_alerts",false);
         boolean allDay = prefs.getBoolean("missed_readings_all_day",true);
+        boolean enableReraise = prefs.getBoolean("bg_missed_alerts_enable_alerts_reraise",false);
         
-        checkboxEnableAlert.setChecked(enableAlert);
         checkboxAllDay.setChecked(allDay);
+        checkboxEnableAlert.setChecked(enableAlert);
+        checkboxEnableReraise.setChecked(enableReraise);
         
         startHour = AlertType.time2Hours(startMinutes);
         startMinute = AlertType.time2Minutes(startMinutes);
         endHour = AlertType.time2Hours(endMinutes);
         endMinute = AlertType.time2Minutes(endMinutes);
         bgMissedMinutes.setText(prefs.getString("bg_missed_minutes", "30"));
+        int defaultSnooze = MissedReadingService.readPerfsInt(prefs, "other_alerts_snooze", 20);
+        bgMissedSnoozeMin.setText(prefs.getString("bg_missed_alerts_snooze", "" + defaultSnooze));
+        bgMissedReraiseSec.setText(prefs.getString("bg_missed_alerts_reraise_sec", "60"));
         
         addListenerOnButtons();
         enableAllControls();
@@ -94,9 +110,12 @@ public class MissedReadingActivity extends ActivityWithMenu {
         prefs.edit().putInt("missed_readings_start", AlertType.toTime(startHour, startMinute)).apply();
         prefs.edit().putInt("missed_readings_end", AlertType.toTime(endHour, endMinute)).apply();
         prefs.edit().putString("bg_missed_minutes", bgMissedMinutes.getText().toString()).apply();
+        prefs.edit().putString("bg_missed_alerts_snooze", bgMissedSnoozeMin.getText().toString()).apply();
+        prefs.edit().putString("bg_missed_alerts_reraise_sec", bgMissedReraiseSec.getText().toString()).apply();
 
         prefs.edit().putBoolean("bg_missed_alerts", checkboxEnableAlert.isChecked()).apply();
         prefs.edit().putBoolean("missed_readings_all_day", checkboxAllDay.isChecked()).apply();
+        prefs.edit().putBoolean("bg_missed_alerts_enable_alerts_reraise", checkboxEnableReraise.isChecked()).apply();
         
         context.startService(new Intent(context, MissedReadingService.class));
     }
@@ -110,9 +129,14 @@ public class MissedReadingActivity extends ActivityWithMenu {
         layoutTimeBetween.setEnabled(enabled);
         timeInstructions.setEnabled(enabled);
         checkboxAllDay.setEnabled(enabled);
+        checkboxEnableReraise.setEnabled(enabled);
         bgMissedMinutes.setEnabled(enabled);
+        bgMissedSnoozeMin.setEnabled(enabled);
+        bgMissedReraiseSec.setEnabled(enabled);
         viewAlertTime.setEnabled(enabled);
-        vieSelectTime.setEnabled(enabled);
+        viewSelectTime.setEnabled(enabled);
+        viewSnoozeTime.setEnabled(enabled);
+        viewReraiseTime.setEnabled(enabled);
     }
     
     void enableAllControls() {
@@ -129,6 +153,10 @@ public class MissedReadingActivity extends ActivityWithMenu {
         } else {
             setTimeRanges();
         }
+
+        boolean enableReraise = checkboxEnableReraise.isChecked();
+        bgMissedReraiseSec.setEnabled(enableReraise);
+        
     }
     
    
@@ -141,13 +169,22 @@ public class MissedReadingActivity extends ActivityWithMenu {
                 enableAllControls();
             }
         });
-        
+
         checkboxEnableAlert.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             //          @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 enableAllControls();
             }
         });
+        
+        checkboxEnableReraise.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            //          @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                enableAllControls();
+            }
+        });
+
+        
         View.OnClickListener startTimeListener = new View.OnClickListener() {
 
             @Override

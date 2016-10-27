@@ -127,6 +127,26 @@
                         android:key="bg_unclear_readings_minutes"
                         android:summary=""
                         android:title="Alert after x minutes of noisy values" />
+                    <EditTextPreference
+                        android:defaultValue="20"
+                        android:dependency="bg_unclear_readings_alerts"
+                        android:key="bg_unclear_readings_alert_snooze"
+                        android:numeric="integer"
+                        android:summary="Number of minutes before raising the same alert after snooze."
+                        android:title="Alert Snooze" />
+                    <CheckBoxPreference
+                        android:dependency="bg_unclear_readings_alerts"
+                        android:key="bg_unclear_readings_alert_enable_alerts_reraise"
+                        android:title="Reraise alerts before snooze time"
+                        android:summary="Reraise the alert if not snoozed sooner"
+                        android:defaultValue="false" />
+                    <EditTextPreference
+                        android:dependency="bg_unclear_readings_alert_enable_alerts_reraise"
+                        android:key="bg_unclear_readings_alert_reraise_sec"
+                        android:title="Alert Reraise time"
+                        android:numeric="integer"
+                        android:summary="Number of SECONDS to pass before raising the same alert."
+                        android:defaultValue="60" />
                 </PreferenceCategory>
 
                 <PreferenceCategory android:title="Falling/Rising BG">
@@ -167,24 +187,6 @@
                         android:defaultValue="false"
                         android:key="other_alerts_override_silent"
                         android:title="Override Silent mode on these alerts" />
-                    <EditTextPreference
-                        android:defaultValue="20"
-                        android:key="other_alerts_snooze"
-                        android:numeric="integer"
-                        android:summary="Number of minutes before raising the same alert after snooze."
-                        android:title="Alert Snooze" />
-                    <CheckBoxPreference
-                        android:key="enable_alerts_reraise"
-                        android:title="Reraise alerts before snooze time"
-                        android:summary="Reraise the alert if not snoozed sooner"
-                        android:defaultValue="false" />
-	                <EditTextPreference
-	                    android:dependency="enable_alerts_reraise"
-	                    android:key="other_alerts_reraise_sec"
-	                    android:title="Alert Reraise time"
-	                    android:numeric="integer"
-	                    android:summary="Number of SECONDS to pass before raising the same alert."
-	                    android:defaultValue="60" />                    
                 </PreferenceCategory>
             </PreferenceScreen>
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
@@ -220,6 +222,26 @@
                         android:showSilent="true"
                         android:summary="@string/choose_sound_used_for_persistent_high_alarm"
                         android:title="@string/persistent_high_sound" />
+                    <EditTextPreference
+                        android:defaultValue="20"
+                        android:dependency="persistent_high_alert_enabled"
+                        android:key="persistent_high_alert_snooze"
+                        android:numeric="integer"
+                        android:summary="Number of minutes before raising the same alert after snooze."
+                        android:title="Alert Snooze" />
+                    <CheckBoxPreference
+                        android:key="persistent_high_alert_enable_alerts_reraise"
+                        android:dependency="persistent_high_alert_enabled"
+                        android:title="Reraise alerts before snooze time"
+                        android:summary="Reraise the alert if not snoozed sooner"
+                        android:defaultValue="false" />
+                    <EditTextPreference
+                        android:dependency="persistent_high_alert_enable_alerts_reraise"
+                        android:key="persistent_high_alert_reraise_sec"
+                        android:title="Alert Reraise time"
+                        android:numeric="integer"
+                        android:summary="Number of SECONDS to pass before raising the same alert."
+                        android:defaultValue="60" />
 
                 </PreferenceCategory>
                 <PreferenceCategory
@@ -252,6 +274,26 @@
                         android:showSilent="true"
                         android:summary="@string/choose_sound_used_for_predicted_low_alarm"
                         android:title="@string/predicted_low_sound" />
+                    <EditTextPreference
+                        android:defaultValue="20"
+                        android:dependency="predict_lows"
+                        android:key="bg_predict_alert_snooze"
+                        android:numeric="integer"
+                        android:summary="Number of minutes before raising the same alert after snooze."
+                        android:title="Alert Snooze" />
+                    <CheckBoxPreference
+                        android:key="bg_predict_alert_enable_alerts_reraise"
+                        android:dependency="predict_lows"
+                        android:title="Reraise alerts before snooze time"
+                        android:summary="Reraise the alert if not snoozed sooner"
+                        android:defaultValue="false" />
+                    <EditTextPreference
+                        android:dependency="bg_predict_alert_enable_alerts_reraise"
+                        android:key="bg_predict_alert_reraise_sec"
+                        android:title="Alert Reraise time"
+                        android:numeric="integer"
+                        android:summary="Number of SECONDS to pass before raising the same alert."
+                        android:defaultValue="60" />
                 </PreferenceCategory>
                 <PreferenceCategory android:title="@string/other_xdrip_plus_alerts">
                     <SwitchPreference

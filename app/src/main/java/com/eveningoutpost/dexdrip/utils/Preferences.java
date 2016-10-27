@@ -545,7 +545,6 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("falling_bg_val"));
             bindPreferenceSummaryToValue(findPreference("rising_bg_val"));
             bindPreferenceSummaryToValue(findPreference("other_alerts_sound"));
-            bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("other_alerts_snooze"));
 
             addPreferencesFromResource(R.xml.pref_data_source);
 
@@ -1602,20 +1601,6 @@ public class Preferences extends PreferenceActivity {
             });
         }
 
-
-        private static Preference.OnPreferenceChangeListener sBgMissedAlertsHandler = new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Context context = preference.getContext();
-                context.startService(new Intent(context, MissedReadingService.class));
-                return true;
-            }
-        };
-
-
-        private void bindBgMissedAlertsListener() {
-            findPreference("other_alerts_snooze").setOnPreferenceChangeListener(sBgMissedAlertsHandler);
-        }
 
 
         // Will update the widget if any setting relevant to the widget gets changed.

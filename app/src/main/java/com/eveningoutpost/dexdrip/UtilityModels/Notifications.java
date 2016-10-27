@@ -362,7 +362,7 @@ public class Notifications extends IntentService {
         if (userNotification == null) {
             // An alert should have already being played, how is this NULL.
         	Log.wtf(TAG, "No active alert exists.");
-            wakeTimeUnclear = now + MissedReadingService.getOtherAlertReraiseSec(ctx) * 1000;
+            wakeTimeUnclear = now + MissedReadingService.getOtherAlertReraiseSec(ctx, "bg_unclear_readings_alert") * 1000;
         } else {
             // This alert is snoozed
             // reminder - userNotification.timestamp is the time that the alert should be played again
@@ -719,12 +719,12 @@ public class Notifications extends IntentService {
     }
 
     public static void bgUnclearAlert(Context context) {
-        long otherAlertReraiseSec = MissedReadingService.getOtherAlertReraiseSec(context);
+        long otherAlertReraiseSec = MissedReadingService.getOtherAlertReraiseSec(context, "bg_unclear_readings_alert");
         OtherAlert(context, "bg_unclear_readings_alert", "Unclear Sensor Readings" + "  (@" + JoH.hourMinuteString() + ")", uncleanAlertNotificationId, otherAlertReraiseSec);
     }
 
     public static void bgMissedAlert(Context context) {
-        long otherAlertReraiseSec = MissedReadingService.getOtherAlertReraiseSec(context);
+        long otherAlertReraiseSec = MissedReadingService.getOtherAlertReraiseSec(context, "bg_missed_alerts");
         OtherAlert(context, "bg_missed_alerts", "BG Readings Missed" + "  (@" + JoH.hourMinuteString() + ")", missedAlertNotificationId, otherAlertReraiseSec);
     }
 

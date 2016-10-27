@@ -104,7 +104,7 @@ public class MissedReadingService extends IntentService {
         if(userNotification == null) {
             // No active alert exists, should not happen, we have just created it.
         	Log.wtf(TAG, "No active alert exists.");
-            setAlarm(getOtherAlertReraiseSec(context) * 1000, false);
+            setAlarm(getOtherAlertReraiseSec(context, "bg_missed_alerts") * 1000, false);
         } else {
             // we have an alert that should be re-raised on userNotification.timestamp
         	long alarmIn = (long)userNotification.timestamp - now;
@@ -147,13 +147,14 @@ public class MissedReadingService extends IntentService {
         }
     }
     
-    static public long getOtherAlertReraiseSec(Context context) {
+    static public long getOtherAlertReraiseSec(Context context, String alertName) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean enableAlertsReraise = prefs.getBoolean("enable_alerts_reraise", false);
+        boolean enableAlertsReraise = prefs.getBoolean(alertName + "_enable_alerts_reraise" , false);
         if(enableAlertsReraise) {
-            return readPerfsInt(prefs, "other_alerts_reraise_sec", 60);
+            return readPerfsInt(prefs, alertName + "_reraise_sec", 60);
         } else {
-            return 60 * readPerfsInt(prefs, "other_alerts_snooze", 20);
+            int defaultSnooze = readPerfsInt(prefs, "other_alerts_snooze", 20);
+            return 60 * readPerfsInt(prefs, alertName + "_snooze", defaultSnooze);
         }
 
     }

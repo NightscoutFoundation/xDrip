@@ -41,7 +41,7 @@ public class SnoozeOnNotificationDismissService extends IntentService {
            alertType.equals("bg_predict_alert") ||
            alertType.equals("persistent_high_alert")) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            boolean enableAlertsReraise = prefs.getBoolean("enable_alerts_reraise", false);
+            boolean enableAlertsReraise = prefs.getBoolean(alertType + "_enable_alerts_reraise", false);
             if(enableAlertsReraise) {
                 // Only snooze these alert if it the reraise function is enabled. 
                 snoozeOtherAlert(alertType);
