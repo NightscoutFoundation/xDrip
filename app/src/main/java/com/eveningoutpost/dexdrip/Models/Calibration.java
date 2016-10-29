@@ -563,9 +563,10 @@ public class Calibration extends Model {
             }
 
             // less than 5 calibrations in last 4 days? cast the net wider if in extended mode
-            if ((calibrations.size() < 5) && extended) {
+            final int ccount = calibrations.size();
+            if ((ccount < 5) && extended) {
                 calibrations = allForSensorLimited(5);
-                if (calibrations.size() >= 5) {
+                if (calibrations.size() > ccount) {
                     Home.toaststaticnext("Calibrated using data beyond last 4 days");
                 }
             }
@@ -993,7 +994,6 @@ public class Calibration extends Model {
                 .where("Sensor = ? ", sensor.getId())
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
-                .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 4)))
                 .orderBy("timestamp desc")
                 .limit(limit)
                 .execute();

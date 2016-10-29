@@ -46,7 +46,7 @@ public class TaskService extends GcmTaskService {
 
     private int doUnmeteredTask() {
         if (GcmActivity.token != null) {
-            if (JoH.ratelimit("unmetered-update", 43200)) {
+            if (JoH.pratelimit("unmetered-update", 43200)) {
                 UpdateActivity.checkForAnUpdate(getApplicationContext());
             }
         }
