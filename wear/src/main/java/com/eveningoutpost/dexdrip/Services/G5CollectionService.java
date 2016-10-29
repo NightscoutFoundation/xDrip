@@ -797,9 +797,13 @@ public class G5CollectionService extends Service {
                                                   stopScan();
                                               }
                                               Log.e(TAG, "STATE_DISCONNECTED: " + status);
-                                              if (mGatt != null)
-                                                  mGatt.close();
-                                              mGatt = null;
+                                              if (mGatt != null) {
+                                                  try {
+                                                      mGatt.close();
+                                                  } catch (NullPointerException e) { //
+                                                  }
+                                              }
+                                                  mGatt = null;
                                               if (status == 0 && !encountered133) {// || status == 59) {
                                                   android.util.Log.i(TAG, "clean disconnect");
                                                   max133RetryCounter = 0;

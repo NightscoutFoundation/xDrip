@@ -511,11 +511,13 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                             Calibration bgData = gson.fromJson(bgrecord, Calibration.class);
                             Calibration uuidexists = Calibration.findByUuid(bgData.uuid);
                             date.setTime(bgData.timestamp);
-                            if (uuidexists != null) {
-                                Log.d(TAG, "syncCalibrationData Calibration already exists for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + df.format(date));
-                            }
                             bgData.sensor = sensor;
                             bgData.save();
+                            if (uuidexists == null) {//adjust BGs for new calibrations
+                                final boolean adjustPast = mPrefs.getBoolean("rewrite_history", true);
+                                Log.d(TAG, "syncCalibrationData Calibration does not exist for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + df.format(date));
+                                Calibration.adjustRecentBgReadings(adjustPast ? 30 : 2);
+                            }
                             uuidexists = Calibration.findByUuid(bgData.uuid);
                             if (uuidexists != null)
                                 Log.d(TAG, "syncCalibrationData Calibration GSON saved BG: " + uuidexists.toS());
@@ -555,10 +557,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                             Log.d(TAG, "syncBGData add BgReading Table bgrecord=" + bgrecord);
                             BgReading bgData = gson.fromJson(bgrecord, BgReading.class);
                             BgReading exists = BgReading.getForTimestamp(bgData.timestamp);
-                            BgReading uuidexists = BgReading.findByUuid(bgData.uuid);
+                            exists = exists != null ? exists : BgReading.findByUuid(bgData.uuid);
                             date.setTime(bgData.timestamp);
-                            date.setTime(bgData.timestamp);
-                            if (exists != null || uuidexists != null) {
+                            if (exists != null) {
                                 Log.d(TAG, "syncBGData BG already exists for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + df.format(date));
                                 exists.filtered_calculated_value = bgData.filtered_calculated_value;
                                 exists.calculated_value = bgData.calculated_value;

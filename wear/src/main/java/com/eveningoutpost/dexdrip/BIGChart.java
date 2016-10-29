@@ -182,22 +182,27 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
 
     @Override
     protected void onTimeChanged(WatchFaceTime oldTime, WatchFaceTime newTime) {
-        if (layoutSet && (newTime.hasHourChanged(oldTime) || newTime.hasMinuteChanged(oldTime))) {
-            wakeLock.acquire(50);
-            final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BIGChart.this);
-            mTime.setText(timeFormat.format(System.currentTimeMillis()));
-            showAgoRawBatt();
+        if (newTime.hasHourChanged(oldTime) || newTime.hasMinuteChanged(oldTime)) {
+            if (layoutSet) {
+                wakeLock.acquire(50);
+                final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BIGChart.this);
+                mTime.setText(timeFormat.format(System.currentTimeMillis()));
+                showAgoRawBatt();
 
-            if(ageLevel()<=0) {
-                mSgv.setPaintFlags(mSgv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            } else {
-                mSgv.setPaintFlags(mSgv.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                if (ageLevel() <= 0) {
+                    mSgv.setPaintFlags(mSgv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                } else {
+                    mSgv.setPaintFlags(mSgv.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                }
+
+                missedReadingAlert();
+                mRelativeLayout.measure(specW, specH);
+                mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
+                        mRelativeLayout.getMeasuredHeight());
             }
-
-            missedReadingAlert();
-            mRelativeLayout.measure(specW, specH);
-            mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
-                    mRelativeLayout.getMeasuredHeight());
+            else {
+                missedReadingAlert();//KS TEST otherwise, it can be 10+ minutes before missedReadingAlert is called; hwr, aggressive restart does not always resolve ble connection
+            }
         }
     }
 
@@ -436,10 +441,13 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
 
     public void missedReadingAlert() {
         int minutes_since = (int) Math.floor(timeSince() / (1000 * 60));
-        //  if(minutes_since >= 16 && ((minutes_since - 16) % 5) == 0) {
-        Log.d("BIGChart", "missedReadingAlert Enter minutes_since " + minutes_since + " call requestData if >= 4 minutes mod 5");//KS
-        //if(minutes_since >= 16 && ((minutes_since - 16) % 5) == 0) {
-        if (minutes_since >= 4 && ((minutes_since - 4) % 5) == 0) {//KS TODO reduce time for debugging; add notifications
+        int maxDelay = 16;
+        if (sharedPrefs.getBoolean("connectG5", false)) {
+            maxDelay = 4;
+            Log.d("BIGChart", "missedReadingAlert Enter minutes_since " + minutes_since + " call requestData if >= 4 minutes mod 5");//KS
+        }
+
+        if (minutes_since >= maxDelay && ((minutes_since - maxDelay) % 5) == 0) {//KS TODO reduce time for debugging; add notifications
             /*NotificationCompat.Builder notification = new NotificationCompat.Builder(getApplicationContext())
                     .setContentTitle("Missed BG Readings")
                     .setVibrate(vibratePattern);
