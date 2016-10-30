@@ -72,26 +72,30 @@ public class NSClientReceiver extends BroadcastReceiver {
                         process_SGV_json(sgv_json);
                     }
                 } else {
-                    Log.e(TAG, "Ignoring SGV data as we are not a follower");
+                    Log.d(TAG, "Ignoring SGV data as we are not a follower");
                 }
                 break;
 
             case Intents.ACTION_NEW_TREATMENT:
                 if (bundle == null) break;
-                final String treatment_json = bundle.getString("treatment", "");
-                if (treatment_json.length() > 0) {
-                    process_TREATMENT_json(treatment_json);
-                }
-                final String treatments_json = bundle.getString("treatments", "");
-                if (treatments_json.length() > 0) {
-                    try {
-                        final JSONArray jsonArray = new JSONArray(treatments_json);
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            process_TREATMENT_json(jsonArray.getString(i));
-                        }
-                    } catch (JSONException e) {
-                        Log.e(TAG, "Json exception with sgvs: " + e.toString());
+                if (prefs.getBoolean("accept_nsclient_treatments", true)) {
+                    final String treatment_json = bundle.getString("treatment", "");
+                    if (treatment_json.length() > 0) {
+                        process_TREATMENT_json(treatment_json);
                     }
+                    final String treatments_json = bundle.getString("treatments", "");
+                    if (treatments_json.length() > 0) {
+                        try {
+                            final JSONArray jsonArray = new JSONArray(treatments_json);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                process_TREATMENT_json(jsonArray.getString(i));
+                            }
+                        } catch (JSONException e) {
+                            Log.e(TAG, "Json exception with sgvs: " + e.toString());
+                        }
+                    }
+                } else {
+                    Log.d(TAG, "Ignoring nsclient treatment data due to preference");
                 }
                 break;
 

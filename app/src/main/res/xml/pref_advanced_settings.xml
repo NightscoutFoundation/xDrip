@@ -147,13 +147,32 @@
     <PreferenceCategory
         android:key="other_category"
         android:title="@string/other_settings">
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="broadcast_data_through_intents"
-            android:summary="@string/pref_summary_broadcast_enabled"
-            android:switchTextOff="@string/short_off_text_for_switches"
-            android:switchTextOn="@string/short_on_text_for_switches"
-            android:title="@string/pref_title_broadcast_enabled" />
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:key="xdrip_intrer_app_settings"
+            android:summary="For interacting with other compatible apps"
+            android:icon="@drawable/ic_open_in_app_grey600_48dp"
+            android:title="Inter-app settings">
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="broadcast_data_through_intents"
+                android:summary="@string/pref_summary_broadcast_enabled"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="@string/pref_title_broadcast_enabled" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="broadcast_data_through_intents"
+                android:key="broadcast_data_through_intents_without_permission"
+                android:summary="Send broadcasts without locking to the older permission model"
+                android:title="@string/compatible_broadcast" />
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="accept_nsclient_treatments"
+                android:summary="Process treatment data received from NSClient app"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="Accept Treatments" />
+        </PreferenceScreen>
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_less_common_settings"
             android:summary="@string/debug_and_other_misc_options"
@@ -241,11 +260,6 @@
                 android:key="aggressive_service_restart"
                 android:summary="Repeatedly restart the collection service at any hint of missing data. Enable only if you are getting data loss."
                 android:title="Aggressive service restarts" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="broadcast_data_through_intents_without_permission"
-                android:summary="Send broadcasts without locking to the older permission model"
-                android:title="@string/compatible_broadcast" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="engineering_mode"
