@@ -37,9 +37,7 @@ public class SnoozeOnNotificationDismissService extends IntentService {
             return;
         }
         if(alertType.equals("bg_unclear_readings_alert") || 
-           alertType.equals("bg_missed_alerts") ||
-           alertType.equals("bg_predict_alert") ||
-           alertType.equals("persistent_high_alert")) {
+           alertType.equals("bg_missed_alerts")) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             boolean enableAlertsReraise = prefs.getBoolean(alertType + "_enable_alerts_reraise", false);
             if(enableAlertsReraise) {
@@ -48,6 +46,13 @@ public class SnoozeOnNotificationDismissService extends IntentService {
             }
             return;
         }
+        
+        if(alertType.equals("bg_predict_alert") ||
+                alertType.equals("persistent_high_alert")) {
+            Log.wtf(TAG, "SnoozeOnNotificationDismissService called for unsupported type!!! source = " + alertType);
+            
+        }
+        
         Log.e(TAG, "SnoozeOnNotificationDismissService called for unknown source = " + alertType);
     }
     
