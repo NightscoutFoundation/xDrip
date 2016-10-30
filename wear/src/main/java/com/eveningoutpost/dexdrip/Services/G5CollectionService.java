@@ -33,6 +33,7 @@ import android.os.Looper;
 import android.os.ParcelUuid;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.support.v4.content.WakefulBroadcastReceiver;
 
 import com.eveningoutpost.dexdrip.G5Model.AuthChallengeRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.AuthChallengeTxMessage;
@@ -207,7 +208,6 @@ public class G5CollectionService extends Service {
                 return START_STICKY;
             } else {
                 Log.e(TAG,"jamorham service already active!");
-                keep_running = false;//KS test to stop wear BT upon re-connecting to phone
                 keepAlive();
                 return START_NOT_STICKY;
             }
@@ -255,6 +255,15 @@ public class G5CollectionService extends Service {
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
             alarm.cancel(pendingIntent);
         }
+        // close gatt
+        if (mGatt != null) {
+            try {
+                mGatt.close();
+            } catch (NullPointerException e) {
+                Log.d(TAG, "concurrency related null pointer exception in close");
+            }
+        }
+
 //        close();
 //        setRetryTimer();
 //        foregroundServiceStarter.stop();
@@ -292,7 +301,6 @@ public class G5CollectionService extends Service {
             Log.e(TAG, "Ignoring keepalive call due to ratelimit");
         }
     }
-
 
     @Override
     public IBinder onBind(Intent intent) {
