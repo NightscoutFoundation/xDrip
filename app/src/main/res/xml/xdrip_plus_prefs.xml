@@ -369,22 +369,26 @@
                     android:defaultValue="100"
                     android:key="plus_target_range"
                     android:summary=""
+                    android:inputType="numberDecimal"
                     android:title="Target Glucose Default" />
                 <EditTextPreference
                     android:defaultValue="3.0"
                     android:key="xplus_insulin_dia"
                     android:summary=""
+                    android:inputType="numberDecimal"
                     android:title="@string/insulin_duration_hours" />
 
                 <EditTextPreference
                     android:defaultValue="2"
                     android:key="xplus_liver_sensitivity"
                     android:summary=""
+                    android:inputType="numberDecimal"
                     android:title="@string/default_liver_sensitivity_ratio" />
                 <EditTextPreference
                     android:defaultValue="0.8"
                     android:key="xplus_liver_maximpact"
                     android:summary=""
+                    android:inputType="numberDecimal"
                     android:title="Default Liver Maximum Impact (0-1)" />
             </PreferenceCategory>
         </PreferenceScreen>
