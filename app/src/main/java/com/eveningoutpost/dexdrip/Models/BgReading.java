@@ -1274,12 +1274,19 @@ public class BgReading extends Model implements ShareUploadableBg {
         return true;
     }
 
+    // Make sure that this function either sets the alert or removes it.
     public static boolean getAndRaiseUnclearReading(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
+            Log.d("NOTIFICATIONS", "getAndRaiseUnclearReading Notifications are currently disabled!!");
+            UserNotification.DeleteNotificationByType("bg_unclear_readings_alert");
+            return false;
+        }
         
         Boolean bg_unclear_readings_alerts = prefs.getBoolean("bg_unclear_readings_alerts", false);
         if (!bg_unclear_readings_alerts || (!DexCollectionType.hasFiltered())) {
             Log.d(TAG_ALERT, "getUnclearReading returned false since feature is disabled");
+            UserNotification.DeleteNotificationByType("bg_unclear_readings_alert");
             return false;
         }
         Long UnclearTimeSetting = Long.parseLong(prefs.getString("bg_unclear_readings_minutes", "90")) * 60000;
@@ -1291,6 +1298,9 @@ public class BgReading extends Model implements ShareUploadableBg {
             Notifications.bgUnclearAlert(context);
             return true;
         }
+        
+        UserNotification.DeleteNotificationByType("bg_unclear_readings_alert");
+        
         if (UnclearTime > 0 ) {
             Log.d(TAG_ALERT, "We are in an clear state, but not for too long. Alerts are disabled");
             return true;
