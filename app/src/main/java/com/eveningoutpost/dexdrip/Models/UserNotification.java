@@ -160,7 +160,7 @@ public class UserNotification extends Model {
             userNotification.bg_fall_alert = true;
         } else {
             Log.d(TAG,"Saving workaround for: "+type+" "+message);
-            Home.setPreferencesString("UserNotification:timestamp:" + type, JoH.qs((JoH.ts())));
+            Home.setPreferencesString("UserNotification:timestamp:" + type, JoH.qs(timestamp));
             Home.setPreferencesString("UserNotification:message:" + type, message);
            return null;
         }
