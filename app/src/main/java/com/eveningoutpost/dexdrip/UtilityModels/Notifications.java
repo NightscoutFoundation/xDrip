@@ -360,9 +360,9 @@ public class Notifications extends IntentService {
 
         UserNotification userNotification = UserNotification.GetNotificationByType("bg_unclear_readings_alert");
         if (userNotification == null) {
-            // An alert should have already being played, how is this NULL.
-        	Log.wtf(TAG, "No active alert exists.");
-            wakeTimeUnclear = now + MissedReadingService.getOtherAlertReraiseSec(ctx, "bg_unclear_readings_alert") * 1000;
+            // This is the case, that we are in unclear sensor reading, but for small time, so there is no call 
+        	Log.i(TAG, "No active alert exists. returning Long.MAX_VALUE");
+        	return Long.MAX_VALUE;
         } else {
             // This alert is snoozed
             // reminder - userNotification.timestamp is the time that the alert should be played again
@@ -446,8 +446,11 @@ public class Notifications extends IntentService {
 
         
         if(wakeTime < now || wakeTime >=  now + 6 * 60000 ) {
-          Log.e("Notifications" , "ArmTimer recieved a negative time, will fire in 6 minutes");
-          wakeTime = now + 6 * 60000;
+            Log.e("Notifications" , "ArmTimer recieved a negative time, will fire in 6 minutes");
+            wakeTime = now + 6 * 60000;
+        } else if (wakeTime == now) {
+            Log.e("Notifications", "should arm right now, waiting one more second to avoid infinitue loop");
+            wakeTime = now + 1;
         }
         
         AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
