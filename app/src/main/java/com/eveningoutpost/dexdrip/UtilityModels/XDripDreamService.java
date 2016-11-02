@@ -44,6 +44,10 @@ public class XDripDreamService extends DreamService {
     private TextView widgetDelta;
     private TextView widgetStatusLine;
     private TextView widgetReadingAge;
+    private ImageView graphimage;
+
+    private int graph_width;
+    private int graph_height;
 
     private Bouncer mBouncer;
     private Handler mainHandler;
@@ -81,10 +85,10 @@ public class XDripDreamService extends DreamService {
         int screen_height = dm.heightPixels;
 
         // TODO test on various screens
-        
+
         double screen_scale = (dm.densityDpi / 160f);
-        int graph_width = (int) (230 * screen_scale);
-        int graph_height = (int) (128 * screen_scale);
+        graph_width = (int) (230 * screen_scale);
+        graph_height = (int) (128 * screen_scale);
         int widget_width = (int) (180 * screen_scale);
         int widget_height = (int) (100 * screen_scale);
         Log.d(TAG, "Width: " + graph_width + " Height: " + graph_height);
@@ -103,24 +107,9 @@ public class XDripDreamService extends DreamService {
         mBouncer.setLayoutParams(new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
         mBouncer.setSpeed(0.1f);
 
-        long end = System.currentTimeMillis() + (60000 * 5);
-        long start = end - (60000 * 60 * 3) - (60000 * 10);
-        BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(this, start, end);
-        final Bitmap dreamBitmap = new BgSparklineBuilder(this)
-                .setBgGraphBuilder(bgGraphBuilder)
-                .setWidthPx(graph_width)
-                .setHeightPx(graph_height)
-                .showHighLine()
-                .showLowLine()
-                .setStart(System.currentTimeMillis() - 60000 * 60 * 3)
-                .showAxes(true)
-                .setBackgroundColor(getCol(ColorCache.X.color_notification_chart_background))
-                .setShowFiltered(DexCollectionType.hasFiltered() && Home.getPreferencesBooleanDefaultFalse("show_filtered_curve"))
-                .build();
 
-
-        final ImageView graphimage = new ImageView(this);
-        graphimage.setImageBitmap(dreamBitmap);
+        graphimage = new ImageView(this);
+        updateGraph();
         //  image.setBackgroundColor(0xFF004000);
         mBouncer.addView(graphimage, gl);
 
@@ -183,8 +172,27 @@ public class XDripDreamService extends DreamService {
             final long timemod = ((300000 - dg.mssince) % 60000) + 10000;
             Log.d(TAG, "Time mod: " + timemod);
             if (timemod > 1000) delay = timemod;
+            updateGraph();
         }
         return delay; // default clock
+    }
+
+    private void updateGraph() {
+        long end = System.currentTimeMillis() + (60000 * 5);
+        long start = end - (60000 * 60 * 3) - (60000 * 10);
+        BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(this, start, end);
+        final Bitmap dreamBitmap = new BgSparklineBuilder(this)
+                .setBgGraphBuilder(bgGraphBuilder)
+                .setWidthPx(graph_width)
+                .setHeightPx(graph_height)
+                .showHighLine()
+                .showLowLine()
+                .setStart(System.currentTimeMillis() - 60000 * 60 * 3)
+                .showAxes(true)
+                .setBackgroundColor(getCol(ColorCache.X.color_notification_chart_background))
+                .setShowFiltered(DexCollectionType.hasFiltered() && Home.getPreferencesBooleanDefaultFalse("show_filtered_curve"))
+                .build();
+        graphimage.setImageBitmap(dreamBitmap);
     }
 
     // from http://code.google.com/p/android-daydream-samples
