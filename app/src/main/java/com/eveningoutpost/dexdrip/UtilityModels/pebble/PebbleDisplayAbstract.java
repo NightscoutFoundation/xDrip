@@ -6,6 +6,7 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
@@ -36,6 +37,8 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
     protected BgReading bgReading;
     protected PebbleWatchSync pebbleWatchSync;
 
+    protected static final boolean use_best_glucose = true;
+    protected BestGlucose.DisplayGlucose dg;
 
     public void receiveNack(int transactionId) {
         // default no implementation
@@ -80,10 +83,10 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
 
 
     public String getSlopeOrdinal() {
-        if (this.bgReading == null)
+        if ((use_best_glucose && dg == null) || (!use_best_glucose && this.bgReading == null))
             return "0";
 
-        String arrow_name = this.bgReading.slopeName();
+        final String arrow_name = (use_best_glucose ? dg.delta_name : this.bgReading.slopeName());
         if (arrow_name.equalsIgnoreCase("DoubleDown"))
             return "7";
 
@@ -170,7 +173,7 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
 
 
     public String getBgReading() {
-        return this.bgGraphBuilder.unitized_string(this.bgReading.calculated_value);
+        return (use_best_glucose) ? dg.unitized : this.bgGraphBuilder.unitized_string(this.bgReading.calculated_value);
     }
 
 
