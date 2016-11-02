@@ -1478,6 +1478,12 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    // ignores calibration checkins for speed
+    public double ageAdjustedFiltered_fast() {
+        // adjust the filtered_data with the same factor as the age adjusted raw value
+        return filtered_data * (age_adjusted_raw_value / raw_data);
+    }
+
     // the input of this function is a string. each char can be g(=good) or b(=bad) or s(=skip, point unmissed).
     static List<BgReading> createlatestTest(String input, Long now) {
         Random randomGenerator = new Random();

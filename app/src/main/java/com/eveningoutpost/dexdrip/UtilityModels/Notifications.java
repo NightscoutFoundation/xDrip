@@ -22,7 +22,13 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.style.StrikethroughSpan;
+import android.text.style.UnderlineSpan;
+import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
@@ -72,13 +78,16 @@ public class Notifications extends IntentService {
     public static boolean smart_snoozing;
     public static boolean smart_alerting;
     private final static String TAG = AlertPlayer.class.getSimpleName();
+    private static final boolean use_best_glucose = true;
 
     private static String last_noise_string = "Startup";
+
 
     Context mContext;
     PendingIntent wakeIntent;
     private static Handler mHandler = new Handler(Looper.getMainLooper());
 
+    private BestGlucose.DisplayGlucose dg;
     int currentVolume;
     AudioManager manager;
     Bitmap iconBitmap;
@@ -170,21 +179,36 @@ public class Notifications extends IntentService {
         ReadPerfs(context);
         Sensor sensor = Sensor.currentSensor();
 
-        BgReading bgReading = BgReading.last(Home.get_follower());
+        final BgReading bgReading = BgReading.last();
         if (bgReading == null) {
             // Sensor is stopped, or there is not enough data
             AlertPlayer.getPlayer().stopAlert(context, true, false);
             return;
         }
 
-        Log.d(TAG, "FileBasedNotifications called bgReading.calculated_value = " + bgReading.calculated_value);
+        final double calculated_value;
+        if (use_best_glucose) {
+            this.dg = BestGlucose.getDisplayGlucose();
+            if (dg != null) {
+                bgReading.calculated_value = dg.mgdl;
+                calculated_value = dg.mgdl;
+            } else {
+                calculated_value = bgReading.calculated_value;
+                Log.wtf(TAG, "Could not obtain best glucose value!");
+            }
+        } else {
+            calculated_value = bgReading.calculated_value;
+        }
+
+        Log.d(TAG, "FileBasedNotifications called bgReading.calculated_value = " + bgReading.calculated_value + " calculated value: "+calculated_value);
+
 
         // TODO: tzachi what is the time of this last bgReading
         // If the last reading does not have a sensor, or that sensor was stopped.
         // or the sensor was started, but the 2 hours did not still pass? or there is no calibrations.
         // In all this cases, bgReading.calculated_value should be 0.
-        if (((sensor != null) || (Home.get_follower())) && bgReading != null && bgReading.calculated_value != 0) {
-            AlertType newAlert = AlertType.get_highest_active_alert(context, bgReading.calculated_value);
+        if (((sensor != null) || (Home.get_follower())) && calculated_value != 0) {
+            AlertType newAlert = AlertType.get_highest_active_alert(context, calculated_value);
 
             if (newAlert == null) {
                 Log.d(TAG, "FileBasedNotifications - No active notifcation exists, stopping all alerts");
@@ -198,7 +222,7 @@ public class Notifications extends IntentService {
                 Log.d(TAG, "FileBasedNotifications we have a new alert, starting to play it... " + newAlert.name);
                 // We need to create a new alert  and start playing
                 boolean trendingToAlertEnd = trendingToAlertEnd(context, true, newAlert);
-                AlertPlayer.getPlayer().startAlert(context, trendingToAlertEnd, newAlert, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
+                AlertPlayer.getPlayer().startAlert(context, trendingToAlertEnd, newAlert, EditAlertActivity.unitsConvert2Disp(doMgdl, calculated_value));
                 return;
             }
 
@@ -217,7 +241,7 @@ public class Notifications extends IntentService {
 
                 Log.d(TAG, "FileBasedNotifications we have found an active alert, checking if we need to play it " + newAlert.name);
                 boolean trendingToAlertEnd = trendingToAlertEnd(context, false, newAlert);
-                AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
+                AlertPlayer.getPlayer().ClockTick(context, trendingToAlertEnd, EditAlertActivity.unitsConvert2Disp(doMgdl, calculated_value));
                 return;
             }
             // Currently the ui blocks having two alerts with the same alert value.
@@ -252,7 +276,7 @@ public class Notifications extends IntentService {
             Log.d(TAG, "Found a new alert, that is higher than the previous one will play it. " + newAlert.name);
             AlertPlayer.getPlayer().stopAlert(context, true, false);
             boolean trendingToAlertEnd = trendingToAlertEnd(context, true, newAlert);
-            AlertPlayer.getPlayer().startAlert(context, trendingToAlertEnd, newAlert, EditAlertActivity.unitsConvert2Disp(doMgdl, bgReading.calculated_value));
+            AlertPlayer.getPlayer().startAlert(context, trendingToAlertEnd, newAlert, EditAlertActivity.unitsConvert2Disp(doMgdl, calculated_value));
         } else {
             AlertPlayer.getPlayer().stopAlert(context, true, false);
         }
@@ -467,14 +491,24 @@ public class Notifications extends IntentService {
         NotificationCompat.Builder b = new NotificationCompat.Builder(mContext);
         //b.setOngoing(true);
         b.setCategory(NotificationCompat.CATEGORY_STATUS);
-        String titleString = lastReading == null ? "BG Reading Unavailable" : (lastReading.displayValue(mContext) + " " + lastReading.slopeArrow());
+        final BestGlucose.DisplayGlucose dg = (use_best_glucose) ? BestGlucose.getDisplayGlucose() : null;
+        final SpannableString titleString = new SpannableString(lastReading == null ? "BG Reading Unavailable" : (dg != null) ? dg.unitized + " " + dg.delta_arrow
+                : (lastReading.displayValue(mContext) + " " + lastReading.slopeArrow()));
         b.setContentTitle(titleString)
                 .setContentText("xDrip Data collection service is running.")
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setUsesChronometer(false);
         if (lastReading != null) {
+
             b.setWhen(lastReading.timestamp);
-            String deltaString = "Delta: " + bgGraphBuilder.unitizedDeltaString(true, true);
+            final SpannableString deltaString = new SpannableString("Delta: " + ((dg != null) ? dg.unitized_delta + (dg.from_plugin ? " "+context.getString(R.string.p_in_circle) : "")
+                    : bgGraphBuilder.unitizedDeltaString(true, true)));
+
+            if ((dg != null) && (dg.stale)) {
+                deltaString.setSpan(new StrikethroughSpan(), 0, deltaString.length(), 0);
+                titleString.setSpan(new StrikethroughSpan(), 0, titleString.length(), 0); // reference updatable
+            }
+
             b.setContentText(deltaString);
             iconBitmap = new BgSparklineBuilder(mContext)
                     .setHeight(64)
