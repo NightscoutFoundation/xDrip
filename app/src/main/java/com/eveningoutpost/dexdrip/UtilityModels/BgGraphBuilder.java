@@ -44,6 +44,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -98,8 +99,9 @@ public class BgGraphBuilder {
     public static double previous_low_occurs_at = -1;
     private static double low_occurs_at_processed_till_timestamp = -1;
     private final static String TAG = "jamorham graph";
-    private final static int pluginColor = Color.parseColor("#AA00FFFF"); // temporary
-    private final static int pluginSize = 1;
+    //private final static int pluginColor = Color.parseColor("#AA00FFFF"); // temporary
+    private final static int pluginColor = Color.parseColor("#77ff7700"); // temporary
+    private final static int pluginSize = 2;
     final int pointSize;
     final int axisTextSize;
     final int previewAxisTextSize;
@@ -110,6 +112,11 @@ public class BgGraphBuilder {
     public double start_time = end_time - ((60000 * 60 * 24)) / FUZZER;
     private final static double timeshift = 500000;
     private static final int NUM_VALUES = (60 / 5) * 24;
+
+    // flag to indicate if readings data has been adjusted
+    private static boolean plugin_adjusted = false;
+    // used to prevent concurrency problems with calibration plugins
+    private static final ReentrantLock readings_lock = new ReentrantLock();
 
     private final List<Treatments> treatments;
     private final static boolean d = false; // debug flag, could be read from preferences
@@ -130,9 +137,8 @@ public class BgGraphBuilder {
     private static int avg1counter = 0;
     private static double avg1startfuzzed = 0;
     private static int avg2counter = 0;
-    private double endHour;
-
-    //private final int numValues =(60/5)*24;
+    private final int loaded_numValues;
+    private final long loaded_start, loaded_end;
     private final List<BgReading> bgReadings;
     private final List<Calibration> calibrations;
     private final List<PointValue> inRangeValues = new ArrayList<PointValue>();
@@ -181,7 +187,18 @@ public class BgGraphBuilder {
         prediction_enabled = show_prediction;
         end_time = end / FUZZER;
         start_time = start / FUZZER;
-        bgReadings = BgReading.latestForGraph(numValues, start, end);
+
+        readings_lock.lock();
+        try {
+            // store the initialization values used for this instance
+            loaded_numValues=numValues;
+            loaded_start=start;
+            loaded_end=end;
+            bgReadings = BgReading.latestForGraph(numValues, start, end);
+            plugin_adjusted = false;
+        } finally {
+            readings_lock.unlock();
+        }
 
         if ((end - start) > 80000000) {
             try {
@@ -377,11 +394,11 @@ public class BgGraphBuilder {
         return previewLineData;
     }
 
-    public List<Line> defaultLines(boolean simple) {
+    public synchronized List<Line> defaultLines(boolean simple) {
         List<Line> lines = new ArrayList<Line>();
         try {
 
-            addBgReadingValues();
+            addBgReadingValues(simple);
 
             if (!simple) {
                 // motion lines
@@ -459,6 +476,7 @@ public class BgGraphBuilder {
 
 
         } catch (Exception e) {
+            e.printStackTrace();
             Log.e(TAG, "Error in bgbuilder defaultlines: " + e.toString());
         }
         return lines;
@@ -709,571 +727,608 @@ public class BgGraphBuilder {
         return lines;
     }
 
-    private synchronized void addBgReadingValues() {
-       //UserError.Log.i(TAG, "ADD BG READINGS START");
-        filteredValues.clear();
-        rawInterpretedValues.clear();
-        iobValues.clear();
-        activityValues.clear();
-        cobValues.clear();
-        predictedBgValues.clear();
-        polyBgValues.clear();
-        noisePolyBgValues.clear();
-        annotationValues.clear();
-        treatmentValues.clear();
-        highValues.clear();
-        lowValues.clear();
-        inRangeValues.clear();
-        calibrationValues.clear();
-        pluginValues.clear();
+    private void addBgReadingValues() {
+        addBgReadingValues(true);
+    }
 
-        final double bgScale = bgScale();
-        final double now = JoH.ts();
-        long highest_bgreading_timestamp = -1;
-        double trend_start_working = now-(1000*60*12); // 10 minutes // TODO MAKE PREFERENCE?
-        if (bgReadings.size()>0)
-        {
-            highest_bgreading_timestamp = bgReadings.get(0).timestamp;
-            final double ms_since_last_reading = now-highest_bgreading_timestamp;
-            if (ms_since_last_reading<500000)
-            {
-                trend_start_working -= ms_since_last_reading; // push back start of trend calc window
-                Log.d(TAG,"Pushed back trend start by: "+JoH.qs(ms_since_last_reading/1000)+" secs - last reading: "+JoH.dateTimeText(highest_bgreading_timestamp));
-            }
+    private synchronized void addBgReadingValues(final boolean simple) {
+        if (readings_lock.isLocked()) {
+            Log.d(TAG, "BgReadings lock is currently held");
         }
+        readings_lock.lock();
 
-        final double trendstart = trend_start_working;
-        final double noise_trendstart = now-(1000*60*20); // 20 minutes // TODO MAKE PREFERENCE
-        double oldest_noise_timestamp = now;
-        double newest_noise_timestamp = 0;
-        TrendLine[] polys = new TrendLine[5];
-        TrendLine noisePoly = new PolyTrendLine(2);
-        polys[0] = new PolyTrendLine(1);
-       // polys[1] = new PolyTrendLine(2);
-        polys[1] = new Forecast.LogTrendLine();
-        polys[2] = new Forecast.ExpTrendLine();
-        polys[3] = new Forecast.PowerTrendLine();
-        TrendLine poly = null;
-
-        final List<Double> polyxList = new ArrayList<Double>();
-        final List<Double> polyyList = new ArrayList<Double>();
-        final List<Double> noise_polyxList = new ArrayList<Double>();
-        final List<Double> noise_polyyList = new ArrayList<Double>();
-
-        final double avg1start = now-(1000*60*60*8); // 8 hours
-        final double momentum_illustration_start = now-(1000*60*60*2); // 8 hours
-        avg1startfuzzed=avg1start / FUZZER;
-        avg1value = 0;
-        avg1counter = 0;
-        avg2value = 0;
-        avg2counter = 0;
-
-        double last_calibration = 0;
-
-        if (doMgdl)
-        {
-            Profile.scale_factor = Constants.MMOLL_TO_MGDL;
-        } else {
-            Profile.scale_factor = 1;
-        }
-
-        // enumerate calibrations
-        try {
-            for (Calibration calibration : calibrations) {
-                if (calibration.slope_confidence!=0) {
-                    calibrationValues.add(new PointValue((float) (calibration.timestamp / FUZZER), (float) unitized(calibration.bg)));
-                    if (calibration.timestamp > last_calibration) {
-                        last_calibration = calibration.timestamp;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Exception doing calibration values in bggraphbuilder: " + e.toString());
-        }
-        final boolean has_filtered = DexCollectionType.hasFiltered();
-        final boolean predict_use_momentum = prefs.getBoolean("predict_use_momentum", true);
-        final boolean show_moment_working_line = prefs.getBoolean("show_momentum_working_line",false);
-        final boolean interpret_raw = prefs.getBoolean("interpret_raw", false);
-        final boolean show_filtered = prefs.getBoolean("show_filtered_curve", false) && has_filtered;
-        final boolean predict_lows = prefs.getBoolean("predict_lows", true);
-        final boolean show_plugin = prefs.getBoolean("plugin_plot_on_graph", false);
-        final boolean glucose_from_plugin = prefs.getBoolean("display_glucose_from_plugin",false);
-
-        if ((Home.get_follower()) && (bgReadings.size() < 3)) {
-            GcmActivity.requestBGsync();
-        }
-
-        final CalibrationAbstract plugin = (show_plugin) ? PluggableCalibration.getCalibrationPluginFromPreferences() : null;
-        final CalibrationAbstract.CalibrationData cd = (plugin != null) ? plugin.getCalibrationData() : null;
-
-
-        for (BgReading bgReading : bgReadings) {
-            // jamorham special
-
-            // swap main and plugin plot if display glucose is from plugin
-            if ((glucose_from_plugin) && (cd != null))
-            {
-                // original values
-                pluginValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
-                // recalculate from plugin
-                bgReading.calculated_value = plugin.getGlucoseFromBgReading(bgReading, cd);
-                bgReading.filtered_calculated_value = plugin.getGlucoseFromFilteredBgReading(bgReading, cd);
-            }
-
-            if ((show_filtered) && (bgReading.filtered_calculated_value > 0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
-                filteredValues.add(new PointValue((float) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(bgReading.filtered_calculated_value)));
-            }
-            if ((interpret_raw && (bgReading.raw_calculated > 0))) {
-                rawInterpretedValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.raw_calculated)));
-            }
-            if ((!glucose_from_plugin) && (plugin != null) && (cd != null)) {
-                pluginValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(plugin.getGlucoseFromBgReading(bgReading, cd))));
-            }
-            if (bgReading.calculated_value >= 400) {
-                highValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(400)));
-            } else if (unitized(bgReading.calculated_value) >= highMark) {
-                highValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
-            } else if (unitized(bgReading.calculated_value) >= lowMark) {
-                inRangeValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
-            } else if (bgReading.calculated_value >= 40) {
-                lowValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
-            } else if (bgReading.calculated_value > 13) {
-                lowValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(40)));
-            }
-
-            avg2counter++;
-            avg2value +=bgReading.calculated_value;
-            if (bgReading.timestamp > avg1start)
-            {
-                 avg1counter++;
-                 avg1value +=bgReading.calculated_value;
-            }
-
-            // noise calculator
-            if ((bgReading.timestamp > noise_trendstart) && (bgReading.timestamp > last_calibration))
-            {
-                if (has_filtered && (bgReading.filtered_calculated_value>0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
-                    final double shifted_timestamp = bgReading.timestamp - timeshift;
-
-                    if (shifted_timestamp > last_calibration) {
-                        if (shifted_timestamp < oldest_noise_timestamp) oldest_noise_timestamp = shifted_timestamp;
-                        noise_polyxList.add(shifted_timestamp);
-                        noise_polyyList.add((bgReading.filtered_calculated_value));
-                        if (d) Log.d(TAG, "flt noise poly Added: " + noise_polyxList.size() + " " + JoH.qs(noise_polyxList.get(noise_polyxList.size() - 1)) + " / " + JoH.qs(noise_polyyList.get(noise_polyyList.size() - 1), 2));
-                    }
-
-                }
-                if (bgReading.calculated_value>0) {
-                    if (bgReading.timestamp < oldest_noise_timestamp) oldest_noise_timestamp = bgReading.timestamp;
-                    if (bgReading.timestamp > newest_noise_timestamp) { newest_noise_timestamp = bgReading.timestamp; original_value = bgReading.calculated_value; }
-                    noise_polyxList.add((double) bgReading.timestamp);
-                    noise_polyyList.add((bgReading.calculated_value));
-                    if (d) Log.d(TAG, "raw noise poly Added: " + noise_polyxList.size() + " " + JoH.qs(noise_polyxList.get(noise_polyxList.size() - 1)) + " / " + JoH.qs(noise_polyyList.get(noise_polyyList.size() - 1), 2));
-
-                }
-             }
-
-            // momentum trend
-            if ((bgReading.timestamp > trendstart) && (bgReading.timestamp > last_calibration))
-             {
-                 if (has_filtered && (bgReading.filtered_calculated_value>0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
-                     polyxList.add((double) bgReading.timestamp - timeshift);
-                     polyyList.add(unitized(bgReading.filtered_calculated_value));
-                 }
-                 if (bgReading.calculated_value>0) {
-                     polyxList.add((double) bgReading.timestamp);
-                     polyyList.add(unitized(bgReading.calculated_value));
-                 }
-                if (d) Log.d(TAG,"poly Added: "+JoH.qs(polyxList.get(polyxList.size()-1))+" / "+JoH.qs(polyyList.get(polyyList.size() - 1), 2));
-            }
-
-        }
-        if (avg1counter>0) { avg1value = avg1value / avg1counter; };
-        if (avg2counter>0) { avg2value = avg2value / avg2counter; };
-
-        // noise evaluate
         try {
 
-            if (d) Log.d(TAG, "noise Poly list size: " + noise_polyxList.size());
-            // TODO Impossible to satisfy noise evaluation size with only raw data do we want it with raw only??
-            if (noise_polyxList.size()>5) {
-                final double[] noise_polyys = PolyTrendLine.toPrimitiveFromList(noise_polyyList);
-                final double[] noise_polyxs = PolyTrendLine.toPrimitiveFromList(noise_polyxList);
-                noisePoly.setValues(noise_polyys, noise_polyxs);
-                last_noise = noisePoly.errorVarience();
-                if (newest_noise_timestamp > oldest_noise_timestamp)
-                {
-                    best_bg_estimate = noisePoly.predict(newest_noise_timestamp);
-                    last_bg_estimate = noisePoly.predict(newest_noise_timestamp - DEXCOM_PERIOD);
-                } else {
-                    best_bg_estimate = -99;
-                    last_bg_estimate = -99;
-                }
-                Log.i(TAG, "Noise Poly Error Varience: " + JoH.qs(last_noise, 5));
+            if (plugin_adjusted) {
+                Log.i(TAG, "Reloading as Plugin modified data: " + JoH.backTrace(1) + " size:" + bgReadings.size());
+                bgReadings.clear();
+                bgReadings.addAll(BgReading.latestForGraph(loaded_numValues, loaded_start, loaded_end));
             } else {
-                Log.i(TAG,"Not enough data to get sensible noise value");
-                noisePoly=null;
-                last_noise = -9999;
-                best_bg_estimate = -9999;
-                last_bg_estimate = -9999;
+                //Log.d(TAG, "not adjusted");
             }
-        } catch (Exception e){
-            Log.e(TAG," Error with noise poly trend: "+e.toString());
-        }
 
-        // momentum
-        try {
-            if (d) Log.d(TAG, "moment Poly list size: " + polyxList.size());
-            if (polyxList.size()>1) {
-                final double[] polyys = PolyTrendLine.toPrimitiveFromList(polyyList);
-                final double[] polyxs = PolyTrendLine.toPrimitiveFromList(polyxList);
+            filteredValues.clear();
+            rawInterpretedValues.clear();
+            iobValues.clear();
+            activityValues.clear();
+            cobValues.clear();
+            predictedBgValues.clear();
+            polyBgValues.clear();
+            noisePolyBgValues.clear();
+            annotationValues.clear();
+            treatmentValues.clear();
+            highValues.clear();
+            lowValues.clear();
+            inRangeValues.clear();
+            calibrationValues.clear();
+            pluginValues.clear();
 
-                // set and evaluate poly curve models and select first best
-                double min_errors = 9999999;
-                for (TrendLine this_poly : polys) {
-                    if (this_poly != null) {
-                        if (poly == null) poly = this_poly;
-                        this_poly.setValues(polyys, polyxs);
-                        if (this_poly.errorVarience() < min_errors) {
-                            min_errors = this_poly.errorVarience();
-                            poly = this_poly;
-                            //if (d) Log.d(TAG, "set forecast best model to: " + poly.getClass().getSimpleName() + " with varience of: " + JoH.qs(poly.errorVarience(),14));
-                        }
-
-                    }
+            final double bgScale = bgScale();
+            final double now = JoH.ts();
+            long highest_bgreading_timestamp = -1;
+            double trend_start_working = now - (1000 * 60 * 12); // 10 minutes // TODO MAKE PREFERENCE?
+            if (bgReadings.size() > 0) {
+                highest_bgreading_timestamp = bgReadings.get(0).timestamp;
+                final double ms_since_last_reading = now - highest_bgreading_timestamp;
+                if (ms_since_last_reading < 500000) {
+                    trend_start_working -= ms_since_last_reading; // push back start of trend calc window
+                    Log.d(TAG, "Pushed back trend start by: " + JoH.qs(ms_since_last_reading / 1000) + " secs - last reading: " + JoH.dateTimeText(highest_bgreading_timestamp));
                 }
-                if (d) Log.i(TAG, "set forecast best model to: " + poly.getClass().getSimpleName() + " with varience of: " + JoH.qs(poly.errorVarience(), 4));
+            }
+
+            final double trendstart = trend_start_working;
+            final double noise_trendstart = now - (1000 * 60 * 20); // 20 minutes // TODO MAKE PREFERENCE
+            double oldest_noise_timestamp = now;
+            double newest_noise_timestamp = 0;
+            TrendLine[] polys = new TrendLine[5];
+            TrendLine noisePoly = new PolyTrendLine(2);
+            polys[0] = new PolyTrendLine(1);
+            // polys[1] = new PolyTrendLine(2);
+            polys[1] = new Forecast.LogTrendLine();
+            polys[2] = new Forecast.ExpTrendLine();
+            polys[3] = new Forecast.PowerTrendLine();
+            TrendLine poly = null;
+
+            final List<Double> polyxList = new ArrayList<>();
+            final List<Double> polyyList = new ArrayList<>();
+            final List<Double> noise_polyxList = new ArrayList<>();
+            final List<Double> noise_polyyList = new ArrayList<>();
+
+            final double avg1start = now - (1000 * 60 * 60 * 8); // 8 hours
+            final double momentum_illustration_start = now - (1000 * 60 * 60 * 2); // 8 hours
+            avg1startfuzzed = avg1start / FUZZER;
+            avg1value = 0;
+            avg1counter = 0;
+            avg2value = 0;
+            avg2counter = 0;
+
+            double last_calibration = 0;
+
+            if (doMgdl) {
+                Profile.scale_factor = Constants.MMOLL_TO_MGDL;
             } else {
-                if (d) Log.i(TAG,"Not enough data for forecast model");
+                Profile.scale_factor = 1;
             }
 
-        } catch (Exception e)
-        {
-            Log.e(TAG," Error with poly trend: "+e.toString());
-        }
-
-        try {
-            // show trend for whole bg reading area
-            if ((show_moment_working_line) && (poly!=null)) {
-                for (BgReading bgReading : bgReadings) {
-                    // only show working curve for last x hours to a
-                    if (bgReading.timestamp > momentum_illustration_start) {
-                        double polyPredicty = poly.predict(bgReading.timestamp);
-                        //if (d) Log.d(TAG, "Poly predict: "+JoH.qs(polyPredict)+" @ "+JoH.qs(iob.timestamp));
-                        if ((polyPredicty < highMark) && (polyPredicty > 0)) {
-                            PointValue zv = new PointValue((float) (bgReading.timestamp / FUZZER), (float) polyPredicty);
-                            polyBgValues.add(zv);
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            Log.e(TAG,"Error creating back trend: "+e.toString());
-        }
-
-        // low estimator
-        // work backwards to see whether we think a low is estimated
-        low_occurs_at = -1;
-        try {
-            if ((predict_lows) && (prediction_enabled) && (poly != null)) {
-                final double offset = ActivityRecognizedService.raise_limit_due_to_vehicle_mode() ? unitized(ActivityRecognizedService.getVehicle_mode_adjust_mgdl()) : 0;
-                final double plow_now = JoH.ts();
-                double plow_timestamp = plow_now + (1000 * 60 * 99); // max look-ahead
-                double polyPredicty = poly.predict(plow_timestamp);
-                Log.d(TAG, "Low predictor at max lookahead is: " + JoH.qs(polyPredicty));
-                low_occurs_at_processed_till_timestamp = highest_bgreading_timestamp; // store that we have processed up to this timestamp
-                if (polyPredicty <= (lowMark+offset)) {
-                    low_occurs_at = plow_timestamp;
-                    final double lowMarkIndicator = (lowMark - (lowMark / 4));
-                    //if (d) Log.d(TAG, "Poly predict: "+JoH.qs(polyPredict)+" @ "+JoH.qsz(iob.timestamp));
-                    while (plow_timestamp > plow_now) {
-                        plow_timestamp = plow_timestamp - FUZZER;
-                        polyPredicty = poly.predict(plow_timestamp);
-                        if (polyPredicty > (lowMark+offset)) {
-                            PointValue zv = new PointValue((float) (plow_timestamp / FUZZER), (float) polyPredicty);
-                            polyBgValues.add(zv);
-                        } else {
-                            low_occurs_at = plow_timestamp;
-                            if (polyPredicty > lowMarkIndicator) {
-                                polyBgValues.add(new PointValue((float) (plow_timestamp / FUZZER), (float) polyPredicty));
-                            }
-                        }
-                    }
-                    Log.i(TAG, "LOW PREDICTED AT: " + JoH.dateTimeText((long) low_occurs_at));
-                    predictivehours = Math.max(predictivehours, (int) ((low_occurs_at - plow_now) / (60 * 60 * 1000)) + 1);
-                }
-            }
-
-        } catch (NullPointerException e) {
-            //Log.d(TAG,"Error with low prediction trend: "+e.toString());
-        }
-
-        final boolean show_noise_working_line;
-        if ((last_noise > NOISE_TRIGGER) && prefs.getBoolean("bg_compensate_noise", false)) {
-            show_noise_working_line = true;
-        } else {
-            show_noise_working_line = prefs.getBoolean("show_noise_workings", false);
-        }
-        // noise debug
-        try {
-            // overlay noise curve
-            if ((show_noise_working_line) && (prediction_enabled) && (noisePoly != null)) {
-                for (BgReading bgReading : bgReadings) {
-                    // only show working curve for last x hours to a
-                    if ((bgReading.timestamp > oldest_noise_timestamp) && (bgReading.timestamp > last_calibration)) {
-                        double polyPredicty = unitized(noisePoly.predict(bgReading.timestamp));
-                        if (d) Log.d(TAG, "noise Poly predict: "+JoH.qs(polyPredicty)+" @ "+JoH.qs(bgReading.timestamp));
-                        if ((polyPredicty < highMark) && (polyPredicty > 0)) {
-                            PointValue zv = new PointValue((float) (bgReading.timestamp / FUZZER), (float) polyPredicty);
-                            noisePolyBgValues.add(zv);
-                        }
-                    }
-                }
-            }
-
-
-        } catch (Exception e) {
-            Log.e(TAG,"Error creating noise working trend: "+e.toString());
-        }
-
-        //Log.i(TAG,"Average1 value: "+unitized(avg1value));
-        //Log.i(TAG,"Average2 value: "+unitized(avg2value));
-
-
-        try {
-            // display treatment blobs and annotations
-            for (Treatments treatment : treatments) {
-                double height = 6 * bgScale;
-                if (treatment.insulin > 0)
-                    height = treatment.insulin; // some scaling needed I think
-                if (height > highMark) height = highMark;
-                if (height < lowMark) height = lowMark;
-
-                PointValueExtended pv = new PointValueExtended((float) (treatment.timestamp / FUZZER), (float) height);
-                String mylabel = "";
-                if (treatment.insulin > 0) {
-                    if (mylabel.length() > 0)
-                        mylabel = mylabel + System.getProperty("line.separator");
-                    mylabel = mylabel + (Double.toString(treatment.insulin) + "u").replace(".0u", "u");
-                }
-                if (treatment.carbs > 0) {
-                    if (mylabel.length() > 0)
-                        mylabel = mylabel + System.getProperty("line.separator");
-                    mylabel = mylabel + (Double.toString(treatment.carbs) + "g").replace(".0g", "g");
-                }
-                pv.setLabel(mylabel); // standard label
-                if ((treatment.notes !=null) &&(treatment.notes.length()>0))
-                {
-                    pv.note=treatment.notes;
-                    try {
-                        final Pattern p = Pattern.compile(".*?pos:([0-9.]+).*");
-                        final Matcher m = p.matcher(treatment.enteredBy);
-                        if (m.matches()) {
-                            pv.set(pv.getX(), (float)JoH.tolerantParseDouble(m.group(1)));
-                        }
-                    } catch (Exception e) {
-                        Log.d(TAG, "Exception matching position: " + e);
-                    }
-                } else {
-                    pv.note="Treatment";
-                }
-                if (treatmentValues.size() > 0) { // not sure if this >1 is right really - needs a review
-                    PointValue lastpv = treatmentValues.get(treatmentValues.size() - 1);
-                    if (Math.abs(lastpv.getX() - pv.getX()) < ((10 * 60 * 1000) / FUZZER)) {
-                        // merge label with previous - Intelligent parsing and additions go here
-                        if (d) Log.d(TAG, "Merge treatment difference: " + Float.toString(lastpv.getX() - pv.getX()));
-                        String lastlabel = String.valueOf(lastpv.getLabelAsChars());
-                        if (lastlabel.length() > 0) {
-                            lastpv.setLabel(lastlabel + "+" + mylabel);
-                            pv.setLabel("");
-                        }
-                    }
-                }
-                treatmentValues.add(pv); // hover
-                if (d) Log.d(TAG, "Treatment total record: " + Double.toString(height) + " " + " timestamp: " + Long.toString(treatment.timestamp));
-            }
-
-        } catch (Exception e) {
-
-            Log.e(TAG, "Exception doing treatment values in bggraphbuilder: " + e.toString());
-        }
-        try {
-
-
-            // we need to check we actually have sufficient data for this
-            double predictedbg = -1000;
-            BgReading mylastbg = bgReadings.get(0);
-            double lasttimestamp = 0;
-
-            // this can be optimised to oncreate and onchange
-            Profile.reloadPreferences(prefs); // TODO handle this better now we use profile time blocks
-
-
+            // enumerate calibrations
             try {
-                if (mylastbg != null) {
-                    if (doMgdl) {
-                        predictedbg = mylastbg.calculated_value;
-                    } else {
-                        predictedbg = mylastbg.calculated_value_mmol();
+                for (Calibration calibration : calibrations) {
+                    if (calibration.slope_confidence != 0) {
+                        calibrationValues.add(new PointValue((float) (calibration.timestamp / FUZZER), (float) unitized(calibration.bg)));
+                        if (calibration.timestamp > last_calibration) {
+                            last_calibration = calibration.timestamp;
+                        }
                     }
-                    //if (d) Log.d(TAG, "Starting prediction with bg of: " + JoH.qs(predictedbg));
-                    lasttimestamp = mylastbg.timestamp / FUZZER;
-
-                     if (d) Log.d(TAG, "Starting prediction with bg of: " + JoH.qs(predictedbg) + " secs ago: "+(JoH.ts()-mylastbg.timestamp)/1000);
-                } else {
-                    Log.i(TAG, "COULD NOT GET LAST BG READING FOR PREDICTION!!!");
                 }
             } catch (Exception e) {
-                // could not get a bg reading
+                Log.e(TAG, "Exception doing calibration values in bggraphbuilder: " + e.toString());
+            }
+            final boolean has_filtered = DexCollectionType.hasFiltered();
+            final boolean predict_use_momentum = prefs.getBoolean("predict_use_momentum", true);
+            final boolean show_moment_working_line = prefs.getBoolean("show_momentum_working_line", false);
+            final boolean interpret_raw = prefs.getBoolean("interpret_raw", false);
+            final boolean show_filtered = prefs.getBoolean("show_filtered_curve", false) && has_filtered;
+            final boolean predict_lows = prefs.getBoolean("predict_lows", true);
+            final boolean show_plugin = prefs.getBoolean("plugin_plot_on_graph", false);
+            final boolean glucose_from_plugin = prefs.getBoolean("display_glucose_from_plugin", false);
+
+            if ((Home.get_follower()) && (bgReadings.size() < 3)) {
+                GcmActivity.requestBGsync();
             }
 
-            final double iobscale = 1 * bgScale;
-            final double cobscale = 0.2 * bgScale;
-            final double initial_predicted_bg = predictedbg;
-            final double relaxed_predicted_bg_limit = initial_predicted_bg * 1.20;
-            final double cob_insulin_max_draw_value = highMark * 1.20;
-            // final List<Iob> iobinfo_old = Treatments.ioBForGraph(numValues, (start_time * FUZZER));
-            final List<Iob> iobinfo = Treatments.ioBForGraph_new(NUM_VALUES, (start_time * FUZZER)); // for test
+            final CalibrationAbstract plugin = (show_plugin) ? PluggableCalibration.getCalibrationPluginFromPreferences() : null;
+            final CalibrationAbstract.CalibrationData cd = (plugin != null) ? plugin.getCalibrationData() : null;
 
-            long fuzzed_timestamp = (long) end_time; // initial value in case there are no iob records
-            if (d)
-                Log.d(TAG, "Internal date timestamp: " + android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", new java.util.Date()));
+            if ((glucose_from_plugin) && (cd != null)) {
+                plugin_adjusted = true; // plugin will be adjusting data
+            }
 
+            for (final BgReading bgReading : bgReadings) {
+                // jamorham special
 
-            if (d)
-                Log.d(TAG, "initial Fuzzed end timestamp: " + android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", fuzzed_timestamp * FUZZER));
-            if (d)
-                Log.d(TAG, "initial Fuzzed start timestamp: " + android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", (long) start_time * FUZZER));
-            if ((iobinfo != null) && (prediction_enabled)) {
+                // swap main and plugin plot if display glucose is from plugin
+                if ((glucose_from_plugin) && (cd != null)) {
+                    pluginValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
+                    // recalculate from plugin - beware floating / cached references!
+                    bgReading.calculated_value = plugin.getGlucoseFromBgReading(bgReading, cd);
+                    bgReading.filtered_calculated_value = plugin.getGlucoseFromFilteredBgReading(bgReading, cd);
+                }
 
-                double predict_weight = 0.1;
+                if ((show_filtered) && (bgReading.filtered_calculated_value > 0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
+                    filteredValues.add(new PointValue((float) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(bgReading.filtered_calculated_value)));
+                }
+                if ((interpret_raw && (bgReading.raw_calculated > 0))) {
+                    rawInterpretedValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.raw_calculated)));
+                }
+                if ((!glucose_from_plugin) && (plugin != null) && (cd != null)) {
+                    pluginValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(plugin.getGlucoseFromBgReading(bgReading, cd))));
+                }
+                if (bgReading.calculated_value >= 400) {
+                    highValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(400)));
+                } else if (unitized(bgReading.calculated_value) >= highMark) {
+                    highValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
+                } else if (unitized(bgReading.calculated_value) >= lowMark) {
+                    inRangeValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
+                } else if (bgReading.calculated_value >= 40) {
+                    lowValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
+                } else if (bgReading.calculated_value > 13) {
+                    lowValues.add(new PointValue((float) (bgReading.timestamp / FUZZER), (float) unitized(40)));
+                }
 
-                for (Iob iob : iobinfo) {
+                avg2counter++;
+                avg2value += bgReading.calculated_value;
+                if (bgReading.timestamp > avg1start) {
+                    avg1counter++;
+                    avg1value += bgReading.calculated_value;
+                }
 
-                    double activity = iob.activity;
-                    if ((iob.iob > 0) || (iob.cob > 0) || (iob.jActivity > 0) || (iob.jCarbImpact > 0)) {
-                        fuzzed_timestamp = iob.timestamp / FUZZER;
-                        if (d) Log.d(TAG, "iob timestamp: " + iob.timestamp);
-                        if (iob.iob > Profile.minimum_shown_iob) {
-                            double height = iob.iob * iobscale;
-                            if (height > cob_insulin_max_draw_value) height = cob_insulin_max_draw_value;
-                            PointValue pv = new PointValue((float) fuzzed_timestamp, (float) height);
-                            iobValues.add(pv);
-                            double activityheight = iob.jActivity * 3; // currently scaled by profile
-                            if (activityheight > cob_insulin_max_draw_value) activityheight = cob_insulin_max_draw_value;
-                            PointValue av = new PointValue((float) fuzzed_timestamp, (float) activityheight);
-                            activityValues.add(av);
-                        }
+                // noise calculator
+                if (!simple && (bgReading.timestamp > noise_trendstart) && (bgReading.timestamp > last_calibration)) {
+                    if (has_filtered && (bgReading.filtered_calculated_value > 0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
+                        final double shifted_timestamp = bgReading.timestamp - timeshift;
 
-                        if (iob.cob > 0) {
-                            double height = iob.cob * cobscale;
-                            if (height > cob_insulin_max_draw_value) height = cob_insulin_max_draw_value;
-                            PointValue pv = new PointValue((float) fuzzed_timestamp, (float) height);
+                        if (shifted_timestamp > last_calibration) {
+                            if (shifted_timestamp < oldest_noise_timestamp)
+                                oldest_noise_timestamp = shifted_timestamp;
+                            noise_polyxList.add(shifted_timestamp);
+                            noise_polyyList.add((bgReading.filtered_calculated_value));
                             if (d)
-                                Log.d(TAG, "Cob total record: " + JoH.qs(height) + " " + JoH.qs(iob.cob) + " " + Float.toString(pv.getY()) + " @ timestamp: " + Long.toString(iob.timestamp));
-                            cobValues.add(pv); // warning should not be hardcoded
+                                Log.d(TAG, "flt noise poly Added: " + noise_polyxList.size() + " " + JoH.qs(noise_polyxList.get(noise_polyxList.size() - 1)) + " / " + JoH.qs(noise_polyyList.get(noise_polyyList.size() - 1), 2));
                         }
 
-                        // momentum curve
-                        // do we actually need to calculate this within the loop - can we use only the last datum?
-                        if (fuzzed_timestamp > (lasttimestamp)) {
-                            double polyPredict = 0;
-                            if (poly != null) {
-                                try {
-                                    polyPredict = poly.predict(iob.timestamp);
+                    }
+                    if (bgReading.calculated_value > 0) {
+                        if (bgReading.timestamp < oldest_noise_timestamp)
+                            oldest_noise_timestamp = bgReading.timestamp;
+                        if (bgReading.timestamp > newest_noise_timestamp) {
+                            newest_noise_timestamp = bgReading.timestamp;
+                            original_value = bgReading.calculated_value;
+                        }
+                        noise_polyxList.add((double) bgReading.timestamp);
+                        noise_polyyList.add((bgReading.calculated_value));
+                        if (d)
+                            Log.d(TAG, "raw noise poly Added: " + noise_polyxList.size() + " " + JoH.qs(noise_polyxList.get(noise_polyxList.size() - 1)) + " / " + JoH.qs(noise_polyyList.get(noise_polyyList.size() - 1), 2));
+                    }
+                }
+
+                // momentum trend
+                if (!simple && (bgReading.timestamp > trendstart) && (bgReading.timestamp > last_calibration)) {
+                    if (has_filtered && (bgReading.filtered_calculated_value > 0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
+                        polyxList.add((double) bgReading.timestamp - timeshift);
+                        polyyList.add(unitized(bgReading.filtered_calculated_value));
+                    }
+                    if (bgReading.calculated_value > 0) {
+                        polyxList.add((double) bgReading.timestamp);
+                        polyyList.add(unitized(bgReading.calculated_value));
+                    }
+                    if (d)
+                        Log.d(TAG, "poly Added: " + JoH.qs(polyxList.get(polyxList.size() - 1)) + " / " + JoH.qs(polyyList.get(polyyList.size() - 1), 2));
+                }
+
+            }
+            if (avg1counter > 0) {
+                avg1value = avg1value / avg1counter;
+            }
+
+            if (avg2counter > 0) {
+                avg2value = avg2value / avg2counter;
+            }
+
+
+            if (!simple) {
+                // noise evaluate
+                try {
+
+                    if (d) Log.d(TAG, "noise Poly list size: " + noise_polyxList.size());
+                    // TODO Impossible to satisfy noise evaluation size with only raw data do we want it with raw only??
+                    if (noise_polyxList.size() > 5) {
+                        final double[] noise_polyys = PolyTrendLine.toPrimitiveFromList(noise_polyyList);
+                        final double[] noise_polyxs = PolyTrendLine.toPrimitiveFromList(noise_polyxList);
+                        noisePoly.setValues(noise_polyys, noise_polyxs);
+                        last_noise = noisePoly.errorVarience();
+                        if (newest_noise_timestamp > oldest_noise_timestamp) {
+                            best_bg_estimate = noisePoly.predict(newest_noise_timestamp);
+                            last_bg_estimate = noisePoly.predict(newest_noise_timestamp - DEXCOM_PERIOD);
+                        } else {
+                            best_bg_estimate = -99;
+                            last_bg_estimate = -99;
+                        }
+                        Log.i(TAG, "Noise Poly Error Varience: " + JoH.qs(last_noise, 5));
+                    } else {
+                        Log.i(TAG, "Not enough data to get sensible noise value");
+                        noisePoly = null;
+                        last_noise = -9999;
+                        best_bg_estimate = -9999;
+                        last_bg_estimate = -9999;
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, " Error with noise poly trend: " + e.toString());
+                }
+
+                // momentum
+                try {
+                    if (d) Log.d(TAG, "moment Poly list size: " + polyxList.size());
+                    if (polyxList.size() > 1) {
+                        final double[] polyys = PolyTrendLine.toPrimitiveFromList(polyyList);
+                        final double[] polyxs = PolyTrendLine.toPrimitiveFromList(polyxList);
+
+                        // set and evaluate poly curve models and select first best
+                        double min_errors = 9999999;
+                        for (TrendLine this_poly : polys) {
+                            if (this_poly != null) {
+                                if (poly == null) poly = this_poly;
+                                this_poly.setValues(polyys, polyxs);
+                                if (this_poly.errorVarience() < min_errors) {
+                                    min_errors = this_poly.errorVarience();
+                                    poly = this_poly;
+                                    //if (d) Log.d(TAG, "set forecast best model to: " + poly.getClass().getSimpleName() + " with varience of: " + JoH.qs(poly.errorVarience(),14));
+                                }
+
+                            }
+                        }
+                        if (d)
+                            Log.i(TAG, "set forecast best model to: " + poly.getClass().getSimpleName() + " with varience of: " + JoH.qs(poly.errorVarience(), 4));
+                    } else {
+                        if (d) Log.i(TAG, "Not enough data for forecast model");
+                    }
+
+                } catch (Exception e) {
+                    Log.e(TAG, " Error with poly trend: " + e.toString());
+                }
+
+                try {
+                    // show trend for whole bg reading area
+                    if ((show_moment_working_line) && (poly != null)) {
+                        for (BgReading bgReading : bgReadings) {
+                            // only show working curve for last x hours to a
+                            if (bgReading.timestamp > momentum_illustration_start) {
+                                double polyPredicty = poly.predict(bgReading.timestamp);
+                                //if (d) Log.d(TAG, "Poly predict: "+JoH.qs(polyPredict)+" @ "+JoH.qs(iob.timestamp));
+                                if ((polyPredicty < highMark) && (polyPredicty > 0)) {
+                                    PointValue zv = new PointValue((float) (bgReading.timestamp / FUZZER), (float) polyPredicty);
+                                    polyBgValues.add(zv);
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error creating back trend: " + e.toString());
+                }
+
+                // low estimator
+                // work backwards to see whether we think a low is estimated
+                low_occurs_at = -1;
+                try {
+                    if ((predict_lows) && (prediction_enabled) && (poly != null)) {
+                        final double offset = ActivityRecognizedService.raise_limit_due_to_vehicle_mode() ? unitized(ActivityRecognizedService.getVehicle_mode_adjust_mgdl()) : 0;
+                        final double plow_now = JoH.ts();
+                        double plow_timestamp = plow_now + (1000 * 60 * 99); // max look-ahead
+                        double polyPredicty = poly.predict(plow_timestamp);
+                        Log.d(TAG, "Low predictor at max lookahead is: " + JoH.qs(polyPredicty));
+                        low_occurs_at_processed_till_timestamp = highest_bgreading_timestamp; // store that we have processed up to this timestamp
+                        if (polyPredicty <= (lowMark + offset)) {
+                            low_occurs_at = plow_timestamp;
+                            final double lowMarkIndicator = (lowMark - (lowMark / 4));
+                            //if (d) Log.d(TAG, "Poly predict: "+JoH.qs(polyPredict)+" @ "+JoH.qsz(iob.timestamp));
+                            while (plow_timestamp > plow_now) {
+                                plow_timestamp = plow_timestamp - FUZZER;
+                                polyPredicty = poly.predict(plow_timestamp);
+                                if (polyPredicty > (lowMark + offset)) {
+                                    PointValue zv = new PointValue((float) (plow_timestamp / FUZZER), (float) polyPredicty);
+                                    polyBgValues.add(zv);
+                                } else {
+                                    low_occurs_at = plow_timestamp;
+                                    if (polyPredicty > lowMarkIndicator) {
+                                        polyBgValues.add(new PointValue((float) (plow_timestamp / FUZZER), (float) polyPredicty));
+                                    }
+                                }
+                            }
+                            Log.i(TAG, "LOW PREDICTED AT: " + JoH.dateTimeText((long) low_occurs_at));
+                            predictivehours = Math.max(predictivehours, (int) ((low_occurs_at - plow_now) / (60 * 60 * 1000)) + 1);
+                        }
+                    }
+
+                } catch (NullPointerException e) {
+                    //Log.d(TAG,"Error with low prediction trend: "+e.toString());
+                }
+
+                final boolean show_noise_working_line;
+                if ((last_noise > NOISE_TRIGGER) && prefs.getBoolean("bg_compensate_noise", false)) {
+                    show_noise_working_line = true;
+                } else {
+                    show_noise_working_line = prefs.getBoolean("show_noise_workings", false);
+                }
+                // noise debug
+                try {
+                    // overlay noise curve
+                    if ((show_noise_working_line) && (prediction_enabled) && (noisePoly != null)) {
+                        for (BgReading bgReading : bgReadings) {
+                            // only show working curve for last x hours to a
+                            if ((bgReading.timestamp > oldest_noise_timestamp) && (bgReading.timestamp > last_calibration)) {
+                                double polyPredicty = unitized(noisePoly.predict(bgReading.timestamp));
+                                if (d)
+                                    Log.d(TAG, "noise Poly predict: " + JoH.qs(polyPredicty) + " @ " + JoH.qs(bgReading.timestamp));
+                                if ((polyPredicty < highMark) && (polyPredicty > 0)) {
+                                    PointValue zv = new PointValue((float) (bgReading.timestamp / FUZZER), (float) polyPredicty);
+                                    noisePolyBgValues.add(zv);
+                                }
+                            }
+                        }
+                    }
+
+
+                } catch (Exception e) {
+                    Log.e(TAG, "Error creating noise working trend: " + e.toString());
+                }
+
+                //Log.i(TAG,"Average1 value: "+unitized(avg1value));
+                //Log.i(TAG,"Average2 value: "+unitized(avg2value));
+
+
+                try {
+                    // display treatment blobs and annotations
+                    for (Treatments treatment : treatments) {
+                        double height = 6 * bgScale;
+                        if (treatment.insulin > 0)
+                            height = treatment.insulin; // some scaling needed I think
+                        if (height > highMark) height = highMark;
+                        if (height < lowMark) height = lowMark;
+
+                        PointValueExtended pv = new PointValueExtended((float) (treatment.timestamp / FUZZER), (float) height);
+                        String mylabel = "";
+                        if (treatment.insulin > 0) {
+                            if (mylabel.length() > 0)
+                                mylabel = mylabel + System.getProperty("line.separator");
+                            mylabel = mylabel + (Double.toString(treatment.insulin) + "u").replace(".0u", "u");
+                        }
+                        if (treatment.carbs > 0) {
+                            if (mylabel.length() > 0)
+                                mylabel = mylabel + System.getProperty("line.separator");
+                            mylabel = mylabel + (Double.toString(treatment.carbs) + "g").replace(".0g", "g");
+                        }
+                        pv.setLabel(mylabel); // standard label
+                        if ((treatment.notes != null) && (treatment.notes.length() > 0)) {
+                            pv.note = treatment.notes;
+                            try {
+                                final Pattern p = Pattern.compile(".*?pos:([0-9.]+).*");
+                                final Matcher m = p.matcher(treatment.enteredBy);
+                                if (m.matches()) {
+                                    pv.set(pv.getX(), (float) JoH.tolerantParseDouble(m.group(1)));
+                                }
+                            } catch (Exception e) {
+                                Log.d(TAG, "Exception matching position: " + e);
+                            }
+                        } else {
+                            pv.note = "Treatment";
+                        }
+                        if (treatmentValues.size() > 0) { // not sure if this >1 is right really - needs a review
+                            PointValue lastpv = treatmentValues.get(treatmentValues.size() - 1);
+                            if (Math.abs(lastpv.getX() - pv.getX()) < ((10 * 60 * 1000) / FUZZER)) {
+                                // merge label with previous - Intelligent parsing and additions go here
+                                if (d)
+                                    Log.d(TAG, "Merge treatment difference: " + Float.toString(lastpv.getX() - pv.getX()));
+                                String lastlabel = String.valueOf(lastpv.getLabelAsChars());
+                                if (lastlabel.length() > 0) {
+                                    lastpv.setLabel(lastlabel + "+" + mylabel);
+                                    pv.setLabel("");
+                                }
+                            }
+                        }
+                        treatmentValues.add(pv); // hover
+                        if (d)
+                            Log.d(TAG, "Treatment total record: " + Double.toString(height) + " " + " timestamp: " + Long.toString(treatment.timestamp));
+                    }
+
+                } catch (Exception e) {
+
+                    Log.e(TAG, "Exception doing treatment values in bggraphbuilder: " + e.toString());
+                }
+                try {
+
+
+                    // we need to check we actually have sufficient data for this
+                    double predictedbg = -1000;
+                    BgReading mylastbg = bgReadings.get(0);
+                    double lasttimestamp = 0;
+
+                    // this can be optimised to oncreate and onchange
+                    Profile.reloadPreferences(prefs); // TODO handle this better now we use profile time blocks
+
+
+                    try {
+                        if (mylastbg != null) {
+                            if (doMgdl) {
+                                predictedbg = mylastbg.calculated_value;
+                            } else {
+                                predictedbg = mylastbg.calculated_value_mmol();
+                            }
+                            //if (d) Log.d(TAG, "Starting prediction with bg of: " + JoH.qs(predictedbg));
+                            lasttimestamp = mylastbg.timestamp / FUZZER;
+
+                            if (d)
+                                Log.d(TAG, "Starting prediction with bg of: " + JoH.qs(predictedbg) + " secs ago: " + (JoH.ts() - mylastbg.timestamp) / 1000);
+                        } else {
+                            Log.i(TAG, "COULD NOT GET LAST BG READING FOR PREDICTION!!!");
+                        }
+                    } catch (Exception e) {
+                        // could not get a bg reading
+                    }
+
+                    final double iobscale = 1 * bgScale;
+                    final double cobscale = 0.2 * bgScale;
+                    final double initial_predicted_bg = predictedbg;
+                    final double relaxed_predicted_bg_limit = initial_predicted_bg * 1.20;
+                    final double cob_insulin_max_draw_value = highMark * 1.20;
+                    // final List<Iob> iobinfo_old = Treatments.ioBForGraph(numValues, (start_time * FUZZER));
+                    final List<Iob> iobinfo = Treatments.ioBForGraph_new(NUM_VALUES, (start_time * FUZZER)); // for test
+
+                    long fuzzed_timestamp = (long) end_time; // initial value in case there are no iob records
+                    if (d)
+                        Log.d(TAG, "Internal date timestamp: " + android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", new java.util.Date()));
+
+
+                    if (d)
+                        Log.d(TAG, "initial Fuzzed end timestamp: " + android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", fuzzed_timestamp * FUZZER));
+                    if (d)
+                        Log.d(TAG, "initial Fuzzed start timestamp: " + android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", (long) start_time * FUZZER));
+                    if ((iobinfo != null) && (prediction_enabled)) {
+
+                        double predict_weight = 0.1;
+
+                        for (Iob iob : iobinfo) {
+
+                            double activity = iob.activity;
+                            if ((iob.iob > 0) || (iob.cob > 0) || (iob.jActivity > 0) || (iob.jCarbImpact > 0)) {
+                                fuzzed_timestamp = iob.timestamp / FUZZER;
+                                if (d) Log.d(TAG, "iob timestamp: " + iob.timestamp);
+                                if (iob.iob > Profile.minimum_shown_iob) {
+                                    double height = iob.iob * iobscale;
+                                    if (height > cob_insulin_max_draw_value)
+                                        height = cob_insulin_max_draw_value;
+                                    PointValue pv = new PointValue((float) fuzzed_timestamp, (float) height);
+                                    iobValues.add(pv);
+                                    double activityheight = iob.jActivity * 3; // currently scaled by profile
+                                    if (activityheight > cob_insulin_max_draw_value)
+                                        activityheight = cob_insulin_max_draw_value;
+                                    PointValue av = new PointValue((float) fuzzed_timestamp, (float) activityheight);
+                                    activityValues.add(av);
+                                }
+
+                                if (iob.cob > 0) {
+                                    double height = iob.cob * cobscale;
+                                    if (height > cob_insulin_max_draw_value)
+                                        height = cob_insulin_max_draw_value;
+                                    PointValue pv = new PointValue((float) fuzzed_timestamp, (float) height);
                                     if (d)
-                                        Log.d(TAG, "Poly predict: " + JoH.qs(polyPredict) + " @ " + JoH.dateTimeText(iob.timestamp));
-                                    if (show_moment_working_line) {
-                                        if (((polyPredict < highMark) || (polyPredict < initial_predicted_bg)) && (polyPredict > 0)) {
-                                            PointValue zv = new PointValue((float) fuzzed_timestamp, (float) polyPredict);
-                                            polyBgValues.add(zv);
+                                        Log.d(TAG, "Cob total record: " + JoH.qs(height) + " " + JoH.qs(iob.cob) + " " + Float.toString(pv.getY()) + " @ timestamp: " + Long.toString(iob.timestamp));
+                                    cobValues.add(pv); // warning should not be hardcoded
+                                }
+
+                                // momentum curve
+                                // do we actually need to calculate this within the loop - can we use only the last datum?
+                                if (fuzzed_timestamp > (lasttimestamp)) {
+                                    double polyPredict = 0;
+                                    if (poly != null) {
+                                        try {
+                                            polyPredict = poly.predict(iob.timestamp);
+                                            if (d)
+                                                Log.d(TAG, "Poly predict: " + JoH.qs(polyPredict) + " @ " + JoH.dateTimeText(iob.timestamp));
+                                            if (show_moment_working_line) {
+                                                if (((polyPredict < highMark) || (polyPredict < initial_predicted_bg)) && (polyPredict > 0)) {
+                                                    PointValue zv = new PointValue((float) fuzzed_timestamp, (float) polyPredict);
+                                                    polyBgValues.add(zv);
+                                                }
+                                            }
+                                        } catch (Exception e) {
+                                            Log.e(TAG, "Got exception with poly predict: " + e.toString());
                                         }
                                     }
-                                } catch (Exception e) {
-                                    Log.e(TAG, "Got exception with poly predict: " + e.toString());
+                                    if (d)
+                                        Log.d(TAG, "Processing prediction: before: " + JoH.qs(predictedbg) + " activity: " + JoH.qs(iob.jActivity) + " jcarbimpact: " + JoH.qs(iob.jCarbImpact));
+                                    predictedbg -= iob.jActivity; // lower bg by current insulin activity
+                                    predictedbg += iob.jCarbImpact;
+
+                                    double predictedbg_final = predictedbg;
+                                    // add momentum characteristics if we have them
+                                    final boolean momentum_smoothing = true;
+                                    if ((predict_use_momentum) && (polyPredict > 0)) {
+                                        predictedbg_final = ((predictedbg * predict_weight) + polyPredict) / (predict_weight + 1);
+                                        if (momentum_smoothing) predictedbg = predictedbg_final;
+
+                                        if (d)
+                                            Log.d(TAG, "forecast predict_weight: " + JoH.qs(predict_weight));
+                                    }
+                                    predict_weight = predict_weight * 2.5; // from 0-infinity - // TODO account for step!!!
+                                    // we should pull in actual graph upper and lower limits here
+                                    if (((predictedbg_final < cob_insulin_max_draw_value) || (predictedbg_final < relaxed_predicted_bg_limit)) && (predictedbg_final > 0)) {
+                                        PointValue zv = new PointValue((float) fuzzed_timestamp, (float) predictedbg_final);
+                                        predictedBgValues.add(zv);
+                                    }
                                 }
-                            }
-                            if (d)
-                                Log.d(TAG, "Processing prediction: before: " + JoH.qs(predictedbg) + " activity: " + JoH.qs(iob.jActivity) + " jcarbimpact: " + JoH.qs(iob.jCarbImpact));
-                            predictedbg -= iob.jActivity; // lower bg by current insulin activity
-                            predictedbg += iob.jCarbImpact;
+                                if (fuzzed_timestamp > end_time) {
+                                    predictivehours = (int) (((fuzzed_timestamp - end_time) * FUZZER) / (1000 * 60 * 60)) + 1; // round up to nearest future hour - timestamps in minutes here
+                                    if (d)
+                                        Log.d(TAG, "Predictive hours updated to: " + predictivehours);
+                                } else {
+                                    if ((fuzzed_timestamp == end_time - 4) && (iob.iob > 0)) {
+                                        // show current iob
+                                        double position = 12.4 * bgScale; // this is for mmol - needs generic for mg/dl
+                                        if (Math.abs(predictedbg - position) < (2 * bgScale)) {
+                                            position = 7.0 * bgScale;
+                                        }
 
-                            double predictedbg_final = predictedbg;
-                            // add momentum characteristics if we have them
-                            final boolean momentum_smoothing = true;
-                            if ((predict_use_momentum) && (polyPredict > 0)) {
-                                predictedbg_final = ((predictedbg * predict_weight) + polyPredict) / (predict_weight + 1);
-                                if (momentum_smoothing) predictedbg = predictedbg_final;
+                                        PointValue iv = new PointValue((float) fuzzed_timestamp, (float) position);
+                                        DecimalFormat df = new DecimalFormat("#");
+                                        df.setMaximumFractionDigits(2);
+                                        df.setMinimumIntegerDigits(1);
+                                        iv.setLabel("IoB: " + df.format(iob.iob));
+                                        annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
+                                    }
+                                }
 
-                                if (d)
-                                    Log.d(TAG, "forecast predict_weight: " + JoH.qs(predict_weight));
-                            }
-                            predict_weight = predict_weight * 2.5; // from 0-infinity - // TODO account for step!!!
-                            // we should pull in actual graph upper and lower limits here
-                            if (((predictedbg_final < cob_insulin_max_draw_value) || (predictedbg_final < relaxed_predicted_bg_limit)) && (predictedbg_final > 0)) {
-                                PointValue zv = new PointValue((float) fuzzed_timestamp, (float) predictedbg_final);
-                                predictedBgValues.add(zv);
                             }
                         }
-                        if (fuzzed_timestamp > end_time) {
-                            predictivehours = (int) (((fuzzed_timestamp - end_time) * FUZZER) / (1000 * 60 * 60)) + 1; // round up to nearest future hour - timestamps in minutes here
-                            if (d) Log.d(TAG, "Predictive hours updated to: " + predictivehours);
-                        } else {
-                            if ((fuzzed_timestamp == end_time - 4) && (iob.iob > 0)) {
-                                // show current iob
-                                double position = 12.4 * bgScale; // this is for mmol - needs generic for mg/dl
-                                if (Math.abs(predictedbg - position) < (2 * bgScale)) {
-                                    position = 7.0 * bgScale;
-                                }
+                        if (d)
+                            Log.i(TAG, "Size of iob: " + Integer.toString(iobinfo.size()) + " Predictive hours: " + Integer.toString(predictivehours)
+                                    + " Predicted end game change: " + JoH.qs(predictedbg - mylastbg.calculated_value_mmol())
+                                    + " Start bg: " + JoH.qs(mylastbg.calculated_value_mmol()) + " Predicted: " + JoH.qs(predictedbg));
+                        // calculate bolus or carb adjustment - these should have granularity for injection / pump and thresholds
+                    } else {
+                        if (d) Log.i(TAG, "iobinfo was null");
+                    }
 
-                                PointValue iv = new PointValue((float) fuzzed_timestamp, (float) position);
-                                DecimalFormat df = new DecimalFormat("#");
-                                df.setMaximumFractionDigits(2);
-                                df.setMinimumIntegerDigits(1);
-                                iv.setLabel("IoB: " + df.format(iob.iob));
+                    double[] evaluation;
+                    if (prediction_enabled) {
+                        if (doMgdl) {
+                            // These routines need to understand how the profile is defined to use native instead of scaled
+                            evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
+                        } else {
+                            evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
+
+                        }
+
+                        if (d)
+                            Log.i(TAG, "Predictive BWP: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
+                        if ((low_occurs_at < 1) && (Home.getPreferencesBooleanDefaultFalse("show_bwp"))) {
+                            if (evaluation[0] > Profile.minimum_carb_recommendation) {
+                                PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));
+                                iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));
+                                annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
+                            }
+                            if (evaluation[1] > Profile.minimum_insulin_recommendation) {
+                                PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (11 * bgScale));
+                                iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
                                 annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
                             }
                         }
-
                     }
+
+                } catch (Exception e) {
+                    Log.e(TAG, "Exception doing iob values in bggraphbuilder: " + e.toString());
                 }
-                if (d)
-                    Log.i(TAG, "Size of iob: " + Integer.toString(iobinfo.size()) + " Predictive hours: " + Integer.toString(predictivehours)
-                            + " Predicted end game change: " + JoH.qs(predictedbg - mylastbg.calculated_value_mmol())
-                            + " Start bg: " + JoH.qs(mylastbg.calculated_value_mmol()) + " Predicted: " + JoH.qs(predictedbg));
-                // calculate bolus or carb adjustment - these should have granularity for injection / pump and thresholds
-            } else {
-                if (d) Log.i(TAG, "iobinfo was null");
-            }
-
-            double[] evaluation;
-            if (prediction_enabled) {
-                if (doMgdl) {
-                    // These routines need to understand how the profile is defined to use native instead of scaled
-                    evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
-                } else {
-                    evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
-
-                }
-
-                if (d)
-                    Log.i(TAG, "Predictive BWP: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
-               if ((low_occurs_at <1) && (Home.getPreferencesBooleanDefaultFalse("show_bwp"))) {
-                   if (evaluation[0] > Profile.minimum_carb_recommendation) {
-                       PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));
-                       iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));
-                       annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
-                   }
-                   if (evaluation[1] > Profile.minimum_insulin_recommendation) {
-                       PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (11 * bgScale));
-                       iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
-                       annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
-                   }
-               }
-            }
-
-        } catch (Exception e) {
-            Log.e(TAG, "Exception doing iob values in bggraphbuilder: " + e.toString());
+            } // if !simple
+        } finally {
+            readings_lock.unlock();
         }
     }
 

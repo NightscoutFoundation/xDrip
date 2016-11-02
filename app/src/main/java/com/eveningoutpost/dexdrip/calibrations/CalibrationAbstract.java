@@ -125,7 +125,7 @@ public abstract class CalibrationAbstract {
         if (data == null) return -1;
         if (bgReading == null) return -1;
         // algorithm can override to decide whether or not to be using age_adjusted_raw
-        return bgReading.ageAdjustedFiltered() * data.slope + data.intercept;
+        return bgReading.ageAdjustedFiltered_fast() * data.slope + data.intercept;
     }
 
 
