@@ -52,8 +52,8 @@ def generateVersionName = { ->
                 commandLine 'git', 'describe', '--tags'
                 standardOutput = stdout
             }
-            stringBuilder.append(stdout.toString().trim())
-            stringBuilder.append("-")
+            //stringBuilder.append(stdout.toString().trim())
+            //stringBuilder.append("-")
         } catch (ignored) {
             // no tags
         }
