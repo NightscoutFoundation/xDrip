@@ -15,6 +15,7 @@
         <item>čeština</item>
         <item>Nederlands</item>
         <item>Italiano</item>
+        <item>Suomi</item>
     </string-array>
     <string-array name="LocaleChoicesValues">
         <item>en</item>
@@ -31,5 +32,6 @@
         <item>cs</item>
         <item>nl</item>
         <item>it</item>
+        <item>fi</item>
     </string-array>
 </resources>

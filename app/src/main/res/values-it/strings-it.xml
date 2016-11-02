@@ -483,7 +483,7 @@
 	<string name="if_the_phone_has_text_to_speech">Se il telefono è dotato di funzionalità text-to-speech che parlerà ogni nuova lettura.</string>
 	<string name="upload_logs">Carica Logs</string>
 	<string name="short_off_text_for_switches">OFF</string>
-	<string name="short_on_text_for_switches">SOPRA</string>
+	<string name="short_on_text_for_switches">ON</string>
 	<string name="install_pebble_apps">Installare Pebble Apps</string>
 	<string name="sliding_24_hour_window_summary">Utilizzare ultime 24 ore invece di tempo a partire dalla mezzanotte per le statistiche.</string>
 	<string name="sliding_24_hour_window">Finestra scorrevole</string>
