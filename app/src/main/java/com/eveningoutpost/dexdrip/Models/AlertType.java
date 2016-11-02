@@ -22,6 +22,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -163,20 +164,7 @@ public class AlertType extends Model {
             return null;
         }
 
-        Boolean bg_unclear_readings_alerts = prefs.getBoolean("bg_unclear_readings_alerts", false);
-        Long UnclearTimeSetting = Long.parseLong(prefs.getString("bg_unclear_readings_minutes", "90")) * 60000;
-
-        Long UnclearTime = BgReading.getUnclearTime(UnclearTimeSetting);
-
         AlertType at;
-        if (UnclearTime >= UnclearTimeSetting && bg_unclear_readings_alerts ) {
-            Log.d("NOTIFICATIONS", "Readings have been unclear for too long!!");
-            Notifications.bgUnclearAlert(context);
-        }
-        if ((UnclearTime > 0 ) && bg_unclear_readings_alerts) {
-            Log.d(TAG_ALERT, "We are in an clear state, but not for too long. Alerts are disabled");
-            return null;
-        }
         at = get_highest_active_alert_helper(bg, prefs);
         if (at != null) {
             Log.d(TAG_ALERT, "get_highest_active_alert_helper returned alert uuid = " + at.uuid + " alert name = " + at.name);
@@ -427,7 +415,6 @@ public class AlertType extends Model {
 
 
     public static void testAll(Context context) {
-
         remove_all();
         add_alert(null, "high alert 1", true, 180, true, 10, null, 0, 0, true, 20, true, true);
         add_alert(null, "high alert 2", true, 200, true, 10, null, 0, 0, true, 20, true, true);

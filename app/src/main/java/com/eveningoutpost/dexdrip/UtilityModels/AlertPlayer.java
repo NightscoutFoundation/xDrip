@@ -338,6 +338,7 @@ public class AlertPlayer {
     }
     private PendingIntent snoozeIntent(Context ctx){
         Intent intent = new Intent(ctx, SnoozeOnNotificationDismissService.class);
+        intent.putExtra("alertType", "bg_alerts");
         return PendingIntent.getService(ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
