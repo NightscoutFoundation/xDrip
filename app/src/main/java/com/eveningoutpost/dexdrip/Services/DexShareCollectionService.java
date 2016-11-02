@@ -255,13 +255,19 @@ public class DexShareCollectionService extends Service {
                     mDeviceName = btDevice.name;
                     mDeviceAddress = btDevice.address;
                     mBluetoothAdapter = mBluetoothManager.getAdapter();
-                    if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(mDeviceAddress) != null) {
-                        connect(mDeviceAddress);
-                        return;
-                    } else {
-                        Log.w(TAG, "Bluetooth is disabled or BT device cant be found");
-                        setRetryTimer();
-                        return;
+                    try {
+                        if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(mDeviceAddress) != null) {
+                            connect(mDeviceAddress);
+                            return;
+                        } else {
+                            Log.w(TAG, "Bluetooth is disabled or BT device cant be found");
+                            setRetryTimer();
+                            return;
+                        }
+                    } catch (IllegalArgumentException e) {
+                        if (JoH.ratelimit("dex-share-error-log", 180)) {
+                            Log.wtf(TAG, "Error connecting: " + e);
+                        }
                     }
                 } else {
                     Log.w(TAG, "No bluetooth device to try and connect to");
