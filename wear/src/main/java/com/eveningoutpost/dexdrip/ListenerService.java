@@ -57,8 +57,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String WEARABLE_BG_DATA_PATH = "/nightscout_watch_bg_data";//KS
     private static final String WEARABLE_CALIBRATION_DATA_PATH = "/nightscout_watch_cal_data";//KS
     private static final String WEARABLE_SENSOR_DATA_PATH = "/nightscout_watch_sensor_data";//KS
-    public static final String WEARABLE_PREF_DATA_PATH = "/nightscout_watch_pref_data";//KS
-    public static final String DATA_ITEM_RECEIVED_PATH = "/data-item-received";//KS
+    private static final String WEARABLE_PREF_DATA_PATH = "/nightscout_watch_pref_data";//KS
+    private static final String DATA_ITEM_RECEIVED_PATH = "/data-item-received";//KS
     private static final String ACTION_RESEND = "com.dexdrip.stephenblack.nightwatch.RESEND_DATA";
     private static final String ACTION_SENDDATA = "com.dexdrip.stephenblack.nightwatch.SEND_DATA";
     private static final String FIELD_SENDPATH = "field_xdrip_plus_sendpath";
@@ -66,25 +66,21 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String WEARABLE_TREATMENT_PAYLOAD = "/xdrip_plus_treatment_payload";
     private static final String WEARABLE_TOAST_NOTIFICATON = "/xdrip_plus_toast";
     private static final String TAG = "jamorham listener";
-    SharedPreferences mPrefs;//KS
-    Context mContext;//KS
-    public static boolean mLocationPermissionApproved;//KS
-    public static long last_send_previous = 0;//KS
-    public static long last_send_sucess = 0;//KS
-    final public static String pref_last_send_previous = "last_send_previous";
-    boolean is_using_g5 = false;
+    private SharedPreferences mPrefs;//KS
+    private static boolean mLocationPermissionApproved;//KS
+    private static long last_send_previous = 0;//KS
+    final private static String pref_last_send_previous = "last_send_previous";
+    private boolean is_using_g5 = false;
     private static int aggressive_backoff_timer = 120;
 
-    GoogleApiClient googleApiClient;
+    private GoogleApiClient googleApiClient;
     private static long lastRequest = 0;
 
     public class DataRequester extends AsyncTask<Void, Void, Void> {
-        Context mContext;
         final String path;
         final byte[] payload;
 
         DataRequester(Context context, String thispath, byte[] thispayload) {
-            mContext = context;
             path = thispath;
             payload = thispayload;
             Sensor.InitDb(context);//ensure database has already been initialized
@@ -186,7 +182,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     dataMaps.add(dataMap(bg));
                     date.setTime(bg.timestamp);
                     Log.d(TAG, "getWearTransmitterData bg.timestamp:" + df.format(date));
-                    last_send_sucess = bg.timestamp + 1;
+                    long last_send_sucess = bg.timestamp + 1;
                     date.setTime(last_send_sucess);
                     Log.d(TAG, "getWearTransmitterData set last_send_sucess:" + df.format(date));
                     Log.d(TAG, "getWearTransmitterData bg getId:" + bg.getId() + " raw_data:" + bg.raw_data + " filtered_data:" + bg.filtered_data + " timestamp:" + bg.timestamp + " uuid:" + bg.uuid);
@@ -224,16 +220,16 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         return dataMap;
     }
 
-    public void requestData() {
+    private void requestData() {
         sendData(WEARABLE_RESEND_PATH, null);
     }
 
-    public void sendData(String path, byte[] payload) {
+    private void sendData(String path, byte[] payload) {
         if (path == null) return;
         new DataRequester(this, path, payload).execute();
     }
 
-    public void googleApiConnect() {
+    private void googleApiConnect() {
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -277,7 +273,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());//KS
         listenForChangeInSettings();//KS
         is_using_g5 = mPrefs.getBoolean("g5_collection_method", false);//DexCollectionType.DexcomG5
-        mContext = getApplicationContext();//KS
         if (intent != null && ACTION_RESEND.equals(intent.getAction())) {
             googleApiConnect();
             requestData();
@@ -288,7 +283,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         return START_STICKY;
     }
 
-    public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {//KS
+    final private SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {//KS
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             Log.d(TAG, "OnSharedPreferenceChangeListener entered");
             if(key.compareTo("connectG5") == 0 || key.compareTo("use_connectG5") == 0) {
@@ -302,7 +297,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
     };
 
-    public void listenForChangeInSettings() {//KS
+    private void listenForChangeInSettings() {//KS
         mPrefs.registerOnSharedPreferenceChangeListener(prefListener);
         // TODO do we need an unregister!?
     }
@@ -384,7 +379,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
     }
 
-    public void syncPrefData(DataMap dataMap) {//KS
+    private void syncPrefData(DataMap dataMap) {//KS
         SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(this).edit();
 
         Log.d(TAG, "syncPrefData dataMap=" + dataMap);
@@ -433,7 +428,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     }
 
     //Assumes Wear is connected to phone
-    public void processConnectG5() {//KS
+    private void processConnectG5() {//KS
         Log.d(TAG, "processConnectG5 enter");
         boolean connectG5 = mPrefs.getBoolean("connectG5", false);
         boolean use_connectG5 = mPrefs.getBoolean("use_connectG5", false);
@@ -456,7 +451,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
     }
 
-    public void syncSensorData(DataMap dataMap, Context context) {//KS
+    private void syncSensorData(DataMap dataMap, Context context) {//KS
         Log.d(TAG, "syncSensorData");
         java.text.DateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
         Date date = new Date();
@@ -486,7 +481,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
     }
 
-    public void syncCalibrationData(DataMap dataMap, Context context) {//KS
+    private void syncCalibrationData(DataMap dataMap, Context context) {//KS
         Log.d(TAG, "syncCalibrationData");
         java.text.DateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
         Date date = new Date();
@@ -533,7 +528,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
     }
 
-    public void syncBgData(DataMap dataMap, Context context) {//KS
+    private void syncBgData(DataMap dataMap, Context context) {//KS
         Log.d(TAG, "syncBGData");
         java.text.DateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
         Date date = new Date();

@@ -55,15 +55,15 @@ public class WatchUpdaterService extends WearableListenerService implements
     public static final String ACTION_SYNC_DB = WatchUpdaterService.class.getName().concat(".SyncDB");//KS
     public static final String ACTION_SYNC_SENSOR = WatchUpdaterService.class.getName().concat(".SyncSensor");//KS
     public static final String ACTION_SYNC_CALIBRATION = WatchUpdaterService.class.getName().concat(".SyncCalibration");//KS
-    public static final String SYNC_DB_PATH = "/syncweardb";//KS
+    private static final String SYNC_DB_PATH = "/syncweardb";//KS
     private static final String SYNC_BGS_PATH = "/syncwearbgs";//KS
-    public static final String WEARABLE_CALIBRATION_DATA_PATH = "/nightscout_watch_cal_data";//KS
-    public static final String WEARABLE_BG_DATA_PATH = "/nightscout_watch_bg_data";//KS
-    public static final String WEARABLE_SENSOR_DATA_PATH = "/nightscout_watch_sensor_data";//KS
-    public static final String WEARABLE_PREF_DATA_PATH = "/nightscout_watch_pref_data";//KS
-    public static final String DATA_ITEM_RECEIVED_PATH = "/data-item-received";//KS
-    public static final String WEARABLE_DATA_PATH = "/nightscout_watch_data";
-    public static final String WEARABLE_RESEND_PATH = "/nightscout_watch_data_resend";
+    private static final String WEARABLE_CALIBRATION_DATA_PATH = "/nightscout_watch_cal_data";//KS
+    private static final String WEARABLE_BG_DATA_PATH = "/nightscout_watch_bg_data";//KS
+    private static final String WEARABLE_SENSOR_DATA_PATH = "/nightscout_watch_sensor_data";//KS
+    private static final String WEARABLE_PREF_DATA_PATH = "/nightscout_watch_pref_data";//KS
+    private static final String DATA_ITEM_RECEIVED_PATH = "/data-item-received";//KS
+    private static final String WEARABLE_DATA_PATH = "/nightscout_watch_data";
+    private static final String WEARABLE_RESEND_PATH = "/nightscout_watch_data_resend";
     public static final String WEARABLE_VOICE_PAYLOAD = "/xdrip_plus_voice_payload";
     public static final String WEARABLE_APPROVE_TREATMENT = "/xdrip_plus_approve_treatment";
     public static final String WEARABLE_CANCEL_TREATMENT = "/xdrip_plus_cancel_treatment";
@@ -76,11 +76,11 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static long lastRequest = 0;//KS
     private static final Integer sendCalibrationCount = 3;//KS
     private final static Integer sendBgCount = 4;//KS
-    boolean wear_integration = false;
-    boolean pebble_integration = false;
-    boolean is_using_g5 = false;
-    SharedPreferences mPrefs;
-    SharedPreferences.OnSharedPreferenceChangeListener mPreferencesListener;
+    private boolean wear_integration = false;
+    private boolean pebble_integration = false;
+    private boolean is_using_g5 = false;
+    private SharedPreferences mPrefs;
+    private SharedPreferences.OnSharedPreferenceChangeListener mPreferencesListener;
 
     public static void receivedText(Context context, String text) {
         startHomeWithExtra(context, WEARABLE_VOICE_PAYLOAD, text);
@@ -282,7 +282,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
     }
 
-    public static boolean doMgdl(SharedPreferences sPrefs) {
+    private static boolean doMgdl(SharedPreferences sPrefs) {
         String unit = sPrefs.getString("units", "mgdl");
         if (unit.compareTo("mgdl") == 0) {
             return true;
@@ -304,7 +304,7 @@ public class WatchUpdaterService extends WearableListenerService implements
 
     }
 
-    public void listenForChangeInSettings() {
+    private void listenForChangeInSettings() {
         mPreferencesListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                 Log.d(TAG, "onSharedPreferenceChanged enter key=" + key);
@@ -316,7 +316,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         mPrefs.registerOnSharedPreferenceChangeListener(mPreferencesListener);
     }
 
-    public void setSettings() {
+    private void setSettings() {
         Log.d(TAG, "setSettings enter");
         pebble_integration = mPrefs.getBoolean("pebble_sync", false);
         processConnectG5();
@@ -327,7 +327,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
     }
 
-    public void googleApiConnect() {
+    private void googleApiConnect() {
         if (googleApiClient != null && (googleApiClient.isConnected() || googleApiClient.isConnecting())) {
             googleApiClient.disconnect();
         }
@@ -400,10 +400,6 @@ public class WatchUpdaterService extends WearableListenerService implements
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("watchupdate-onstart",60000);
-        double timestamp = 0;
-        if (intent != null) {
-            timestamp = intent.getDoubleExtra("timestamp", 0);
-        }
 
         String action = null;
         if (intent != null) {
@@ -605,7 +601,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
     }
 
-    public void sendData() {
+    private void sendData() {
         BgReading bg = BgReading.last();
         if (bg != null) {
             if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
@@ -716,7 +712,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             if (sensor != null) {
                 if (wear_integration) {
                     DataMap dataMap = new DataMap();
-                    Log.d(TAG, "Sensor sendSensorData uuid=" + sensor.uuid + " started_at=" + sensor.started_at + " active=" + sensor.isActive() + " battery=" + sensor.latest_battery_level + " location=" + sensor.sensor_location + " stopped_at=" + sensor.stopped_at);
+                    Log.d(TAG, "Sensor sendSensorData uuid=" + sensor.uuid + " started_at=" + sensor.started_at + " active=" + Sensor.isActive() + " battery=" + sensor.latest_battery_level + " location=" + sensor.sensor_location + " stopped_at=" + sensor.stopped_at);
                     String json = sensor.toS();
                     Log.d(TAG, "dataMap sendSensorData GSON: " + json);
 
@@ -827,7 +823,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
     }
 
-    public long sgvLevel(double sgv_double, SharedPreferences prefs, BgGraphBuilder bgGB) {
+    private long sgvLevel(double sgv_double, SharedPreferences prefs, BgGraphBuilder bgGB) {
         Double highMark = Double.parseDouble(prefs.getString("highValue", "170"));
         Double lowMark = Double.parseDouble(prefs.getString("lowValue", "70"));
         if (bgGB.unitized(sgv_double) >= highMark) {
@@ -839,7 +835,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
     }
 
-    public double inMgdl(double value, SharedPreferences sPrefs) {
+    private double inMgdl(double value, SharedPreferences sPrefs) {
         if (!doMgdl(sPrefs)) {
             return value * Constants.MMOLL_TO_MGDL;
         } else {
