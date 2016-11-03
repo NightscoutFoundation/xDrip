@@ -426,6 +426,11 @@ public class WatchUpdaterService extends WearableListenerService implements
                     sendSensorData();
                 } else if (ACTION_SYNC_CALIBRATION.equals(action)) {//KS
                     Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_CALIBRATION + " Path=" + WEARABLE_CALIBRATION_DATA_PATH);
+
+                    final boolean adjustPast = mPrefs.getBoolean("rewrite_history", true);
+                    Log.d(TAG, "onStartCommand adjustRecentBgReadings for rewrite_history=" + adjustPast);
+                    sendWearBgData(adjustPast ? 30 : 2);//wear may not have all BGs if use_connectG5=false, so send BGs from phone
+
                     sendWearCalibrationData(sendCalibrationCount);
                 } else {
                     if (!mPrefs.getBoolean("use_wear_connectG5", false)
@@ -692,6 +697,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         Log.d(TAG, "sendPrefSettings connectG5: " + connectG5 + " use_connectG5:" + use_connectG5 + " dex_collection_method:" + dexCollector);
         dataMap.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
         dataMap.putString("dex_collection_method", dexCollector);
+        dataMap.putBoolean("rewrite_history", mPrefs.getBoolean("rewrite_history", true));
         dataMap.putBoolean("connectG5", connectG5);
         dataMap.putBoolean("use_connectG5", use_connectG5);
         dataMap.putString("dex_txid", mPrefs.getString("dex_txid", "ABCDEF"));

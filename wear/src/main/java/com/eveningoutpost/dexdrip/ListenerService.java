@@ -415,7 +415,10 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             stopBtG5Service();
         }
 
-        String units = dataMap.getString("units", "mgdl");//KS
+        final boolean adjustPast = dataMap.getBoolean("rewrite_history", true);
+        prefs.putBoolean("rewrite_history", adjustPast);
+
+        String units = dataMap.getString("units", "mgdl");
         Log.d(TAG, "syncPrefData dataMap units=" + units);
         prefs.putString("units", units);
         Log.d(TAG, "syncPrefData prefs units=" + mPrefs.getString("units", ""));
@@ -556,7 +559,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         if (bgrecord != null) {
                             Log.d(TAG, "syncBGData add BgReading Table bgrecord=" + bgrecord);
                             BgReading bgData = gson.fromJson(bgrecord, BgReading.class);
-                            BgReading exists = BgReading.getForTimestamp(bgData.timestamp);
+                            BgReading exists = BgReading.getForTimestampExists(bgData.timestamp);
                             exists = exists != null ? exists : BgReading.findByUuid(bgData.uuid);
                             date.setTime(bgData.timestamp);
                             if (exists != null) {

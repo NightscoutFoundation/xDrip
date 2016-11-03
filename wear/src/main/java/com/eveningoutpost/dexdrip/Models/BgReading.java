@@ -291,6 +291,24 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    public static BgReading getForTimestampExists(double timestamp) {
+        Sensor sensor = Sensor.currentSensor();
+        if (sensor != null) {
+            BgReading bgReading = new Select()
+                    .from(BgReading.class)
+                    .where("Sensor = ? ", sensor.getId())
+                    .where("timestamp <= ?", (timestamp + (60 * 1000))) // 1 minute padding (should never be that far off, but why not)
+                    .orderBy("timestamp desc")
+                    .executeSingle();
+            if (bgReading != null && Math.abs(bgReading.timestamp - timestamp) < (3 * 60 * 1000)) { //cool, so was it actually within 4 minutes of that bg reading?
+                Log.i(TAG, "getForTimestamp: Found a BG timestamp match");
+                return bgReading;
+            }
+        }
+        Log.d(TAG, "getForTimestamp: No luck finding a BG timestamp match");
+        return null;
+    }
+
     public static BgReading getForTimestamp(double timestamp) {
         Sensor sensor = Sensor.currentSensor();
         if (sensor != null) {
