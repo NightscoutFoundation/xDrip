@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -176,16 +177,24 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
             this.dictionary = new PebbleDictionary();
         }
 
-        if (this.bgReading != null) {
+        if (use_best_glucose ? (this.dg != null) : (this.bgReading != null)) {
             boolean no_signal;
 
-            String slopeOrdinal = getSlopeOrdinal();
-            String bgReadingS = getBgReading();
+            final String slopeOrdinal = getSlopeOrdinal();
+            final String bgReadingS = getBgReading();
 
-            Log.v(TAG, "buildDictionary: slopeOrdinal-" + slopeOrdinal + " bgReading-" + bgReadingS + //
-                    " now-" + (int) now.getTime() / 1000 + " bgTime-" + (int) (this.bgReading.timestamp / 1000) + //
-                    " phoneTime-" + (int) (new Date().getTime() / 1000) + " getBgDelta-" + getBgDelta());
-            no_signal = ((new Date().getTime()) - Home.stale_data_millis() - this.bgReading.timestamp > 0);
+            if (use_best_glucose)
+            {
+                Log.v(TAG, "buildDictionary: slopeOrdinal-" + slopeOrdinal + " bgReading-" + bgReadingS + //
+                        " now-" + (int) now.getTime() / 1000 + " bgTime-" + (int) (dg.timestamp / 1000) + //
+                        " phoneTime-" + (int) (new Date().getTime() / 1000) + " getBgDelta-" + getBgDelta());
+                no_signal = (dg.mssince > Home.stale_data_millis());
+            } else {
+                Log.v(TAG, "buildDictionary: slopeOrdinal-" + slopeOrdinal + " bgReading-" + bgReadingS + //
+                        " now-" + (int) now.getTime() / 1000 + " bgTime-" + (int) (this.bgReading.timestamp / 1000) + //
+                        " phoneTime-" + (int) (new Date().getTime() / 1000) + " getBgDelta-" + getBgDelta());
+                no_signal = ((new Date().getTime()) - Home.stale_data_millis() - this.bgReading.timestamp > 0);
+            }
 
             if (!getBooleanValue("pebble_show_arrows") || no_signal) {
                 this.dictionary.addString(ICON_KEY, "0");
@@ -212,7 +221,11 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
                 this.lastBfReadingSent = bgReadingS;
             }
 
-            this.dictionary.addUint32(RECORD_TIME_KEY, (int) (((this.bgReading.timestamp + offsetFromUTC) / 1000)));
+            if (use_best_glucose) {
+                this.dictionary.addUint32(RECORD_TIME_KEY, (int) (((dg.timestamp + offsetFromUTC) / 1000)));
+            } else {
+                this.dictionary.addUint32(RECORD_TIME_KEY, (int) (((this.bgReading.timestamp + offsetFromUTC) / 1000)));
+            }
 
             if (getBooleanValue("pebble_show_delta")) {
                 if (no_signal) {
@@ -453,7 +466,13 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
 
                             if (d) Log.i(TAG, "sendData: messageInTransit= " + messageInTransit + ", transactionFailed= " + transactionFailed + ", sendStep= " + sendStep);
                             if (sendStep == 0 && !messageInTransit && !transactionOk && !transactionFailed) {
-                                this.bgReading = BgReading.last();
+
+                                if (use_best_glucose) {
+                                    this.dg = BestGlucose.getDisplayGlucose();
+                                } else {
+                                    this.bgReading = BgReading.last();
+                                    }
+
                                 sendingData = true;
                                 buildDictionary();
                                 sendDownload();
@@ -504,7 +523,9 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
 
 
     public String getBgDelta() {
-        return this.bgGraphBuilder.unitizedDeltaString(getBooleanValue("pebble_show_delta_units"), true);
+        final boolean show_delta_units = getBooleanValue("pebble_show_delta_units");
+        return (use_best_glucose) ? (show_delta_units ? dg.unitized_delta : dg.unitized_delta_no_units)
+                : this.bgGraphBuilder.unitizedDeltaString(show_delta_units, true);
     }
 
 

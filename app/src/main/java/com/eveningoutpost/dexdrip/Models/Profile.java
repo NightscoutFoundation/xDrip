@@ -36,10 +36,10 @@ public class Profile {
     private static List<ProfileItem> profileItemList;
 
     public static double getSensitivity(double when) {
-       final double sensitivity = findItemListElementForTime(when).sensitivity;
-       // Log.d(TAG,"sensitivity: "+sensitivity);
+        final double sensitivity = findItemListElementForTime(when).sensitivity;
+        // Log.d(TAG,"sensitivity: "+sensitivity);
         return sensitivity;
-       // expressed in native units lowering effect of 1U
+        // expressed in native units lowering effect of 1U
     }
 
     public static void setSensitivityDefault(double value) {
@@ -82,46 +82,41 @@ public class Profile {
     }
 
 
-    private static void populateProfile()
-    {
-        if (profileItemList==null)
-        {
+    private static void populateProfile() {
+        if (profileItemList == null) {
             profileItemList = ProfileEditor.loadData(false);
-            Log.d(TAG,"Loaded profile data, blocks: "+profileItemList.size());
+            Log.d(TAG, "Loaded profile data, blocks: " + profileItemList.size());
         }
     }
 
-    public static void invalidateProfile()
-    {
+    public static void invalidateProfile() {
         profileItemList = null;
     }
 
-    private static ProfileItem findItemListElementForTime(double when)
-    {
+    private static ProfileItem findItemListElementForTime(double when) {
         populateProfile();
         // TODO does this want/need a hash table lookup cache?
-        if (profileItemList.size()==1) profileItemList.get(0); // always will be first/only element.
+        if (profileItemList.size() == 1)
+            profileItemList.get(0); // always will be first/only element.
         // get time of day
         final int min = ProfileItem.timeStampToMin(when);
         // find element
-        for (ProfileItem item : profileItemList)
-        {
+        for (ProfileItem item : profileItemList) {
             if (item.start_min < item.end_min) {
                 // regular
                 if ((item.start_min <= min) && (item.end_min >= min)) {
-                   // Log.d(TAG, "Match on item " + item.getTimePeriod() + " " + profileItemList.indexOf(item));
+                    // Log.d(TAG, "Match on item " + item.getTimePeriod() + " " + profileItemList.indexOf(item));
                     return item;
                 }
             } else {
                 // item spans midnight
-                if ((min >= item.start_min) || (min <= item.end_min))
-                {
-                  //  Log.d(TAG, "midnight span Match on item " + item.getTimePeriod() + " " + profileItemList.indexOf(item));
+                if ((min >= item.start_min) || (min <= item.end_min)) {
+                    //  Log.d(TAG, "midnight span Match on item " + item.getTimePeriod() + " " + profileItemList.indexOf(item));
                     return item;
                 }
             }
         }
-        Log.wtf(TAG,"Null return from findItemListElementForTime");
+        Log.wtf(TAG, "Null return from findItemListElementForTime");
         return null; // should be impossible
     }
 
@@ -138,23 +133,21 @@ public class Profile {
         return 2.0;
     }
 
-    public static void validateTargetRange()
-    {
-        final double default_target_glucose = tolerantParseDouble(Home.getPreferencesStringWithDefault("plus_target_range",Double.toString(5.5 / scale_factor)));
-        if (default_target_glucose > tolerantParseDouble(Home.getPreferencesStringWithDefault("highValue",Double.toString(5.5 / scale_factor))))
-        {
-            Home.setPreferencesString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL,1));
-            UserError.Log.i(TAG,"Converted initial value of target glucose to mmol");
+    public static void validateTargetRange() {
+        final double default_target_glucose = tolerantParseDouble(Home.getPreferencesStringWithDefault("plus_target_range", Double.toString(5.5 / scale_factor)));
+        if (default_target_glucose > tolerantParseDouble(Home.getPreferencesStringWithDefault("highValue", Double.toString(5.5 / scale_factor)))) {
+            Home.setPreferencesString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL, 1));
+            UserError.Log.i(TAG, "Converted initial value of target glucose to mmol");
         }
     }
 
     static double getTargetRangeInMmol(double when) {
-       // return tolerantParseDouble(Home.getPreferencesStringWithDefault("plus_target_range",Double.toString(5.5 / scale_factor)));
+        // return tolerantParseDouble(Home.getPreferencesStringWithDefault("plus_target_range",Double.toString(5.5 / scale_factor)));
         return getTargetRangeInUnits(when) / scale_factor;
     }
 
     public static double getTargetRangeInUnits(double when) {
-        return tolerantParseDouble(Home.getPreferencesStringWithDefault("plus_target_range",Double.toString(5.5 / scale_factor)));
+        return tolerantParseDouble(Home.getPreferencesStringWithDefault("plus_target_range", Double.toString(5.5 / scale_factor)));
         //return getTargetRangeInMmol(when) * scale_factor; // TODO deal with rounding errors here? (3 decimal places?)
     }
 
@@ -203,24 +196,32 @@ public class Profile {
         try {
             Profile.setSensitivityDefault(tolerantParseDouble(prefs.getString("profile_insulin_sensitivity_default", "0")));
         } catch (Exception e) {
-            Home.toaststatic("Invalid insulin sensitivity");
+            if (JoH.ratelimit("invalid-insulin-profile", 60)) {
+                Home.toaststatic("Invalid insulin sensitivity");
+            }
         }
         try {
             Profile.setDefaultCarbRatio(tolerantParseDouble(prefs.getString("profile_carb_ratio_default", "0")));
         } catch (Exception e) {
-            Home.toaststatic("Invalid default carb ratio!");
+            if (JoH.ratelimit("invalid-insulin-profile", 60)) {
+                Home.toaststatic("Invalid default carb ratio!");
+            }
         }
         try {
             Profile.setCarbAbsorptionDefault(tolerantParseDouble(prefs.getString("profile_carb_absorption_default", "0")));
         } catch (Exception e) {
-            Home.toaststatic("Invalid carb absorption rate");
+            if (JoH.ratelimit("invalid-insulin-profile", 60)) {
+                Home.toaststatic("Invalid carb absorption rate");
+            }
         }
         try {
             Profile.setInsulinActionTimeDefault(tolerantParseDouble(prefs.getString("xplus_insulin_dia", "3.0")));
         } catch (Exception e) {
-            Home.toaststatic("Invalid insulin action time");
+            if (JoH.ratelimit("invalid-insulin-profile", 60)) {
+                Home.toaststatic("Invalid insulin action time");
+            }
         }
-        profileItemList=null;
+        profileItemList = null;
         populateProfile();
     }
 

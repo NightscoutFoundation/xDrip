@@ -68,29 +68,34 @@ public class ShareRest {
     private static final String SHARE_BASE_URL = "https://share2.dexcom.com/ShareWebServices/Services/";
     private SharedPreferences sharedPreferences;
 
-    public ShareRest (Context context, OkHttpClient okHttpClient) {
-        OkHttpClient httpClient = okHttpClient != null ? okHttpClient : getOkHttpClient();
+    public ShareRest(Context context, OkHttpClient okHttpClient) {
 
-        if (httpClient == null) httpClient = getOkHttpClient(); // try again on failure
-        // if fails second time we've got big problems
+        try {
+            OkHttpClient httpClient = okHttpClient != null ? okHttpClient : getOkHttpClient();
 
-        Gson gson = new GsonBuilder()
-                .excludeFieldsWithoutExposeAnnotation()
-                .create();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(SHARE_BASE_URL)
-                .client(httpClient)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
-        dexcomShareApi = retrofit.create(DexcomShare.class);
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        sessionId = sharedPreferences.getString("dexcom_share_session_id", null);
-        username = sharedPreferences.getString("dexcom_account_name", null);
-        password = sharedPreferences.getString("dexcom_account_password", null);
-        serialNumber = sharedPreferences.getString("share_key", null);
-        sharedPreferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
-        if ("".equals(sessionId)) // migrate previous empty sessionIds to null;
-            sessionId = null;
+            if (httpClient == null) httpClient = getOkHttpClient(); // try again on failure
+            // if fails second time we've got big problems
+
+            Gson gson = new GsonBuilder()
+                    .excludeFieldsWithoutExposeAnnotation()
+                    .create();
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(SHARE_BASE_URL)
+                    .client(httpClient)
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .build();
+            dexcomShareApi = retrofit.create(DexcomShare.class);
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+            sessionId = sharedPreferences.getString("dexcom_share_session_id", null);
+            username = sharedPreferences.getString("dexcom_account_name", null);
+            password = sharedPreferences.getString("dexcom_account_password", null);
+            serialNumber = sharedPreferences.getString("share_key", null);
+            sharedPreferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
+            if ("".equals(sessionId)) // migrate previous empty sessionIds to null;
+                sessionId = null;
+        } catch (IllegalStateException e) {
+            Log.wtf(TAG, "Illegal state exception: " + e);
+        }
     }
 
     public synchronized OkHttpClient getOkHttpClient() {

@@ -337,7 +337,7 @@ public class TaskerPlugin {
 			boolean supportedFlag = hostSupportsOnFireVariableReplacement( editActivity.getIntent().getExtras() );
 			
 			if ( ! supportedFlag ) {
-				String callerPackage = editActivity.getCallingActivity().getPackageName();
+				String callerPackage = (editActivity.getCallingActivity() != null) ? editActivity.getCallingActivity().getPackageName() : "null";
 				
 				// Tasker only supporteed this from 1.0.10
 				supportedFlag = 

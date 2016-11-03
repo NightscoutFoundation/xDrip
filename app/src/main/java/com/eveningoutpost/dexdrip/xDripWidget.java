@@ -5,7 +5,6 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.PowerManager;
@@ -69,8 +68,9 @@ public class xDripWidget extends AppWidgetProvider {
         displayCurrentInfo(appWidgetManager, appWidgetId, context, views);
         try {
             appWidgetManager.updateAppWidget(appWidgetId, views);
-        } catch (RuntimeException e) {
-            Log.e(TAG, "Got Runtime exception in widget update: " + e);
+            // needed to catch RuntimeException and DeadObjectException
+        } catch (Exception e) {
+            Log.e(TAG, "Got Rexception in widget update: " + e);
         }
     }
 
@@ -113,7 +113,7 @@ public class xDripWidget extends AppWidgetProvider {
                 }
                 // TODO functionize this check as it is in multiple places
                 if (Home.getPreferencesBooleanDefaultFalse("display_glucose_from_plugin") && (PluggableCalibration.getCalibrationPluginFromPreferences() != null)){
-                    extrastring += " \u24C5";
+                    extrastring += " "+context.getString(R.string.p_in_circle);
                 }
 
 

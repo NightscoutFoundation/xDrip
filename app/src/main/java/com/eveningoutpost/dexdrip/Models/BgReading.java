@@ -1216,11 +1216,6 @@ public class BgReading extends Model implements ShareUploadableBg {
             return;
         }
 
-        if(IsUnclearTime(context)) {
-            Log.d(TAG_ALERT, "checkForRisingAllert we are in an clear time, returning without doing anything");
-            return ;
-        }
-
         String riseRate = prefs.getString("rising_bg_val", "2");
         float friseRate = 2;
 
@@ -1248,11 +1243,6 @@ public class BgReading extends Model implements ShareUploadableBg {
         if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
             Log.d("NOTIFICATIONS", "checkForDropAllert: Notifications are currently disabled!!");
             return;
-        }
-
-        if(IsUnclearTime(context)) {
-            Log.d(TAG_ALERT, "checkForDropAllert we are in an clear time, returning without doing anything");
-            return ;
         }
 
         String dropRate = prefs.getString("falling_bg_val", "2");
@@ -1311,18 +1301,38 @@ public class BgReading extends Model implements ShareUploadableBg {
         return true;
     }
 
-    private static boolean IsUnclearTime(Context context) {
+    // Make sure that this function either sets the alert or removes it.
+    public static boolean getAndRaiseUnclearReading(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-        Boolean bg_unclear_readings_alerts = prefs.getBoolean("bg_unclear_readings_alerts", false);
-        if(bg_unclear_readings_alerts) {
-            Long UnclearTimeSetting = Long.parseLong(prefs.getString("bg_unclear_readings_minutes", "90")) * 60000;
-            Long unclearTime = getUnclearTime(UnclearTimeSetting);
-            if (unclearTime > 0) {
-                Log.d(TAG_ALERT, "IsUnclearTime we are in an clear time, returning true");
-                return true;
-            }
+        if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
+            Log.d("NOTIFICATIONS", "getAndRaiseUnclearReading Notifications are currently disabled!!");
+            UserNotification.DeleteNotificationByType("bg_unclear_readings_alert");
+            return false;
         }
+        
+        Boolean bg_unclear_readings_alerts = prefs.getBoolean("bg_unclear_readings_alerts", false);
+        if (!bg_unclear_readings_alerts || (!DexCollectionType.hasFiltered())) {
+            Log.d(TAG_ALERT, "getUnclearReading returned false since feature is disabled");
+            UserNotification.DeleteNotificationByType("bg_unclear_readings_alert");
+            return false;
+        }
+        Long UnclearTimeSetting = Long.parseLong(prefs.getString("bg_unclear_readings_minutes", "90")) * 60000;
+
+        Long UnclearTime = BgReading.getUnclearTime(UnclearTimeSetting);
+
+        if (UnclearTime >= UnclearTimeSetting ) {
+            Log.d("NOTIFICATIONS", "Readings have been unclear for too long!!");
+            Notifications.bgUnclearAlert(context);
+            return true;
+        }
+        
+        UserNotification.DeleteNotificationByType("bg_unclear_readings_alert");
+        
+        if (UnclearTime > 0 ) {
+            Log.d(TAG_ALERT, "We are in an clear state, but not for too long. Alerts are disabled");
+            return true;
+        }
+        
         return false;
     }
     /*
@@ -1337,11 +1347,6 @@ public class BgReading extends Model implements ShareUploadableBg {
     public static boolean trendingToAlertEnd(Context context, boolean above) {
         // TODO: check if we are not in an UnclerTime.
         Log.d(TAG_ALERT, "trendingToAlertEnd called");
-
-        if(IsUnclearTime(context)) {
-            Log.d(TAG_ALERT, "trendingToAlertEnd we are in an clear time, returning false");
-            return false;
-        }
 
         List<BgReading> latest = getXRecentPoints(3);
         if(latest == null) {
@@ -1476,6 +1481,12 @@ public class BgReading extends Model implements ShareUploadableBg {
             // adjust the filtered_data with the same factor as the age adjusted raw value
             return filtered_data * (usedRaw/raw_data);
         }
+    }
+
+    // ignores calibration checkins for speed
+    public double ageAdjustedFiltered_fast() {
+        // adjust the filtered_data with the same factor as the age adjusted raw value
+        return filtered_data * (age_adjusted_raw_value / raw_data);
     }
 
     // the input of this function is a string. each char can be g(=good) or b(=bad) or s(=skip, point unmissed).

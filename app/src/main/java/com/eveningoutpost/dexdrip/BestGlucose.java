@@ -34,13 +34,26 @@ public class BestGlucose {
         public double delta_mgdl = 0;
         public int warning = -1;
         public long mssince = -1;
+        public long timestamp = -1;
         public boolean stale = true;
         public String unitized = "void";
         public String unitized_delta = "";
+        public String unitized_delta_no_units = "";
         public String delta_arrow = "";
+        public String delta_name = "";
         public String extra_string = "";
         public String plugin_name = "";
         public boolean from_plugin = false;
+
+        public String minutesAgo() {
+            return minutesAgo(false);
+        }
+
+        public String minutesAgo(boolean include_words) {
+            final int minutes = ((int) (this.mssince / 60000));
+            return Integer.toString(minutes) + (include_words ? (((minutes == 1) ? xdrip.getAppContext().getString(R.string.space_minute_ago) : xdrip.getAppContext().getString(R.string.space_minutes_ago))) : "");
+        }
+
     }
 
     // note we don't support the original depreciated "predictive" mode
@@ -60,7 +73,7 @@ public class BestGlucose {
 
         List<BgReading> last_2 = BgReading.latest(2);
 
-        final BgReading lastBgReading = BgReading.last();
+        final BgReading lastBgReading = BgReading.last(is_follower);
         if (lastBgReading == null) return null;
 
         final CalibrationAbstract.CalibrationData pcalibration;
@@ -84,7 +97,10 @@ public class BestGlucose {
         }
 
         dg.mssince = JoH.msSince(lastBgReading.timestamp);
-        // TODO set stale
+
+        dg.timestamp = lastBgReading.timestamp;
+        // TODO set stale or use getter maybe
+        dg.stale = dg.mssince > Home.stale_data_millis();
 
         // if we are actively using a plugin, get the glucose calculation from there
         if ((plugin != null) && ((pcalibration = plugin.getCalibrationData()) != null) && (Home.getPreferencesBoolean("display_glucose_from_plugin", false))) {
@@ -104,6 +120,7 @@ public class BestGlucose {
 
         int warning_level = 0;
         String slope_arrow = "";
+        String slope_name = "";
         String extrastring = "";
         double estimated_delta = 0;
 
@@ -125,8 +142,11 @@ public class BestGlucose {
             estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
             // TODO handle ratio when period is not dexcom period?
             double estimated_delta_by_minute = estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000);
+            dg.unitized_delta_no_units = BgGraphBuilder.unitizedDeltaStringRaw(false, true, estimated_delta_by_minute, doMgdl);
+            // TODO optimize adding units
             dg.unitized_delta = BgGraphBuilder.unitizedDeltaStringRaw(true, true, estimated_delta_by_minute, doMgdl);
             slope_arrow = BgReading.slopeToArrowSymbol(estimated_delta_by_minute); // delta by minute
+            slope_name = BgReading.slopeName(estimated_delta_by_minute);
             extrastring = "\u26A0"; // warning symbol !
             warning_level = 1;
 
@@ -137,12 +157,15 @@ public class BestGlucose {
         } else {
             // TODO ignores plugin
             //dg.unitized_delta = BgGraphBuilder.unitizedDeltaString(true, true, is_follower , doMgdl);
+            dg.unitized_delta_no_units = unitizedDeltaString(false, true, doMgdl, estimate, timestamp, previous_estimate, previous_timestamp);
+            // TODO optimize adding units
             dg.unitized_delta = unitizedDeltaString(true, true, doMgdl, estimate, timestamp, previous_estimate, previous_timestamp);
             long time_delta = timestamp - previous_timestamp;
             if (time_delta < 0) Log.wtf(TAG, "Time delta is negative! : " + time_delta);
             //slope_arrow = lastBgReading.slopeArrow(); // internalize this for plugins
             double slope = calculateSlope(estimate, timestamp, previous_estimate, previous_timestamp);
             slope_arrow = BgReading.slopeToArrowSymbol(slope * 60000); // slope by minute
+            slope_name = BgReading.slopeName(slope*60000);
             Log.d(TAG, "No noise option slope by minute: " + (slope * 60000));
         }
 
@@ -152,9 +175,12 @@ public class BestGlucose {
             warning_level = 2;
         }
 
+
+
         final String stringEstimate = BgGraphBuilder.unitized_string(estimate, doMgdl);
         if ((lastBgReading.hide_slope) || (bg_from_filtered)) {
             slope_arrow = "";
+            slope_name = "NOT COMPUTABLE";
         }
 
         dg.mgdl = estimate;
@@ -163,6 +189,7 @@ public class BestGlucose {
         dg.unitized = stringEstimate;
         dg.delta_arrow = slope_arrow;
         dg.extra_string = extrastring;
+        dg.delta_name = slope_name;
 
         Log.d(TAG, "dg result: " + dg.unitized);
         return dg;
