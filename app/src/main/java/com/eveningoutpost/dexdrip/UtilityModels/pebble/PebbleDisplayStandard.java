@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.UtilityModels.pebble;
 
 import android.content.Intent;
 
+import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -49,15 +50,32 @@ public class PebbleDisplayStandard extends PebbleDisplayAbstract {
         Date now = new Date();
         int offsetFromUTC = tz.getOffset(now.getTime());
 
-        String bgDelta = getBgDelta();
-        String bgReadingS = getBgReading();
+        final String bgDelta = getBgDelta();
+        final String bgReadingS = getBgReading();
+        final String slopeOrdinal = getSlopeOrdinal();
+        //boolean no_signal;
 
-        Log.v(TAG, "buildDictionary: slopeOrdinal-" + getSlopeOrdinal() + " bgReading-" + bgReadingS +
-                " now-" + (int) now.getTime() / 1000 + " bgTime-" + (int) (this.bgReading.timestamp / 1000) +
-                " phoneTime-" + (int) (new Date().getTime() / 1000) + " getBgDelta-" + bgDelta);
-        dictionary.addString(ICON_KEY, getSlopeOrdinal());
+        if (use_best_glucose) {
+            Log.v(TAG, "buildDictionary: slopeOrdinal-" + slopeOrdinal + " bgReading-" + bgReadingS + //
+                    " now-" + (int) now.getTime() / 1000 + " bgTime-" + (int) (dg.timestamp / 1000) + //
+                    " phoneTime-" + (int) (new Date().getTime() / 1000) + " getBgDelta-" + getBgDelta());
+            //   no_signal = (dg.mssince > Home.stale_data_millis());
+        } else {
+            Log.v(TAG, "buildDictionary: slopeOrdinal-" + slopeOrdinal + " bgReading-" + bgReadingS + //
+                    " now-" + (int) now.getTime() / 1000 + " bgTime-" + (int) (this.bgReading.timestamp / 1000) + //
+                    " phoneTime-" + (int) (new Date().getTime() / 1000) + " getBgDelta-" + getBgDelta());
+            //   no_signal = ((new Date().getTime()) - Home.stale_data_millis() - this.bgReading.timestamp > 0);
+        }
+
+        dictionary.addString(ICON_KEY, slopeOrdinal);
         dictionary.addString(BG_KEY, bgReadingS);
-        dictionary.addUint32(RECORD_TIME_KEY, (int) (((this.bgReading.timestamp + offsetFromUTC) / 1000)));
+
+        if (use_best_glucose) {
+            dictionary.addUint32(RECORD_TIME_KEY, (int) (((dg.timestamp + offsetFromUTC) / 1000)));
+        } else {
+            dictionary.addUint32(RECORD_TIME_KEY, (int) (((this.bgReading.timestamp + offsetFromUTC) / 1000)));
+        }
+
         dictionary.addUint32(PHONE_TIME_KEY, (int) ((new Date().getTime() + offsetFromUTC) / 1000));
         dictionary.addString(BG_DELTA_KEY, bgDelta);
 
@@ -68,8 +86,13 @@ public class PebbleDisplayStandard extends PebbleDisplayAbstract {
 
 
     public void sendData() {
-        this.bgReading = BgReading.last();
-        if (this.bgReading != null) {
+        if (use_best_glucose) {
+            this.dg = BestGlucose.getDisplayGlucose();
+        } else {
+            this.bgReading = BgReading.last();
+        }
+
+        if (use_best_glucose ? (this.dg != null) : (this.bgReading != null)) {
             sendDownload();
         }
     }

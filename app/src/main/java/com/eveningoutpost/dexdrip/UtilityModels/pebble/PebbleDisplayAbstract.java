@@ -171,9 +171,8 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
     }
 
 
-
     public String getBgReading() {
-        return (use_best_glucose) ? dg.unitized : this.bgGraphBuilder.unitized_string(this.bgReading.calculated_value);
+        return (use_best_glucose) ? ((dg != null) ? dg.unitized : "") : this.bgGraphBuilder.unitized_string(this.bgReading.calculated_value);
     }
 
 
