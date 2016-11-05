@@ -1123,7 +1123,7 @@ public class Calibration extends Model {
                 .from(Calibration.class)
                 .where("sensor_uuid = ? ", sensor.uuid)
                  .orderBy("timestamp desc")
-                 .limit(9) // Currently, only 10 calibrations seems to pass, and I want to have some spare
+                 .limit(8) // Saw a case that 9 did not pass.
                 .execute();
     }
     

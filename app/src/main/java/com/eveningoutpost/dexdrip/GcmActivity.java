@@ -63,7 +63,7 @@ class NewCalibration {
     long timestamp;
     
     @Expose
-    double offset;
+    long offset;
     
     @Expose
     String uuid;
