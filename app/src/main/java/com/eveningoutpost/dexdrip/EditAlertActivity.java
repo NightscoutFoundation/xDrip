@@ -7,14 +7,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Paint;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.text.format.DateFormat;
 import android.text.method.DigitsKeyListener;
@@ -43,9 +48,9 @@ import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
 
 public class EditAlertActivity extends ActivityWithMenu {
     //public static String menu_name = "Edit Alert";
@@ -90,6 +95,7 @@ public class EditAlertActivity extends ActivityWithMenu {
     private Context mContext;
     private boolean above;
     private final int REQUEST_CODE_CHOOSE_FILE = 1;
+    private final static int MY_PERMISSIONS_REQUEST_STORAGE = 138;
     
     private final int MIN_ALERT = 40;
     private final int MAX_ALERT = 400;
@@ -567,10 +573,9 @@ public class EditAlertActivity extends ActivityWithMenu {
                                     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL);
                                     startActivityForResult(intent, 999);
                                 } else if (which == 1) {
-                                    Intent fileIntent = new Intent();
-                                    fileIntent.setType("audio/mpeg3");
-                                    fileIntent.setAction(Intent.ACTION_GET_CONTENT);
-                                    startActivityForResult(Intent.createChooser(fileIntent, "Select File for Alert"), REQUEST_CODE_CHOOSE_FILE);
+                                    if (checkPermissions()) {
+                                      chooseFile();
+                                    }
                                 } else {
                                     // Xdrip default was chossen, we live the file name as empty.
                                     audioPath = "";
@@ -650,6 +655,26 @@ public class EditAlertActivity extends ActivityWithMenu {
 
     }
 
+    private void chooseFile()
+    {
+        final Intent fileIntent = new Intent();
+        fileIntent.setType("audio/mpeg3");
+        fileIntent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(fileIntent, "Select File for Alert"), REQUEST_CODE_CHOOSE_FILE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MY_PERMISSIONS_REQUEST_STORAGE) {
+            if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                chooseFile(); // must be the only functionality which calls for permission
+            } else {
+                JoH.static_toast_long(this, "Cannot choose file without storage permission");
+            }
+        }
+    }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
@@ -827,6 +852,22 @@ public class EditAlertActivity extends ActivityWithMenu {
                 d.show();
             }});
 
+    }
+
+    private boolean checkPermissions()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_STORAGE);
+                return false;
+            }
+        }
+        return true;
     }
 
     public void testAlert() {
