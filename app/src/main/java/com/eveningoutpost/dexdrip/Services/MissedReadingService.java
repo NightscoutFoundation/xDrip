@@ -153,9 +153,14 @@ public class MissedReadingService extends IntentService {
         if(enableAlertsReraise) {
             return readPerfsInt(prefs, alertName + "_reraise_sec", 60);
         } else {
-            int defaultSnooze = readPerfsInt(prefs, "other_alerts_snooze", 20);
-            return 60 * readPerfsInt(prefs, alertName + "_snooze", defaultSnooze);
+            return 60 * getOtherAlertSnoozeMinutes(prefs, alertName);
         }
 
     }
+    
+    static public long getOtherAlertSnoozeMinutes(SharedPreferences prefs, String alertName) {
+        int defaultSnooze = readPerfsInt(prefs, "other_alerts_snooze", 20);
+        return readPerfsInt(prefs, alertName + "_snooze", defaultSnooze);
+    }
+    
 }

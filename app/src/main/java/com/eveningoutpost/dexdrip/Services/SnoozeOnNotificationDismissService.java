@@ -73,7 +73,8 @@ public class SnoozeOnNotificationDismissService extends IntentService {
     
     private void snoozeOtherAlert(String alertType) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        int snoozeMinutes = MissedReadingService.readPerfsInt(prefs, "other_alerts_snooze", 20);
+        long snoozeMinutes = MissedReadingService.getOtherAlertSnoozeMinutes(prefs, alertType);
+        Log.i(TAG, "snoozeOtherAlert calling snooze alert alert = " + alertType + " snoozeMinutes = " + snoozeMinutes);
         UserNotification.snoozeAlert(alertType, snoozeMinutes);
     }
 }
