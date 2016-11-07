@@ -94,8 +94,7 @@ public class MissedReadingActivity extends ActivityWithMenu {
         endHour = AlertType.time2Hours(endMinutes);
         endMinute = AlertType.time2Minutes(endMinutes);
         bgMissedMinutes.setText(prefs.getString("bg_missed_minutes", "30"));
-        int defaultSnooze = MissedReadingService.readPerfsInt(prefs, "other_alerts_snooze", 20);
-        bgMissedSnoozeMin.setText(prefs.getString("bg_missed_alerts_snooze", "" + defaultSnooze));
+        bgMissedSnoozeMin.setText("" + MissedReadingService.getOtherAlertSnoozeMinutes(prefs, "bg_missed_alerts"));
         bgMissedReraiseSec.setText(prefs.getString("bg_missed_alerts_reraise_sec", "60"));
         
         addListenerOnButtons();
