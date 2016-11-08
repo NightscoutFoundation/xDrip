@@ -363,6 +363,44 @@
                 android:paddingRight="4dp"
                 android:paddingBottom="2dp" />
 
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:drawableTop="@drawable/ic_heart_pulse_grey600_24dp"
+                android:id="@+id/bpmButton"
+                android:background="@android:color/transparent"
+                android:paddingBottom="2dp"
+                android:paddingEnd="4dp"
+                android:layout_marginRight="8dp"
+                android:text="123"
+                android:textSize="10sp"
+                android:gravity="center_horizontal|center_vertical"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_below="@+id/vehicleModeButton"
+                android:layout_alignStart="@+id/vehicleModeButton" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:onClick="toggleStepsVisibility"
+                android:drawableTop="@drawable/ic_walk_grey600_24dp"
+                android:id="@+id/walkButton"
+                android:paddingBottom="0dp"
+                android:paddingEnd="0dp"
+                android:paddingTop="0dp"
+                android:paddingStart="0dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="0dp"
+                android:background="@android:color/transparent"
+                android:text="9999"
+                android:textSize="10sp"
+                android:gravity="center_horizontal|center_vertical"
+                android:layout_below="@+id/bpmButton"
+                android:layout_alignStart="@+id/vehicleModeButton" />
+
+
+
 
         </RelativeLayout>
 

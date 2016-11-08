@@ -22,6 +22,7 @@ import com.eveningoutpost.dexdrip.Models.Forecast.PolyTrendLine;
 import com.eveningoutpost.dexdrip.Models.Forecast.TrendLine;
 import com.eveningoutpost.dexdrip.Models.Iob;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -100,7 +101,7 @@ public class BgGraphBuilder {
     private static double low_occurs_at_processed_till_timestamp = -1;
     private final static String TAG = "jamorham graph";
     //private final static int pluginColor = Color.parseColor("#AA00FFFF"); // temporary
-    private final static int pluginColor = Color.parseColor("#77ff7700"); // temporary
+
     private final static int pluginSize = 2;
     final int pointSize;
     final int axisTextSize;
@@ -276,6 +277,68 @@ public class BgGraphBuilder {
         Log.d(TAG,"Extend line size: "+points.size());
     }
 
+    // line illustrating result from step counter
+    private List<Line> stepsLines() {
+        final List<Line> stepsLines = new ArrayList<>();
+        if (prefs.getBoolean("show_pebble_movement_line", true)) {
+            final List<PebbleMovement> pmlist = PebbleMovement.deltaListFromMovementList(PebbleMovement.latestForGraph(2000, loaded_start, loaded_end));
+            PointValue last_point = null;
+            final boolean d = false;
+            if (d) Log.d(TAG, "Delta: pmlist size: " + pmlist.size());
+            final float yscale = doMgdl ? (float) Constants.MMOLL_TO_MGDL : 1f;
+            final float ypos = 6 * yscale; // TODO Configurable
+            //final long last_timestamp = pmlist.get(pmlist.size() - 1).timestamp;
+            final float MAX_SIZE = 40;
+            int flipper = 0;
+            int accumulator = 0;
+
+            for (PebbleMovement pm : pmlist) {
+                if (last_point == null) {
+                    last_point = new PointValue((float) pm.timestamp / FUZZER, ypos);
+                } else {
+                    final PointValue this_point = new PointValue((float) pm.timestamp / FUZZER, ypos);
+                    final float time_delta = this_point.getX() - last_point.getX();
+                    if (time_delta > 1) {
+
+                        final List<PointValue> new_points = new ArrayList<>();
+                        new_points.add(last_point);
+                        new_points.add(this_point);
+
+                        last_point = this_point; // update pointer
+                        final Line this_line = new Line(new_points);
+                        flipper ^= 1;
+                        this_line.setColor((flipper == 0) ? getCol(X.color_step_counter1) : getCol(X.color_step_counter2));
+
+                        float stroke_size = Math.min(MAX_SIZE, (float) Math.log1p(((double) (pm.metric + accumulator)) / time_delta) * 5);
+                        if (d) Log.d(TAG, "Delta stroke: " + stroke_size);
+                        this_line.setStrokeWidth((int) stroke_size);
+
+                        if (d)
+                            Log.d(TAG, "Delta-Line: " + JoH.dateTimeText(pm.timestamp) + " time delta: " + time_delta + "  total: " + (pm.metric + accumulator) + " lsize: " + stroke_size + " / " + (int) stroke_size);
+                        accumulator = 0;
+
+                        if (this_line.getStrokeWidth() > 0) {
+                            stepsLines.add(this_line);
+                            this_line.setHasPoints(false);
+                            this_line.setHasLines(true);
+                        } else {
+                            if (d) Log.d(TAG, "Delta skip: " + JoH.dateTimeText(pm.timestamp));
+                        }
+                        if (d)
+                            Log.d(TAG, "Delta-List: " + JoH.dateTimeText(pm.timestamp) + " time delta: " + time_delta + "  val: " + pm.metric);
+                    } else {
+                        accumulator += pm.metric;
+                        if (d)
+                            Log.d(TAG, "Delta: added: " + JoH.dateTimeText(pm.timestamp) + " metric: " + pm.metric + " to accumulator: " + accumulator);
+                    }
+                }
+            }
+            if (d)
+                Log.d(TAG, "Delta returning stepsLines: " + stepsLines.size() + " final accumulator remaining: " + accumulator);
+        }
+        return stepsLines;
+    }
+
     private List<Line> motionLine() {
 
         final ArrayList<ActivityRecognizedService.motionData> motion_datas = ActivityRecognizedService.getForGraph((long) start_time * FUZZER, (long) end_time * FUZZER);
@@ -373,9 +436,11 @@ public class BgGraphBuilder {
             unlabledLinesSize = 2;
         }
         for (Line lline : previewLineData.getLines()) {
-            if ((lline.getPointRadius() == pluginSize) && (lline.getPointColor() == pluginColor)) {
-                removeItems.add(lline); // remove plugin plot from preview graph
+            if (((lline.getPointRadius() == pluginSize) && (lline.getPointColor() == getCol(X.color_secondary_glucose_value)))
+                    || ((lline.getColor() == getCol(X.color_step_counter1) || (lline.getColor() == getCol(X.color_step_counter2))))) {
+                removeItems.add(lline); // remove plugin or step counter plot from preview graph
             }
+
             if ((lline.hasLabels() && (lline.getPointRadius() > 0))) {
 
                 lline.setPointRadius(3); // preserve size for treatments
@@ -405,6 +470,7 @@ public class BgGraphBuilder {
                 if (Home.getPreferencesBoolean("motion_tracking_enabled", false) && Home.getPreferencesBoolean("plot_motion", false)) {
                     lines.addAll(motionLine());
                 }
+                lines.addAll(stepsLines());
             }
 
             Line[] calib = calibrationValuesLine();
@@ -605,7 +671,7 @@ public class BgGraphBuilder {
         line.setHasLines(false);
         line.setPointRadius(pluginSize);
         line.setHasPoints(true);
-        line.setColor(pluginColor);
+        line.setColor(getCol(X.color_secondary_glucose_value));
         lines.add(line);
         return lines;
     }

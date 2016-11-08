@@ -44,6 +44,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -55,7 +56,9 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -171,6 +174,8 @@ public class Home extends ActivityWithMenu {
     public static final int SHOWCASE_STATISTICS = 8;
     private static double last_speech_time = 0;
     private PreviewLineChartView previewChart;
+    private Button stepsButton;
+    private Button bpmButton;
     private TextView dexbridgeBattery;
     private TextView parakeetBattery;
     private TextView sensorAge;
@@ -250,6 +255,8 @@ public class Home extends ActivityWithMenu {
         this.sensorAge = (TextView) findViewById(R.id.libstatus);
         this.extraStatusLineText = (TextView) findViewById(R.id.extraStatusLine);
         this.currentBgValueText = (TextView) findViewById(R.id.currentBgValueRealTime);
+        this.bpmButton = (Button) findViewById(R.id.bpmButton);
+        this.stepsButton = (Button) findViewById(R.id.walkButton);
 
         extraStatusLineText.setText("");
         dexbridgeBattery.setText("");
@@ -1315,6 +1322,7 @@ public class Home extends ActivityWithMenu {
             public void onReceive(Context ctx, Intent intent) {
                 if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
                     updateCurrentBgInfo("time tick");
+                    updateHealthInfo("time_tick");
                 }
             }
         };
@@ -1323,6 +1331,7 @@ public class Home extends ActivityWithMenu {
             public void onReceive(Context ctx, Intent intent) {
                 holdViewport.set(0, 0, 0, 0);
                 updateCurrentBgInfo("new data");
+                updateHealthInfo("new_data");
             }
         };
         registerReceiver(_broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
@@ -1335,6 +1344,7 @@ public class Home extends ActivityWithMenu {
         }
         activityVisible = true;
         updateCurrentBgInfo("generic on resume");
+        updateHealthInfo("generic on resume");
 
         if (!JoH.getWifiSleepPolicyNever()) {
             if (JoH.ratelimit("policy-never", 3600)) {
@@ -1528,6 +1538,30 @@ public class Home extends ActivityWithMenu {
 
     public static boolean get_holo() {
         return Home.is_holo;
+    }
+
+    public void toggleStepsVisibility(View v) {
+        setPreferencesBoolean("show_pebble_movement_line", !getPreferencesBoolean("show_pebble_movement_line", true));
+        staticRefreshBGCharts();
+    }
+
+    private void updateHealthInfo(String caller) {
+        final PebbleMovement pm = PebbleMovement.last();
+        if (pm != null) {
+            stepsButton.setText(Integer.toString(pm.metric));
+            stepsButton.setVisibility(View.VISIBLE);
+            stepsButton.setAlpha(getPreferencesBoolean("show_pebble_movement_line", true) ? 1.0f : 0.3f);
+        } else {
+            stepsButton.setVisibility(View.INVISIBLE);
+        }
+
+        final HeartRate hr = HeartRate.last();
+        if (hr != null) {
+            bpmButton.setText(Integer.toString(hr.bpm));
+            bpmButton.setVisibility(View.VISIBLE);
+        } else {
+            bpmButton.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void updateCurrentBgInfo(String source) {
@@ -1869,6 +1903,15 @@ public class Home extends ActivityWithMenu {
             predictive = false;
         }
         if (lastBgReading != null) {
+
+            // detect broken data from G5 or other sources
+            if ((lastBgReading.raw_data != 0) && (lastBgReading.raw_data * 2 == lastBgReading.filtered_data)) {
+                if (JoH.ratelimit("g5-corrupt-data-warning", 1200)) {
+                    final String msg = "filtered data appears to be exactly double raw sensor data which looks completely wrong! " + lastBgReading.raw_data;
+                    toaststaticnext(msg);
+                }
+            }
+
             displayCurrentInfoFromReading(lastBgReading, predictive);
         } else {
             display_delta = "";
@@ -2002,6 +2045,7 @@ public class Home extends ActivityWithMenu {
         double estimated_delta = 0;
         if (lastBgReading == null) return;
         final BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
+        if (dg == null) return;
         //String slope_arrow = lastBgReading.slopeArrow();
         String slope_arrow = dg.delta_arrow;
         String extrastring = "";
@@ -2091,8 +2135,8 @@ public class Home extends ActivityWithMenu {
         if (bgReadingList != null && bgReadingList.size() == 2) {
             // same logic as in xDripWidget (refactor that to BGReadings to avoid redundancy / later inconsistencies)?
 
-            display_delta = bgGraphBuilder.unitizedDeltaString(true, true, is_follower);
-
+            //display_delta = bgGraphBuilder.unitizedDeltaString(true, true, is_follower);
+            display_delta = dg.unitized_delta;
             // TODO reduce duplication of logic
             if ((BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER)
                     && (BgGraphBuilder.best_bg_estimate > 0)
@@ -2119,7 +2163,7 @@ public class Home extends ActivityWithMenu {
 
         // TODO this should be made more efficient probably
         if (Home.getPreferencesBooleanDefaultFalse("display_glucose_from_plugin") && (PluggableCalibration.getCalibrationPluginFromPreferences() != null)) {
-            currentBgValueText.setText("\u24C5" + currentBgValueText.getText()); // adds warning P in circle icon
+            currentBgValueText.setText(getString(R.string.p_in_circle) + currentBgValueText.getText()); // adds warning P in circle icon
         }
     }
 
@@ -2556,8 +2600,10 @@ public class Home extends ActivityWithMenu {
         }
         if (prefs != null) {
             return prefs.getString(pref, def);
+        } else {
+            UserError.Log.wtf(TAG, "Could not initialize preferences in getPreferencesStringWithDefault: "+pref);
+            return "";
         }
-        return "";
     }
 
     public static long getPreferencesLong(final String pref, final long def) {
