@@ -51,7 +51,10 @@ public class ColorCache {
         color_treatment_dot_foreground("color_treatment_dot_foreground"),
         color_home_chart_background("color_home_chart_background"),
         color_notification_chart_background("color_notification_chart_background"),
-        color_widget_chart_background("color_widget_chart_background");
+        color_widget_chart_background("color_widget_chart_background"),
+        color_secondary_glucose_value("color_secondary_glucose_value"),
+        color_step_counter1("color_step_counter1"),
+        color_step_counter2("color_step_counter2");
 
         String internalName;
 

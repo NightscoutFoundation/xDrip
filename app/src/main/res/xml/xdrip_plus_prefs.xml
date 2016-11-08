@@ -188,6 +188,39 @@
                         app:colorpicker_selectNoneButtonText="@string/revert_to_default"
                         app:colorpicker_showHex="false" />
                 </PreferenceCategory>
+
+                <PreferenceCategory
+                    android:key="xdrip_plus_display_colorset8"
+                    android:title="Plugins and Features">
+
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#8a6b4c33"
+                        android:dependency="plugin_plot_on_graph"
+                        android:key="color_secondary_glucose_value"
+                        android:title="Secondary Plugin Glucose value"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
+
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#3e29937b"
+                        android:key="color_step_counter1"
+                        android:dependency="broadcast_to_pebble"
+                        android:title="Step counter 1st Color"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
+
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#3c72c3c0"
+                        android:key="color_step_counter2"
+                        android:dependency="broadcast_to_pebble"
+                        android:title="Step counter 2nd Color"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
+
+                    </PreferenceCategory>
             </PreferenceScreen>
 
             <SwitchPreference

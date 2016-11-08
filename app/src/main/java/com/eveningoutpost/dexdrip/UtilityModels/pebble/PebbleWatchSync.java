@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
@@ -35,9 +37,17 @@ public class PebbleWatchSync extends Service {
 
 
     private final static String TAG = PebbleWatchSync.class.getSimpleName();
+    private final static long sanity_timestamp = 1478197375;
+    private final static boolean d = false;
+
+    // these must match in watchface
+    private final static int HEARTRATE_LOG = 101;
+    private final static int MOVEMENT_LOG = 103;
 
     public static int lastTransactionId;
 
+    private long last_heartrate_timestamp = 0;
+    private long last_movement_timestamp = 0;
 
     private static Context context;
     private static BgGraphBuilder bgGraphBuilder;
@@ -144,6 +154,93 @@ public class PebbleWatchSync extends Service {
             public void receiveNack(Context context, int transactionId) {
                 getActivePebbleDisplay().receiveNack(transactionId);
             }
+        });
+
+        PebbleKit.registerDataLogReceiver(context, new PebbleKit.PebbleDataLogReceiver(currentWatchFaceUUID) {
+            @Override
+            public void receiveData(Context context, UUID logUuid, Long timestamp,
+                                    Long tag, int data) {
+                if (d)
+                    Log.d(TAG, "receiveLogData: uuid:" + logUuid + " " + JoH.dateTimeText(timestamp * 1000) + " tag:" + tag + " data: " + data);
+            }
+
+            @Override
+            public void receiveData(Context context, UUID logUuid, Long timestamp,
+                                    Long tag, Long data) {
+                Log.d(TAG, "receiveLogData: uuid:" + logUuid + " started: " + JoH.dateTimeText(timestamp * 1000) + " tag:" + tag + " data: " + data);
+
+                if ((tag != null) && (data != null)) {
+                    final int s = (int) (long) tag;
+
+
+                    switch (s) {
+                        case HEARTRATE_LOG:
+                            if (data > sanity_timestamp) {
+                                if (last_heartrate_timestamp > 0) {
+                                    Log.e(TAG, "Out of sequence heartrate timestamp received!");
+                                }
+                                last_heartrate_timestamp = data;
+                            } else {
+                                if (data > 0) {
+                                    if (last_heartrate_timestamp > 0) {
+                                        final HeartRate hr = new HeartRate();
+                                        hr.timestamp = last_heartrate_timestamp * 1000;
+                                        hr.bpm = (int) (long) data;
+                                        Log.d(TAG, "Saving HeartRate: " + hr.toS());
+                                        hr.saveit();
+                                        last_heartrate_timestamp = 0; // reset state
+                                    } else {
+                                        Log.e(TAG, "Out of sequence heartrate value received!");
+                                    }
+                                }
+                            }
+                            break;
+
+                        case MOVEMENT_LOG:
+                            if (data > sanity_timestamp) {
+                                if (last_movement_timestamp > 0) {
+                                    Log.e(TAG, "Out of sequence movement timestamp received!");
+                                }
+                                last_movement_timestamp = data;
+                            } else {
+                                if (data > 0) {
+                                    if (last_movement_timestamp > 0) {
+                                        final PebbleMovement pm = new PebbleMovement();
+                                        pm.timestamp = last_movement_timestamp * 1000;
+                                        pm.metric = (int) (long) data;
+                                        Log.d(TAG, "Saving Movement: " + pm.toS());
+                                        pm.saveit();
+                                        last_movement_timestamp = 0; // reset state
+                                    } else {
+                                        Log.e(TAG, "Out of sequence movement value received!");
+                                    }
+                                }
+                            }
+                            break;
+
+                        default:
+                            Log.e(TAG, "Unknown pebble data log type received: " + s);
+                            break;
+
+                    }
+                } else {
+                    Log.e(TAG, "Got null Long in receive data");
+                }
+            }
+
+
+            @Override
+            public void receiveData(Context context, UUID logUuid, Long timestamp,
+                                    Long tag, byte[] data) {
+               if (d) Log.d(TAG,"receiveLogData: uuid:"+logUuid+" "+JoH.dateTimeText(timestamp*1000)+" tag:"+tag+" hexdata: "+JoH.bytesToHex(data));
+            }
+
+            @Override
+            public void onFinishSession(Context context, UUID logUuid, Long timestamp,
+                                        Long tag) {
+                if (d) Log.i(TAG, "Session " + tag + " finished!");
+            }
+
         });
 
         // control app

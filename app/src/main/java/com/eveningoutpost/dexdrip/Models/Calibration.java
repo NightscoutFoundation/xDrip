@@ -725,34 +725,41 @@ public class Calibration extends Model {
         if (calibrations.size() >= 3) {
             final int denom = bgReadings.size();
             //Calibration latestCalibration = calibrations.get(0);
-            final Calibration latestCalibration = Calibration.lastValid();
-            int i = 0;
-            for (BgReading bgReading : bgReadings) {
-                final double oldYValue = bgReading.calculated_value;
-                final double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
-                final double new_calculated_value = ((newYvalue * (denom - i)) + (oldYValue * (i))) / denom;
-                // if filtered == raw then rewrite them both because this would not happen if filtered data was from real source
-                if (bgReading.filtered_calculated_value == bgReading.calculated_value) {
-                    bgReading.filtered_calculated_value = new_calculated_value;
-                }
-                bgReading.calculated_value = new_calculated_value;
+            try {
+                final Calibration latestCalibration = Calibration.lastValid();
+                int i = 0;
+                for (BgReading bgReading : bgReadings) {
+                    final double oldYValue = bgReading.calculated_value;
+                    final double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
+                    final double new_calculated_value = ((newYvalue * (denom - i)) + (oldYValue * (i))) / denom;
+                    // if filtered == raw then rewrite them both because this would not happen if filtered data was from real source
+                    if (bgReading.filtered_calculated_value == bgReading.calculated_value) {
+                        bgReading.filtered_calculated_value = new_calculated_value;
+                    }
+                    bgReading.calculated_value = new_calculated_value;
 
-                bgReading.save();
-                i += 1;
+                    bgReading.save();
+                    i += 1;
+                }
+            } catch (NullPointerException e) {
+                Log.wtf(TAG, "Null pointer in AdjustRecentReadings >=3: " + e);
             }
             // initial calibration
         } else if (calibrations.size() == 2) {
             //Calibration latestCalibration = calibrations.get(0);
-            final Calibration latestCalibration = Calibration.lastValid();
-            for (BgReading bgReading : bgReadings) {
-                final double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
-                if (bgReading.filtered_calculated_value == bgReading.calculated_value) {
-                    bgReading.filtered_calculated_value = newYvalue;
+            try {
+                final Calibration latestCalibration = Calibration.lastValid();
+                for (BgReading bgReading : bgReadings) {
+                    final double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
+                    if (bgReading.filtered_calculated_value == bgReading.calculated_value) {
+                        bgReading.filtered_calculated_value = newYvalue;
+                    }
+                    bgReading.calculated_value = newYvalue;
+                    BgReading.updateCalculatedValue(bgReading);
+                    bgReading.save();
                 }
-                bgReading.calculated_value = newYvalue;
-                BgReading.updateCalculatedValue(bgReading);
-                bgReading.save();
-
+            } catch (NullPointerException e) {
+                Log.wtf(TAG, "Null pointer in AdjustRecentReadings ==2: " + e);
             }
         }
 

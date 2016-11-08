@@ -158,6 +158,7 @@ public class BestGlucose {
             // TODO ignores plugin
             //dg.unitized_delta = BgGraphBuilder.unitizedDeltaString(true, true, is_follower , doMgdl);
             dg.unitized_delta_no_units = unitizedDeltaString(false, true, doMgdl, estimate, timestamp, previous_estimate, previous_timestamp);
+            estimated_delta = estimate - previous_estimate; // TODO time stretch adjustment?
             // TODO optimize adding units
             dg.unitized_delta = unitizedDeltaString(true, true, doMgdl, estimate, timestamp, previous_estimate, previous_timestamp);
             long time_delta = timestamp - previous_timestamp;

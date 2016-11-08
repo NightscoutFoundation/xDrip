@@ -30,7 +30,7 @@ import java.util.List;
 public class xDripWidget extends AppWidgetProvider {
 
     public static final String TAG = "xDripWidget";
-
+    private static final boolean use_best_glucose = true;
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -94,29 +94,37 @@ public class xDripWidget extends AppWidgetProvider {
                         .setBackgroundColor(ColorCache.getCol(ColorCache.X.color_widget_chart_background))
                         .setHeight(height).setWidth(width).showHighLine(showLines).showLowLine(showLines).build());
 
-                estimate = lastBgreading.calculated_value;
+                final BestGlucose.DisplayGlucose dg = (use_best_glucose) ? BestGlucose.getDisplayGlucose() : null;
+                estimate = (dg != null) ? dg.mgdl : lastBgreading.calculated_value;
                 String extrastring = "";
-                String slope_arrow = lastBgreading.slopeArrow();
+                String slope_arrow = (dg != null) ? dg.delta_arrow : lastBgreading.slopeArrow();
                 String stringEstimate;
 
-                // TODO use BestGlucose
-                if ((BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER)
-                        && (BgGraphBuilder.best_bg_estimate > 0)
-                        && (BgGraphBuilder.last_bg_estimate > 0)
-                        && (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("bg_compensate_noise", false))) {
-                    estimate = BgGraphBuilder.best_bg_estimate; // this needs scaling based on noise intensity
-                    estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
-                    slope_arrow = BgReading.slopeToArrowSymbol(estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000)); // delta by minute
-                    //currentBgValueText.setTypeface(null, Typeface.ITALIC);
-                    extrastring = " \u26A0"; // warning symbol !
+                if (dg == null) {
+                    // if not using best glucose helper
+                    if ((BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER)
+                            && (BgGraphBuilder.best_bg_estimate > 0)
+                            && (BgGraphBuilder.last_bg_estimate > 0)
+                            && (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("bg_compensate_noise", false))) {
+                        estimate = BgGraphBuilder.best_bg_estimate; // this needs scaling based on noise intensity
+                        estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
+                        slope_arrow = BgReading.slopeToArrowSymbol(estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000)); // delta by minute
+                        //currentBgValueText.setTypeface(null, Typeface.ITALIC);
+                        extrastring = " \u26A0"; // warning symbol !
 
+                    }
+                    // TODO functionize this check as it is in multiple places
+                    if (Home.getPreferencesBooleanDefaultFalse("display_glucose_from_plugin") && (PluggableCalibration.getCalibrationPluginFromPreferences() != null)) {
+                        extrastring += " " + context.getString(R.string.p_in_circle);
+                    }
+                } else {
+                    // TODO make a couple of getters in dg for these functions
+                    extrastring = " "+dg.extra_string + ((dg.from_plugin) ? " " + context.getString(R.string.p_in_circle) : "");
+                    estimated_delta = dg.delta_mgdl;
                 }
-                // TODO functionize this check as it is in multiple places
-                if (Home.getPreferencesBooleanDefaultFalse("display_glucose_from_plugin") && (PluggableCalibration.getCalibrationPluginFromPreferences() != null)){
-                    extrastring += " "+context.getString(R.string.p_in_circle);
-                }
-
-
+                // TODO properly illustrate + standardize warning level
+                if (dg.warning>1) slope_arrow="";
+                // TODO use dg stale calculation and/or preformatted text
                 if ((new Date().getTime()) - Home.stale_data_millis() - lastBgreading.timestamp > 0) {
 //                estimate = lastBgreading.calculated_value;
                     Log.d(TAG, "old value, estimate " + estimate);
@@ -157,6 +165,7 @@ public class xDripWidget extends AppWidgetProvider {
                     views.setTextViewText(R.id.widgetDelta, bgGraphBuilder.unitizedDeltaStringRaw(true, true, estimated_delta));
                 }
 
+                // TODO use dg preformatted localized string
                 int timeAgo = (int) Math.floor((new Date().getTime() - lastBgreading.timestamp) / (1000 * 60));
                 if (timeAgo == 1) {
                     views.setTextViewText(R.id.readingAge, timeAgo + " Minute ago" + extrastring);
