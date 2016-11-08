@@ -30,6 +30,7 @@ import com.ustwo.clockwise.WatchFaceTime;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.TreeSet;
@@ -69,7 +70,8 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
     private double datetime = 0;
     private String direction = "";
     private String delta = "";
-    public TreeSet<BgWatchData> bgDataList = new TreeSet<BgWatchData>();
+    //public TreeSet<BgWatchData> bgDataList = new TreeSet<BgWatchData>();
+    public ArrayList<BgWatchData> bgDataList = new ArrayList<>();
 
     private View layoutView;
     private int specW;
@@ -544,6 +546,55 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         }
     }
 
+    public void addDataMap(DataMap dataMap) {//KS
+        double sgv = dataMap.getDouble("sgvDouble");
+        double high = dataMap.getDouble("high");
+        double low = dataMap.getDouble("low");
+        double timestamp = dataMap.getDouble("timestamp");
+
+        Log.d("addToWatchSet", "entry=" + dataMap);
+
+        final int size = bgDataList.size();
+        BgWatchData bgdata = new BgWatchData(sgv, high, low, timestamp);
+        if (size > 0) {
+            if (bgDataList.contains(bgdata)) {
+                int i = bgDataList.indexOf(bgdata);
+                BgWatchData bgd = bgDataList.get(bgDataList.indexOf(bgdata));
+                Log.d("addToWatchSet", "replace indexOf=" + i + " bgDataList.sgv=" + bgd.sgv + " bgDataList.timestamp" + bgd.timestamp);
+                bgDataList.set(i, bgdata);
+            } else {
+                Log.d("addToWatchSet", "add " + " entry.sgv=" + bgdata.sgv + " entry.timestamp" + bgdata.timestamp);
+                bgDataList.add(bgdata);
+            }
+        }
+        else {
+            bgDataList.add(bgdata);
+        }
+    }
+
+    public void addToWatchSet(DataMap dataMap) {
+
+        Log.d("addToWatchSet", "bgDataList.size()=" + bgDataList.size());
+
+        ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
+        if (entries != null) {
+            Log.d("addToWatchSet", "entries.size()=" + entries.size());
+            for (DataMap entry : entries) {
+                addDataMap(entry);
+            }
+        } else {
+            addDataMap(dataMap);
+        }
+
+        for (int i = 0; i < bgDataList.size(); i++) {
+            if (bgDataList.get(i).timestamp < (new Date().getTime() - (1000 * 60 * 60 * 5))) {
+                bgDataList.remove(i); //Get rid of anything more than 5 hours old
+                break;
+            }
+        }
+        Collections.sort(bgDataList);
+    }
+    /*
     public synchronized void addToWatchSet(DataMap dataMap) {
 
         if(!sharedPrefs.getBoolean("showRingHistory", false)){
@@ -586,6 +637,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         removeSet = null;
         System.gc();
     }
+    */
 
     public int darken(int color, double fraction) {
         int red = Color.red(color);

@@ -447,7 +447,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
             Log.d("BIGChart", "missedReadingAlert Enter minutes_since " + minutes_since + " call requestData if >= 4 minutes mod 5");//KS
         }
 
-        if (minutes_since >= maxDelay && ((minutes_since - maxDelay) % 5) == 0) {//KS TODO reduce time for debugging; add notifications
+        if (minutes_since >= maxDelay && ((minutes_since - maxDelay) % 5) == 0 || (datetime == 0)) {//KS TODO reduce time for debugging; add notifications
             /*NotificationCompat.Builder notification = new NotificationCompat.Builder(getApplicationContext())
                     .setContentTitle("Missed BG Readings")
                     .setVibrate(vibratePattern);
@@ -457,37 +457,44 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         }
     }
 
+    public void addDataMap(DataMap dataMap) {//KS
+        double sgv = dataMap.getDouble("sgvDouble");
+        double high = dataMap.getDouble("high");
+        double low = dataMap.getDouble("low");
+        double timestamp = dataMap.getDouble("timestamp");
+
+        Log.d("addToWatchSet", "entry=" + dataMap);
+
+        final int size = bgDataList.size();
+        BgWatchData bgdata = new BgWatchData(sgv, high, low, timestamp);
+        if (size > 0) {
+            if (bgDataList.contains(bgdata)) {
+                int i = bgDataList.indexOf(bgdata);
+                BgWatchData bgd = bgDataList.get(bgDataList.indexOf(bgdata));
+                Log.d("addToWatchSet", "replace indexOf=" + i + " bgDataList.sgv=" + bgd.sgv + " bgDataList.timestamp" + bgd.timestamp);
+                bgDataList.set(i, bgdata);
+            } else {
+                Log.d("addToWatchSet", "add " + " entry.sgv=" + bgdata.sgv + " entry.timestamp" + bgdata.timestamp);
+                bgDataList.add(bgdata);
+            }
+        }
+        else {
+            bgDataList.add(bgdata);
+        }
+    }
+
     public void addToWatchSet(DataMap dataMap) {
+
+        Log.d("addToWatchSet", "bgDataList.size()=" + bgDataList.size());
 
         ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
         if (entries != null) {
+            Log.d("addToWatchSet", "entries.size()=" + entries.size());
             for (DataMap entry : entries) {
-                double sgv = entry.getDouble("sgvDouble");
-                double high = entry.getDouble("high");
-                double low = entry.getDouble("low");
-                double timestamp = entry.getDouble("timestamp");
-
-                final int size = bgDataList.size();
-                if (size > 0) {
-                    if (bgDataList.get(size - 1).timestamp == timestamp)
-                        continue; // Ignore duplicates.
-                }
-
-                bgDataList.add(new BgWatchData(sgv, high, low, timestamp));
+                addDataMap(entry);
             }
         } else {
-            double sgv = dataMap.getDouble("sgvDouble");
-            double high = dataMap.getDouble("high");
-            double low = dataMap.getDouble("low");
-            double timestamp = dataMap.getDouble("timestamp");
-
-            final int size = bgDataList.size();
-            if (size > 0) {
-                if (bgDataList.get(size - 1).timestamp == timestamp)
-                    return; // Ignore duplicates.
-            }
-
-            bgDataList.add(new BgWatchData(sgv, high, low, timestamp));
+            addDataMap(dataMap);
         }
 
         for (int i = 0; i < bgDataList.size(); i++) {

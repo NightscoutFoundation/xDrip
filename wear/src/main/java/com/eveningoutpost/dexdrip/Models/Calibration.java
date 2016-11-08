@@ -213,6 +213,10 @@ public class Calibration extends Model {
     @Column(name = "second_scale")
     public double second_scale;
 
+    public Calibration () {
+        super ();
+    }
+
     public static void initialCalibration(double bg1, double bg2, Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String unit = prefs.getString("units", "mgdl");

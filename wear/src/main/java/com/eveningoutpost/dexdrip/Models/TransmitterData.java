@@ -49,6 +49,10 @@ public class TransmitterData extends Model {
     @Column(name = "uuid", index = true)
     public String uuid;
 
+    public TransmitterData () {
+        super ();
+    }
+
     public static synchronized TransmitterData create(byte[] buffer, int len, Long timestamp) {
         if (len < 6) { return null; }
         TransmitterData transmitterData = new TransmitterData();

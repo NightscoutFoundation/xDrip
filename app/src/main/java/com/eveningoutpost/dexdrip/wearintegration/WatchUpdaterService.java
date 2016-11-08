@@ -75,7 +75,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static GoogleApiClient googleApiClient;
     private static long lastRequest = 0;//KS
     private static final Integer sendCalibrationCount = 3;//KS
-    private final static Integer sendBgCount = 4;//KS
+    private final static Integer sendBgCount = 5;//KS
     private boolean wear_integration = false;
     private boolean pebble_integration = false;
     private boolean is_using_g5 = false;
@@ -423,11 +423,11 @@ public class WatchUpdaterService extends WearableListenerService implements
                 } else if (ACTION_SYNC_CALIBRATION.equals(action)) {//KS
                     Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_CALIBRATION + " Path=" + WEARABLE_CALIBRATION_DATA_PATH);
 
+                    sendWearCalibrationData(sendCalibrationCount);
                     final boolean adjustPast = mPrefs.getBoolean("rewrite_history", true);
                     Log.d(TAG, "onStartCommand adjustRecentBgReadings for rewrite_history=" + adjustPast);
                     sendWearBgData(adjustPast ? 30 : 2);//wear may not have all BGs if use_connectG5=false, so send BGs from phone
 
-                    sendWearCalibrationData(sendCalibrationCount);
                 } else {
                     if (!mPrefs.getBoolean("use_wear_connectG5", false)
                             || !mPrefs.getBoolean("wear_connectG5",false)
@@ -739,14 +739,14 @@ public class WatchUpdaterService extends WearableListenerService implements
                 googleApiConnect();
             }
             Log.d(TAG, "sendWearCalibrationData");
+            final Sensor sensor = Sensor.currentSensor();
             final Calibration last = Calibration.last();
-            final List<Calibration> lastest = Calibration.latest(count);
-            if ((last != null) && (lastest != null && !lastest.isEmpty())) {
+            final List<Calibration> lastest = Calibration.latestForGraph((int)Long.MAX_VALUE, sensor.started_at, Long.MAX_VALUE);//.latest(count);
+            if ((sensor != null) && (last != null) && (lastest != null && !lastest.isEmpty())) {
                 Log.d(TAG, "sendWearCalibrationData lastest count = " + lastest.size());
                 final DataMap entries = dataMap(last);
                 final ArrayList<DataMap> dataMaps = new ArrayList<>(lastest.size());
-                final Sensor sensor = Sensor.currentSensor();
-                if ((sensor != null) && (sensor.uuid != null)) {
+                if (sensor.uuid != null) {
                     for (Calibration bg : lastest) {
                         if ((bg != null) && (bg.sensor_uuid != null) && (bg.sensor_uuid.equals(sensor.uuid))) {
                             dataMaps.add(dataMap(bg));
@@ -806,6 +806,12 @@ public class WatchUpdaterService extends WearableListenerService implements
 
     private DataMap dataMap(BgReading bg) {//KS
         DataMap dataMap = new DataMap();
+        //KS Fix for calibration_uuid not being set in Calibration.create which updates bgReading to new calibration ln 497
+        //if (bg.calibration_flag == true) {
+        //    bg.calibration_uuid = bg.calibration.uuid;
+        //}
+        dataMap.putString("calibrationUuid", bg.calibration.uuid);
+
         String json = bg.toS();
         Log.d(TAG, "dataMap BG GSON: " + json);
         dataMap.putString("bgs", json);

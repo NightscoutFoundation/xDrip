@@ -276,6 +276,7 @@ public class BgSendQueue extends Model {
                 dataMaps.add(dataMap(bg, sharedPrefs, bgGraphBuilder, context));
             }
             entries.putDataMapArrayList("entries", dataMaps);
+            Log.d("BgSendQueue", "resendData entries=" + entries);
 
             Intent messageIntent = new Intent();
             messageIntent.setAction(Intent.ACTION_SEND);

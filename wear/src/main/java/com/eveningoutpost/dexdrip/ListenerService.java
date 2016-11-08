@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -244,9 +245,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         String id = peer.getId();
         String name = peer.getDisplayName();
         Log.d(TAG, "onPeerConnected peer name & ID: " + name + "|" + id);
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         sendPrefSettings();
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        if (sharedPrefs.getBoolean("connectG5", false) && !sharedPrefs.getBoolean("use_connectG5", false)) {
+        if (mPrefs.getBoolean("connectG5", false) && !mPrefs.getBoolean("use_connectG5", false)) {
             stopBtG5Service();
             ListenerService.requestData(this);
         }
@@ -258,8 +259,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         String id = peer.getId();
         String name = peer.getDisplayName();
         Log.d(TAG, "onPeerDisconnected peer name & ID: " + name + "|" + id);
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        if (sharedPrefs.getBoolean("connectG5", false)) {
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if (mPrefs.getBoolean("connectG5", false)) {
             startBtG5Service();
         }
     }
@@ -269,6 +270,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         Log.d(TAG, "onStartCommand entered");
         Home.setAppContext(getApplicationContext());
         xdrip.checkAppContext(getApplicationContext());
+        final PowerManager.WakeLock wl = JoH.getWakeLock("watchlistener-onstart",60000);
         last_send_previous = PersistentStore.getLong(pref_last_send_previous); // 0 if undef
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());//KS
         listenForChangeInSettings();//KS
@@ -280,6 +282,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             final Bundle bundle = intent.getExtras();
             sendData(bundle.getString(FIELD_SENDPATH), bundle.getByteArray(FIELD_PAYLOAD));
         }
+        JoH.releaseWakeLock(wl);
         return START_STICKY;
     }
 
@@ -481,7 +484,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
     }
 
-    private void syncCalibrationData(DataMap dataMap, Context context) {//KS
+    private synchronized void syncCalibrationData(DataMap dataMap, Context context) {//KS
         Log.d(TAG, "syncCalibrationData");
         java.text.DateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
         Date date = new Date();
@@ -510,11 +513,16 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                             Calibration uuidexists = Calibration.findByUuid(bgData.uuid);
                             date.setTime(bgData.timestamp);
                             bgData.sensor = sensor;
-                            bgData.save();
                             if (uuidexists == null) {//adjust BGs for new calibrations
-                                final boolean adjustPast = mPrefs.getBoolean("rewrite_history", true);
+                                bgData.save();
+                                //final boolean adjustPast = mPrefs.getBoolean("rewrite_history", true);
                                 Log.d(TAG, "syncCalibrationData Calibration does not exist for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + df.format(date));
-                                Calibration.adjustRecentBgReadings(adjustPast ? 30 : 2);
+                                //Calibration.adjustRecentBgReadings(adjustPast ? 30 : 2);
+                            }
+                            else {
+                                Log.d(TAG, "syncCalibrationData Calibration exists for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + df.format(date));
+                                uuidexists = bgData;
+                                uuidexists.save();
                             }
                             uuidexists = Calibration.findByUuid(bgData.uuid);
                             if (uuidexists != null)
@@ -528,7 +536,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
     }
 
-    private void syncBgData(DataMap dataMap, Context context) {//KS
+    private synchronized void syncBgData(DataMap dataMap, Context context) {//KS
         Log.d(TAG, "syncBGData");
         java.text.DateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
         Date date = new Date();
@@ -559,23 +567,76 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                             date.setTime(bgData.timestamp);
                             if (exists != null) {
                                 Log.d(TAG, "syncBGData BG already exists for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + df.format(date));
+                                date.setTime(exists.timestamp);
+                                Log.d(TAG, "syncBGData exists timeString=" + df.format(date) + "  exists.calibration.uuid=" + exists.calibration.uuid + " exists=" + exists.toS());
+
                                 exists.filtered_calculated_value = bgData.filtered_calculated_value;
                                 exists.calculated_value = bgData.calculated_value;
                                 exists.hide_slope = bgData.hide_slope;
-                                exists.save();
+
+                                exists.filtered_data = bgData.filtered_data;
+                                exists.raw_data = bgData.raw_data;
+                                exists.raw_calculated = bgData.raw_calculated;
+                                exists.calculated_value_slope = bgData.calculated_value_slope;
+                                exists.age_adjusted_raw_value = bgData.age_adjusted_raw_value;
+                                exists.calibration_flag = bgData.calibration_flag;
+                                exists.ignoreForStats = bgData.ignoreForStats;
+                                exists.time_since_sensor_started = bgData.time_since_sensor_started;
+                                exists.ra = bgData.ra;
+                                exists.rb = bgData.rb;
+                                exists.rc = bgData.rc;
+                                exists.a = bgData.a;
+                                exists.b = bgData.b;
+                                exists.c = bgData.c;
+                                exists.noise = bgData.noise;
+                                exists.time_since_sensor_started = bgData.time_since_sensor_started;
+
+                                String calibrationUuid = entry.getString("calibrationUuid");
+                                if (calibrationUuid != null && !calibrationUuid.isEmpty()) {
+                                    Calibration calibration = Calibration.byuuid(calibrationUuid);
+                                    if (calibration != null) {
+                                        exists.calibration = calibration;
+                                        exists.sensor = sensor;
+                                        exists.save();
+                                    }
+                                    else {
+                                        Log.e(TAG, "syncBGData calibrationUuid not found by byuuid; calibrationUuid=" + calibrationUuid + " bgData.calibration_uuid=" + bgData.calibration_uuid);
+                                    }
+                                }
+                                else {
+                                    Log.e(TAG, "syncBGData calibrationUuid not sent");
+                                }
                             } else {
                                 Calibration calibration = Calibration.byuuid(bgData.calibration_uuid);
                                 if (calibration != null) {
                                     bgData.calibration = calibration;
                                     bgData.sensor = sensor;
                                     Log.d(TAG, "syncBGData add BG; does NOT exist for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + df.format(date));
-                                    bgData.save();
-                                    //BgSendQueue.handleNewBgReading(bgReading, "create", getApplicationContext() );
+                                    String calibrationUuid = entry.getString("calibrationUuid");
+                                    if (calibrationUuid != null && !calibrationUuid.isEmpty()) {
+                                        calibration = Calibration.byuuid(calibrationUuid);
+                                        if (calibration != null) {
+                                            bgData.calibration = calibration;
+                                            bgData.sensor = sensor;
+                                            bgData.save();
+                                        }
+                                        else {
+                                            Log.e(TAG, "syncBGData calibrationUuid not found by byuuid; calibrationUuid=" + calibrationUuid + " bgData.calibration_uuid=" + bgData.calibration_uuid);
+                                        }
+                                    }
+                                    else {
+                                        Log.e(TAG, "syncBGData calibrationUuid not sent");
+                                    }
+
+                                    //BgSendQueue.handleNewBgReading(bgData, "create", getApplicationContext() );
                                     exists = BgReading.findByUuid(bgData.uuid);
                                     if (exists != null)
                                         Log.d(TAG, "syncBGData BG GSON saved BG: " + exists.toS());
                                     else
-                                        Log.d(TAG, "syncBGData BG GSON NOT saved");
+                                        Log.e(TAG, "syncBGData BG GSON NOT saved");
+                                }
+                                else {
+                                    Log.e(TAG, "syncBGData bgData.calibration_uuid not found by byuuid; calibration_uuid=" + bgData.calibration_uuid);
                                 }
                             }
                         }

@@ -118,7 +118,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     @Column(name = "rc")
     public double rc;
     @Expose
-    @Column(name = "uuid", unique = true, onUniqueConflicts = Column.ConflictAction.IGNORE)
+    @Column(name = "uuid", unique = true, onUniqueConflicts = Column.ConflictAction.REPLACE)//KS replace IGNORE with REPLACE
     public String uuid;
 
     @Expose
@@ -144,6 +144,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     @Expose
     @Column(name = "noise")
     public String noise;
+
+    public BgReading () {
+        super ();
+    }
 
     public double calculated_value_mmol() {
         return mmolConvert(calculated_value);
@@ -420,6 +424,9 @@ public class BgReading extends Model implements ShareUploadableBg {
             } else {
                 BgReading lastBgReading = BgReading.last();
                 if (lastBgReading != null && lastBgReading.calibration != null) {
+                    Log.d(TAG, "Create calibration.uuid=" + calibration.uuid + " bgReading.uuid: " + bgReading.uuid + " lastBgReading.calibration_uuid: " + lastBgReading.calibration_uuid + " lastBgReading.calibration.uuid: " + lastBgReading.calibration.uuid);
+                    Log.d(TAG, "Create lastBgReading.calibration_flag=" + lastBgReading.calibration_flag + " bgReading.timestamp: " + bgReading.timestamp + " lastBgReading.timestamp: " + lastBgReading.timestamp + " lastBgReading.calibration.timestamp: " + lastBgReading.calibration.timestamp);
+                    Log.d(TAG, "Create lastBgReading.calibration_flag=" + lastBgReading.calibration_flag + " bgReading.timestamp: " + JoH.dateTimeText(bgReading.timestamp) + " lastBgReading.timestamp: " + JoH.dateTimeText(lastBgReading.timestamp) + " lastBgReading.calibration.timestamp: " + JoH.dateTimeText(lastBgReading.calibration.timestamp));
                     if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp) && ((lastBgReading.calibration.timestamp + (60000 * 20)) > bgReading.timestamp)) {
                         lastBgReading.calibration.rawValueOverride(BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value), context);
                     }
