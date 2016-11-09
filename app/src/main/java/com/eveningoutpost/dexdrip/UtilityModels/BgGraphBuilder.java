@@ -211,7 +211,7 @@ public class BgGraphBuilder {
             }
         }
         calibrations = Calibration.latestForGraph(numValues, start, end);
-        treatments = Treatments.latestForGraph(numValues, start, end);
+        treatments = Treatments.latestForGraph(numValues, start, end + (120 * 60 * 1000));
         this.context = context;
         this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
         this.highMark = tolerantParseDouble(prefs.getString("highValue", "170"));
@@ -1404,7 +1404,7 @@ public class BgGraphBuilder {
             if (low_occurs_at_processed_till_timestamp < last_bg_reading_timestamp) {
                 Log.d(TAG, "Recalculating lowOccursAt: " + JoH.dateTimeText((long) low_occurs_at_processed_till_timestamp) + " vs " + JoH.dateTimeText(last_bg_reading_timestamp));
                 // new only the last hour worth of data for this
-                (new BgGraphBuilder(xdrip.getAppContext(), System.currentTimeMillis() - 60 * 60 * 1000, System.currentTimeMillis() + 5 * 60 * 1000, 12, true)).addBgReadingValues();
+                (new BgGraphBuilder(xdrip.getAppContext(), System.currentTimeMillis() - 60 * 60 * 1000, System.currentTimeMillis() + 5 * 60 * 1000, 24, true)).addBgReadingValues(false);
             } else {
                 Log.d(TAG, "Cached current low timestamp ok: " +  JoH.dateTimeText((long) low_occurs_at_processed_till_timestamp) + " vs " + JoH.dateTimeText(last_bg_reading_timestamp));
             }
