@@ -319,7 +319,7 @@ public class BluetoothScan extends ListActivityWithMenu {
         // automatically set or unset the option for "Transmiter" device
         boolean using_transmiter = false;
         try {
-            if (device.getName().toLowerCase().contains("LimiTTer")
+            if (device.getName().toLowerCase().contains("limitter")
                     && (adverts.containsKey(device.getAddress()) && (new String(adverts.get(device.getAddress()), "UTF-8").contains("eLeR")))) {
                 String msg = "Auto-detected transmiter_pl device!";
                 Log.e(TAG, msg);
