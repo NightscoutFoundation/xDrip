@@ -90,8 +90,8 @@ public class AlertPlayer {
 
     private final static String TAG = AlertPlayer.class.getSimpleName();
     private MediaPlayer mediaPlayer;
-    int volumeBeforeAlert;
-    int volumeForThisAlert;
+    int volumeBeforeAlert = -1;
+    int volumeForThisAlert = -1;
 
     final static int ALERT_PROFILE_HIGH = 1;
     final static int ALERT_PROFILE_ASCENDING = 2;
@@ -147,6 +147,7 @@ public class AlertPlayer {
             mediaPlayer.release();
             mediaPlayer = null;
         }
+        revertCurrentVolume(ctx);
     }
 
     //  default signature for user initiated interactive snoozes only
@@ -308,14 +309,7 @@ public class AlertPlayer {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         Log.i(TAG, "PlayFile: onCompletion called (finished playing) ");
-                        AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
-                        int currentVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
-                        Log.i(TAG, "After playing volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert
-                                + " currentVolume " + currentVolume);
-                        if (volumeForThisAlert == currentVolume) {
-                            // If the user has changed the volume, don't change it again.
-                            manager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeBeforeAlert, 0);
-                        }
+                        revertCurrentVolume(ctx);
                     }
                 });
                 Log.i(TAG, "PlayFile: calling mediaPlayer.start() ");
@@ -330,6 +324,20 @@ public class AlertPlayer {
             // TODO, what should we do here???
             Log.wtf(TAG, "PlayFile: Starting an alert failed, what should we do !!!");
         }
+    }
+    
+    private void revertCurrentVolume(final Context ctx) {
+        AudioManager manager = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
+        int currentVolume = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        Log.i(TAG, "revertCurrentVolume volumeBeforeAlert " + volumeBeforeAlert + " volumeForThisAlert " + volumeForThisAlert
+                + " currentVolume " + currentVolume);
+        if (volumeForThisAlert == currentVolume && (volumeBeforeAlert != -1) && (volumeForThisAlert != -1)) {
+            // If the user has changed the volume, don't change it again.
+            manager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeBeforeAlert, 0);
+        }
+        volumeBeforeAlert = -1;
+        volumeForThisAlert = - 1;
+        
     }
 
     private PendingIntent notificationIntent(Context ctx, Intent intent){
