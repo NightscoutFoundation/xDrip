@@ -9,7 +9,7 @@ public class HM10Attributes {
     public static final String HM_RX_TX = "0000ffe1-0000-1000-8000-00805f9b34fb";
 
     // Experimental support for "Transmiter PL" from Marek Macner @FPV-UAV
-    public static final String TRANSMITER_PL_SERVICE = "c97433f1-be8f-4dc8-b6f0-5343e6100eb4";
-    public static final String TRANSMITER_PL_RX_TX   = "c97433f3-be8f-4dc8-b6f0-5343e6100eb4";
+    public static final String TRANSMITER_PL_SERVICE = "c97433f0-be8f-4dc8-b6f0-5343e6100eb4";
+    public static final String TRANSMITER_PL_RX_TX   = "c97433f1-be8f-4dc8-b6f0-5343e6100eb4";
 
 }

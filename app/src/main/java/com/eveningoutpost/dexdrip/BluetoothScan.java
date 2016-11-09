@@ -298,6 +298,10 @@ public class BluetoothScan extends ListActivityWithMenu {
                 btDevice.save();
             }
         }
+
+        // automatically set or unset the option for "Transmiter" device
+        prefs.edit().putBoolean("use_transmiter_pl_bluetooth",device.getName().toLowerCase().contains("LimiTTereLeR")).apply();
+
         if (device.getName().toLowerCase().contains("dexcom")) {
             if (!CollectionServiceStarter.isBTShare(getApplicationContext())) {
                 prefs.edit().putString("dex_collection_method", "DexcomShare").apply();
