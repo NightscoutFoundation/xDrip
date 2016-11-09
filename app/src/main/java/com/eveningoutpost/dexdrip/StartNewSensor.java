@@ -99,6 +99,7 @@ public class StartNewSensor extends ActivityWithMenu {
         }
 
         LibreAlarmReceiver.clearSensorStats();
+        JoH.scheduleNotification(this,"Sensor should be ready",getString(R.string.please_enter_two_calibrations_to_get_started), 60*130, Home.SENSOR_READY_ID);
 
         CollectionServiceStarter.newStart(getApplicationContext());
         Intent intent;

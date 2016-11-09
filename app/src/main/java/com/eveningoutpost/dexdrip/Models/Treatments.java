@@ -4,6 +4,7 @@ package com.eveningoutpost.dexdrip.Models;
  * Created by jamorham on 31/12/15.
  */
 
+import android.content.Context;
 import android.provider.BaseColumns;
 
 import com.activeandroid.Model;
@@ -16,7 +17,9 @@ import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.GoogleDriveInterface;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 
@@ -69,6 +72,18 @@ public class Treatments extends Model {
     public String created_at;
 
     public static synchronized Treatments create(final double carbs, final double insulin, long timestamp) {
+        // if treatment more than 1 minutes in the future
+        final long future_seconds = (timestamp - JoH.tsl()) / 1000;
+        if (future_seconds > (60 * 60)) {
+            JoH.static_toast_long("Refusing to create a treatement more than 1 hours in the future!");
+            return null;
+        }
+        if ((future_seconds > 60) && (future_seconds < 86400) && ((carbs > 0) || (insulin > 0))) {
+            final Context context = xdrip.getAppContext();
+            JoH.scheduleNotification(context, "Treatment Reminder", "@" + JoH.hourMinuteString(timestamp) + " : "
+                    + carbs + " " + context.getString(R.string.carbs) + " / "
+                    + insulin + " " + context.getString(R.string.units), (int) future_seconds, 34026);
+        }
         return create(carbs, insulin, timestamp, -1);
     }
 
@@ -185,7 +200,7 @@ public class Treatments extends Model {
         for (String patch : patchup) {
             try {
                 SQLiteUtils.execSql(patch);
-                Log.e(TAG, "Processed patch should not have succeeded!!: " + patch);
+                //Log.e(TAG, "Processed patch should not have succeeded!!: " + patch);
             } catch (Exception e) {
                 // Log.d(TAG, "Patch: " + patch + " generated exception as it should: " + e.toString());
             }
