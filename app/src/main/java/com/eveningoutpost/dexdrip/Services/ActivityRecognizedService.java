@@ -206,7 +206,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                     Home.startHomeWithExtra(context, Home.HOME_FULL_WAKEUP, "1");
                 }
             } else if (requested == 15) {
-                if ((received < 4) && (PowerStateReceiver.is_power_connected())) {
+                if ((received < 4) && (!PowerStateReceiver.is_power_connected())) {
                disableMotionTrackingDueToErrors(context);
                 }
             }
@@ -259,7 +259,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         }
 
         // mutually exclusive logic
-        if ((!disable) && (requested_all_time > 100) && (ratio < 90 ) && (PowerStateReceiver.is_power_connected()) && (JoH.isAnyNetworkConnected()) && (JoH.ratelimit("disable_motion", 86400))) {
+        if ((!disable) && (requested_all_time > 100) && (ratio < 90 ) && (!PowerStateReceiver.is_power_connected()) && (JoH.isAnyNetworkConnected()) && (JoH.ratelimit("disable_motion", 86400))) {
             disableMotionTrackingDueToErrors(context);
         }
 
