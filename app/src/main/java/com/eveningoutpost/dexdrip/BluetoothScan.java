@@ -41,8 +41,11 @@ import com.eveningoutpost.dexdrip.utils.LocationHelper;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import lecho.lib.hellocharts.util.ChartUtils;
 
@@ -60,6 +63,7 @@ public class BluetoothScan extends ListActivityWithMenu {
     private ArrayList<BluetoothDevice> found_devices;
     private BluetoothAdapter bluetooth_adapter;
     private BluetoothLeScanner lollipopScanner;
+    private Map<String,byte[]> adverts = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +74,7 @@ public class BluetoothScan extends ListActivityWithMenu {
 
         bluetooth_adapter = bluetooth_manager.getAdapter();
         mHandler = new Handler();
+
 
         if (bluetooth_adapter == null) {
             Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_LONG).show();
@@ -192,10 +197,16 @@ public class BluetoothScan extends ListActivityWithMenu {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        for (ScanResult result: results) {
+                        for (ScanResult result : results) {
                             BluetoothDevice device = result.getDevice();
                             if (device.getName() != null && device.getName().length() > 0) {
                                 mLeDeviceListAdapter.addDevice(device);
+                                try {
+                                    if (result.getScanRecord() != null)
+                                        adverts.put(device.getAddress(), result.getScanRecord().getBytes());
+                                } catch (NullPointerException e) {
+                                    //
+                                }
                             }
                         }
                         mLeDeviceListAdapter.notifyDataSetChanged();
@@ -204,13 +215,19 @@ public class BluetoothScan extends ListActivityWithMenu {
             }
 
             @Override
-            public void onScanResult(int callbackType, ScanResult result) {
+            public void onScanResult(int callbackType, final ScanResult result) {
                 final BluetoothDevice device = result.getDevice();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (device.getName() != null && device.getName().length() > 0) {
                             mLeDeviceListAdapter.addDevice(device);
+                            try {
+                                if (result.getScanRecord() != null)
+                                adverts.put(device.getAddress(), result.getScanRecord().getBytes());
+                            } catch (NullPointerException e) {
+                                //
+                            }
                             mLeDeviceListAdapter.notifyDataSetChanged();
                         }
                     }
@@ -300,7 +317,20 @@ public class BluetoothScan extends ListActivityWithMenu {
         }
 
         // automatically set or unset the option for "Transmiter" device
-        prefs.edit().putBoolean("use_transmiter_pl_bluetooth",device.getName().toLowerCase().contains("LimiTTereLeR")).apply();
+        boolean using_transmiter = false;
+        try {
+            if (device.getName().toLowerCase().contains("LimiTTer")
+                    && (adverts.containsKey(device.getAddress()) && (new String(adverts.get(device.getAddress()), "UTF-8").contains("eLeR")))) {
+                String msg = "Auto-detected transmiter_pl device!";
+                Log.e(TAG, msg);
+                JoH.static_toast_long(msg);
+                using_transmiter = true;
+            }
+        } catch (UnsupportedEncodingException | NullPointerException e) {
+            //
+        }
+
+        prefs.edit().putBoolean("use_transmiter_pl_bluetooth",using_transmiter).apply();
 
         if (device.getName().toLowerCase().contains("dexcom")) {
             if (!CollectionServiceStarter.isBTShare(getApplicationContext())) {
@@ -411,6 +441,15 @@ public class BluetoothScan extends ListActivityWithMenu {
             }
             viewHolder.deviceName.setText(deviceName);
             viewHolder.deviceAddress.setText(device.getAddress());
+            if (adverts.containsKey(device.getAddress())) {
+                try {
+                    if (Home.getPreferencesBooleanDefaultFalse("engineering_mode")) {
+                        viewHolder.deviceAddress.append("   " + new String(adverts.get(device.getAddress()), "UTF-8"));
+                    }
+                } catch (UnsupportedEncodingException e) {
+                    //
+                }
+            }
             return view;
         }
     }
@@ -419,12 +458,13 @@ public class BluetoothScan extends ListActivityWithMenu {
             new BluetoothAdapter.LeScanCallback() {
 
                 @Override
-                public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+                public void onLeScan(final BluetoothDevice device, int rssi, final byte[] scanRecord) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             if (device.getName() != null && device.getName().length() > 0) {
                                 mLeDeviceListAdapter.addDevice(device);
+                                if (scanRecord != null) adverts.put(device.getAddress(),scanRecord);
                                 mLeDeviceListAdapter.notifyDataSetChanged();
                             }
                         }
