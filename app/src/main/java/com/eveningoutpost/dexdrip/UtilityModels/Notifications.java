@@ -477,7 +477,7 @@ public class Notifications extends IntentService {
              wakeTime = now + 6 * 60000;
         }  else if (wakeTime == now) {
             Log.e("Notifications", "should arm right now, waiting one more second to avoid infinitue loop");
-            wakeTime = now + 1;
+            wakeTime = now + 1000;
         }
         
         AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
