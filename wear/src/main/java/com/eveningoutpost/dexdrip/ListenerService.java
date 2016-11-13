@@ -6,6 +6,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;//KS
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;//KS
+import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import android.Manifest;
@@ -14,6 +15,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
@@ -26,6 +28,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.CapabilityApi;
+import com.google.android.gms.wearable.CapabilityInfo;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataMap;
@@ -44,6 +48,7 @@ import java.text.SimpleDateFormat;//KS
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by stephenblack on 12/26/14.
@@ -66,6 +71,16 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String FIELD_PAYLOAD = "field_xdrip_plus_payload";
     private static final String WEARABLE_TREATMENT_PAYLOAD = "/xdrip_plus_treatment_payload";
     private static final String WEARABLE_TOAST_NOTIFICATON = "/xdrip_plus_toast";
+
+    // Phone
+    private static final String CAPABILITY_PHONE_APP = "phone_app_sync_bgs";
+    private static final String MESSAGE_PATH_PHONE = "/phone_message_path";
+    // Wear
+    private static final String CAPABILITY_WEAR_APP = "wear_app_sync_bgs";
+    private static final String MESSAGE_PATH_WEAR = "/wear_message_path";
+    private String mPhoneNodeId = null;
+    private String localnode= null;
+
     private static final String TAG = "jamorham listener";
     private SharedPreferences mPrefs;//KS
     private static boolean mLocationPermissionApproved;//KS
@@ -99,10 +114,21 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 if (!path.equals(ACTION_RESEND) || (System.currentTimeMillis() - lastRequest > 20 * 1000)) { // enforce 20-second debounce period
                     lastRequest = System.currentTimeMillis();
 
-                    NodeApi.GetConnectedNodesResult nodes =
-                            Wearable.NodeApi.getConnectedNodes(googleApiClient).await();
+                    //NodeApi.GetConnectedNodesResult nodes =
+                    //        Wearable.NodeApi.getConnectedNodes(googleApiClient).await();
+                    NodeApi.GetLocalNodeResult localnodes = Wearable.NodeApi.getLocalNode(googleApiClient).await();
+                    Node getnode = localnodes != null ? localnodes.getNode() : null;
+                    localnode = getnode != null ?  getnode.getDisplayName() + "|" + getnode.getId() : "";
+                    Log.d(TAG, "doInBackground.  getLocalNode name=" + localnode);
+                    CapabilityApi.GetCapabilityResult capResult =
+                            Wearable.CapabilityApi.getCapability(
+                                    googleApiClient, CAPABILITY_PHONE_APP,
+                                    CapabilityApi.FILTER_REACHABLE).await();
+                    CapabilityInfo nodes = capResult.getCapability();
+                    updatePhoneSyncBgsCapability(nodes);
+
                     int count = nodes.getNodes().size();//KS
-                    Log.d(TAG, "doInBackground connected.  NodeApi.GetConnectedNodesResult await count=" + count);//KS
+                    Log.d(TAG, "doInBackground connected.  CapabilityApi.GetCapabilityResult mPhoneNodeID=" + (mPhoneNodeId != null ? mPhoneNodeId : "") + " count=" + count);//KS
                     if (count > 0) {//KS
                         if (connectG5) {
                             if (use_connectG5) {
@@ -118,7 +144,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                             if (connectG5) {//KS
                                 DataMap datamap = getWearTransmitterData(288);//KS 36 data for last 3 hours; 288 for 1 day
                                 if (datamap != null) {//while
-                                    Log.d(TAG, "doInBackground send Wear Data BGs to phone at path:" + SYNC_BGS_PATH + " and node:" + node.getId());
+                                    Log.d(TAG, "doInBackground send Wear Data BGs to phone path:" + SYNC_BGS_PATH + " and node:" + node.getId() + " and node:" + node.getDisplayName());
                                     Log.d(TAG, "doInBackground send Wear datamap:" + datamap);
 
                                     PendingResult<MessageApi.SendMessageResult> result = Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), SYNC_BGS_PATH, datamap.toByteArray());
@@ -204,13 +230,27 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         DataMap dataMap = new DataMap();
         boolean connectG5 = mPrefs.getBoolean("connectG5", false);
         boolean use_connectG5 = mPrefs.getBoolean("use_connectG5", false);
+        String use_node_connectG5 = mPrefs.getString("use_node_connectG5", "");
         String dex_txid = mPrefs.getString("dex_txid", "ABCDEF");//KS 4023GU
-        Log.d(TAG, "sendPrefSettings connectG5: " + connectG5 + " use_connectG5:" + use_connectG5 + " dex_txid:" + dex_txid);
+        Log.d(TAG, "sendPrefSettings connectG5: " + connectG5 + " use_connectG5:" + use_connectG5 + " use_node_connectG5:" + use_node_connectG5 + " dex_txid:" + dex_txid);
         dataMap.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
         dataMap.putBoolean("connectG5", connectG5);
         dataMap.putBoolean("use_connectG5", use_connectG5);
+        if (use_connectG5) {
+            dataMap.putString("use_node_connectG5", localnode);
+        }
+        else {
+            dataMap.putString("use_node_connectG5", use_node_connectG5);
+        }
         dataMap.putString("dex_txid", dex_txid);
         sendData(WEARABLE_PREF_DATA_PATH, dataMap.toByteArray());
+
+        SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        if (!use_node_connectG5.equals(dataMap.getString("use_node_connectG5", ""))) {
+            Log.d(TAG, "syncPrefData use_node_connectG5:" + use_node_connectG5);
+            prefs.putString("use_node_connectG5", use_node_connectG5);
+        }
+        prefs.commit();
     }
 
     private DataMap dataMap(TransmitterData bg) {//KS
@@ -291,8 +331,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             Log.d(TAG, "OnSharedPreferenceChangeListener entered");
             if(key.compareTo("connectG5") == 0 || key.compareTo("use_connectG5") == 0) {
                 Log.i(TAG, "OnSharedPreferenceChangeListener connectG5 || use_connectG5 changed!");
-                processConnectG5();
                 sendPrefSettings();
+                processConnectG5();
             }
             else if(key.compareTo("dex_txid") == 0){
                 processConnectG5();
@@ -395,6 +435,15 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
         boolean connectG5 = is_using_g5 && dataMap.getBoolean("connectG5", false);
         boolean use_connectG5 = is_using_g5 && dataMap.getBoolean("use_connectG5", false);
+        String use_node_connectG5 = dataMap.getString("use_node_connectG5", "");
+
+        if (!use_node_connectG5.equals(mPrefs.getString("use_node_connectG5", ""))) {
+            Log.d(TAG, "syncPrefData use_node_connectG5:" + use_node_connectG5);
+            prefs.putString("use_node_connectG5", use_node_connectG5);
+        }
+        if (!use_node_connectG5.equals(localnode)) {
+            use_connectG5 = false;
+        }
 
         if (use_connectG5 != mPrefs.getBoolean("use_connectG5", false)) {
             Log.d(TAG, "syncPrefData use_connectG5:" + use_connectG5);
@@ -642,6 +691,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         }
                     }
                 }
+                BgSendQueue.resendData(getApplicationContext());
             }
         }
     }
@@ -721,8 +771,39 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         context.startService(intent);
     }
 
+    private void updatePhoneSyncBgsCapability(CapabilityInfo capabilityInfo) {
+        Set<Node> connectedNodes = capabilityInfo.getNodes();
+        mPhoneNodeId = pickBestNodeId(connectedNodes);
+    }
+
+    private String pickBestNodeId(Set<Node> nodes) {
+        String bestNodeId = null;
+        // Find a nearby node or pick one arbitrarily
+        for (Node node : nodes) {
+            if (node.isNearby()) {
+                return node.getId();
+            }
+            bestNodeId = node.getId();
+        }
+        return bestNodeId;
+    }
+
     @Override
     public void onConnected(Bundle bundle) {
+        CapabilityApi.CapabilityListener capabilityListener =
+                new CapabilityApi.CapabilityListener() {
+                    @Override
+                    public void onCapabilityChanged(CapabilityInfo capabilityInfo) {
+                        updatePhoneSyncBgsCapability(capabilityInfo);
+                        Log.d(TAG, "onConnected onCapabilityChanged mPhoneNodeID:" + mPhoneNodeId);
+                    }
+                };
+
+        Wearable.CapabilityApi.addCapabilityListener(
+                googleApiClient,
+                capabilityListener,
+                CAPABILITY_PHONE_APP);
+
         requestData();
     }
 

@@ -296,7 +296,7 @@ protected abstract void setColorDark();
             Log.d("BIGChart", "missedReadingAlert Enter minutes_since " + minutes_since + " call requestData if >= 4 minutes mod 5");//KS
         }
 
-        if (minutes_since >= maxDelay && ((minutes_since - maxDelay) % 5) == 0 || (datetime == 0)) {//KS TODO reduce time for debugging; add notifications
+        if (minutes_since >= maxDelay && ((minutes_since - maxDelay) % 5) == 0) {//KS TODO reduce time for debugging; add notifications
             /*NotificationCompat.Builder notification = new NotificationCompat.Builder(getApplicationContext())
                         .setContentTitle("Missed BG Readings")
                         .setVibrate(vibratePattern);

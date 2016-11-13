@@ -253,7 +253,7 @@ public class BgSendQueue extends Model {
     }
 
     //KS start from WatchUpdaterService
-    private static void resendData(Context context) {//KS
+    public static void resendData(Context context) {//KS
         long startTime = new Date().getTime() - (60000 * 60 * 24);
         Log.d("BgSendQueue", "resendData enter");
         java.text.DateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
