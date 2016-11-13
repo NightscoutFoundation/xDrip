@@ -23,7 +23,6 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 
 /**
@@ -144,6 +143,7 @@ public class XDripDreamService extends DreamService {
         }
 
         mBouncer.addView(inflatedLayout, new FrameLayout.LayoutParams(widget_width, widget_height));
+
         setContentView(mBouncer);
 
     }
@@ -161,10 +161,9 @@ public class XDripDreamService extends DreamService {
         final BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
         if (dg != null) {
             // TODO Coloring
-            // TODO Strikethrough et al
-            widgetbg.setText(dg.unitized);
-            widgetArrow.setText(dg.delta_arrow);
-            widgetDelta.setText(dg.unitized_delta);
+            widgetbg.setText(dg.spannableString(dg.unitized,true));
+            widgetArrow.setText(dg.isStale() ? "" : dg.spannableString(dg.delta_arrow,true));
+            widgetDelta.setText(dg.spannableString(dg.unitized_delta));
             widgetReadingAge.setText(dg.minutesAgo(true));
             widgetStatusLine.setText("");
             // try to align our minute updates with 10 seconds after reading should arrive to show
