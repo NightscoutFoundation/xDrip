@@ -492,10 +492,10 @@ public class Calibration extends Model {
     }
 
     public static Calibration create(double bg, long timeoffset, Context context) {
-        return create(bg, timeoffset, context, false);
+        return create(bg, timeoffset, context, false, 0);
     }
 
-    public static Calibration create(double bg, long timeoffset, Context context, boolean note_only) {
+    public static Calibration create(double bg, long timeoffset, Context context, boolean note_only, long estimatedInterstitialLagSeconds) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final String unit = prefs.getString("units", "mgdl");
         final boolean adjustPast = prefs.getBoolean("rewrite_history", true);
@@ -527,7 +527,7 @@ public class Calibration extends Model {
                 bgReading = BgReading.last(is_follower);
             } else {
                 // get closest bg reading we can find with a cut off at 15 minutes max time
-                bgReading = BgReading.getForPreciseTimestamp(new Date().getTime() - (timeoffset * 1000), (15 * 60 * 1000));
+                bgReading = BgReading.getForPreciseTimestamp(new Date().getTime() - ((timeoffset - estimatedInterstitialLagSeconds) * 1000 ), (15 * 60 * 1000));
             }
             if (bgReading != null) {
                 calibration.sensor = sensor;

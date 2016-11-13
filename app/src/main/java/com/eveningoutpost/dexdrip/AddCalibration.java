@@ -28,6 +28,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
     private static final String TAG = "AddCalibration";
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private static double lastExternalCalibrationValue = 0;
+    public final long estimatedInterstitialLagSeconds = 600; // how far behind venous glucose do we estimate
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +59,6 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
 
         final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-autocalib",60000);
 
-        final long estimatedInterstitialLagSeconds = 600; // how far behind venous glucose do we estimate
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -81,19 +81,20 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                 final PowerManager.WakeLock wlt = JoH.getWakeLock("xdrip-autocalibt",60000);
 
                                 long bgAgeNumber = Long.parseLong(bg_age);
+                                long localEstimatedInterstitialLagSeconds = 0;
 
                                 // most appropriate raw value to calculate calibration
                                 // from should be some time after venous glucose reading
                                 // adjust timestamp for this if we can
                                 if (bgAgeNumber > estimatedInterstitialLagSeconds) {
-                                    bgAgeNumber = bgAgeNumber - estimatedInterstitialLagSeconds;
+                                    localEstimatedInterstitialLagSeconds = estimatedInterstitialLagSeconds;
                                 }
                                 // Sanity checking can go here
 
                                 if (calValue > 0) {
                                     if (calValue != lastExternalCalibrationValue) {
                                         lastExternalCalibrationValue = calValue;
-                                        Calibration calibration = Calibration.create(calValue, bgAgeNumber, getApplicationContext(), (note_only.equals("true")));
+                                        Calibration calibration = Calibration.create(calValue, bgAgeNumber, getApplicationContext(), (note_only.equals("true")), localEstimatedInterstitialLagSeconds);
                                         if ((calibration != null) && allow_undo.equals("true")) {
                                             UndoRedo.addUndoCalibration(calibration.uuid);
                                         }
