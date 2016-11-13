@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -129,6 +130,8 @@ public class Home extends ActivityWithMenu {
     public final static String HOME_FULL_WAKEUP = "HOME_FULL_WAKEUP";
     public final static String GCM_RESOLUTION_ACTIVITY = "GCM_RESOLUTION_ACTIVITY";
     public final static String SNOOZE_CONFIRM_DIALOG = "SNOOZE_CONFIRM_DIALOG";
+    public final static String SHOW_NOTIFICATION = "SHOW_NOTIFICATION";
+    public final static int SENSOR_READY_ID = 4912;
     public static String menu_name = "Home Screen";
     public static boolean activityVisible = false;
     public static boolean invalidateMenu = false;
@@ -495,12 +498,13 @@ public class Home extends ActivityWithMenu {
 
     // handle sending the intent
     private void processCalibrationNoUI(final double glucosenumber, final double timeoffset) {
-
-                if (timeoffset < 0) {
-                    toaststaticnext("Got calibration in the future - cannot process!");
-                    return;
-                }
                 if (glucosenumber > 0) {
+
+                    if (timeoffset < 0) {
+                        toaststaticnext("Got calibration in the future - cannot process!");
+                        return;
+                    }
+
                     final Intent calintent = new Intent(getApplicationContext(), AddCalibration.class);
 
                     calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -646,9 +650,20 @@ public class Home extends ActivityWithMenu {
                 GcmActivity.checkPlayServices(this, this);
             } else if (bundle.getString(Home.SNOOZE_CONFIRM_DIALOG) != null) {
                 GcmActivity.sendSnoozeToRemoteWithConfirm(this);
+            } else if (bundle.getString(Home.SHOW_NOTIFICATION) != null) {
+                final Intent notificationIntent = new Intent(this, Home.class);
+                final int notification_id = bundle.getInt("notification_id");
+                if ((notification_id == SENSOR_READY_ID) && (!Sensor.isActive() || BgReading.last() != null)) {
+                    Log.e(TAG, "Sensor not in warm up period when notification due to fire");
+                    return;
+                }
+                final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                JoH.showNotification(bundle.getString(SHOW_NOTIFICATION), bundle.getString("notification_body"), pendingIntent, notification_id, true, true, true);
             }
         }
     }
+
+
 
     public static void startHomeWithExtra(Context context, String extra, String text) {
         startHomeWithExtra(context, extra, text, "");

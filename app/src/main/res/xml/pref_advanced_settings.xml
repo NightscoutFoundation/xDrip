@@ -254,6 +254,11 @@
                 android:key="bluetooth_frequent_reset"
                 android:summary="Reset Bluetooth by turning it off and on every few minutes! Only select if you are testing. It may disrupt anything else using bluetooth."
                 android:title="Constantly reset bluetooth" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="use_transmiter_pl_bluetooth"
+                android:summary="Experimental support for 'Transmiter' device from @FPV-UAV - test only"
+                android:title="Transmiter (PL) support" />
             </PreferenceScreen>
             <CheckBoxPreference
                 android:defaultValue="false"

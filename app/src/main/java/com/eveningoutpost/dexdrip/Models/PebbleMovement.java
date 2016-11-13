@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -70,13 +71,18 @@ public class PebbleMovement extends Model {
     }
 
     public static List<PebbleMovement> latestForGraph(int number, long startTime, long endTime) {
-        return new Select()
-                .from(PebbleMovement.class)
-                .where("timestamp >= " + Math.max(startTime, 0))
-                .where("timestamp <= " + endTime)
-                .orderBy("timestamp asc") // warn asc!
-                .limit(number)
-                .execute();
+        try {
+            return new Select()
+                    .from(PebbleMovement.class)
+                    .where("timestamp >= " + Math.max(startTime, 0))
+                    .where("timestamp <= " + endTime)
+                    .orderBy("timestamp asc") // warn asc!
+                    .limit(number)
+                    .execute();
+        } catch (android.database.sqlite.SQLiteException e) {
+            fixUpTable();
+            return new ArrayList<>();
+        }
     }
 
     // expects pre-sorted in asc order?

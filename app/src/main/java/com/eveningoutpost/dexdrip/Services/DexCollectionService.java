@@ -80,8 +80,10 @@ public class DexCollectionService extends Service {
     public static double last_time_seen = 0;
     private static int watchdog_count = 0;
 
-    public final UUID xDripDataService = UUID.fromString(HM10Attributes.HM_10_SERVICE);
-    public final UUID xDripDataCharacteristic = UUID.fromString(HM10Attributes.HM_RX_TX);
+    // Experimental support for "Transmiter PL" from Marek Macner @FPV-UAV
+    private final boolean use_transmiter_pl_bluetooth = Home.getPreferencesBooleanDefaultFalse("use_transmiter_pl_bluetooth");
+    private final UUID xDripDataService = use_transmiter_pl_bluetooth ? UUID.fromString(HM10Attributes.TRANSMITER_PL_SERVICE) : UUID.fromString(HM10Attributes.HM_10_SERVICE);
+    private final UUID xDripDataCharacteristic = use_transmiter_pl_bluetooth ? UUID.fromString(HM10Attributes.TRANSMITER_PL_RX_TX) : UUID.fromString(HM10Attributes.HM_RX_TX);
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -351,6 +353,14 @@ public class DexCollectionService extends Service {
             final int charaProp = gattCharacteristic.getProperties();
             if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
                 mBluetoothGatt.setCharacteristicNotification(gattCharacteristic, true);
+
+                // Experimental support for "Transmiter PL" from Marek Macner @FPV-UAV
+                if (use_transmiter_pl_bluetooth) {
+                    BluetoothGattDescriptor descriptor = gattCharacteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
+                    Log.i(TAG, "Transmiter Descriptor found: " + descriptor.getUuid());
+                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    mBluetoothGatt.writeDescriptor(descriptor);
+                }
             } else {
                 Log.w(TAG, "onServicesDiscovered: characteristic " + xDripDataCharacteristic + " not found");
             }

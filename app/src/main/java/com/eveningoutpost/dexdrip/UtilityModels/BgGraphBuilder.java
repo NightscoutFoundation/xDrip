@@ -99,6 +99,7 @@ public class BgGraphBuilder {
     public static double low_occurs_at = -1;
     public static double previous_low_occurs_at = -1;
     private static double low_occurs_at_processed_till_timestamp = -1;
+    private static long noise_processed_till_timestamp = -1;
     private final static String TAG = "jamorham graph";
     //private final static int pluginColor = Color.parseColor("#AA00FFFF"); // temporary
 
@@ -157,6 +158,7 @@ public class BgGraphBuilder {
     private final List<PointValue> noisePolyBgValues = new ArrayList<PointValue>();
     private final List<PointValue> activityValues = new ArrayList<PointValue>();
     private final List<PointValue> annotationValues = new ArrayList<>();
+    private static TrendLine noisePoly;
     public static double last_noise = -99999;
     public static double original_value = -99999;
     public static double best_bg_estimate = -99999;
@@ -203,7 +205,6 @@ public class BgGraphBuilder {
 
         if ((end - start) > 80000000) {
             try {
-                // TODO something about this means it never seems to get to 100% maybe int rounding or timing related.
                 capturePercentage = ((bgReadings.size() * 100) / ((end - start) / 300000));
                 //Log.d(TAG, "CPTIMEPERIOD: " + Long.toString(end - start) + " percentage: " + JoH.qs(capturePercentage));
             } catch (Exception e) {
@@ -211,7 +212,7 @@ public class BgGraphBuilder {
             }
         }
         calibrations = Calibration.latestForGraph(numValues, start, end);
-        treatments = Treatments.latestForGraph(numValues, start, end);
+        treatments = Treatments.latestForGraph(numValues, start, end + (120 * 60 * 1000));
         this.context = context;
         this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
         this.highMark = tolerantParseDouble(prefs.getString("highValue", "170"));
@@ -831,7 +832,7 @@ public class BgGraphBuilder {
 
             final double bgScale = bgScale();
             final double now = JoH.ts();
-            long highest_bgreading_timestamp = -1;
+            long highest_bgreading_timestamp = -1; // most recent bgreading timestamp we have
             double trend_start_working = now - (1000 * 60 * 12); // 10 minutes // TODO MAKE PREFERENCE?
             if (bgReadings.size() > 0) {
                 highest_bgreading_timestamp = bgReadings.get(0).timestamp;
@@ -847,7 +848,7 @@ public class BgGraphBuilder {
             double oldest_noise_timestamp = now;
             double newest_noise_timestamp = 0;
             TrendLine[] polys = new TrendLine[5];
-            TrendLine noisePoly = new PolyTrendLine(2);
+
             polys[0] = new PolyTrendLine(1);
             // polys[1] = new PolyTrendLine(2);
             polys[1] = new Forecast.LogTrendLine();
@@ -949,7 +950,7 @@ public class BgGraphBuilder {
                 }
 
                 // noise calculator
-                if (!simple && (bgReading.timestamp > noise_trendstart) && (bgReading.timestamp > last_calibration)) {
+                if ((!simple || (noise_processed_till_timestamp < highest_bgreading_timestamp)) && (bgReading.timestamp > noise_trendstart) && (bgReading.timestamp > last_calibration)) {
                     if (has_filtered && (bgReading.filtered_calculated_value > 0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
                         final double shifted_timestamp = bgReading.timestamp - timeshift;
 
@@ -1001,13 +1002,16 @@ public class BgGraphBuilder {
             }
 
 
-            if (!simple) {
+            // always calculate noise if needed
+            if (noise_processed_till_timestamp < highest_bgreading_timestamp) {
                 // noise evaluate
-                try {
+                Log.d(TAG, "Noise: Processing new data for noise: " + JoH.dateTimeText(noise_processed_till_timestamp) + " vs now: " + JoH.dateTimeText(highest_bgreading_timestamp));
 
+                try {
                     if (d) Log.d(TAG, "noise Poly list size: " + noise_polyxList.size());
                     // TODO Impossible to satisfy noise evaluation size with only raw data do we want it with raw only??
                     if (noise_polyxList.size() > 5) {
+                        noisePoly = new PolyTrendLine(2);
                         final double[] noise_polyys = PolyTrendLine.toPrimitiveFromList(noise_polyyList);
                         final double[] noise_polyxs = PolyTrendLine.toPrimitiveFromList(noise_polyxList);
                         noisePoly.setValues(noise_polyys, noise_polyxs);
@@ -1019,18 +1023,23 @@ public class BgGraphBuilder {
                             best_bg_estimate = -99;
                             last_bg_estimate = -99;
                         }
-                        Log.i(TAG, "Noise Poly Error Varience: " + JoH.qs(last_noise, 5));
+                        Log.i(TAG, "Noise: Poly Error Varience: " + JoH.qs(last_noise, 5));
                     } else {
-                        Log.i(TAG, "Not enough data to get sensible noise value");
+                        Log.i(TAG, "Noise: Not enough data to get sensible noise value");
                         noisePoly = null;
                         last_noise = -9999;
                         best_bg_estimate = -9999;
                         last_bg_estimate = -9999;
                     }
+                    noise_processed_till_timestamp = highest_bgreading_timestamp; // store that we have processed up to this timestamp
                 } catch (Exception e) {
                     Log.e(TAG, " Error with noise poly trend: " + e.toString());
                 }
+            } else {
+                Log.d(TAG, "Noise Cached noise timestamp: " + JoH.dateTimeText(noise_processed_till_timestamp));
+            }
 
+            if (!simple) {
                 // momentum
                 try {
                     if (d) Log.d(TAG, "moment Poly list size: " + polyxList.size());
@@ -1404,7 +1413,7 @@ public class BgGraphBuilder {
             if (low_occurs_at_processed_till_timestamp < last_bg_reading_timestamp) {
                 Log.d(TAG, "Recalculating lowOccursAt: " + JoH.dateTimeText((long) low_occurs_at_processed_till_timestamp) + " vs " + JoH.dateTimeText(last_bg_reading_timestamp));
                 // new only the last hour worth of data for this
-                (new BgGraphBuilder(xdrip.getAppContext(), System.currentTimeMillis() - 60 * 60 * 1000, System.currentTimeMillis() + 5 * 60 * 1000, 12, true)).addBgReadingValues();
+                (new BgGraphBuilder(xdrip.getAppContext(), System.currentTimeMillis() - 60 * 60 * 1000, System.currentTimeMillis() + 5 * 60 * 1000, 24, true)).addBgReadingValues(false);
             } else {
                 Log.d(TAG, "Cached current low timestamp ok: " +  JoH.dateTimeText((long) low_occurs_at_processed_till_timestamp) + " vs " + JoH.dateTimeText(last_bg_reading_timestamp));
             }
@@ -1412,6 +1421,14 @@ public class BgGraphBuilder {
             Log.e(TAG, "Got exception in getCurrentLowOccursAt() " + e);
         }
         return low_occurs_at;
+    }
+
+    public static synchronized void refreshNoiseIfOlderThan(long timestamp) {
+        if (noise_processed_till_timestamp < timestamp) {
+            Log.d(TAG, "Refreshing Noise as Older: " + JoH.dateTimeText((long) noise_processed_till_timestamp) + " vs " + JoH.dateTimeText(timestamp));
+            // new only the last hour worth of data for this, simple mode should work for this calculation
+            (new BgGraphBuilder(xdrip.getAppContext(), System.currentTimeMillis() - 60 * 60 * 1000, System.currentTimeMillis() + 5 * 60 * 1000, 24, true)).addBgReadingValues(true);
+        }
     }
 
     public Line avg1Line() {

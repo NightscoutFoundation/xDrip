@@ -546,7 +546,8 @@ public class Notifications extends IntentService {
         //b.setOngoing(true);
         b.setCategory(NotificationCompat.CATEGORY_STATUS);
         final BestGlucose.DisplayGlucose dg = (use_best_glucose) ? BestGlucose.getDisplayGlucose() : null;
-        final SpannableString titleString = new SpannableString(lastReading == null ? "BG Reading Unavailable" : (dg != null) ? dg.unitized + " " + dg.delta_arrow
+        final boolean use_color_in_notification = false; // could be preference option
+        final SpannableString titleString = new SpannableString(lastReading == null ? "BG Reading Unavailable" : (dg != null) ? (dg.spannableString(dg.unitized + " " + dg.delta_arrow,use_color_in_notification))
                 : (lastReading.displayValue(mContext) + " " + lastReading.slopeArrow()));
         b.setContentTitle(titleString)
                 .setContentText("xDrip Data collection service is running.")
@@ -555,13 +556,8 @@ public class Notifications extends IntentService {
         if (lastReading != null) {
 
             b.setWhen(lastReading.timestamp);
-            final SpannableString deltaString = new SpannableString("Delta: " + ((dg != null) ? dg.unitized_delta + (dg.from_plugin ? " "+context.getString(R.string.p_in_circle) : "")
+            final SpannableString deltaString = new SpannableString("Delta: " + ((dg != null) ? (dg.spannableString(dg.unitized_delta + (dg.from_plugin ? " "+context.getString(R.string.p_in_circle) : "")))
                     : bgGraphBuilder.unitizedDeltaString(true, true)));
-
-            if ((dg != null) && (dg.stale)) {
-                deltaString.setSpan(new StrikethroughSpan(), 0, deltaString.length(), 0);
-                titleString.setSpan(new StrikethroughSpan(), 0, titleString.length(), 0); // reference updatable
-            }
 
             b.setContentText(deltaString);
             iconBitmap = new BgSparklineBuilder(mContext)

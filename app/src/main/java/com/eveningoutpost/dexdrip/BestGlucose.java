@@ -1,7 +1,11 @@
 package com.eveningoutpost.dexdrip;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.preference.PreferenceManager;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StrikethroughSpan;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -28,22 +32,31 @@ import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCa
 public class BestGlucose {
 
     final static String TAG = "BestGlucose";
+    final static boolean d = true; // debug flag
+    private static SharedPreferences prefs;
 
     public static class DisplayGlucose {
-        public double mgdl = -1;
-        public double delta_mgdl = 0;
-        public int warning = -1;
+        private Boolean stale = null;
+        private Double highMark = null;
+        private Double lowMark = null;
+
+        public double mgdl = -1;    // displayable mgdl figure
+        public double unitized_value = -1; // in local units
+        public double delta_mgdl = 0; // displayable delta mgdl figure
+        public int warning = -1;  // warning level
         public long mssince = -1;
-        public long timestamp = -1;
-        public boolean stale = true;
+        public long timestamp = -1; // timestamp of reading
         public String unitized = "void";
         public String unitized_delta = "";
         public String unitized_delta_no_units = "";
-        public String delta_arrow = "";
+        public String delta_arrow = ""; // unicode delta arrow
         public String delta_name = "";
         public String extra_string = "";
-        public String plugin_name = "";
-        public boolean from_plugin = false;
+        public String plugin_name = ""; // plugin which generated this data
+        public boolean from_plugin = false; // whether a plugin was used
+
+
+        // Display getters - built in caching where appropriate
 
         public String minutesAgo() {
             return minutesAgo(false);
@@ -52,6 +65,53 @@ public class BestGlucose {
         public String minutesAgo(boolean include_words) {
             final int minutes = ((int) (this.mssince / 60000));
             return Integer.toString(minutes) + (include_words ? (((minutes == 1) ? xdrip.getAppContext().getString(R.string.space_minute_ago) : xdrip.getAppContext().getString(R.string.space_minutes_ago))) : "");
+        }
+
+        // return boolean if data would be considered stale
+        public boolean isStale() {
+            if (this.stale == null) {
+                this.stale = this.mssince > Home.stale_data_millis();
+            }
+            return this.stale;
+        }
+
+        // is this value above the "High" preference value
+        public boolean isHigh() {
+            if (this.highMark == null)
+                this.highMark = JoH.tolerantParseDouble(prefs.getString("highValue", "170"));
+            return this.unitized_value >= this.highMark;
+        }
+
+        // is this value below the "Low" preference value
+        public boolean isLow() {
+            if (this.lowMark == null)
+                this.lowMark = JoH.tolerantParseDouble(prefs.getString("lowValue", "70"));
+            return this.unitized_value <= this.lowMark;
+        }
+
+        // return strikeout string if data is high/low / stale
+        public SpannableString spannableString(String str) {
+            return spannableString(str, false);
+        }
+
+        // return a coloured strikeout string based on boolean
+        public SpannableString spannableString(String str, boolean color) {
+            final SpannableString ret = new SpannableString((str != null) ? str : "");
+            if (isStale()) wholeSpan(ret, new StrikethroughSpan());
+            if (color) {
+                if (isLow()) {
+                    // TODO should colors be configurable?
+                    wholeSpan(ret, new ForegroundColorSpan(Color.parseColor("#C30909")));
+                } else if (isHigh()) {
+                    wholeSpan(ret, new ForegroundColorSpan(Color.parseColor("#FFBB33")));
+                } // else default to whatever default is?
+            }
+            return ret;
+        }
+
+        // set the whole spannable string to whatever this span is
+        private void wholeSpan(SpannableString ret, Object what) {
+            ret.setSpan(what, 0, ret.length(), 0);
         }
 
     }
@@ -63,13 +123,16 @@ public class BestGlucose {
     // TODO internalize delta handling to handle irregular periods and missing data plugins etc
     // TODO see getSlopeArrowSymbolBeforeCalibration for calculation method for arbitary slope
     // TODO option to process noise or not
+    // TODO check what happens if there is only a single entry, especially regarding delta
+
 
     public static DisplayGlucose getDisplayGlucose() {
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        if (prefs == null)
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        final DisplayGlucose dg = new DisplayGlucose(); // return value
         final boolean doMgdl = (prefs.getString("units", "mgdl").equals("mgdl"));
         final boolean is_follower = Home.get_follower();
-        final DisplayGlucose dg = new DisplayGlucose(); // return value
 
         List<BgReading> last_2 = BgReading.latest(2);
 
@@ -99,8 +162,6 @@ public class BestGlucose {
         dg.mssince = JoH.msSince(lastBgReading.timestamp);
 
         dg.timestamp = lastBgReading.timestamp;
-        // TODO set stale or use getter maybe
-        dg.stale = dg.mssince > Home.stale_data_millis();
 
         // if we are actively using a plugin, get the glucose calculation from there
         if ((plugin != null) && ((pcalibration = plugin.getCalibrationData()) != null) && (Home.getPreferencesBoolean("display_glucose_from_plugin", false))) {
@@ -125,6 +186,7 @@ public class BestGlucose {
         double estimated_delta = 0;
 
         // TODO refresh bggraph if needed based on cache - observe
+        BgGraphBuilder.refreshNoiseIfOlderThan(dg.timestamp); // should this be conditional on whether bg_compensate_noise is set?
 
         boolean bg_from_filtered = prefs.getBoolean("bg_from_filtered", false);
         // if noise has settled down then switch off filtered mode
@@ -166,7 +228,7 @@ public class BestGlucose {
             //slope_arrow = lastBgReading.slopeArrow(); // internalize this for plugins
             double slope = calculateSlope(estimate, timestamp, previous_estimate, previous_timestamp);
             slope_arrow = BgReading.slopeToArrowSymbol(slope * 60000); // slope by minute
-            slope_name = BgReading.slopeName(slope*60000);
+            slope_name = BgReading.slopeName(slope * 60000);
             Log.d(TAG, "No noise option slope by minute: " + (slope * 60000));
         }
 
@@ -176,8 +238,7 @@ public class BestGlucose {
             warning_level = 2;
         }
 
-
-
+        dg.unitized_value = BgGraphBuilder.unitized(estimate, doMgdl);
         final String stringEstimate = BgGraphBuilder.unitized_string(estimate, doMgdl);
         if ((lastBgReading.hide_slope) || (bg_from_filtered)) {
             slope_arrow = "";
@@ -192,7 +253,8 @@ public class BestGlucose {
         dg.extra_string = extrastring;
         dg.delta_name = slope_name;
 
-        Log.d(TAG, "dg result: " + dg.unitized);
+        if (d)
+            Log.d(TAG, "dg result: " + dg.unitized + " previous: " + BgGraphBuilder.unitized_string(previous_estimate, doMgdl));
         return dg;
     }
 
