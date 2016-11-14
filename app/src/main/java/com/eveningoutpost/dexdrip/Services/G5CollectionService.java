@@ -234,13 +234,13 @@ public class G5CollectionService extends Service {
         }
     }
 
-    private void getTransmitterDetails() {
+    private synchronized void getTransmitterDetails() {
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         Log.d(TAG, "Transmitter: " + prefs.getString("dex_txid", "ABCDEF"));
         defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
         isBondedOrBonding = false;
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-        if (pairedDevices.size() > 0) {
+        if ((pairedDevices != null) && (pairedDevices.size() > 0)) {
             for (BluetoothDevice device : pairedDevices) {
                 if (device.getName() != null) {
 
