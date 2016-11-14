@@ -22,7 +22,6 @@ import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
-import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -47,7 +46,7 @@ class DexParameters extends SlopeParameters {
         DEFAULT_LOW_SLOPE_HIGH = 1.15;
         DEFAULT_SLOPE = 1;
         DEFAULT_HIGH_SLOPE_HIGH = 1.3;
-        DEFAUL_HIGH_SLOPE_LOW = 1.2;
+        DEFAULT_HIGH_SLOPE_LOW = 1.2;
     }
 
 }
@@ -67,7 +66,7 @@ class DexParametersAdrian extends SlopeParameters {
         DEFAULT_LOW_SLOPE_HIGH = 0.70;
         DEFAULT_SLOPE = 1;
         DEFAULT_HIGH_SLOPE_HIGH = 1.3;
-        DEFAUL_HIGH_SLOPE_LOW = 1.2;
+        DEFAULT_HIGH_SLOPE_LOW = 1.2;
     }
 
 }
@@ -82,7 +81,7 @@ class LiParameters extends SlopeParameters {
         DEFAULT_LOW_SLOPE_HIGH = 1;
         DEFAULT_SLOPE = 1;
         DEFAULT_HIGH_SLOPE_HIGH = 1;
-        DEFAUL_HIGH_SLOPE_LOW = 1;
+        DEFAULT_HIGH_SLOPE_LOW = 1;
     }
 }
 
@@ -96,7 +95,7 @@ class TestParameters extends SlopeParameters {
         DEFAULT_LOW_SLOPE_HIGH = 0.95; //1.15
         DEFAULT_SLOPE = 1;
         DEFAULT_HIGH_SLOPE_HIGH = 1.3;
-        DEFAUL_HIGH_SLOPE_LOW = 1.2;
+        DEFAULT_HIGH_SLOPE_LOW = 1.2;
     }
 }
 
@@ -1114,7 +1113,7 @@ abstract class SlopeParameters {
     protected double DEFAULT_LOW_SLOPE_HIGH;
     protected int DEFAULT_SLOPE;
     protected double DEFAULT_HIGH_SLOPE_HIGH;
-    protected double DEFAUL_HIGH_SLOPE_LOW;
+    protected double DEFAULT_HIGH_SLOPE_LOW;
 
     public double getLowSlope1() {
         return LOW_SLOPE_1;
@@ -1149,6 +1148,6 @@ abstract class SlopeParameters {
     }
 
     public double getDefaulHighSlopeLow() {
-        return DEFAUL_HIGH_SLOPE_LOW;
+        return DEFAULT_HIGH_SLOPE_LOW;
     }
 }
