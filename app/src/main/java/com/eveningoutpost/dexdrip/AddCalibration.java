@@ -151,7 +151,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                         try {
                             final double calValue = JoH.tolerantParseDouble(string_value);
 
-                            if(Home.get_master()) {
+                            if(!Home.get_follower()) {
                                 Calibration calibration = Calibration.create(calValue, getApplicationContext());
                                 if (calibration != null) {
                                     UndoRedo.addUndoCalibration(calibration.uuid);
