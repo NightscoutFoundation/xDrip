@@ -15,6 +15,7 @@ import android.provider.BaseColumns;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.GcmActivity;
@@ -75,6 +76,15 @@ public class BgSendQueue extends Model {
                 .execute();
     }
 
+    public static List<BgSendQueue> cleanQueue() {
+        return new Delete()
+                .from(BgSendQueue.class)
+                .where("mongo_success = ?", true)
+                .where("operation_type = ?", "create")
+                .limit(5000)
+                .execute();
+    }
+
     private static void addToQueue(BgReading bgReading, String operation_type) {
         BgSendQueue bgSendQueue = new BgSendQueue();
         bgSendQueue.operation_type = operation_type;
@@ -99,7 +109,10 @@ public class BgSendQueue extends Model {
                 "sendQueue");
         wakeLock.acquire();
         try {
-            if (!is_follower) addToQueue(bgReading, operation_type);
+            if (!is_follower) {
+                addToQueue(bgReading, operation_type);
+                //UploaderQueue.newEntry("insert",bgReading);
+            }
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
