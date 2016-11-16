@@ -128,6 +128,13 @@
                 android:key="pebble_special_text"
                 android:summary="@string/message_to_display_when_bgl_hits"
                 android:title="@string/text_to_display_when_hitting_special_value" />
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="use_pebble_health"
+                android:summary="Collect and display Step counter and Heart rate when available"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="Use Pebble Health Data" />
         </PreferenceCategory>
         <PreferenceCategory
             android:key="pebble_installers"

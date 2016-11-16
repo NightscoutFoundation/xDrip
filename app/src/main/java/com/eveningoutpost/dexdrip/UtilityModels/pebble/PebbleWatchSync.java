@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
@@ -168,63 +169,63 @@ public class PebbleWatchSync extends Service {
             public void receiveData(Context context, UUID logUuid, Long timestamp,
                                     Long tag, Long data) {
                 Log.d(TAG, "receiveLogData: uuid:" + logUuid + " started: " + JoH.dateTimeText(timestamp * 1000) + " tag:" + tag + " data: " + data);
+                if (Home.getPreferencesBoolean("use_pebble_health", true)) {
+                    if ((tag != null) && (data != null)) {
+                        final int s = (int) (long) tag;
 
-                if ((tag != null) && (data != null)) {
-                    final int s = (int) (long) tag;
-
-
-                    switch (s) {
-                        case HEARTRATE_LOG:
-                            if (data > sanity_timestamp) {
-                                if (last_heartrate_timestamp > 0) {
-                                    Log.e(TAG, "Out of sequence heartrate timestamp received!");
-                                }
-                                last_heartrate_timestamp = data;
-                            } else {
-                                if (data > 0) {
+                        switch (s) {
+                            case HEARTRATE_LOG:
+                                if (data > sanity_timestamp) {
                                     if (last_heartrate_timestamp > 0) {
-                                        final HeartRate hr = new HeartRate();
-                                        hr.timestamp = last_heartrate_timestamp * 1000;
-                                        hr.bpm = (int) (long) data;
-                                        Log.d(TAG, "Saving HeartRate: " + hr.toS());
-                                        hr.saveit();
-                                        last_heartrate_timestamp = 0; // reset state
-                                    } else {
-                                        Log.e(TAG, "Out of sequence heartrate value received!");
+                                        Log.e(TAG, "Out of sequence heartrate timestamp received!");
+                                    }
+                                    last_heartrate_timestamp = data;
+                                } else {
+                                    if (data > 0) {
+                                        if (last_heartrate_timestamp > 0) {
+                                            final HeartRate hr = new HeartRate();
+                                            hr.timestamp = last_heartrate_timestamp * 1000;
+                                            hr.bpm = (int) (long) data;
+                                            Log.d(TAG, "Saving HeartRate: " + hr.toS());
+                                            hr.saveit();
+                                            last_heartrate_timestamp = 0; // reset state
+                                        } else {
+                                            Log.e(TAG, "Out of sequence heartrate value received!");
+                                        }
                                     }
                                 }
-                            }
-                            break;
+                                break;
 
-                        case MOVEMENT_LOG:
-                            if (data > sanity_timestamp) {
-                                if (last_movement_timestamp > 0) {
-                                    Log.e(TAG, "Out of sequence movement timestamp received!");
-                                }
-                                last_movement_timestamp = data;
-                            } else {
-                                if (data > 0) {
+                            case MOVEMENT_LOG:
+                                if (data > sanity_timestamp) {
                                     if (last_movement_timestamp > 0) {
-                                        final PebbleMovement pm = new PebbleMovement();
-                                        pm.timestamp = last_movement_timestamp * 1000;
-                                        pm.metric = (int) (long) data;
-                                        Log.d(TAG, "Saving Movement: " + pm.toS());
-                                        pm.saveit();
-                                        last_movement_timestamp = 0; // reset state
-                                    } else {
-                                        Log.e(TAG, "Out of sequence movement value received!");
+                                        Log.e(TAG, "Out of sequence movement timestamp received!");
+                                    }
+                                    last_movement_timestamp = data;
+                                } else {
+                                    if (data > 0) {
+                                        if (last_movement_timestamp > 0) {
+                                            final PebbleMovement pm = new PebbleMovement();
+                                            pm.timestamp = last_movement_timestamp * 1000;
+                                            pm.metric = (int) (long) data;
+                                            Log.d(TAG, "Saving Movement: " + pm.toS());
+                                            pm.saveit();
+                                            last_movement_timestamp = 0; // reset state
+                                        } else {
+                                            Log.e(TAG, "Out of sequence movement value received!");
+                                        }
                                     }
                                 }
-                            }
-                            break;
+                                break;
 
-                        default:
-                            Log.e(TAG, "Unknown pebble data log type received: " + s);
-                            break;
+                            default:
+                                Log.e(TAG, "Unknown pebble data log type received: " + s);
+                                break;
 
+                        }
+                    } else {
+                        Log.e(TAG, "Got null Long in receive data");
                     }
-                } else {
-                    Log.e(TAG, "Got null Long in receive data");
                 }
             }
 
