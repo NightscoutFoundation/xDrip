@@ -233,11 +233,13 @@ public class BgSendQueue extends Model {
             }
 
             //Text to speech
-            //Log.d("BgToSpeech", "gonna call speak");
-            if ((!quick) && (prefs.getBoolean("bg_to_speech", false)))
-            {
-                // TODO Use BestGlucose
-                BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp);
+            if ((!quick) && (prefs.getBoolean("bg_to_speech", false))) {
+                final BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
+                if (dg != null) {
+                    BgToSpeech.speak(dg.mgdl, dg.timestamp);
+                } else {
+                    BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp);
+                }
             }
 
 

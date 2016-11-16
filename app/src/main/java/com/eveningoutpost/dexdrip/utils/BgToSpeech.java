@@ -29,7 +29,7 @@ public class BgToSpeech {
     private TextToSpeech tts = null;
     private static final String TAG = "BgToSpeech";
 
-    public static BgToSpeech setupTTS(Context context){
+    public synchronized static BgToSpeech setupTTS(Context context){
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (! prefs.getBoolean("bg_to_speech", false)){
@@ -46,7 +46,7 @@ public class BgToSpeech {
         }
     }
 
-    public static void tearDownTTS(){
+    public synchronized static void tearDownTTS(){
         if(instance!=null){
             instance.tearDown();
             instance = null;
@@ -55,7 +55,7 @@ public class BgToSpeech {
         }
     }
 
-    public static void speak(final double value, long timestamp) {
+    public static synchronized  void speak(final double value, long timestamp) {
         if (instance == null) {
             try {
                 setupTTS(xdrip.getAppContext());
@@ -192,6 +192,7 @@ public class BgToSpeech {
                 df.setMinimumFractionDigits(1);
                 text = df.format(value * Constants.MGDL_TO_MMOLL);
                 try {
+                    if (tts == null) setupTTS(xdrip.getAppContext());
                     if (tts.getLanguage().getLanguage().startsWith("en")) {
                         // in case the text has a comma in current locale but TTS defaults to English
                         text = text.replace(",", ".");
