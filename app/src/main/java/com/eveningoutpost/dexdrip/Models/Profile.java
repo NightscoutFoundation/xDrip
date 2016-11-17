@@ -1,12 +1,14 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileItem;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.List;
 
@@ -33,6 +35,7 @@ public class Profile {
     private static double stored_default_absorption_rate = 35;
     private static double stored_default_insulin_action_time = 3.0;
     private static double stored_default_carb_delay_minutes = 15;
+    private static boolean preferences_loaded = false;
     private static List<ProfileItem> profileItemList;
 
     public static double getSensitivity(double when) {
@@ -191,7 +194,16 @@ public class Profile {
         return new double[]{addcarbs, addinsulin};
     }
 
-    public static void reloadPreferences(SharedPreferences prefs) {
+    public static void reloadPreferencesIfNeeded(SharedPreferences prefs) {
+        if (!preferences_loaded) reloadPreferences(prefs);
+    }
+
+    public static void reloadPreferences() {
+        Log.d(TAG,"Reloaded profile preferences");
+        reloadPreferences(PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()));
+    }
+
+    public static synchronized  void reloadPreferences(SharedPreferences prefs) {
         validateTargetRange();
         try {
             Profile.setSensitivityDefault(tolerantParseDouble(prefs.getString("profile_insulin_sensitivity_default", "0")));
@@ -223,6 +235,7 @@ public class Profile {
         }
         profileItemList = null;
         populateProfile();
+        preferences_loaded = true;
     }
 
     private static double tolerantParseDouble(String str) throws NumberFormatException {

@@ -134,6 +134,7 @@ public class BgGraphBuilder {
     public static double capturePercentage = -1;
     private int predictivehours = 0;
     private boolean prediction_enabled = false;
+    private boolean simulation_enabled = false;
     private static double avg1value = 0;
     private static double avg2value = 0;
     private static int avg1counter = 0;
@@ -187,7 +188,10 @@ public class BgGraphBuilder {
         }
         if (d)
             Log.d(TAG, "Called timestamps: " + JoH.dateTimeText(start) + " -> " + JoH.dateTimeText(end));
+        this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prediction_enabled = show_prediction;
+        if (prediction_enabled)
+            simulation_enabled = prefs.getBoolean("simulations_enabled", true);
         end_time = end / FUZZER;
         start_time = start / FUZZER;
 
@@ -214,7 +218,6 @@ public class BgGraphBuilder {
         calibrations = Calibration.latestForGraph(numValues, start, end);
         treatments = Treatments.latestForGraph(numValues, start, end + (120 * 60 * 1000));
         this.context = context;
-        this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
         this.highMark = tolerantParseDouble(prefs.getString("highValue", "170"));
         this.lowMark = tolerantParseDouble(prefs.getString("lowValue", "70"));
         this.doMgdl = (prefs.getString("units", "mgdl").equals("mgdl"));
@@ -1228,7 +1231,7 @@ public class BgGraphBuilder {
                     double lasttimestamp = 0;
 
                     // this can be optimised to oncreate and onchange
-                    Profile.reloadPreferences(prefs); // TODO handle this better now we use profile time blocks
+                    Profile.reloadPreferencesIfNeeded(prefs); // TODO handle this better now we use profile time blocks
 
 
                     try {
@@ -1256,7 +1259,7 @@ public class BgGraphBuilder {
                     final double relaxed_predicted_bg_limit = initial_predicted_bg * 1.20;
                     final double cob_insulin_max_draw_value = highMark * 1.20;
                     // final List<Iob> iobinfo_old = Treatments.ioBForGraph(numValues, (start_time * FUZZER));
-                    final List<Iob> iobinfo = Treatments.ioBForGraph_new(NUM_VALUES, (start_time * FUZZER)); // for test
+                    final List<Iob> iobinfo = (simulation_enabled) ? Treatments.ioBForGraph_new(NUM_VALUES, (start_time * FUZZER)) : null; // for test
 
                     long fuzzed_timestamp = (long) end_time; // initial value in case there are no iob records
                     if (d)
@@ -1267,7 +1270,7 @@ public class BgGraphBuilder {
                         Log.d(TAG, "initial Fuzzed end timestamp: " + android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", fuzzed_timestamp * FUZZER));
                     if (d)
                         Log.d(TAG, "initial Fuzzed start timestamp: " + android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", (long) start_time * FUZZER));
-                    if ((iobinfo != null) && (prediction_enabled)) {
+                    if ((iobinfo != null) && (prediction_enabled) && (simulation_enabled)) {
 
                         double predict_weight = 0.1;
 
@@ -1374,7 +1377,7 @@ public class BgGraphBuilder {
                     }
 
                     double[] evaluation;
-                    if (prediction_enabled) {
+                    if (prediction_enabled && simulation_enabled) {
                         if (doMgdl) {
                             // These routines need to understand how the profile is defined to use native instead of scaled
                             evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);

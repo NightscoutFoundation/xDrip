@@ -81,7 +81,6 @@ public class BgSendQueue extends Model {
                 .from(BgSendQueue.class)
                 .where("mongo_success = ?", true)
                 .where("operation_type = ?", "create")
-                .limit(5000)
                 .execute();
     }
 

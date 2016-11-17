@@ -342,6 +342,13 @@
         <PreferenceCategory
             android:key="xdrip_plus_profile_category"
             android:title="@string/xdrip_plus_prediction_settings">
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="simulations_enabled"
+                android:summary="Display mathamatical simulations based on profile data and carbs/insulin logs"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="Predictive Simulations" />
 
             <Preference
                 android:key="profile_carb_ratio_default"
