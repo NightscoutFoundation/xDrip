@@ -435,7 +435,7 @@ public class Notifications extends IntentService {
         Long wakeTimeUnclear = calcuatleArmTimeUnclearalert(ctx, now, unclearAlert);
         Long wakeTime = Math.min(wakeTimeBg, wakeTimeUnclear);
         
-        Log.d("Notifications" , "calcuatleArmTimeBg returning: "+ new Date(wakeTime) +" in " +  (wakeTime - now)/60000d + " minutes");
+        Log.d("Notifications" , "calcuatleArmTime returning: "+ new Date(wakeTime) +" in " +  (wakeTime - now)/60000d + " minutes");
         return wakeTime;
 
 /*
@@ -469,12 +469,15 @@ public class Notifications extends IntentService {
         long wakeTime = calcuatleArmTime(ctx, now, unclearAlert);
 
         
-        if(wakeTime < now || wakeTime >=  now + 6 * 60000 ) {
+        if(wakeTime < now ) {
             Log.e("Notifications" , "ArmTimer recieved a negative time, will fire in 6 minutes");
             wakeTime = now + 6 * 60000;
-        } else if (wakeTime == now) {
+        } else if  (wakeTime >=  now + 6 * 60000) {
+        	 Log.i("Notifications" , "ArmTimer recieved a biger time, will fire in 6 minutes");
+             wakeTime = now + 6 * 60000;
+        }  else if (wakeTime == now) {
             Log.e("Notifications", "should arm right now, waiting one more second to avoid infinitue loop");
-            wakeTime = now + 1;
+            wakeTime = now + 1000;
         }
         
         AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
