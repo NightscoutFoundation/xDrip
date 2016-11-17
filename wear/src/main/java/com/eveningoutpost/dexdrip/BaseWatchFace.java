@@ -291,7 +291,7 @@ protected abstract void setColorDark();
     public void missedReadingAlert() {
         int minutes_since   = (int) Math.floor(timeSince()/(1000*60));
         int maxDelay = 16;
-        if (sharedPrefs.getBoolean("connectG5", false)) {
+        if (sharedPrefs.getBoolean("enable_wearG5", false)) {
             maxDelay = 4;
             Log.d("BIGChart", "missedReadingAlert Enter minutes_since " + minutes_since + " call requestData if >= 4 minutes mod 5");//KS
         }

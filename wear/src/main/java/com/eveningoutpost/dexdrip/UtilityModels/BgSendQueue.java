@@ -22,6 +22,7 @@ import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.ListenerService;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 //KS import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 
@@ -230,10 +231,10 @@ public class BgSendQueue extends Model {
             */
 
             // if executing on watch; send to watchface
-            if (prefs.getBoolean("connectG5", false)) {//KS
+            if (prefs.getBoolean("enable_wearG5", false)) {//KS
                 Log.d("BgSendQueue", "handleNewBgReading Broadcast BG data to watch");
                 resendData(context);
-                if (prefs.getBoolean("use_connectG5", false)) {
+                if (prefs.getBoolean("force_wearG5", false)) {
                     ListenerService.requestData(context);
                 }
             }
@@ -247,7 +248,7 @@ public class BgSendQueue extends Model {
     public static void sendToPhone(Context context) {//KS
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        if (prefs.getBoolean("connectG5", false) && prefs.getBoolean("use_connectG5", false)) {
+        if (prefs.getBoolean("enable_wearG5", false) && prefs.getBoolean("force_wearG5", false)) {
             ListenerService.requestData(context);
         }
     }
@@ -256,13 +257,10 @@ public class BgSendQueue extends Model {
     public static void resendData(Context context) {//KS
         long startTime = new Date().getTime() - (60000 * 60 * 24);
         Log.d("BgSendQueue", "resendData enter");
-        java.text.DateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
-        Date date = new Date();
 
         BgReading last_bg = BgReading.last();
         if (last_bg != null) {
-            date.setTime(last_bg.timestamp);
-            Log.d("BgSendQueue", "resendData last_bg.timestamp:" + df.format(date));
+            Log.d("BgSendQueue", "resendData last_bg.timestamp:" +  JoH.dateTimeText(last_bg.timestamp));
         }
 
         List<BgReading> graph_bgs = BgReading.latestForGraph(60, startTime);
