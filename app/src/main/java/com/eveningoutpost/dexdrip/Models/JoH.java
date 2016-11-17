@@ -444,11 +444,11 @@ public class JoH {
     }
 
     public static String hourMinuteString(long timestamp) {
-        return android.text.format.DateFormat.format("HH:mm", timestamp).toString();
+        return android.text.format.DateFormat.format("kk:mm", timestamp).toString();
     }
 
     public static String dateTimeText(long timestamp) {
-        return android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", timestamp).toString();
+        return android.text.format.DateFormat.format("yyyy-MM-dd kk:mm:ss", timestamp).toString();
     }
 
     public static String dateText(long timestamp) {

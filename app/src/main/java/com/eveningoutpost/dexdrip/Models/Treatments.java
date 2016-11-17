@@ -18,7 +18,9 @@ import com.eveningoutpost.dexdrip.GoogleDriveInterface;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
+import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -112,8 +114,9 @@ public class Treatments extends Model {
         Treatment.created_at = DateUtil.toISOString(timestamp);
         Treatment.uuid = UUID.randomUUID().toString();
         Treatment.save();
-        GcmActivity.pushTreatmentAsync(Treatment);
-        NSClientChat.pushTreatmentAsync(Treatment);
+       // GcmActivity.pushTreatmentAsync(Treatment);
+      //  NSClientChat.pushTreatmentAsync(Treatment);
+        pushTreatmentSync(Treatment);
         UndoRedo.addUndoTreatment(Treatment.uuid);
         return Treatment;
     }
@@ -176,9 +179,12 @@ public class Treatments extends Model {
         return Treatment;
     }
 
-    public static void pushTreatmentSync(Treatments Treatment) {
-        GcmActivity.pushTreatmentAsync(Treatment);
-        NSClientChat.pushTreatmentAsync(Treatment);
+    public static void pushTreatmentSync(Treatments treatment) {
+        GcmActivity.pushTreatmentAsync(treatment);
+        NSClientChat.pushTreatmentAsync(treatment);
+        if (UploaderQueue.newEntry("insert",treatment) != null) {
+            SyncService.startSyncService(3000); // sync in 3 seconds
+        }
     }
 
     // This shouldn't be needed but it seems it is
@@ -223,6 +229,13 @@ public class Treatments extends Model {
                 .executeSingle();
     }
 
+    public static Treatments byid(long id) {
+        return new Select()
+                .from(Treatments.class)
+                .where("_ID = ?", id)
+                .executeSingle();
+    }
+
     public static Treatments byTimestamp(long timestamp) {
         return byTimestamp(timestamp, 1500);
     }
@@ -246,6 +259,7 @@ public class Treatments extends Model {
         new Delete()
                 .from(Treatments.class)
                 .execute();
+        // not synced with uploader queue - should we?
     }
 
     public static Treatments delete_last() {
@@ -261,9 +275,12 @@ public class Treatments extends Model {
         Treatments thistreat = byuuid(uuid);
         if (thistreat != null) {
 
+            UploaderQueue.newEntry("delete",thistreat);
             if (from_interactive) {
                 GcmActivity.push_delete_treatment(thistreat);
+                SyncService.startSyncService(3000); // sync in 3 seconds
             }
+
             thistreat.delete();
             Home.staticRefreshBGCharts();
         }
@@ -278,6 +295,7 @@ public class Treatments extends Model {
                 //GoogleDriveInterface gdrive = new GoogleDriveInterface();
                 //gdrive.deleteTreatmentAtRemote(thistreat.uuid);
             }
+            UploaderQueue.newEntry("delete",thistreat);
             thistreat.delete();
         }
         return null;

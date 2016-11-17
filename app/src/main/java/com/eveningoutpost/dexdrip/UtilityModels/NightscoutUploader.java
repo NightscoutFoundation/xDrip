@@ -11,6 +11,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.google.common.base.Charsets;
@@ -60,6 +61,7 @@ public class NightscoutUploader {
         private static final String TAG = NightscoutUploader.class.getSimpleName();
         private static final int SOCKET_TIMEOUT = 60000;
         private static final int CONNECTION_TIMEOUT = 30000;
+
         private static int failurecount = 0;
         private Context mContext;
         private Boolean enableRESTUpload;
@@ -79,6 +81,9 @@ public class NightscoutUploader {
 
             @POST("devicestatus")
             Call<ResponseBody> uploadDeviceStatus(@Header("api-secret") String secret, @Body RequestBody body);
+
+            @POST("treatments")
+            Call<ResponseBody> uploadTreatments(@Header("api-secret") String secret, @Body RequestBody body);
 
         }
 
@@ -199,13 +204,14 @@ public class NightscoutUploader {
                 populateV1APICalibrationEntry(array, record);
             }
 
-            if (array != null) {//KS
+            if (array.length() > 0) {//KS
                 RequestBody body = RequestBody.create(MediaType.parse("application/json"), array.toString());
                 Response<ResponseBody> r = nightscoutService.upload(secret, body).execute();
                 if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
 
                 postDeviceStatus(nightscoutService, secret);
             }
+                postTreatments(nightscoutService,secret);
         }
 
     private void populateV1APIBGEntry(JSONArray array, BgReading record) throws Exception {
@@ -277,6 +283,59 @@ public class NightscoutUploader {
             }
             array.put(json);
         }
+
+    private void populateV1APITreatmentEntry(JSONArray array, Treatments treatment) throws Exception {
+
+        if (treatment == null) return;
+        final JSONObject record = new JSONObject();
+        record.put("timestamp", treatment.timestamp);
+        record.put("eventType", treatment.eventType);
+        record.put("enteredBy", treatment.enteredBy);
+        record.put("notes", treatment.notes);
+        record.put("uuid", treatment.uuid);
+        record.put("carbs", treatment.carbs);
+        record.put("insulin", treatment.insulin);
+        record.put("created_at", treatment.created_at);
+        array.put(record);
+    }
+
+    private void postTreatments(NightscoutService nightscoutService, String apiSecret) throws Exception {
+        Log.d(TAG, "Processing treatments for RESTAPI");
+        final long THIS_QUEUE = UploaderQueue.NIGHTSCOUT_RESTAPI;
+        final List<UploaderQueue> tups = UploaderQueue.getPendingbyType(Treatments.class.getSimpleName(), THIS_QUEUE);
+        if (tups != null) {
+            JSONArray array = new JSONArray();
+            for (UploaderQueue up : tups) {
+                if ((up.action.equals("insert") || (up.action.equals("update")))) {
+                    Treatments treatment = Treatments.byid(up.reference_id);
+                    populateV1APITreatmentEntry(array, treatment);
+                } else if (up.action.equals("delete")) {
+                    if (up.reference_uuid != null) {
+                        Log.d(TAG, "Cannot delete treatment using REST-API: " + up.reference_uuid);
+                        up.completed(THIS_QUEUE); // mark as completed so as not to tie up the queue for now
+                    }
+                } else {
+                    Log.e(TAG, "Unsupported operation type for treatment: " + up.action);
+                }
+            }
+            if (array.length() == 0) return;
+            final RequestBody body = RequestBody.create(MediaType.parse("application/json"), array.toString());
+            final Response<ResponseBody> r;
+            if (apiSecret != null) {
+                r = nightscoutService.uploadTreatments(apiSecret, body).execute();
+                if (!r.isSuccess()) {
+                    throw new UploaderException(r.message(), r.code());
+                } else {
+                    Log.d(TAG, "Success for RESTAPI treatment upload");
+                    for (UploaderQueue up : tups) {
+                        up.completed(THIS_QUEUE); // approve all types for this queue
+                    }
+                }
+            } else {
+                Log.wtf(TAG, "Cannot upload treatments without api secret being set");
+            }
+        }
+    }
 
         private void postDeviceStatus(NightscoutService nightscoutService, String apiSecret) throws Exception {
             JSONObject json = new JSONObject();
@@ -386,7 +445,50 @@ public class NightscoutUploader {
                         devicestatus.put("created_at", format.format(System.currentTimeMillis()));
                         dsCollection.insert(devicestatus, WriteConcern.UNACKNOWLEDGED);
 
+                        // treatments mongo sync using unified queue
+                        Log.d(TAG,"Starting treatments mongo direct");
+                        final long THIS_QUEUE = UploaderQueue.MONGO_DIRECT;
+                        final DBCollection treatmentDb = db.getCollection("treatments");
+                        final List<UploaderQueue> tups = UploaderQueue.getPendingbyType(Treatments.class.getSimpleName(), THIS_QUEUE);
+                        if (tups != null) {
+                            for (UploaderQueue up : tups) {
+                                if ((up.action.equals("insert") || (up.action.equals("update")))) {
+                                    Treatments treatment = Treatments.byid(up.reference_id);
+                                    if (treatment != null) {
+                                        BasicDBObject record = new BasicDBObject();
+                                        record.put("timestamp", treatment.timestamp);
+                                        record.put("eventType", treatment.eventType);
+                                        record.put("enteredBy", treatment.enteredBy);
+                                        record.put("notes", treatment.notes);
+                                        record.put("uuid", treatment.uuid);
+                                        record.put("carbs", treatment.carbs);
+                                        record.put("insulin", treatment.insulin);
+                                        record.put("created_at", treatment.created_at);
+                                        final BasicDBObject searchQuery = new BasicDBObject().append("uuid", treatment.uuid);
+                                        //treatmentDb.insert(record, WriteConcern.UNACKNOWLEDGED);
+                                        Log.d(TAG, "Sending upsert for: " + treatment.toJSON());
+                                        treatmentDb.update(searchQuery, record, true, false);
+                                    } else {
+                                        Log.d(TAG, "Got null for treatment id: " + up.reference_id);
+                                    }
+                                    up.completed(THIS_QUEUE);
+                                } else if (up.action.equals("delete")) {
+                                    if (up.reference_uuid != null) {
+                                        Log.d(TAG,"Processing treatment delete mongo sync for: "+up.reference_uuid);
+                                        final BasicDBObject searchQuery = new BasicDBObject().append("uuid", up.reference_uuid);
+                                        Log.d(TAG,treatmentDb.remove(searchQuery, WriteConcern.UNACKNOWLEDGED).toString());
+
+                                    }
+                                    up.completed(THIS_QUEUE);
+                                } else {
+                                    Log.e(TAG, "Unsupported operation type for treatment: " + up.action);
+                                }
+                            }
+                            Log.d(TAG, "Processed " + tups.size() + " Treatment mongo direct upload records");
+                        }
+
                         client.close();
+
                         failurecount=0;
                         return true;
 

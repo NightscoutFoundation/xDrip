@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.MongoSendTask;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -41,18 +42,24 @@ public class SyncService extends IntentService {
 
     public void setRetryTimer() {
         if (enableRESTUpload || enableMongoUpload) { //Check for any upload type being enabled
-            Calendar calendar = Calendar.getInstance();
-            AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            long wakeTime = calendar.getTimeInMillis() + (1000 * 60 * 6);
-            // make it up on the next BG reading or retry if the reading doesn't materialize
-            // TODO THIS NEEDS UPDATING
-            PendingIntent serviceIntent = PendingIntent.getService(this, 0, new Intent(this, SyncService.class), PendingIntent.FLAG_CANCEL_CURRENT);
-            alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+            final PendingIntent serviceIntent = PendingIntent.getService(this, 0, new Intent(this, SyncService.class), PendingIntent.FLAG_CANCEL_CURRENT);
+            JoH.wakeUpIntent(this,(1000 * 60 * 6),serviceIntent); // TODO use static method below instead
         }
     }
 
-    public void syncToMongoDb() {
+    private void syncToMongoDb() {
+        // TODO does this need locking?
         MongoSendTask task = new MongoSendTask(getApplicationContext());
         task.executeOnExecutor(xdrip.executor);
+    }
+
+    public static void startSyncService(long delay) {
+        Log.d("SyncService", "static starting Sync service delay: " + delay);
+        if (delay == 0) {
+            xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), SyncService.class));
+        } else {
+            final PendingIntent serviceIntent = PendingIntent.getService(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), SyncService.class), PendingIntent.FLAG_CANCEL_CURRENT);
+            JoH.wakeUpIntent(xdrip.getAppContext(), delay, serviceIntent);
+        }
     }
 }

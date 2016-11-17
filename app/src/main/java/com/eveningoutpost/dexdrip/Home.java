@@ -458,7 +458,6 @@ public class Home extends ActivityWithMenu {
         processIncomingBundle(bundle);
 
         checkBadSettings();
-
         // lower priority
         PlusSyncService.startSyncService(getApplicationContext(), "HomeOnCreate");
         ParakeetHelper.notifyOnNextCheckin(false);
@@ -1562,7 +1561,8 @@ public class Home extends ActivityWithMenu {
 
     private void updateHealthInfo(String caller) {
         final PebbleMovement pm = PebbleMovement.last();
-        if (pm != null) {
+        final boolean use_pebble_health = prefs.getBoolean("use_pebble_health", true);
+        if ((use_pebble_health) && (pm != null)) {
             stepsButton.setText(Integer.toString(pm.metric));
             stepsButton.setVisibility(View.VISIBLE);
             stepsButton.setAlpha(getPreferencesBoolean("show_pebble_movement_line", true) ? 1.0f : 0.3f);
@@ -1571,7 +1571,7 @@ public class Home extends ActivityWithMenu {
         }
 
         final HeartRate hr = HeartRate.last();
-        if (hr != null) {
+        if ((use_pebble_health) && (hr != null)) {
             bpmButton.setText(Integer.toString(hr.bpm));
             bpmButton.setVisibility(View.VISIBLE);
         } else {

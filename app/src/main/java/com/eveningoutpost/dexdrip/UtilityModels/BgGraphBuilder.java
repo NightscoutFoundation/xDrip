@@ -281,7 +281,8 @@ public class BgGraphBuilder {
     // line illustrating result from step counter
     private List<Line> stepsLines() {
         final List<Line> stepsLines = new ArrayList<>();
-        if (prefs.getBoolean("show_pebble_movement_line", true)) {
+        if ((prefs.getBoolean("use_pebble_health", true)
+                && prefs.getBoolean("show_pebble_movement_line", true))) {
             final List<PebbleMovement> pmlist = PebbleMovement.deltaListFromMovementList(PebbleMovement.latestForGraph(2000, loaded_start, loaded_end));
             PointValue last_point = null;
             final boolean d = false;
