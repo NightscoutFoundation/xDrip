@@ -4,7 +4,9 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.PowerManager;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
@@ -44,7 +46,11 @@ public class DailyIntentService extends IntentService {
         } catch (Exception e) {
             //
         }
-
+        try {
+            PebbleMovement.cleanup(Home.getPreferencesInt("retention_pebble_movement", 180));
+        } catch (Exception e) {
+            //
+        }
         try {
             checkForAnUpdate(getApplicationContext());
         } catch (Exception e) {
