@@ -379,6 +379,11 @@
                 <action android:name="com.eveningoutpost.dexdrip.FROM_LIBRE_ALARM" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".NSEmulatorReceiver">
+            <intent-filter>
+                <action android:name="com.eveningoutpost.dexdrip.NS_EMULATOR" />
+            </intent-filter>
+        </receiver>
         <receiver
             android:name=".localeTasker.receiver.FireReceiver"
             android:exported="true"
