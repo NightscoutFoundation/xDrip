@@ -86,7 +86,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static GoogleApiClient googleApiClient;
     private static long lastRequest = 0;//KS
     private static final Integer sendCalibrationCount = 3;//KS
-    private final static Integer sendBgCount = 5;//KS
+    private final static Integer sendBgCount = 4;//KS
     private boolean wear_integration = false;
     private boolean pebble_integration = false;
     private boolean is_using_g5 = false;
@@ -504,7 +504,6 @@ public class WatchUpdaterService extends WearableListenerService implements
                 googleApiClient,
                 capabilityListener,
                 CAPABILITY_WEAR_APP);
-        //new CheckWearableConnected().execute();
         sendData();
     }
 
@@ -814,13 +813,25 @@ public class WatchUpdaterService extends WearableListenerService implements
             Log.d(TAG, "sendWearCalibrationData");
             final Sensor sensor = Sensor.currentSensor();
             final Calibration last = Calibration.last();
-            final List<Calibration> lastest = Calibration.latestForGraph((int)Long.MAX_VALUE, sensor.started_at, Long.MAX_VALUE);//.latest(count);
-            if ((sensor != null) && (last != null) && (lastest != null && !lastest.isEmpty())) {
-                Log.d(TAG, "sendWearCalibrationData lastest count = " + lastest.size());
+
+            List<Calibration> latest;
+            BgReading lastBgReading = BgReading.last();
+            //From BgReading: if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp) && ((lastBgReading.calibration.timestamp + (60000 * 20)) > bgReading.timestamp))
+            //From BgReading:     lastBgReading.calibration.rawValueOverride()
+            if (lastBgReading != null && lastBgReading.calibration != null && lastBgReading.calibration_flag == true) {
+                Log.d(TAG, "sendWearCalibrationData lastBgReading.calibration_flag=" + lastBgReading.calibration_flag + " lastBgReading.timestamp: " + lastBgReading.timestamp + " lastBgReading.calibration.timestamp: " + lastBgReading.calibration.timestamp);
+                latest = Calibration.allForSensor();
+            }
+            else {
+                latest = Calibration.latest(count);
+            }
+
+            if ((sensor != null) && (last != null) && (latest != null && !latest.isEmpty())) {
+                Log.d(TAG, "sendWearCalibrationData latest count = " + latest.size());
                 final DataMap entries = dataMap(last);
-                final ArrayList<DataMap> dataMaps = new ArrayList<>(lastest.size());
+                final ArrayList<DataMap> dataMaps = new ArrayList<>(latest.size());
                 if (sensor.uuid != null) {
-                    for (Calibration bg : lastest) {
+                    for (Calibration bg : latest) {
                         if ((bg != null) && (bg.sensor_uuid != null) && (bg.sensor_uuid.equals(sensor.uuid))) {
                             dataMaps.add(dataMap(bg));
                         }
@@ -831,7 +842,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                 if (googleApiClient != null)
                     new SendToDataLayerThread(WEARABLE_CALIBRATION_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, entries);
             } else
-                Log.d(TAG, "sendWearCalibrationData lastest count = 0");
+                Log.d(TAG, "sendWearCalibrationData latest count = 0");
         } catch (NullPointerException e) {
             Log.e(TAG, "Nullpointer exception in sendWearBgData: " + e);
         }
@@ -853,14 +864,14 @@ public class WatchUpdaterService extends WearableListenerService implements
             }
             Log.d(TAG, "sendWearBgData");
             final BgReading last = BgReading.last();
-            final List<BgReading> lastest = BgReading.latest(count);
-            if ((last != null) && (lastest != null && !lastest.isEmpty())) {
-                Log.d(TAG, "sendWearBgData lastest count = " + lastest.size());
+            final List<BgReading> latest = BgReading.latest(count);
+            if ((last != null) && (latest != null && !latest.isEmpty())) {
+                Log.d(TAG, "sendWearBgData latest count = " + latest.size());
                 final DataMap entries = dataMap(last);
-                final ArrayList<DataMap> dataMaps = new ArrayList<>(lastest.size());
+                final ArrayList<DataMap> dataMaps = new ArrayList<>(latest.size());
                 final Sensor sensor = Sensor.currentSensor();
                 if ((sensor != null) && (sensor.uuid != null)) {
-                    for (BgReading bg : lastest) {
+                    for (BgReading bg : latest) {
                         if ((bg != null) && (bg.sensor_uuid != null) && (bg.sensor_uuid.equals(sensor.uuid))) {
                             dataMaps.add(dataMap(bg));
                         }

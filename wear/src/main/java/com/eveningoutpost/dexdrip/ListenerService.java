@@ -556,7 +556,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         Log.d(TAG, "syncCalibrationData");
 
         ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
-        Log.d(TAG, "syncCalibrationData add Calibration Table" );
         if (entries != null) {
 
             Gson gson = new GsonBuilder()
@@ -571,27 +570,49 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             if (sensor != null) {
                 for (DataMap entry : entries) {
                     if (entry != null) {
-                        Log.d(TAG, "syncCalibrationData add Calibration Table entry=" + entry);
                         String bgrecord = entry.getString("bgs");
                         if (bgrecord != null) {
-                            Log.d(TAG, "syncCalibrationData add Calibration Table bgrecord=" + bgrecord);
                             Calibration bgData = gson.fromJson(bgrecord, Calibration.class);
-                            Calibration uuidexists = Calibration.findByUuid(bgData.uuid);
+                            Calibration exists = Calibration.findByUuid(bgData.uuid);
                             bgData.sensor = sensor;
-                            if (uuidexists == null) {//adjust BGs for new calibrations
+                            if (exists != null) {
+                                Log.d(TAG, "syncCalibrationData Calibration exists for uuid=" + bgData.uuid + " bg=" + bgData.bg + " timestamp=" + bgData.timestamp + " timeString=" +  JoH.dateTimeText(bgData.timestamp));
+                                exists.adjusted_raw_value = bgData.adjusted_raw_value;
+                                exists.bg = bgData.bg;
+                                exists.check_in = bgData.check_in;
+                                exists.distance_from_estimate = bgData.distance_from_estimate;
+                                exists.estimate_bg_at_time_of_calibration = bgData.estimate_bg_at_time_of_calibration;
+                                exists.estimate_raw_at_time_of_calibration = bgData.estimate_raw_at_time_of_calibration;
+                                exists.first_decay = bgData.first_decay;
+                                exists.first_intercept = bgData.first_intercept;
+                                exists.first_scale = bgData.first_scale;
+                                exists.first_slope = bgData.first_slope;
+                                exists.intercept = bgData.intercept;
+                                exists.possible_bad = bgData.possible_bad;
+                                exists.raw_timestamp = bgData.raw_timestamp;
+                                exists.raw_value = bgData.raw_value;
+                                exists.second_decay = bgData.second_decay;
+                                exists.second_intercept = bgData.second_intercept;
+                                exists.second_scale = bgData.second_scale;
+                                exists.second_slope = bgData.second_slope;
+                                exists.sensor = sensor;
+                                exists.sensor_age_at_time_of_estimation = bgData.sensor_age_at_time_of_estimation;
+                                exists.sensor_confidence = bgData.sensor_confidence;
+                                exists.sensor_uuid = bgData.sensor_uuid;
+                                exists.slope = bgData.slope;
+                                exists.slope_confidence = bgData.slope_confidence;
+                                exists.timestamp = bgData.timestamp;
+                                exists.save();
+                            }
+                            else {
                                 bgData.save();
                                 //final boolean adjustPast = mPrefs.getBoolean("rewrite_history", true);
                                 Log.d(TAG, "syncCalibrationData Calibration does not exist for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" +  JoH.dateTimeText(bgData.timestamp));
                                 //Calibration.adjustRecentBgReadings(adjustPast ? 30 : 2);
                             }
-                            else {
-                                Log.d(TAG, "syncCalibrationData Calibration exists for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" +  JoH.dateTimeText(bgData.timestamp));
-                                uuidexists = bgData;
-                                uuidexists.save();
-                            }
-                            uuidexists = Calibration.findByUuid(bgData.uuid);
-                            if (uuidexists != null)
-                                Log.d(TAG, "syncCalibrationData Calibration GSON saved BG: " + uuidexists.toS());
+                            exists = Calibration.findByUuid(bgData.uuid);
+                            if (exists != null)
+                                Log.d(TAG, "syncCalibrationData Calibration GSON saved BG: " + exists.toS());
                             else
                                 Log.d(TAG, "syncCalibrationData Calibration GSON NOT saved");
                         }
@@ -620,10 +641,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             if (sensor != null) {
                 for (DataMap entry : entries) {
                     if (entry != null) {
-                        Log.d(TAG, "syncBGData add BgReading Table entry=" + entry);
                         String bgrecord = entry.getString("bgs");
                         if (bgrecord != null) {
-                            Log.d(TAG, "syncBGData add BgReading Table bgrecord=" + bgrecord);
                             BgReading bgData = gson.fromJson(bgrecord, BgReading.class);
                             BgReading exists = BgReading.getForTimestampExists(bgData.timestamp);
                             exists = exists != null ? exists : BgReading.findByUuid(bgData.uuid);
