@@ -917,7 +917,7 @@ public class Calibration extends Model {
     public static void upsertFromMaster(Calibration jsonCalibration) {
         
         if (jsonCalibration == null) {
-            Log.wtf("xxxx","Got null calibration from json");
+            Log.wtf(TAG,"Got null calibration from json");
             return;
         }
         try {
@@ -928,11 +928,11 @@ public class Calibration extends Model {
             }
             Calibration existingCalibration = byuuid(jsonCalibration.uuid);
             if (existingCalibration == null) {
-                Log.d("xxxx", "saving new calibration record. sensor uuid =" + jsonCalibration.sensor_uuid);
+                Log.d(TAG, "saving new calibration record. sensor uuid =" + jsonCalibration.sensor_uuid);
                 jsonCalibration.sensor = sensor;
                 jsonCalibration.save();
             } else {
-                Log.d("xxxx", "updating existing calibration record: ");
+                Log.d(TAG, "updating existing calibration record: ");
                 existingCalibration.sensor = sensor;
                 existingCalibration.timestamp = jsonCalibration.timestamp;
                 existingCalibration.sensor_age_at_time_of_estimation = jsonCalibration.sensor_age_at_time_of_estimation;
