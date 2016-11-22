@@ -120,17 +120,23 @@ public class GcmActivity extends Activity {
     }
     
     public static NewCalibration getNewCalibration(String json) {
-        NewCalibration newCalibration = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(json, NewCalibration.class);
-        Log.d(TAG, "After fromjson NewCalibration are " + newCalibration.toString());
-        return newCalibration;
+        NewCalibration []newCalibrationArray = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(json, NewCalibration[].class);
+        if(newCalibrationArray != null) {
+            Log.e(TAG, "After fromjson NewCalibration are " + newCalibrationArray.toString());
+        } else {
+            Log.e(TAG,"Error creating newCalibrationArray");
+        }
+        return newCalibrationArray[0];
     }
     
     public static String newCalibrationToJson(double bgValue, String uuid) {
+        NewCalibration newCalibrationArray[] = new NewCalibration[1];
         NewCalibration newCalibration = new NewCalibration();
         newCalibration.bgValue = bgValue;
         newCalibration.uuid = uuid;
         newCalibration.timestamp = JoH.tsl();
         newCalibration.offset = 0;
+        newCalibrationArray[0] = newCalibration;
         
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
@@ -138,7 +144,7 @@ public class GcmActivity extends Activity {
                 .serializeSpecialFloatingPointValues()
                 .create();
         
-        String output =  gson.toJson(newCalibration);
+        String output =  gson.toJson(newCalibrationArray);
         Log.d(TAG, "newCalibrationToJson Created the string " + output);
         return output;
     }
