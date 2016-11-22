@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:10591810485:android:b70845957aa2e415",
         "android_client_info": {
-          "package_name": "com.eveningoutpost.dexdripplus"
+          "package_name": "jamorham.xdrip.plus.variant1"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "10591810485-upgrnlqjblrcuad3bu80ouvr7osfoh4i.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.eveningoutpost.dexdripplus"
+            "package_name": "jamorham.xdrip.plus.variant1"
           }
         },
         {
