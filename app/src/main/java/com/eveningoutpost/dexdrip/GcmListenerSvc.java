@@ -199,23 +199,25 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                 Log.i(TAG, "Received cal2 packet");
                 if (Home.get_master()) {
                     NewCalibration newCalibration = GcmActivity.getNewCalibration(payload);
-                    Intent calintent = new Intent();
-                    calintent.setClassName(getString(R.string.local_target_package), "com.eveningoutpost.dexdrip.AddCalibration");
-                    calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    if (newCalibration != null) {
+                        Intent calintent = new Intent();
+                        calintent.setClassName(getString(R.string.local_target_package), "com.eveningoutpost.dexdrip.AddCalibration");
+                        calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                    long timediff = (long) ((new Date().getTime() - newCalibration.timestamp) / 1000);
-                    Log.i(TAG, "Remote calibration latency calculated as: " + timediff + " seconds");
-                    Long bg_age = newCalibration.offset;
-                    if (timediff > 0) {
-                        bg_age += timediff;
-                    }
-                    Log.i(TAG, "Processing remote CAL " + newCalibration.bgValue + " age: " + bg_age);
-                    calintent.putExtra("bg_string", "" + newCalibration.bgValue);
-                    calintent.putExtra("bg_age", "" + bg_age);
-                    if (timediff < 3600) {
-                        getApplicationContext().startActivity(calintent);
-                    } else {
-                        Log.w(TAG, "warninig ignoring calibration because timediff is "+ timediff);
+                        long timediff = (long) ((new Date().getTime() - newCalibration.timestamp) / 1000);
+                        Log.i(TAG, "Remote calibration latency calculated as: " + timediff + " seconds");
+                        Long bg_age = newCalibration.offset;
+                        if (timediff > 0) {
+                            bg_age += timediff;
+                        }
+                        Log.i(TAG, "Processing remote CAL " + newCalibration.bgValue + " age: " + bg_age);
+                        calintent.putExtra("bg_string", "" + newCalibration.bgValue);
+                        calintent.putExtra("bg_age", "" + bg_age);
+                        if (timediff < 3600) {
+                            getApplicationContext().startActivity(calintent);
+                        } else {
+                            Log.w(TAG, "warninig ignoring calibration because timediff is "+ timediff);
+                        }
                     }
                 } else {
                     Log.e(TAG, "Received cal2 packet packet but we are not a master, so ignoring it");
