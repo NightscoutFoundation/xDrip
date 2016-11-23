@@ -10,6 +10,7 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.gson.annotations.Expose;
 
 import java.nio.ByteBuffer;
@@ -71,14 +72,27 @@ public class TransmitterData extends Model {
             for (int i = 0; i < len; ++i) { data_string.append((char) buffer[i]); }
             final String[] data = data_string.toString().split("\\s+");
 
-            if (data.length > 1) { 
+            if (data.length > 1) {
                 transmitterData.sensor_battery_level = Integer.parseInt(data[1]);
                 if (data.length > 2) {
                     try {
                         Home.setPreferencesInt("bridge_battery", Integer.parseInt(data[2]));
-                        if (Home.get_master()) GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery",-1));
+                        if (Home.get_master())
+                            GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery", -1));
                     } catch (Exception e) {
                         Log.e(TAG, "Got exception processing classic wixel or limitter battery value: " + e.toString());
+                    }
+                    if (data.length > 3) {
+                        if (DexCollectionType.getDexCollectionType() == DexCollectionType.LimiTTer) {
+                            try {
+                                // reported sensor age in minutes
+                                final Integer sensorAge = Integer.parseInt(data[3]);
+                                if ((sensorAge > 0) && (sensorAge < 200000))
+                                    Home.setPreferencesInt("nfc_sensor_age", sensorAge);
+                            } catch (Exception e) {
+                                Log.e(TAG, "Got exception processing field 4 in classic limitter protocol: " + e);
+                            }
+                        }
                     }
                 }
             }

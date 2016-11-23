@@ -13,6 +13,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -41,7 +42,6 @@ import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
-import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -93,6 +93,7 @@ public class Preferences extends PreferenceActivity {
 
     private static ListPreference locale_choice;
     private static Preference force_english;
+    private static Preference nfc_expiry_days;
 
 
     private void refreshFragments() {
@@ -569,43 +570,7 @@ public class Preferences extends PreferenceActivity {
             profile_carb_ratio_default = findPreference("profile_carb_ratio_default");
             refreshProfileRatios();
 
-//            profile_carb_ratio_default.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-//                @Override
-//                public boolean onPreferenceChange(Preference preference, Object newValue) {
-//                    if (!isNumeric(newValue.toString())) {
-//                        return false;
-//                    }
-//                    preference.setTitle(format_carb_ratio(preference.getTitle().toString(), newValue.toString()));
-//                    Profile.reloadPreferences(AllPrefsFragment.this.prefs);
-//                    Home.staticRefreshBGCharts();
-//                    return true;
-//                }
-//            });
-
-            //profile_carb_ratio_default.setTitle(format_carb_ratio(profile_carb_ratio_default.getTitle().toString(), this.prefs.getString("profile_carb_ratio_default", "")));
-
-
-
-
-
-
-
-//            profile_insulin_sensitivity_default.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-//                @Override
-//                public boolean onPreferenceChange(Preference preference, Object newValue) {
-//                    if (!isNumeric(newValue.toString())) {
-//                        return false;
-//                    }
-//                    do_format_insulin_sensitivity(preference, AllPrefsFragment.this.prefs, true, newValue.toString());
-//                    Profile.reloadPreferences(AllPrefsFragment.this.prefs);
-//                    Home.staticRefreshBGCharts();
-//                    return true;
-//                }
-//            });
-
-            //do_format_insulin_sensitivity(profile_insulin_sensitivity_default, this.prefs, false, null);
-
-
+            nfc_expiry_days = findPreference("nfc_expiry_days");
             locale_choice = (ListPreference) findPreference("forced_language");
             force_english = findPreference("force_english");
 
@@ -963,12 +928,15 @@ public class Preferences extends PreferenceActivity {
             if (!DexCollectionType.hasLibre(collectionType)) {
                 collectionCategory.removePreference(nfcSettings);
             } else {
+                // has libre
                 if (!engineering_mode)
                     try {
                         nfcScreen.removePreference(findPreference("nfc_test_diagnostic"));
                     } catch (NullPointerException e) {
                         //
                     }
+                set_nfc_expiry_change_listeners();
+                update_nfc_expiry_preferences(null);
             }
 
             try {
@@ -1249,7 +1217,7 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValue(transmitterId);
             transmitterId.getEditText().setFilters(new InputFilter[]{new InputFilter.AllCaps()});
 
-
+            // when changing collection method
                     collectionMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -1376,6 +1344,47 @@ public class Preferences extends PreferenceActivity {
                     return true;
                 }
             });
+        }
+
+        // all this boiler plate for a dynamic interface seems excessive and boring, I would love to know a helper library to simplify this
+        private void set_nfc_expiry_change_listeners() {
+            nfc_expiry_days.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    // have to pre-save it
+                    preference.getEditor().putString("nfc_expiry_days", (String) newValue).apply();
+                    update_nfc_expiry_preferences(null);
+                    return true;
+                }
+            });
+            final Preference nfc_show_age = findPreference("nfc_show_age");
+            nfc_show_age.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    update_nfc_expiry_preferences((Boolean) newValue);
+                    return true;
+                }
+            });
+        }
+
+        private void update_nfc_expiry_preferences(Boolean show_age) {
+            try {
+                ;
+                final PreferenceScreen nfcScreen = (PreferenceScreen) findPreference("xdrip_plus_nfc_settings");
+                final String nfc_expiry_days_string = AllPrefsFragment.this.prefs.getString("nfc_expiry_days", "14.5");
+
+                final CheckBoxPreference nfc_show_age = (CheckBoxPreference) findPreference("nfc_show_age");
+                nfc_show_age.setSummaryOff("Show the sensor expiry time based on " + nfc_expiry_days_string + " days");
+                if (show_age == null) show_age = nfc_show_age.isChecked();
+                if (show_age) {
+                    nfcScreen.removePreference(nfc_expiry_days);
+                } else {
+                    nfc_expiry_days.setOrder(3);
+                    nfcScreen.addPreference(nfc_expiry_days);
+                }
+            } catch (NullPointerException e) {
+                //
+            }
         }
 
         private void bindWidgetUpdater() {

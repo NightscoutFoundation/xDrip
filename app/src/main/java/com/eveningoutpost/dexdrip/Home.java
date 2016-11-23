@@ -1891,7 +1891,18 @@ public class Home extends ActivityWithMenu {
 
         final int sensor_age = prefs.getInt("nfc_sensor_age", 0);
         if ((sensor_age > 0) && (DexCollectionType.hasLibre())) {
-            sensorAge.setText("Age: " + JoH.qs(((double) sensor_age) / 1440, 1) + "d"+(Home.getPreferencesBooleanDefaultFalse("nfc_age_problem") ? " \u26A0\u26A0\u26A0" : ""));
+            final String age_problem = (Home.getPreferencesBooleanDefaultFalse("nfc_age_problem") ? " \u26A0\u26A0\u26A0" : "");
+            if (prefs.getBoolean("nfc_show_age", true)) {
+                sensorAge.setText("Age: " + JoH.qs(((double) sensor_age) / 1440, 1) + "d" + age_problem);
+            } else {
+                try {
+                    final double expires = JoH.tolerantParseDouble(Home.getPreferencesStringWithDefault("nfc_expiry_days", "14.5")) - ((double) sensor_age) / 1440;
+                    sensorAge.setText(((expires >= 0) ? ("Expires: " + JoH.qs(expires, 1) + "d") : "EXPIRED! ") + age_problem);
+                } catch (Exception e) {
+                    Log.e(TAG, "expiry calculation: " + e);
+                    sensorAge.setText("Expires: " + "???");
+                }
+            }
             sensorAge.setVisibility(View.VISIBLE);
             if (sensor_age < 1440) {
                 sensorAge.setTextColor(Color.YELLOW);
