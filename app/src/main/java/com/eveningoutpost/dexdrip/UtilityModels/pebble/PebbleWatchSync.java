@@ -205,11 +205,8 @@ public class PebbleWatchSync extends Service {
                                 } else {
                                     if (data > 0) {
                                         if (last_movement_timestamp > 0) {
-                                            final PebbleMovement pm = new PebbleMovement();
-                                            pm.timestamp = last_movement_timestamp * 1000;
-                                            pm.metric = (int) (long) data;
+                                            final PebbleMovement pm = PebbleMovement.createEfficientRecord(last_movement_timestamp * 1000, (int)(long) data);
                                             Log.d(TAG, "Saving Movement: " + pm.toS());
-                                            pm.saveit();
                                             last_movement_timestamp = 0; // reset state
                                         } else {
                                             Log.e(TAG, "Out of sequence movement value received!");

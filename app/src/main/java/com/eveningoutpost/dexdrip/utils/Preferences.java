@@ -29,6 +29,7 @@ import android.text.TextUtils;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -1592,7 +1593,12 @@ public class Preferences extends PreferenceActivity {
                             BgToSpeech.setupTTS(preference.getContext()); // try to initialize now
                             BgReading bgReading = BgReading.last();
                             if (bgReading != null) {
-                                BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp+1200000);
+                                final BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
+                                if (dg != null) {
+                                    BgToSpeech.speak(dg.mgdl, dg.timestamp + 1200000);
+                                } else {
+                                    BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp + 1200000);
+                                }
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "Got exception with TTS: " + e);

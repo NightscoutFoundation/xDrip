@@ -262,6 +262,7 @@ public class ProfileEditor extends AppCompatActivity {
         super.onPause();
 
         if (dataChanged) {
+            Profile.reloadPreferences();
             Intent intent = new Intent(ProfileEditor.this, Preferences.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             intent.putExtra("refresh", "");

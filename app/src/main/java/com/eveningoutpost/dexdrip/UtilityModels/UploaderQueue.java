@@ -135,7 +135,7 @@ public class UploaderQueue extends Model {
     }
 
     public static List<UploaderQueue> getPendingbyType(String className, long bitfield) {
-        return getPendingbyType(className, bitfield, 5000);
+        return getPendingbyType(className, bitfield, 500);
     }
 
     public static List<UploaderQueue> getPendingbyType(String className, long bitfield, int limit) {
@@ -165,10 +165,10 @@ public class UploaderQueue extends Model {
                 .where("bitfield_wanted == bitfield_complete")
                 .execute();
 
-        // delete everything > 30 days old
+        // delete everything > 7 days old
         new Delete()
                 .from(UploaderQueue.class)
-                .where("timestamp < ?", JoH.tsl() - 86400000L * 30L)
+                .where("timestamp < ?", JoH.tsl() - 86400000L * 7L)
                 .execute();
     }
 

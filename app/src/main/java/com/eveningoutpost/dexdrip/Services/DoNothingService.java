@@ -1,17 +1,13 @@
 package com.eveningoutpost.dexdrip.Services;
 
-import android.annotation.TargetApi;
-import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.GcmListenerSvc;
@@ -25,7 +21,7 @@ import java.util.Calendar;
 
 public class DoNothingService extends Service {
     private final static String TAG = DoNothingService.class.getSimpleName();
-    public DoNothingService dexCollectionService;
+    private DoNothingService dexCollectionService;
     private SharedPreferences prefs;
     private ForegroundServiceStarter foregroundServiceStarter;
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -43,10 +39,9 @@ public class DoNothingService extends Service {
             }
         }
     };
-    private Context mContext;
+
     private static long nextWakeUpTime = -1;
     private static int wakeUpErrors = 0;
-    private static boolean wakeUpFailsafe = false;
 
 
     public DoNothingService() {
@@ -61,7 +56,6 @@ public class DoNothingService extends Service {
     public void onCreate() {
         foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), this);
         foregroundServiceStarter.start();
-        mContext = getApplicationContext();
         dexCollectionService = this;
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         listenForChangeInSettings();
@@ -82,11 +76,6 @@ public class DoNothingService extends Service {
             if (wake_time_difference > 10000) {
                 UserError.Log.e(TAG, "Slow Wake up! time difference in ms: " + wake_time_difference);
                 wakeUpErrors = wakeUpErrors + 3;
-                if (wakeUpErrors > 7) {
-                    wakeUpFailsafe = true;
-                    UserError.Log.e(TAG, "Wake up FailSafe engaged!!!");
-                }
-
             } else {
                 if (wakeUpErrors > 0) wakeUpErrors--;
             }
@@ -95,7 +84,7 @@ public class DoNothingService extends Service {
         if (CollectionServiceStarter.isFollower(getApplicationContext())) {
             new Thread(new Runnable() {
                 public void run() {
-                    int minsago = GcmListenerSvc.lastMessageMinutesAgo();
+                    final int minsago = GcmListenerSvc.lastMessageMinutesAgo();
                     //Log.d(TAG, "Tick: minutes ago: " + minsago);
                     int sleep_time = 1000;
 
@@ -114,8 +103,8 @@ public class DoNothingService extends Service {
 
                     try {
                         Thread.sleep(sleep_time);
-                    } catch (
-                            InterruptedException e) {
+                    } catch (InterruptedException e) {
+                        //
                     }
 
                     setFailOverTimer();
@@ -143,25 +132,11 @@ public class DoNothingService extends Service {
         if (Home.get_follower()) {
             final long retry_in = (5 * 60 * 1000);
             UserError.Log.d(TAG, "setFailoverTimer: Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
-            final Calendar calendar = Calendar.getInstance();
-            final AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            final long wakeUpTime = calendar.getTimeInMillis() + retry_in;
-            nextWakeUpTime = wakeUpTime;
+            nextWakeUpTime = JoH.tsl() + retry_in;
 
             final PendingIntent wakeIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeUpTime, wakeIntent);
-            } else {
-                if ((wakeUpFailsafe) && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)) {
-                    alarm.setAlarmClock(new AlarmManager.AlarmClockInfo(wakeUpTime, wakeIntent), wakeIntent);
-                } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        alarm.setExact(AlarmManager.RTC_WAKEUP, wakeUpTime, wakeIntent);
-                    } else {
-                        alarm.set(AlarmManager.RTC_WAKEUP, wakeUpTime, wakeIntent);
-                    }
-                }
-            }
+            JoH.wakeUpIntent(this, retry_in, wakeIntent);
+
         } else {
             stopSelf();
         }

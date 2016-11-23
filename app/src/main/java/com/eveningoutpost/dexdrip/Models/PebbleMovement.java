@@ -5,8 +5,10 @@ import android.provider.BaseColumns;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
+import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -24,6 +26,7 @@ public class PebbleMovement extends Model {
 
     private static boolean patched = false;
     private final static String TAG = "PebbleMovement";
+    private final static boolean d = false;
 
     @Expose
     @Column(name = "timestamp", unique = true, onUniqueConflicts = Column.ConflictAction.IGNORE)
@@ -49,6 +52,23 @@ public class PebbleMovement extends Model {
 
 
     // static methods
+
+    public static PebbleMovement createEfficientRecord(long timestamp_ms, int data)
+    {
+        PebbleMovement pm = last();
+        if ((pm == null) || (data < pm.metric) || ((timestamp_ms - pm.timestamp) > (1000 * 30 * 5))) {
+            pm = new PebbleMovement();
+            pm.timestamp = timestamp_ms;
+            if (d) UserError.Log.d(TAG,"Creating new record for timestamp: "+JoH.dateTimeText(timestamp_ms));
+        } else {
+            if (d) UserError.Log.d(TAG,"Merging pebble movement record: "+JoH.dateTimeText(timestamp_ms)+" vs old "+JoH.dateTimeText(pm.timestamp));
+        }
+
+        pm.metric = (int) (long) data;
+        if(d) UserError.Log.d(TAG, "Saving Movement: " + pm.toS());
+        pm.saveit();
+        return pm;
+    }
 
     public static PebbleMovement last() {
         try {
@@ -106,6 +126,13 @@ public class PebbleMovement extends Model {
             }
         }
         return mList;
+    }
+
+    public static List<PebbleMovement> cleanup(int retention_days) {
+        return new Delete()
+                .from(PebbleMovement.class)
+                .where("timestamp < ?", JoH.tsl() - (retention_days * 86400000L))
+                .execute();
     }
 
 
