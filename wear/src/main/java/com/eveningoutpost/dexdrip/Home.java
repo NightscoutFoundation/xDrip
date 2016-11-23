@@ -38,6 +38,7 @@ public class Home extends BaseWatchFace {
     }
 
     protected void setColorDark() {
+        Log.d("setColorDark", "WatchMode=" + getCurrentWatchMode());
         mTime.setTextColor(Color.WHITE);
         mRelativeLayout.setBackgroundColor(Color.BLACK);
         mLinearLayout.setBackgroundColor(Color.WHITE);
@@ -50,9 +51,9 @@ public class Home extends BaseWatchFace {
             mDirection.setTextColor(Color.WHITE);
             mDelta.setTextColor(Color.WHITE);
         } else if (sgvLevel == -1) {
-            mSgv.setTextColor(Color.RED);
-            mDirection.setTextColor(Color.RED);
-            mDelta.setTextColor(Color.RED);
+            mSgv.setTextColor(lowColorWatchMode);
+            mDirection.setTextColor(lowColorWatchMode);
+            mDelta.setTextColor(lowColorWatchMode);
         }
         if (ageLevel == 1) {
             mTimestamp.setTextColor(Color.BLACK);
@@ -68,7 +69,7 @@ public class Home extends BaseWatchFace {
         mRaw.setTextColor(Color.BLACK);
         if (chart != null) {
             highColor = Color.YELLOW;
-           lowColor = Color.RED;
+            lowColor = lowColorWatchMode;
             midColor = Color.WHITE;
             singleLine = false;
             pointSize = 2;
@@ -80,6 +81,7 @@ public class Home extends BaseWatchFace {
 
     protected void setColorBright() {
 
+        Log.d("setColorBright", "WatchMode=" + getCurrentWatchMode());
         if (getCurrentWatchMode() == WatchMode.INTERACTIVE) {
             mRelativeLayout.setBackgroundColor(Color.WHITE);
             mLinearLayout.setBackgroundColor(Color.BLACK);
@@ -130,9 +132,9 @@ public class Home extends BaseWatchFace {
                 mDirection.setTextColor(Color.WHITE);
                 mDelta.setTextColor(Color.WHITE);
             } else if (sgvLevel == -1) {
-                mSgv.setTextColor(Color.RED);
-                mDirection.setTextColor(Color.RED);
-                mDelta.setTextColor(Color.RED);
+                mSgv.setTextColor(lowColorWatchMode);
+                mDirection.setTextColor(lowColorWatchMode);
+                mDelta.setTextColor(lowColorWatchMode);
             }
             mRaw.setTextColor(Color.BLACK);
             mUploaderBattery.setTextColor(Color.BLACK);
@@ -142,7 +144,7 @@ public class Home extends BaseWatchFace {
             if (chart != null) {
                 highColor = Color.YELLOW;
                 midColor = Color.WHITE;
-                lowColor = Color.RED;
+                lowColor = lowColorWatchMode;
                 singleLine = true;
                 pointSize = 2;
                 setupCharts();

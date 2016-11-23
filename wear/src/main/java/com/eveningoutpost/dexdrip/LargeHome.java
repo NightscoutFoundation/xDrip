@@ -18,6 +18,7 @@ public class LargeHome extends BaseWatchFace {
 
     @Override
     protected void setColorDark(){
+        //Log.d("setColorDark", "WatchMode=" + getCurrentWatchMode());
         mTime.setTextColor(Color.WHITE);
         mRelativeLayout.setBackgroundColor(Color.BLACK);
         mLinearLayout.setBackgroundColor(Color.WHITE);
@@ -30,9 +31,9 @@ public class LargeHome extends BaseWatchFace {
             mDirection.setTextColor(Color.WHITE);
             mDelta.setTextColor(Color.WHITE);
         } else if (sgvLevel == -1) {
-            mSgv.setTextColor(Color.RED);
-            mDirection.setTextColor(Color.RED);
-            mDelta.setTextColor(Color.RED);
+            mSgv.setTextColor(lowColorWatchMode);
+            mDirection.setTextColor(lowColorWatchMode);
+            mDelta.setTextColor(lowColorWatchMode);
         }
         if (ageLevel == 1) {
             mTimestamp.setTextColor(Color.BLACK);
@@ -84,6 +85,8 @@ public class LargeHome extends BaseWatchFace {
             mRaw.setTextColor(Color.WHITE);
             mTime.setTextColor(Color.BLACK);
         } else {
+            //RED is not supported in Ambient mode on WatchMode=LOW_BIT sa Sony SmartWatch 3
+            //Therefore, use a cold color to indicate a low value
             mRelativeLayout.setBackgroundColor(Color.BLACK);
             mLinearLayout.setBackgroundColor(Color.LTGRAY);
             if (sgvLevel == 1) {
@@ -95,9 +98,9 @@ public class LargeHome extends BaseWatchFace {
                 mDirection.setTextColor(Color.WHITE);
                 mDelta.setTextColor(Color.WHITE);
             } else if (sgvLevel == -1) {
-                mSgv.setTextColor(Color.RED);
-                mDirection.setTextColor(Color.RED);
-                mDelta.setTextColor(Color.RED);
+                mSgv.setTextColor(lowColorWatchMode);
+                mDirection.setTextColor(lowColorWatchMode);
+                mDelta.setTextColor(lowColorWatchMode);
             }
 
             mUploaderBattery.setTextColor(Color.BLACK);

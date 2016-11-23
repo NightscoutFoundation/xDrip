@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:key="preferenceScreen">
     <PreferenceCategory
-        android:title="XDrip G5 Settings"
+        android:title="@string/pref_xdrip_g5_settings"
         android:key="collection_category"
         android:selectable="false">
 
@@ -57,6 +57,14 @@
             android:defaultValue="true"
             android:summary="Dark theme"
             android:key="dark" />
+
+        <ListPreference
+            android:key="ambient_lowcolor"
+            android:title="@string/pref_ambient_lowcolor"
+            android:summary="@string/pref_summary_ambient_lowcolor"
+            android:entries="@array/ambient_lowcolor"
+            android:entryValues="@array/ambient_lowcolor_values"
+            android:defaultValue="3" />
 
         <!-- TODO: reenable raw
         <CheckBoxPreference android:title="Show Raw"

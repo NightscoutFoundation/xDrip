@@ -735,6 +735,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 Log.d(TAG, "startBtG5Service start G5CollectionService");
                 if (restartWatchDog())
                     stopBtG5Service();
+                G5CollectionService.keep_running = true;
                 myContext.startService(new Intent(myContext, G5CollectionService.class));
                 Log.d(TAG, "startBtG5Service AFTER startService G5CollectionService mLocationPermissionApproved " + mLocationPermissionApproved);
             }

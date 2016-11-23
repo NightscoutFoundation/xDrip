@@ -3,6 +3,20 @@
 
     <string name="app_name">XDrip Prefs.</string>
 
+    <string-array name="ambient_lowcolor">
+        <item>CYAN</item>
+        <item>GREEN</item>
+        <item>RED</item>
+        <item>WHITE</item>
+
+    </string-array>
+    <string-array name="ambient_lowcolor_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
     <string-array name="chart_timeframe">
         <item>1 hour</item>
         <item>2 hours</item>
@@ -46,6 +60,7 @@
     <string name="notify_title">Location Permission</string>
     <string name="notify_text">xDrip requires Location access permission</string>
 
+    <string name="pref_xdrip_g5_settings">XDrip G5 Settings</string>
     <string name="pref_enable_wearG5">Enable G5 Collection</string>
     <string name="pref_summary_enable_wearG5">Connect to G5 when phone is out-of-range</string>
     <string name="pref_force_wearG5">Force G5 Collection</string>
@@ -58,6 +73,8 @@
     <string name="pref_summary_always_get_new_keys">This will attempt a full authentication each read attempt. Redundant if Unbond before each read is also selected.</string>
     <string name="pref_always_unbond_G5">Unbond G5 before each read"</string>
     <string name="pref_summary_always_unbond_G5">This will remove the G5 from your device\'s paired device list, and attempt a full authentication and bonding with each read attempt.</string>
+    <string name="pref_ambient_lowcolor">Ambient Low Color</string>
+    <string name="pref_summary_ambient_lowcolor">Ambient Low Color. Note, RED is not supported on LOW-BIT devices, eg., Sony SmartWatch 3.</string>
 
     <!-- Location Settings -->
     <string name="location_not_found_title">Location Is Not Enabled</string>

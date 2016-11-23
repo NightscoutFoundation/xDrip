@@ -16,12 +16,15 @@ import android.graphics.Rect;
 import android.graphics.Shader;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.support.wearable.watchface.WatchFaceStyle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.wearable.view.WatchViewStub;
+import android.support.wearable.watchface.WatchFaceService;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowInsets;
@@ -56,6 +59,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     public int highColor = Color.YELLOW;
     public int lowColor = Color.RED;
     public int midColor = Color.WHITE;
+    public int lowColorWatchMode = Color.RED;
     public int pointSize = 2;
     public boolean singleLine = false;
     public boolean layoutSet = false;
@@ -79,6 +83,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     private String rawString = "000 | 000 | 000";
     private String batteryString = "--";
     private String sgvString = "--";
+    private Rect mCardRect = new Rect(0,0,0,0);
 
     @Override
     public void onCreate() {
@@ -177,6 +182,14 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         if(layoutSet) {
             this.mRelativeLayout.draw(canvas);
             Log.d("onDraw", "draw");
+            int cardWidth = mCardRect.width();
+            int cardHeight = mCardRect.height();
+            if (cardHeight > 0 && cardWidth > 0 && getCurrentWatchMode() != WatchMode.INTERACTIVE) {
+                Paint paint = new Paint();
+                paint.setColor(Color.BLACK);
+                paint.setStrokeWidth(0);
+                canvas.drawRect(mCardRect, paint);
+            }
         }
     }
 
@@ -270,6 +283,16 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     }
 
     public void setColor() {
+        if (getCurrentWatchMode() == WatchMode.INTERACTIVE) {
+            lowColorWatchMode = Color.RED;
+        }
+        else {
+            //RED is not supported in Ambient mode on WatchMode=LOW_BIT sa Sony SmartWatch 3
+            //Therefore, use a cold color to indicate a low value
+            int prefColor = Integer.parseInt(sharedPrefs.getString("ambient_lowcolor", "3"));
+            int[] rainbow = {Color.CYAN, Color.GREEN, Color.RED, Color.WHITE};
+            lowColorWatchMode = rainbow[prefColor-1];
+        }
         if (sharedPrefs.getBoolean("dark", false)) {
             setColorDark();
         } else {
@@ -343,8 +366,53 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         animator.start();
     }
 
+    private void resetRelativeLayout() {
+        mRelativeLayout.measure(specW, specH);
+        mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
+                mRelativeLayout.getMeasuredHeight());
+        Log.d("resetRelativeLayout", "specW=" + specW + " specH=" + specH + " mRelativeLayout.getMeasuredWidth()=" + mRelativeLayout.getMeasuredWidth() + " mRelativeLayout.getMeasuredHeight()=" + mRelativeLayout.getMeasuredHeight());
+    }
+
+    private void displayCard() {
+        int cardWidth = mCardRect.width();
+        int cardHeight = mCardRect.height();
+        Log.d("displayCard", "WatchFace.onCardPeek: getWidth()=" + getWidth() + " getHeight()=" + getHeight() + " cardWidth=" + cardWidth + " cardHeight=" + cardHeight);
+
+        if (cardHeight > 0 && cardWidth > 0) {
+            if (getCurrentWatchMode() != WatchMode.INTERACTIVE) {
+                // get height of visible area (not including card)
+                int visibleWidth = getWidth() - cardWidth;
+                int visibleHeight = getHeight() - cardHeight;
+                Log.d("onCardPeek", "WatchFace.onCardPeek: visibleWidth=" + visibleWidth + " visibleHeight=" + visibleHeight);
+                mRelativeLayout.layout(0, 0, visibleWidth, visibleHeight);
+            }
+            else
+                resetRelativeLayout();
+        }
+        else
+            resetRelativeLayout();
+        invalidate();
+    }
+
+    @Override
+    protected void onCardPeek(Rect peekCardRect) {
+        mCardRect = peekCardRect;
+        displayCard();
+        int cardWidth = peekCardRect.width();
+        int cardHeight = peekCardRect.height();
+        Log.d("onCardPeek", "WatchFace.onCardPeek: getWidth()=" + getWidth() + " getHeight()=" + getHeight() + " cardWidth=" + cardWidth + " cardHeight=" + cardHeight);
+    }
+
+    @Override
+    protected void onWatchModeChanged(WatchMode watchMode) {
+        Log.d("onWatchModeChanged", "WatchFace.onWatchModeChanged: watchMode=" + watchMode.name());
+        invalidate();
+        setColor();
+    }
 
     protected void setColorDark() {
+        Log.d("setColorDark", "WatchMode=" + getCurrentWatchMode());
+
         mTime.setTextColor(Color.WHITE);
         mRelativeLayout.setBackgroundColor(Color.BLACK);
         if (sgvLevel == 1) {
@@ -354,15 +422,15 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
             mSgv.setTextColor(Color.WHITE);
             mDelta.setTextColor(Color.WHITE);
         } else if (sgvLevel == -1) {
-            mSgv.setTextColor(Color.RED);
-            mDelta.setTextColor(Color.RED);
+            mSgv.setTextColor(lowColorWatchMode);
+            mDelta.setTextColor(lowColorWatchMode);
         }
 
 
         if (ageLevel == 1) {
             mTimestamp.setTextColor(Color.WHITE);
         } else {
-            mTimestamp.setTextColor(Color.RED);
+            mTimestamp.setTextColor(lowColorWatchMode);
         }
 
         if (batteryLevel == 1) {
@@ -370,7 +438,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         }
         if (chart != null) {
             highColor = Color.YELLOW;
-            lowColor = Color.RED;
+            lowColor = lowColorWatchMode;
             midColor = Color.WHITE;
             singleLine = false;
             pointSize = 2;
@@ -382,6 +450,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
 
     protected void setColorBright() {
 
+        Log.d("setColorBright", "WatchMode=" + getCurrentWatchMode());
         if (getCurrentWatchMode() == WatchMode.INTERACTIVE) {
             mRelativeLayout.setBackgroundColor(Color.WHITE);
             if (sgvLevel == 1) {
@@ -412,6 +481,8 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
                 setupCharts();
             }
         } else {
+            //RED is not supported in Ambient mode on WatchMode=LOW_BIT sa Sony SmartWatch 3
+            //Therefore, use a cold color to indicate a low value
             mRelativeLayout.setBackgroundColor(Color.BLACK);
             if (sgvLevel == 1) {
                 mSgv.setTextColor(Color.YELLOW);
@@ -420,8 +491,8 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
                 mSgv.setTextColor(Color.WHITE);
                 mDelta.setTextColor(Color.WHITE);
             } else if (sgvLevel == -1) {
-                mSgv.setTextColor(Color.RED);
-                mDelta.setTextColor(Color.RED);
+                mSgv.setTextColor(lowColorWatchMode);
+                mDelta.setTextColor(lowColorWatchMode);
             }
             mTimestamp.setTextColor(Color.WHITE);
 
@@ -429,7 +500,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
             if (chart != null) {
                 highColor = Color.YELLOW;
                 midColor = Color.WHITE;
-                lowColor = Color.RED;
+                lowColor = lowColorWatchMode;
                 singleLine = true;
                 pointSize = 2;
                 setupCharts();
