@@ -239,6 +239,10 @@ public class G5CollectionService extends Service {
         Log.d(TAG, "Transmitter: " + prefs.getString("dex_txid", "ABCDEF"));
         defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
         isBondedOrBonding = false;
+        if (mBluetoothAdapter == null) {
+            Log.wtf(TAG, "No bluetooth adapter");
+            return;
+        }
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         if ((pairedDevices != null) && (pairedDevices.size() > 0)) {
             for (BluetoothDevice device : pairedDevices) {
@@ -328,7 +332,7 @@ public class G5CollectionService extends Service {
             single_timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    mBluetoothAdapter.enable();
+                    if (mBluetoothAdapter != null) mBluetoothAdapter.enable();
                 }
             }, 1000);
             single_timer.schedule(new TimerTask() {
