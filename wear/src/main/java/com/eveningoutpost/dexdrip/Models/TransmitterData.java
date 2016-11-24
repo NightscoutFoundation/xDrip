@@ -49,6 +49,10 @@ public class TransmitterData extends Model {
     @Column(name = "uuid", index = true)
     public String uuid;
 
+    public TransmitterData () {
+        super ();
+    }
+
     public static synchronized TransmitterData create(byte[] buffer, int len, Long timestamp) {
         if (len < 6) { return null; }
         TransmitterData transmitterData = new TransmitterData();
@@ -168,27 +172,37 @@ public class TransmitterData extends Model {
     }
 
     public static TransmitterData getForTimestamp(double timestamp) {//KS
-        Sensor sensor = Sensor.currentSensor();
-        if (sensor != null) {
-            TransmitterData bgReading = new Select()
-                    .from(TransmitterData.class)
-                    .where("timestamp <= ?", (timestamp + (60 * 1000))) // 1 minute padding (should never be that far off, but why not)
-                    .orderBy("timestamp desc")
-                    .executeSingle();
-            if (bgReading != null && Math.abs(bgReading.timestamp - timestamp) < (3 * 60 * 1000)) { //cool, so was it actually within 4 minutes of that bg reading?
-                Log.i(TAG, "getForTimestamp: Found a BG timestamp match");
-                return bgReading;
+        try {
+            Sensor sensor = Sensor.currentSensor();
+            if (sensor != null) {
+                TransmitterData bgReading = new Select()
+                        .from(TransmitterData.class)
+                        .where("timestamp <= ?", (timestamp + (60 * 1000))) // 1 minute padding (should never be that far off, but why not)
+                        .orderBy("timestamp desc")
+                        .executeSingle();
+                if (bgReading != null && Math.abs(bgReading.timestamp - timestamp) < (3 * 60 * 1000)) { //cool, so was it actually within 4 minutes of that bg reading?
+                    Log.i(TAG, "getForTimestamp: Found a BG timestamp match");
+                    return bgReading;
+                }
             }
+        } catch (Exception e) {
+            Log.e(TAG,"getForTimestamp() Got exception on Select : "+e.toString());
+            return null;
         }
         Log.d(TAG, "getForTimestamp: No luck finding a BG timestamp match");
         return null;
     }
 
     public static TransmitterData findByUuid(String uuid) {//KS
-        return new Select()
+        try {
+            return new Select()
                 .from(TransmitterData.class)
                 .where("uuid = ?", uuid)
                 .executeSingle();
+        } catch (Exception e) {
+            Log.e(TAG,"findByUuid() Got exception on Select : "+e.toString());
+            return null;
+        }
     }
 
     public String toS() {//KS

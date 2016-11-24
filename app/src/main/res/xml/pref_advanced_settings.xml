@@ -18,15 +18,21 @@
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="wear_sync"
-                android:key="wear_connectG5"
-                android:summary="@string/pref_summary_wear_connectG5"
-                android:title="@string/pref_wear_connectG5"/>
+                android:key="enable_wearG5"
+                android:summary="@string/pref_summary_enable_wearG5"
+                android:title="@string/pref_enable_wearG5"/>
             <CheckBoxPreference
                 android:defaultValue="false"
-                android:dependency="wear_connectG5"
-                android:key="use_wear_connectG5"
-                android:summary="@string/pref_summary_use_wear_connectG5"
-                android:title="@string/pref_use_wear_connectG5"/>
+                android:dependency="enable_wearG5"
+                android:key="force_wearG5"
+                android:summary="@string/pref_summary_force_wearG5"
+                android:title="@string/pref_force_wearG5"/>
+            <EditTextPreference
+                android:defaultValue=""
+                android:dependency="force_wearG5"
+                android:key="node_wearG5"
+                android:summary="@string/pref_summary_node_wearG5"
+                android:title="@string/pref_node_wearG5"/>
         </PreferenceCategory>
         <PreferenceCategory
             android:key="pebble_integration"

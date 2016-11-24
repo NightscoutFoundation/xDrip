@@ -1,26 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="preferenceScreen">
     <PreferenceCategory
-        android:title="XDrip Settings"
-        android:key="category"
+        android:title="@string/pref_xdrip_g5_settings"
+        android:key="collection_category"
         android:selectable="false">
 
         <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="connectG5"
-            android:summary="@string/pref_summary_connectG5"
-            android:title="@string/pref_connectG5"/>
+            android:defaultValue="true"
+            android:key="g5_collection_method"
+            android:summary=""
+            android:title="G5 Collection Method"/>
         <CheckBoxPreference
             android:defaultValue="false"
-            android:dependency="connectG5"
-            android:key="use_connectG5"
-            android:summary="@string/pref_summary_use_connectG5"
-            android:title="@string/pref_use_connectG5"/>
+            android:key="enable_wearG5"
+            android:summary="@string/pref_summary_enable_wearG5"
+            android:title="@string/pref_enable_wearG5"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="enable_wearG5"
+            android:key="force_wearG5"
+            android:summary="@string/pref_summary_force_wearG5"
+            android:title="@string/pref_force_wearG5"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="enable_wearG5"
+            android:key="run_ble_scan_constantly"
+            android:summary="@string/pref_summary_run_ble_scan_constantly"
+            android:title="@string/pref_summary_run_ble_scan_constantly" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="enable_wearG5"
+            android:key="run_G5_ble_tasks_on_uithread"
+            android:summary="@string/pref_summary_run_G5_ble_tasks_on_uithread"
+            android:title="@string/pref_run_G5_ble_tasks_on_uithread"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="enable_wearG5"
+            android:key="always_get_new_keys"
+            android:summary="@string/pref_summary_always_get_new_keys"
+            android:title="@string/pref_always_get_new_keys"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="enable_wearG5"
+            android:key="always_unbond_G5"
+            android:summary="@string/pref_summary_always_unbond_G5"
+            android:title="@string/pref_always_unbond_G5"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="XDrip Watch Settings"
+        android:key="category"
+        android:selectable="false">
 
         <CheckBoxPreference android:title="Dark"
             android:defaultValue="true"
             android:summary="Dark theme"
             android:key="dark" />
+
+        <ListPreference
+            android:key="ambient_lowcolor"
+            android:title="@string/pref_ambient_lowcolor"
+            android:summary="@string/pref_summary_ambient_lowcolor"
+            android:entries="@array/ambient_lowcolor"
+            android:entryValues="@array/ambient_lowcolor_values"
+            android:defaultValue="3" />
 
         <!-- TODO: reenable raw
         <CheckBoxPreference android:title="Show Raw"

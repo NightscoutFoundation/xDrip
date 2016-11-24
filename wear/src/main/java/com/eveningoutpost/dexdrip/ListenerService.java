@@ -2,10 +2,12 @@ package com.eveningoutpost.dexdrip;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;//KS
 import com.eveningoutpost.dexdrip.Models.Calibration;//KS
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;//KS
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
-import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;//KS
+import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import android.Manifest;
 import android.content.Context;
@@ -14,6 +16,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -24,7 +28,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.CapabilityApi;
+import com.google.android.gms.wearable.CapabilityInfo;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataMap;
@@ -32,8 +37,6 @@ import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
-import com.google.android.gms.wearable.PutDataMapRequest;
-import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
 
@@ -46,7 +49,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by stephenblack on 12/26/14.
@@ -61,33 +63,40 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String WEARABLE_BG_DATA_PATH = "/nightscout_watch_bg_data";//KS
     private static final String WEARABLE_CALIBRATION_DATA_PATH = "/nightscout_watch_cal_data";//KS
     private static final String WEARABLE_SENSOR_DATA_PATH = "/nightscout_watch_sensor_data";//KS
-    public static final String WEARABLE_PREF_DATA_PATH = "/nightscout_watch_pref_data";//KS
-    public static final String DATA_ITEM_RECEIVED_PATH = "/data-item-received";//KS
+    private static final String WEARABLE_PREF_DATA_PATH = "/nightscout_watch_pref_data";//KS
+    private static final String DATA_ITEM_RECEIVED_PATH = "/data-item-received";//KS
     private static final String ACTION_RESEND = "com.dexdrip.stephenblack.nightwatch.RESEND_DATA";
     private static final String ACTION_SENDDATA = "com.dexdrip.stephenblack.nightwatch.SEND_DATA";
-    private static final String ACTION_RESEND_BULK = "com.dexdrip.stephenblack.nightwatch.RESEND_BULK_DATA";
     private static final String FIELD_SENDPATH = "field_xdrip_plus_sendpath";
     private static final String FIELD_PAYLOAD = "field_xdrip_plus_payload";
     private static final String WEARABLE_TREATMENT_PAYLOAD = "/xdrip_plus_treatment_payload";
     private static final String WEARABLE_TOAST_NOTIFICATON = "/xdrip_plus_toast";
-    private static final String TAG = "jamorham listener";
-    SharedPreferences mPrefs;//KS
-    Context mContext;//KS
-    public static boolean mLocationPermissionApproved;//KS
-    public static long last_send_previous = 0;//KS
-    public static long last_send_sucess = 0;//KS
-    public static String pref_last_send_previous = "last_send_previous";
 
-    GoogleApiClient googleApiClient;
+    // Phone
+    private static final String CAPABILITY_PHONE_APP = "phone_app_sync_bgs";
+    private static final String MESSAGE_PATH_PHONE = "/phone_message_path";
+    // Wear
+    private static final String CAPABILITY_WEAR_APP = "wear_app_sync_bgs";
+    private static final String MESSAGE_PATH_WEAR = "/wear_message_path";
+    private String mPhoneNodeId = null;
+    private String localnode= null;
+
+    private static final String TAG = "jamorham listener";
+    private SharedPreferences mPrefs;//KS
+    private static boolean mLocationPermissionApproved;//KS
+    private static long last_send_previous = 0;//KS
+    final private static String pref_last_send_previous = "last_send_previous";
+    private boolean is_using_g5 = false;
+    private static int aggressive_backoff_timer = 120;
+
+    private GoogleApiClient googleApiClient;
     private static long lastRequest = 0;
 
     public class DataRequester extends AsyncTask<Void, Void, Void> {
-        Context mContext;
         final String path;
         final byte[] payload;
 
         DataRequester(Context context, String thispath, byte[] thispayload) {
-            mContext = context;
             path = thispath;
             payload = thispayload;
             Sensor.InitDb(context);//ensure database has already been initialized
@@ -97,20 +106,33 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         @Override
         protected Void doInBackground(Void... params) {
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());//KS
-            boolean connectG5 = sharedPrefs.getBoolean("connectG5", false); //KS
-            boolean use_connectG5 = sharedPrefs.getBoolean("use_connectG5", false); //KS
+            boolean enable_wearG5 = sharedPrefs.getBoolean("enable_wearG5", false); //KS
+            boolean force_wearG5 = sharedPrefs.getBoolean("force_wearG5", false); //KS
+            String node_wearG5 = sharedPrefs.getString("node_wearG5", ""); //KS
+            Log.d(TAG, "doInBackground enter enable_wearG5=" + enable_wearG5 + " force_wearG5=" + force_wearG5 + " node_wearG5=" + node_wearG5);//KS
 
             if ((googleApiClient != null) && (googleApiClient.isConnected())) {
                 if (!path.equals(ACTION_RESEND) || (System.currentTimeMillis() - lastRequest > 20 * 1000)) { // enforce 20-second debounce period
                     lastRequest = System.currentTimeMillis();
 
-                    NodeApi.GetConnectedNodesResult nodes =
-                            Wearable.NodeApi.getConnectedNodes(googleApiClient).await();
+                    //NodeApi.GetConnectedNodesResult nodes =
+                    //        Wearable.NodeApi.getConnectedNodes(googleApiClient).await();
+                    NodeApi.GetLocalNodeResult localnodes = Wearable.NodeApi.getLocalNode(googleApiClient).await();
+                    Node getnode = localnodes != null ? localnodes.getNode() : null;
+                    localnode = getnode != null ?  getnode.getDisplayName() + "|" + getnode.getId() : "";
+                    Log.d(TAG, "doInBackground.  getLocalNode name=" + localnode);
+                    CapabilityApi.GetCapabilityResult capResult =
+                            Wearable.CapabilityApi.getCapability(
+                                    googleApiClient, CAPABILITY_PHONE_APP,
+                                    CapabilityApi.FILTER_REACHABLE).await();
+                    CapabilityInfo nodes = capResult.getCapability();
+                    updatePhoneSyncBgsCapability(nodes);
+
                     int count = nodes.getNodes().size();//KS
-                    Log.d(TAG, "doInBackground connected.  NodeApi.GetConnectedNodesResult await count=" + count);//KS
+                    Log.d(TAG, "doInBackground connected.  CapabilityApi.GetCapabilityResult mPhoneNodeID=" + (mPhoneNodeId != null ? mPhoneNodeId : "") + " count=" + count);//KS
                     if (count > 0) {//KS
-                        if (connectG5) {
-                            if (use_connectG5) {
+                        if (enable_wearG5) {
+                            if (force_wearG5) {
                                 startBtG5Service();
                             }
                             else {
@@ -120,14 +142,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
                         for (Node node : nodes.getNodes()) {
 
-                            if (connectG5) {//KS
+                            if (enable_wearG5) {//KS
                                 DataMap datamap = getWearTransmitterData(288);//KS 36 data for last 3 hours; 288 for 1 day
                                 if (datamap != null) {//while
-                                    Log.d(TAG, "doInBackground send Wear Data BGs to phone at path:" + SYNC_BGS_PATH + " and node:" + node.getId());
+                                    Log.d(TAG, "doInBackground send Wear Data BGs to phone path:" + SYNC_BGS_PATH + " and node:" + node.getId() + " and node:" + node.getDisplayName());
                                     Log.d(TAG, "doInBackground send Wear datamap:" + datamap);
-
-                                    //onDataChanged doesn't ever get triggered on phone using putDataItem. Therefore, use MessageAPI instead.
-                                    //sendToDataLayer(SYNC_BGS_PATH, datamap, node);
 
                                     PendingResult<MessageApi.SendMessageResult> result = Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), SYNC_BGS_PATH, datamap.toByteArray());
                                     result.setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
@@ -137,20 +156,17 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                                 Log.e(TAG, "ERROR: failed to send Wear BGs to phone: " + sendMessageResult.getStatus().getStatusMessage());
                                             }
                                             else {
-                                                //last_send_previous = last_send_sucess; //Set this in onDataChanged event DATA_ITEM_RECEIVED_PATH
                                                 Log.i(TAG, "Sent Wear BGs to phone: " + sendMessageResult.getStatus().getStatusMessage());
                                             }
                                         }
                                     });
                                 }
                             }
-                            //if (!use_connectG5 && path.equals(WEARABLE_RESEND_PATH)) {//KS don't request Resend if wear collector is active
                             Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), path, payload);
-                            //}
                         }
                     }
                     else {
-                        if (connectG5) {//KS
+                        if (enable_wearG5) {//KS
                             Log.d(TAG, "doInBackground connected but getConnectedNodes returns 0.  start G5 service");
                             startBtG5Service();
                         }
@@ -168,58 +184,18 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
     }
 
-    private void sendToDataLayer(String path, DataMap dataMap, Node node) {//KS
-        if (googleApiClient.isConnected()) {
-            Log.d(TAG, "sendToDataLayer send to path=" + path + "node=" + node.getDisplayName());
-            Log.d(TAG, "sendToDataLayer send dataMap=" + dataMap);
-            PutDataMapRequest dataMapRequest = PutDataMapRequest.create(path);
-            dataMapRequest.setUrgent();
-            //unique content
-            //dataMapRequest.getDataMap().putDouble("timestamp", System.currentTimeMillis());
-            //dataMapRequest.getDataMap().putString(notification, notification);
-            //PutDataRequest putDataRequest = dataMapRequest.asPutDataRequest();
-            //Wearable.DataApi.putDataItem(googleApiClient, putDataRequest);
-
-            dataMapRequest.getDataMap().putAll(dataMap);
-            PutDataRequest request = dataMapRequest.asPutDataRequest();
-            DataApi.DataItemResult result = Wearable.DataApi.putDataItem(googleApiClient, request).await(15, TimeUnit.SECONDS);
-            if (result.getStatus().isSuccess()) {
-                Log.d(TAG, "sendToDataLayer sent dataMap: " + dataMap);
-                Log.d(TAG, "sendToDataLayer sent to node: " + node.getDisplayName());
-                last_send_previous = last_send_sucess;
-            } else {
-                Log.e(TAG, "sendToDataLayer ERROR: failed to send DataMap");
-                result = Wearable.DataApi.putDataItem(googleApiClient, request).await(25, TimeUnit.SECONDS);
-                if (result.getStatus().isSuccess()) {
-                    Log.d(TAG, "sendToDataLayer RETRY sent dataMap: " + dataMap);
-                    Log.d(TAG, "sendToDataLayer RETRY sent to node: " + node.getDisplayName());
-                    last_send_previous = last_send_sucess;
-                } else {
-                    Log.e(TAG, "sendToDataLayer ERROR on retry: failed to send DataMap");
-                }
-            }
-        } else {
-            Log.e(TAG, "sendToDataLayer No connection to phone available!");
-        }
-    }
-
     private DataMap getWearTransmitterData(int count) {//KS
-        java.text.DateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
-        Date date = new Date();
         if(googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) { googleApiConnect(); }
 
-        date.setTime(last_send_previous);
-        Log.d(TAG, "getWearTransmitterData last_send_previous:" + df.format(date));
+        Log.d(TAG, "getWearTransmitterData last_send_previous:" + JoH.dateTimeText(last_send_previous));
 
         TransmitterData last_bg = TransmitterData.last();
         if (last_bg != null) {
-            date.setTime(last_bg.timestamp);
-            Log.d(TAG, "getWearTransmitterData last_bg.timestamp:" + df.format(date));
+            Log.d(TAG, "getWearTransmitterData last_bg.timestamp:" + JoH.dateTimeText(last_bg.timestamp));
         }
 
         if (last_bg != null && last_send_previous <= last_bg.timestamp) {//startTime
-            date.setTime(last_bg.timestamp);
-            Log.d(TAG, "getWearTransmitterData last_send_previous < last_bg.timestamp:" + df.format(date));
+            Log.d(TAG, "getWearTransmitterData last_send_previous < last_bg.timestamp:" + JoH.dateTimeText(last_bg.timestamp));
             List<TransmitterData> graph_bgs = TransmitterData.latestForGraphAsc(count, last_send_previous);
             if (!graph_bgs.isEmpty()) {
                 Log.d(TAG, "getWearTransmitterData graph_bgs count = " + graph_bgs.size());
@@ -227,11 +203,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 final ArrayList<DataMap> dataMaps = new ArrayList<>(graph_bgs.size());
                 for (TransmitterData bg : graph_bgs) {
                     dataMaps.add(dataMap(bg));
-                    date.setTime(bg.timestamp);
-                    Log.d(TAG, "getWearTransmitterData bg.timestamp:" + df.format(date));
-                    last_send_sucess = bg.timestamp + 1;
-                    date.setTime(last_send_sucess);
-                    Log.d(TAG, "getWearTransmitterData set last_send_sucess:" + df.format(date));
+                    Log.d(TAG, "getWearTransmitterData bg.timestamp:" + JoH.dateTimeText(bg.timestamp));
+                    long last_send_sucess = bg.timestamp + 1;
+                    Log.d(TAG, "getWearTransmitterData set last_send_sucess:" + JoH.dateTimeText(last_send_sucess));
                     Log.d(TAG, "getWearTransmitterData bg getId:" + bg.getId() + " raw_data:" + bg.raw_data + " filtered_data:" + bg.filtered_data + " timestamp:" + bg.timestamp + " uuid:" + bg.uuid);
                 }
                 entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
@@ -248,32 +222,35 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
         if(googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) { googleApiConnect(); }
         DataMap dataMap = new DataMap();
-        boolean connectG5 = mPrefs.getBoolean("connectG5", false);
-        boolean use_connectG5 = mPrefs.getBoolean("use_connectG5", false);
-        Log.d(TAG, "sendPrefSettings connectG5: " + connectG5 + " use_connectG5:" + use_connectG5);
-        dataMap.putBoolean("connectG5", connectG5);
-        dataMap.putBoolean("use_connectG5", use_connectG5);
+        boolean enable_wearG5 = mPrefs.getBoolean("enable_wearG5", false);
+        boolean force_wearG5 = mPrefs.getBoolean("force_wearG5", false);
+        String node_wearG5 = mPrefs.getString("node_wearG5", "");
+        String dex_txid = mPrefs.getString("dex_txid", "ABCDEF");
+
+        Log.d(TAG, "sendPrefSettings enable_wearG5: " + enable_wearG5 + " force_wearG5:" + force_wearG5 + " node_wearG5:" + node_wearG5 + " localnode:" + localnode + " dex_txid:" + dex_txid);
+        dataMap.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
+        dataMap.putBoolean("enable_wearG5", enable_wearG5);
+        dataMap.putBoolean("force_wearG5", force_wearG5);
+        if (force_wearG5) {
+            dataMap.putString("node_wearG5", localnode);
+        }
+        else {
+            if (node_wearG5.equals(localnode)) {
+                dataMap.putString("node_wearG5", "");
+            }
+            else {
+                dataMap.putString("node_wearG5", node_wearG5);
+            }
+        }
+        dataMap.putString("dex_txid", dex_txid);
         sendData(WEARABLE_PREF_DATA_PATH, dataMap.toByteArray());
 
-/*
-        final SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());//KS TODO
-        new Thread(){
-            public void run(){
-                sendPrefSettingsAsync(sharedPrefs);
-            }
-        }.start();
-*/
-    }
-
-    private void sendPrefSettingsAsync(final SharedPreferences sharedPrefs) {//KS
-        final PutDataMapRequest request = PutDataMapRequest.create(WEARABLE_PREF_DATA_PATH);
-        final DataMap dataMap = request.getDataMap();
-        boolean connectG5 = sharedPrefs.getBoolean("connectG5", false);
-        boolean use_connectG5 = sharedPrefs.getBoolean("use_connectG5", false);
-        dataMap.putBoolean("connectG5", connectG5);
-        dataMap.putBoolean("use_connectG5", use_connectG5);
-        request.setUrgent();
-        Wearable.DataApi.putDataItem(googleApiClient, request.asPutDataRequest());
+        SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        if (!node_wearG5.equals(dataMap.getString("node_wearG5", ""))) {
+            Log.d(TAG, "syncPrefData save to SharedPreferences - node_wearG5:" + dataMap.getString("node_wearG5", ""));
+            prefs.putString("node_wearG5", node_wearG5);
+            prefs.commit();
+        }
     }
 
     private DataMap dataMap(TransmitterData bg) {//KS
@@ -284,65 +261,16 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         return dataMap;
     }
 
-    private DataMap getWearBGData(int count) {//KS
-        java.text.DateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
-        Date date = new Date();
-        if(googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) { googleApiConnect(); }
-        long currentTime = new Date().getTime() - (60000 * 60 * 24);
-
-        date.setTime(last_send_previous);
-        Log.d(TAG, "getWearBGData last_send_previous:" + df.format(date));
-
-        BgReading last_bg = BgReading.last();
-        if (last_bg != null) {
-            date.setTime(last_bg.timestamp);
-            Log.d(TAG, "getWearBGData last_bg.timestamp:" + df.format(date));
-        }
-
-        if (last_bg != null && last_send_previous <= last_bg.timestamp) {//startTime
-            date.setTime(last_bg.timestamp);
-            Log.d(TAG, "getWearBGData last_send_previous < last_bg.timestamp:" + df.format(date));
-            List<BgReading> graph_bgs = BgReading.latestForGraphAsc(count, last_send_previous);
-            if (!graph_bgs.isEmpty()) {
-                Log.d(TAG, "getWearBGData graph_bgs count = " + graph_bgs.size());
-                DataMap entries = dataMap(last_bg);
-                final ArrayList<DataMap> dataMaps = new ArrayList<>(graph_bgs.size());
-                for (BgReading bg : graph_bgs) {
-                    dataMaps.add(dataMap(bg));
-                    date.setTime(bg.timestamp);
-                    Log.d(TAG, "getWearBGData bg.timestamp:" + df.format(date));
-                    last_send_previous = bg.timestamp + 1;
-                    date.setTime(last_send_previous);
-                    Log.d(TAG, "getWearBGData set last_send_previous:" + df.format(date));
-                }
-                entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
-                entries.putDataMapArrayList("entries", dataMaps);
-                return entries;
-            }
-            else
-                Log.d(TAG, "getWearBGData graph_bgs count = 0");
-        }
-        return null;
-    }
-
-    private DataMap dataMap(BgReading bg) {//KS
-        DataMap dataMap = new DataMap();
-        String json = bg.toS();
-        Log.d(TAG, "dataMap BG GSON: " + json);
-        dataMap.putString("bgs", json);
-        return dataMap;
-    }
-
-    public void requestData() {
+    private void requestData() {
         sendData(WEARABLE_RESEND_PATH, null);
     }
 
-    public void sendData(String path, byte[] payload) {
+    private void sendData(String path, byte[] payload) {
         if (path == null) return;
         new DataRequester(this, path, payload).execute();
     }
 
-    public void googleApiConnect() {
+    private void googleApiConnect() {
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -357,9 +285,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         String id = peer.getId();
         String name = peer.getDisplayName();
         Log.d(TAG, "onPeerConnected peer name & ID: " + name + "|" + id);
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         sendPrefSettings();
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        if (sharedPrefs.getBoolean("connectG5", false) && !sharedPrefs.getBoolean("use_connectG5", false)) {
+        if (mPrefs.getBoolean("enable_wearG5", false) && !mPrefs.getBoolean("force_wearG5", false)) {
             stopBtG5Service();
             ListenerService.requestData(this);
         }
@@ -371,8 +299,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         String id = peer.getId();
         String name = peer.getDisplayName();
         Log.d(TAG, "onPeerDisconnected peer name & ID: " + name + "|" + id);
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        if (sharedPrefs.getBoolean("connectG5", false)) {
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if (mPrefs.getBoolean("enable_wearG5", false)) {
             startBtG5Service();
         }
     }
@@ -382,11 +310,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         Log.d(TAG, "onStartCommand entered");
         Home.setAppContext(getApplicationContext());
         xdrip.checkAppContext(getApplicationContext());
+        final PowerManager.WakeLock wl = JoH.getWakeLock("watchlistener-onstart",60000);
         last_send_previous = PersistentStore.getLong(pref_last_send_previous); // 0 if undef
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());//KS
         listenForChangeInSettings();//KS
-        //sendPrefSettings();
-        mContext = getApplicationContext();//KS
+        is_using_g5 = mPrefs.getBoolean("g5_collection_method", false);//DexCollectionType.DexcomG5
         if (intent != null && ACTION_RESEND.equals(intent.getAction())) {
             googleApiConnect();
             requestData();
@@ -394,16 +322,17 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             final Bundle bundle = intent.getExtras();
             sendData(bundle.getString(FIELD_SENDPATH), bundle.getByteArray(FIELD_PAYLOAD));
         }
+        JoH.releaseWakeLock(wl);
         return START_STICKY;
     }
 
-    public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {//KS
+    final private SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {//KS
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             Log.d(TAG, "OnSharedPreferenceChangeListener entered");
-            if(key.compareTo("connectG5") == 0 || key.compareTo("use_connectG5") == 0) {
-                Log.i(TAG, "OnSharedPreferenceChangeListener connectG5 || use_connectG5 changed!");
-                processConnectG5();
+            if(key.compareTo("enable_wearG5") == 0 || key.compareTo("force_wearG5") == 0 || key.compareTo("node_wearG5") == 0) {
+                Log.i(TAG, "OnSharedPreferenceChangeListener enable_wearG5 || force_wearG5 changed!");
                 sendPrefSettings();
+                processConnectG5();
             }
             else if(key.compareTo("dex_txid") == 0){
                 processConnectG5();
@@ -411,7 +340,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
     };
 
-    public void listenForChangeInSettings() {//KS
+    private void listenForChangeInSettings() {//KS
         mPrefs.registerOnSharedPreferenceChangeListener(prefListener);
         // TODO do we need an unregister!?
     }
@@ -454,6 +383,13 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     getApplicationContext().startActivity(intent);
                 } else if (path.equals(SYNC_DB_PATH)) {//KS
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH=" + path);
+                    final PowerManager.WakeLock wl = JoH.getWakeLock("watchlistener-SYNC_DB_PATH",120000);
+                    TransmitterData last_bg = TransmitterData.last();
+                    if (last_bg != null && last_send_previous <= last_bg.timestamp) {
+                        Log.d(TAG, "onDataChanged SYNC_DB_PATH requestData for last_send_previous < last_bg.timestamp:" + JoH.dateTimeText(last_send_previous) + "<="+ JoH.dateTimeText(last_bg.timestamp));
+                        requestData();
+                    }
+                    JoH.releaseWakeLock(wl);
                     Sensor.DeleteAndInitDb(getApplicationContext());
                     PersistentStore.setLong(pref_last_send_previous, 0);
                 } else if (path.equals(WEARABLE_SENSOR_DATA_PATH)) {//KS
@@ -463,11 +399,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 } else if (path.equals(WEARABLE_CALIBRATION_DATA_PATH)) {//KS
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
-                    syncCalibrationData(dataMap);
+                    syncCalibrationData(dataMap, getApplicationContext());
                 } else if (path.equals(WEARABLE_BG_DATA_PATH)) {//KS
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
-                    syncBgData(dataMap);
+                    syncBgData(dataMap, getApplicationContext());
                 } else if (path.equals(WEARABLE_PREF_DATA_PATH)) {//KS
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
@@ -477,40 +413,63 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
                     long timeOfLastBG = dataMap.getLong("timeOfLastBG", 0);
                     if (timeOfLastBG > 0) {
-                        java.text.DateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
-                        Date date = new Date();
-                        date.setTime(last_send_previous);
-                        Log.d(TAG, "onDataChanged received from sendDataReceived current last_send_previous=" + df.format(date));
-                        date.setTime(timeOfLastBG);
-                        Log.d(TAG, "onDataChanged received from sendDataReceived timeOfLastBG=" + df.format(date) + " Path=" + path);
+                        Log.d(TAG, "onDataChanged received from sendDataReceived current last_send_previous=" + JoH.dateTimeText(last_send_previous));
+                        Log.d(TAG, "onDataChanged received from sendDataReceived timeOfLastBG=" + JoH.dateTimeText(timeOfLastBG) + " Path=" + path);
                         last_send_previous = timeOfLastBG;
                         PersistentStore.setLong(pref_last_send_previous, last_send_previous);
-                        date.setTime(last_send_previous);
-                        Log.d(TAG, "onDataChanged received from sendDataReceived update last_send_previous=" + df.format(date));
+                        Log.d(TAG, "onDataChanged received from sendDataReceived update last_send_previous=" + JoH.dateTimeText(last_send_previous));
                     }
                 }
             }
         }
     }
 
-    public void syncPrefData(DataMap dataMap) {//KS
+    private void syncPrefData(DataMap dataMap) {//KS
         SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(this).edit();
 
         Log.d(TAG, "syncPrefData dataMap=" + dataMap);
 
-        boolean connectG5 = dataMap.getBoolean("connectG5", false);
-        boolean use_connectG5 = dataMap.getBoolean("use_connectG5", false);
+        String dexCollector = dataMap.getString("dex_collection_method", "DexcomG5");//BluetoothWixel
+        DexCollectionType collectionType = DexCollectionType.getType( dexCollector);
+        is_using_g5 = (collectionType == DexCollectionType.DexcomG5);
+        Log.d(TAG, "syncPrefData is_using_g5:" + is_using_g5);
+        prefs.putBoolean("g5_collection_method", is_using_g5);
 
-        if (use_connectG5 != mPrefs.getBoolean("use_connectG5", false)) {
-            Log.d(TAG, "syncPrefData use_connectG5:" + use_connectG5);
-            prefs.putBoolean("use_connectG5", use_connectG5);
+        boolean enable_wearG5 = is_using_g5 && dataMap.getBoolean("enable_wearG5", false);
+        boolean force_wearG5 = is_using_g5 && dataMap.getBoolean("force_wearG5", false);
+        String node_wearG5 = dataMap.getString("node_wearG5", "");
+        String prefs_node_wearG5 = mPrefs.getString("node_wearG5", "");
+        boolean change = false;
+        Log.d(TAG, "syncPrefData enter enable_wearG5: " + enable_wearG5 + " force_wearG5:" + force_wearG5 + " node_wearG5:" + node_wearG5 + " prefs_node_wearG5:" + prefs_node_wearG5 + " localnode:" + localnode);
+
+        if (!node_wearG5.equals(prefs_node_wearG5)) {
+            change = true;
+            prefs.putString("node_wearG5", node_wearG5);
+            Log.d(TAG, "syncPrefData node_wearG5 pref set to dataMap:" + node_wearG5);
         }
-        if (connectG5 != mPrefs.getBoolean("connectG5", false)) {
-            Log.d(TAG, "syncPrefData connectG5:" + use_connectG5);
-            prefs.putBoolean("connectG5", connectG5);
+        if (force_wearG5 && node_wearG5.equals("")) {
+            change = true;
+            prefs.putString("node_wearG5", localnode);
+            node_wearG5 = localnode;
+            Log.d(TAG, "syncPrefData node_wearG5 set empty string to localnode:" + localnode);
+        }
+        if (!node_wearG5.equals(localnode)) {
+            //change = true;
+            force_wearG5 = false;
         }
 
-        String dex_txid = dataMap.getString("dex_txid", "ABCDEF");//KS 4023GU
+        if (force_wearG5 != mPrefs.getBoolean("force_wearG5", false)) {
+            change = true;
+            Log.d(TAG, "syncPrefData force_wearG5:" + force_wearG5);
+            prefs.putBoolean("force_wearG5", force_wearG5);
+        }
+        if (enable_wearG5 != mPrefs.getBoolean("enable_wearG5", false)) {
+            change = true;
+            Log.d(TAG, "syncPrefData enable_wearG5:" + force_wearG5);
+            prefs.putBoolean("enable_wearG5", enable_wearG5);
+        }
+
+        String dex_txid = dataMap.getString("dex_txid", "ABCDEF");
         Log.d(TAG, "syncPrefData dataMap dex_txid=" + dex_txid);
         if (!dex_txid.equals(mPrefs.getString("dex_txid", "ABCDEF"))) {
             Log.d(TAG, "syncPrefData dex_txid:" + dex_txid);
@@ -518,60 +477,58 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             stopBtG5Service();
         }
 
-        String units = dataMap.getString("units", "ABCDEF");//KS
+        final boolean adjustPast = dataMap.getBoolean("rewrite_history", true);
+        prefs.putBoolean("rewrite_history", adjustPast);
+
+        String units = dataMap.getString("units", "mgdl");
         Log.d(TAG, "syncPrefData dataMap units=" + units);
         prefs.putString("units", units);
-        Log.d(TAG, "syncPrefData prefs units=" + mPrefs.getString("units", ""));
+        Log.d(TAG, "syncPrefData prefs units=" + mPrefs.getString("units", "mgdl"));
 
-        Double high = dataMap.getDouble("high");
-        Double low = dataMap.getDouble("low");
+        Double high = dataMap.getDouble("high", 170.0);
+        Double low = dataMap.getDouble("low", 70.0);
         Log.d(TAG, "syncPrefData dataMap highMark=" + high + " highMark=" + low);
         prefs.putString("highValue", high.toString());
         prefs.putString("lowValue", low.toString());
 
-        prefs.commit();
+        if (change) {
+            prefs.commit();
+            //sendPrefSettings();
+            //processConnectG5();
+        }
+        enable_wearG5 = mPrefs.getBoolean("enable_wearG5", false);
+        force_wearG5 = mPrefs.getBoolean("force_wearG5", false);
+        node_wearG5 = mPrefs.getString("node_wearG5", "");
+        Log.d(TAG, "syncPrefData exit enable_wearG5: " + enable_wearG5 + " force_wearG5:" + force_wearG5 + " node_wearG5:" + node_wearG5);
     }
 
     //Assumes Wear is connected to phone
-    public void processConnectG5() {//KS
+    private void processConnectG5() {//KS
         Log.d(TAG, "processConnectG5 enter");
-        boolean connectG5 = mPrefs.getBoolean("connectG5", false);
-        boolean use_connectG5 = mPrefs.getBoolean("use_connectG5", false);
-        if (connectG5) {
-            Log.d(TAG, "processConnectG5 connectG5=true");
-            if (!use_connectG5){
-                Log.d(TAG, "processConnectG5 use_connectG5=false - stopBtG5Service and requestData");
+        boolean enable_wearG5 = mPrefs.getBoolean("enable_wearG5", false);
+        boolean force_wearG5 = mPrefs.getBoolean("force_wearG5", false);
+        if (enable_wearG5) {
+            Log.d(TAG, "processConnectG5 enable_wearG5=true");
+            if (!force_wearG5){
+                Log.d(TAG, "processConnectG5 force_wearG5=false - stopBtG5Service and requestData");
                 stopBtG5Service();
                 ListenerService.requestData(this);
             }
             else {
-                Log.d(TAG, "processConnectG5 use_connectG5=true - startBtG5Service");
+                Log.d(TAG, "processConnectG5 force_wearG5=true - startBtG5Service");
                 startBtG5Service();
             }
         }
         else {
-            Log.d(TAG, "processConnectG5 connectG5=false - stopBtG5Service and requestData");
+            Log.d(TAG, "processConnectG5 enable_wearG5=false - stopBtG5Service and requestData");
             stopBtG5Service();
             ListenerService.requestData(this);
         }
     }
 
-    public void syncSensorData(DataMap dataMap, Context context) {//KS
+    private void syncSensorData(DataMap dataMap, Context context) {//KS
         Log.d(TAG, "syncSensorData");
-        java.text.DateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
-        Date date = new Date();
         if (dataMap != null) {
-
-            //Get Transmittor ID required to connect to sensor via Bluetooth
-            /*
-            String dex_txid = dataMap.getString("dex_txid", "ABCDEF");//KS 4023GU
-            Log.d(TAG, "syncSensorData dataMap dex_txid=" + dex_txid);
-            SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(this).edit();
-            prefs.putString("dex_txid", dex_txid);
-            prefs.commit();
-            Log.d(TAG, "syncSensorData prefs set dex_txid=" + mPrefs.getString("dex_txid", "ABCDEF"));
-            */
-
             String uuid = dataMap.getString("uuid");
             Log.d(TAG, "syncSensorData add Sensor for uuid=" + uuid);
             long started_at = dataMap.getLong("started_at");
@@ -579,8 +536,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             String sensor_location = dataMap.getString("sensor_location");
             Sensor.InitDb(context);//ensure database has already been initialized
             if (uuid != null && !uuid.isEmpty()) {
-                date.setTime(started_at);
-                Log.d(TAG, "syncSensorData add Sensor for uuid=" + uuid + " timestamp=" + started_at + " timeString=" + df.format(date));
+                Log.d(TAG, "syncSensorData add Sensor for uuid=" + uuid + " timestamp=" + started_at + " timeString=" +  JoH.dateTimeText(started_at));
                 Sensor sensor = Sensor.getByUuid(uuid);
                 if (sensor == null) {
                     Log.d(TAG, "syncSensorData createUpdate new Sensor...");
@@ -596,79 +552,78 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
     }
 
-    public void syncCalibrationData(DataMap dataMap) {//KS
+    private synchronized void syncCalibrationData(DataMap dataMap, Context context) {//KS
         Log.d(TAG, "syncCalibrationData");
-        java.text.DateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
-        Date date = new Date();
+
         ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
         if (entries != null) {
+
             Gson gson = new GsonBuilder()
                     .excludeFieldsWithoutExposeAnnotation()
                     .registerTypeAdapter(Date.class, new DateTypeAdapter())
                     .serializeSpecialFloatingPointValues()
                     .create();
+
             Log.d(TAG, "syncCalibrationData add Calibration Table entries count=" + entries.size());
+            Sensor.InitDb(context);//ensure database has already been initialized
             Sensor sensor = Sensor.currentSensor();
             if (sensor != null) {
                 for (DataMap entry : entries) {
                     if (entry != null) {
-                        Log.d(TAG, "syncCalibrationData add Calibration Table entry=" + entry);
-                        Calibration calibration = new Calibration();
-
-                        Calibration uuidexists = Calibration.byuuid(entry.getString("uuid"));//entry.getLong("timestamp")
-                        if (uuidexists == null) {
-                            date.setTime(entry.getLong("timestamp"));
-                            Log.d(TAG, "syncCalibrationData create Calibration for uuid=" + entry.getString("uuid") + " timestamp=" + entry.getLong("timestamp") + " timeString=" + df.format(date));
-                            Calibration.createCalibration(
-                                    entry.getDouble("adjusted_raw_value"),
-                                    entry.getDouble("bg"),
-                                    entry.getBoolean("check_in"),
-                                    entry.getDouble("distance_from_estimate"),
-                                    entry.getDouble("estimate_bg_at_time_of_calibration"),
-                                    entry.getDouble("estimate_raw_at_time_of_calibration"),
-                                    entry.getDouble("first_decay"),
-                                    entry.getDouble("first_intercept"),
-                                    entry.getDouble("first_scale"),
-                                    entry.getDouble("first_slope"),
-                                    entry.getDouble("intercept"),
-                                    entry.getBoolean("possible_bad"),
-                                    entry.getLong("raw_timestamp"),
-                                    entry.getDouble("raw_value"),
-                                    entry.getDouble("second_decay"),
-                                    entry.getDouble("second_intercept"),
-                                    entry.getDouble("second_scale"),
-                                    entry.getDouble("second_slope"),
-                                    sensor,
-                                    entry.getDouble("sensor_age_at_time_of_estimation"),
-                                    entry.getDouble("sensor_confidence"),
-                                    entry.getString("sensor_uuid"),
-                                    entry.getDouble("slope"),
-                                    entry.getDouble("slope_confidence"),
-                                    entry.getLong("timestamp"),
-                                    entry.getString("uuid"));
+                        String bgrecord = entry.getString("bgs");
+                        if (bgrecord != null) {
+                            Calibration bgData = gson.fromJson(bgrecord, Calibration.class);
+                            Calibration exists = Calibration.findByUuid(bgData.uuid);
+                            bgData.sensor = sensor;
+                            if (exists != null) {
+                                Log.d(TAG, "syncCalibrationData Calibration exists for uuid=" + bgData.uuid + " bg=" + bgData.bg + " timestamp=" + bgData.timestamp + " timeString=" +  JoH.dateTimeText(bgData.timestamp));
+                                exists.adjusted_raw_value = bgData.adjusted_raw_value;
+                                exists.bg = bgData.bg;
+                                exists.check_in = bgData.check_in;
+                                exists.distance_from_estimate = bgData.distance_from_estimate;
+                                exists.estimate_bg_at_time_of_calibration = bgData.estimate_bg_at_time_of_calibration;
+                                exists.estimate_raw_at_time_of_calibration = bgData.estimate_raw_at_time_of_calibration;
+                                exists.first_decay = bgData.first_decay;
+                                exists.first_intercept = bgData.first_intercept;
+                                exists.first_scale = bgData.first_scale;
+                                exists.first_slope = bgData.first_slope;
+                                exists.intercept = bgData.intercept;
+                                exists.possible_bad = bgData.possible_bad;
+                                exists.raw_timestamp = bgData.raw_timestamp;
+                                exists.raw_value = bgData.raw_value;
+                                exists.second_decay = bgData.second_decay;
+                                exists.second_intercept = bgData.second_intercept;
+                                exists.second_scale = bgData.second_scale;
+                                exists.second_slope = bgData.second_slope;
+                                exists.sensor = sensor;
+                                exists.sensor_age_at_time_of_estimation = bgData.sensor_age_at_time_of_estimation;
+                                exists.sensor_confidence = bgData.sensor_confidence;
+                                exists.sensor_uuid = bgData.sensor_uuid;
+                                exists.slope = bgData.slope;
+                                exists.slope_confidence = bgData.slope_confidence;
+                                exists.timestamp = bgData.timestamp;
+                                exists.save();
+                            }
+                            else {
+                                bgData.save();
+                                //final boolean adjustPast = mPrefs.getBoolean("rewrite_history", true);
+                                Log.d(TAG, "syncCalibrationData Calibration does not exist for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" +  JoH.dateTimeText(bgData.timestamp));
+                                //Calibration.adjustRecentBgReadings(adjustPast ? 30 : 2);
+                            }
+                            exists = Calibration.findByUuid(bgData.uuid);
+                            if (exists != null)
+                                Log.d(TAG, "syncCalibrationData Calibration GSON saved BG: " + exists.toS());
+                            else
+                                Log.d(TAG, "syncCalibrationData Calibration GSON NOT saved");
                         }
-                        else
-                            Log.d(TAG, "syncCalibrationData Calibration already exists for uuid=" + entry.getString("uuid") + " timestamp=" + entry.getLong("timestamp"));
                     }
-                }
-            }
-
-            //KS Debug only
-            List<Calibration> cals = Calibration.latest(6);//1 days worth 12 * 24hr  OR Long.MAX_VALUE for all records
-            if (cals != null && !cals.isEmpty()) {
-                Log.d(TAG, "syncCalibrationData cals in wear db count = " + cals.size());
-                for (Calibration cal : cals) {
-                    String json = cal.toS();
-                    Log.d(TAG, "syncCalibrationData cal: " + json);
                 }
             }
         }
     }
 
-    public void syncBgData(DataMap dataMap) {//KS
+    private synchronized void syncBgData(DataMap dataMap, Context context) {//KS
         Log.d(TAG, "syncBGData");
-        java.text.DateFormat df = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
-        Date date = new Date();
 
         ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
         Log.d(TAG, "syncBGData add BgReading Table" );
@@ -681,49 +636,109 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     .create();
 
             Log.d(TAG, "syncBGData add BgReading Table entries count=" + entries.size());
+            Sensor.InitDb(context);//ensure database has already been initialized
             Sensor sensor = Sensor.currentSensor();
-            for (DataMap entry : entries) {
-                if (entry != null) {
-                    Log.d(TAG, "syncBGData add BgReading Table entry=" + entry);
-                    BgReading bgReading = new BgReading();
-                    String bgrecord = entry.getString("bgs");
-                    if (bgrecord != null) {
-                        Log.d(TAG, "syncBGData add BgReading Table bgrecord=" + bgrecord);
-                        BgReading bgData = gson.fromJson(bgrecord, BgReading.class);
-                        BgReading exists = BgReading.getForTimestamp(bgData.timestamp);
-                        BgReading uuidexists = BgReading.findByUuid(bgData.uuid);
-                        date.setTime(bgData.timestamp);
-                        if (exists != null || uuidexists != null) {
-                            Log.d(TAG, "syncBGData BG already exists for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + df.format(date));
-                        }
-                        else {
-                            Calibration calibration = Calibration.byuuid(bgData.calibration_uuid);
-                            if (sensor != null && calibration != null) {
-                                bgData.calibration = calibration;
-                                bgData.sensor = sensor;
-                                Log.d(TAG, "syncBGData add BG; does NOT exist for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + df.format(date));
-                                bgData.save();
-                                //BgSendQueue.handleNewBgReading(bgReading, "create", getApplicationContext() );
-                                exists = BgReading.findByUuid(bgData.uuid);
-                                if (exists != null)
-                                    Log.d(TAG, "syncBGData BG GSON saved BG: " + exists.toS());
-                                else
-                                    Log.d(TAG, "syncBGData BG GSON NOT saved");
+            if (sensor != null) {
+                for (DataMap entry : entries) {
+                    if (entry != null) {
+                        String bgrecord = entry.getString("bgs");
+                        if (bgrecord != null) {
+                            BgReading bgData = gson.fromJson(bgrecord, BgReading.class);
+                            BgReading exists = BgReading.getForTimestampExists(bgData.timestamp);
+                            exists = exists != null ? exists : BgReading.findByUuid(bgData.uuid);
+                            if (exists != null) {
+                                Log.d(TAG, "syncBGData BG already exists for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" +  JoH.dateTimeText(bgData.timestamp));
+                                Log.d(TAG, "syncBGData exists timeString=" +  JoH.dateTimeText(exists.timestamp) + "  exists.calibration.uuid=" + exists.calibration.uuid + " exists=" + exists.toS());
+
+                                exists.filtered_calculated_value = bgData.filtered_calculated_value;
+                                exists.calculated_value = bgData.calculated_value;
+                                exists.hide_slope = bgData.hide_slope;
+
+                                exists.filtered_data = bgData.filtered_data;
+                                exists.raw_data = bgData.raw_data;
+                                exists.raw_calculated = bgData.raw_calculated;
+                                exists.calculated_value_slope = bgData.calculated_value_slope;
+                                exists.age_adjusted_raw_value = bgData.age_adjusted_raw_value;
+                                exists.calibration_flag = bgData.calibration_flag;
+                                exists.ignoreForStats = bgData.ignoreForStats;
+                                exists.time_since_sensor_started = bgData.time_since_sensor_started;
+                                exists.ra = bgData.ra;
+                                exists.rb = bgData.rb;
+                                exists.rc = bgData.rc;
+                                exists.a = bgData.a;
+                                exists.b = bgData.b;
+                                exists.c = bgData.c;
+                                exists.noise = bgData.noise;
+                                exists.time_since_sensor_started = bgData.time_since_sensor_started;
+
+                                String calibrationUuid = entry.getString("calibrationUuid");
+                                if (calibrationUuid != null && !calibrationUuid.isEmpty()) {
+                                    Calibration calibration = Calibration.byuuid(calibrationUuid);
+                                    if (calibration != null) {
+                                        exists.calibration = calibration;
+                                        exists.sensor = sensor;
+                                        exists.save();
+                                    }
+                                    else {
+                                        Log.e(TAG, "syncBGData calibrationUuid not found by byuuid; calibrationUuid=" + calibrationUuid + " bgData.calibration_uuid=" + bgData.calibration_uuid);
+                                    }
+                                }
+                                else {
+                                    Log.e(TAG, "syncBGData calibrationUuid not sent");
+                                }
+                            } else {
+                                Calibration calibration = Calibration.byuuid(bgData.calibration_uuid);
+                                if (calibration != null) {
+                                    bgData.calibration = calibration;
+                                    bgData.sensor = sensor;
+                                    Log.d(TAG, "syncBGData add BG; does NOT exist for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + JoH.dateTimeText(bgData.timestamp));
+                                    String calibrationUuid = entry.getString("calibrationUuid");
+                                    if (calibrationUuid != null && !calibrationUuid.isEmpty()) {
+                                        calibration = Calibration.byuuid(calibrationUuid);
+                                        if (calibration != null) {
+                                            bgData.calibration = calibration;
+                                            bgData.sensor = sensor;
+                                            bgData.save();
+                                        }
+                                        else {
+                                            Log.e(TAG, "syncBGData calibrationUuid not found by byuuid; calibrationUuid=" + calibrationUuid + " bgData.calibration_uuid=" + bgData.calibration_uuid);
+                                        }
+                                    }
+                                    else {
+                                        Log.e(TAG, "syncBGData calibrationUuid not sent");
+                                    }
+
+                                    //BgSendQueue.handleNewBgReading(bgData, "create", getApplicationContext() );
+                                    exists = BgReading.findByUuid(bgData.uuid);
+                                    if (exists != null)
+                                        Log.d(TAG, "syncBGData BG GSON saved BG: " + exists.toS());
+                                    else
+                                        Log.e(TAG, "syncBGData BG GSON NOT saved");
+                                }
+                                else {
+                                    Log.e(TAG, "syncBGData bgData.calibration_uuid not found by byuuid; calibration_uuid=" + bgData.calibration_uuid);
+                                }
                             }
                         }
                     }
                 }
+                BgSendQueue.resendData(getApplicationContext());
             }
         }
     }
 
     private void startBtG5Service() {//KS
         Log.d(TAG, "startBtG5Service");
-        Context myContext = getApplicationContext();
-        if (checkLocationPermissions()) {
-            Log.d(TAG, "startBtG5Service start G5CollectionService");
-            myContext.startService(new Intent(myContext, G5CollectionService.class));
-            Log.d(TAG, "startBtG5Service AFTER startService G5CollectionService mLocationPermissionApproved " + mLocationPermissionApproved);
+        if (is_using_g5) {
+            Context myContext = getApplicationContext();
+            if (checkLocationPermissions()) {
+                Log.d(TAG, "startBtG5Service start G5CollectionService");
+                if (restartWatchDog())
+                    stopBtG5Service();
+                G5CollectionService.keep_running = true;
+                myContext.startService(new Intent(myContext, G5CollectionService.class));
+                Log.d(TAG, "startBtG5Service AFTER startService G5CollectionService mLocationPermissionApproved " + mLocationPermissionApproved);
+            }
         }
     }
 
@@ -750,17 +765,27 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         return mLocationPermissionApproved;
     }
 
-    private void stopBtG5Service() {//KS
-        Log.d(TAG, "stopBtG5Service");
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());//KS
-        boolean connectG5 = sharedPrefs.getBoolean("connectG5", false); //KS
-
-        if (connectG5) {
-            Context myContext = getApplicationContext();
-            Log.d(TAG, "stopBtG5Service call stopService");
-            myContext.stopService(new Intent(myContext, G5CollectionService.class));
-            Log.d(TAG, "stopBtG5Service should have called onDestroy");
+    private boolean restartWatchDog() {//KS from app/MissedReadingService.java
+        final long stale_millis = Home.stale_data_millis();
+        if (is_using_g5) {//(prefs.getBoolean("aggressive_service_restart", false) || DexCollectionType.isFlakey()) {
+            if (!BgReading.last_within_millis(stale_millis)) {
+                if (JoH.ratelimit("aggressive-restart", aggressive_backoff_timer)) {
+                    Log.e(TAG, "Aggressively restarting wear G5 collector service due to lack of reception: backoff: "+aggressive_backoff_timer);
+                    if (aggressive_backoff_timer < 1200) aggressive_backoff_timer+=60;
+                    return true;//CollectionServiceStarter.restartCollectionService
+                } else {
+                    aggressive_backoff_timer = 120; // reset
+                }
+            }
         }
+        return false;
+    }
+
+    private void stopBtG5Service() {//KS
+        Context myContext = getApplicationContext();
+        Log.d(TAG, "stopBtG5Service call stopService");
+        myContext.stopService(new Intent(myContext, G5CollectionService.class));
+        Log.d(TAG, "stopBtG5Service should have called onDestroy");
     }
 
     public static void requestData(Context context) {
@@ -778,8 +803,39 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         context.startService(intent);
     }
 
+    private void updatePhoneSyncBgsCapability(CapabilityInfo capabilityInfo) {
+        Set<Node> connectedNodes = capabilityInfo.getNodes();
+        mPhoneNodeId = pickBestNodeId(connectedNodes);
+    }
+
+    private String pickBestNodeId(Set<Node> nodes) {
+        String bestNodeId = null;
+        // Find a nearby node or pick one arbitrarily
+        for (Node node : nodes) {
+            if (node.isNearby()) {
+                return node.getId();
+            }
+            bestNodeId = node.getId();
+        }
+        return bestNodeId;
+    }
+
     @Override
     public void onConnected(Bundle bundle) {
+        CapabilityApi.CapabilityListener capabilityListener =
+                new CapabilityApi.CapabilityListener() {
+                    @Override
+                    public void onCapabilityChanged(CapabilityInfo capabilityInfo) {
+                        updatePhoneSyncBgsCapability(capabilityInfo);
+                        Log.d(TAG, "onConnected onCapabilityChanged mPhoneNodeID:" + mPhoneNodeId);
+                    }
+                };
+
+        Wearable.CapabilityApi.addCapabilityListener(
+                googleApiClient,
+                capabilityListener,
+                CAPABILITY_PHONE_APP);
+
         requestData();
     }
 

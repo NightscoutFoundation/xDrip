@@ -33,6 +33,7 @@ import android.os.Looper;
 import android.os.ParcelUuid;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.support.v4.content.WakefulBroadcastReceiver;
 
 import com.eveningoutpost.dexdrip.G5Model.AuthChallengeRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.AuthChallengeTxMessage;
@@ -207,7 +208,6 @@ public class G5CollectionService extends Service {
                 return START_STICKY;
             } else {
                 Log.e(TAG,"jamorham service already active!");
-                keep_running = false;//KS test to stop wear BT upon re-connecting to phone
                 keepAlive();
                 return START_NOT_STICKY;
             }
@@ -217,13 +217,13 @@ public class G5CollectionService extends Service {
         }
     }
 
-    private void getTransmitterDetails() {
+    private synchronized void getTransmitterDetails() {
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         Log.d(TAG, "Transmitter: " + prefs.getString("dex_txid", "ABCDEF"));
         defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
         isBondedOrBonding = false;
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-        if (pairedDevices.size() > 0) {
+        if ((pairedDevices != null) && (pairedDevices.size() > 0)) {
             for (BluetoothDevice device : pairedDevices) {
                 if (device.getName() != null) {
 
@@ -249,14 +249,21 @@ public class G5CollectionService extends Service {
 
         Log.d(TAG, "onDestroy");
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        if (!sharedPrefs.getBoolean("use_connectG5", false)) {//KS
-            scan_interval_timer.cancel();
-            if (pendingIntent != null) {
-                Log.d(TAG, "onDestroy stop Alarm pendingIntent");
-                AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-                alarm.cancel(pendingIntent);
+        scan_interval_timer.cancel();
+        if (pendingIntent != null) {
+            Log.d(TAG, "onDestroy stop Alarm pendingIntent");
+            AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+            alarm.cancel(pendingIntent);
+        }
+        // close gatt
+        if (mGatt != null) {
+            try {
+                mGatt.close();
+            } catch (NullPointerException e) {
+                Log.d(TAG, "concurrency related null pointer exception in close");
             }
         }
+
 //        close();
 //        setRetryTimer();
 //        foregroundServiceStarter.stop();
@@ -294,7 +301,6 @@ public class G5CollectionService extends Service {
             Log.e(TAG, "Ignoring keepalive call due to ratelimit");
         }
     }
-
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -799,9 +805,13 @@ public class G5CollectionService extends Service {
                                                   stopScan();
                                               }
                                               Log.e(TAG, "STATE_DISCONNECTED: " + status);
-                                              if (mGatt != null)
-                                                  mGatt.close();
-                                              mGatt = null;
+                                              if (mGatt != null) {
+                                                  try {
+                                                      mGatt.close();
+                                                  } catch (NullPointerException e) { //
+                                                  }
+                                              }
+                                                  mGatt = null;
                                               if (status == 0 && !encountered133) {// || status == 59) {
                                                   android.util.Log.i(TAG, "clean disconnect");
                                                   max133RetryCounter = 0;

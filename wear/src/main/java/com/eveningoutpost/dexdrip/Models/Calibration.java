@@ -212,68 +212,8 @@ public class Calibration extends Model {
     @Column(name = "second_scale")
     public double second_scale;
 
-    public static void createCalibration(//KS
-                /*int _ID, long timestamp, double sensor_age_at_time_of_estimation, Sensor sensor, double bg, double raw_value, double adjusted_raw_value,
-                double sensor_confidence, double slope_confidence, long raw_timestamp, double slope, double intercept, double distance_from_estimate,
-                double estimate_raw_at_time_of_calibration, double estimate_bg_at_time_of_calibration, String uuid,String sensor_uuid, Boolean possible_bad,
-                boolean check_in, double first_decay, double second_decay, double first_slope, double second_slope, double first_intercept,
-                double second_intercept, double first_scale, double second_scale*/
-                double adjusted_raw_value,
-                double bg,
-                boolean check_in,
-                double distance_from_estimate,
-                double estimate_bg_at_time_of_calibration,
-                double estimate_raw_at_time_of_calibration,
-                double first_decay,
-                double first_intercept,
-                double first_scale,
-                double first_slope,
-                double intercept,
-                Boolean possible_bad,
-                long raw_timestamp,
-                double raw_value,
-                double second_decay,
-                double second_intercept,
-                double second_scale,
-                double second_slope,
-                Sensor sensor,
-                double sensor_age_at_time_of_estimation,
-                double sensor_confidence,
-                String sensor_uuid,
-                double slope,
-                double slope_confidence,
-                long timestamp,
-                String uuid
-    )
-    {
-        Calibration newCalibration = new Calibration();
-        newCalibration.timestamp  = timestamp ;
-        newCalibration.sensor_age_at_time_of_estimation  = sensor_age_at_time_of_estimation ;
-        newCalibration.sensor  = sensor ;
-        newCalibration.bg  = bg ;
-        newCalibration.raw_value  = raw_value ;
-        newCalibration.adjusted_raw_value  = adjusted_raw_value ;
-        newCalibration.sensor_confidence  = sensor_confidence ;
-        newCalibration.slope_confidence  = slope_confidence ;
-        newCalibration.raw_timestamp  = raw_timestamp ;
-        newCalibration.slope  = slope ;
-        newCalibration.intercept  = intercept ;
-        newCalibration.distance_from_estimate  = distance_from_estimate ;
-        newCalibration.estimate_raw_at_time_of_calibration  = estimate_raw_at_time_of_calibration ;
-        newCalibration.estimate_bg_at_time_of_calibration  = estimate_bg_at_time_of_calibration ;
-        newCalibration.uuid  = uuid ;
-        newCalibration.sensor_uuid  = sensor_uuid ;
-        newCalibration.possible_bad  = possible_bad ;
-        newCalibration.check_in  = check_in ;
-        newCalibration.first_decay  = first_decay ;
-        newCalibration.second_decay  = second_decay ;
-        newCalibration.first_slope  = first_slope ;
-        newCalibration.second_slope  = second_slope ;
-        newCalibration.first_intercept  = first_intercept ;
-        newCalibration.second_intercept  = second_intercept ;
-        newCalibration.first_scale  = first_scale ;
-        newCalibration.second_scale  = second_scale ;
-        newCalibration.save();
+    public Calibration () {
+        super ();
     }
 
     public static void initialCalibration(double bg1, double bg2, Context context) {
@@ -453,6 +393,13 @@ public class Calibration extends Model {
             Log.d("CAL CHECK IN ", "Looks like a new calibration!");
             return true;
         }
+    }
+
+    public static Calibration findByUuid(String uuid) {
+        return new Select()
+                .from(Calibration.class)
+                .where("uuid = ?", uuid)
+                .executeSingle();
     }
 
     public static Calibration getForTimestamp(double timestamp) {
@@ -915,7 +862,7 @@ public class Calibration extends Model {
                 .where("Sensor = ? ", sensor.getId())
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
-                .where("( slope !=0 and intercept !=0 )")
+                .where("slope != 0")
                 .orderBy("timestamp desc")
                 .executeSingle();
     }
@@ -973,6 +920,22 @@ public class Calibration extends Model {
         return new Select()
                 .from(Calibration.class)
                 .where("Sensor = ? ", sensor.getId())
+                .orderBy("timestamp desc")
+                .limit(number)
+                .execute();
+    }
+
+    public static List<Calibration> latestValid(int number) {
+        Sensor sensor = Sensor.currentSensor();
+        if (sensor == null) {
+            return null;
+        }
+        return new Select()
+                .from(Calibration.class)
+                .where("Sensor = ? ", sensor.getId())
+                .where("slope_confidence != 0")
+                .where("sensor_confidence != 0")
+                .where("slope != 0")
                 .orderBy("timestamp desc")
                 .limit(number)
                 .execute();

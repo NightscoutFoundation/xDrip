@@ -29,6 +29,7 @@ import android.widget.TextView;
 import com.google.android.gms.wearable.DataMap;
 import com.ustwo.clockwise.WatchFace;
 import com.ustwo.clockwise.WatchFaceTime;
+import com.ustwo.clockwise.WatchMode;
 import com.ustwo.clockwise.WatchShape;
 
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public int highColor = Color.YELLOW;
     public int lowColor = Color.RED;
     public int midColor = Color.WHITE;
+    public int lowColorWatchMode = Color.RED;
     public int pointSize = 2;
     public boolean singleLine = false;
     public boolean layoutSet = false;
@@ -72,6 +74,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     private String rawString = "000 | 000 | 000";
     private String batteryString = "--";
     private String sgvString = "--";
+    private Rect mCardRect = new Rect(0,0,0,0);
 
     @Override
     public void onCreate() {
@@ -171,27 +174,39 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         if(layoutSet) {
             this.mRelativeLayout.draw(canvas);
             Log.d("onDraw", "draw");
+            int cardWidth = mCardRect.width();
+            int cardHeight = mCardRect.height();
+            if (cardHeight > 0 && cardWidth > 0 && getCurrentWatchMode() != WatchMode.INTERACTIVE) {
+                Paint paint = new Paint();
+                paint.setColor(Color.BLACK);
+                paint.setStrokeWidth(0);
+                canvas.drawRect(mCardRect, paint);
+            }
         }
     }
 
     @Override
     protected void onTimeChanged(WatchFaceTime oldTime, WatchFaceTime newTime) {
-        if (layoutSet && (newTime.hasHourChanged(oldTime) || newTime.hasMinuteChanged(oldTime))) {
-            wakeLock.acquire(50);
-            final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BaseWatchFace.this);
-            mTime.setText(timeFormat.format(System.currentTimeMillis()));
-            showAgoRawBatt();
+        if (newTime.hasHourChanged(oldTime) || newTime.hasMinuteChanged(oldTime)) {
+            if (layoutSet) {
+                wakeLock.acquire(50);
+                final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BaseWatchFace.this);
+                mTime.setText(timeFormat.format(System.currentTimeMillis()));
+                showAgoRawBatt();
 
-            if(ageLevel()<=0) {
-                mSgv.setPaintFlags(mSgv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                if (ageLevel() <= 0) {
+                    mSgv.setPaintFlags(mSgv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                } else {
+                    mSgv.setPaintFlags(mSgv.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                }
+
+                missedReadingAlert();
+                mRelativeLayout.measure(specW, specH);
+                mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
+                        mRelativeLayout.getMeasuredHeight());
             } else {
-                mSgv.setPaintFlags(mSgv.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                missedReadingAlert();//KS TEST otherwise, it can be 10+ minutes before missedReadingAlert is called; hwr, aggressive restart does not always resolve ble connection
             }
-
-            missedReadingAlert();
-            mRelativeLayout.measure(specW, specH);
-            mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
-                    mRelativeLayout.getMeasuredHeight());
         }
     }
 
@@ -259,6 +274,16 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     }
 
     public void setColor() {
+        if (getCurrentWatchMode() == WatchMode.INTERACTIVE) {
+            lowColorWatchMode = Color.RED;
+        }
+        else {
+            //RED is not supported in Ambient mode on WatchMode=LOW_BIT sa Sony SmartWatch 3
+            //Therefore, use a cold color to indicate a low value
+            int prefColor = Integer.parseInt(sharedPrefs.getString("ambient_lowcolor", "3"));
+            int[] rainbow = {Color.CYAN, Color.GREEN, Color.RED, Color.WHITE};
+            lowColorWatchMode = rainbow[prefColor-1];
+        }
         if (sharedPrefs.getBoolean("dark", false)) {
             setColorDark();
         } else {
@@ -280,13 +305,63 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         }
         invalidate();
     }
-protected abstract void setColorDark();
+
+    private void resetRelativeLayout() {
+        mRelativeLayout.measure(specW, specH);
+        mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
+                mRelativeLayout.getMeasuredHeight());
+        Log.d("resetRelativeLayout", "specW=" + specW + " specH=" + specH + " mRelativeLayout.getMeasuredWidth()=" + mRelativeLayout.getMeasuredWidth() + " mRelativeLayout.getMeasuredHeight()=" + mRelativeLayout.getMeasuredHeight());
+    }
+
+    private void displayCard() {
+        int cardWidth = mCardRect.width();
+        int cardHeight = mCardRect.height();
+        Log.d("displayCard", "WatchFace.onCardPeek: getWidth()=" + getWidth() + " getHeight()=" + getHeight() + " cardWidth=" + cardWidth + " cardHeight=" + cardHeight);
+
+        if (cardHeight > 0 && cardWidth > 0) {
+            if (getCurrentWatchMode() != WatchMode.INTERACTIVE) {
+                // get height of visible area (not including card)
+                int visibleWidth = getWidth() - cardWidth;
+                int visibleHeight = getHeight() - cardHeight;
+                Log.d("onCardPeek", "WatchFace.onCardPeek: visibleWidth=" + visibleWidth + " visibleHeight=" + visibleHeight);
+                mRelativeLayout.layout(0, 0, visibleWidth, visibleHeight);
+            }
+            else
+                resetRelativeLayout();
+        }
+        else
+            resetRelativeLayout();
+        invalidate();
+    }
+
+    @Override
+    protected void onCardPeek(Rect peekCardRect) {
+        mCardRect = peekCardRect;
+        displayCard();
+        int cardWidth = peekCardRect.width();
+        int cardHeight = peekCardRect.height();
+        Log.d("onCardPeek", "WatchFace.onCardPeek: getWidth()=" + getWidth() + " getHeight()=" + getHeight() + " cardWidth=" + cardWidth + " cardHeight=" + cardHeight);
+    }
+
+    @Override
+    protected void onWatchModeChanged(WatchMode watchMode) {
+        Log.d("onWatchModeChanged", "WatchFace.onWatchModeChanged: watchMode=" + watchMode.name());
+        invalidate();
+        setColor();
+    }
+    protected abstract void setColorDark();
     protected abstract void setColorBright();
 
 
     public void missedReadingAlert() {
         int minutes_since   = (int) Math.floor(timeSince()/(1000*60));
-        if(minutes_since >= 16 && ((minutes_since - 16) % 5) == 0) {
+        int maxDelay = 16;
+        if (sharedPrefs.getBoolean("enable_wearG5", false)) {
+            maxDelay = 4;
+            Log.d("BIGChart", "missedReadingAlert Enter minutes_since " + minutes_since + " call requestData if >= 4 minutes mod 5");//KS
+        }
+
+        if (minutes_since >= maxDelay && ((minutes_since - maxDelay) % 5) == 0) {//KS TODO reduce time for debugging; add notifications
             /*NotificationCompat.Builder notification = new NotificationCompat.Builder(getApplicationContext())
                         .setContentTitle("Missed BG Readings")
                         .setVibrate(vibratePattern);
@@ -296,37 +371,44 @@ protected abstract void setColorDark();
         }
     }
 
+    public void addDataMap(DataMap dataMap) {//KS
+        double sgv = dataMap.getDouble("sgvDouble");
+        double high = dataMap.getDouble("high");
+        double low = dataMap.getDouble("low");
+        double timestamp = dataMap.getDouble("timestamp");
+
+        Log.d("addToWatchSet", "entry=" + dataMap);
+
+        final int size = bgDataList.size();
+        BgWatchData bgdata = new BgWatchData(sgv, high, low, timestamp);
+        if (size > 0) {
+            if (bgDataList.contains(bgdata)) {
+                int i = bgDataList.indexOf(bgdata);
+                BgWatchData bgd = bgDataList.get(bgDataList.indexOf(bgdata));
+                Log.d("addToWatchSet", "replace indexOf=" + i + " bgDataList.sgv=" + bgd.sgv + " bgDataList.timestamp" + bgd.timestamp);
+                bgDataList.set(i, bgdata);
+            } else {
+                Log.d("addToWatchSet", "add " + " entry.sgv=" + bgdata.sgv + " entry.timestamp" + bgdata.timestamp);
+                bgDataList.add(bgdata);
+            }
+        }
+        else {
+            bgDataList.add(bgdata);
+        }
+    }
+
     public void addToWatchSet(DataMap dataMap) {
+
+        Log.d("addToWatchSet", "bgDataList.size()=" + bgDataList.size());
 
         ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
         if (entries != null) {
+            Log.d("addToWatchSet", "entries.size()=" + entries.size());
             for (DataMap entry : entries) {
-                double sgv = entry.getDouble("sgvDouble");
-                double high = entry.getDouble("high");
-                double low = entry.getDouble("low");
-                double timestamp = entry.getDouble("timestamp");
-
-                final int size = bgDataList.size();
-                if (size > 0) {
-                    if (bgDataList.get(size - 1).timestamp == timestamp)
-                        continue; // Ignore duplicates.
-                }
-
-                bgDataList.add(new BgWatchData(sgv, high, low, timestamp));
+                addDataMap(entry);
             }
         } else {
-            double sgv = dataMap.getDouble("sgvDouble");
-            double high = dataMap.getDouble("high");
-            double low = dataMap.getDouble("low");
-            double timestamp = dataMap.getDouble("timestamp");
-
-            final int size = bgDataList.size();
-            if (size > 0) {
-                if (bgDataList.get(size - 1).timestamp == timestamp)
-                    return; // Ignore duplicates.
-            }
-
-            bgDataList.add(new BgWatchData(sgv, high, low, timestamp));
+            addDataMap(dataMap);
         }
 
         for (int i = 0; i < bgDataList.size(); i++) {

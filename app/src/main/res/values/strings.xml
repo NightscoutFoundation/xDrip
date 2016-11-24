@@ -227,10 +227,12 @@
     <string name="wear_integration">Wear Integration</string>
     <string name="send_data_to_android_wear_watch">Send data to Android Wear Watchface.</string>
     <string name="android_wear_integration">Android Wear Integration</string>
-    <string name="pref_wear_connectG5">Connect Wear to G5</string>
-    <string name="pref_summary_wear_connectG5">Connect Wear directly to G5</string>
-    <string name="pref_use_wear_connectG5">Use Wear G5 Collection Service</string>
-    <string name="pref_summary_use_wear_connectG5">Force phone to use Wear G5 Collection Service</string>
+    <string name="pref_enable_wearG5">Enable Wear G5 Collection Service</string>
+    <string name="pref_summary_enable_wearG5">Connect Wear to G5 when phone is out-of-range</string>
+    <string name="pref_force_wearG5">Force Wear G5 Collection Service</string>
+    <string name="pref_summary_force_wearG5">Force phone to use Wear G5 Collection Service</string>
+    <string name="pref_node_wearG5">Device running G5 Collection Service</string>
+    <string name="pref_summary_node_wearG5">Force phone to use this Wear G5 Collection Service</string>
     <string name="pebble_integration">Pebble Integration</string>
     <string name="send_data_to_pebble_watchface">Send data to Pebble Watchface.</string>
     <string name="pebble_watch_integration">Pebble Watch Integration</string>

@@ -177,8 +177,10 @@ public class CollectionServiceStarter {
             stopBtShareService();
 
             if (prefs.getBoolean("wear_sync", false)) {//KS
+                boolean enable_wearG5 = prefs.getBoolean("enable_wearG5", false);
+                boolean force_wearG5 = prefs.getBoolean("force_wearG5", false);
                 this.mContext.startService(new Intent(context, WatchUpdaterService.class));
-                if (!prefs.getBoolean("use_wear_connectG5", false)) { //don't start if Wear G5 Collector Service is active
+                if (!enable_wearG5 || (enable_wearG5 && !force_wearG5)) { //don't start if Wear G5 Collector Service is active
                     startBtG5Service();
                 }
             }

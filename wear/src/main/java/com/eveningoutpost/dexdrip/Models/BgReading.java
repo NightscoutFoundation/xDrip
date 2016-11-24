@@ -118,7 +118,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     @Column(name = "rc")
     public double rc;
     @Expose
-    @Column(name = "uuid", unique = true, onUniqueConflicts = Column.ConflictAction.IGNORE)
+    @Column(name = "uuid", unique = true, onUniqueConflicts = Column.ConflictAction.REPLACE)//KS replace IGNORE with REPLACE
     public String uuid;
 
     @Expose
@@ -144,6 +144,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     @Expose
     @Column(name = "noise")
     public String noise;
+
+    public BgReading () {
+        super ();
+    }
 
     public double calculated_value_mmol() {
         return mmolConvert(calculated_value);
@@ -291,6 +295,24 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    public static BgReading getForTimestampExists(double timestamp) {
+        Sensor sensor = Sensor.currentSensor();
+        if (sensor != null) {
+            BgReading bgReading = new Select()
+                    .from(BgReading.class)
+                    .where("Sensor = ? ", sensor.getId())
+                    .where("timestamp <= ?", (timestamp + (60 * 1000))) // 1 minute padding (should never be that far off, but why not)
+                    .orderBy("timestamp desc")
+                    .executeSingle();
+            if (bgReading != null && Math.abs(bgReading.timestamp - timestamp) < (3 * 60 * 1000)) { //cool, so was it actually within 4 minutes of that bg reading?
+                Log.i(TAG, "getForTimestamp: Found a BG timestamp match");
+                return bgReading;
+            }
+        }
+        Log.d(TAG, "getForTimestamp: No luck finding a BG timestamp match");
+        return null;
+    }
+
     public static BgReading getForTimestamp(double timestamp) {
         Sensor sensor = Sensor.currentSensor();
         if (sensor != null) {
@@ -377,6 +399,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
             bgReading.save();
             bgReading.perform_calculations();
+            BgSendQueue.sendToPhone(context);//KS send back to phone
         } else {
             Log.d(TAG, "Calibrations, so doing everything: " + calibration.uuid);
             bgReading.sensor = sensor;
@@ -401,6 +424,9 @@ public class BgReading extends Model implements ShareUploadableBg {
             } else {
                 BgReading lastBgReading = BgReading.last();
                 if (lastBgReading != null && lastBgReading.calibration != null) {
+                    Log.d(TAG, "Create calibration.uuid=" + calibration.uuid + " bgReading.uuid: " + bgReading.uuid + " lastBgReading.calibration_uuid: " + lastBgReading.calibration_uuid + " lastBgReading.calibration.uuid: " + lastBgReading.calibration.uuid);
+                    Log.d(TAG, "Create lastBgReading.calibration_flag=" + lastBgReading.calibration_flag + " bgReading.timestamp: " + bgReading.timestamp + " lastBgReading.timestamp: " + lastBgReading.timestamp + " lastBgReading.calibration.timestamp: " + lastBgReading.calibration.timestamp);
+                    Log.d(TAG, "Create lastBgReading.calibration_flag=" + lastBgReading.calibration_flag + " bgReading.timestamp: " + JoH.dateTimeText(bgReading.timestamp) + " lastBgReading.timestamp: " + JoH.dateTimeText(lastBgReading.timestamp) + " lastBgReading.calibration.timestamp: " + JoH.dateTimeText(lastBgReading.calibration.timestamp));
                     if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp) && ((lastBgReading.calibration.timestamp + (60000 * 20)) > bgReading.timestamp)) {
                         lastBgReading.calibration.rawValueOverride(BgReading.weightedAverageRaw(lastBgReading.timestamp, bgReading.timestamp, lastBgReading.calibration.timestamp, lastBgReading.age_adjusted_raw_value, bgReading.age_adjusted_raw_value), context);
                     }
