@@ -175,6 +175,7 @@ public class Home extends ActivityWithMenu {
     private static final int SHOWCASE_NOTE_LONG = 6;
     private static final int SHOWCASE_VARIANT = 7;
     public static final int SHOWCASE_STATISTICS = 8;
+    private static final int SHOWCASE_G5FIRMWARE = 9;
     private static double last_speech_time = 0;
     private PreviewLineChartView previewChart;
     private Button stepsButton;
@@ -1724,7 +1725,7 @@ public class Home extends ActivityWithMenu {
             btnVehicleMode.setVisibility(View.INVISIBLE);
         }
 
-
+        if (isG5Share) showcasemenu(SHOWCASE_G5FIRMWARE); // nov 2016 firmware warning
         //showcasemenu(1); // 3 dot menu
 
     }
@@ -2267,6 +2268,14 @@ public class Home extends ActivityWithMenu {
             int size2 = 14;
 
                 switch (option) {
+
+                    case SHOWCASE_G5FIRMWARE:
+                        target= new ViewTarget(R.id.btnNote, this); // dummy
+                        size1=0;
+                        size2=0;
+                        title="G5 Firmware Warning";
+                        message="Transmitters containing updated firmware which started shipping around 20th Nov 2016 appear to be currently incompatible with xDrip+\n\nWork will continue to try to resolve this issue but at the time of writing there is not yet a solution.  For the latest updates you can select the Alpha or Nightly update channel.";
+                        break;
 
                     case SHOWCASE_VARIANT:
                         target= new ViewTarget(R.id.btnNote, this); // dummy
