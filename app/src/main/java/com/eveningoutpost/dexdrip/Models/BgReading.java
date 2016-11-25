@@ -837,7 +837,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     private static void FixCalibration(BgReading bgr) {
         Calibration calibration = Calibration.byuuid(bgr.calibration_uuid);
         if(calibration == null) {
-            Log.i(TAG, "recieved Unknown calibration, asking for sensor upate..." );
+            Log.i(TAG, "recieved Unknown calibration," + bgr.calibration_uuid + " asking for sensor upate..." );
             GcmActivity.requestSensorCalibrationsUpdate();
         } else {
             bgr.calibration = calibration;
@@ -940,6 +940,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             jsonObject.put("raw_calculated", raw_calculated);
             jsonObject.put("raw_data", raw_data);
             jsonObject.put("calculated_value_slope", calculated_value_slope);
+            jsonObject.put("calibration_uuid", calibration_uuid);
             //   jsonObject.put("sensor", sensor);
             return jsonObject.toString();
         } catch (JSONException e) {
