@@ -649,6 +649,7 @@ public class Preferences extends PreferenceActivity {
             bindTTSListener();
             final Preference collectionMethod = findPreference("dex_collection_method");
             final Preference runInForeground = findPreference("run_service_in_foreground");
+            final Preference g5nonraw = findPreference("g5_non_raw_method");
             final Preference scanConstantly = findPreference("run_ble_scan_constantly");
             final Preference runOnMain = findPreference("run_G5_ble_tasks_on_uithread");
             final Preference reAuth = findPreference("always_get_new_keys");
@@ -962,6 +963,7 @@ public class Preferences extends PreferenceActivity {
 
                 if (collectionType == DexCollectionType.DexcomG5) {
                     collectionCategory.addPreference(transmitterId);
+                    collectionCategory.addPreference(g5nonraw);
                     collectionCategory.addPreference(scanConstantly);
                     collectionCategory.addPreference(reAuth);
                     collectionCategory.addPreference(reBond);
@@ -969,6 +971,7 @@ public class Preferences extends PreferenceActivity {
                 } else {
                     // collectionCategory.removePreference(transmitterId);
                     collectionCategory.removePreference(scanConstantly);
+                    collectionCategory.removePreference(g5nonraw);
                     collectionCategory.removePreference(reAuth);
                     collectionCategory.removePreference(reBond);
                     collectionCategory.removePreference(runOnMain);
