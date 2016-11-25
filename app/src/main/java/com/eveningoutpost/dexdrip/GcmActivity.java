@@ -155,7 +155,7 @@ public class GcmActivity extends Activity {
         for (SensorCalibrations SensorCalibration : sensorCalibrations ) {
             Sensor.upsertFromMaster(SensorCalibration.sensor);
             for (Calibration calibration : SensorCalibration.calibrations) {
-                Log.d(TAG, "upsertSensorCalibratonsFromJson updating calibration");
+                Log.d(TAG, "upsertSensorCalibratonsFromJson updating calibration " + calibration.uuid);
                 Calibration.upsertFromMaster(calibration);
             }
         }

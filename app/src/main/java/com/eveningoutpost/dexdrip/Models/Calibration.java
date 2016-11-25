@@ -928,11 +928,11 @@ public class Calibration extends Model {
             }
             Calibration existingCalibration = byuuid(jsonCalibration.uuid);
             if (existingCalibration == null) {
-                Log.d(TAG, "saving new calibration record. sensor uuid =" + jsonCalibration.sensor_uuid);
+                Log.d(TAG, "saving new calibration record. sensor uuid =" + jsonCalibration.sensor_uuid + " calibration uuid = " + jsonCalibration.uuid);
                 jsonCalibration.sensor = sensor;
                 jsonCalibration.save();
             } else {
-                Log.d(TAG, "updating existing calibration record: ");
+                Log.d(TAG, "updating existing calibration record: " + jsonCalibration.uuid);
                 existingCalibration.sensor = sensor;
                 existingCalibration.timestamp = jsonCalibration.timestamp;
                 existingCalibration.sensor_age_at_time_of_estimation = jsonCalibration.sensor_age_at_time_of_estimation;
