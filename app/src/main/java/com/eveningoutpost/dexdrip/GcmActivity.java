@@ -125,6 +125,7 @@ public class GcmActivity extends Activity {
             Log.e(TAG, "After fromjson NewCalibration are " + newCalibrationArray.toString());
         } else {
             Log.e(TAG,"Error creating newCalibrationArray");
+            return null;
         }
         return newCalibrationArray[0];
     }
