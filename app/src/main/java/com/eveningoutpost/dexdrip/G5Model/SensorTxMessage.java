@@ -1,5 +1,9 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Services.G5CollectionService;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -9,11 +13,14 @@ import java.nio.ByteOrder;
 public class SensorTxMessage extends TransmitterMessage {
     byte opcode = 0x2e;
     byte[] crc = CRC.calculate(opcode);
+    private final static String TAG = G5CollectionService.TAG; // meh
+
 
     public SensorTxMessage() {
         data = ByteBuffer.allocate(3);
         data.put(opcode);
         data.put(crc);
         byteSequence = data.array();
+        UserError.Log.d(TAG, "SensorTx dbg: " + JoH.bytesToHex(byteSequence));
     }
 }

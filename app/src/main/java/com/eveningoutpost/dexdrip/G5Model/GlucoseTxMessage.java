@@ -1,5 +1,9 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Services.G5CollectionService;
+
 import java.nio.ByteBuffer;
 
 /**
@@ -8,6 +12,7 @@ import java.nio.ByteBuffer;
 
 public class GlucoseTxMessage extends TransmitterMessage {
 
+    private final static String TAG = G5CollectionService.TAG; // meh
     byte opcode = 0x30;
     byte[] crc = CRC.calculate(opcode);
 
@@ -16,6 +21,7 @@ public class GlucoseTxMessage extends TransmitterMessage {
         data.put(opcode);
         data.put(crc);
         byteSequence = data.array();
+        UserError.Log.d(TAG, "GlucoseTx dbg: " + JoH.bytesToHex(byteSequence));
     }
 }
 

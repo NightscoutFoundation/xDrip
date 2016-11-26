@@ -94,11 +94,17 @@
             android:summary="@string/shows_a_persistent_notification"
             android:title="@string/run_collector_in_foreground" />
 
+
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="g5_non_raw_method"
             android:summary="Newer G5 firmware doesn't work with the method previously used. Experimental mode to try to resolve this."
             android:title="TEST G5 Post Nov 2016 mode" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="g5_extended_sut"
+            android:summary="Newer Extended Token size. Experimental mode to try to resolve this."
+            android:title="TEST G5 Post Nov mode 2" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="run_ble_scan_constantly"

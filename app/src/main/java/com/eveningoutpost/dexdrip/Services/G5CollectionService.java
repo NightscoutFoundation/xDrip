@@ -86,7 +86,7 @@ import javax.crypto.spec.SecretKeySpec;
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class G5CollectionService extends Service {
 
-    private final static String TAG = G5CollectionService.class.getSimpleName();
+    public final static String TAG = G5CollectionService.class.getSimpleName();
 
     private static final Object short_lock = new Object();
     private static boolean cycling_bt = false;
@@ -138,7 +138,6 @@ public class G5CollectionService extends Service {
 
     StringBuilder log = new StringBuilder();
 
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -188,7 +187,10 @@ public class G5CollectionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+       // byte[] testbytes =  { 0x31,0x00,0x68,0x0a,0x00,0x00,(byte)0x8a,0x71,0x57,0x00,(byte)0xcc,0x00,0x06,(byte)0xff,(byte)0xc4,0x2a } ;
+       // GlucoseRxMessage rx = new GlucoseRxMessage(testbytes);
+       // new AuthRequestTxMessage(8);
+       // new AuthRequestTxMessage(16);
         final PowerManager.WakeLock wl = JoH.getWakeLock("g5-start-service", 120000);
         try {
             if ((!service_running) && (keep_running)) {
@@ -608,6 +610,7 @@ public class G5CollectionService extends Service {
     }
 
     void forgetDevice() {
+        Log.d(TAG,"forgetDevice() start");
         Transmitter defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
         mBluetoothAdapter = mBluetoothManager.getAdapter();
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
@@ -700,13 +703,13 @@ public class G5CollectionService extends Service {
     }
 
     public synchronized void fullAuthenticate() {
-
+        Log.e(TAG,"fullAuthenticate() start");
         if (alwaysUnbond()) {
             forgetDevice();
         }
         try {
             Log.i(TAG, "Start Auth Process(fullAuthenticate)");
-            authRequest = new AuthRequestTxMessage();
+            authRequest = new AuthRequestTxMessage(getTokenSize());
             if (authCharacteristic != null) {
                 authCharacteristic.setValue(authRequest.byteSequence);
                 Log.i(TAG, authRequest.byteSequence.toString());
@@ -718,6 +721,7 @@ public class G5CollectionService extends Service {
     }
 
     public synchronized void authenticate() {
+        Log.e(TAG,"authenticate() start");
         try {
             mGatt.setCharacteristicNotification(authCharacteristic, true);
             if (!mGatt.readCharacteristic(authCharacteristic)) {
@@ -754,6 +758,7 @@ public class G5CollectionService extends Service {
     private BluetoothAdapter.LeScanCallback mLeScanCallback = null;
 
     private synchronized void connectToDevice(BluetoothDevice device) {
+        Log.d(TAG,"connectToDevice() start");
         if (mGatt != null) {
             Log.i(TAG, "BGatt isnt null, Closing.");
             try {
@@ -788,6 +793,7 @@ public class G5CollectionService extends Service {
 
     // Sends the disconnect tx message to our bt device.
     private synchronized void doDisconnectMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        Log.d(TAG,"doDisconnectMessage() start");
         mGatt.setCharacteristicNotification(controlCharacteristic, false);
         DisconnectTxMessage disconnectTx = new DisconnectTxMessage();
         characteristic.setValue(disconnectTx.byteSequence);
@@ -882,7 +888,7 @@ public class G5CollectionService extends Service {
 
                                               break;
                                           default:
-                                              Log.e("gattCallback", "STATE_OTHER");
+                                              Log.e(TAG, "STATE_OTHER");
                                       }
                                   }
                               }
@@ -962,7 +968,7 @@ public class G5CollectionService extends Service {
 
                         break;
                     default:
-                        Log.e("gattCallback", "STATE_OTHER");
+                        Log.e(TAG, "STATE_OTHER");
                 }
             }
 
@@ -1095,8 +1101,8 @@ public class G5CollectionService extends Service {
 
                         if (status == BluetoothGatt.GATT_SUCCESS) {
                             if (String.valueOf(characteristic.getUuid()).equalsIgnoreCase(String.valueOf(authCharacteristic.getUuid()))) {
-                                Log.i(TAG, "Char Value: " + Arrays.toString(characteristic.getValue()));
-                                Log.i(TAG, "auth? " + String.valueOf(characteristic.getUuid()));
+                                Log.i(TAG, "mt ow Char Value: " + Arrays.toString(characteristic.getValue()));
+                                Log.i(TAG, "mt ow auth? " + String.valueOf(characteristic.getUuid()));
                                 if (characteristic.getValue() != null && characteristic.getValue()[0] != 0x6) {
                                     mGatt.readCharacteristic(characteristic);
                                 }
@@ -1119,8 +1125,8 @@ public class G5CollectionService extends Service {
 
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     if (String.valueOf(characteristic.getUuid()).equalsIgnoreCase(String.valueOf(authCharacteristic.getUuid()))) {
-                        Log.i(TAG, "Char Value: " + Arrays.toString(characteristic.getValue()));
-                        Log.i(TAG, "auth? " + String.valueOf(characteristic.getUuid()));
+                        Log.i(TAG, "ow Char Value: " + Arrays.toString(characteristic.getValue()));
+                        Log.i(TAG, "ow auth? " + String.valueOf(characteristic.getUuid()));
                         if (characteristic.getValue() != null && characteristic.getValue()[0] != 0x6) {
                             mGatt.readCharacteristic(characteristic);
                         }
@@ -1172,9 +1178,9 @@ public class G5CollectionService extends Service {
                                         device.createBond();
                                     } else {
                                         Log.i(TAG, "Transmitter NOT already authenticated");
-                                        authRequest = new AuthRequestTxMessage();
+                                        authRequest = new AuthRequestTxMessage(getTokenSize());
                                         characteristic.setValue(authRequest.byteSequence);
-                                        Log.i(TAG, authRequest.byteSequence.toString());
+                                        Log.i(TAG, "AuthRequestTx: "+JoH.bytesToHex(authRequest.byteSequence));
                                         mGatt.writeCharacteristic(characteristic);
                                     }
                                     break;
@@ -1182,7 +1188,7 @@ public class G5CollectionService extends Service {
                                 case 3:
                                     AuthChallengeRxMessage authChallenge = new AuthChallengeRxMessage(characteristic.getValue());
                                     if (authRequest == null) {
-                                        authRequest = new AuthRequestTxMessage();
+                                        authRequest = new AuthRequestTxMessage(getTokenSize());
                                     }
                                     Log.i(TAG, "tokenHash " + Arrays.toString(authChallenge.tokenHash));
                                     Log.i(TAG, "singleUSe " + Arrays.toString(calculateHash(authRequest.singleUseToken)));
@@ -1200,9 +1206,9 @@ public class G5CollectionService extends Service {
 
                                 default:
                                     Log.i(TAG, code + " - Transmitter NOT already authenticated");
-                                    authRequest = new AuthRequestTxMessage();
+                                    authRequest = new AuthRequestTxMessage(getTokenSize());
                                     characteristic.setValue(authRequest.byteSequence);
-                                    Log.i(TAG, authRequest.byteSequence.toString());
+                                    Log.i(TAG, JoH.bytesToHex(authRequest.byteSequence));
                                     mGatt.writeCharacteristic(characteristic);
                                     break;
                             }
@@ -1242,7 +1248,7 @@ public class G5CollectionService extends Service {
                                 device.createBond();
                             } else {
                                 Log.i(TAG, "Transmitter NOT already authenticated");
-                                authRequest = new AuthRequestTxMessage();
+                                authRequest = new AuthRequestTxMessage(getTokenSize());
                                 characteristic.setValue(authRequest.byteSequence);
                                 Log.i(TAG, authRequest.byteSequence.toString());
                                 mGatt.writeCharacteristic(characteristic);
@@ -1252,7 +1258,7 @@ public class G5CollectionService extends Service {
                         case 3:
                             AuthChallengeRxMessage authChallenge = new AuthChallengeRxMessage(characteristic.getValue());
                             if (authRequest == null) {
-                                authRequest = new AuthRequestTxMessage();
+                                authRequest = new AuthRequestTxMessage(getTokenSize());
                             }
                             Log.i(TAG, "tokenHash " + Arrays.toString(authChallenge.tokenHash));
                             Log.i(TAG, "singleUSe " + Arrays.toString(calculateHash(authRequest.singleUseToken)));
@@ -1270,7 +1276,7 @@ public class G5CollectionService extends Service {
 
                         default:
                             Log.i(TAG, code + " - Transmitter NOT already authenticated");
-                            authRequest = new AuthRequestTxMessage();
+                            authRequest = new AuthRequestTxMessage(getTokenSize());
                             characteristic.setValue(authRequest.byteSequence);
                             Log.i(TAG, authRequest.byteSequence.toString());
                             mGatt.writeCharacteristic(characteristic);
@@ -1305,10 +1311,11 @@ public class G5CollectionService extends Service {
 
 
         private synchronized void processRxCharacteristic(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+
+            Log.i(TAG, "onCharacteristicChanged On Main Thread? " + isOnMainThread());
             Log.e(TAG, "CharBytes-nfy" + Arrays.toString(characteristic.getValue()));
             Log.i(TAG, "CharHex-nfy" + Extensions.bytesToHex(characteristic.getValue()));
 
-            Log.i(TAG, "onCharacteristicChanged On Main Thread? " + isOnMainThread());
 
             byte[] buffer = characteristic.getValue();
             byte firstByte = buffer[0];
@@ -1368,14 +1375,14 @@ public class G5CollectionService extends Service {
         //TODO : LOG if unfiltered or filtered values are zero
 
         Sensor.updateBatteryLevel(sensor, transmitterData.sensor_battery_level);
-        Log.i("timestamp create", Long.toString(transmitterData.timestamp));
+        Log.i(TAG,"timestamp create: "+ Long.toString(transmitterData.timestamp));
 
         BgReading.create(transmitterData.raw_data, filtered_data, this, transmitterData.timestamp);
 
-        Log.d("Dex raw_data ", Double.toString(transmitterData.raw_data));//KS
-        Log.d("Dex filtered_data ", Double.toString(transmitterData.filtered_data));//KS
-        Log.d("Dex sensor_battery_level ", Double.toString(transmitterData.sensor_battery_level));//KS
-        Log.d("Dex timestamp ", Double.toString(transmitterData.timestamp));//KS
+        Log.d(TAG,"Dex raw_data "+ Double.toString(transmitterData.raw_data));//KS
+        Log.d(TAG,"Dex filtered_data "+ Double.toString(transmitterData.filtered_data));//KS
+        Log.d(TAG,"Dex sensor_battery_level "+ Double.toString(transmitterData.sensor_battery_level));//KS
+        Log.d(TAG,"Dex timestamp "+ Double.toString(transmitterData.timestamp));//KS
 
     }
 
@@ -1477,6 +1484,14 @@ public class G5CollectionService extends Service {
         return Home.getPreferencesBooleanDefaultFalse("g5_non_raw_method");
     }
 
+    private int getTokenSize() {
+        if (Home.getPreferencesBooleanDefaultFalse("g5_extended_sut")) {
+            return 16;
+        } else {
+            return 8;
+        }
+    }
+    
 
 
 }

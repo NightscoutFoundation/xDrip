@@ -16,7 +16,7 @@ import java.nio.ByteOrder;
 
 public class GlucoseRxMessage extends TransmitterMessage {
 
-    private final static String TAG = G5CollectionService.class.getSimpleName(); // meh
+    private final static String TAG = G5CollectionService.TAG; // meh
 
     public static final byte opcode = 0x31;
     public TransmitterStatus status;
@@ -54,7 +54,7 @@ public class GlucoseRxMessage extends TransmitterMessage {
                 unfiltered = glucose * 1000;
                 filtered = glucose * 1000;
 
-                UserError.Log.e(TAG, "GlucoseRX: " + sequence + " ts:" + timestamp + " sg:" + glucose + " do:" + glucoseIsDisplayOnly + " ss:" + status + " sr:" + status_raw + " st:" + state + " tr:" + trend);
+                UserError.Log.e(TAG, "GlucoseRX: seq" + sequence + " ts:" + timestamp + " sg:" + glucose + " do:" + glucoseIsDisplayOnly + " ss:" + status + " sr:" + status_raw + " st:" + state + " tr:" + trend);
 
             }
         } else {
