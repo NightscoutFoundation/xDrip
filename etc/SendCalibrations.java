@@ -6,6 +6,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.util.Base64;
+import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.text.ParseException;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.nio.charset.Charset;
@@ -36,7 +40,8 @@ public class SendCalibrations {
 
     private final String USER_AGENT = "Mozilla/5.0";
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
-    final protected staticString key1 = "ebe5c0df162a50ba232d2d721ea8e3e1c5423bb0-12bd-48c3-8932-c93883dfcf1f";
+    final protected static String key1 = "ebe5c0df162a50ba232d2d721ea8e3e1c5423bb0-12bd-48c3-8932-c93883dfcf1f";
+    final protected static String baseUrl = "https://xdrip-plus-updates.appspot.com/xdrip-plus-send-topic/";
     static final byte[] errorbyte = {};
 
     
@@ -48,18 +53,54 @@ public class SendCalibrations {
         String key = "FDED3FA8DE0463285661EE1AB95A7E29";
         String toppic = createToppic(key);
         
-        
+        NewCalibration newCalibration = readData();
+               
         System.out.println("Testing 1 - Send Http GET request");
-        http.sendGet(key, "cal2", createCalibrationString());
+        String action = "cal2";
 
+        String url = baseUrl+ 
+                createToppic(key) +"/" + action + "?payload=" + encryptString(createCalibrationString(newCalibration), key);
+        http.sendGet(url);
+    }
+    
+    public static NewCalibration readData() {
+        NewCalibration newCalibration = new NewCalibration();
+        System.out.println("enter calibration data: time bg \nFor example 27/11/2016 00:30 120");
+        String input = System.console().readLine();
+        
+        String[] splited = input.split("\\s+");
+        if (splited.length != 3) {
+            System.err.println("Wrong input.");
+            System.exit(1);
+        }
+        java.text.DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        Date date =null;
+        try {
+            date = df.parse(splited[0] + " " + splited[1]);
+        } catch (ParseException e) {
+            System.err.println("Error parsing date/time");
+            System.exit(2);
+        }
+        newCalibration.timestamp = date.getTime();
+        newCalibration.bgValue = Integer.parseInt(splited[2]);
+        System.out.println("Time = " + df.format(new Date(newCalibration.timestamp)) +" bg = "+ newCalibration.bgValue );
+        System.out.println("is this correct (y/N)");
+        input = System.console().readLine();
+        if(!input.equals("y")) {
+            System.out.println("Wrong input "+ input);
+            System.exit(3);
+        }
+        newCalibration.uuid = UUID.randomUUID().toString();
+        
+        System.out.println("Time is " + newCalibration.timestamp);
+        return newCalibration;
+        
     }
     
 
-    public static String createCalibrationString() {
+    public static String createCalibrationString( NewCalibration newCalibration) {
         Gson gson = new Gson();
         
-        NewCalibration newCalibration = new NewCalibration();
-        newCalibration.uuid = "aaa";
         NewCalibration nca[] = new NewCalibration[1];
         nca[0] = newCalibration;
         
@@ -176,10 +217,7 @@ public class SendCalibrations {
     }
 
     // HTTP GET request
-    private void sendGet(String key, String action, String payload) throws Exception {
-
-        String url = "https://xdrip-plus-updates.appspot.com/xdrip-plus-send-topic/"+ 
-                createToppic(key) +"/" + action + "?payload=" + encryptString(payload, key);
+    private void sendGet(String url) throws Exception {
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
