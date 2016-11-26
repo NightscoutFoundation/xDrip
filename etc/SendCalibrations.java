@@ -1,0 +1,214 @@
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.util.Base64;
+
+import javax.net.ssl.HttpsURLConnection;
+import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
+
+
+import java.security.SecureRandom;
+import java.security.spec.AlgorithmParameterSpec;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
+import com.google.gson.Gson;
+
+class NewCalibration {
+    double bgValue; // Always in mgdl
+    
+    long timestamp;
+    
+    long offset;
+    
+    String uuid;
+}
+
+
+public class SendCalibrations {
+
+    private final String USER_AGENT = "Mozilla/5.0";
+    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    final protected staticString key1 = "ebe5c0df162a50ba232d2d721ea8e3e1c5423bb0-12bd-48c3-8932-c93883dfcf1f";
+    static final byte[] errorbyte = {};
+
+    
+    // Send a calibration to xDrip
+    public static void main(String[] args) throws Exception {
+
+        SendCalibrations http = new SendCalibrations();
+
+        String key = "FDED3FA8DE0463285661EE1AB95A7E29";
+        String toppic = createToppic(key);
+        
+        
+        System.out.println("Testing 1 - Send Http GET request");
+        http.sendGet(key, "cal2", createCalibrationString());
+
+    }
+    
+
+    public static String createCalibrationString() {
+        Gson gson = new Gson();
+        
+        NewCalibration newCalibration = new NewCalibration();
+        newCalibration.uuid = "aaa";
+        NewCalibration nca[] = new NewCalibration[1];
+        nca[0] = newCalibration;
+        
+        System.out.println("json string is" + gson.toJson(nca));
+        return gson.toJson(nca);
+    }
+    
+    
+    
+    public static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+    
+    public static String getSHA256(String mykey) {
+        try {
+            MessageDigest digest = java.security.MessageDigest
+                    .getInstance("SHA-256");
+            digest.update(mykey.getBytes(Charset.forName("UTF-8")));
+            return bytesToHex(digest.digest()).toLowerCase();
+        } catch (NoSuchAlgorithmException e) {
+            System.err.println( "SHA hash exception: " + e.toString());
+            return null;
+        }
+    }
+    
+    
+    public static String getMD5(String mykey) {
+        try {
+            MessageDigest digest = java.security.MessageDigest
+                    .getInstance("MD5");
+            digest.update(mykey.getBytes(Charset.forName("UTF-8")));
+            return bytesToHex(digest.digest()).toLowerCase();
+        } catch (NoSuchAlgorithmException e) {
+            System.err.println("MD5 hash exception: " + e.toString());
+            return null;
+        }
+    }
+
+    static private String getDriveKeyString(String customkey) {
+
+        String ourFolderResourceKeyHash = getMD5(customkey);
+        return ourFolderResourceKeyHash;
+    }
+    
+    public static byte[] encryptBytes(byte[] plainText, String key) {
+        
+        byte[] keyBytes = getKeyBytes(key1 + getDriveKeyString(key));
+        return encryptBytes(plainText, keyBytes);
+    }
+    
+    private static byte[] getKeyBytes(String mykey) {
+        try {
+            MessageDigest digest = java.security.MessageDigest
+                    .getInstance("MD5");
+            digest.update(mykey.getBytes(Charset.forName("UTF-8")));
+            return digest.digest();
+        } catch (NoSuchAlgorithmException e) {
+            System.err.println("Password creation exception: " + e.toString());
+            return errorbyte;
+        }
+    }
+    
+    public static byte[] encryptBytes(byte[] plainText, byte[] keyBytes) {
+        byte[] ivBytes = new byte[16];
+
+        if ((keyBytes == null) || (keyBytes.length != 16)) {
+            System.err.println("Invalid Keybytes length!");
+            return errorbyte;
+        }
+        SecureRandom sr = new SecureRandom();
+        sr.nextBytes(ivBytes);
+        byte[] cipherData = encrypt(ivBytes, keyBytes, plainText);
+        byte[] destination = new byte[cipherData.length + ivBytes.length];
+        System.arraycopy(ivBytes, 0, destination, 0, ivBytes.length);
+        System.arraycopy(cipherData, 0, destination, ivBytes.length, cipherData.length);
+        return destination;
+    }
+    
+    public static byte[] encrypt(byte[] ivBytes, byte[] keyBytes, byte[] textBytes) {
+        try {
+            AlgorithmParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+            SecretKeySpec newKey = new SecretKeySpec(keyBytes, "AES");
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, newKey, ivSpec);
+            return cipher.doFinal(textBytes);
+        } catch (Exception e) {
+            System.err.println("Error during encryption: " + e.toString());
+            return errorbyte;
+        }
+    }
+    
+    
+    public static String encryptString(String plainText, String key) {
+        byte[] inbytes = plainText.getBytes(Charset.forName("UTF-8"));
+        //return Base64.encodeToString(encryptBytes(inbytes, key), Base64.NO_WRAP);
+        String encoded = Base64.getEncoder().encodeToString(encryptBytes(inbytes, key));
+        //return Base64.getUrlEncoder().encodeToString(encryptBytes(inbytes, key));
+        
+        //encoded = "Kyf0leFpjlbDW0act/mZxI2KBI8Sn0GMSf/0L/LTlRf5pgWO5RvgI4Ag6xEqUmHZzrPrO5LvMdqlrDD+7NPjB8E8ZrwgAdKBDHOsHyfFVuQb+6k86yHuDgGeOxCE9w6dJYErr7K8q1obemQfne9q5T9E3CyWF+jI+d/O8vAM1IY=";
+        encoded = encoded.replaceAll("\\+", "%2b");
+        return encoded;
+        
+        
+    }
+    
+    private static String createToppic(String customkey) {
+        return getSHA256(customkey).substring(0, 32);
+    }
+
+    // HTTP GET request
+    private void sendGet(String key, String action, String payload) throws Exception {
+
+        String url = "https://xdrip-plus-updates.appspot.com/xdrip-plus-send-topic/"+ 
+                createToppic(key) +"/" + action + "?payload=" + encryptString(payload, key);
+
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+        // optional default is GET
+        con.setRequestMethod("GET");
+
+        //add request header
+        con.setRequestProperty("User-Agent", USER_AGENT);
+
+        int responseCode = con.getResponseCode();
+        System.out.println("\nSending 'GET' request to URL : " + url);
+        System.out.println("Response Code : " + responseCode);
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+        //print result
+        System.out.println(response.toString());
+
+    }
+
+
+
+}
