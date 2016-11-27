@@ -1,3 +1,4 @@
+/*
 package com.eveningoutpost.dexdrip;
 
 import android.util.Log;
@@ -7,9 +8,11 @@ import com.google.android.gms.drive.events.ChangeEvent;
 import com.google.android.gms.drive.events.CompletionEvent;
 import com.google.android.gms.drive.events.DriveEventService;
 
+*/
 /**
  * Created by jamorham on 10/01/16.
- */
+ *//*
+
 
 public class MyDriveEventService extends DriveEventService {
     static final String TAG = "jamorham drive EVENT";
@@ -40,3 +43,4 @@ public class MyDriveEventService extends DriveEventService {
         }
     }
 }
+*/

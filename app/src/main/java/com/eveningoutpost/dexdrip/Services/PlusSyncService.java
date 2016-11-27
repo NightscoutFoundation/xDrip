@@ -144,14 +144,14 @@ public class PlusSyncService extends Service {
                     if ((GoogleDriveInterface.isRunning) || (iunderstand == false)) {
                         Log.d(TAG, "Drive interface is running or blocked");
                     } else {
-                        Log.d(TAG, "Calling Google Drive Interface");
+                     /*   Log.d(TAG, "Calling Google Drive Interface");
                         Intent dialogIntent = new Intent(context, GoogleDriveInterface.class);
                         dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         dialogIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
                         dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                         dialogIntent.addFlags(Intent.FLAG_FROM_BACKGROUND);
                         dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NO_USER_ACTION);
-                        startActivity(dialogIntent);
+                        startActivity(dialogIntent);*/
                     }
                 } else if (GcmActivity.token == null) {
                     // also needs isrunning here

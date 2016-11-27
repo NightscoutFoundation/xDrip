@@ -174,13 +174,13 @@
         <service
             android:name=".RegistrationIntentService"
             android:exported="false" />
-        <service
+       <!-- <service
             android:name=".MyDriveEventService"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.drive.events.HANDLE_EVENT" />
             </intent-filter>
-        </service>
+        </service>-->
         <service
             android:name=".Services.SyncService"
             android:enabled="true"

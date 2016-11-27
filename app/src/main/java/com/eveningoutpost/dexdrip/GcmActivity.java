@@ -134,6 +134,7 @@ public class GcmActivity extends Activity {
 
     private static String sendMessage(final String identity, final String action, final String payload) {
         if (cease_all_activity) return null;
+        if (identity == null) return null;
         new Thread() {
             @Override
             public void run() {

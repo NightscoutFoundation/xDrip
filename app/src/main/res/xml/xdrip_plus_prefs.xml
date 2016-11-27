@@ -451,6 +451,7 @@
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="use_custom_sync_key"
+                android:enabled="false"
                 android:summary="@string/key_is_used_instead_of_google_account"
                 android:title="@string/sync_using_custom_security_key" />
             <EditTextPreference
