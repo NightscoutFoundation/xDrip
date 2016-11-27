@@ -191,15 +191,17 @@ public class G5CollectionService extends Service {
        // GlucoseRxMessage rx = new GlucoseRxMessage(testbytes);
        // new AuthRequestTxMessage(8);
        // new AuthRequestTxMessage(16);
+       // fullAuthenticate();
         final PowerManager.WakeLock wl = JoH.getWakeLock("g5-start-service", 120000);
         try {
             if ((!service_running) && (keep_running)) {
                 service_running = true;
 
                 if (useG5NewMethod()) {
-                    if (!Home.getPreferencesStringDefaultBlank("extra_tags_for_logging").contains("G5CollectionService")) {
+                    if (!Home.getPreferencesStringDefaultBlank("extra_tags_for_logging").contains("G5CollectionService:v")) {
                         Home.setPreferencesString("extra_tags_for_logging", "G5CollectionService:v,");
                     }
+                    Home.setPreferencesBoolean("enable_bugfender", true);
                 }
 
                 Log.d(TAG, "onG5StartCommand wakeup: "+JoH.dateTimeText(JoH.tsl()));
@@ -1090,14 +1092,16 @@ public class G5CollectionService extends Service {
 
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final int status) {
+            Log.e(TAG, "OnCharacteristic WRITE started: " + BluetoothServices.getUUIDName(characteristic.getUuid()) + " status: " + status);
+            Log.e(TAG, "Write Status " + String.valueOf(status));
+            //Log.e(TAG, "Characteristic " + String.valueOf(characteristic.getUuid()));
+            Log.i(TAG, "onCharacteristicWrite On Main Thread? " + isOnMainThread());
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
                 iHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e(TAG, "Success Write " + String.valueOf(status));
-                        //Log.e(TAG, "Characteristic " + String.valueOf(characteristic.getUuid()));
-                        Log.i(TAG, "onCharacteristicWrite On Main Thread? " + isOnMainThread());
+
 
                         if (status == BluetoothGatt.GATT_SUCCESS) {
                             if (String.valueOf(characteristic.getUuid()).equalsIgnoreCase(String.valueOf(authCharacteristic.getUuid()))) {
@@ -1119,9 +1123,6 @@ public class G5CollectionService extends Service {
                 });
 
             } else {
-                Log.e(TAG, "Success Write " + String.valueOf(status));
-                //Log.e(TAG, "Characteristic " + String.valueOf(characteristic.getUuid()));
-                Log.i(TAG, "onCharacteristicWrite On Main Thread? " + isOnMainThread());
 
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     if (String.valueOf(characteristic.getUuid()).equalsIgnoreCase(String.valueOf(authCharacteristic.getUuid()))) {
@@ -1145,157 +1146,100 @@ public class G5CollectionService extends Service {
         }
 
         @Override
-        public void onCharacteristicRead(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final int status) {
+        public void onCharacteristicRead(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final int status) {
+            Log.e(TAG, "OnCharacteristicREAD started: " + BluetoothServices.getUUIDName(characteristic.getUuid()) + " status: " + status);
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
                 iHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e(TAG, "ReadStatus: " + String.valueOf(status));
-                        Log.i(TAG, "onCharacteristicRead On Main Thread? " + isOnMainThread());
-
-                        if (status == BluetoothGatt.GATT_SUCCESS) {
-                            Log.e(TAG, "CharBytes-or " + Arrays.toString(characteristic.getValue()));
-                            Log.i(TAG, "CharHex-or " + Extensions.bytesToHex(characteristic.getValue()));
-
-                            byte[] buffer = characteristic.getValue();
-                            byte code = buffer[0];
-                            Transmitter defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
-                            mBluetoothAdapter = mBluetoothManager.getAdapter();
-
-                            switch (code) {
-                                case 5:
-                                    authStatus = new AuthStatusRxMessage(characteristic.getValue());
-                                    if (authStatus.authenticated == 1 && authStatus.bonded == 1 && isBondedOrBonding == true) {
-                                        isBondedOrBonding = true;
-                                        getSensorData();
-                                    } else if (authStatus.authenticated == 1 && authStatus.bonded == 2) {
-                                        Log.i(TAG, "Let's Bond!");
-                                        BondRequestTxMessage bondRequest = new BondRequestTxMessage();
-                                        characteristic.setValue(bondRequest.byteSequence);
-                                        mGatt.writeCharacteristic(characteristic);
-                                        isBondedOrBonding = true;
-                                        device.createBond();
-                                    } else {
-                                        Log.i(TAG, "Transmitter NOT already authenticated");
-                                        authRequest = new AuthRequestTxMessage(getTokenSize());
-                                        characteristic.setValue(authRequest.byteSequence);
-                                        Log.i(TAG, "AuthRequestTx: "+JoH.bytesToHex(authRequest.byteSequence));
-                                        mGatt.writeCharacteristic(characteristic);
-                                    }
-                                    break;
-
-                                case 3:
-                                    AuthChallengeRxMessage authChallenge = new AuthChallengeRxMessage(characteristic.getValue());
-                                    if (authRequest == null) {
-                                        authRequest = new AuthRequestTxMessage(getTokenSize());
-                                    }
-                                    Log.i(TAG, "tokenHash " + Arrays.toString(authChallenge.tokenHash));
-                                    Log.i(TAG, "singleUSe " + Arrays.toString(calculateHash(authRequest.singleUseToken)));
-
-                                    byte[] challengeHash = calculateHash(authChallenge.challenge);
-                                    Log.d(TAG, "challenge hash" + Arrays.toString(challengeHash));
-                                    if (challengeHash != null) {
-                                        Log.d(TAG, "Transmitter try auth challenge");
-                                        AuthChallengeTxMessage authChallengeTx = new AuthChallengeTxMessage(challengeHash);
-                                        Log.i(TAG, "Auth Challenge: " + Arrays.toString(authChallengeTx.byteSequence));
-                                        characteristic.setValue(authChallengeTx.byteSequence);
-                                        mGatt.writeCharacteristic(characteristic);
-                                    }
-                                    break;
-
-                                default:
-                                    Log.i(TAG, code + " - Transmitter NOT already authenticated");
-                                    authRequest = new AuthRequestTxMessage(getTokenSize());
-                                    characteristic.setValue(authRequest.byteSequence);
-                                    Log.i(TAG, JoH.bytesToHex(authRequest.byteSequence));
-                                    mGatt.writeCharacteristic(characteristic);
-                                    break;
-                            }
-
-                        }
-
-                        if (status == 133) {
-                            encountered133 = true;
-                        }
+                        processOnCharacteristicRead(gatt, characteristic, status);
                     }
                 });
             } else {
-                Log.e(TAG, "ReadStatus: " + String.valueOf(status));
-                Log.i(TAG, "onCharacteristicRead On Main Thread? " + isOnMainThread());
+                processOnCharacteristicRead(gatt, characteristic, status);
+            }
+        }
 
-                if (status == BluetoothGatt.GATT_SUCCESS) {
-                    Log.e(TAG, "CharBytes-or " + Arrays.toString(characteristic.getValue()));
-                    Log.i(TAG, "CharHex-or " + Extensions.bytesToHex(characteristic.getValue()));
+        private synchronized void processOnCharacteristicRead (BluetoothGatt gatt,
+                                                  final BluetoothGattCharacteristic characteristic, final int status)
+        {
+            Log.e(TAG, "processOnCRead: Status value: " + String.valueOf(status) + (isOnMainThread() ? " on main thread" : " not on main thread"));
 
-                    byte[] buffer = characteristic.getValue();
-                    byte code = buffer[0];
-                    Transmitter defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
-                    mBluetoothAdapter = mBluetoothManager.getAdapter();
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                Log.e(TAG, "CharBytes-or " + Arrays.toString(characteristic.getValue()));
+                Log.i(TAG, "CharHex-or " + Extensions.bytesToHex(characteristic.getValue()));
 
-                    switch (code) {
-                        case 5:
-                            authStatus = new AuthStatusRxMessage(characteristic.getValue());
-                            if (authStatus.authenticated == 1 && authStatus.bonded == 1 && isBondedOrBonding == true) {
-                                isBondedOrBonding = true;
-                                getSensorData();
-                            } else if (authStatus.authenticated == 1 && authStatus.bonded == 2) {
-                                Log.i(TAG, "Let's Bond!");
-                                BondRequestTxMessage bondRequest = new BondRequestTxMessage();
-                                characteristic.setValue(bondRequest.byteSequence);
-                                mGatt.writeCharacteristic(characteristic);
-                                isBondedOrBonding = true;
-                                device.createBond();
-                            } else {
-                                Log.i(TAG, "Transmitter NOT already authenticated");
-                                authRequest = new AuthRequestTxMessage(getTokenSize());
-                                characteristic.setValue(authRequest.byteSequence);
-                                Log.i(TAG, authRequest.byteSequence.toString());
-                                mGatt.writeCharacteristic(characteristic);
-                            }
-                            break;
+                byte[] buffer = characteristic.getValue();
+                byte code = buffer[0];
+                Transmitter defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
+                mBluetoothAdapter = mBluetoothManager.getAdapter();
 
-                        case 3:
-                            AuthChallengeRxMessage authChallenge = new AuthChallengeRxMessage(characteristic.getValue());
-                            if (authRequest == null) {
-                                authRequest = new AuthRequestTxMessage(getTokenSize());
-                            }
-                            Log.i(TAG, "tokenHash " + Arrays.toString(authChallenge.tokenHash));
-                            Log.i(TAG, "singleUSe " + Arrays.toString(calculateHash(authRequest.singleUseToken)));
-
-                            byte[] challengeHash = calculateHash(authChallenge.challenge);
-                            Log.d(TAG, "challenge hash" + Arrays.toString(challengeHash));
-                            if (challengeHash != null) {
-                                Log.d(TAG, "Transmitter try auth challenge");
-                                AuthChallengeTxMessage authChallengeTx = new AuthChallengeTxMessage(challengeHash);
-                                Log.i(TAG, "Auth Challenge: " + Arrays.toString(authChallengeTx.byteSequence));
-                                characteristic.setValue(authChallengeTx.byteSequence);
-                                mGatt.writeCharacteristic(characteristic);
-                            }
-                            break;
-
-                        default:
-                            Log.i(TAG, code + " - Transmitter NOT already authenticated");
+                switch (code) {
+                    case 5:
+                        authStatus = new AuthStatusRxMessage(characteristic.getValue());
+                        if (authStatus.authenticated == 1 && authStatus.bonded == 1 && isBondedOrBonding == true) {
+                            isBondedOrBonding = true;
+                            getSensorData();
+                        } else if (authStatus.authenticated == 1 && authStatus.bonded == 2) {
+                            Log.i(TAG, "Let's Bond!");
+                            BondRequestTxMessage bondRequest = new BondRequestTxMessage();
+                            characteristic.setValue(bondRequest.byteSequence);
+                            mGatt.writeCharacteristic(characteristic);
+                            isBondedOrBonding = true;
+                            device.createBond();
+                        } else {
+                            Log.i(TAG, "Transmitter NOT already authenticated");
                             authRequest = new AuthRequestTxMessage(getTokenSize());
                             characteristic.setValue(authRequest.byteSequence);
-                            Log.i(TAG, authRequest.byteSequence.toString());
+                            Log.i(TAG, "AuthRequestTx: " + JoH.bytesToHex(authRequest.byteSequence));
                             mGatt.writeCharacteristic(characteristic);
-                            break;
-                    }
+                        }
+                        break;
 
+                    case 3:
+                        AuthChallengeRxMessage authChallenge = new AuthChallengeRxMessage(characteristic.getValue());
+                        if (authRequest == null) {
+                            authRequest = new AuthRequestTxMessage(getTokenSize());
+                        }
+                        Log.i(TAG, "tokenHash " + Arrays.toString(authChallenge.tokenHash));
+                        Log.i(TAG, "singleUSe " + Arrays.toString(calculateHash(authRequest.singleUseToken)));
+
+                        byte[] challengeHash = calculateHash(authChallenge.challenge);
+                        Log.d(TAG, "challenge hash" + Arrays.toString(challengeHash));
+                        if (challengeHash != null) {
+                            Log.d(TAG, "Transmitter try auth challenge");
+                            AuthChallengeTxMessage authChallengeTx = new AuthChallengeTxMessage(challengeHash);
+                            Log.i(TAG, "Auth Challenge: " + Arrays.toString(authChallengeTx.byteSequence));
+                            characteristic.setValue(authChallengeTx.byteSequence);
+                            mGatt.writeCharacteristic(characteristic);
+                        }
+                        break;
+
+                    case 7:
+                        Log.d(TAG,"Received Bond request - ignoring for now!!!");
+                        break;
+
+                    default:
+                        Log.i(TAG, "Read code: " + code + " - Transmitter NOT already authenticated");
+                        authRequest = new AuthRequestTxMessage(getTokenSize());
+                        characteristic.setValue(authRequest.byteSequence);
+                        Log.i(TAG, JoH.bytesToHex(authRequest.byteSequence));
+                        mGatt.writeCharacteristic(characteristic);
+                        break;
                 }
 
-                if (status == 133) {
-                    encountered133 = true;
-                }
             }
 
-
+            if (status == 133) {
+                encountered133 = true;
+            }
         }
 
         @Override
         // Characteristic notification
         public void onCharacteristicChanged(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
+            Log.e(TAG, "OnCharacteristic CHANGED started: " + BluetoothServices.getUUIDName(characteristic.getUuid()));
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
                 iHandler.post(new Runnable() {
@@ -1322,7 +1266,7 @@ public class G5CollectionService extends Service {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && gatt != null) {
                 mGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
             }
-            Log.d(TAG, "Received opcode reply: " + firstByte);
+            Log.d(TAG, "Received opcode reply: " + JoH.bytesToHex(new byte[] { firstByte }));
             if (firstByte == 0x2f) {
                 SensorRxMessage sensorRx = new SensorRxMessage(characteristic.getValue());
 
@@ -1485,11 +1429,7 @@ public class G5CollectionService extends Service {
     }
 
     private int getTokenSize() {
-        if (Home.getPreferencesBooleanDefaultFalse("g5_extended_sut")) {
-            return 16;
-        } else {
-            return 8;
-        }
+            return 8; // d
     }
     
 

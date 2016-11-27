@@ -50,9 +50,13 @@ public class GlucoseRxMessage extends TransmitterMessage {
 
                 state = data.get(12);
                 trend = data.get(13);
-
-                unfiltered = glucose * 1000;
-                filtered = glucose * 1000;
+                if (glucose > 13) {
+                    unfiltered = glucose * 1000;
+                    filtered = glucose * 1000;
+                } else {
+                    filtered = glucose;
+                    unfiltered = glucose;
+                }
 
                 UserError.Log.e(TAG, "GlucoseRX: seq" + sequence + " ts:" + timestamp + " sg:" + glucose + " do:" + glucoseIsDisplayOnly + " ss:" + status + " sr:" + status_raw + " st:" + state + " tr:" + trend);
 

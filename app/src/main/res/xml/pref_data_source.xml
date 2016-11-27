@@ -102,11 +102,6 @@
             android:title="TEST G5 Post Nov 2016 mode" />
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="g5_extended_sut"
-            android:summary="Newer Extended Token size. Experimental mode to try to resolve this."
-            android:title="TEST G5 Post Nov mode 2" />
-        <CheckBoxPreference
-            android:defaultValue="false"
             android:key="run_ble_scan_constantly"
             android:summary="Some devices work better when scanning constantly, others do not. If reading is reliable when this setting is not selected, you should have improved battery life. Turn this setting on if you are missing readings at high rates and unexpected times."
             android:title="Scan for G5 constantly" />

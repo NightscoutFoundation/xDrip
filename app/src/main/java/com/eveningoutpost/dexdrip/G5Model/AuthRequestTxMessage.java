@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.eveningoutpost.dexdrip.G5Model.TransmitterMessage;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 
 import java.io.UnsupportedEncodingException;
@@ -48,7 +49,7 @@ public class AuthRequestTxMessage extends TransmitterMessage {
         data.put(endByte);
 
         byteSequence = data.array();
-        Log.d(TAG,"New AuthRequestTxMessage: "+ JoH.bytesToHex(byteSequence));
+        UserError.Log.d(TAG,"New AuthRequestTxMessage: "+ JoH.bytesToHex(byteSequence));
     }
 }
 

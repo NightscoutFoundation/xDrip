@@ -294,6 +294,18 @@
                 android:key="infrequent_calibration"
                 android:summary="If needed, use calibrations from longer ago, eg if calibrations are supplied infrequently."
                 android:title="Infrequent Calibration" />
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:key="xdrip_logging_adv_settings"
+            android:title="Extra Logging Settings">
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="enable_bugfender"
+                android:summary="Send Event and Error List Logs automatically to the developer"
+                android:title="Enable Remote Logging" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="bugfender_appid"
+                android:title="Set Logging AppID"/>
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="engineering_mode"
@@ -307,6 +319,7 @@
                 android:inputType="textUri"
                 android:key="extra_tags_for_logging"
                 android:title="@string/extra_tags_for_logging"/>
+            </PreferenceScreen>
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="show_data_tables"

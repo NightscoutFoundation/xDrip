@@ -658,7 +658,7 @@ public class Preferences extends PreferenceActivity {
             final Preference wifiRecievers = findPreference("wifi_recievers_addresses");
             final Preference predictiveBG = findPreference("predictive_bg");
             final Preference interpretRaw = findPreference("interpret_raw");
-
+            final Preference bfappid = findPreference("bugfender_appid");
             final Preference nfcSettings = findPreference("xdrip_plus_nfc_settings");
             //DexCollectionType collectionType = DexCollectionType.getType(findPreference("dex_collection_method").)
 
@@ -717,6 +717,8 @@ public class Preferences extends PreferenceActivity {
             final Preference useCustomSyncKey = findPreference("use_custom_sync_key");
             final Preference CustomSyncKey = findPreference("custom_sync_key");
             final PreferenceCategory collectionCategory = (PreferenceCategory) findPreference("collection_category");
+            //final PreferenceScreen updateScreen = (PreferenceScreen) findPreference("xdrip_plus_update_settings");
+            final PreferenceScreen loggingScreen = (PreferenceScreen) findPreference("xdrip_logging_adv_settings");
             final PreferenceScreen motionScreen = (PreferenceScreen) findPreference("xdrip_plus_motion_settings");
             final PreferenceScreen nfcScreen = (PreferenceScreen) findPreference("xdrip_plus_nfc_settings");
             final PreferenceCategory otherCategory = (PreferenceCategory) findPreference("other_category");
@@ -943,54 +945,74 @@ public class Preferences extends PreferenceActivity {
 
             try {
 
-                if ((collectionType != DexCollectionType.WifiWixel)
-                        && (collectionType != DexCollectionType.WifiBlueToothWixel)
-                        && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
-                    String receiversIpAddresses;
-                    receiversIpAddresses = this.prefs.getString("wifi_recievers_addresses", "");
-                    // only hide if non wifi wixel mode and value not previously set to cope with
-                    // dynamic mode changes. jamorham
-                    if (receiversIpAddresses == null || receiversIpAddresses.equals("")) {
-                        collectionCategory.removePreference(wifiRecievers);
+                try {
+                    if ((collectionType != DexCollectionType.WifiWixel)
+                            && (collectionType != DexCollectionType.WifiBlueToothWixel)
+                            && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
+                        final String receiversIpAddresses = this.prefs.getString("wifi_recievers_addresses", "").trim();
+                        // only hide if non wifi wixel mode and value not previously set to cope with
+                        // dynamic mode changes. jamorham
+                        if (receiversIpAddresses.equals("")) {
+                            collectionCategory.removePreference(wifiRecievers);
+                        }
                     }
+                } catch (NullPointerException e) {
+                    Log.wtf(TAG, "Nullpointer wifireceivers ", e);
                 }
 
                 if ((collectionType != DexCollectionType.DexbridgeWixel)
                         && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
-                    collectionCategory.removePreference(transmitterId);
-                    // collectionCategory.removePreference(closeGatt);
+                    try {
+                        collectionCategory.removePreference(transmitterId);
+                        // collectionCategory.removePreference(closeGatt);
+                    } catch (NullPointerException e) {
+                        Log.wtf(TAG, "Nullpointer removing txid ", e);
+                    }
                 }
 
 
                 if (collectionType == DexCollectionType.DexcomG5) {
-                    collectionCategory.addPreference(transmitterId);
-                    collectionCategory.addPreference(g5nonraw);
-                    collectionCategory.addPreference(g5extendedsut);
-                    collectionCategory.addPreference(scanConstantly);
-                    collectionCategory.addPreference(reAuth);
-                    collectionCategory.addPreference(reBond);
-                    collectionCategory.addPreference(runOnMain);
+                    try {
+                        collectionCategory.addPreference(transmitterId);
+                        collectionCategory.addPreference(g5nonraw);
+                        collectionCategory.addPreference(scanConstantly);
+                        collectionCategory.addPreference(reAuth);
+                        collectionCategory.addPreference(reBond);
+                        collectionCategory.addPreference(runOnMain);
+                    } catch (NullPointerException e) {
+                        Log.wtf(TAG, "Null pointer adding G5 prefs ", e);
+                    }
                 } else {
-                    // collectionCategory.removePreference(transmitterId);
-                    collectionCategory.removePreference(scanConstantly);
-                    collectionCategory.removePreference(g5extendedsut);
-                    collectionCategory.removePreference(g5nonraw);
-                    collectionCategory.removePreference(reAuth);
-                    collectionCategory.removePreference(reBond);
-                    collectionCategory.removePreference(runOnMain);
+                    try {
+                        // collectionCategory.removePreference(transmitterId);
+                        collectionCategory.removePreference(scanConstantly);
+                        collectionCategory.removePreference(g5nonraw);
+                        collectionCategory.removePreference(reAuth);
+                        collectionCategory.removePreference(reBond);
+                        collectionCategory.removePreference(runOnMain);
+                    } catch (NullPointerException e) {
+                        Log.wtf(TAG, "Null pointer removing G5 prefs ", e);
+                    }
                 }
 
                 if (!engineering_mode) {
-                    getPreferenceScreen().removePreference(motionScreen);
-                    calibrationSettingsScreen.removePreference(adrian_calibration_mode);
+                    try {
+                        getPreferenceScreen().removePreference(motionScreen);
+                        calibrationSettingsScreen.removePreference(adrian_calibration_mode);
+                    } catch (NullPointerException e) {
+                        Log.wtf(TAG, "Nullpointer with engineering mode s ", e);
+                    }
+                }
+                if ((!engineering_mode) || (!this.prefs.getBoolean("enable_bugfender", false))) {
+                    loggingScreen.removePreference(bfappid);
                 }
 
             } catch (NullPointerException e) {
-                Log.wtf(TAG, "Got null pointer exception removing pref: " + e);
+                Log.wtf(TAG, "Got null pointer exception removing pref: ", e);
             }
 
-            if (engineering_mode || this.prefs.getString("update_channel","").matches("alpha|nightly")) {
-                ListPreference update_channel = (ListPreference)findPreference("update_channel");
+            if (engineering_mode || this.prefs.getString("update_channel", "").matches("alpha|nightly")) {
+                ListPreference update_channel = (ListPreference) findPreference("update_channel");
                 update_channel.setEntryValues(getResources().getStringArray(R.array.UpdateChannelE));
                 update_channel.setEntries(getResources().getStringArray(R.array.UpdateChannelDetailE));
             }

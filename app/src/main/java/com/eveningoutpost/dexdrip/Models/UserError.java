@@ -7,7 +7,9 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.bugfender.sdk.Bugfender;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Date;
 import java.util.Hashtable;
@@ -53,6 +55,21 @@ public class UserError extends Model {
         this.message = message;
         this.timestamp = new Date().getTime();
         this.save();
+        if (xdrip.useBF) {
+            switch (severity) {
+                case 2:
+                case 3:
+                    Bugfender.e(shortError, message);
+                    break;
+                case 5:
+                case 6:
+                    Bugfender.w(shortError, message);
+                    break;
+                default:
+                    Bugfender.d(shortError, message);
+                    break;
+            }
+        }
     }
 
     public UserError(String shortError, String message) {

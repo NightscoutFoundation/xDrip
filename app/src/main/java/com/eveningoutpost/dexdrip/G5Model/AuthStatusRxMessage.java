@@ -1,14 +1,11 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
-import android.util.Log;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * Created by joeginley on 3/16/16.
@@ -26,7 +23,7 @@ public class AuthStatusRxMessage extends TransmitterMessage {
 
                 authenticated = data.get(1);
                 bonded = data.get(2);
-                Log.d(TAG,"AuthRequestRxMessage:  authenticated:"+authenticated+"  bonded:"+bonded);
+                UserError.Log.d(TAG,"AuthRequestRxMessage:  authenticated:"+authenticated+"  bonded:"+bonded);
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -29,5 +30,31 @@ public class BluetoothServices {
 
     //CharacteristicDescriptorUUID
     public static final UUID CharacteristicUpdateNotification = UUID.fromString("00002902-0000-1000-8000-00805F9B34FB");
+
+    private static final HashMap<UUID, String> mapToName = new HashMap<>();
+
+    static {
+        mapToName.put(DeviceInfo, "DeviceInfo");
+        mapToName.put(Advertisement, "Advertisement");
+        mapToName.put(CGMService, "CGMService");
+        mapToName.put(ServiceB, "ServiceB");
+        mapToName.put(ManufacturerNameString, "ManufacturerNameString");
+        mapToName.put(Communication, "Communication");
+        mapToName.put(Control, "Control");
+        mapToName.put(Authentication, "Authentication");
+        mapToName.put(ProbablyBackfill, "ProbablyBackfill");
+        mapToName.put(CharacteristicE, "CharacteristicE");
+        mapToName.put(CharacteristicF, "CharacteristicF");
+        mapToName.put(CharacteristicUpdateNotification, "CharacteristicUpdateNotification");
+    }
+
+    public static String getUUIDName(UUID uuid) {
+        if (uuid == null) return "null";
+        if (mapToName.containsKey(uuid)) {
+            return mapToName.get(uuid);
+        } else {
+            return "Unknown uuid: " + uuid.toString();
+        }
+    }
 
 }
