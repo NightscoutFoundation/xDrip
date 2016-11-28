@@ -206,9 +206,10 @@ public class G5CollectionService extends Service {
                     if (!Home.getPreferencesStringDefaultBlank("extra_tags_for_logging").contains("G5CollectionService:v")) {
                         Home.setPreferencesString("extra_tags_for_logging", "G5CollectionService:v,");
                     }
+                    Home.setPreferencesBoolean("enable_bugfender", true);
+                    xdrip.initBF();
                 }
-                Home.setPreferencesBoolean("enable_bugfender", true);
-                xdrip.initBF();
+
                 Log.d(TAG, "onG5StartCommand wakeup: "+JoH.dateTimeText(JoH.tsl()));
                 Log.e(TAG, "settingsToString: " + settingsToString());
                 //Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
@@ -640,6 +641,7 @@ public class G5CollectionService extends Service {
                 }
             }
         }
+        Log.d(TAG,"forgetDevice() finished");
     }
 
     // API 18 - 20
@@ -765,41 +767,43 @@ public class G5CollectionService extends Service {
     private BluetoothAdapter.LeScanCallback mLeScanCallback = null;
 
     private synchronized void connectToDevice(BluetoothDevice device) {
-        if (!JoH.ratelimit("G5connect-rate",2)) {
-            Log.e(TAG,"TODO: we would have blocked excessive connection rate here");
-        }
-        Log.d(TAG,"connectToDevice() start");
-        if (mGatt != null) {
-            Log.i(TAG, "BGatt isnt null, Closing.");
-            try {
-                mGatt.close();
-            } catch (NullPointerException e) {
-                // concurrency related null pointer
-            }
-            mGatt = null;
-        }
-        Log.i(TAG, "Request Connect");
-        if (enforceMainThread()){
-            Handler iHandler = new Handler(Looper.getMainLooper());
-            final BluetoothDevice mDevice = device;
-            iHandler.post(new Runnable() {
-                @Override
-                public void run() {
+        if (JoH.ratelimit("G5connect-rate", 2)) {
 
-                    Log.i(TAG, "mGatt Null, connecting...");
-                    Log.i(TAG, "connectToDevice On Main Thread? " + isOnMainThread());
-                    mGatt = mDevice.connectGatt(getApplicationContext(), false, gattCallback);
-
+            Log.d(TAG, "connectToDevice() start");
+            if (mGatt != null) {
+                Log.i(TAG, "BGatt isnt null, Closing.");
+                try {
+                    mGatt.close();
+                } catch (NullPointerException e) {
+                    // concurrency related null pointer
                 }
-            });
+                mGatt = null;
+            }
+            Log.i(TAG, "Request Connect");
+            if (enforceMainThread()) {
+                Handler iHandler = new Handler(Looper.getMainLooper());
+                final BluetoothDevice mDevice = device;
+                iHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        Log.i(TAG, "mGatt Null, connecting...");
+                        Log.i(TAG, "connectToDevice On Main Thread? " + isOnMainThread());
+                        mGatt = mDevice.connectGatt(getApplicationContext(), false, gattCallback);
+
+                    }
+                });
+            } else {
+                Log.i(TAG, "mGatt Null, connecting...");
+                Log.i(TAG, "connectToDevice On Main Thread? " + isOnMainThread());
+                mGatt = device.connectGatt(getApplicationContext(), false, gattCallback);
+            }
+
         } else {
-            Log.i(TAG, "mGatt Null, connecting...");
-            Log.i(TAG, "connectToDevice On Main Thread? " + isOnMainThread());
-            mGatt = device.connectGatt(getApplicationContext(), false, gattCallback);
+            Log.e(TAG, "connectToDevice baulking due to rate-limit");
         }
-
-
     }
+
 
     // Sends the disconnect tx message to our bt device.
     private synchronized void doDisconnectMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
@@ -993,7 +997,7 @@ public class G5CollectionService extends Service {
         }
 
         @Override
-        public void onServicesDiscovered(BluetoothGatt gatt, final int status) {
+        public synchronized void onServicesDiscovered(BluetoothGatt gatt, final int status) {
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
                 iHandler.post(new Runnable() {
@@ -1322,7 +1326,7 @@ public class G5CollectionService extends Service {
 
     private synchronized void processNewTransmitterData(int raw_data , int filtered_data,int sensor_battery_level, long captureTime) {
 
-        TransmitterData transmitterData = TransmitterData.create(raw_data, sensor_battery_level, captureTime);
+        final TransmitterData transmitterData = TransmitterData.create(raw_data, filtered_data, sensor_battery_level, captureTime);
         if (transmitterData == null) {
             Log.e(TAG, "TransmitterData.create failed: Duplicate packet");
             return;
@@ -1340,7 +1344,7 @@ public class G5CollectionService extends Service {
         Sensor.updateBatteryLevel(sensor, transmitterData.sensor_battery_level);
         Log.i(TAG,"timestamp create: "+ Long.toString(transmitterData.timestamp));
 
-        BgReading.create(transmitterData.raw_data, filtered_data, this, transmitterData.timestamp);
+        BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, transmitterData.timestamp);
 
         Log.d(TAG,"Dex raw_data "+ Double.toString(transmitterData.raw_data));//KS
         Log.d(TAG,"Dex filtered_data "+ Double.toString(transmitterData.filtered_data));//KS
