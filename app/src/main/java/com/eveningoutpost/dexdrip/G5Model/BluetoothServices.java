@@ -138,11 +138,25 @@ public class BluetoothServices {
     //private static final int GATT_CONN_L2C_FAILURE               1                               /* general L2cap failure  */
     //private static final int GATT_CONN_TIMEOUT                   HCI_ERR_CONNECTION_TOUT         /* 0x08 connection timeout  */
     private static final int GATT_CONN_TERMINATE_PEER_USER = 0x13;   /*  HCI_ERR_PEER_USER 0x13 connection terminate by peer user  */
-    // private static final int GATT_CONN_TERMINATE_LOCAL_HOST      HCI_ERR_CONN_CAUSE_LOCAL_HOST   /* 0x16 connectionterminated by local host  */
+    private static final int GATT_CONN_TERMINATE_LOCAL_HOST = 0x16; /*     HCI_ERR_CONN_CAUSE_LOCAL_HOST   /* 0x16 connectionterminated by local host  */
     // private static final int GATT_CONN_FAIL_ESTABLISH            HCI_ERR_CONN_FAILED_ESTABLISHMENT/* 0x03E connection fail to establish  */
     // private static final int GATT_CONN_LMP_TIMEOUT               HCI_ERR_LMP_RESPONSE_TIMEOUT     /* 0x22 connection fail for LMP response tout */
     // private static final int GATT_CONN_CANCEL                    L2CAP_CONN_CANCEL                /* 0x0100 L2CAP connection cancelled  */
 
+    private static final int HCI_ERR_UNDEFINED_0x31 = 0x31;
+    private static final int HCI_ERR_ROLE_SWITCH_PENDING = 0x32;
+    private static final int HCI_ERR_UNDEFINED_0x33 = 0x33;
+    private static final int HCI_ERR_RESERVED_SLOT_VIOLATION = 0x34;
+    private static final int HCI_ERR_ROLE_SWITCH_FAILED = 0x35;
+    private static final int HCI_ERR_INQ_RSP_DATA_TOO_LARGE = 0x36;
+    private static final int HCI_ERR_SIMPLE_PAIRING_NOT_SUPPORTED = 0x37;
+    private static final int HCI_ERR_HOST_BUSY_PAIRING = 0x38;
+    private static final int HCI_ERR_REJ_NO_SUITABLE_CHANNEL = 0x39;
+    private static final int HCI_ERR_CONTROLLER_BUSY = 0x3A;
+    private static final int HCI_ERR_UNACCEPT_CONN_INTERVAL = 0x3B;
+    private static final int HCI_ERR_DIRECTED_ADVERTISING_TIMEOUT = 0x3C;
+    private static final int HCI_ERR_CONN_TOUT_DUE_TO_MIC_FAILURE = 0x3D;
+    private static final int HCI_ERR_CONN_FAILED_ESTABLISHMENT = 0x3E;
 
     static {
         statusToName.put(GATT_SUCCESS, "Gatt Success");
@@ -158,6 +172,8 @@ public class BluetoothServices {
         statusToName.put(GATT_FAILURE, "General GATT failure 133 code");
 
         statusToName.put(GATT_CONN_TERMINATE_PEER_USER, "Connection terminated by peer");
+        statusToName.put(GATT_CONN_TERMINATE_LOCAL_HOST, "Connection terminated by local host");
+        statusToName.put(HCI_ERR_UNACCEPT_CONN_INTERVAL, "HCI Unacceptable connection interval??");
     }
 
     public static String getUUIDName(UUID uuid) {

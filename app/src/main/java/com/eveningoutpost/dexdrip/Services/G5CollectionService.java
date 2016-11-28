@@ -201,14 +201,16 @@ public class G5CollectionService extends Service {
             if ((!service_running) && (keep_running)) {
                 service_running = true;
 
+                // extra debugging
                 if (useG5NewMethod()) {
                     if (!Home.getPreferencesStringDefaultBlank("extra_tags_for_logging").contains("G5CollectionService:v")) {
                         Home.setPreferencesString("extra_tags_for_logging", "G5CollectionService:v,");
                     }
-                    Home.setPreferencesBoolean("enable_bugfender", true);
                 }
-
+                Home.setPreferencesBoolean("enable_bugfender", true);
+                xdrip.initBF();
                 Log.d(TAG, "onG5StartCommand wakeup: "+JoH.dateTimeText(JoH.tsl()));
+                Log.e(TAG, "settingsToString: " + settingsToString());
                 //Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
                 //stopScan();
                 if (!CollectionServiceStarter.isBTG5(xdrip.getAppContext())) {
@@ -374,7 +376,7 @@ public class G5CollectionService extends Service {
         }
     }
 
-    public void stopScan(){
+    public synchronized void stopScan(){
         if (!isScanning) {
             Log.d(TAG, "alreadyStoppedScanning");
             return;
@@ -401,7 +403,7 @@ public class G5CollectionService extends Service {
 
                 } catch (NullPointerException e) {
                     //Known bug in Samsung API 21 stack
-                    System.out.print("Caught the NullPointerException");
+                    Log.e(TAG,"stopscan() Caught the NullPointerException");
                 }
             }
         }
@@ -709,17 +711,16 @@ public class G5CollectionService extends Service {
     }
 
     public synchronized void fullAuthenticate() {
-        Log.e(TAG,"fullAuthenticate() start");
+        Log.e(TAG, "fullAuthenticate() start");
         if (alwaysUnbond()) {
             forgetDevice();
         }
         try {
             Log.i(TAG, "Start Auth Process(fullAuthenticate)");
-            authRequest = new AuthRequestTxMessage(getTokenSize());
             if (authCharacteristic != null) {
-                authCharacteristic.setValue(authRequest.byteSequence);
-                Log.i(TAG, authRequest.byteSequence.toString());
-                mGatt.writeCharacteristic(authCharacteristic);
+                sendAuthRequestTxMessage(authCharacteristic);
+            } else {
+                Log.e(TAG, "fullAuthenticate: authCharacteristic is NULL!");
             }
         } catch (NullPointerException e) {
             Log.e(TAG, "Got null pointer in fullAuthenticate: " + e);
@@ -764,6 +765,9 @@ public class G5CollectionService extends Service {
     private BluetoothAdapter.LeScanCallback mLeScanCallback = null;
 
     private synchronized void connectToDevice(BluetoothDevice device) {
+        if (!JoH.ratelimit("G5connect-rate",2)) {
+            Log.e(TAG,"TODO: we would have blocked excessive connection rate here");
+        }
         Log.d(TAG,"connectToDevice() start");
         if (mGatt != null) {
             Log.i(TAG, "BGatt isnt null, Closing.");
@@ -808,6 +812,20 @@ public class G5CollectionService extends Service {
         Log.d(TAG,"doDisconnectMessage() finished");
     }
 
+    private synchronized void discoverServices() {
+        if (JoH.ratelimit("G5-discservices", 2)) {
+            Log.i(TAG, "discoverServices() started " + (isOnMainThread() ? "on main thread" : "not on main thread"));
+            if (mGatt != null) {
+                mGatt.discoverServices();
+            } else {
+                Log.e(TAG, "discoverServices: mGatt is null");
+            }
+        } else {
+            Log.e(TAG, "discoverServices rate limited!");
+        }
+    }
+
+    // big bluetooth gatt callback
     private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
 
         @Override
@@ -823,20 +841,16 @@ public class G5CollectionService extends Service {
                                               Log.e(TAG, "STATE_CONNECTED");
                                               isConnected = true;
 
-                                              if (enforceMainThread()){
+                                              if (enforceMainThread()) {
                                                   Handler iHandler = new Handler(Looper.getMainLooper());
                                                   iHandler.post(new Runnable() {
                                                       @Override
                                                       public void run() {
-                                                          Log.i(TAG, "discoverServices On Main Thread? " + isOnMainThread());
-                                                          if (mGatt != null)
-                                                              mGatt.discoverServices();
+                                                          discoverServices();
                                                       }
                                                   });
                                               } else {
-                                                  Log.i(TAG, "discoverServices On Main Thread? " + isOnMainThread());
-                                                  if (mGatt != null)
-                                                      mGatt.discoverServices();
+                                                  discoverServices();
                                               }
 
 
@@ -907,20 +921,16 @@ public class G5CollectionService extends Service {
                         Log.e(TAG, "STATE_CONNECTED");
                         isConnected = true;
 
-                        if (enforceMainThread()){
+                        if (enforceMainThread()) {
                             Handler iHandler = new Handler(Looper.getMainLooper());
                             iHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Log.i(TAG, "discoverServices On Main Thread? " + isOnMainThread());
-                                    if (mGatt != null)
-                                        mGatt.discoverServices();
+                                    discoverServices();
                                 }
                             });
                         } else {
-                            Log.i(TAG, "discoverServices On Main Thread? " + isOnMainThread());
-                            if (mGatt != null)
-                                mGatt.discoverServices();
+                            discoverServices();
                         }
 
 
@@ -1144,7 +1154,7 @@ public class G5CollectionService extends Service {
 
         @Override
         public void onCharacteristicRead(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final int status) {
-            Log.e(TAG, "OnCharacteristicREAD started: " + getUUIDName(characteristic.getUuid()) + " status: " + status);
+            Log.e(TAG, "OnCharacteristic READ started: " + getUUIDName(characteristic.getUuid()) + " status: " + status);
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
                 iHandler.post(new Runnable() {
@@ -1187,10 +1197,7 @@ public class G5CollectionService extends Service {
                             device.createBond();
                         } else {
                             Log.i(TAG, "Transmitter NOT already authenticated");
-                            authRequest = new AuthRequestTxMessage(getTokenSize());
-                            characteristic.setValue(authRequest.byteSequence);
-                            Log.i(TAG, "AuthRequestTx: " + JoH.bytesToHex(authRequest.byteSequence));
-                            mGatt.writeCharacteristic(characteristic);
+                            sendAuthRequestTxMessage(characteristic);
                         }
                         break;
 
@@ -1213,20 +1220,17 @@ public class G5CollectionService extends Service {
                         }
                         break;
 
-                    case 7:
-                        Log.d(TAG,"Received Bond request - trying bond");
-                        isBondedOrBonding = true;
-                        Log.e(TAG,"Bond state pre: "+device.getBondState());
-                        device.createBond();
-                        Log.e(TAG,"Bond state post: "+device.getBondState());
-                        break;
+                    //case 7:
+                    //    Log.d(TAG,"Received Bond request - trying bond");
+                    //    isBondedOrBonding = true;
+                    //   Log.e(TAG,"Bond state pre: "+device.getBondState());
+                    //    device.createBond();
+                    //    Log.e(TAG,"Bond state post: "+device.getBondState());
+                    //    break;
 
                     default:
-                        Log.i(TAG, "Read code: " + code + " - Transmitter NOT already authenticated");
-                        authRequest = new AuthRequestTxMessage(getTokenSize());
-                        characteristic.setValue(authRequest.byteSequence);
-                        Log.i(TAG, JoH.bytesToHex(authRequest.byteSequence));
-                        mGatt.writeCharacteristic(characteristic);
+                        Log.i(TAG, "Read code: " + code + " - Transmitter NOT already authenticated?");
+                        sendAuthRequestTxMessage(characteristic);
                         break;
                 }
 
@@ -1237,6 +1241,8 @@ public class G5CollectionService extends Service {
             }
             Log.e(TAG, "OnCharacteristic READ finished: status: " + getStatusName(status));
         }
+
+
 
         @Override
         // Characteristic notification
@@ -1303,9 +1309,16 @@ public class G5CollectionService extends Service {
             Log.e(TAG, "OnCharacteristic CHANGED finished: ");
         }
     };
+    // end BluetoothGattCallback
 
 
-
+    private synchronized void sendAuthRequestTxMessage(BluetoothGattCharacteristic characteristic) {
+        Log.e(TAG, "Sending new AuthRequestTxMessage to " + getUUIDName(characteristic.getUuid()) + " ...");
+        authRequest = new AuthRequestTxMessage(getTokenSize());
+        Log.i(TAG, "AuthRequestTX: " + JoH.bytesToHex(authRequest.byteSequence));
+        characteristic.setValue(authRequest.byteSequence);
+        mGatt.writeCharacteristic(characteristic);
+    }
 
     private synchronized void processNewTransmitterData(int raw_data , int filtered_data,int sensor_battery_level, long captureTime) {
 
@@ -1406,25 +1419,25 @@ public class G5CollectionService extends Service {
         return new Date().getTime() - timeInMillisecondsOfLastSuccessfulSensorRead;
     }
 
-    public boolean scanConstantly() {
+    private boolean scanConstantly() {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         return sharedPreferences.getBoolean("run_ble_scan_constantly", false);
     }
 
-    public boolean alwaysUnbond() {
+    private boolean alwaysUnbond() {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         return sharedPreferences.getBoolean("always_unbond_G5", false);
     }
 
-    public boolean alwaysAuthenticate() {
+    private boolean alwaysAuthenticate() {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         return sharedPreferences.getBoolean("always_get_new_keys", false);
     }
 
-    public boolean enforceMainThread() {
+    private boolean enforceMainThread() {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         return sharedPreferences.getBoolean("run_G5_ble_tasks_on_uithread", false);
@@ -1438,7 +1451,14 @@ public class G5CollectionService extends Service {
     private int getTokenSize() {
             return 8; // d
     }
-    
+
+    private String settingsToString() {
+        return ((scanConstantly() ? "scanConstantly " : "")
+                + (alwaysUnbond() ? "alwaysUnbond " : "")
+                + (alwaysAuthenticate() ? "alwaysAuthenticate " : "")
+                + (enforceMainThread() ? "enforceMainThread " : "")
+                + (useG5NewMethod() ? "useG5NewMethod " : ""));
+    }
 
 
 }

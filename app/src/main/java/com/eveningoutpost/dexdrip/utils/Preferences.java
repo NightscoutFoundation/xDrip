@@ -728,6 +728,19 @@ public class Preferences extends PreferenceActivity {
             final PreferenceScreen calibrationSettingsScreen = (PreferenceScreen) findPreference("xdrip_plus_calibration_settings");
             final Preference adrian_calibration_mode = findPreference("adrian_calibration_mode");
             final Preference extraTagsForLogs = findPreference("extra_tags_for_logging");
+            final Preference enableBF = findPreference("enable_bugfender");
+
+
+            if (enableBF != null ) enableBF.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                                                                              @Override
+                                                                              public boolean onPreferenceChange(Preference preference, Object newValue) {
+                                                                                  preference.getEditor().putBoolean(preference.getKey(),(boolean)newValue).apply();
+                                                                                  xdrip.initBF();
+                                                                                  return true;
+                                                                              }
+                                                                          }
+
+            );
 
             disableAlertsStaleDataMinutes.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
