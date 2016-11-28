@@ -83,6 +83,9 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
+import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getStatusName;
+import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
+
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class G5CollectionService extends Service {
 
@@ -192,6 +195,7 @@ public class G5CollectionService extends Service {
        // new AuthRequestTxMessage(8);
        // new AuthRequestTxMessage(16);
        // fullAuthenticate();
+
         final PowerManager.WakeLock wl = JoH.getWakeLock("g5-start-service", 120000);
         try {
             if ((!service_running) && (keep_running)) {
@@ -628,7 +632,7 @@ public class G5CollectionService extends Service {
                             Method m = device.getClass().getMethod("removeBond", (Class[]) null);
                             m.invoke(device, (Object[]) null);
                             getTransmitterDetails();
-                        } catch (Exception e) { Log.e("SystemStatus", e.getMessage(), e); }
+                        } catch (Exception e) { Log.e(TAG, e.getMessage(), e); }
                     }
 
                 }
@@ -801,6 +805,7 @@ public class G5CollectionService extends Service {
         characteristic.setValue(disconnectTx.byteSequence);
         mGatt.writeCharacteristic(characteristic);
         mGatt.disconnect();
+        Log.d(TAG,"doDisconnectMessage() finished");
     }
 
     private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
@@ -844,7 +849,7 @@ public class G5CollectionService extends Service {
                                               if (isScanning) {
                                                   stopScan();
                                               }
-                                              Log.e(TAG, "STATE_DISCONNECTED: " + status);
+                                              Log.e(TAG, "STATE_DISCONNECTED: " + getStatusName(status));
                                               if (mGatt != null) {
                                                   try {
                                                       mGatt.close();
@@ -1055,99 +1060,91 @@ public class G5CollectionService extends Service {
         }
 
         @Override
-        public void onDescriptorWrite(BluetoothGatt gatt, final BluetoothGattDescriptor descriptor, final int status) {
+        public void onDescriptorWrite(final BluetoothGatt gatt, final BluetoothGattDescriptor descriptor, final int status) {
+            Log.e(TAG, "OnDescriptor WRITE started: status: " + getStatusName(status));
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
                 iHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.i(TAG, "onDescriptorWrite On Main Thread? " + isOnMainThread());
-                        if (status == BluetoothGatt.GATT_SUCCESS) {
-                            mGatt.writeCharacteristic(descriptor.getCharacteristic());
-                            Log.e(TAG, "Writing descriptor: " + status);
-                        } else {
-                            Log.e(TAG, "Unknown error writing descriptor");
-                        }
-
-                        if (status == 133) {
-                            encountered133 = true;
-                        }
+                        processonDescrptorWrite(gatt, descriptor, status);
                     }
                 });
             } else {
-                Log.i(TAG, "onDescriptorWrite On Main Thread? " + isOnMainThread());
-                if (status == BluetoothGatt.GATT_SUCCESS) {
-                    mGatt.writeCharacteristic(descriptor.getCharacteristic());
-                    Log.e(TAG, "Writing descriptor: " + status);
-                } else {
-                    Log.e(TAG, "Unknown error writing descriptor");
-                }
+                processonDescrptorWrite(gatt, descriptor, status);
+            }
+        }
 
-                if (status == 133) {
-                    encountered133 = true;
-                }
+        private void processonDescrptorWrite(final BluetoothGatt gatt, final BluetoothGattDescriptor descriptor, final int status) {
+            Log.i(TAG, "onDescriptorWrite On Main Thread? " + isOnMainThread());
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                Log.e(TAG, "Writing to characteristic: " + getUUIDName(descriptor.getCharacteristic().getUuid()));
+                mGatt.writeCharacteristic(descriptor.getCharacteristic());
+            } else {
+                Log.e(TAG, "not writing characteristic due to Unknown error writing descriptor");
             }
 
+            if (status == 133) {
+                encountered133 = true;
+            }
+            Log.e(TAG, "OnDescriptor WRITE finished: status: " + getStatusName(status));
         }
 
         @Override
-        public void onCharacteristicWrite(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final int status) {
-            Log.e(TAG, "OnCharacteristic WRITE started: " + BluetoothServices.getUUIDName(characteristic.getUuid()) + " status: " + status);
-            Log.e(TAG, "Write Status " + String.valueOf(status));
+        public void onCharacteristicWrite(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final int status) {
+            Log.e(TAG, "OnCharacteristic WRITE started: "
+                    + getUUIDName(characteristic.getUuid())
+                    + " status: " + getStatusName(status));
+            //Log.e(TAG, "Write Status " + String.valueOf(status));
             //Log.e(TAG, "Characteristic " + String.valueOf(characteristic.getUuid()));
-            Log.i(TAG, "onCharacteristicWrite On Main Thread? " + isOnMainThread());
+
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
                 iHandler.post(new Runnable() {
                     @Override
                     public void run() {
-
-
-                        if (status == BluetoothGatt.GATT_SUCCESS) {
-                            if (String.valueOf(characteristic.getUuid()).equalsIgnoreCase(String.valueOf(authCharacteristic.getUuid()))) {
-                                Log.i(TAG, "mt ow Char Value: " + Arrays.toString(characteristic.getValue()));
-                                Log.i(TAG, "mt ow auth? " + String.valueOf(characteristic.getUuid()));
-                                if (characteristic.getValue() != null && characteristic.getValue()[0] != 0x6) {
-                                    mGatt.readCharacteristic(characteristic);
-                                }
-                            } else {
-                                Log.i(TAG, "control? " + String.valueOf(characteristic.getUuid()));
-                                Log.i(TAG, "status? " + status);
-                            }
-                        }
-
-                        if (status == 133) {
-                            encountered133 = true;
-                        }
+                        processOnCharacteristicWrite(gatt, characteristic, status);
                     }
                 });
-
             } else {
-
-                if (status == BluetoothGatt.GATT_SUCCESS) {
-                    if (String.valueOf(characteristic.getUuid()).equalsIgnoreCase(String.valueOf(authCharacteristic.getUuid()))) {
-                        Log.i(TAG, "ow Char Value: " + Arrays.toString(characteristic.getValue()));
-                        Log.i(TAG, "ow auth? " + String.valueOf(characteristic.getUuid()));
-                        if (characteristic.getValue() != null && characteristic.getValue()[0] != 0x6) {
-                            mGatt.readCharacteristic(characteristic);
-                        }
-                    } else {
-                        Log.i(TAG, "control? " + String.valueOf(characteristic.getUuid()));
-                        Log.i(TAG, "status? " + status);
-                    }
-                }
-
-                if (status == 133) {
-                    encountered133 = true;
-                }
+                processOnCharacteristicWrite(gatt, characteristic, status);
             }
 
 
+        }
+
+        private synchronized void processOnCharacteristicWrite(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final int status) {
+            Log.i(TAG, "processOnCharacteristicWrite On Main Thread? " + isOnMainThread());
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                // is this being written to the auth characterstic?
+                if (String.valueOf(characteristic.getUuid()).equalsIgnoreCase(String.valueOf(authCharacteristic.getUuid()))) {
+                    Log.i(TAG, "Auth ow Char Value: " + Arrays.toString(characteristic.getValue()));
+                    Log.i(TAG, "Auth ow auth? name: " + getUUIDName(characteristic.getUuid()));
+                    if (characteristic.getValue() != null) {
+                        Log.e(TAG, "Auth ow: got opcode: " + characteristic.getValue()[0]);
+                        if (characteristic.getValue()[0] != 0x6) { /* opcode keepalive? */
+                            mGatt.readCharacteristic(characteristic);
+                        } else {
+                            Log.e(TAG, "Auth ow: got keepalive");
+                        }
+                    } else {
+                        Log.e(TAG, "Auth ow: got NULL opcode!");
+                    }
+                } else {
+                    Log.i(TAG, "ow unexpected? characteristic: "+ getUUIDName(characteristic.getUuid()));
+                  //  Log.i(TAG, "ow status? " + status);
+                }
+            }
+
+            if (status == 133) {
+                encountered133 = true;
+            }
+            Log.e(TAG, "OnCharacteristic WRITE finished: status: " + getStatusName(status));
         }
 
         @Override
         public void onCharacteristicRead(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic, final int status) {
-            Log.e(TAG, "OnCharacteristicREAD started: " + BluetoothServices.getUUIDName(characteristic.getUuid()) + " status: " + status);
+            Log.e(TAG, "OnCharacteristicREAD started: " + getUUIDName(characteristic.getUuid()) + " status: " + status);
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
                 iHandler.post(new Runnable() {
@@ -1217,7 +1214,11 @@ public class G5CollectionService extends Service {
                         break;
 
                     case 7:
-                        Log.d(TAG,"Received Bond request - ignoring for now!!!");
+                        Log.d(TAG,"Received Bond request - trying bond");
+                        isBondedOrBonding = true;
+                        Log.e(TAG,"Bond state pre: "+device.getBondState());
+                        device.createBond();
+                        Log.e(TAG,"Bond state post: "+device.getBondState());
                         break;
 
                     default:
@@ -1234,12 +1235,13 @@ public class G5CollectionService extends Service {
             if (status == 133) {
                 encountered133 = true;
             }
+            Log.e(TAG, "OnCharacteristic READ finished: status: " + getStatusName(status));
         }
 
         @Override
         // Characteristic notification
         public void onCharacteristicChanged(final BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
-            Log.e(TAG, "OnCharacteristic CHANGED started: " + BluetoothServices.getUUIDName(characteristic.getUuid()));
+            Log.e(TAG, "OnCharacteristic CHANGED started: " + getUUIDName(characteristic.getUuid()));
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
                 iHandler.post(new Runnable() {
@@ -1293,8 +1295,12 @@ public class G5CollectionService extends Service {
             } else if (firstByte == GlucoseRxMessage.opcode) {
                 GlucoseRxMessage glucoseRx = new GlucoseRxMessage(characteristic.getValue());
                 Log.e(TAG, "glucose unfiltered: " + glucoseRx.unfiltered);
+                doDisconnectMessage(gatt, characteristic);
                 processNewTransmitterData(glucoseRx.unfiltered, glucoseRx.filtered, 216, new Date().getTime());
+            } else {
+                Log.e(TAG,"onCharacteristic CHANGED unexpected opcode: "+firstByte+" (have not disconnected!)");
             }
+            Log.e(TAG, "OnCharacteristic CHANGED finished: ");
         }
     };
 
@@ -1331,7 +1337,7 @@ public class G5CollectionService extends Service {
     }
 
     @SuppressLint("GetInstance")
-    private byte[] calculateHash(byte[] data) {
+    private synchronized byte[] calculateHash(byte[] data) {
         if (data.length != 8) {
             Log.e(TAG, "Decrypt Data length should be exactly 8.");
             return null;
@@ -1367,6 +1373,7 @@ public class G5CollectionService extends Service {
     }
 
     private byte[] cryptKey() {
+        if (defaultTransmitter.transmitterId.length() != 6) Log.e(TAG,"cryptKey: Wrong transmitter id length!: "+defaultTransmitter.transmitterId.length());
         try {
             return ("00" + defaultTransmitter.transmitterId + "00" + defaultTransmitter.transmitterId).getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
