@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
@@ -69,10 +70,10 @@ public class ErrorsActivity extends ActivityWithMenu {
                 final String str = bundle.getString("events");
                 if (str != null) {
                     userEventHighCheckboxView.setChecked(true);
-                    userEventLowCheckboxView.setChecked(false);
-                    mediumCheckboxView.setChecked(false);
-                    highCheckboxView.setChecked(false);
-                    lowCheckboxView.setChecked(false);
+                    userEventLowCheckboxView.setChecked(PersistentStore.getBoolean("events-userlowcheckbox"));
+                    mediumCheckboxView.setChecked(PersistentStore.getBoolean("events-mediumcheckbox"));
+                    highCheckboxView.setChecked(PersistentStore.getBoolean("events-highcheckbox"));
+                    lowCheckboxView.setChecked(PersistentStore.getBoolean("events-lowcheckbox"));
                 }
             }
         }
@@ -155,6 +156,13 @@ public class ErrorsActivity extends ActivityWithMenu {
 
     public void updateErrors(boolean from_timer) {
         List<Integer> severitiesList = new ArrayList<>();
+
+        PersistentStore.setBoolean("events-highcheckbox", highCheckboxView.isChecked());
+        PersistentStore.setBoolean("events-mediumcheckbox", mediumCheckboxView.isChecked());
+        PersistentStore.setBoolean("events-lowcheckbox", lowCheckboxView.isChecked());
+        PersistentStore.setBoolean("events-userlowcheckbox", userEventLowCheckboxView.isChecked());
+        PersistentStore.setBoolean("events-userhighcheckbox", userEventHighCheckboxView.isChecked());
+
         if (highCheckboxView.isChecked()) severitiesList.add(3);
         if (mediumCheckboxView.isChecked()) severitiesList.add(2);
         if (lowCheckboxView.isChecked()) severitiesList.add(1);
