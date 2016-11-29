@@ -242,10 +242,11 @@ public class GcmActivity extends Activity {
     }
 
     public synchronized static void syncBGReading(BgReading bgReading) {
+        Log.d(TAG, "syncBGReading called");
         if (JoH.ratelimit("gcm-bgs-batch", 15)) {
-            GcmActivity.sendMessage("bgs", bgReading.toJSON());
+            GcmActivity.sendMessage("bgs", bgReading.toJSON(true));
         } else {
-            PersistentStore.appendString("gcm-bgs-batch-queue", bgReading.toJSON(), "^");
+            PersistentStore.appendString("gcm-bgs-batch-queue", bgReading.toJSON(true), "^");
             PersistentStore.setLong("gcm-bgs-batch-time", JoH.tsl());
             processBgsBatch(false);
         }
@@ -407,7 +408,7 @@ public class GcmActivity extends Activity {
 
                     StringBuilder stringBuilder = new StringBuilder();
                     for (BgReading bgReading : bgReadings) {
-                        String myrecord = bgReading.toJSON();
+                        String myrecord = bgReading.toJSON(false);
                         if (stringBuilder.length() > 0) {
                             stringBuilder.append("^");
                         }
