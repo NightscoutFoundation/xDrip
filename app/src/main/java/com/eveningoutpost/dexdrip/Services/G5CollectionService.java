@@ -219,6 +219,7 @@ public class G5CollectionService extends Service {
                 //Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
                 //stopScan();
                 if (!CollectionServiceStarter.isBTG5(xdrip.getAppContext())) {
+                    Log.e(TAG,"Shutting down as no longer using G5 data source");
                     service_running = false;
                     keep_running = false;
                     stopSelf();
@@ -347,6 +348,7 @@ public class G5CollectionService extends Service {
     }
 
     public void setupBluetooth() {
+
         getTransmitterDetails();
         if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
             //First time using the app or bluetooth was turned off?
@@ -377,6 +379,10 @@ public class G5CollectionService extends Service {
                 filters.add(new ScanFilter.Builder().setDeviceName("Dexcom" + transmitterIdLastTwo).build());
             }
 
+            // unbond here to avoid clashes when we are mid-connection
+            if (alwaysUnbond()) {
+                forgetDevice();
+            }
             cycleScan(0);
         }
     }
@@ -480,7 +486,7 @@ public class G5CollectionService extends Service {
 
     private synchronized void scanLogic() {
         if (!keep_running) return;
-        if (JoH.ratelimit("G5-scanlogic",2)) {
+        if (JoH.ratelimit("G5-scanlogic", 2)) {
             try {
                 mLEScanner.stopScan(mScanCallback);
                 isScanning = false;
@@ -622,7 +628,7 @@ public class G5CollectionService extends Service {
         }
     }
 
-    void forgetDevice() {
+    private synchronized void forgetDevice() {
         Log.d(TAG,"forgetDevice() start");
         Transmitter defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
         mBluetoothAdapter = mBluetoothManager.getAdapter();
@@ -631,9 +637,9 @@ public class G5CollectionService extends Service {
             for (BluetoothDevice device : pairedDevices) {
                 if (device.getName() != null) {
 
-                    String transmitterIdLastTwo = Extensions.lastTwoCharactersOfString(defaultTransmitter.transmitterId);
-                    String deviceNameLastTwo = Extensions.lastTwoCharactersOfString(device.getName());
-                    Log.e(TAG, "removeBond");
+                    final String transmitterIdLastTwo = Extensions.lastTwoCharactersOfString(defaultTransmitter.transmitterId);
+                    final String deviceNameLastTwo = Extensions.lastTwoCharactersOfString(device.getName());
+                    Log.e(TAG, "removeBond: "+transmitterIdLastTwo+" vs "+deviceNameLastTwo);
                     if (transmitterIdLastTwo.equals(deviceNameLastTwo)) {
                         try {
                             Method m = device.getClass().getMethod("removeBond", (Class[]) null);
@@ -787,28 +793,29 @@ public class G5CollectionService extends Service {
                 mGatt = null;
             }
             Log.i(TAG, "Request Connect");
+            final BluetoothDevice mDevice = device;
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
-                final BluetoothDevice mDevice = device;
                 iHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        // TODO move this to method
-                        Log.i(TAG, "mGatt Null, connecting...");
-                        Log.i(TAG, "connectToDevice On Main Thread? " + isOnMainThread());
-                        mGatt = mDevice.connectGatt(getApplicationContext(), false, gattCallback);
-
+                        connectGatt(mDevice);
                     }
                 });
             } else {
-                Log.i(TAG, "mGatt Null, connecting...");
-                Log.i(TAG, "connectToDevice On Main Thread? " + isOnMainThread());
-                mGatt = device.connectGatt(getApplicationContext(), false, gattCallback);
+                connectGatt(mDevice);
             }
 
         } else {
             Log.e(TAG, "connectToDevice baulking due to rate-limit");
         }
+    }
+
+    private synchronized void connectGatt(BluetoothDevice mDevice)
+    {
+        Log.i(TAG, "mGatt Null, connecting...");
+        Log.i(TAG, "connectToDevice On Main Thread? " + isOnMainThread());
+        mGatt = mDevice.connectGatt(getApplicationContext(), false, gattCallback);
     }
 
 
@@ -1172,10 +1179,11 @@ public class G5CollectionService extends Service {
                         authStatus = new AuthStatusRxMessage(buffer);
 
                         // TODO KS check here
-                        //if (authStatus.authenticated == 1 && authStatus.bonded == 1 && !isBondedOrBonding) {
-                        //    device.createBond();
-                        //    isBondedOrBonding = true;
-                        //}
+                        if (authStatus.authenticated == 1 && authStatus.bonded == 1 && !isBondedOrBonding) {
+                            Log.e(TAG,"Special bonding test case!");
+                            device.createBond();
+                            isBondedOrBonding = true;
+                        }
 
                         if (authStatus.authenticated == 1 && authStatus.bonded == 1 && isBondedOrBonding) {
                             // TODO check bonding logic here and above
