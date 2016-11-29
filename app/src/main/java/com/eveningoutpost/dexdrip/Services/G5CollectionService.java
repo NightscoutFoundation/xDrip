@@ -35,7 +35,6 @@ import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.G5Model.AuthChallengeRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.AuthChallengeTxMessage;
-
 import com.eveningoutpost.dexdrip.G5Model.AuthRequestTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.AuthStatusRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.BluetoothServices;
@@ -46,6 +45,7 @@ import com.eveningoutpost.dexdrip.G5Model.GlucoseRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.GlucoseTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.SensorRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.SensorTxMessage;
+import com.eveningoutpost.dexdrip.G5Model.Transmitter;
 import com.eveningoutpost.dexdrip.G5Model.TransmitterStatus;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -54,8 +54,6 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-import com.eveningoutpost.dexdrip.G5Model.Transmitter;
-
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
@@ -113,7 +111,7 @@ public class G5CollectionService extends Service {
     private BluetoothGattService cgmService;// = gatt.getService(UUID.fromString(BluetoothServices.CGMService));
     private BluetoothGattCharacteristic authCharacteristic;// = cgmService.getCharacteristic(UUID.fromString(BluetoothServices.Authentication));
     private BluetoothGattCharacteristic controlCharacteristic;//
-    private BluetoothGattCharacteristic commCharacteristic;//
+    //private BluetoothGattCharacteristic commCharacteristic;//
 
     private BluetoothDevice device;
     private Boolean isBondedOrBonding = false;
@@ -263,29 +261,32 @@ public class G5CollectionService extends Service {
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         Log.d(TAG, "Transmitter: " + prefs.getString("dex_txid", "ABCDEF"));
         defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
+        final boolean previousBondedState = isBondedOrBonding;
         isBondedOrBonding = false;
         if (mBluetoothAdapter == null) {
             Log.wtf(TAG, "No bluetooth adapter");
             return;
         }
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+        final Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         if ((pairedDevices != null) && (pairedDevices.size() > 0)) {
             for (BluetoothDevice device : pairedDevices) {
                 if (device.getName() != null) {
 
-                    String transmitterIdLastTwo = Extensions.lastTwoCharactersOfString(defaultTransmitter.transmitterId);
-                    String deviceNameLastTwo = Extensions.lastTwoCharactersOfString(device.getName());
+                    final String transmitterIdLastTwo = Extensions.lastTwoCharactersOfString(defaultTransmitter.transmitterId);
+                    final String deviceNameLastTwo = Extensions.lastTwoCharactersOfString(device.getName());
 
                     if (transmitterIdLastTwo.equals(deviceNameLastTwo)) {
                         isBondedOrBonding = true;
+                        if (!previousBondedState) Log.e(TAG,"Device is now detected as bonded!");
+                    // TODO should we break here for performance?
                     } else {
                         isIntialScan = true;
                     }
-
                 }
             }
         }
-        Log.d(TAG, "Bonded? " + isBondedOrBonding.toString());
+        if (previousBondedState && !isBondedOrBonding) Log.e(TAG,"Device is no longer detected as bonded!");
+        Log.d(TAG, "getTransmitterDetails() result: Bonded? " + isBondedOrBonding.toString());
     }
 
     @Override
@@ -630,18 +631,19 @@ public class G5CollectionService extends Service {
 
     private synchronized void forgetDevice() {
         Log.d(TAG,"forgetDevice() start");
-        Transmitter defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
+        final Transmitter defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF")); // should be cached?
         mBluetoothAdapter = mBluetoothManager.getAdapter();
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+        final Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
                 if (device.getName() != null) {
 
                     final String transmitterIdLastTwo = Extensions.lastTwoCharactersOfString(defaultTransmitter.transmitterId);
                     final String deviceNameLastTwo = Extensions.lastTwoCharactersOfString(device.getName());
-                    Log.e(TAG, "removeBond: "+transmitterIdLastTwo+" vs "+deviceNameLastTwo);
+                    //Log.e(TAG, "removeBond: "+transmitterIdLastTwo+" vs "+deviceNameLastTwo);
                     if (transmitterIdLastTwo.equals(deviceNameLastTwo)) {
                         try {
+                            Log.e(TAG, "removingBond: "+transmitterIdLastTwo+" vs "+deviceNameLastTwo);
                             Method m = device.getClass().getMethod("removeBond", (Class[]) null);
                             m.invoke(device, (Object[]) null);
                             getTransmitterDetails();
@@ -821,13 +823,13 @@ public class G5CollectionService extends Service {
 
     // Sends the disconnect tx message to our bt device.
     private synchronized void doDisconnectMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-        Log.d(TAG,"doDisconnectMessage() start");
-        mGatt.setCharacteristicNotification(controlCharacteristic, false);
-        DisconnectTxMessage disconnectTx = new DisconnectTxMessage();
-        characteristic.setValue(disconnectTx.byteSequence);
-        mGatt.writeCharacteristic(characteristic);
-        mGatt.disconnect();
-        Log.d(TAG,"doDisconnectMessage() finished");
+           Log.d(TAG, "doDisconnectMessage() start");
+           mGatt.setCharacteristicNotification(controlCharacteristic, false);
+           DisconnectTxMessage disconnectTx = new DisconnectTxMessage();
+           characteristic.setValue(disconnectTx.byteSequence);
+           mGatt.writeCharacteristic(characteristic);
+           mGatt.disconnect();
+           Log.d(TAG, "doDisconnectMessage() finished");
     }
 
     private synchronized void discoverServices() {
@@ -928,7 +930,7 @@ public class G5CollectionService extends Service {
 
                                               break;
                                           default:
-                                              Log.e(TAG, "STATE_OTHER");
+                                              Log.e(TAG, "STATE_OTHER: "+newState);
                                       }
                                   }
                               }
@@ -1036,7 +1038,7 @@ public class G5CollectionService extends Service {
                             authCharacteristic = cgmService.getCharacteristic(BluetoothServices.Authentication);
                             controlCharacteristic = cgmService.getCharacteristic(BluetoothServices.Control);
                             // TODO can we remove the below comm line
-                            commCharacteristic = cgmService.getCharacteristic(BluetoothServices.Communication);
+                            //commCharacteristic = cgmService.getCharacteristic(BluetoothServices.Communication);
                         }
                     } catch (NullPointerException e) {
                         Log.e(TAG, "Got Null pointer in OnServices discovered 2");
@@ -1180,18 +1182,18 @@ public class G5CollectionService extends Service {
 
                         // TODO KS check here
                         if (authStatus.authenticated == 1 && authStatus.bonded == 1 && !isBondedOrBonding) {
-                            Log.e(TAG,"Special bonding test case!");
-                            device.createBond();
-                            isBondedOrBonding = true;
+                            Log.e(TAG, "Special bonding test case!");
+                            getTransmitterDetails(); // try to refresh on the off-chance
                         }
 
                         if (authStatus.authenticated == 1 && authStatus.bonded == 1 && isBondedOrBonding) {
                             // TODO check bonding logic here and above
-                            isBondedOrBonding = true;
+                            isBondedOrBonding = true; // statement has no effect?
                             getSensorData();
-                        } else if (authStatus.authenticated == 1 && authStatus.bonded == 2) {
-                            Log.i(TAG, "Let's Bond!");
-                            BondRequestTxMessage bondRequest = new BondRequestTxMessage();
+                        } else if ((authStatus.authenticated == 1 && authStatus.bonded == 2)
+                                || (authStatus.authenticated == 1 && authStatus.bonded == 1 && !isBondedOrBonding)) {
+                            Log.i(TAG, "Let's Bond! " + (isBondedOrBonding ? "locally bonded" : "not locally bonded"));
+                            final BondRequestTxMessage bondRequest = new BondRequestTxMessage();
                             characteristic.setValue(bondRequest.byteSequence);
                             mGatt.writeCharacteristic(characteristic);
                             isBondedOrBonding = true;
@@ -1346,7 +1348,7 @@ public class G5CollectionService extends Service {
         Log.d(TAG,"Dex raw_data "+ Double.toString(transmitterData.raw_data));//KS
         Log.d(TAG,"Dex filtered_data "+ Double.toString(transmitterData.filtered_data));//KS
         Log.d(TAG,"Dex sensor_battery_level "+ Double.toString(transmitterData.sensor_battery_level));//KS
-        Log.d(TAG,"Dex timestamp "+ Double.toString(transmitterData.timestamp));//KS
+        Log.d(TAG,"Dex timestamp "+ JoH.dateTimeText(transmitterData.timestamp));//KS
 
     }
 
