@@ -126,7 +126,7 @@ public class G5CollectionService extends Service {
     private static boolean isScanning = false;
     private boolean isConnected = false;
     private boolean encountered133 = false;
-    private Handler handler;
+    //private Handler handler;
     public int max133Retries = 5;
     public int max133RetryCounter = 0;
     private static int disconnected133 = 0;
@@ -155,8 +155,10 @@ public class G5CollectionService extends Service {
 //        registerReceiver(mPairReceiver, bondintent);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         listenForChangeInSettings();
+
+        // TODO check this
         bgToSpeech = BgToSpeech.setupTTS(getApplicationContext()); //keep reference to not being garbage collected
-        handler = new Handler(getApplicationContext().getMainLooper());
+       // handler = new Handler(getApplicationContext().getMainLooper());
     }
 
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -205,6 +207,8 @@ public class G5CollectionService extends Service {
                 if (useG5NewMethod()) {
                     if (!Home.getPreferencesStringDefaultBlank("extra_tags_for_logging").contains("G5CollectionService:v")) {
                         Home.setPreferencesString("extra_tags_for_logging", "G5CollectionService:v,");
+                        String extraLogs = Home.getPreferencesStringDefaultBlank("extra_tags_for_logging");
+                        UserError.ExtraLogTags.readPreference(extraLogs);
                     }
                     Home.setPreferencesBoolean("enable_bugfender", true);
                     xdrip.initBF();
@@ -746,7 +750,7 @@ public class G5CollectionService extends Service {
         try {
             if (mGatt != null) {
                 mGatt.setCharacteristicNotification(controlCharacteristic, true);
-                BluetoothGattDescriptor descriptor = controlCharacteristic.getDescriptor(BluetoothServices.CharacteristicUpdateNotification);
+                final BluetoothGattDescriptor descriptor = controlCharacteristic.getDescriptor(BluetoothServices.CharacteristicUpdateNotification);
                 descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
                 if (useG5NewMethod()) {
                     // new style
@@ -757,10 +761,13 @@ public class G5CollectionService extends Service {
                     SensorTxMessage sensorTx = new SensorTxMessage();
                     controlCharacteristic.setValue(sensorTx.byteSequence);
                 }
+                Log.d(TAG,"getSensorData(): writing desccrptor");
                 mGatt.writeDescriptor(descriptor);
+            } else {
+                Log.e(TAG,"getSensorData() mGatt was null");
             }
         } catch (NullPointerException e) {
-            Log.d(TAG, "Got null pointer in getSensorData() " + e);
+            Log.e(TAG, "Got null pointer in getSensorData() " + e);
         }
     }
 
@@ -786,7 +793,7 @@ public class G5CollectionService extends Service {
                 iHandler.post(new Runnable() {
                     @Override
                     public void run() {
-
+                        // TODO move this to method
                         Log.i(TAG, "mGatt Null, connecting...");
                         Log.i(TAG, "connectToDevice On Main Thread? " + isOnMainThread());
                         mGatt = mDevice.connectGatt(getApplicationContext(), false, gattCallback);
@@ -836,6 +843,7 @@ public class G5CollectionService extends Service {
         public void onConnectionStateChange(BluetoothGatt gatt, final int status, final int newState) {
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
+                // TODO this also needs moving in to a method
                 iHandler.post(new Runnable() {
                                   @Override
                                   public void run() { //Log.e(TAG, "last disconnect status? " + lastGattStatus);
@@ -947,7 +955,7 @@ public class G5CollectionService extends Service {
                         if (isScanning) {
                             stopScan();
                         }
-                        Log.e(TAG, "STATE_DISCONNECTED: " + status);
+                        Log.e(TAG, "STATE_DISCONNECTED: " + getStatusName(status));
                         if (mGatt != null)
                             mGatt.close();
                         mGatt = null;
@@ -993,84 +1001,56 @@ public class G5CollectionService extends Service {
                 }
             }
 
-
         }
 
         @Override
-        public synchronized void onServicesDiscovered(BluetoothGatt gatt, final int status) {
+        public synchronized void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
                 iHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.i(TAG, "onServicesDiscovered On Main Thread? " + isOnMainThread());
-                        Log.e(TAG, "onServicesDiscovered: " + status);
-                        if (status == BluetoothGatt.GATT_SUCCESS) {
-                            if (mGatt != null) {
-                                try {
-                                    cgmService = mGatt.getService(BluetoothServices.CGMService);
-                                    if (cgmService != null) {
-                                        authCharacteristic = cgmService.getCharacteristic(BluetoothServices.Authentication);
-                                        controlCharacteristic = cgmService.getCharacteristic(BluetoothServices.Control);
-                                        commCharacteristic = cgmService.getCharacteristic(BluetoothServices.Communication);
-                                    }
-                                } catch (NullPointerException e) {
-                                    Log.e(TAG, "Got null point exception onService Discovered");
-                                }
-                                mBluetoothAdapter.cancelDiscovery();
-                            }
-
-                            //TODO : ADD option in settings!
-                            if (alwaysAuthenticate() || alwaysUnbond()) {
-                                fullAuthenticate();
-                            } else {
-                                authenticate();
-                            }
-
-                        } else {
-                            Log.w(TAG, "onServicesDiscovered received: " + status);
-                        }
-
-                        if (status == 133) {
-                            encountered133 = true;
-                        }
+                        processOnServicesDiscovered(gatt, status);
                     }
                 });
             } else {
-                Log.i(TAG, "onServicesDiscovered On Main Thread? " + isOnMainThread());
-                Log.e(TAG, "onServicesDiscovered: " + status);
-                if (status == BluetoothGatt.GATT_SUCCESS) {
-                    if (mGatt != null) {
-                        try {
-                            cgmService = mGatt.getService(BluetoothServices.CGMService);
-                            if (cgmService != null) {
-                                authCharacteristic = cgmService.getCharacteristic(BluetoothServices.Authentication);
-                                controlCharacteristic = cgmService.getCharacteristic(BluetoothServices.Control);
-                                commCharacteristic = cgmService.getCharacteristic(BluetoothServices.Communication);
-                            }
-                        } catch (NullPointerException e) {
-                            Log.e(TAG, "Got Null pointer in OnServices discovered 2");
+                processOnServicesDiscovered(gatt, status);
+            }
+        }
+
+        private synchronized void processOnServicesDiscovered(final BluetoothGatt gatt, final int status) {
+            Log.i(TAG, "onServicesDiscovered On Main Thread? " + isOnMainThread());
+            Log.e(TAG, "onServicesDiscovered: " + getStatusName(status));
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                if (mGatt != null) {
+                    try {
+                        cgmService = mGatt.getService(BluetoothServices.CGMService);
+                        if (cgmService != null) {
+                            authCharacteristic = cgmService.getCharacteristic(BluetoothServices.Authentication);
+                            controlCharacteristic = cgmService.getCharacteristic(BluetoothServices.Control);
+                            // TODO can we remove the below comm line
+                            commCharacteristic = cgmService.getCharacteristic(BluetoothServices.Communication);
                         }
-                        mBluetoothAdapter.cancelDiscovery();
+                    } catch (NullPointerException e) {
+                        Log.e(TAG, "Got Null pointer in OnServices discovered 2");
                     }
+                    mBluetoothAdapter.cancelDiscovery();
+                }
 
-                    //TODO : ADD option in settings!
-                    if (alwaysAuthenticate() || alwaysUnbond()) {
-                        fullAuthenticate();
-                    } else {
-                        authenticate();
-                    }
-
+                //TODO : ADD option in settings!
+                if (alwaysAuthenticate() || alwaysUnbond()) {
+                    fullAuthenticate();
                 } else {
-                    Log.w(TAG, "onServicesDiscovered received: " + status);
+                    authenticate();
                 }
 
-                if (status == 133) {
-                    encountered133 = true;
-                }
+            } else {
+                Log.w(TAG, "onServicesDiscovered received error status: " + getStatusName(status));
             }
 
-
+            if (status == 133) {
+                encountered133 = true;
+            }
         }
 
         @Override
@@ -1175,21 +1155,30 @@ public class G5CollectionService extends Service {
         private synchronized void processOnCharacteristicRead (BluetoothGatt gatt,
                                                   final BluetoothGattCharacteristic characteristic, final int status)
         {
-            Log.e(TAG, "processOnCRead: Status value: " + String.valueOf(status) + (isOnMainThread() ? " on main thread" : " not on main thread"));
+            Log.e(TAG, "processOnCRead: Status value: " + getStatusName(status) + (isOnMainThread() ? " on main thread" : " not on main thread"));
 
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.e(TAG, "CharBytes-or " + Arrays.toString(characteristic.getValue()));
                 Log.i(TAG, "CharHex-or " + Extensions.bytesToHex(characteristic.getValue()));
 
-                byte[] buffer = characteristic.getValue();
+                final byte[] buffer = characteristic.getValue();
                 byte code = buffer[0];
-                Transmitter defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
+                //Transmitter defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
+                Log.e(TAG,"processOncRead: code:"+code);
                 mBluetoothAdapter = mBluetoothManager.getAdapter();
 
                 switch (code) {
                     case 5:
-                        authStatus = new AuthStatusRxMessage(characteristic.getValue());
-                        if (authStatus.authenticated == 1 && authStatus.bonded == 1 && isBondedOrBonding == true) {
+                        authStatus = new AuthStatusRxMessage(buffer);
+
+                        // TODO KS check here
+                        //if (authStatus.authenticated == 1 && authStatus.bonded == 1 && !isBondedOrBonding) {
+                        //    device.createBond();
+                        //    isBondedOrBonding = true;
+                        //}
+
+                        if (authStatus.authenticated == 1 && authStatus.bonded == 1 && isBondedOrBonding) {
+                            // TODO check bonding logic here and above
                             isBondedOrBonding = true;
                             getSensorData();
                         } else if (authStatus.authenticated == 1 && authStatus.bonded == 2) {
@@ -1399,8 +1388,7 @@ public class G5CollectionService extends Service {
         return null;
     }
 
-    public static boolean isOnMainThread()
-    {
+    private static boolean isOnMainThread() {
         return Looper.getMainLooper().getThread() == Thread.currentThread();
     }
 
@@ -1463,6 +1451,5 @@ public class G5CollectionService extends Service {
                 + (enforceMainThread() ? "enforceMainThread " : "")
                 + (useG5NewMethod() ? "useG5NewMethod " : ""));
     }
-
 
 }
