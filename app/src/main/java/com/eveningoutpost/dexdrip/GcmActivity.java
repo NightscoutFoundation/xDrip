@@ -246,7 +246,7 @@ public class GcmActivity extends Activity {
         if (JoH.ratelimit("gcm-bgs-batch", 15)) {
             GcmActivity.sendMessage("bgs", bgReading.toJSON(true));
         } else {
-            PersistentStore.appendString("gcm-bgs-batch-queue", bgReading.toJSON(true), "^");
+            PersistentStore.appendString("gcm-bgs-batch-queue", bgReading.toJSON(false), "^");
             PersistentStore.setLong("gcm-bgs-batch-time", JoH.tsl());
             processBgsBatch(false);
         }
