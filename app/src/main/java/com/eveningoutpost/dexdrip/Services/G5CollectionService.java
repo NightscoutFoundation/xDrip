@@ -90,6 +90,7 @@ public class G5CollectionService extends Service {
     public final static String TAG = G5CollectionService.class.getSimpleName();
 
     private static final Object short_lock = new Object();
+    private final Object mLock = new Object();
     private static boolean cycling_bt = false;
     private static boolean service_running = false;
     private static boolean scan_scheduled = false;
@@ -115,6 +116,7 @@ public class G5CollectionService extends Service {
 
     private BluetoothDevice device;
     private Boolean isBondedOrBonding = false;
+    private Boolean isBonded = false;
     public static boolean keep_running = true;
 
     private ScanSettings settings;
@@ -125,7 +127,7 @@ public class G5CollectionService extends Service {
     private boolean isConnected = false;
     private boolean encountered133 = false;
     //private Handler handler;
-    public int max133Retries = 5;
+    private final int max133Retries = 5;
     public int max133RetryCounter = 0;
     private static int disconnected133 = 0;
     private static int disconnected59 = 0;
@@ -136,6 +138,14 @@ public class G5CollectionService extends Service {
     private int maxScanIntervalInMilliseconds = 5 * 1000; //seconds *1k
     private int maxScanCycles = 24;
     private int scanCycleCount = 0;
+    private boolean delays = false;
+
+
+    // test params
+    private static final boolean ignoreLocalBondingState = false; // don't try to bond
+    private static final boolean delayOnBond = false; // delay while bonding
+    private static final boolean tryPreBondWithDelay = false; // prebond with delay
+    private static final boolean delayOn133Errors = true; // add some delays with 133 errors
 
     StringBuilder log = new StringBuilder();
 
@@ -247,7 +257,7 @@ public class G5CollectionService extends Service {
                     return START_STICKY;
                 }
             } else {
-                Log.e(TAG,"jamorham service already active!");
+                Log.e(TAG,"G5 service already active!");
                 keepAlive();
                 return START_NOT_STICKY;
             }
@@ -261,8 +271,9 @@ public class G5CollectionService extends Service {
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         Log.d(TAG, "Transmitter: " + prefs.getString("dex_txid", "ABCDEF"));
         defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
-        final boolean previousBondedState = isBondedOrBonding;
+        final boolean previousBondedState = isBonded;
         isBondedOrBonding = false;
+        isBonded = false;
         if (mBluetoothAdapter == null) {
             Log.wtf(TAG, "No bluetooth adapter");
             return;
@@ -277,6 +288,7 @@ public class G5CollectionService extends Service {
 
                     if (transmitterIdLastTwo.equals(deviceNameLastTwo)) {
                         isBondedOrBonding = true;
+                        isBonded=true;
                         if (!previousBondedState) Log.e(TAG,"Device is now detected as bonded!");
                     // TODO should we break here for performance?
                     } else {
@@ -285,8 +297,8 @@ public class G5CollectionService extends Service {
                 }
             }
         }
-        if (previousBondedState && !isBondedOrBonding) Log.e(TAG,"Device is no longer detected as bonded!");
-        Log.d(TAG, "getTransmitterDetails() result: Bonded? " + isBondedOrBonding.toString());
+        if (previousBondedState && !isBonded) Log.e(TAG,"Device is no longer detected as bonded!");
+        Log.d(TAG, "getTransmitterDetails() result: Bonded? " + isBondedOrBonding.toString()+(isBonded ? " localed bonded" : " not locally bonded"));
     }
 
     @Override
@@ -825,7 +837,7 @@ public class G5CollectionService extends Service {
     private synchronized void doDisconnectMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
            Log.d(TAG, "doDisconnectMessage() start");
            mGatt.setCharacteristicNotification(controlCharacteristic, false);
-           DisconnectTxMessage disconnectTx = new DisconnectTxMessage();
+           final DisconnectTxMessage disconnectTx = new DisconnectTxMessage();
            characteristic.setValue(disconnectTx.byteSequence);
            mGatt.writeCharacteristic(characteristic);
            mGatt.disconnect();
@@ -834,8 +846,14 @@ public class G5CollectionService extends Service {
 
     private synchronized void discoverServices() {
         if (JoH.ratelimit("G5-discservices", 2)) {
+
             Log.i(TAG, "discoverServices() started " + (isOnMainThread() ? "on main thread" : "not on main thread"));
             if (mGatt != null) {
+                if (delayOn133Errors && max133RetryCounter > 1) {
+                    // should we only be looking at disconnected 133 here?
+                    Log.e(TAG, "Adding a delay before discovering services due to 133 count of: " + max133RetryCounter);
+                    waitFor(1600);
+                }
                 mGatt.discoverServices();
             } else {
                 Log.e(TAG, "discoverServices: mGatt is null");
@@ -849,168 +867,111 @@ public class G5CollectionService extends Service {
     private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
 
         @Override
-        public void onConnectionStateChange(BluetoothGatt gatt, final int status, final int newState) {
+        public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
-                // TODO this also needs moving in to a method
                 iHandler.post(new Runnable() {
                                   @Override
-                                  public void run() { //Log.e(TAG, "last disconnect status? " + lastGattStatus);
-                                      Log.i(TAG, "onConnectionStateChange On Main Thread? " + isOnMainThread());
-                                      switch (newState) {
-                                          case BluetoothProfile.STATE_CONNECTED:
-                                              Log.e(TAG, "STATE_CONNECTED");
-                                              isConnected = true;
-
-                                              if (enforceMainThread()) {
-                                                  Handler iHandler = new Handler(Looper.getMainLooper());
-                                                  iHandler.post(new Runnable() {
-                                                      @Override
-                                                      public void run() {
-                                                          discoverServices();
-                                                      }
-                                                  });
-                                              } else {
-                                                  discoverServices();
-                                              }
-
-
-                                              stopScan();
-                                              scan_interval_timer.cancel();
-                                              keepAlive();
-                                              break;
-                                          case BluetoothProfile.STATE_DISCONNECTED:
-                                              isConnected = false;
-                                              if (isScanning) {
-                                                  stopScan();
-                                              }
-                                              Log.e(TAG, "STATE_DISCONNECTED: " + getStatusName(status));
-                                              if (mGatt != null) {
-                                                  try {
-                                                      mGatt.close();
-                                                  } catch (NullPointerException e) { //
-                                                  }
-                                              }
-                                                  mGatt = null;
-                                              if (status == 0 && !encountered133) {// || status == 59) {
-                                                  Log.i(TAG, "clean disconnect");
-                                                  max133RetryCounter = 0;
-                                                  if (scanConstantly())
-                                                      cycleScan(15000);
-                                              } else if (status == 133 || max133RetryCounter >= max133Retries) {
-                                                  Log.e(TAG, "max133RetryCounter? " + max133RetryCounter);
-                                                  Log.e(TAG, "Encountered 133: " + encountered133);
-                                                  max133RetryCounter = 0;
-                                                  disconnected133++;
-                                                  cycleBT(true);
-                                              } else if (encountered133) {
-                                                  Log.e(TAG, "max133RetryCounter? " + max133RetryCounter);
-                                                  Log.e(TAG, "Encountered 133: " + encountered133);
-                                                  if (scanConstantly())
-                                                      startScan();
-                                                  else
-                                                      cycleScan(0);
-                                                  max133RetryCounter++;
-                                              } else if (status == 129) {
-                                                  forgetDevice();
-                                              } else {
-                                                  if (status == 59) {
-                                                      disconnected59++;
-                                                  }
-                                                  if (disconnected59 > 2) {
-                                                      cycleBT(true);
-                                                  } else {
-                                                      if (scanConstantly())
-                                                          startScan();
-                                                      else
-                                                          cycleScan(0);
-                                                      max133RetryCounter = 0;
-                                                  }
-                                              }
-
-                                              break;
-                                          default:
-                                              Log.e(TAG, "STATE_OTHER: "+newState);
-                                      }
+                                  public void run() {
+                                      processOnStateChange(gatt, status, newState);
                                   }
                               }
                 );
             } else {
-                Log.i(TAG, "onConnectionStateChange On Main Thread? " + isOnMainThread());
-                switch (newState) {
-                    case BluetoothProfile.STATE_CONNECTED:
-                        Log.e(TAG, "STATE_CONNECTED");
-                        isConnected = true;
+                processOnStateChange(gatt, status, newState);
+            }
+        }
 
-                        if (enforceMainThread()) {
-                            Handler iHandler = new Handler(Looper.getMainLooper());
-                            iHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    discoverServices();
-                                }
-                            });
-                        } else {
-                            discoverServices();
+
+        private void processOnStateChange(final BluetoothGatt gatt, final int status, final int newState) {
+            switch (newState) {
+
+
+                case BluetoothProfile.STATE_CONNECTED:
+                    Log.e(TAG, "STATE_CONNECTED");
+                    isConnected = true;
+
+                    // TODO we should already be on the correct thread
+                    if (enforceMainThread()) {
+                        if (!isOnMainThread()) {
+                            Log.d(TAG, "We are not on the main thread so this section is still needed!!");
                         }
+                        Handler iHandler = new Handler(Looper.getMainLooper());
+                        iHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                discoverServices();
+                            }
+                        });
+                    } else {
+                        discoverServices();
+                    }
 
 
+                    stopScan();
+                    scan_interval_timer.cancel();
+                    keepAlive();
+                    break;
+
+
+                case BluetoothProfile.STATE_DISCONNECTED:
+                    isConnected = false;
+                    if (isScanning) {
                         stopScan();
-                        scan_interval_timer.cancel();
-                        keepAlive();
-                        break;
-                    case BluetoothProfile.STATE_DISCONNECTED:
-                        isConnected = false;
-                        if (isScanning) {
-                            stopScan();
-                        }
-                        Log.e(TAG, "STATE_DISCONNECTED: " + getStatusName(status));
-                        if (mGatt != null)
+                    }
+                    Log.e(TAG, "STATE_DISCONNECTED: " + getStatusName(status));
+                    if (mGatt != null) {
+                        try {
                             mGatt.close();
-                        mGatt = null;
-                        if (status == 0 && !encountered133) {// || status == 59) {
-                            Log.i(TAG, "clean disconnect");
-                            max133RetryCounter = 0;
-                            if (scanConstantly())
-                                cycleScan(15000);
-                        } else if (status == 133 || max133RetryCounter >= max133Retries) {
-                            Log.e(TAG, "max133RetryCounter? " + max133RetryCounter);
-                            Log.e(TAG, "Encountered 133: " + encountered133);
-                            max133RetryCounter = 0;
-                            disconnected133++;
+                        } catch (NullPointerException e) { //
+                        }
+                    }
+
+                    mGatt = null;
+                    if (status == 0 && !encountered133) {// || status == 59) {
+                        Log.i(TAG, "clean disconnect");
+                        max133RetryCounter = 0;
+                        if (scanConstantly())
+                            cycleScan(15000);
+                    } else if (status == 133 || max133RetryCounter >= max133Retries) {
+                        Log.e(TAG, "max133RetryCounter? " + max133RetryCounter);
+                        Log.e(TAG, "Encountered 133: " + encountered133);
+                        max133RetryCounter = 0;
+                        disconnected133++;
+                        cycleBT(true);
+                    } else if (encountered133) {
+                        Log.e(TAG, "max133RetryCounter? " + max133RetryCounter);
+                        Log.e(TAG, "Encountered 133: " + encountered133);
+                        if (scanConstantly())
+                            startScan();
+                        else
+                            cycleScan(0);
+                        max133RetryCounter++;
+                    } else if (status == 129) {
+                        Log.d(TAG, "Forgetting device due to status: " + status);
+                        forgetDevice();
+                    } else {
+                        if (status == 59) {
+                            disconnected59++;
+                        }
+                        if (disconnected59 > 2) {
                             cycleBT(true);
-                        } else if (encountered133) {
-                            Log.e(TAG, "max133RetryCounter? " + max133RetryCounter);
-                            Log.e(TAG, "Encountered 133: " + encountered133);
+                        } else {
                             if (scanConstantly())
                                 startScan();
                             else
                                 cycleScan(0);
-                            max133RetryCounter++;
-                        } else if (status == 129) {
-                            forgetDevice();
-                        } else {
-                            if (status == 59) {
-                                disconnected59++;
-                            }
-                            if (disconnected59 > 2) {
-                                cycleBT(true);
-                            } else {
-                                if (scanConstantly())
-                                    startScan();
-                                else
-                                    cycleScan(0);
-                                max133RetryCounter = 0;
-                            }
+                            max133RetryCounter = 0;
                         }
+                    }
+                    break;
 
-                        break;
-                    default:
-                        Log.e(TAG, "STATE_OTHER");
-                }
+
+                default:
+                    Log.e(TAG, "STATE_OTHER: " + newState);
             }
-
         }
+
 
         @Override
         public synchronized void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
@@ -1126,6 +1087,11 @@ public class G5CollectionService extends Service {
                     if (characteristic.getValue() != null) {
                         Log.e(TAG, "Auth ow: got opcode: " + characteristic.getValue()[0]);
                         if (characteristic.getValue()[0] != 0x6) { /* opcode keepalive? */
+                            if (delayOn133Errors && max133RetryCounter > 1) {
+                                // should we only be looking at disconnected 133 here?
+                                Log.e(TAG, "Adding a delay before reading characteristic with 133 count of: " + max133RetryCounter);
+                                waitFor(300);
+                            }
                             mGatt.readCharacteristic(characteristic);
                         } else {
                             Log.e(TAG, "Auth ow: got keepalive");
@@ -1183,10 +1149,22 @@ public class G5CollectionService extends Service {
                         // TODO KS check here
                         if (authStatus.authenticated == 1 && authStatus.bonded == 1 && !isBondedOrBonding) {
                             Log.e(TAG, "Special bonding test case!");
+
+                            if (tryPreBondWithDelay) {
+                                Log.e(TAG,"Trying prebonding with delay!");
+                                isBondedOrBonding = true;
+                                device.createBond();
+                                waitFor(1600);
+                                Log.e(TAG,"Prebond delay finished");
+                            }
+
                             getTransmitterDetails(); // try to refresh on the off-chance
                         }
 
-                        if (authStatus.authenticated == 1 && authStatus.bonded == 1 && isBondedOrBonding) {
+                        if (ignoreLocalBondingState) Log.e(TAG,"Ignoring local bonding state!!");
+
+
+                        if (authStatus.authenticated == 1 && authStatus.bonded == 1 && (isBondedOrBonding || ignoreLocalBondingState)) {
                             // TODO check bonding logic here and above
                             isBondedOrBonding = true; // statement has no effect?
                             getSensorData();
@@ -1196,6 +1174,11 @@ public class G5CollectionService extends Service {
                             final BondRequestTxMessage bondRequest = new BondRequestTxMessage();
                             characteristic.setValue(bondRequest.byteSequence);
                             mGatt.writeCharacteristic(characteristic);
+                            if (delayOnBond) {
+                                Log.e(TAG, "Delaying before bond");
+                                waitFor(1000);
+                                Log.e(TAG, "Delay finished");
+                            }
                             isBondedOrBonding = true;
                             device.createBond();
                         } else {
@@ -1232,6 +1215,11 @@ public class G5CollectionService extends Service {
                     //    break;
 
                     default:
+                        if ((code == 7) && (delayOnBond)) {
+                            Log.e(TAG, "Delaying response to onRead for code: " + code);
+                            waitFor(1500);
+                            Log.e(TAG, "Delayed response to onRead finished");
+                        }
                         Log.i(TAG, "Read code: " + code + " - Transmitter NOT already authenticated?");
                         sendAuthRequestTxMessage(characteristic);
                         break;
@@ -1296,12 +1284,14 @@ public class G5CollectionService extends Service {
                 }
 
                 //Log.e(TAG, "filtered: " + sensorRx.filtered);
-                disconnected133 = 0;
+                disconnected133 = 0; // reset as we got a reading
                 disconnected59 = 0;
                 Log.e(TAG, "unfiltered: " + sensorRx.unfiltered);
                 doDisconnectMessage(gatt, characteristic);
                 processNewTransmitterData(sensorRx.unfiltered, sensorRx.filtered, sensor_battery_level, new Date().getTime());
             } else if (firstByte == GlucoseRxMessage.opcode) {
+                disconnected133 = 0; // reset as we got a reading
+                disconnected59 = 0;
                 GlucoseRxMessage glucoseRx = new GlucoseRxMessage(characteristic.getValue());
                 Log.e(TAG, "glucose unfiltered: " + glucoseRx.unfiltered);
                 doDisconnectMessage(gatt, characteristic);
@@ -1413,6 +1403,17 @@ public class G5CollectionService extends Service {
         return expectedTxTime;
     }
 
+    protected void waitFor(final int millis) {
+        synchronized (mLock) {
+            try {
+                Log.e(TAG, "waiting " + millis + "ms");
+                mLock.wait(millis);
+            } catch (final InterruptedException e) {
+                Log.e(TAG, "Sleeping interrupted", e);
+            }
+        }
+    }
+
     private long getMillisecondsSinceTxLastSeen() {
         return new Date().getTime() - advertiseTimeMS.get(0);
     }
@@ -1459,7 +1460,11 @@ public class G5CollectionService extends Service {
                 + (alwaysUnbond() ? "alwaysUnbond " : "")
                 + (alwaysAuthenticate() ? "alwaysAuthenticate " : "")
                 + (enforceMainThread() ? "enforceMainThread " : "")
-                + (useG5NewMethod() ? "useG5NewMethod " : ""));
+                + (useG5NewMethod() ? "useG5NewMethod " : "")
+                + (ignoreLocalBondingState ? "ignoreLocalBondingState " : "")
+                + (delayOnBond ? "delayOnBond " : "")
+                + (delayOn133Errors ? "delayOn133Errors " : "")
+                + (tryPreBondWithDelay ? "tryPreBondWithDelay " : ""));
     }
 
 }
