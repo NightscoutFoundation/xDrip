@@ -15,6 +15,7 @@ import android.widget.EditText;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
+import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
@@ -56,7 +57,7 @@ public class CalibrationOverride extends ActivityWithMenu {
                         last_calibration.sensor_confidence = 0;
                         last_calibration.slope_confidence = 0;
                         last_calibration.save();
-
+                        CalibrationSendQueue.addToQueue(last_calibration, getApplicationContext());
                         // TODO we need to push the nixing of this last calibration
 
                         final Calibration calibration = Calibration.create(calValue, getApplicationContext());

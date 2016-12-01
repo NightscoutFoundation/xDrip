@@ -14,7 +14,11 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 import com.google.gson.internal.bind.DateTypeAdapter;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Date;
 import java.util.UUID;
@@ -25,25 +29,26 @@ import java.util.UUID;
 
 @Table(name = "Sensors", id = BaseColumns._ID)
 public class Sensor extends Model {
+    private final static String TAG = Sensor.class.getSimpleName();
 
-//    @Expose
+    @Expose
     @Column(name = "started_at", index = true)
     public long started_at;
 
-//    @Expose
+    @Expose
     @Column(name = "stopped_at")
     public long stopped_at;
 
-//    @Expose
+    @Expose
     //latest minimal battery level
     @Column(name = "latest_battery_level")
     public int latest_battery_level;
 
-//    @Expose
+    @Expose
     @Column(name = "uuid", index = true)
     public String uuid;
 
-//  @Expose
+  @Expose
   @Column(name = "sensor_location")
   public String sensor_location;
 
@@ -198,5 +203,59 @@ public class Sensor extends Model {
         sensor.sensor_location = sensor_location;
         sensor.save();
     }
+    
+    public static void upsertFromMaster(Sensor jsonSensor) {
+        if (jsonSensor == null) {
+            Log.wtf(TAG,"Got null sensor from json");
+            return;
+        }
+        try {
+            Sensor existingSensor = getByUuid(jsonSensor.uuid);
+            if (existingSensor == null) {
+                Log.d(TAG, "saving new sensor record.");
+                jsonSensor.save();
+            } else {
+                Log.d(TAG, "updating existing sensor record.");
+                existingSensor.started_at = jsonSensor.started_at;
+                existingSensor.stopped_at = jsonSensor.stopped_at;
+                existingSensor.latest_battery_level = jsonSensor.latest_battery_level;
+                existingSensor.sensor_location = jsonSensor.sensor_location;
+                existingSensor.save();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Could not save Sensor: " + e.toString());
+        }
+    }
+
+    public String toJSON() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("started_at", started_at);
+            jsonObject.put("stopped_at", stopped_at);
+            jsonObject.put("latest_battery_level", latest_battery_level);
+            jsonObject.put("uuid", uuid);
+            jsonObject.put("sensor_location", sensor_location);
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            Log.e(TAG,"Got JSONException handeling sensor", e);
+            return "";
+        }
+    }
+    
+    public static Sensor fromJSON(String json) {
+        if (json.length()==0) {
+            Log.d(TAG,"Empty json received in Sensor fromJson");
+            return null;
+        }
+        try {
+            Log.d(TAG, "Processing incoming json: " + json);
+           return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(json,Sensor.class);
+        } catch (Exception e) {
+            Log.d(TAG, "Got exception parsing Sensor json: " + e.toString());
+            Home.toaststaticnext("Error on Sensor sync.");
+            return null;
+        }
+    }
+
 }
 

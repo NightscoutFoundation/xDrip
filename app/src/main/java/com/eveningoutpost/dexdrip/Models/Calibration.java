@@ -848,6 +848,60 @@ public class Calibration extends Model {
             }
         }
     }
+    
+    public static void upsertFromMaster(Calibration jsonCalibration) {
+        
+        if (jsonCalibration == null) {
+            Log.wtf("xxxx","Got null calibration from json");
+            return;
+        }
+        try {
+            Sensor sensor = Sensor.getByUuid(jsonCalibration.sensor_uuid);
+            if (sensor == null) {
+                Log.e(TAG, "No sensor found, ignoring cailbration " + jsonCalibration.sensor_uuid);
+                return;
+            }
+            Calibration existingCalibration = byuuid(jsonCalibration.uuid);
+            if (existingCalibration == null) {
+                Log.d("xxxx", "saving new calibration record. sensor uuid =" + jsonCalibration.sensor_uuid);
+                jsonCalibration.sensor = sensor;
+                jsonCalibration.save();
+            } else {
+                Log.d("xxxx", "updating existing calibration record: ");
+                existingCalibration.sensor = sensor;
+                existingCalibration.timestamp = jsonCalibration.timestamp;
+                existingCalibration.sensor_age_at_time_of_estimation = jsonCalibration.sensor_age_at_time_of_estimation;
+                existingCalibration.bg = jsonCalibration.bg;
+                existingCalibration.raw_value = jsonCalibration.raw_value;
+                existingCalibration.adjusted_raw_value = jsonCalibration.adjusted_raw_value;
+                existingCalibration.sensor_confidence = jsonCalibration.sensor_confidence;
+                existingCalibration.slope_confidence = jsonCalibration.slope_confidence;
+                existingCalibration.raw_timestamp = jsonCalibration.raw_timestamp;
+                existingCalibration.slope = jsonCalibration.slope;
+                existingCalibration.intercept = jsonCalibration.intercept;
+                existingCalibration.distance_from_estimate = jsonCalibration.distance_from_estimate;
+                existingCalibration.estimate_raw_at_time_of_calibration = jsonCalibration.estimate_raw_at_time_of_calibration;
+                existingCalibration.estimate_bg_at_time_of_calibration = jsonCalibration.estimate_bg_at_time_of_calibration;
+                existingCalibration.uuid = jsonCalibration.uuid;
+                existingCalibration.sensor_uuid = jsonCalibration.sensor_uuid;
+                existingCalibration.possible_bad = jsonCalibration.possible_bad;
+                existingCalibration.check_in = jsonCalibration.check_in;
+                existingCalibration.first_decay = jsonCalibration.first_decay;
+                existingCalibration.second_decay = jsonCalibration.second_decay;
+                existingCalibration.first_slope = jsonCalibration.first_slope;
+                existingCalibration.second_slope = jsonCalibration.second_slope;
+                existingCalibration.first_intercept = jsonCalibration.first_intercept;
+                existingCalibration.second_intercept = jsonCalibration.second_intercept;
+                existingCalibration.first_scale = jsonCalibration.first_scale;
+                existingCalibration.second_scale = jsonCalibration.second_scale;
+                
+                existingCalibration.save();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Could not save Calibration: " + e.toString());
+        }
+    }
+    
 
     //COMMON SCOPES!
     public static Calibration last() {
@@ -1005,6 +1059,15 @@ public class Calibration extends Model {
                 .execute();
     }
 
+    public static List<Calibration> getCalibrationsForSensor(Sensor sensor) {
+        return new Select()
+                .from(Calibration.class)
+                .where("sensor_uuid = ? ", sensor.uuid)
+                 .orderBy("timestamp desc")
+                 .limit(9) // Currently, only 10 calibrations seems to pass, and I want to have some spare
+                .execute();
+    }
+    
     public static List<Calibration> futureCalibrations() {
         double timestamp = new Date().getTime();
         return new Select()
