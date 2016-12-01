@@ -185,13 +185,15 @@ public class G5CollectionService extends Service {
             Log.d(TAG, "onReceive ACTION: " + action);
             // When discovery finds a device
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                currentBondState = device.getBondState();
-                final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                Log.d(TAG, "onReceive FOUND: " + device.getName() + " STATE: " + device.getBondState());
+                final BluetoothDevice parcel_device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                // TODO do we need to filter on the last 2 characters of the device name here?
+                currentBondState = parcel_device.getBondState();
+                Log.d(TAG, "onReceive FOUND: " + parcel_device.getName() + " STATE: " + parcel_device.getBondState());
             } else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
-                currentBondState = device.getBondState();
-                final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                Log.d(TAG, "onReceive UPDATE Name " + device.getName() + " Value " + device.getAddress() + " Bond state " + device.getBondState() + bondState(device.getBondState()));
+                final BluetoothDevice parcel_device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                // TODO do we need to filter on the last 2 characters of the device name here?
+                currentBondState = parcel_device.getBondState();
+                Log.d(TAG, "onReceive UPDATE Name " + parcel_device.getName() + " Value " + parcel_device.getAddress() + " Bond state " + parcel_device.getBondState() + bondState(parcel_device.getBondState()));
             }
         }
     };
