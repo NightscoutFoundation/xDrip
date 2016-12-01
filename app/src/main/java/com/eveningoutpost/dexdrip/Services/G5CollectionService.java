@@ -43,6 +43,7 @@ import com.eveningoutpost.dexdrip.G5Model.DisconnectTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.Extensions;
 import com.eveningoutpost.dexdrip.G5Model.GlucoseRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.GlucoseTxMessage;
+import com.eveningoutpost.dexdrip.G5Model.KeepAliveTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.SensorRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.SensorTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.Transmitter;
@@ -142,10 +143,12 @@ public class G5CollectionService extends Service {
 
 
     // test params
-    private static final boolean ignoreLocalBondingState = false; // don't try to bond
-    private static final boolean delayOnBond = false; // delay while bonding
-    private static final boolean tryPreBondWithDelay = false; // prebond with delay
+    private static final boolean ignoreLocalBondingState = false; // don't try to bond gives: GATT_ERR_UNLIKELY but no more 133s
+    private static final boolean delayOnBond = false; // delay while bonding also gives ERR_UNLIKELY but no more 133s
+    private static final boolean tryPreBondWithDelay = true; // prebond with delay seems to help
     private static final boolean delayOn133Errors = true; // add some delays with 133 errors
+    private static final boolean useKeepAlive = true; // add some delays with 133 errors
+
 
     StringBuilder log = new StringBuilder();
 
@@ -825,10 +828,16 @@ public class G5CollectionService extends Service {
         }
     }
 
-    private synchronized void connectGatt(BluetoothDevice mDevice)
-    {
+    private synchronized void connectGatt(BluetoothDevice mDevice) {
         Log.i(TAG, "mGatt Null, connecting...");
         Log.i(TAG, "connectToDevice On Main Thread? " + isOnMainThread());
+
+        if (delayOn133Errors && max133RetryCounter > 1) {
+            // should we only be looking at disconnected 133 here?
+            Log.e(TAG, "Adding a delay before connecting to 133 count of: " + max133RetryCounter);
+            waitFor(600);
+            Log.e(TAG, "connectGatt() delay completed");
+        }
         mGatt = mDevice.connectGatt(getApplicationContext(), false, gattCallback);
     }
 
@@ -1086,7 +1095,7 @@ public class G5CollectionService extends Service {
                     Log.i(TAG, "Auth ow auth? name: " + getUUIDName(characteristic.getUuid()));
                     if (characteristic.getValue() != null) {
                         Log.e(TAG, "Auth ow: got opcode: " + characteristic.getValue()[0]);
-                        if (characteristic.getValue()[0] != 0x6) { /* opcode keepalive? */
+                        if (characteristic.getValue()[0] != KeepAliveTxMessage.opcode) { /* opcode keepalive? */
                             if (delayOn133Errors && max133RetryCounter > 1) {
                                 // should we only be looking at disconnected 133 here?
                                 Log.e(TAG, "Adding a delay before reading characteristic with 133 count of: " + max133RetryCounter);
@@ -1095,6 +1104,10 @@ public class G5CollectionService extends Service {
                             mGatt.readCharacteristic(characteristic);
                         } else {
                             Log.e(TAG, "Auth ow: got keepalive");
+                            if (useKeepAlive) {
+                                Log.e(TAG, "Keepalive written, now trying bond");
+                                performBondWrite(characteristic);
+                            }
                         }
                     } else {
                         Log.e(TAG, "Auth ow: got NULL opcode!");
@@ -1125,6 +1138,22 @@ public class G5CollectionService extends Service {
             } else {
                 processOnCharacteristicRead(gatt, characteristic, status);
             }
+        }
+
+        private synchronized void performBondWrite(BluetoothGattCharacteristic characteristic)
+        {
+            Log.d(TAG,"performBondWrite() started");
+            final BondRequestTxMessage bondRequest = new BondRequestTxMessage();
+            characteristic.setValue(bondRequest.byteSequence);
+            mGatt.writeCharacteristic(characteristic);
+            if (delayOnBond) {
+                Log.e(TAG, "Delaying before bond");
+                waitFor(1000);
+                Log.e(TAG, "Delay finished");
+            }
+            isBondedOrBonding = true;
+            device.createBond();
+            Log.d(TAG,"performBondWrite() finished");
         }
 
         private synchronized void processOnCharacteristicRead (BluetoothGatt gatt,
@@ -1171,16 +1200,15 @@ public class G5CollectionService extends Service {
                         } else if ((authStatus.authenticated == 1 && authStatus.bonded == 2)
                                 || (authStatus.authenticated == 1 && authStatus.bonded == 1 && !isBondedOrBonding)) {
                             Log.i(TAG, "Let's Bond! " + (isBondedOrBonding ? "locally bonded" : "not locally bonded"));
-                            final BondRequestTxMessage bondRequest = new BondRequestTxMessage();
-                            characteristic.setValue(bondRequest.byteSequence);
-                            mGatt.writeCharacteristic(characteristic);
-                            if (delayOnBond) {
-                                Log.e(TAG, "Delaying before bond");
-                                waitFor(1000);
-                                Log.e(TAG, "Delay finished");
+
+                            if (useKeepAlive) {
+                                Log.e(TAG,"Trying keepalive..");
+                                final KeepAliveTxMessage keepAliveRequest = new KeepAliveTxMessage(25);
+                                characteristic.setValue(keepAliveRequest.byteSequence);
+                                mGatt.writeCharacteristic(characteristic);
+                            } else {
+                             performBondWrite(characteristic);
                             }
-                            isBondedOrBonding = true;
-                            device.createBond();
                         } else {
                             Log.i(TAG, "Transmitter NOT already authenticated");
                             sendAuthRequestTxMessage(characteristic);
