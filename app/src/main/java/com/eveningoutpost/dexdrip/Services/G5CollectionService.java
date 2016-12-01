@@ -23,8 +23,10 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Handler;
@@ -118,6 +120,7 @@ public class G5CollectionService extends Service {
     private BluetoothDevice device;
     private Boolean isBondedOrBonding = false;
     private Boolean isBonded = false;
+    private int currentBondState = 0;
     public static boolean keep_running = true;
 
     private ScanSettings settings;
@@ -162,14 +165,51 @@ public class G5CollectionService extends Service {
         service = this;
         foregroundServiceStarter = new ForegroundServiceStarter(getApplicationContext(), service);
         foregroundServiceStarter.start();
-//        final IntentFilter bondintent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-//        registerReceiver(mPairReceiver, bondintent);
+
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         listenForChangeInSettings();
 
         // TODO check this
         bgToSpeech = BgToSpeech.setupTTS(getApplicationContext()); //keep reference to not being garbage collected
-       // handler = new Handler(getApplicationContext().getMainLooper());
+        // handler = new Handler(getApplicationContext().getMainLooper());
+
+        final IntentFilter bondintent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);//KS turn on
+        bondintent.addAction(BluetoothDevice.ACTION_FOUND);//KS add
+        registerReceiver(mPairReceiver, bondintent);//KS turn on
+    }
+
+    final BroadcastReceiver mPairReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            Log.d(TAG, "onReceive ACTION: " + action);
+            // When discovery finds a device
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                currentBondState = device.getBondState();
+                final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                Log.d(TAG, "onReceive FOUND: " + device.getName() + " STATE: " + device.getBondState());
+            } else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
+                currentBondState = device.getBondState();
+                final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                Log.d(TAG, "onReceive UPDATE Name " + device.getName() + " Value " + device.getAddress() + " Bond state " + device.getBondState() + bondState(device.getBondState()));
+            }
+        }
+    };
+
+    private String bondState(int bs) {
+        String bondState;
+        if (bs == BluetoothDevice.BOND_NONE) {
+            bondState = " Unpaired";
+        } else if (bs == BluetoothDevice.BOND_BONDING) {
+            bondState = " Pairing";
+        } else if (bs == BluetoothDevice.BOND_BONDED) {
+            bondState = " Paired";
+        } else if (bs == 0) {
+            bondState = " Startup";
+        } else {
+            bondState = " Unknown bond state: " + bs;
+        }
+        return bondState;
     }
 
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -318,10 +358,16 @@ public class G5CollectionService extends Service {
             alarm.cancel(pendingIntent);
         }
 
+        // TODO do we need to gatt disconnect or close??
 //        close();
 //        setRetryTimer();
 //        foregroundServiceStarter.stop();
 //        unregisterReceiver(mPairReceiver);
+        try {
+            unregisterReceiver(mPairReceiver);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception unregistering bonding receiver: ", e);
+        }
 //        BgToSpeech.tearDownTTS();
         Log.i(TAG, "SERVICE STOPPED");
     }
