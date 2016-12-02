@@ -65,7 +65,8 @@ public class ShareRest {
         }
     };
 
-    private static final String SHARE_BASE_URL = "https://share2.dexcom.com/ShareWebServices/Services/";
+    private static final String US_SHARE_BASE_URL = "https://share2.dexcom.com/ShareWebServices/Services/";
+    private static final String NON_US_SHARE_BASE_URL = "https://shareous1.dexcom.com/ShareWebServices/Services/";
     private SharedPreferences sharedPreferences;
 
     public ShareRest(Context context, OkHttpClient okHttpClient) {
@@ -76,16 +77,16 @@ public class ShareRest {
             if (httpClient == null) httpClient = getOkHttpClient(); // try again on failure
             // if fails second time we've got big problems
 
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
             Gson gson = new GsonBuilder()
                     .excludeFieldsWithoutExposeAnnotation()
                     .create();
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(SHARE_BASE_URL)
+                    .baseUrl(sharedPreferences.getBoolean("dex_share_us_acct", true) ? US_SHARE_BASE_URL : NON_US_SHARE_BASE_URL)
                     .client(httpClient)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();
             dexcomShareApi = retrofit.create(DexcomShare.class);
-            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
             sessionId = sharedPreferences.getString("dexcom_share_session_id", null);
             username = sharedPreferences.getString("dexcom_account_name", null);
             password = sharedPreferences.getString("dexcom_account_password", null);
@@ -98,7 +99,7 @@ public class ShareRest {
         }
     }
 
-    public synchronized OkHttpClient getOkHttpClient() {
+    private synchronized OkHttpClient getOkHttpClient() {
         try {
             final TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
                 @Override
@@ -176,7 +177,7 @@ public class ShareRest {
         }
     }
 
-    public String getSessionId() {
+    private String getSessionId() {
         AsyncTask<String, Void, String> task = new AsyncTask<String, Void, String>() {
 
             @Override

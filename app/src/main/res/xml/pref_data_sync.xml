@@ -76,6 +76,12 @@
                 android:key="share_upload"
                 android:summary="Enable this to upload to Dexcom's servers"
                 android:title="Upload BG values as Dexcom Share" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="dex_share_us_acct"
+                android:summaryOn="Enabled = Your account and follower apps are from the USA"
+                android:summaryOff="Disabled = Your account and follower apps are from outside the USA"
+                android:title="Dexcom USA based account" />
             <EditTextPreference
                 android:defaultValue=""
                 android:dependency="share_upload"
