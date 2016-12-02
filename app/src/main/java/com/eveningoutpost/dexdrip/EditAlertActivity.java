@@ -459,6 +459,19 @@ public class EditAlertActivity extends ActivityWithMenu {
         }
     }
 
+    // rarely the parseInt can fail, this adds a failsafe in that case
+    private int safeGetDefaultSnooze()
+    {
+        int defaultSnooze;
+        try {
+            defaultSnooze = parseInt(editSnooze.getText().toString());
+        } catch (NullPointerException e) {
+            Log.wtf(TAG,"Got null pointer exception unboxing parseInt: ",e);
+            defaultSnooze = SnoozeActivity.getDefaultSnooze(above);
+        }
+        return defaultSnooze;
+    }
+
     private Integer parseInt(String str) {
         try {
             return Integer.parseInt(str);
@@ -486,7 +499,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                 if(alterReraiseInt ==null)
                     return;
                 alertReraise = alterReraiseInt;
-                int defaultSnooze = parseInt(editSnooze.getText().toString());
+                int defaultSnooze = safeGetDefaultSnooze();
 
                 if(alertReraise < 1) {
                     Toast.makeText(getApplicationContext(), "Reraise Value must be 1 minute or greater", Toast.LENGTH_LONG).show();
@@ -792,7 +805,8 @@ public class EditAlertActivity extends ActivityWithMenu {
 
                     final NumberPicker snoozeValue = (NumberPicker) d.findViewById(R.id.numberPicker1);
 
-                    int defaultSnooze = parseInt(editSnooze.getText().toString());
+                    int defaultSnooze = safeGetDefaultSnooze();
+
                     SnoozeActivity.SetSnoozePickerValues(snoozeValue, above, defaultSnooze);
                     b1.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -811,7 +825,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                     });
                     d.show();
                 }
-                    return false;
+                return false;
 
             }});
 
@@ -833,7 +847,7 @@ public class EditAlertActivity extends ActivityWithMenu {
 
                 final NumberPicker snoozeValue = (NumberPicker) d.findViewById(R.id.numberPicker1);
 
-                int defaultSnooze = parseInt(editSnooze.getText().toString());
+                int defaultSnooze = safeGetDefaultSnooze();
                 SnoozeActivity.SetSnoozePickerValues(snoozeValue, above, defaultSnooze);
                 b1.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -904,7 +918,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         boolean overrideSilentMode = checkboxAlertOverride.isChecked();
         String mp3_file = audioPath;
         try {
-            int defaultSnooze = parseInt(editSnooze.getText().toString());
+            int defaultSnooze = safeGetDefaultSnooze();
             AlertType.testAlert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, vibrate, mContext);
         } catch (NullPointerException e) {
             JoH.static_toast_long("Snooze value is not a number - cannot test");
