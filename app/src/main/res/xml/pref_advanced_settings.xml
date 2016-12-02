@@ -254,6 +254,11 @@
                 android:title="Bluetooth Watchdog" />
             <CheckBoxPreference
                 android:defaultValue="true"
+                android:key="g5_bluetooth_watchdog"
+                android:summary="Reset Bluetooth by turning it off and on as a way to keep the G5 data source working. Without this the G5 collector may fail."
+                android:title="G5 Bluetooth Watchdog" />
+            <CheckBoxPreference
+                android:defaultValue="true"
                 android:key="close_gatt_on_ble_disconnect"
                 android:summary="If the bluetooth watchdog activates often then you can try unchecking this option to see if it helps"
                 android:title="@string/close_gatt_on_ble_disconnect" />

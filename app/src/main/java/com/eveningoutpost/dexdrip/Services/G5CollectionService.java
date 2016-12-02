@@ -667,26 +667,33 @@ public class G5CollectionService extends Service {
         }
     }
 
-    private synchronized void cycleBT(){
+    private synchronized void cycleBT() {
         synchronized (short_lock) {
-            if (JoH.ratelimit("cyclebt",10)) {
+            if (JoH.ratelimit("cyclebt", 20)) {
+
+                // TODO cycling_bt not used as never set to true - rate limit any sync used instead
                 if (cycling_bt) {
                     Log.e(TAG, "jamorham Already concurrent BT cycle in progress!");
                     return;
                 }
                 encountered133 = false;
                 stopScan();
-                Log.e(TAG, "Cycling BT-gatt - disabling BT");
-                mBluetoothAdapter.disable();
-                Timer single_timer = new Timer();
-                single_timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        mBluetoothAdapter.enable();
-                        Log.e(TAG, "Cycling BT-gatt - enableing BT");
-                        cycling_bt = false;
-                    }
-                }, 3000);
+                if (g5BluetoothWatchdog()) {
+                    Log.e(TAG, "Cycling BT-gatt - disabling BT");
+                    mBluetoothAdapter.disable();
+                    Timer single_timer = new Timer();
+                    single_timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            mBluetoothAdapter.enable();
+                            Log.e(TAG, "Cycling BT-gatt - enableing BT");
+                            cycling_bt = false;
+                        }
+                    }, 3000);
+                } else {
+                    Log.e(TAG, "Wanted to cycle g5 bluetooth but is disabled in advanced bluetooth preferences!");
+                    waitFor(3000);
+                }
             }
             keepAlive();
         }
@@ -1523,9 +1530,14 @@ public class G5CollectionService extends Service {
     }
 
     // TODO this could be cached for performance
-    public boolean useG5NewMethod() {
+    private boolean useG5NewMethod() {
         return Home.getPreferencesBooleanDefaultFalse("g5_non_raw_method");
     }
+
+    private boolean g5BluetoothWatchdog() {
+        return Home.getPreferencesBoolean("g5_bluetooth_watchdog", true);
+    }
+
 
     private int getTokenSize() {
             return 8; // d
