@@ -16,7 +16,7 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v7.app.NotificationCompat;
-import android.util.Log;
+import android.util.Base64;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -25,6 +25,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
@@ -34,6 +35,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Map;
 
@@ -45,6 +47,21 @@ public class GcmListenerSvc extends FirebaseMessagingService {
     private static byte[] staticKey;
     public static double lastMessageReceived = 0;
 
+    @Override
+    public void onSendError(String msgID, Exception exception){
+        Log.e(TAG, "onSendError called" + msgID, exception );
+    }
+    
+    @Override
+    public void onDeletedMessages() {
+        Log.e(TAG, "onDeletedMessages: ");
+    }
+
+    @Override
+    public void onMessageSent(String msgID) {
+        Log.i(TAG, "onMessageSent: " + msgID );
+    }
+    
     @Override
     public void onMessageReceived(RemoteMessage rmessage) {
         if (rmessage == null) return;
@@ -109,13 +126,27 @@ public class GcmListenerSvc extends FirebaseMessagingService {
 
             if (payload.length() > 16) {
                 if (GoogleDriveInterface.keyInitialized()) {
-                    String decrypted_payload = CipherUtils.decryptString(payload);
-                    if (decrypted_payload.length() > 0) {
-                        payload = decrypted_payload;
+                    
+                    if(action.equals("sensorupdate")) {
+                        try {
+                            Log.i(TAG, "payload for sensorupdate " + payload);
+                            byte[] inbytes = Base64.decode(payload, Base64.NO_WRAP);
+                            byte[] inbytes1 = JoH.decompressBytesToBytes(CipherUtils.decryptBytes(inbytes));
+                            payload = new String(inbytes1, "UTF-8");
+                            Log.d(TAG, "inbytes size = " + inbytes.length + " inbytes1 size " + inbytes1.length + "payload len " +payload.length());
+                        } catch (UnsupportedEncodingException e) {
+                            Log.e(TAG, "Got unsupported encoding on UTF8 " + e.toString());
+                            payload = "";
+                        }
                     } else {
-                        Log.e(TAG, "Couldn't decrypt payload!");
-                        payload = "";
-                        Home.toaststaticnext("Having problems decrypting incoming data - check keys");
+                        String decrypted_payload = CipherUtils.decryptString(payload);
+                        if (decrypted_payload.length() > 0) {
+                            payload = decrypted_payload;
+                        } else {
+                            Log.e(TAG, "Couldn't decrypt payload!");
+                            payload = "";
+                            Home.toaststaticnext("Having problems decrypting incoming data - check keys");
+                        }
                     }
                 } else {
                     Log.e(TAG, "Couldn't decrypt as key not initialized");
@@ -162,9 +193,38 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                     }
                 } else {
                     Log.e(TAG, "Invalid CAL payload");
+                    
                 }
+            } else if (action.equals("cal2")) {
+                Log.i(TAG, "Received cal2 packet");
+                if (Home.get_master()) {
+                    NewCalibration newCalibration = GcmActivity.getNewCalibration(payload);
+                    if (newCalibration != null) {
+                        Intent calintent = new Intent();
+                        calintent.setClassName(getString(R.string.local_target_package), "com.eveningoutpost.dexdrip.AddCalibration");
+                        calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                        long timediff = (long) ((new Date().getTime() - newCalibration.timestamp) / 1000);
+                        Log.i(TAG, "Remote calibration latency calculated as: " + timediff + " seconds");
+                        Long bg_age = newCalibration.offset;
+                        if (timediff > 0) {
+                            bg_age += timediff;
+                        }
+                        Log.i(TAG, "Processing remote CAL " + newCalibration.bgValue + " age: " + bg_age);
+                        calintent.putExtra("bg_string", "" + newCalibration.bgValue);
+                        calintent.putExtra("bg_age", "" + bg_age);
+                        if (timediff < 3600) {
+                            getApplicationContext().startActivity(calintent);
+                        } else {
+                            Log.w(TAG, "warninig ignoring calibration because timediff is "+ timediff);
+                        }
+                    }
+                } else {
+                    Log.e(TAG, "Received cal2 packet packet but we are not a master, so ignoring it");
+                }
+                
             } else if (action.equals("ping")) {
-                // don't respond to wakeup pings
+             // don't respond to wakeup pings
             } else if (action.equals("p")) {
                 GcmActivity.send_ping_reply();
             } else if (action.equals("q")) {
@@ -286,6 +346,18 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                 if (prefs.getBoolean("plus_follow_master", false)) {
                     Log.i(TAG, "Processing backfill location request as we are master");
                     GcmActivity.syncBGTable2();
+                }
+            } else if (action.equals("sensorupdate")) {
+                Log.i(TAG, "Received sensorupdate packet(s)");
+                if (Home.get_follower()) {
+                    GcmActivity.upsertSensorCalibratonsFromJson(payload);
+                } else {
+                    Log.e(TAG, "Received sensorupdate packets but we are not set as a follower");
+                }
+            } else if (action.equals("sensor_calibrations_update")) {
+                if (Home.get_master()) {
+                    Log.i(TAG, "Received request for sensor calibration update");
+                    GcmActivity.syncSensor(Sensor.currentSensor() ,false);
                 }
             } else {
                 Log.e(TAG, "Received message action we don't know about: " + action);

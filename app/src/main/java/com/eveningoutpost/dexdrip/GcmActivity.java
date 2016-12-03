@@ -13,20 +13,29 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
+import android.util.Base64;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
+import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -38,6 +47,28 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by jamorham on 11/01/16.
  */
+class SensorCalibrations {
+    @Expose
+    Sensor sensor;
+    
+    @Expose
+    List <Calibration> calibrations;
+}
+
+class NewCalibration {
+    @Expose
+    double bgValue; // Always in mgdl
+    
+    @Expose
+    long timestamp;
+    
+    @Expose
+    long offset;
+    
+    @Expose
+    String uuid;
+}
+
 public class GcmActivity extends Activity {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -64,6 +95,73 @@ public class GcmActivity extends Activity {
     private static final int MAX_RECURSION = 30;
     private static final int MAX_QUEUE_SIZE = 500;
 
+
+    public static SensorCalibrations []  getSensorCalibrations(String json) {
+        SensorCalibrations[] sensorCalibrations = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(json, SensorCalibrations[].class);
+        Log.d(TAG, "After fromjson sensorCalibrations are " + sensorCalibrations.toString());
+        return sensorCalibrations;
+    }
+    
+    public static String sensorAndCalibrationsToJson(Sensor sensor) {
+        SensorCalibrations []sensorCalibrations = new SensorCalibrations[1];
+        sensorCalibrations[0] = new SensorCalibrations(); 
+        sensorCalibrations[0].sensor = sensor;
+        sensorCalibrations[0].calibrations = Calibration.getCalibrationsForSensor(sensor);
+        Log.d(TAG, "calibrations size " + sensorCalibrations[0].calibrations.size() );
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                .serializeSpecialFloatingPointValues()
+                .create();
+        
+        String output =  gson.toJson(sensorCalibrations);
+        Log.d(TAG, "sensorAndCalibrationsToJson created the string " + output);
+        return output;
+    }
+    
+    public static NewCalibration getNewCalibration(String json) {
+        NewCalibration []newCalibrationArray = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(json, NewCalibration[].class);
+        if(newCalibrationArray != null) {
+            Log.e(TAG, "After fromjson NewCalibration are " + newCalibrationArray.toString());
+        } else {
+            Log.e(TAG,"Error creating newCalibrationArray");
+            return null;
+        }
+        return newCalibrationArray[0];
+    }
+    
+    public static String newCalibrationToJson(double bgValue, String uuid) {
+        NewCalibration newCalibrationArray[] = new NewCalibration[1];
+        NewCalibration newCalibration = new NewCalibration();
+        newCalibration.bgValue = bgValue;
+        newCalibration.uuid = uuid;
+        newCalibration.timestamp = JoH.tsl();
+        newCalibration.offset = 0;
+        newCalibrationArray[0] = newCalibration;
+        
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                .serializeSpecialFloatingPointValues()
+                .create();
+        
+        String output =  gson.toJson(newCalibrationArray);
+        Log.d(TAG, "newCalibrationToJson Created the string " + output);
+        return output;
+    }
+
+    public static void upsertSensorCalibratonsFromJson(String json) {
+        Log.i(TAG, "upsertSensorCalibratonsFromJson called");
+        SensorCalibrations [] sensorCalibrations = getSensorCalibrations(json);
+        for (SensorCalibrations SensorCalibration : sensorCalibrations ) {
+            Sensor.upsertFromMaster(SensorCalibration.sensor);
+            for (Calibration calibration : SensorCalibration.calibrations) {
+                Log.d(TAG, "upsertSensorCalibratonsFromJson updating calibration " + calibration.uuid);
+                Calibration.upsertFromMaster(calibration);
+            }
+        }
+    }
+    
     public static synchronized void queueAction(String reference) {
         synchronized (queue_lock) {
             Log.d(TAG, "Received ACK, Queue Size: " + GcmActivity.gcm_queue.size() + " " + reference);
@@ -145,10 +243,11 @@ public class GcmActivity extends Activity {
     }
 
     public synchronized static void syncBGReading(BgReading bgReading) {
+        Log.d(TAG, "syncBGReading called");
         if (JoH.ratelimit("gcm-bgs-batch", 15)) {
-            GcmActivity.sendMessage("bgs", bgReading.toJSON());
+            GcmActivity.sendMessage("bgs", bgReading.toJSON(true));
         } else {
-            PersistentStore.appendString("gcm-bgs-batch-queue", bgReading.toJSON(), "^");
+            PersistentStore.appendString("gcm-bgs-batch-queue", bgReading.toJSON(false), "^");
             PersistentStore.setLong("gcm-bgs-batch-time", JoH.tsl());
             processBgsBatch(false);
         }
@@ -174,6 +273,21 @@ public class GcmActivity extends Activity {
                 }
             }, 5000);
         }
+    }
+
+    public static void syncSensor(Sensor sensor, boolean forceSend) {
+        Log.i(TAG, "syncSensor called");
+        if(sensor == null) {
+            Log.e(TAG, "syncSensor sensor is null");
+            return;
+        }
+        if((!forceSend) && JoH.pratelimit("GcmSensorCalibrationsUpdate", 300) == false) {
+            Log.i(TAG, "syncSensor not sending data, because of rate limiter");
+            return;
+        }
+
+        String json = sensorAndCalibrationsToJson(sensor);
+        GcmActivity.sendMessage(GcmActivity.myIdentity(), "sensorupdate", json);
     }
 
     public static void requestPing() {
@@ -281,6 +395,8 @@ public class GcmActivity extends Activity {
     }
 
     public static void syncBGTable2() {
+        // Since this is a big update, also update sensor and calibrations
+        syncSensor(Sensor.currentSensor(), true);
         new Thread() {
             @Override
             public void run() {
@@ -293,7 +409,7 @@ public class GcmActivity extends Activity {
 
                     StringBuilder stringBuilder = new StringBuilder();
                     for (BgReading bgReading : bgReadings) {
-                        String myrecord = bgReading.toJSON();
+                        String myrecord = bgReading.toJSON(false);
                         if (stringBuilder.length() > 0) {
                             stringBuilder.append("^");
                         }
@@ -336,6 +452,13 @@ public class GcmActivity extends Activity {
         if (Home.get_follower() && JoH.pratelimit("SensorBatteryUpdateRequest", 1200)) {
             Log.d(TAG, "Requesting Sensor Battery Update");
             GcmActivity.sendMessage("sbr", ""); // request sensor battery update
+        }
+    }
+    
+    public static void requestSensorCalibrationsUpdate() {
+        if (Home.get_follower() && JoH.pratelimit("SensorCalibrationsUpdateRequest", 300)) {
+            Log.d(TAG, "Requesting Sensor and calibrations Update");
+            GcmActivity.sendMessage("sensor_calibrations_update", "");
         }
     }
 
@@ -381,9 +504,32 @@ public class GcmActivity extends Activity {
 
     public static void pushCalibration(String bg_value, String seconds_ago) {
         if ((bg_value.length() == 0) || (seconds_ago.length() == 0)) return;
+        if (Home.get_master()) {
+            // For master, we now send the entire table, no need to send this specific table each time
+            return;
+        }
         String currenttime = Double.toString(new Date().getTime());
         String tosend = currenttime + " " + bg_value + " " + seconds_ago;
         sendMessage(myIdentity(), "cal", tosend);
+    }
+    
+    public static void pushCalibration2(double bgValue, String uuid) {
+        Log.i(TAG, "pushCalibration2 called");
+
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        final String unit = prefs.getString("units", "mgdl");
+        
+        if (unit.compareTo("mgdl") != 0) {
+            bgValue = bgValue * Constants.MMOLL_TO_MGDL;
+        }
+        
+        if ((bgValue < 40) || (bgValue > 400)) {
+            Log.wtf(TAG, "Invalid out of range calibration glucose mg/dl value of: " + bgValue);
+            JoH.static_toast_long("Calibration out of range: " + bgValue + " mg/dl");
+            return ;
+        }
+        String json = newCalibrationToJson(bgValue, uuid);
+        GcmActivity.sendMessage(myIdentity(), "cal2", json);
     }
 
     public static void clearLastCalibration() {
@@ -399,12 +545,19 @@ public class GcmActivity extends Activity {
             data.putString("action", action);
             data.putString("identity", identity);
 
-            if (payload.length() > 0) {
-                data.putString("payload", CipherUtils.encryptString(payload));
+            if(action.equals("sensorupdate") ) {
+                byte[] inbytes =  JoH.compressStringToBytes(payload);
+                String str1 =  Base64.encodeToString(CipherUtils.encryptBytes(inbytes), Base64.NO_WRAP);
+                Log.i(TAG, "sensor length inbytes " + inbytes.length  + " CipherUtils.encryptBytes " + CipherUtils.encryptBytes(inbytes).length + " str1 " + str1.length());
+                data.putString("payload", str1);
+                Log.d(TAG, "sending data len " + str1.length()+ " " + str1);
             } else {
-                data.putString("payload", "");
+                if (payload.length() > 0) {
+                    data.putString("payload", CipherUtils.encryptString(payload));
+                } else {
+                    data.putString("payload", "");
+                }
             }
-
             if (xdrip.getAppContext() == null) {
                 Log.e(TAG, "mContext is null cannot sendMessage");
                 return "";
@@ -424,11 +577,12 @@ public class GcmActivity extends Activity {
                 Log.e(TAG, "GCM token is null - cannot sendMessage");
                 return "";
             }
-            gcm.send(senderid + "@gcm.googleapis.com", Integer.toString(msgId.incrementAndGet()), data);
+            String messageid = Integer.toString(msgId.incrementAndGet());
+            gcm.send(senderid + "@gcm.googleapis.com", messageid, data);
             if (last_ack == -1) last_ack = JoH.ts();
             last_send_previous = last_send;
             last_send = JoH.ts();
-            msg = "Sent message OK";
+            msg = "Sent message OK " + messageid;
         } catch (IOException ex) {
             msg = "Error :" + ex.getMessage();
         }

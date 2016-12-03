@@ -156,6 +156,9 @@ public class CipherUtils {
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Got unsupported encoding on UTF8 " + e.toString());
             return "";
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Got IllegalArgumentException encoding on UTF8 ", e);
+            return "";           
         }
     }
 

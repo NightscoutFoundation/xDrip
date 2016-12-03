@@ -92,12 +92,15 @@ public class UndoRedo {
                     return true;
                 } else if (item.Calibration_uuid != null) {
                     // TODO try catch
-                    item.saved_data = Calibration.byuuid(item.Calibration_uuid).toS();
-                    item.expires = JoH.ts() + EXPIRY_TIME;
-                    redo_queue.add(item);
-                    undo_queue.remove(location);
-                    Calibration.clear_byuuid(item.Calibration_uuid, true); // from interactive
-                    return true;
+                    Calibration calibration = Calibration.byuuid(item.Calibration_uuid);
+                    if(calibration != null) {
+                        item.saved_data = calibration.toS();
+                        item.expires = JoH.ts() + EXPIRY_TIME;
+                        redo_queue.add(item);
+                        undo_queue.remove(location);
+                        Calibration.clear_byuuid(item.Calibration_uuid, true); // from interactive
+                        return true;
+                    }
                 }
 
             }

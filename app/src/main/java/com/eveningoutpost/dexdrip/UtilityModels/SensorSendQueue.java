@@ -1,11 +1,17 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.GcmActivity;
+import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 
 import java.util.List;
@@ -42,9 +48,17 @@ public class SensorSendQueue extends Model {
     }
 
     public static void addToQueue(Sensor sensor) {
+        SendToFollower(sensor);
         SensorSendQueue sensorSendQueue = new SensorSendQueue();
         sensorSendQueue.sensor = sensor;
         sensorSendQueue.success = false;
         sensorSendQueue.save();
+    }
+    
+    public static void SendToFollower(Sensor sensor) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        if(Home.get_master()) {
+            GcmActivity.syncSensor(sensor, true);
+        }
     }
 }
