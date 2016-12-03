@@ -159,12 +159,12 @@ public class Sensor extends Model {
                 Log.d("wearSENSOR", "InitDb DB exists");
             }
             else {
-                Log.d("wearSENSOR", "InitDb DB does NOT exist. Call ActiveAndroid.initialize()");
                 ActiveAndroid.initialize(dbConfiguration);
+                Log.d("wearSENSOR", "InitDb DB does NOT exist. Call ActiveAndroid.initialize()");
             }
         } catch (Exception e) {
-            Log.d("wearSENSOR", "InitDb CATCH: DB does NOT exist. Call ActiveAndroid.initialize()");
             ActiveAndroid.initialize(dbConfiguration);
+            Log.d("wearSENSOR", "InitDb CATCH: DB does NOT exist. Call ActiveAndroid.initialize()");
         }
     }
 

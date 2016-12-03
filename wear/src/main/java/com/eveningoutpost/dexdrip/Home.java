@@ -157,9 +157,9 @@ public class Home extends BaseWatchFace {
         return Home.context;
     }//KS from app / xdrip.java
 
-    public static void setAppContext(Context context) {
+    public static void setAppContext(Context context) {//KS
         Home.context = context;
-    }//KS
+    }
 
     //KS Toast Messages from app / Home
     public static void toaststatic(final String msg) {
@@ -195,7 +195,7 @@ public class Home extends BaseWatchFace {
     }
 
     private static void set_is_follower() {
-        is_follower = PreferenceManager.getDefaultSharedPreferences(Home.getAppContext()).getString("dex_collection_method", "").equals("Follower");
+        is_follower = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).getString("dex_collection_method", "").equals("Follower");
         is_follower_set = true;
     }
 
@@ -213,8 +213,8 @@ public class Home extends BaseWatchFace {
     }
 
     public static long getPreferencesLong(final String pref, final long def) {
-        if ((prefs == null) && (Home.getAppContext() != null)) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(Home.getAppContext());
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         }
         if (prefs != null) {
             return prefs.getLong(pref, def);
@@ -223,8 +223,8 @@ public class Home extends BaseWatchFace {
     }
 
     public static boolean getPreferencesBooleanDefaultFalse(final String pref) {
-        if ((prefs == null) && (Home.getAppContext() != null)) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(Home.getAppContext());
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         }
         if ((prefs != null) && (prefs.getBoolean(pref, false))) {
             return true;
@@ -243,8 +243,8 @@ public class Home extends BaseWatchFace {
     }
 
     public static String getPreferencesStringWithDefault(final String pref, final String def) {
-        if ((prefs == null) && (Home.getAppContext() != null)) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(Home.getAppContext());
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         }
         if (prefs != null) {
             return prefs.getString(pref, def);
@@ -283,8 +283,8 @@ public class Home extends BaseWatchFace {
     }
 
     public static boolean setPreferencesLong(final String pref, final long lng) {
-        if ((prefs == null) && (Home.getAppContext() != null)) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(Home.getAppContext());
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         }
         if (prefs != null) {
             prefs.edit().putLong(pref, lng).apply();

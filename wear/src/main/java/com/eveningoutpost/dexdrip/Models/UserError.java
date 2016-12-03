@@ -47,7 +47,7 @@ public class UserError extends Model {
         return severity+" ^ "+JoH.dateTimeText((long)timestamp)+" ^ "+shortError+" ^ "+message;
     }
 
-    public UserError() {}
+    public UserError() {super();}//KS
 
     public UserError(int severity, String shortError, String message) {
         this.severity = severity;
