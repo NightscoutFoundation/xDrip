@@ -491,6 +491,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         prefs.putString("highValue", high.toString());
         prefs.putString("lowValue", low.toString());
 
+        final boolean g5_non_raw_method = dataMap.getBoolean("g5_non_raw_method", false);
+        prefs.putBoolean("g5_non_raw_method", g5_non_raw_method);
+        final String extra_tags_for_logging = dataMap.getString("extra_tags_for_logging", "");
+        prefs.putString("extra_tags_for_logging", extra_tags_for_logging);
+
         if (change) {
             prefs.commit();
             //sendPrefSettings();

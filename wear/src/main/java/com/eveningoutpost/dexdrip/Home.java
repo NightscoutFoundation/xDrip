@@ -204,6 +204,14 @@ public class Home extends BaseWatchFace {
         return Home.is_follower;
     }
 
+    public static boolean getPreferencesBoolean(final String pref, boolean def) {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if ((prefs != null) && (prefs.getBoolean(pref, def))) return true;
+        return false;
+    }
+
     public static long getPreferencesLong(final String pref, final long def) {
         if ((prefs == null) && (Home.getAppContext() != null)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(Home.getAppContext());
@@ -224,6 +232,16 @@ public class Home extends BaseWatchFace {
         return false;
     }
 
+    public static String getPreferencesStringDefaultBlank(final String pref) {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs != null) {
+            return prefs.getString(pref, "");
+        }
+        return "";
+    }
+
     public static String getPreferencesStringWithDefault(final String pref, final String def) {
         if ((prefs == null) && (Home.getAppContext() != null)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(Home.getAppContext());
@@ -232,6 +250,17 @@ public class Home extends BaseWatchFace {
             return prefs.getString(pref, def);
         }
         return "";
+    }
+
+    public static boolean setPreferencesBoolean(final String pref, final boolean lng) {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs != null) {
+            prefs.edit().putBoolean(pref, lng).apply();
+            return true;
+        }
+        return false;
     }
 
     public static boolean setPreferencesString(final String pref, final String str) {

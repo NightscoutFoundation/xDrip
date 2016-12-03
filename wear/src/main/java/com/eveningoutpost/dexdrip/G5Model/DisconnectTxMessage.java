@@ -1,5 +1,9 @@
 package com.eveningoutpost.dexdrip.G5Model;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Services.G5CollectionService;
+
 import java.nio.ByteBuffer;
 
 /**
@@ -7,12 +11,13 @@ import java.nio.ByteBuffer;
  */
 public class DisconnectTxMessage extends TransmitterMessage {
     byte opcode = 0x09;
-
+    private final static String TAG = G5CollectionService.TAG; // meh
     public DisconnectTxMessage() {
         data = ByteBuffer.allocate(1);
         data.put(opcode);
 
         byteSequence = data.array();
+        UserError.Log.d(TAG,"DisconnectTX: "+ JoH.bytesToHex(byteSequence));
     }
 }
 

@@ -5,22 +5,23 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 /**
- * Created by jcostik1 on 3/26/16.
+ * Created by jamorham on 25/11/2016.
  */
-public class SensorTxMessage extends TransmitterMessage {
-    byte opcode = 0x2e;
-    byte[] crc = CRC.calculate(opcode);
+
+public class GlucoseTxMessage extends TransmitterMessage {
+
     private final static String TAG = G5CollectionService.TAG; // meh
+    byte opcode = 0x30;
+    byte[] crc = CRC.calculate(opcode);
 
-
-    public SensorTxMessage() {
+    public GlucoseTxMessage() {
         data = ByteBuffer.allocate(3);
         data.put(opcode);
         data.put(crc);
         byteSequence = data.array();
-        UserError.Log.d(TAG, "SensorTx dbg: " + JoH.bytesToHex(byteSequence));
+        UserError.Log.d(TAG, "GlucoseTx dbg: " + JoH.bytesToHex(byteSequence));
     }
 }
+

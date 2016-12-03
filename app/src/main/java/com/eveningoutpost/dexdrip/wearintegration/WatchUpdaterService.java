@@ -772,6 +772,8 @@ public class WatchUpdaterService extends WearableListenerService implements
         dataMap.putString("units", mPrefs.getString("units", "mgdl"));
         dataMap.putDouble("high", inMgdl(highMark, mPrefs));
         dataMap.putDouble("low", inMgdl(lowMark, mPrefs));
+        dataMap.putBoolean("g5_non_raw_method",  mPrefs.getBoolean("g5_non_raw_method", false));
+        dataMap.putString("extra_tags_for_logging",  Home.getPreferencesStringDefaultBlank("extra_tags_for_logging"));
         new SendToDataLayerThread(WEARABLE_PREF_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap);
     }
 
