@@ -89,11 +89,13 @@ public class GcmActivity extends Activity {
     public static double last_ack = -1;
     public static double last_send = -1;
     public static double last_send_previous = -1;
-    private static long MAX_ACK_OUTSTANDING_MS = 3600000;
+    private static final long MAX_ACK_OUTSTANDING_MS = 3600000;
     private static int recursion_depth = 0;
     private static int last_bridge_battery = -1;
     private static final int MAX_RECURSION = 30;
-    private static final int MAX_QUEUE_SIZE = 500;
+    private static final int MAX_QUEUE_SIZE = 300;
+    private static final int RELIABLE_MAX_PAYLOAD = 1800;
+    private static final boolean d = false; // debug
 
 
     public static SensorCalibrations []  getSensorCalibrations(String json) {
@@ -101,21 +103,21 @@ public class GcmActivity extends Activity {
         Log.d(TAG, "After fromjson sensorCalibrations are " + sensorCalibrations.toString());
         return sensorCalibrations;
     }
-    
-    public static String sensorAndCalibrationsToJson(Sensor sensor) {
-        SensorCalibrations []sensorCalibrations = new SensorCalibrations[1];
-        sensorCalibrations[0] = new SensorCalibrations(); 
+
+    public static String sensorAndCalibrationsToJson(Sensor sensor, int limit) {
+        SensorCalibrations[] sensorCalibrations = new SensorCalibrations[1];
+        sensorCalibrations[0] = new SensorCalibrations();
         sensorCalibrations[0].sensor = sensor;
-        sensorCalibrations[0].calibrations = Calibration.getCalibrationsForSensor(sensor);
-        Log.d(TAG, "calibrations size " + sensorCalibrations[0].calibrations.size() );
+        sensorCalibrations[0].calibrations = Calibration.getCalibrationsForSensor(sensor, limit);
+        if (d) Log.d(TAG, "calibrations size " + sensorCalibrations[0].calibrations.size());
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
                 .registerTypeAdapter(Date.class, new DateTypeAdapter())
                 .serializeSpecialFloatingPointValues()
                 .create();
-        
-        String output =  gson.toJson(sensorCalibrations);
-        Log.d(TAG, "sensorAndCalibrationsToJson created the string " + output);
+
+        String output = gson.toJson(sensorCalibrations);
+        if (d) Log.d(TAG, "sensorAndCalibrationsToJson created the string " + output);
         return output;
     }
     
@@ -190,7 +192,7 @@ public class GcmActivity extends Activity {
         }
 
         final double MAX_QUEUE_AGE = (5 * 60 * 60 * 1000); // 5 hours
-        final double MIN_QUEUE_AGE = (0 * 60 * 1000); // minutes
+        final double MIN_QUEUE_AGE = (15000);
         final double MAX_RESENT = 10;
         Double timenow = JoH.ts();
         boolean queuechanged = false;
@@ -275,19 +277,34 @@ public class GcmActivity extends Activity {
         }
     }
 
-    public static void syncSensor(Sensor sensor, boolean forceSend) {
+    public static synchronized void syncSensor(Sensor sensor, boolean forceSend) {
+        Log.d(TAG,"syncsensor backtrace: "+JoH.backTrace());
         Log.i(TAG, "syncSensor called");
-        if(sensor == null) {
+        if (sensor == null) {
             Log.e(TAG, "syncSensor sensor is null");
             return;
         }
-        if((!forceSend) && JoH.pratelimit("GcmSensorCalibrationsUpdate", 300) == false) {
+        if ((!forceSend) && !JoH.pratelimit("GcmSensorCalibrationsUpdate", 300)) {
             Log.i(TAG, "syncSensor not sending data, because of rate limiter");
             return;
         }
 
-        String json = sensorAndCalibrationsToJson(sensor);
-        GcmActivity.sendMessage(GcmActivity.myIdentity(), "sensorupdate", json);
+        // automatically find a suitable volume of payload data
+        for (int limit = 9; limit > 0; limit--) {
+            final String json = sensorAndCalibrationsToJson(sensor, limit);
+            if (d) Log.d(TAG, "sensor json size: limit: " + limit + " len: " + CipherUtils.compressEncryptString(json).length());
+            if (CipherUtils.compressEncryptString(json).length() <= RELIABLE_MAX_PAYLOAD) {
+                final String json_hash = CipherUtils.getSHA256(json);
+                if (!forceSend || !PersistentStore.getString("last-syncsensor-json").equals(json_hash)) {
+                    PersistentStore.setString("last-syncsensor-json", json_hash);
+                    GcmActivity.sendMessage(GcmActivity.myIdentity(), "sensorupdate", json);
+                } else {
+                    Log.d(TAG, "syncSensor: data is duplicate of last data: " + json);
+                    break;
+                }
+                break; // send only one
+            }
+        }
     }
 
     public static void requestPing() {
@@ -395,8 +412,6 @@ public class GcmActivity extends Activity {
     }
 
     public static void syncBGTable2() {
-        // Since this is a big update, also update sensor and calibrations
-        syncSensor(Sensor.currentSensor(), true);
         new Thread() {
             @Override
             public void run() {
@@ -404,6 +419,9 @@ public class GcmActivity extends Activity {
                 if ((JoH.ts() - last_sync_fill) > (60 * 1000 * (5 + bg_sync_backoff))) {
                     last_sync_fill = JoH.ts();
                     bg_sync_backoff++;
+
+                    // Since this is a big update, also update sensor and calibrations
+                    syncSensor(Sensor.currentSensor(), true);
 
                     final List<BgReading> bgReadings = BgReading.latestForGraph(300, JoH.ts() - (24 * 60 * 60 * 1000));
 
@@ -418,8 +436,6 @@ public class GcmActivity extends Activity {
                     final String mypacket = stringBuilder.toString();
                     Log.d(TAG, "Total BGreading sync packet size: " + mypacket.length());
                     if (mypacket.length() > 0) {
-                        if (DisplayQRCode.mContext == null)
-                            DisplayQRCode.mContext = xdrip.getAppContext();
                         DisplayQRCode.uploadBytes(mypacket.getBytes(Charset.forName("UTF-8")), 2);
                     } else {
                         Log.i(TAG, "Not uploading data due to zero length");
@@ -436,7 +452,6 @@ public class GcmActivity extends Activity {
     public static void backfillLink(String id, String key) {
         Log.d(TAG, "sending bfb message: " + id);
         sendMessage("bfb", id + "^" + key);
-        DisplayQRCode.mContext = null;
     }
 
     public static void processBFPbundle(String bundle) {
@@ -541,16 +556,26 @@ public class GcmActivity extends Activity {
         Log.i(TAG, "Sendmessage called: " + identity + " " + action + " " + payload);
         String msg;
         try {
-            Bundle data = new Bundle();
+
+            if (xdrip.getAppContext() == null) {
+                Log.e(TAG, "mContext is null cannot sendMessage");
+                return "";
+            }
+
+            if (identity == null) {
+                Log.e(TAG, "identity is null cannot sendMessage");
+                return "";
+            }
+
+            final Bundle data = new Bundle();
             data.putString("action", action);
             data.putString("identity", identity);
 
             if(action.equals("sensorupdate") ) {
-                byte[] inbytes =  JoH.compressStringToBytes(payload);
-                String str1 =  Base64.encodeToString(CipherUtils.encryptBytes(inbytes), Base64.NO_WRAP);
-                Log.i(TAG, "sensor length inbytes " + inbytes.length  + " CipherUtils.encryptBytes " + CipherUtils.encryptBytes(inbytes).length + " str1 " + str1.length());
-                data.putString("payload", str1);
-                Log.d(TAG, "sending data len " + str1.length()+ " " + str1);
+                final String ce_payload = CipherUtils.compressEncryptString(payload);
+                Log.i(TAG, "sensor length CipherUtils.encryptBytes ce_payload length: " + ce_payload.length());
+                data.putString("payload", ce_payload);
+                if (d) Log.d(TAG, "sending data len " + ce_payload.length()+ " " + ce_payload);
             } else {
                 if (payload.length() > 0) {
                     data.putString("payload", CipherUtils.encryptString(payload));
@@ -558,16 +583,11 @@ public class GcmActivity extends Activity {
                     data.putString("payload", "");
                 }
             }
-            if (xdrip.getAppContext() == null) {
-                Log.e(TAG, "mContext is null cannot sendMessage");
-                return "";
-            }
-            if (identity == null) {
-                Log.e(TAG, "identity is null cannot sendMessage");
-                return "";
-            }
+
             if (gcm_queue.size() < MAX_QUEUE_SIZE) {
-                gcm_queue.add(new GCM_data(data));
+                if (shouldAddQueue(data)) {
+                    gcm_queue.add(new GCM_data(data));
+                }
             } else {
                 Log.e(TAG, "Queue size exceeded");
                 Home.toaststaticnext("Maximum Sync Queue size Exceeded!");
@@ -588,6 +608,32 @@ public class GcmActivity extends Activity {
         }
         Log.d(TAG, "Return msg in SendMessage: " + msg);
         return msg;
+    }
+
+    private static boolean shouldAddQueue(Bundle data) {
+        final String action = data.getString("action");
+        if (action == null) return false;
+        switch (action) {
+            // one shot action types where multi queuing is not needed
+            case "ping":
+            case "sbr":
+            case "bfr":
+                synchronized (queue_lock) {
+                    for (GCM_data qdata : gcm_queue) {
+                        try {
+                            if (qdata.bundle.getString("action").equals(action)) {
+                                Log.d(TAG, "Skipping queue add for duplicate action: " + action);
+                                return false;
+                            }
+                        } catch (NullPointerException e) {
+                            //
+                        }
+                    }
+                }
+                return true;
+            default:
+                return true;
+        }
     }
 
     public void tryGCMcreate() {
@@ -754,9 +800,9 @@ public class GcmActivity extends Activity {
     private static class GCM_data {
         public Bundle bundle;
         public Double timestamp;
-        public int resent;
+        private int resent;
 
-        public GCM_data(Bundle data) {
+        private GCM_data(Bundle data) {
             bundle = data;
             timestamp = JoH.ts();
             resent = 0;

@@ -8,6 +8,7 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.GoogleDriveInterface;
+import com.eveningoutpost.dexdrip.Models.JoH;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -165,6 +166,11 @@ public class CipherUtils {
     public static String encryptString(String plainText) {
         byte[] inbytes = plainText.getBytes(Charset.forName("UTF-8"));
         return Base64.encodeToString(encryptBytes(inbytes), Base64.NO_WRAP);
+    }
+
+    public static String compressEncryptString(String plainText) {
+        return Base64.encodeToString(CipherUtils.encryptBytes(JoH.compressStringToBytes(plainText))
+                , Base64.NO_WRAP);
     }
 
     public static byte[] getRandomKey() {

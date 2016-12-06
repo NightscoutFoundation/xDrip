@@ -71,6 +71,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
@@ -288,7 +289,12 @@ public class Home extends ActivityWithMenu {
                     intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
                     intent.setData(Uri.parse("package:" + packageName));
                     startActivity(intent);
-                    JoH.static_toast_long("Select YES for best performance!");
+                    if (PersistentStore.incrementLong("asked_battery_optimization") < 5) {
+                        JoH.static_toast_long("Select YES for best performance!");
+                    } else {
+                        JoH.static_toast_long("This app needs battery optimization whitelisting or it will not work well. Please reset app preferences");
+                    }
+
                 } catch (ActivityNotFoundException e) {
                     final String msg = "Device does not appear to support battery optimization whitelisting!";
                     JoH.static_toast_short(msg);
@@ -1320,7 +1326,7 @@ public class Home extends ActivityWithMenu {
         super.onResume();
         checkEula();
         set_is_follower();
-        
+
         if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             this.currentBgValueText.setTextSize(100);
             this.notificationText.setTextSize(40);
@@ -2466,7 +2472,6 @@ public class Home extends ActivityWithMenu {
     }
 
     public void doBackFillBroadcast(MenuItem myitem) {
-        DisplayQRCode.mContext = getApplicationContext();
         GcmActivity.syncBGTable2();
         toast("Starting sync to other devices");
     }
