@@ -1,7 +1,5 @@
 package com.eveningoutpost.dexdrip.utils;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -10,12 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
-import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -37,7 +34,6 @@ public class DisplayQRCode extends AppCompatActivity {
     private static final String TAG = "jamorham qr";
     private static String send_url;
     private SharedPreferences prefs;
-    public static Context mContext;
     private static DisplayQRCode mInstance;
     private Map<String, String> prefsMap = new HashMap<String, String>();
 
@@ -66,7 +62,6 @@ public class DisplayQRCode extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = getApplicationContext();
         mInstance = this;
         setContentView(R.layout.activity_display_qrcode);
         JoH.fixActionBar(this);
@@ -127,7 +122,7 @@ public class DisplayQRCode extends AppCompatActivity {
                 toast("Preparing");
 
                 try {
-                    send_url = mContext.getString(R.string.wserviceurl) + "/joh-setsw";
+                    send_url = xdrip.getAppContext().getString(R.string.wserviceurl) + "/joh-setsw";
                     final String bbody = Base64.encodeToString(crypted_data, Base64.NO_WRAP);
                     Log.d(TAG, "Upload Body size: " + bbody.length());
                     final RequestBody formBody = new FormEncodingBuilder()
@@ -239,30 +234,9 @@ public class DisplayQRCode extends AppCompatActivity {
         }
     }
 
-    public static void static_toast(final Context context, final String msg) {
-        try {
-            Activity activity = (Activity) context;
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
-                }
-            });
-            Log.d(TAG, "Toast msg: " + msg);
-        } catch (Exception e) {
-            Log.e(TAG, "Couldn't display toast: " + msg);
-        }
-    }
 
     private static void toast(final String msg) {
-        {
-            if (mContext != null) {
-                static_toast(mContext, msg);
-            } else {
-                Log.e(TAG, "mContext is null");
-                Home.toaststatic(msg); // fallback
-            }
-        }
+        JoH.static_toast_short(msg);
     }
 
 }
