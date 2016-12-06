@@ -119,6 +119,42 @@ class CompareResult {
 
 }
 
+
+class SympleHystograme {
+    float total;
+    int lessThan10;
+    int lessThan20;
+    int lessThan30;
+    int others;
+    
+    void addValue(double finger, double cgm) {
+        total++;
+        double ratio = (double)cgm / finger;
+        if (ratio < 1.1 && ratio > 0.9) {
+            lessThan10++;
+            return;
+        }
+        if (ratio < 1.2 && ratio > 0.8) {
+            lessThan20++;
+            return;
+        }
+        if (ratio < 1.3 && ratio > 0.7) {
+            lessThan30++;
+            return;
+        }
+        others++;
+    }
+        
+    void Print() {
+        System.out.println("total objects = " + total);
+        System.out.println("  < 10% = " + lessThan10 * 100.0 / total);
+        System.out.println("  < 20% = " + lessThan20 * 100.0 / total);
+        System.out.println("  < 30% = " + lessThan30 * 100.0 / total);
+        System.out.println("  others " + others * 100.0 / total);
+    }
+        
+}
+
 class CompareCgms {
 
     static java.text.DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
@@ -144,20 +180,29 @@ class CompareCgms {
     static void printResults(List<FingerPricksData> fpDataList, List<CgmData> xDripBgReadings,
             List<CgmData> libreManual, List<CgmData> libreContinus) {
 
+        SympleHystograme xDripHistogram = new SympleHystograme();
+        SympleHystograme libreHistogram = new SympleHystograme();
+        
         System.out.println("Final results");
-        System.out.println("Finger Pricks                  xdrip results             libre results");
+        System.out.println("Finger Pricks                  xdrip results                    libre results");
 
         for (FingerPricksData fingerPricksData : fpDataList) {
 
             // Create the xdrip data if needed
-            String xDrip = CreateXdripResults(fingerPricksData, xDripBgReadings);
+            String xDrip = CreateXdripResults(fingerPricksData, xDripBgReadings, xDripHistogram);
 
             // Create the libre data if needed
-            String libre = CreateLibreResults(fingerPricksData, libreManual, libreContinus);
+            String libre = CreateLibreResults(fingerPricksData, libreManual, libreContinus, libreHistogram);
 
             System.out.printf("%s %4.0f  %30s %30s\n", df.format(new Date(fingerPricksData.timeMs)),
                     (float) fingerPricksData.bg, xDrip, libre);
         }
+        
+        System.out.println("xDrip histogram\n");
+        xDripHistogram.Print();
+        
+        System.out.println("\n\nxLibre histogram\n");
+        libreHistogram.Print();
 
     }
 
@@ -165,7 +210,7 @@ class CompareCgms {
     // fingerprick.
     // Xdrip will look for it's closest reading and create it's result based on
     // what it has found.
-    static String CreateXdripResults(FingerPricksData fpData, List<CgmData> xDripBgReadings) {
+    static String CreateXdripResults(FingerPricksData fpData, List<CgmData> xDripBgReadings, SympleHystograme xDripHistogram) {
         CgmData xDripPoint = getClosestPrecidingReading(xDripBgReadings, fpData.timeMs);
 
         if (xDripPoint == null) {
@@ -173,6 +218,8 @@ class CompareCgms {
         }
         double xDripTimeDiffMinutes = (fpData.timeMs - xDripPoint.timeMs) / 60000.0;
         if (xDripTimeDiffMinutes < 15) {
+            xDripHistogram.addValue(fpData.bg, xDripPoint.bg);
+            
             StringBuilder sb = new StringBuilder();
             Formatter formatter = new Formatter(sb);
             formatter.format(" %6.1f %1.1f (sensor age = %1.1f)", xDripPoint.bg, xDripTimeDiffMinutes,
@@ -197,7 +244,7 @@ class CompareCgms {
     // fingerprick.
     // Xdrip will look for it's closest reading and create it's result based on
     // what it has found.
-    static String CreateLibreResults(FingerPricksData fpData, List<CgmData> libreManual, List<CgmData> libreContinus) {
+    static String CreateLibreResults(FingerPricksData fpData, List<CgmData> libreManual, List<CgmData> libreContinus, SympleHystograme libreHistogram) {
         CgmData librePoint = getClosestPrecidingReading(libreManual, fpData.timeMs);
         String description = "";
         if (librePoint == null || isTooFar(fpData, librePoint)) {
@@ -209,6 +256,7 @@ class CompareCgms {
         }
         double libreTimeDiffMinutes = (fpData.timeMs - librePoint.timeMs) / 60000.0;
         if (libreTimeDiffMinutes < 15) {
+            libreHistogram.addValue(fpData.bg, librePoint.bg);
             StringBuilder sb = new StringBuilder();
             Formatter formatter = new Formatter(sb);
             formatter.format(" %6.1f %1.1f %s", librePoint.bg, libreTimeDiffMinutes, description);
