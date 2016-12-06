@@ -3,7 +3,6 @@ package com.eveningoutpost.dexdrip.Models;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
@@ -44,6 +43,7 @@ import android.widget.Toast;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.utils.BestGZIPOutputStream;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -172,7 +172,7 @@ public class JoH {
     public static byte[] compressStringToBytes(String string) {
         try {
             ByteArrayOutputStream output = new ByteArrayOutputStream(string.length());
-            GZIPOutputStream gzipped_data = new GZIPOutputStream(output);
+            BestGZIPOutputStream gzipped_data = new BestGZIPOutputStream(output);
             gzipped_data.write(string.getBytes(Charset.forName("UTF-8")));
             gzipped_data.close();
             byte[] compressed = output.toByteArray();
@@ -187,7 +187,7 @@ public class JoH {
     public static byte[] compressBytesToBytes(byte[] bytes) {
         try {
             ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length);
-            GZIPOutputStream gzipped_data = new GZIPOutputStream(output);
+            BestGZIPOutputStream gzipped_data = new BestGZIPOutputStream(output);
             gzipped_data.write(bytes);
             gzipped_data.close();
             byte[] compressed = output.toByteArray();
@@ -479,7 +479,9 @@ public class JoH {
         final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         final boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnected();
-        return isConnected && ((activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) || (activeNetwork.getType() == ConnectivityManager.TYPE_ETHERNET));
+        return isConnected && ((activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)
+                || (activeNetwork.getType() == ConnectivityManager.TYPE_ETHERNET)
+                || (activeNetwork.getType() == ConnectivityManager.TYPE_BLUETOOTH));
     }
 
     public static boolean isMobileDataOrEthernetConnected() {
