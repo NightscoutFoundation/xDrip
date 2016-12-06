@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:key="preferenceScreen">
     <PreferenceCategory
         android:title="@string/pref_xdrip_g5_settings"
@@ -53,18 +54,17 @@
         android:key="category"
         android:selectable="false">
 
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="showExternalStatus"
+            android:title="Show Loop Status"
+            app:wear_iconOff="@drawable/settings_off"
+            app:wear_iconOn="@drawable/settings_on" />
+
         <CheckBoxPreference android:title="Dark"
             android:defaultValue="true"
             android:summary="Dark theme"
             android:key="dark" />
-
-        <ListPreference
-            android:key="ambient_lowcolor"
-            android:title="@string/pref_ambient_lowcolor"
-            android:summary="@string/pref_summary_ambient_lowcolor"
-            android:entries="@array/ambient_lowcolor"
-            android:entryValues="@array/ambient_lowcolor_values"
-            android:defaultValue="3" />
 
         <!-- TODO: reenable raw
         <CheckBoxPreference android:title="Show Raw"

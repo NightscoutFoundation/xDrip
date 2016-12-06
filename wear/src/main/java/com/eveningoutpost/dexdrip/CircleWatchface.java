@@ -13,6 +13,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -25,8 +26,8 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.google.android.gms.wearable.DataMap;
-import com.ustwo.clockwise.WatchFace;
-import com.ustwo.clockwise.WatchFaceTime;
+import com.ustwo.clockwise.wearable.WatchFace;
+import com.ustwo.clockwise.common.WatchFaceTime;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,6 +65,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
     private int sgvLevel = 0;
     private String sgvString = "999";
     private String rawString = "x | x | x";
+    private String statusString = "no status";
 
 
     private int batteryLevel = 0;
@@ -162,6 +164,17 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
                 ) {
             textView.setVisibility(View.VISIBLE);
             textView.setText(getRawString());
+            textView.setTextColor(getTextColor());
+
+        } else {
+            //Also possible: View.INVISIBLE instead of View.GONE (no layout change)
+            textView.setVisibility(View.GONE);
+        }
+
+        textView = (TextView) myLayout.findViewById(R.id.statusString);
+        if (sharedPrefs.getBoolean("showExternalStatus", true)) {
+            textView.setVisibility(View.VISIBLE);
+            textView.setText(getStatusString());
             textView.setTextColor(getTextColor());
 
         } else {
@@ -462,6 +475,14 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         this.rawString = rawString;
     }
 
+    String getStatusString() {
+        return statusString;
+    }
+
+    void setStatusString(String statusString) {
+        this.statusString = statusString;
+    }
+
     public String getDelta() {
         return delta;
     }
@@ -522,26 +543,40 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
                     "MyWakelockTag");
             wakeLock.acquire(30000);
 
-            DataMap dataMap = DataMap.fromBundle(intent.getBundleExtra("data"));
-            setSgvLevel((int) dataMap.getLong("sgvLevel"));
-            Log.d("CircleWatchface", "sgv level : " + getSgvLevel());
-            setSgvString(dataMap.getString("sgvString"));
-            Log.d("CircleWatchface", "sgv string : " + getSgvString());
-            setRawString(dataMap.getString("rawString"));
-            setDelta(dataMap.getString("delta"));
-            setDatetime(dataMap.getDouble("timestamp"));
-            addToWatchSet(dataMap);
+            Bundle bundle = intent.getBundleExtra("data");
+            if (bundle!= null) {
+                DataMap dataMap = DataMap.fromBundle(bundle);
+                setSgvLevel((int) dataMap.getLong("sgvLevel"));
+                Log.d("CircleWatchface", "sgv level : " + getSgvLevel());
+                setSgvString(dataMap.getString("sgvString"));
+                Log.d("CircleWatchface", "sgv string : " + getSgvString());
+                setRawString(dataMap.getString("rawString"));
+                setDelta(dataMap.getString("delta"));
+                setDatetime(dataMap.getDouble("timestamp"));
+                addToWatchSet(dataMap);
 
 
-            //start animation?
-            // dataMap.getDataMapArrayList("entries") == null -> not on "resend data".
-            if (sharedPrefs.getBoolean("animation", false) && dataMap.getDataMapArrayList("entries") == null && (getSgvString().equals("100") || getSgvString().equals("5.5") || getSgvString().equals("5,5"))) {
-                startAnimation();
+                //start animation?
+                // dataMap.getDataMapArrayList("entries") == null -> not on "resend data".
+                if (sharedPrefs.getBoolean("animation", false) && dataMap.getDataMapArrayList("entries") == null && (getSgvString().equals("100") || getSgvString().equals("5.5") || getSgvString().equals("5,5"))) {
+                    startAnimation();
+                }
+
+                prepareLayout();
+                prepareDrawTime();
+                invalidate();
             }
+            //status
+            bundle = intent.getBundleExtra("status");
+            if (bundle != null) {
+                DataMap dataMap = DataMap.fromBundle(bundle);
+                wakeLock.acquire(50);
+                setStatusString(dataMap.getString("externalStatusString"));
 
-            prepareLayout();
-            prepareDrawTime();
-            invalidate();
+                prepareLayout();
+                prepareDrawTime();
+                invalidate();
+            }
             wakeLock.release();
         }
     }
@@ -594,50 +629,6 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         }
         Collections.sort(bgDataList);
     }
-    /*
-    public synchronized void addToWatchSet(DataMap dataMap) {
-
-        if(!sharedPrefs.getBoolean("showRingHistory", false)){
-            bgDataList.clear();
-            return;
-        }
-
-        Log.d("CircleWatchface", "start addToWatchSet");
-        ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
-        if (entries == null) {
-            double sgv = dataMap.getDouble("sgvDouble");
-            double high = dataMap.getDouble("high");
-            double low = dataMap.getDouble("low");
-            double timestamp = dataMap.getDouble("timestamp");
-            bgDataList.add(new BgWatchData(sgv, high, low, timestamp));
-        } else if (!sharedPrefs.getBoolean("animation", false)) {
-            // don't load history at once if animations are set (less resource consumption)
-            Log.d("addToWatchSet", "entries.size(): " + entries.size());
-
-            for (DataMap entry : entries) {
-                double sgv = entry.getDouble("sgvDouble");
-                double high = entry.getDouble("high");
-                double low = entry.getDouble("low");
-                double timestamp = entry.getDouble("timestamp");
-                bgDataList.add(new BgWatchData(sgv, high, low, timestamp));
-            }
-        } else
-
-            Log.d("addToWatchSet", "start removing bgDataList.size(): " + bgDataList.size());
-        HashSet removeSet = new HashSet();
-        double threshold = (new Date().getTime() - (1000 * 60 * 5 * holdInMemory()));
-        for (BgWatchData data : bgDataList) {
-            if (data.timestamp < threshold) {
-                removeSet.add(data);
-
-            }
-        }
-        bgDataList.removeAll(removeSet);
-        Log.d("addToWatchSet", "after bgDataList.size(): " + bgDataList.size());
-        removeSet = null;
-        System.gc();
-    }
-    */
 
     public int darken(int color, double fraction) {
         int red = Color.red(color);

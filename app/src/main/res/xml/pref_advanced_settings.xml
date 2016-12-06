@@ -32,7 +32,9 @@
                 android:dependency="force_wearG5"
                 android:key="node_wearG5"
                 android:summary="@string/pref_summary_node_wearG5"
-                android:title="@string/pref_node_wearG5"/>
+                android:title="@string/pref_node_wearG5"
+                android:inputType="none"
+                android:textIsSelectable="true"/>
         </PreferenceCategory>
         <PreferenceCategory
             android:key="pebble_integration"

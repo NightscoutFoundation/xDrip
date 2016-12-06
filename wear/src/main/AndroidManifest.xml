@@ -37,7 +37,7 @@
         <service
             android:name=".Home"
             android:allowEmbedded="true"
-            android:label="xDrip"
+            android:label="@string/label_xdrip"
             android:permission="android.permission.BIND_WALLPAPER">
             <meta-data
                 android:name="android.service.wallpaper"
@@ -54,7 +54,7 @@
         <service
             android:name=".LargeHome"
             android:allowEmbedded="true"
-            android:label="xDrip(Large)"
+            android:label="@string/label_xdrip_large"
             android:permission="android.permission.BIND_WALLPAPER">
             <meta-data
                 android:name="android.service.wallpaper"
@@ -71,7 +71,7 @@
         <service
             android:name=".BIGChart"
             android:allowEmbedded="true"
-            android:label="xDrip(BigChart)"
+            android:label="@string/label_xdrip_big_chart"
             android:permission="android.permission.BIND_WALLPAPER">
             <meta-data
                 android:name="android.service.wallpaper"
@@ -88,7 +88,7 @@
         <service
             android:name=".CircleWatchface"
             android:allowEmbedded="true"
-            android:label="xDrip(Circle)"
+            android:label="@string/label_xdrip_circle"
             android:permission="android.permission.BIND_WALLPAPER">
             <meta-data
                 android:name="android.service.wallpaper"

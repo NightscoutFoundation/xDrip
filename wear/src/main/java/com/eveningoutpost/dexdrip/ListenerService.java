@@ -58,6 +58,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String WEARABLE_DATA_PATH = "/nightscout_watch_data";
     private static final String WEARABLE_RESEND_PATH = "/nightscout_watch_data_resend";
     private static final String OPEN_SETTINGS = "/openwearsettings";
+    private static final String NEW_STATUS_PATH = "/sendstatustowear";
     private static final String SYNC_DB_PATH = "/syncweardb";//KS
     private static final String SYNC_BGS_PATH = "/syncwearbgs";//KS
     private static final String WEARABLE_BG_DATA_PATH = "/nightscout_watch_bg_data";//KS
@@ -349,6 +350,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     public void onDataChanged(DataEventBuffer dataEvents) {
 
         DataMap dataMap;
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());//KS
 
         for (DataEvent event : dataEvents) {
 
@@ -362,6 +364,13 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
 
+                } else if (path.equals(NEW_STATUS_PATH)) {
+                    dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
+                    Intent messageIntent = new Intent();
+                    messageIntent.setAction(Intent.ACTION_SEND);
+                    messageIntent.putExtra("status", dataMap.toBundle());
+                    Log.d(TAG, "onDataChanged NEW_STATUS_PATH=" + path);
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
                 } else if (path.equals(WEARABLE_DATA_PATH)) {
 
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();

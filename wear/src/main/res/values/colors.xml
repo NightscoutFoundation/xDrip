@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- light colors -->
+    <color name="light_bigchart_time">@color/black</color>
+    <color name="light_bigchart_status">@color/black</color>
+    <color name="light_background">@color/white</color>
+    <color name="light_stripe_background">@color/black</color>
+    <color name="light_mTimestamp1">@color/black</color>
+    <color name="light_mTimestamp">@color/red_600</color>
+    <color name="light_highColor">@color/yellow_700</color>
+    <color name="light_lowColor">@color/red_600</color>
+    <color name="light_midColor">@color/black</color>
+    <color name="light_gridColor">@color/black</color>
+    <!-- dark colors -->
+    <color name="dark_mTime">@color/white</color>
+    <color name="dark_statusView">@color/white</color>
+    <color name="dark_background">@color/black</color>
+    <color name="dark_mLinearLayout">@color/grey_50</color>
+    <color name="dark_Timestamp">@color/white</color>
+    <color name="dark_mTimestamp1_home">@color/black</color>
+    <color name="dark_TimestampOld">@color/red_600</color>
+    <color name="dark_uploaderBattery">@color/black</color>
+    <color name="dark_uploaderBatteryEmpty">@color/red_600</color>
+    <color name="dark_mStatus_home">@color/black</color>
+
+    <color name="dark_highColor">@color/yellow_A200</color>
+    <color name="dark_lowColor">@color/RED</color>
+    <color name="dark_midColor">@color/grey_50</color>
+    <color name="dark_gridColor">@color/grey_50</color>
+
+    <!-- basal colors -->
+    <color name="basal_light">@color/blue_300</color>
+    <color name="basal_dark">@color/BLUE</color>
+    <color name="basal_light_lowres">@color/grey_300</color>
+    <color name="basal_dark_lowres">@color/grey_500</color>
+
+
+    <!-- Material Design - Color Palette -->
+    <!-- Red -->
+    <color name="red_600">#E53935</color>
+    <color name="RED">#FF0000</color>
+    <!-- Red -->
+
+    <!-- Blue -->
+    <color name="blue_300">#64B5F6</color>
+    <!-- Blue -->
+
+    <!-- Yellow -->
+    <color name="yellow_700">#FBC02D</color>
+    <color name="yellow_A200">#FFFF00</color>
+    <!-- Yellow -->
+
+    <!-- Grey -->
+    <color name="grey_50">#FAFAFA</color>
+    <color name="grey_300">#E0E0E0</color>
+    <color name="grey_500">#9E9E9E</color>
+    <!-- Grey -->
+
+    <!-- Blue Grey -->
+    <color name="BLUE">#0000FF</color>
+    <!-- Blue Grey -->
+
+    <!-- Black -->
+    <color name="black">#000000</color>
+    <!-- Black -->
+
+    <!-- White -->
+    <color name="white">#FFFFFF</color>
+    <!-- White -->
+</resources>

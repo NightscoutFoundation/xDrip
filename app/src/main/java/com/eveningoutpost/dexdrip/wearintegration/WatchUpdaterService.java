@@ -58,6 +58,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     public static final String ACTION_SYNC_DB = WatchUpdaterService.class.getName().concat(".SyncDB");//KS
     public static final String ACTION_SYNC_SENSOR = WatchUpdaterService.class.getName().concat(".SyncSensor");//KS
     public static final String ACTION_SYNC_CALIBRATION = WatchUpdaterService.class.getName().concat(".SyncCalibration");//KS
+    public static final String ACTION_SEND_STATUS = WatchUpdaterService.class.getName().concat(".SendStatus");//KS
     private static final String SYNC_DB_PATH = "/syncweardb";//KS
     private static final String SYNC_BGS_PATH = "/syncwearbgs";//KS
     private static final String WEARABLE_CALIBRATION_DATA_PATH = "/nightscout_watch_cal_data";//KS
@@ -73,7 +74,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String WEARABLE_TREATMENT_PAYLOAD = "/xdrip_plus_treatment_payload";
     private static final String WEARABLE_TOAST_NOTIFICATON = "/xdrip_plus_toast";
     private static final String OPEN_SETTINGS_PATH = "/openwearsettings";
-
+    private static final String NEW_STATUS_PATH = "/sendstatustowear";//KS
     // Phone
     private static final String CAPABILITY_PHONE_APP = "phone_app_sync_bgs";
     private static final String MESSAGE_PATH_PHONE = "/phone_message_path";
@@ -424,6 +425,10 @@ public class WatchUpdaterService extends WearableListenerService implements
                     resendData();
                 } else if (ACTION_OPEN_SETTINGS.equals(action)) {
                     sendNotification(OPEN_SETTINGS_PATH, "openSettings");//KS add args
+                } else if (ACTION_SEND_STATUS.equals(action)) {//KS added for HAPP
+                    //https://github.com/StephenBlackWasAlreadyTaken/xDrip-Experimental
+                    Log.d(TAG, "onStartCommand Action=" + ACTION_SEND_STATUS + " externalStatusString=" + intent.getStringExtra("externalStatusString"));
+                    sendStatus(intent.getStringExtra("externalStatusString"));
                 } else if (ACTION_SYNC_DB.equals(action)) {//KS
                     Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_DB + " Path=" + SYNC_DB_PATH);
                     sendNotification(SYNC_DB_PATH, "syncDB");
@@ -715,6 +720,19 @@ public class WatchUpdaterService extends WearableListenerService implements
             Wearable.DataApi.putDataItem(googleApiClient, putDataRequest);
         } else {
             Log.e(notification, "No connection to wearable available!");
+        }
+    }
+
+    private void sendStatus(String status) {
+        if (googleApiClient.isConnected()) {
+            PutDataMapRequest dataMapRequest = PutDataMapRequest.create(NEW_STATUS_PATH);
+            //unique content
+            dataMapRequest.getDataMap().putDouble("timestamp", System.currentTimeMillis());
+            dataMapRequest.getDataMap().putString("externalStatusString", status);
+            PutDataRequest putDataRequest = dataMapRequest.asPutDataRequest();
+            Wearable.DataApi.putDataItem(googleApiClient, putDataRequest);
+        } else {
+            Log.e("SendStatus", "No connection to wearable available!");
         }
     }
 

@@ -113,7 +113,16 @@
                 <TextView
                     android:id="@+id/raw"
                     android:textSize="10sp"
-                    android:text="000 | 000 | 000"
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:textAlignment="center"
+                    android:textColor="#000000"
+                    android:paddingLeft="10sp"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/externaltstatus"
+                    android:textSize="10sp"
+                    android:text="S: no status"
                     android:layout_width="wrap_content"
                     android:textAlignment="center"
                     android:textColor="#000000"
@@ -139,9 +148,10 @@
         <lecho.lib.hellocharts.view.LineChartView
             android:id="@+id/chart"
             android:layout_width="match_parent"
-            android:layout_height="77dp"
+            android:layout_height="0dp"
             android:layout_gravity="bottom"
-            android:gravity="center_horizontal|top" />
+            android:layout_weight="1"
+            android:gravity="center_horizontal" />
 
     </LinearLayout>
 

@@ -23,7 +23,7 @@
         <TextView android:id="@+id/sgvString"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="55sp"
+        android:textSize="45sp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:text="999"
@@ -36,6 +36,16 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:text="x | x | x"
+            android:layout_gravity="center"
+            android:layout_marginTop="-5dp" />
+
+        <TextView android:id="@+id/statusString"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="no status"
             android:layout_gravity="center"
             android:layout_marginTop="-5dp" />
 
