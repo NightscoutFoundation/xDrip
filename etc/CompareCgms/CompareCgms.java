@@ -123,89 +123,104 @@ class CompareResult {
 class CompareCgms {
     
     static java.text.DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    final static String NO_DATA = "------------------------";
     
     public static void main(String[] args) throws Exception {
 
-        List<CgmData> libreContinus = readLibre("c:\\temp\\snir1.txt", "17/11/2016 18:42", LibreReading.CONTINUS, null);
         List<CgmData> libreManual = readLibre("c:\\temp\\snir1.txt", "17/11/2016 18:42", LibreReading.MANUAL, null);
+        List<CgmData> libreContinus = readLibre("c:\\temp\\snir1.txt", "17/11/2016 18:42", LibreReading.CONTINUS, null);
         
         List<FingerPricksData> fpData = readFreeStyleFingerPricks("c:\\temp\\fingers.txt");
         
         List<Sensor> sensors = ReadSensors("..\\..\\..\\BgAlgorithm\\export20161129-012233.sqlite" );
         List<CgmData> xDripBgReadings = readxDripBgReadings("..\\..\\..\\BgAlgorithm\\export20161129-012233.sqlite", "17/11/2016 18:42", sensors);
         
-        
-        
-        
-        List<CompareResult> compareResultList = createCompareResult(fpData);
-        createXdripResults(fpData, xDripBgReadings, compareResultList);
-        
-        
         // Now we have all the data, let's print it...
-        printResults(compareResultList); 
+        printResults(fpData, xDripBgReadings, libreManual, libreContinus); 
             
     }
-    
-    static void printResults(List<CompareResult> compareResultList) {
+
+static void printResults(List<FingerPricksData> fpDataList, List<CgmData> xDripBgReadings, List<CgmData> libreManual, List<CgmData> libreContinus) {
         
         System.out.println("Final results");
         System.out.println("Finger Pricks                  ");
         
         
-        for (CompareResult compareResult : compareResultList) {
+        for (FingerPricksData fingerPricksData : fpDataList) {
             
             
             // Create the xdrip data if needed
-            String xDrip;
-            double xDripTimeDiffMinutes = (compareResult.fpDate - compareResult.xDripDate) / 60000.0;
-            if (xDripTimeDiffMinutes < 15 || xDripTimeDiffMinutes == 0) {
-                StringBuilder sb = new StringBuilder();
-                Formatter formatter = new Formatter(sb);
-                formatter.format(" %6.1f %1.1f (sensor age = %1.1f)", compareResult.xDripBg, xDripTimeDiffMinutes, (float)compareResult.xDripTimeFromSensorStart / 24 /3600 / 1000);
-                xDrip =sb.toString();
-            } else {
-                xDrip = "-------------";
-            }
+            String xDrip = CreateXdripResults(fingerPricksData, xDripBgReadings);
+
+            // Create the libre data if needed
+            String libre = CreateLibreResults(fingerPricksData, libreManual, libreContinus);
             
-            System.out.printf("%s %4.0f  %s\n", df.format(new Date(compareResult.fpDate)), (float)compareResult.fpBg, 
-                    xDrip );
+            System.out.printf("%s %4.0f  %30s %30s\n", df.format(new Date(fingerPricksData.timeMs)), (float)fingerPricksData.bg, 
+                    xDrip,  libre);
         }
         
     }
     
-    // Go over the fingerpricks data, and create a CompareResult for it.
-    public static List<CompareResult> createCompareResult(List<FingerPricksData> fpData) {
-        List<CompareResult> compareResultList = new ArrayList<CompareResult>();
-        for (FingerPricksData fingerPricks : fpData) {
-            CompareResult compareResult = new CompareResult();
-            compareResult.fpDate = fingerPricks.timeMs;
-            compareResult.fpBg = fingerPricks.bg;
-            compareResultList.add(compareResult);
-        }
-        return compareResultList;
-    }
     
-    
-    // Go over the fingerpricks data, find the dexcom data, and copy them to the result structure.
-    public static  void createXdripResults(List<FingerPricksData> fpData, List<CgmData> xDripBgReadings, List<CompareResult> compareResultList) {
+    // Prepare a string that represents what xDrip has to say about the given fingerprick.
+    // Xdrip will look for it's closest reading and create it's result based on what it has found.
+    static String CreateXdripResults(FingerPricksData fpData, List<CgmData> xDripBgReadings) {
+        CgmData xDripPoint = getClosestPrecidingReading(xDripBgReadings, fpData.timeMs);
         
-        int i = 0;
-        for (FingerPricksData fingerPricks : fpData) {
-            
-            CgmData xDripPoint = getClosestPrecidingReading(xDripBgReadings, fingerPricks.timeMs);
-            if (xDripPoint != null) {
-                CompareResult compareResult =  compareResultList.get(i);
-                compareResult.xDripBg = xDripPoint.bg;
-                compareResult.xDripDate = xDripPoint.timeMs;
-                compareResult.xDripTimeFromSensorStart = xDripPoint.msFromSensorStart;
+        if(xDripPoint == null) {
+            return NO_DATA;
+        }
+        double xDripTimeDiffMinutes = (fpData.timeMs - xDripPoint.timeMs) / 60000.0;
+        if (xDripTimeDiffMinutes < 15 ) {
+            StringBuilder sb = new StringBuilder();
+            Formatter formatter = new Formatter(sb);
+            formatter.format(" %6.1f %1.1f (sensor age = %1.1f)", xDripPoint.bg, xDripTimeDiffMinutes, (float)xDripPoint.msFromSensorStart / 24 /3600 / 1000);
+            return sb.toString();
+        } else {
+            return NO_DATA;
+        }
+    }
+    static boolean isTooFar(FingerPricksData fpData, CgmData cgmData ) {
+        double libreTimeDiffMinutes = (fpData.timeMs - cgmData.timeMs) / 60000.0;
+        
+        if(libreTimeDiffMinutes < 0) {
+            System.err.printf("Point is too far away...");
+        }
+        
+        return libreTimeDiffMinutes > 15 ;
+    }
+    
+    // Prepare a string that represents what xDrip has to say about the given fingerprick.
+    // Xdrip will look for it's closest reading and create it's result based on what it has found.
+    static String CreateLibreResults(FingerPricksData fpData, List<CgmData> libreManual, List<CgmData> libreContinus) {
+        CgmData librePoint = getClosestPrecidingReading(libreManual, fpData.timeMs);
+        String description = "";
+        if(librePoint == null || isTooFar(fpData, librePoint)) {
+            librePoint = getClosestPrecidingReading(libreContinus, fpData.timeMs);
+            if(librePoint == null || isTooFar(fpData, librePoint)) {
+                return NO_DATA;
             }
-            i++;
+            description = " (interpulated)";
+        }
+        double libreTimeDiffMinutes = (fpData.timeMs - librePoint.timeMs) / 60000.0;
+        if (libreTimeDiffMinutes < 15 ) {
+            StringBuilder sb = new StringBuilder();
+            Formatter formatter = new Formatter(sb);
+            formatter.format(" %6.1f %1.1f %s", librePoint.bg, libreTimeDiffMinutes, description);
+            return sb.toString();
+        } else {
+            return NO_DATA;
         }
     }
     
+    
+   
     // Find the closest CgmData data that was before the measurment. (This is the data that the user had
     // when he decided to measure.
     static CgmData getClosestPrecidingReading(List<CgmData> cgmDataList, long time) {
+        if (cgmDataList == null) {
+            return null;
+        }
         //System.out.println("Looking for " + df.format(new Date(time)));
         ListIterator<CgmData> li = cgmDataList.listIterator(cgmDataList.size());
         // Iterate in reverse.
