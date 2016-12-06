@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Formatter;
 import java.awt.SecondaryLoop;
 import java.io.*;
 import java.text.ParseException;
@@ -16,6 +17,11 @@ import java.text.ParseException;
  * 1) Read the data of the finger pricks. (time, val)
  * 2) Read the data of xDrip: (time, val, time from sensor start)
  * 3) Read the data of Libre (time, val, time from sensor start).
+ * 
+ * When doing the copmparision we will create a 3 strings structure.
+ * One describing the measurment (for example time, value)
+ * The second is comparing with dexcom: value, time from measurment (if signifcant) and time from sensor start.
+ * The third is for comparing with lybre, same as for decxcom but will say if it is based on real measurment, or their interpulated data.
  * It then prints a table with the data.
  * 
  *  Due to the small size of this task, it is all in one file. Will be changed when it gets better.
@@ -27,7 +33,7 @@ class FingerPricksData {
     double bg;
     
     FingerPricksData(long time, double bg) {
-        this.timeMs = timeMs;
+        this.timeMs = time;
         this.bg = bg;
     }
 }
@@ -81,16 +87,140 @@ class Sensor {
     double days;
 }
 
+enum LibreReading {
+    CONTINUS(0), MANUAL(1);
+    
+    LibreReading(int val) {
+        value = val;
+    }
+    
+    public int getValue() {
+        return value;
+      }
+    
+    private int value; 
+}
+
+
+class CompareResult {
+    // data of finger prints
+    long fpDate;
+    double fpBg;
+    
+    // dexcom data
+    long xDripDate;
+    double xDripBg;
+    long xDripTimeFromSensorStart;
+    
+    // libre data
+    long libreDate;
+    double libreBg;
+    LibreReading libreReading;
+    
+    
+}
+
 class CompareCgms {
     
     static java.text.DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     
     public static void main(String[] args) throws Exception {
-        readFreeStyleFingerPricks("c:\\temp\\fingers.txt");
+
+        List<CgmData> libreContinus = readLibre("c:\\temp\\snir1.txt", "17/11/2016 18:42", LibreReading.CONTINUS, null);
+        List<CgmData> libreManual = readLibre("c:\\temp\\snir1.txt", "17/11/2016 18:42", LibreReading.MANUAL, null);
+        
+        List<FingerPricksData> fpData = readFreeStyleFingerPricks("c:\\temp\\fingers.txt");
+        
         List<Sensor> sensors = ReadSensors("..\\..\\..\\BgAlgorithm\\export20161129-012233.sqlite" );
-        readxDripBgReadings("..\\..\\..\\BgAlgorithm\\export20161129-012233.sqlite", "27/11/2016 18:42", sensors);
+        List<CgmData> xDripBgReadings = readxDripBgReadings("..\\..\\..\\BgAlgorithm\\export20161129-012233.sqlite", "17/11/2016 18:42", sensors);
+        
+        
+        
+        
+        List<CompareResult> compareResultList = createCompareResult(fpData);
+        createXdripResults(fpData, xDripBgReadings, compareResultList);
+        
+        
+        // Now we have all the data, let's print it...
+        printResults(compareResultList); 
+            
     }
     
+    static void printResults(List<CompareResult> compareResultList) {
+        
+        System.out.println("Final results");
+        System.out.println("Finger Pricks                  ");
+        
+        
+        for (CompareResult compareResult : compareResultList) {
+            
+            
+            // Create the xdrip data if needed
+            String xDrip;
+            double xDripTimeDiffMinutes = (compareResult.fpDate - compareResult.xDripDate) / 60000.0;
+            if (xDripTimeDiffMinutes < 15 || xDripTimeDiffMinutes == 0) {
+                StringBuilder sb = new StringBuilder();
+                Formatter formatter = new Formatter(sb);
+                formatter.format(" %6.1f %1.1f (sensor age = %1.1f)", compareResult.xDripBg, xDripTimeDiffMinutes, (float)compareResult.xDripTimeFromSensorStart / 24 /3600 / 1000);
+                xDrip =sb.toString();
+            } else {
+                xDrip = "-------------";
+            }
+            
+            System.out.printf("%s %4.0f  %s\n", df.format(new Date(compareResult.fpDate)), (float)compareResult.fpBg, 
+                    xDrip );
+        }
+        
+    }
+    
+    // Go over the fingerpricks data, and create a CompareResult for it.
+    public static List<CompareResult> createCompareResult(List<FingerPricksData> fpData) {
+        List<CompareResult> compareResultList = new ArrayList<CompareResult>();
+        for (FingerPricksData fingerPricks : fpData) {
+            CompareResult compareResult = new CompareResult();
+            compareResult.fpDate = fingerPricks.timeMs;
+            compareResult.fpBg = fingerPricks.bg;
+            compareResultList.add(compareResult);
+        }
+        return compareResultList;
+    }
+    
+    
+    // Go over the fingerpricks data, find the dexcom data, and copy them to the result structure.
+    public static  void createXdripResults(List<FingerPricksData> fpData, List<CgmData> xDripBgReadings, List<CompareResult> compareResultList) {
+        
+        int i = 0;
+        for (FingerPricksData fingerPricks : fpData) {
+            
+            CgmData xDripPoint = getClosestPrecidingReading(xDripBgReadings, fingerPricks.timeMs);
+            if (xDripPoint != null) {
+                CompareResult compareResult =  compareResultList.get(i);
+                compareResult.xDripBg = xDripPoint.bg;
+                compareResult.xDripDate = xDripPoint.timeMs;
+                compareResult.xDripTimeFromSensorStart = xDripPoint.msFromSensorStart;
+            }
+            i++;
+        }
+    }
+    
+    // Find the closest CgmData data that was before the measurment. (This is the data that the user had
+    // when he decided to measure.
+    static CgmData getClosestPrecidingReading(List<CgmData> cgmDataList, long time) {
+        //System.out.println("Looking for " + df.format(new Date(time)));
+        ListIterator<CgmData> li = cgmDataList.listIterator(cgmDataList.size());
+        // Iterate in reverse.
+        while(li.hasPrevious()) {
+            CgmData cgmData = li.previous();
+            //System.out.println("Checking object with time " + df.format(new Date(cgmData.timeMs)));
+            if(cgmData.timeMs < time) {
+                // We have found the first data before our data, return it.
+                //System.out.println("found ??????????????????????????");
+                return cgmData;
+            }
+        }
+        //System.out.println("not found ??????????????????????????");
+        return null;
+    }
     
     
     // Read finger pricks data
@@ -118,7 +248,7 @@ class CompareCgms {
             double bgVal = Integer.parseInt(splited[8]);
             System.out.println("data is " + df.format(new Date(time))  +" " + bgVal );
             
-            fpData.add(new FingerPricksData(time, bgVal));
+            fpData.add(0, new FingerPricksData(time, bgVal));
         }
      
         br.close();
@@ -127,7 +257,52 @@ class CompareCgms {
         
     }
     
+    // Read the libre Sensors (I still did not see a sensor change, so I don't know how...)
     
+    
+    // Read the libre data
+    static List<CgmData> readLibre(String FileName, String startTime, LibreReading libreReading, List<Sensor> sensors) throws IOException {
+        // Format of the file is:
+        // 87      2016/11/27 18:42        1               207
+        // 90      2016/11/27 18:56        1               183
+        // 92      2016/11/27 18:42        0       209
+        
+        List<CgmData> CgmDataList = new ArrayList<CgmData>();
+        
+        FileInputStream fis = new FileInputStream(FileName);
+        
+        //Construct BufferedReader from InputStreamReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+        java.text.DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+     
+        String line = null;
+        while ((line = br.readLine()) != null) {
+            //System.out.println(line);
+            String[] splited = line.split("\\s+");
+
+            int lineType = Integer.parseInt(splited[3]);
+            if(lineType != libreReading.getValue()) {
+                continue;
+            }
+            java.util.Date date = null;
+            try {
+                date = df.parse(splited[1] + " " + splited[2]); // 
+            } catch (ParseException e) {
+                System.err.println("Error parsing date/time from libre file " + splited[1] + " " + splited[2]);
+                System.exit(2);
+            }
+            
+            double bgVal = Integer.parseInt(splited[4]);
+            System.out.println("data is " + df.format(date)  +" " + bgVal );
+            
+            CgmDataList.add( new CgmData(date.getTime(), bgVal, 0));
+        }
+     
+        br.close();
+        // sort this data
+        return CgmDataList;
+        
+    }
     static long EpochFrom1900 (double time1900) {
         // typical format is 42703.8416666667 which is number of days from 1900 and our place in the days.
         long days = (long) time1900;
@@ -141,7 +316,7 @@ class CompareCgms {
         
         java.text.DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         //System.out.println("time " + df.format(new Date(timeSeconds * 1000)));
-        return (long) timeSeconds * 1000;
+        return timeSeconds * 1000;
     }
     
     
@@ -213,7 +388,6 @@ class CompareCgms {
                     String dateStr = df.format(date);
                     System.out.println(dateStr + ", " + calculated );
                     cgmData.add(new CgmData(timestamp, calculated, bgReadingStartSensorTime(timestamp, sensors)));
-                    ;
                 }
 
             }
