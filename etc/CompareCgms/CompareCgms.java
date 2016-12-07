@@ -46,11 +46,13 @@ class CgmData {
     long timeMs;
     double bg;
     long msFromSensorStart;
+    double rawValue;
 
-    CgmData(long timeMs, double bg, long msFromSensorStart) {
+    CgmData(long timeMs, double bg, long msFromSensorStart, double rawValue) {
         this.timeMs = timeMs;
         this.bg = bg;
         this.msFromSensorStart = msFromSensorStart;
+        this.rawValue = rawValue;
     }
 }
 
@@ -102,24 +104,6 @@ enum LibreReading {
     private int value;
 }
 
-class CompareResult {
-    // data of finger prints
-    long fpDate;
-    double fpBg;
-
-    // dexcom data
-    long xDripDate;
-    double xDripBg;
-    long xDripTimeFromSensorStart;
-
-    // libre data
-    long libreDate;
-    double libreBg;
-    LibreReading libreReading;
-
-}
-
-
 class SympleHystograme {
     float total;
     int lessThan10;
@@ -155,6 +139,41 @@ class SympleHystograme {
         
 }
 
+class SensorCalibrationTableWriter {
+    void openFileIfNeeded(long timeMs, long timeFromSensorStart) throws IOException {
+        
+        String fileName = "Sensor" + df.format(new Date(timeMs)) + ".csv";
+        if (writer == null) {
+            writer = new FileWriter(fileName);
+        } else if (timeFromSensorStart < lastTimeFromSensorStart) {
+            // This meachnisim is not garenteed to work, but will work on reasnable values.
+            Flush();
+            writer = new FileWriter(fileName);
+        }
+        lastTimeFromSensorStart = timeFromSensorStart;
+        
+    }
+    
+    void writeEntry(double raw, double bgValue, long timeMs, long timeFromSensorStart) throws IOException{
+        openFileIfNeeded(timeMs, timeFromSensorStart);
+        StringBuilder sb = new StringBuilder();
+        sb.append("" + raw + ", "+ bgValue + ", "+ (timeFromSensorStart / 1000.0 / 3600/ 24)+ " \r\n");
+        writer.append(sb.toString());
+    }
+    
+    void Flush() throws IOException {
+        writer.flush();
+        writer.close();
+        writer = null;
+    }
+    
+    FileWriter writer = null;
+    long lastTimeFromSensorStart = 0;
+    static java.text.DateFormat df = new SimpleDateFormat("dd_MM_yyyyHH_mm");
+}
+
+
+
 class CompareCgms {
 
     static java.text.DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
@@ -178,7 +197,9 @@ class CompareCgms {
     }
 
     static void printResults(List<FingerPricksData> fpDataList, List<CgmData> xDripBgReadings,
-            List<CgmData> libreManual, List<CgmData> libreContinus) {
+            List<CgmData> libreManual, List<CgmData> libreContinus) throws IOException{
+        
+        SensorCalibrationTableWriter sensorCalibrationTableWriter = new SensorCalibrationTableWriter();
 
         SympleHystograme xDripHistogram = new SympleHystograme();
         SympleHystograme libreHistogram = new SympleHystograme();
@@ -189,7 +210,7 @@ class CompareCgms {
         for (FingerPricksData fingerPricksData : fpDataList) {
 
             // Create the xdrip data if needed
-            String xDrip = CreateXdripResults(fingerPricksData, xDripBgReadings, xDripHistogram);
+            String xDrip = CreateXdripResults(fingerPricksData, xDripBgReadings, xDripHistogram, sensorCalibrationTableWriter);
 
             // Create the libre data if needed
             String libre = CreateLibreResults(fingerPricksData, libreManual, libreContinus, libreHistogram);
@@ -203,6 +224,7 @@ class CompareCgms {
         
         System.out.println("\n\nxLibre histogram\n");
         libreHistogram.Print();
+        sensorCalibrationTableWriter.Flush();
 
     }
 
@@ -210,7 +232,7 @@ class CompareCgms {
     // fingerprick.
     // Xdrip will look for it's closest reading and create it's result based on
     // what it has found.
-    static String CreateXdripResults(FingerPricksData fpData, List<CgmData> xDripBgReadings, SympleHystograme xDripHistogram) {
+    static String CreateXdripResults(FingerPricksData fpData, List<CgmData> xDripBgReadings, SympleHystograme xDripHistogram, SensorCalibrationTableWriter sensorCalibrationTableWriter) throws IOException {
         CgmData xDripPoint = getClosestPrecidingReading(xDripBgReadings, fpData.timeMs);
 
         if (xDripPoint == null) {
@@ -218,6 +240,7 @@ class CompareCgms {
         }
         double xDripTimeDiffMinutes = (fpData.timeMs - xDripPoint.timeMs) / 60000.0;
         if (xDripTimeDiffMinutes < 15) {
+            sensorCalibrationTableWriter.writeEntry(xDripPoint.rawValue, fpData.bg, fpData.timeMs, xDripPoint.msFromSensorStart);
             xDripHistogram.addValue(fpData.bg, xDripPoint.bg);
             
             StringBuilder sb = new StringBuilder();
@@ -380,7 +403,7 @@ class CompareCgms {
             double bgVal = Integer.parseInt(splited[4]);
             //System.out.println("libre data is " + df.format(date) + " " + bgVal);
 
-            CgmDataList.add(new CgmData(date.getTime(), bgVal, 0));
+            CgmDataList.add(new CgmData(date.getTime(), bgVal, 0, 0));
         }
 
         br.close();
@@ -448,7 +471,7 @@ class CompareCgms {
 
     // Read the xDrip bg data
     public static List<CgmData> readxDripBgReadings(String dbName, String startTime, List<Sensor> sensors) {
-        List<CgmData> cgmData = new ArrayList<CgmData>();
+        List<CgmData> cgmDataList = new ArrayList<CgmData>();
         java.util.Date startDate = null;
         try {
             startDate = df.parse(startTime); //
@@ -470,13 +493,15 @@ class CompareCgms {
             while (rs.next()) {
                 double calculated = rs.getDouble("calculated_value");
                 long timestamp = (long) rs.getDouble("timestamp");
+                double rawValue = rs.getDouble("raw_data");
 
                 Date date = new Date(timestamp);
                 // TODO move this to the sql command
                 if (startDate.before(date)) {
                     String dateStr = df.format(date);
                     // System.out.println(dateStr + ", " + calculated);
-                    cgmData.add(new CgmData(timestamp, calculated, bgReadingStartSensorTime(timestamp, sensors)));
+                    
+                    cgmDataList.add(new CgmData(timestamp, calculated, bgReadingStartSensorTime(timestamp, sensors), rawValue));
                 }
 
             }
@@ -488,7 +513,7 @@ class CompareCgms {
             System.exit(0);
         }
         System.out.println("xDrip bg data read successfully");
-        return cgmData;
+        return cgmDataList;
     }
 
     // Calculate the time from the start of the sensor to this reading

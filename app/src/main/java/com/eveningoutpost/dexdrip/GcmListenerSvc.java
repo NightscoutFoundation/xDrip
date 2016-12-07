@@ -64,6 +64,8 @@ public class GcmListenerSvc extends FirebaseMessagingService {
     
     @Override
     public void onMessageReceived(RemoteMessage rmessage) {
+        Log.e("xxxx", "onMessageReceived called rmessage = " + rmessage);
+        Log.e("xxxx", "my key" + GcmActivity.myIdentity());
         if (rmessage == null) return;
         if (GcmActivity.cease_all_activity) return;
         String from = rmessage.getFrom();
@@ -71,6 +73,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
         Bundle data = new Bundle();
         for (Map.Entry<String, String> entry : rmessage.getData().entrySet()) {
             data.putString(entry.getKey(), entry.getValue());
+            Log.e("xxxx", "onMessageReceived key = " + entry.getKey() + " " + entry.getValue());
         }
 
         if (data == null) return;
@@ -79,7 +82,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
         if (from == null) from = "null";
         String message = data.getString("message");
 
-        Log.d(TAG, "From: " + from);
+        Log.e("xxxx", "From: " + from);
         if (message != null) {
             Log.d(TAG, "Message: " + message);
         } else {
@@ -98,6 +101,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
 
         if (from.startsWith(getString(R.string.gcmtpc))) {
 
+            Log.e("xxxx", "inside if");
             String xfrom = data.getString("xfrom");
             String payload = data.getString("datum");
             String action = data.getString("action");
