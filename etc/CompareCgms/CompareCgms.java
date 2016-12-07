@@ -140,15 +140,22 @@ class SympleHystograme {
 }
 
 class SensorCalibrationTableWriter {
-    void openFileIfNeeded(long timeMs, long timeFromSensorStart) throws IOException {
-        
+    private void openFile(long timeMs) throws IOException {
         String fileName = "Sensor" + df.format(new Date(timeMs)) + ".csv";
+        writer = new FileWriter(fileName);
+        StringBuilder sb = new StringBuilder();
+        sb.append("dexcom raw data, fingers bg, days from sensor start \r\n");
+        writer.append(sb.toString());
+        
+    }
+    
+    private void openFileIfNeeded(long timeMs, long timeFromSensorStart) throws IOException {
         if (writer == null) {
-            writer = new FileWriter(fileName);
+            openFile(timeMs);
         } else if (timeFromSensorStart < lastTimeFromSensorStart) {
             // This meachnisim is not garenteed to work, but will work on reasnable values.
             Flush();
-            writer = new FileWriter(fileName);
+            openFile(timeMs);
         }
         lastTimeFromSensorStart = timeFromSensorStart;
         
