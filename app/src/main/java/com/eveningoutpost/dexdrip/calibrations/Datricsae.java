@@ -137,7 +137,14 @@ public class Datricsae extends CalibrationAbstract {
                 Log.d(TAG, "One: " + one);
                 final double slope = one - intercept;
                 Log.d(TAG, "Slope: " + slope);
-                cd = new CalibrationData(slope, intercept);
+
+                // last sanity check
+                if (slope_in_range(slope)) {
+                    cd = new CalibrationData(slope, intercept);
+                } else {
+                    cd = new CalibrationData(calibrations.get(0).slope, calibrations.get(0).intercept);
+                    Log.wtf(TAG, "ERROR: Slope outside range: " + slope + " REVERTING TO FALLBACK!");
+                }
             }
         } else {
             Log.d(TAG,"Returning cached calibration data object");

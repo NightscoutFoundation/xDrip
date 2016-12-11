@@ -1059,12 +1059,12 @@ public class Calibration extends Model {
                 .execute();
     }
 
-    public static List<Calibration> getCalibrationsForSensor(Sensor sensor) {
+    public static List<Calibration> getCalibrationsForSensor(Sensor sensor, int limit) {
         return new Select()
                 .from(Calibration.class)
                 .where("sensor_uuid = ? ", sensor.uuid)
                  .orderBy("timestamp desc")
-                 .limit(8) // Saw a case that 9 did not pass.
+                 .limit(limit)
                 .execute();
     }
     
