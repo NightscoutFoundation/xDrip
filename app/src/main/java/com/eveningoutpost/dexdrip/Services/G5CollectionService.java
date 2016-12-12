@@ -245,11 +245,6 @@ public class G5CollectionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-       // byte[] testbytes =  { 0x31,0x00,0x68,0x0a,0x00,0x00,(byte)0x8a,0x71,0x57,0x00,(byte)0xcc,0x00,0x06,(byte)0xff,(byte)0xc4,0x2a } ;
-       // GlucoseRxMessage rx = new GlucoseRxMessage(testbytes);
-       // new AuthRequestTxMessage(8);
-       // new AuthRequestTxMessage(16);
-       // fullAuthenticate();
 
         final PowerManager.WakeLock wl = JoH.getWakeLock("g5-start-service", 120000);
         try {
@@ -269,6 +264,11 @@ public class G5CollectionService extends Service {
 
                 Log.d(TAG, "onG5StartCommand wakeup: "+JoH.dateTimeText(JoH.tsl()));
                 Log.e(TAG, "settingsToString: " + settingsToString());
+
+                final IntentFilter pairingRequestFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
+                pairingRequestFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
+                xdrip.getAppContext().registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
+
                 //Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
                 //stopScan();
                 if (!CollectionServiceStarter.isBTG5(xdrip.getAppContext())) {
@@ -352,7 +352,7 @@ public class G5CollectionService extends Service {
         stopScan();
 
         Log.d(TAG, "onDestroy");
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        //SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         scan_interval_timer.cancel();
         if (pendingIntent != null) {
             Log.d(TAG, "onDestroy stop Alarm pendingIntent");
@@ -369,6 +369,11 @@ public class G5CollectionService extends Service {
             unregisterReceiver(mPairReceiver);
         } catch (Exception e) {
             Log.e(TAG, "Got exception unregistering bonding receiver: ", e);
+        }
+        try {
+            unregisterReceiver(mPairingRequestRecevier);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception unregistering pairing receiver: ", e);
         }
 //        BgToSpeech.tearDownTTS();
         Log.i(TAG, "SERVICE STOPPED");
@@ -1395,6 +1400,28 @@ public class G5CollectionService extends Service {
         characteristic.setValue(authRequest.byteSequence);
         mGatt.writeCharacteristic(characteristic);
     }
+
+    private final BroadcastReceiver mPairingRequestRecevier = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (BluetoothDevice.ACTION_PAIRING_REQUEST.equals(intent.getAction())) {
+                final BluetoothDevice this_device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                if (this_device != null) {
+                    int type = intent.getIntExtra(BluetoothDevice.EXTRA_PAIRING_VARIANT, BluetoothDevice.ERROR);
+                    if ((device != null) && (device.getAddress() != null) && (this_device.getAddress().equals(device.getAddress()))) {
+                        this_device.setPairingConfirmation(true);
+                        JoH.static_toast_short("Pairing");
+                        UserError.Log.e(TAG, "Received Pairing type: " + type);
+                        abortBroadcast();
+                    } else {
+                        UserError.Log.e(TAG, "Received pairing request for not our device: " + this_device.getAddress());
+                    }
+                } else {
+                    UserError.Log.e(TAG, "Device was null in pairing receiver");
+                }
+            }
+        }
+    };
 
     private synchronized void processNewTransmitterData(int raw_data , int filtered_data,int sensor_battery_level, long captureTime) {
 
