@@ -56,6 +56,7 @@ import com.crashlytics.android.Crashlytics;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -132,6 +133,7 @@ public class Home extends ActivityWithMenu {
     public final static String GCM_RESOLUTION_ACTIVITY = "GCM_RESOLUTION_ACTIVITY";
     public final static String SNOOZE_CONFIRM_DIALOG = "SNOOZE_CONFIRM_DIALOG";
     public final static String SHOW_NOTIFICATION = "SHOW_NOTIFICATION";
+    public final static String BLUETOOTH_METER_CALIBRATION = "BLUETOOTH_METER_CALIBRATION";
     public final static int SENSOR_READY_ID = 4912;
     public static String menu_name = "Home Screen";
     public static boolean activityVisible = false;
@@ -502,6 +504,49 @@ public class Home extends ActivityWithMenu {
         }
     }
 
+
+    // handle sending the intent
+    private void processFingerStickCalibration(final double glucosenumber, final double timeoffset) {
+        if (glucosenumber > 0) {
+
+            if (timeoffset < 0) {
+                toaststaticnext("Got calibration in the future - cannot process!");
+                return;
+            }
+
+            final Intent calintent = new Intent(getApplicationContext(), AddCalibration.class);
+            calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            calintent.putExtra("bg_string", JoH.qs(glucosenumber));
+            calintent.putExtra("bg_age", Long.toString((long) (timeoffset / 1000)));
+            calintent.putExtra("allow_undo", "true");
+            Log.d(TAG, "processFingerStickCalibration number: " + glucosenumber + " offset: " + timeoffset);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Use " + JoH.qs(glucosenumber, 1) + " for Calibration?");
+            builder.setMessage("Do you want to use this synced finger-stick blood glucose result to calibrate with?\n\n(you can change when this dialog is displayed in Settings)");
+
+            builder.setPositiveButton("YES, Calibrate", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    calintent.putExtra("note_only", "false");
+                    startIntentThreadWithDelayedRefresh(calintent);
+                    dialog.dismiss();
+                }
+            });
+
+            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+
+        }
+    }
+
+
     // handle sending the intent
     private void processCalibrationNoUI(final double glucosenumber, final double timeoffset) {
                 if (glucosenumber > 0) {
@@ -665,6 +710,8 @@ public class Home extends ActivityWithMenu {
                 }
                 final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
                 JoH.showNotification(bundle.getString(SHOW_NOTIFICATION), bundle.getString("notification_body"), pendingIntent, notification_id, true, true, true);
+            } else if (bundle.getString(Home.BLUETOOTH_METER_CALIBRATION) != null) {
+                processFingerStickCalibration(JoH.tolerantParseDouble(bundle.getString(Home.BLUETOOTH_METER_CALIBRATION)),JoH.tolerantParseDouble(bundle.getString(Home.BLUETOOTH_METER_CALIBRATION+"2")));
             }
         }
     }
@@ -864,26 +911,27 @@ public class Home extends ActivityWithMenu {
     /**
      * Showing google speech input dialog
      */
-    private void promptSpeechInput() {
+    private synchronized void promptSpeechInput() {
 
+        if (JoH.ratelimit("speech-input",1)) {
+            if (recognitionRunning) return;
+            recognitionRunning = true;
 
-        if (recognitionRunning) return;
-        recognitionRunning = true;
+            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                    RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+            // intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US"); // debug voice
+            intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                    getString(R.string.speak_your_treatment));
 
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-        // intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US"); // debug voice
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
-                getString(R.string.speak_your_treatment));
-
-        try {
-            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
-        } catch (ActivityNotFoundException a) {
-            Toast.makeText(getApplicationContext(),
-                    R.string.speech_recognition_is_not_supported,
-                    Toast.LENGTH_LONG).show();
+            try {
+                startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+            } catch (ActivityNotFoundException a) {
+                Toast.makeText(getApplicationContext(),
+                        R.string.speech_recognition_is_not_supported,
+                        Toast.LENGTH_LONG).show();
+            }
         }
 
     }
@@ -945,6 +993,12 @@ public class Home extends ActivityWithMenu {
         } else if (allWords.contentEquals("delete all glucose data")) {
             deleteAllBG(null);
             LibreAlarmReceiver.clearSensorStats();
+        } else if (allWords.contentEquals("delete selected glucose meter") || allWords.contentEquals("delete selected glucose metre")) {
+            setPreferencesString("selected_bluetooth_meter_address","");
+        } else if (allWords.contentEquals("delete all finger stick data") || (allWords.contentEquals("delete all fingerstick data"))) {
+            BloodTest.cleanup(-100000);
+        } else if (allWords.contentEquals("delete all persistent store")) {
+            SdcardImportExport.deletePersistentStore();
         }
 
         if (allWords.contentEquals("clear battery warning")) {

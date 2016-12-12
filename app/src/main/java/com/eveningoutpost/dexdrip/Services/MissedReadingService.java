@@ -65,6 +65,8 @@ public class MissedReadingService extends IntentService {
             }
         }
 
+        BluetoothGlucoseMeter.immortality();
+
         bg_missed_alerts =  prefs.getBoolean("bg_missed_alerts", false);
         if (!bg_missed_alerts) {
             // we should not do anything in this case. if the ui, changes will be called again

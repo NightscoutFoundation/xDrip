@@ -146,7 +146,7 @@ public class NightscoutUploader {
                 try {
                     int apiVersion = 0;
                     URI uri = new URI(baseURI);
-                    if ((uri.getHost().startsWith("192.168.")) && (!JoH.isLANConnected()))
+                    if ((uri.getHost().startsWith("192.168.")) && prefs.getBoolean("skip_lan_uploads_when_no_lan", true) && (!JoH.isLANConnected()))
                     {
                         Log.d(TAG,"Skipping Nighscout upload to: "+uri.getHost()+" due to no LAN connection");
                         continue;
@@ -358,7 +358,7 @@ public class NightscoutUploader {
             if (dbURI != null) {
                 try {
                     final URI uri = new URI(dbURI.trim());
-                    if ((uri.getHost().startsWith("192.168.")) && (!JoH.isLANConnected())) {
+                    if ((uri.getHost().startsWith("192.168.")) && prefs.getBoolean("skip_lan_uploads_when_no_lan", true) && (!JoH.isLANConnected())) {
                         Log.d(TAG, "Skipping mongo upload to: " + dbURI + " due to no LAN connection");
                         return false;
                     }

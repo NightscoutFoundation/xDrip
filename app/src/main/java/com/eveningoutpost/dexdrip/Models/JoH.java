@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -19,6 +20,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -66,7 +68,6 @@ import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 import java.util.zip.Inflater;
 
 import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
@@ -124,7 +125,12 @@ public class JoH {
         return (tsl() - when);
     }
 
+    public static long absMsSince(long when) {
+        return Math.abs(tsl() - when);
+    }
+
     public static String bytesToHex(byte[] bytes) {
+        if (bytes == null) return "<empty>";
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
             int v = bytes[j] & 0xFF;
@@ -609,6 +615,20 @@ public class JoH {
 
     public static void static_toast_long(Context context, final String msg) {
         static_toast(context, msg, Toast.LENGTH_LONG);
+    }
+
+    public static synchronized void playResourceAudio(int id) {
+        playSoundUri(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + xdrip.getAppContext().getPackageName() + "/" + id);
+    }
+
+    public static synchronized void playSoundUri(String soundUri) {
+        try {
+            JoH.getWakeLock("joh-playsound", 10000);
+            final MediaPlayer player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(soundUri));
+            player.start();
+        } catch (Exception e) {
+            Log.wtf(TAG, "Failed to play audio: " + soundUri + " exception:" + e);
+        }
     }
 
     public static String urlEncode(String source) {

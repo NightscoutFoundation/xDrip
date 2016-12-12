@@ -12,6 +12,7 @@ import com.bugfender.sdk.Bugfender;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
+import com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.IdempotentMigrations;
@@ -69,6 +70,7 @@ public class xdrip extends Application {
         if (Home.getPreferencesBoolean("motion_tracking_enabled", false)) {
             ActivityRecognizedService.startActivityRecogniser(getApplicationContext());
         }
+        BluetoothGlucoseMeter.startIfEnabled();
         PluggableCalibration.invalidateCache();
 
     }
