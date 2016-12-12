@@ -117,6 +117,16 @@ public class SdcardImportExport extends AppCompatActivity {
         hardReset();
     }
 
+    public static void deletePersistentStore() {
+        final String filename = "shared_prefs/persist_internal_store.xml";
+            if (deleteFolder(new File(xdrip.getAppContext().getFilesDir().getParent() + "/" + filename), false)) {
+                Log.d(TAG, "Successfully deleted: " + filename);
+            } else {
+                Log.e(TAG, "Error deleting: " + filename);
+            }
+        hardReset();
+    }
+
     public void loadPreferencesToSD(View myview) {
         if (loadPreferencesFromSD()) {
             toast(getString(R.string.loaded_preferences_restarting));

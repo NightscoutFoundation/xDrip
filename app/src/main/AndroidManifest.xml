@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    android:installLocation="internalOnly"
-    package="com.eveningoutpost.dexdrip">
-
+    package="com.eveningoutpost.dexdrip"
+    android:installLocation="internalOnly">
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -50,7 +49,7 @@
             android:value="41" />
         <meta-data
             android:name="AA_MODELS"
-            android:value="com.eveningoutpost.dexdrip.Models.ActiveBgAlert,com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice,com.eveningoutpost.dexdrip.Models.AlertType,com.eveningoutpost.dexdrip.Models.BgReading,com.eveningoutpost.dexdrip.Models.BgReading,com.eveningoutpost.dexdrip.Models.Calibration,com.eveningoutpost.dexdrip.Models.Calibration,com.eveningoutpost.dexdrip.Models.CalibrationRequest,com.eveningoutpost.dexdrip.Models.Sensor,com.eveningoutpost.dexdrip.Models.TransmitterData,com.eveningoutpost.dexdrip.Models.Treatments,com.eveningoutpost.dexdrip.Models.UserError,com.eveningoutpost.dexdrip.Models.UserNotification,com.eveningoutpost.dexdrip.ShareModels.Models,com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue,com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue,com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue,com.eveningoutpost.dexdrip.Models.HeartRate,com.eveningoutpost.dexdrip.Models.PebbleMovement,com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue"/>
+            android:value="com.eveningoutpost.dexdrip.Models.ActiveBgAlert,com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice,com.eveningoutpost.dexdrip.Models.AlertType,com.eveningoutpost.dexdrip.Models.BgReading,com.eveningoutpost.dexdrip.Models.BgReading,com.eveningoutpost.dexdrip.Models.Calibration,com.eveningoutpost.dexdrip.Models.Calibration,com.eveningoutpost.dexdrip.Models.CalibrationRequest,com.eveningoutpost.dexdrip.Models.Sensor,com.eveningoutpost.dexdrip.Models.TransmitterData,com.eveningoutpost.dexdrip.Models.Treatments,com.eveningoutpost.dexdrip.Models.UserError,com.eveningoutpost.dexdrip.Models.UserNotification,com.eveningoutpost.dexdrip.ShareModels.Models,com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue,com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue,com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue,com.eveningoutpost.dexdrip.Models.HeartRate,com.eveningoutpost.dexdrip.Models.PebbleMovement,com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue,com.eveningoutpost.dexdrip.Models.BloodTest" />
 
         <provider
             android:name="com.activeandroid.content.ContentProvider"
@@ -79,7 +78,8 @@
             android:name=".Services.WifiCollectionService"
             android:enabled="true"
             android:exported="true" />
-        <service android:name=".Services.ActivityRecognizedService"/>
+        <service android:name=".Services.ActivityRecognizedService" />
+        <service android:name=".Services.BluetoothGlucoseMeter" />
         <service
             android:name=".wearintegration.WatchUpdaterService"
             android:exported="true">
@@ -138,7 +138,6 @@
             android:name=".PhoneKeypadInputActivity"
             android:label="Keypad Input"
             android:theme="@style/PopUpKeypad" />
-
         <activity
             android:name=".NoteSearch"
             android:label="Note Search" />
@@ -159,14 +158,12 @@
             android:name=".Tables.CalibrationDataTable"
             android:label="@string/calibration_data_table" />
 
-        <service
-            android:name=".GcmListenerSvc">
+        <service android:name=".GcmListenerSvc">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service
-            android:name=".MyInstanceIDListenerService">
+        <service android:name=".MyInstanceIDListenerService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
@@ -174,13 +171,15 @@
         <service
             android:name=".RegistrationIntentService"
             android:exported="false" />
-       <!-- <service
+        <!--
+        <service
             android:name=".MyDriveEventService"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.drive.events.HANDLE_EVENT" />
             </intent-filter>
-        </service>-->
+        </service>
+        -->
         <service
             android:name=".Services.SyncService"
             android:enabled="true"
@@ -192,8 +191,8 @@
 
         <activity
             android:name=".stats.StatsActivity"
-            android:label="Statistics"
             android:configChanges="orientation|screenSize"
+            android:label="Statistics"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".SnoozeActivity"
@@ -253,22 +252,23 @@
         </activity>
         <activity
             android:name=".NFCFilterX"
-            android:launchMode="singleTask"
             android:configChanges="orientation|screenSize"
-            android:label="xDrip+ NFC">
+            android:label="xDrip+ NFC"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.nfc.action.TECH_DISCOVERED" />
             </intent-filter>
+
             <meta-data
                 android:name="android.nfc.action.TECH_DISCOVERED"
                 android:resource="@xml/nfc_tech_list" />
         </activity>
         <activity
             android:name=".NFCScanningX"
-            android:launchMode="singleTask"
             android:configChanges="orientation|screenSize"
-            android:label="NFC Scanning">
-        </activity>
+            android:label="NFC Scanning"
+            android:launchMode="singleTask"></activity>
+
         <service
             android:name=".Services.DexShareCollectionService"
             android:enabled="true"
@@ -287,8 +287,8 @@
             android:label="@string/system_status" />
         <activity
             android:name=".utils.Preferences"
-            android:label="@string/settings"
             android:configChanges="orientation|screenSize"
+            android:label="@string/settings"
             android:theme="@style/OldAppTheme" />
 
         <receiver android:name=".xDripWidget">
@@ -409,6 +409,7 @@
             android:permission="android.permission.BIND_DREAM_SERVICE">
             <intent-filter>
                 <action android:name="android.service.dreams.DreamService" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
@@ -495,8 +496,16 @@
             android:name=".languageeditor.LanguageEditor"
             android:configChanges="orientation|screenSize"
             android:label="@string/language_editor"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".GlucoseMeter.BTGlucoseMeterActivity"
+            android:label="@string/title_activity_btglucose_meter"
+            android:configChanges="orientation|screenSize"
+            android:parentActivityName=".Home">
 
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.eveningoutpost.dexdrip.Home" />
         </activity>
     </application>
 

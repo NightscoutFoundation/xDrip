@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.Forecast;
 import com.eveningoutpost.dexdrip.Models.Forecast.PolyTrendLine;
@@ -144,12 +145,14 @@ public class BgGraphBuilder {
     private final long loaded_start, loaded_end;
     private final List<BgReading> bgReadings;
     private final List<Calibration> calibrations;
+    private final List<BloodTest> bloodtests;
     private final List<PointValue> inRangeValues = new ArrayList<PointValue>();
     private final List<PointValue> highValues = new ArrayList<PointValue>();
     private final List<PointValue> lowValues = new ArrayList<PointValue>();
     private final List<PointValue> pluginValues = new ArrayList<PointValue>();
     private final List<PointValue> rawInterpretedValues = new ArrayList<PointValue>();
     private final List<PointValue> filteredValues = new ArrayList<PointValue>();
+    private final List<PointValue> bloodTestValues = new ArrayList<PointValue>();
     private final List<PointValue> calibrationValues = new ArrayList<PointValue>();
     private final List<PointValue> treatmentValues = new ArrayList<PointValue>();
     private final List<PointValue> iobValues = new ArrayList<PointValue>();
@@ -215,6 +218,7 @@ public class BgGraphBuilder {
                 capturePercentage = -1; // invalid reading
             }
         }
+        bloodtests = BloodTest.latestForGraph(numValues, start, end);
         calibrations = Calibration.latestForGraph(numValues, start, end);
         treatments = Treatments.latestForGraph(numValues, start, end + (120 * 60 * 1000));
         this.context = context;
@@ -678,6 +682,23 @@ public class BgGraphBuilder {
         line.setHasPoints(true);
         line.setColor(getCol(X.color_secondary_glucose_value));
         lines.add(line);
+
+        Line bloodtest = new Line(bloodTestValues);
+        bloodtest.setHasLines(false);
+        bloodtest.setPointRadius(pointSize * 3 / 2);
+        bloodtest.setHasPoints(true);
+        bloodtest.setColor(ChartUtils.darkenColor(getCol(X.color_calibration_dot_background)));
+        bloodtest.setShape(ValueShape.SQUARE);
+        lines.add(bloodtest);
+
+        Line bloodtesti = new Line(bloodTestValues);
+        bloodtesti.setHasLines(false);
+        bloodtesti.setPointRadius(pointSize * 3 / 4);
+        bloodtesti.setHasPoints(true);
+        bloodtesti.setColor(ChartUtils.darkenColor(getCol(X.color_calibration_dot_foreground)));
+        bloodtesti.setShape(ValueShape.SQUARE);
+        lines.add(bloodtesti);
+
         return lines;
     }
 
@@ -832,6 +853,7 @@ public class BgGraphBuilder {
             lowValues.clear();
             inRangeValues.clear();
             calibrationValues.clear();
+            bloodTestValues.clear();
             pluginValues.clear();
 
             final double bgScale = bgScale();
@@ -874,6 +896,7 @@ public class BgGraphBuilder {
             avg2counter = 0;
 
             double last_calibration = 0;
+            double last_bloodtest = 0;
 
             if (doMgdl) {
                 Profile.scale_factor = Constants.MMOLL_TO_MGDL;
@@ -894,6 +917,28 @@ public class BgGraphBuilder {
             } catch (Exception e) {
                 Log.e(TAG, "Exception doing calibration values in bggraphbuilder: " + e.toString());
             }
+
+            // enumerate blood tests
+            try {
+                for (BloodTest bloodtest : bloodtests) {
+                    final PointValue this_point = new PointValue((float) (bloodtest.timestamp / FUZZER), (float) unitized(bloodtest.mgdl));
+                    // exclude any which have been used for calibration
+                    boolean matches = false;
+                    for (PointValue calibration_point : calibrationValues) {
+                        if ((calibration_point.getX() == this_point.getX()) && (calibration_point.getY() == calibration_point.getY())) {
+                            matches = true;
+                            break;
+                        }
+                    }
+                    if (!matches) bloodTestValues.add(this_point);
+                    if (bloodtest.timestamp > last_bloodtest) {
+                        last_bloodtest = bloodtest.timestamp;
+                    }
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Exception doing calibration values in bggraphbuilder: " + e.toString());
+            }
+
             final boolean has_filtered = DexCollectionType.hasFiltered();
             final boolean predict_use_momentum = prefs.getBoolean("predict_use_momentum", true);
             final boolean show_moment_working_line = prefs.getBoolean("show_momentum_working_line", false);
@@ -1667,6 +1712,14 @@ public class BgGraphBuilder {
 
     public String unitized_string(double value) {
         return unitized_string(value, doMgdl);
+    }
+
+    public static String unitized_string_static(double value) {
+        return unitized_string(value, Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl"));
+    }
+    public static String unitized_string_with_units_static(double value) {
+        final boolean domgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
+        return unitized_string(value, domgdl)+" "+(domgdl ? "mg/dl" : "mmol/l");
     }
 
     public static String unitized_string(double value, boolean doMgdl) {

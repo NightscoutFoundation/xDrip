@@ -514,5 +514,6 @@
     <string name="sliding_24_hour_window">Sliding Window</string>
     <string name="split">Split</string>
     <string name="delete">Delete</string>
+    <string name="title_activity_btglucose_meter">Meter Scan</string>
 
 </resources>

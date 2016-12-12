@@ -12,105 +12,159 @@
             android:summary="@string/prefs_auto_config_summary"
             android:title="@string/auto_configure_title" />
         <PreferenceScreen
-            android:key="cloud_storage_mongo"
-            android:summary="@string/pref_summary_mongodb_enabled"
-            android:title="@string/pref_title_mongodb">
+            android:icon="@drawable/ic_cloud_upload_grey600_48dp"
+            android:key="cloud_data_sync"
+            android:summary="Options for Nightscout, MongoDB or Dexcom Share uploading"
+            android:title="Cloud Upload">
+            <PreferenceScreen
+                android:key="cloud_storage_mongo"
+                android:summary="@string/pref_summary_mongodb_enabled"
+                android:title="@string/pref_title_mongodb">
 
-            <SwitchPreference
-                android:defaultValue="false"
-                android:key="cloud_storage_mongodb_enable"
-                android:title="Enable Nightscout Mongo DB sync" />
-            <EditTextPreference
-                android:defaultValue="@string/pref_default_mongodb_uri"
-                android:dependency="cloud_storage_mongodb_enable"
-                android:dialogMessage="@string/pref_message_mongodb_uri"
-                android:dialogTitle="@string/pref_dialog_mongodb_uri"
-                android:inputType="textUri"
-                android:key="cloud_storage_mongodb_uri"
-                android:title="Mongo DB Uri"/>
-            <EditTextPreference
-                android:defaultValue="@string/pref_default_mongodb_collection"
-                android:dependency="cloud_storage_mongodb_enable"
-                android:dialogMessage="@string/pref_message_mongodb_collection"
-                android:dialogTitle="@string/pref_dialog_mongodb_collection"
-                android:key="cloud_storage_mongodb_collection"
-                android:title="@string/pref_title_mongodb_collection"/>
-            <EditTextPreference
-                android:defaultValue="@string/pref_default_mongodb_device_status_collection"
-                android:dependency="cloud_storage_mongodb_enable"
-                android:dialogMessage="@string/pref_message_mongodb_device_status_collection"
-                android:dialogTitle="@string/pref_dialog_mongodb_device_status_collection"
-                android:key="cloud_storage_mongodb_device_status_collection"
-                android:title="@string/pref_title_mongodb_device_status_collection"/>
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="cloud_storage_mongodb_enable"
+                    android:title="Enable Nightscout Mongo DB sync" />
+                <EditTextPreference
+                    android:defaultValue="@string/pref_default_mongodb_uri"
+                    android:dependency="cloud_storage_mongodb_enable"
+                    android:dialogMessage="@string/pref_message_mongodb_uri"
+                    android:dialogTitle="@string/pref_dialog_mongodb_uri"
+                    android:inputType="textUri"
+                    android:key="cloud_storage_mongodb_uri"
+                    android:title="Mongo DB Uri" />
+                <EditTextPreference
+                    android:defaultValue="@string/pref_default_mongodb_collection"
+                    android:dependency="cloud_storage_mongodb_enable"
+                    android:dialogMessage="@string/pref_message_mongodb_collection"
+                    android:dialogTitle="@string/pref_dialog_mongodb_collection"
+                    android:key="cloud_storage_mongodb_collection"
+                    android:title="@string/pref_title_mongodb_collection" />
+                <EditTextPreference
+                    android:defaultValue="@string/pref_default_mongodb_device_status_collection"
+                    android:dependency="cloud_storage_mongodb_enable"
+                    android:dialogMessage="@string/pref_message_mongodb_device_status_collection"
+                    android:dialogTitle="@string/pref_dialog_mongodb_device_status_collection"
+                    android:key="cloud_storage_mongodb_device_status_collection"
+                    android:title="@string/pref_title_mongodb_device_status_collection" />
 
-        </PreferenceScreen>
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="skip_lan_uploads_when_no_lan"
+                    android:summary="For local servers with 192.168.x.x addresses, skip uploads when there is no local network connectivity."
+                    android:title="Skip LAN uploads" />
 
-        <PreferenceScreen
-            android:key="cloud_storage_api"
-            android:summary="@string/pref_summary_api_enabled"
-            android:title="@string/pref_title_api">
+            </PreferenceScreen>
 
-            <SwitchPreference
-                android:disableDependentsState="false"
-                android:key="cloud_storage_api_enable"
+            <PreferenceScreen
+                android:key="cloud_storage_api"
                 android:summary="@string/pref_summary_api_enabled"
-                android:title="@string/pref_title_api_enabled"/>
-            <EditTextPreference
-                android:defaultValue="@string/pref_default_api_url"
-                android:dependency="cloud_storage_api_enable"
-                android:dialogMessage="@string/pref_message_api_url"
-                android:dialogTitle="@string/pref_dialog_api_url"
-                android:inputType="textUri"
-                android:key="cloud_storage_api_base"
-                android:title="@string/pref_title_api_url"/>
+                android:title="@string/pref_title_api">
 
+                <SwitchPreference
+                    android:disableDependentsState="false"
+                    android:key="cloud_storage_api_enable"
+                    android:summary="@string/pref_summary_api_enabled"
+                    android:title="@string/pref_title_api_enabled" />
+                <EditTextPreference
+                    android:defaultValue="@string/pref_default_api_url"
+                    android:dependency="cloud_storage_api_enable"
+                    android:dialogMessage="@string/pref_message_api_url"
+                    android:dialogTitle="@string/pref_dialog_api_url"
+                    android:inputType="textUri"
+                    android:key="cloud_storage_api_base"
+                    android:title="@string/pref_title_api_url" />
+
+            </PreferenceScreen>
+
+            <PreferenceScreen
+                android:key="dexcom_server_upload_screen"
+                android:summary="@string/upload_data_to_dex_servers"
+                android:title="@string/dexcom_share_server_upload">
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="share_upload"
+                    android:summary="Enable this to upload to Dexcom's servers"
+                    android:title="Upload BG values as Dexcom Share" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="dex_share_us_acct"
+                    android:summaryOff="Disabled = Your account and follower apps are from outside the USA"
+                    android:summaryOn="Enabled = Your account and follower apps are from the USA"
+                    android:title="Dexcom USA based account" />
+                <EditTextPreference
+                    android:defaultValue=""
+                    android:dependency="share_upload"
+                    android:key="dexcom_account_name"
+                    android:summary="Your login for Dexcom's Website"
+                    android:title="Dexcom Account Login" />
+                <EditTextPreference
+                    android:defaultValue=""
+                    android:dependency="share_upload"
+                    android:inputType="textPassword"
+                    android:key="dexcom_account_password"
+                    android:summary="Your password for Dexcom's Website"
+                    android:title="Dexcom Account Password" />
+                <EditTextPreference
+                    android:defaultValue="SM00000000"
+                    android:dependency="share_upload"
+                    android:key="share_key"
+                    android:shouldDisableView="true"
+                    android:title="10 Character Dexcom Receiver Serial Number" />
+                <Preference
+                    android:dependency="share_upload"
+                    android:summary="@string/manage_existing_followers"
+                    android:title="@string/manage_followers">
+                    <intent
+                        android:action="android.intent.action.MAIN"
+                        android:targetClass="com.eveningoutpost.dexdrip.FollowerManagementActivity"
+                        android:targetPackage="@string/local_target_package" />
+                </Preference>
+            </PreferenceScreen>
         </PreferenceScreen>
-
         <PreferenceScreen
-            android:key="dexcom_server_upload_screen"
-            android:summary="@string/upload_data_to_dex_servers"
-            android:title="@string/dexcom_share_server_upload">
+            android:icon="@drawable/ic_touch_app_grey600_48dp"
+            android:key="bluetooth_meters"
+            android:summary="Options for wireless glucose meters"
+            android:title="Glucose Meters">
 
-            <CheckBoxPreference
+            <SwitchPreference
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:defaultValue="false"
-                android:key="share_upload"
-                android:summary="Enable this to upload to Dexcom's servers"
-                android:title="Upload BG values as Dexcom Share" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="dex_share_us_acct"
-                android:summaryOn="Enabled = Your account and follower apps are from the USA"
-                android:summaryOff="Disabled = Your account and follower apps are from outside the USA"
-                android:title="Dexcom USA based account" />
-            <EditTextPreference
-                android:defaultValue=""
-                android:dependency="share_upload"
-                android:key="dexcom_account_name"
-                android:summary="Your login for Dexcom's Website"
-                android:title="Dexcom Account Login" />
-            <EditTextPreference
-                android:defaultValue=""
-                android:dependency="share_upload"
-                android:inputType="textPassword"
-                android:key="dexcom_account_password"
-                android:summary="Your password for Dexcom's Website"
-                android:title="Dexcom Account Password" />
-            <EditTextPreference
-                android:defaultValue="SM00000000"
-                android:dependency="share_upload"
-                android:key="share_key"
-                android:shouldDisableView="true"
-                android:title="10 Character Dexcom Receiver Serial Number" />
+                android:key="bluetooth_meter_enabled"
+                android:summary="Automatically connect and retrieve data from a standards compliant glucose meter like the Contour Next One"
+                android:title="Use Bluetooth Meter" />
             <Preference
-                android:dependency="share_upload"
-                android:summary="@string/manage_existing_followers"
-                android:title="@string/manage_followers">
+                android:key="scan_and_pair_meter"
+                android:summary=""
+                android:title="Scan for Bluetooth Meter">
                 <intent
                     android:action="android.intent.action.MAIN"
-                    android:targetClass="com.eveningoutpost.dexdrip.FollowerManagementActivity"
+                    android:targetClass="com.eveningoutpost.dexdrip.GlucoseMeter.BTGlucoseMeterActivity"
                     android:targetPackage="@string/local_target_package" />
             </Preference>
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="bluetooth_meter_play_sounds"
+                android:summary="Enable this to play sound effects when the meter connects, disconnects or syncs data"
+                android:title="Sound effect indicators" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="bluetooth_meter_for_calibrations"
+                android:summary="When a new blood glucose result is received, ask if that should be used to calibrate with"
+                android:title="Use Meter for Calibrations" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:enabled="false"
+                android:dependency="bluetooth_meter_for_calibrations"
+                android:key="bluetooth_meter_for_calibrations_auto"
+                android:summary="Calibrate using new blood glucose readings if the conditions appear right to do so without asking confirmation (experimental)"
+                android:title="Automatic Calibration" />
+
         </PreferenceScreen>
+
 
     </PreferenceCategory>
 
