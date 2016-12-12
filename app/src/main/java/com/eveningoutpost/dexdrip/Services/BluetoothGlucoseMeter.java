@@ -146,7 +146,7 @@ public class BluetoothGlucoseMeter extends Service {
                 final int old_connection_state = mConnectionState;
                 mConnectionState = STATE_DISCONNECTED;
                 statusUpdate("Disconnected");
-                if ((old_connection_state != STATE_DISCONNECTED) && (playSounds() && (JoH.ratelimit("bt_meter_disconnect_sound", 1)))) {
+                if ((old_connection_state == STATE_CONNECTED) && (playSounds() && (JoH.ratelimit("bt_meter_disconnect_sound", 1)))) {
                     JoH.playResourceAudio(R.raw.bt_meter_disconnect);
                 }
                 close();
