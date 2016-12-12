@@ -176,6 +176,10 @@ public class G5CollectionService extends Service {
         final IntentFilter bondintent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);//KS turn on
         bondintent.addAction(BluetoothDevice.ACTION_FOUND);//KS add
         registerReceiver(mPairReceiver, bondintent);//KS turn on
+
+        final IntentFilter pairingRequestFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
+        pairingRequestFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
+        registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
     }
 
     final BroadcastReceiver mPairReceiver = new BroadcastReceiver() {
@@ -243,6 +247,7 @@ public class G5CollectionService extends Service {
         // TODO do we need an unregister!?
     }
 
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -265,9 +270,6 @@ public class G5CollectionService extends Service {
                 Log.d(TAG, "onG5StartCommand wakeup: "+JoH.dateTimeText(JoH.tsl()));
                 Log.e(TAG, "settingsToString: " + settingsToString());
 
-                final IntentFilter pairingRequestFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
-                pairingRequestFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
-                xdrip.getAppContext().registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
 
                 //Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
                 //stopScan();
@@ -1404,21 +1406,8 @@ public class G5CollectionService extends Service {
     private final BroadcastReceiver mPairingRequestRecevier = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (BluetoothDevice.ACTION_PAIRING_REQUEST.equals(intent.getAction())) {
-                final BluetoothDevice this_device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (this_device != null) {
-                    int type = intent.getIntExtra(BluetoothDevice.EXTRA_PAIRING_VARIANT, BluetoothDevice.ERROR);
-                    if ((device != null) && (device.getAddress() != null) && (this_device.getAddress().equals(device.getAddress()))) {
-                        this_device.setPairingConfirmation(true);
-                        JoH.static_toast_short("Pairing");
-                        UserError.Log.e(TAG, "Received Pairing type: " + type);
-                        abortBroadcast();
-                    } else {
-                        UserError.Log.e(TAG, "Received pairing request for not our device: " + this_device.getAddress());
-                    }
-                } else {
-                    UserError.Log.e(TAG, "Device was null in pairing receiver");
-                }
+            if ((device != null) && (device.getAddress() != null)) {
+                JoH.doPairingRequest(context, this, intent, device.getAddress());
             }
         }
     };
