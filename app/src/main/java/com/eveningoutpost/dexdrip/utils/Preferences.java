@@ -1029,7 +1029,7 @@ public class Preferences extends PreferenceActivity {
 
                 if (!engineering_mode) {
                     try {
-                        getPreferenceScreen().removePreference(motionScreen);
+                        //getPreferenceScreen().removePreference(motionScreen);
                         calibrationSettingsScreen.removePreference(adrian_calibration_mode);
                     } catch (NullPointerException e) {
                         Log.wtf(TAG, "Nullpointer with engineering mode s ", e);
