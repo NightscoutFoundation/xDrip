@@ -221,6 +221,33 @@
                         app:colorpicker_showHex="false" />
 
                     </PreferenceCategory>
+                <PreferenceCategory
+                    android:key="xdrip_plus_display_colorset9_android5plus"
+                    android:title="Flair Colors">
+
+                    <SwitchPreference
+                        android:defaultValue="false"
+                        android:key="use_flair_colors"
+                        android:switchTextOff="@string/short_off_text_for_switches"
+                        android:switchTextOn="@string/short_on_text_for_switches"
+                        android:title="Use Flair Colors"/>
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#00000000"
+                        android:key="color_upper_flair_bar"
+                        android:title="Upper Title Bar Flair"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
+
+                    <com.eveningoutpost.dexdrip.UtilityModels.ColorPicker
+                        android:defaultValue="#FF000000"
+                        android:key="color_lower_flair_bar"
+                        android:title="Lower Button Bar Flair"
+                        app:colorpicker_noneSelectedSummaryText="@string/default_color_selected"
+                        app:colorpicker_selectNoneButtonText="@string/revert_to_default"
+                        app:colorpicker_showHex="false" />
+
+                </PreferenceCategory>
             </PreferenceScreen>
 
             <SwitchPreference
