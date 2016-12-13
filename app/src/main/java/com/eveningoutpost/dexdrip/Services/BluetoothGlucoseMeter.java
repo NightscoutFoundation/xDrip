@@ -238,13 +238,13 @@ public class BluetoothGlucoseMeter extends Service {
             if (status == BluetoothGatt.GATT_SUCCESS) {
 
                 if (characteristic.getUuid().equals(TIME_CHARACTERISTIC)) {
-                    Log.d(TAG, "Got time characteristic read data");
+                    UserError.Log.d(TAG, "Got time characteristic read data");
                     ct = new CurrentTimeRx(characteristic.getValue());
                     statusUpdate("Device time: " + ct.toNiceString());
 
                 } else if (characteristic.getUuid().equals(MANUFACTURER_NAME)) {
                     mLastManufacturer = characteristic.getStringValue(0);
-                    Log.d(TAG, "Manufacturer Name: " + mLastManufacturer);
+                    UserError.Log.d(TAG, "Manufacturer Name: " + mLastManufacturer);
                     statusUpdate("Device from: " + mLastManufacturer);
 
                 } else {
@@ -436,13 +436,13 @@ public class BluetoothGlucoseMeter extends Service {
     }
 
     public void startup() {
-        Log.d(TAG, "startup()");
+        UserError.Log.d(TAG, "startup()");
         initScanCallback();
     }
 
     // robustly discover device services
     private synchronized void discover_services() {
-        Log.d(TAG, "discover_services()");
+        UserError.Log.d(TAG, "discover_services()");
         services_discovered = false;
         service_discovery_count++;
         if (mBluetoothGatt != null) {
@@ -500,14 +500,14 @@ public class BluetoothGlucoseMeter extends Service {
 
         // extra debug
         if (d) {
-            Log.d(TAG, "charactersiticChanged: " + characteristic.getUuid().toString());
-            Log.d(TAG, JoH.bytesToHex(characteristic.getValue()));
+            UserError.Log.d(TAG, "charactersiticChanged: " + characteristic.getUuid().toString());
+            UserError.Log.d(TAG, JoH.bytesToHex(characteristic.getValue()));
         }
 
         if (GLUCOSE_CHARACTERISTIC.equals(characteristic.getUuid())) {
 
             final GlucoseReadingRx gtb = new GlucoseReadingRx(characteristic.getValue(), gatt.getDevice().getAddress());
-            Log.d(TAG, "Result: " + gtb.toString());
+            UserError.Log.d(TAG, "Result: " + gtb.toString());
             if (ct == null) {
                 statusUpdate("Cannot process glucose record as we do not know device time!");
             } else {
@@ -518,15 +518,15 @@ public class BluetoothGlucoseMeter extends Service {
                     JoH.static_toast_long("Success with: " + mLastConnectedDeviceAddress + "  Enabling auto-start");
                     sendDeviceUpdate(gatt.getDevice(), true); // force update
                 }
-                statusUpdate("Glucose Record: " + JoH.dateTimeText((gtb.time - ct.timediff) - gtb.offsetMs()) + "\n" + unitized_string_with_units_static(gtb.mgdl));
+                statusUpdate("Glucose Record: " + JoH.dateTimeText((gtb.time - ct.timediff) + gtb.offsetMs()) + "\n" + unitized_string_with_units_static(gtb.mgdl));
 
                 if (playSounds() && JoH.ratelimit("bt_meter_data_in", 1))
                     JoH.playResourceAudio(R.raw.bt_meter_data_in);
 
                 if ((!ignore_control_solution_tests) || (gtb.sampleType != 10)) {
-                    final BloodTest bt = BloodTest.create((gtb.time - ct.timediff) - gtb.offsetMs(), gtb.mgdl, "Bluetooth Glucose Meter:\n" + mLastManufacturer + "   " + mLastConnectedDeviceAddress);
+                    final BloodTest bt = BloodTest.create((gtb.time - ct.timediff) + gtb.offsetMs(), gtb.mgdl, "Bluetooth Glucose Meter:\n" + mLastManufacturer + "   " + mLastConnectedDeviceAddress);
                     if (bt != null) {
-                        Log.d(TAG, "Successfully created new BloodTest: " + bt.toS());
+                        UserError.Log.d(TAG, "Successfully created new BloodTest: " + bt.toS());
                         bt.glucoseReadingRx = gtb; // add reference
                         lastBloodTest = bt;
 
@@ -541,10 +541,10 @@ public class BluetoothGlucoseMeter extends Service {
                         }, 1000);
 
                     } else {
-                        if (d) Log.d(TAG, "Failed to greate BloodTest record");
+                        if (d) UserError.Log.d(TAG, "Failed to greate BloodTest record");
                     }
                 } else {
-                    Log.d(TAG, "Ignoring control solution test");
+                    UserError.Log.d(TAG, "Ignoring control solution test");
                 }
             }
 
