@@ -381,16 +381,20 @@ public class BluetoothGlucoseMeter extends Service {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        final IntentFilter pairingRequestFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
+        pairingRequestFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
+        registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null) {
             stopSelf();
             return START_NOT_STICKY;
         }
         started_at = JoH.tsl();
-
-        final IntentFilter pairingRequestFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
-        pairingRequestFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
-        xdrip.getAppContext().registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
 
         initialize();
         final String service_action = intent.getStringExtra("service_action");
@@ -550,22 +554,7 @@ public class BluetoothGlucoseMeter extends Service {
     private static final BroadcastReceiver mPairingRequestRecevier = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (BluetoothDevice.ACTION_PAIRING_REQUEST.equals(intent.getAction())) {
-                final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (device != null) {
-                    int type = intent.getIntExtra(BluetoothDevice.EXTRA_PAIRING_VARIANT, BluetoothDevice.ERROR);
-                    if ((mBluetoothDeviceAddress != null) && (device.getAddress().equals(mBluetoothDeviceAddress))) {
-                        device.setPairingConfirmation(true);
-                        JoH.static_toast_short("Pairing");
-                        Log.d(TAG, "Pairing type: " + type);
-                        abortBroadcast();
-                    } else {
-                        Log.w(TAG, "Received pairing request for not our device: " + device.getAddress());
-                    }
-                } else {
-                    Log.w(TAG, "Device was null in pairing receiver");
-                }
-            }
+            JoH.doPairingRequest(context, this, intent, mBluetoothDeviceAddress);
         }
     };
 
