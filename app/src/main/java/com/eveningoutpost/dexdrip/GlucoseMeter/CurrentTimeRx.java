@@ -34,7 +34,7 @@ public class CurrentTimeRx extends BluetoothCHelper {
             calendar.set(year, month - 1, day, hour, minute, second);
             time = calendar.getTimeInMillis();
             timediff_calculated = System.currentTimeMillis() - time; // ms behind local clock
-            timediff = 0; // don't use offset at the moment
+            timediff = timediff_calculated; // use timediff, set to 0 otherwise
         }
     }
 
