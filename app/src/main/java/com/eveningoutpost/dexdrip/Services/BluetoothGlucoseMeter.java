@@ -518,13 +518,13 @@ public class BluetoothGlucoseMeter extends Service {
                     JoH.static_toast_long("Success with: " + mLastConnectedDeviceAddress + "  Enabling auto-start");
                     sendDeviceUpdate(gatt.getDevice(), true); // force update
                 }
-                statusUpdate("Glucose Record: " + JoH.dateTimeText((gtb.time - ct.timediff) - gtb.offsetMs()) + "\n" + unitized_string_with_units_static(gtb.mgdl));
+                statusUpdate("Glucose Record: " + JoH.dateTimeText((gtb.time - ct.timediff) + gtb.offsetMs()) + "\n" + unitized_string_with_units_static(gtb.mgdl));
 
                 if (playSounds() && JoH.ratelimit("bt_meter_data_in", 1))
                     JoH.playResourceAudio(R.raw.bt_meter_data_in);
 
                 if ((!ignore_control_solution_tests) || (gtb.sampleType != 10)) {
-                    final BloodTest bt = BloodTest.create((gtb.time - ct.timediff) - gtb.offsetMs(), gtb.mgdl, "Bluetooth Glucose Meter:\n" + mLastManufacturer + "   " + mLastConnectedDeviceAddress);
+                    final BloodTest bt = BloodTest.create((gtb.time - ct.timediff) + gtb.offsetMs(), gtb.mgdl, "Bluetooth Glucose Meter:\n" + mLastManufacturer + "   " + mLastConnectedDeviceAddress);
                     if (bt != null) {
                         Log.d(TAG, "Successfully created new BloodTest: " + bt.toS());
                         bt.glucoseReadingRx = gtb; // add reference
