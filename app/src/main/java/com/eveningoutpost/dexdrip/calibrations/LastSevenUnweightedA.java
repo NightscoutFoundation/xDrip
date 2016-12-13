@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is an example calibration algorithm which takes the last 6 calibrations
+ * This is an example calibration algorithm which takes the last 7 calibrations
  * and produces a best fit line through them (Linear regression)
  * <p>
  * It has no weighting but uses the age adjusted raw value for certain data sources
@@ -29,9 +29,9 @@ import java.util.List;
  * please create a new one and make the modifications there
  */
 
-public class LastSixUnweightedA extends CalibrationAbstract {
+public class LastSevenUnweightedA extends CalibrationAbstract {
 
-    private static final String TAG = "Last6Ua";
+    private static final String TAG = "Last7Ua";
 
     @Override
     public String getAlgorithmName() {
@@ -40,7 +40,7 @@ public class LastSixUnweightedA extends CalibrationAbstract {
 
     @Override
     public String getAlgorithmDescription() {
-        return "Unweighted last 6 calibrations. Example only";
+        return "Unweighted last 7 calibrations. Example only";
     }
 
     @Override
@@ -50,7 +50,7 @@ public class LastSixUnweightedA extends CalibrationAbstract {
         if (cd == null) {
 
             // first is most recent
-            final List<Calibration> calibrations = Calibration.latestValid(6);
+            final List<Calibration> calibrations = Calibration.latestValid(7);
             if (calibrations == null) return null;
             // have we got enough data to have a go
             if (calibrations.size() < 4) {

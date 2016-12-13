@@ -8,7 +8,6 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 
@@ -42,8 +41,8 @@ public class PluggableCalibration {
             case xDripOriginal:
                 plugin = new XDripOriginal();
                 break;
-            case Last6UnweightedA:
-                plugin = new LastSixUnweightedA();
+            case Last7UnweightedA:
+                plugin = new LastSevenUnweightedA();
                 break;
 
             // add new plugins here and also to the enum below
@@ -64,7 +63,7 @@ public class PluggableCalibration {
         Datricsae("Datricsae"),
         FixedSlopeExample("FixedSlopeExample"),
         xDripOriginal("xDripOriginal"),
-        Last6UnweightedA("Last6UnweightedA");
+        Last7UnweightedA("Last7UnweightedA");
 
         // add new algorithms here and also in to getCalibrationPlugin() above
 

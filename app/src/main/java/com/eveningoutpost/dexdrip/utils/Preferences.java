@@ -946,7 +946,7 @@ public class Preferences extends PreferenceActivity {
 
             final boolean engineering_mode = this.prefs.getBoolean("engineering_mode",false);
 
-            if (engineering_mode) {
+            //if (engineering_mode) {
                 // populate the list
                 PluggableCalibration.setListPreferenceData(currentCalibrationPlugin);
 
@@ -959,7 +959,7 @@ public class Preferences extends PreferenceActivity {
                         return true;
                     }
                 });
-            }
+            //}
 
             if (!DexCollectionType.hasLibre(collectionType)) {
                 collectionCategory.removePreference(nfcSettings);
