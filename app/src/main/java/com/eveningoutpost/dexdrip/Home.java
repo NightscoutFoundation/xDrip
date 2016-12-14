@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -247,10 +248,6 @@ public class Home extends ActivityWithMenu {
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         final boolean checkedeula = checkEula();
 
-        //if (Build.VERSION.SDK_INT >= 21) {
-        //    getWindow().setNavigationBarColor(Color.BLUE);
-        //    getWindow().setStatusBarColor(getCol(X.color_home_chart_background));
-        //}
         setContentView(R.layout.activity_home);
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -1374,10 +1371,25 @@ public class Home extends ActivityWithMenu {
         }
     }
 
+    @TargetApi(21)
+    private void handleFlairColors() {
+        if ((Build.VERSION.SDK_INT >= 21)) {
+            try {
+                if (getPreferencesBooleanDefaultFalse("use_flair_colors")) {
+                    getWindow().setNavigationBarColor(getCol(X.color_lower_flair_bar));
+                    getWindow().setStatusBarColor(getCol(X.color_upper_flair_bar));
+                }
+            } catch (Exception e) {
+                //
+            }
+        }
+    }
+
     @Override
     protected void onResume() {
         xdrip.checkForcedEnglish(xdrip.getAppContext());
         super.onResume();
+        handleFlairColors();
         checkEula();
         set_is_follower();
 

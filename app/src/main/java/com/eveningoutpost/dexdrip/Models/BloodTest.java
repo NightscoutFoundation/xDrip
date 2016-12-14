@@ -8,6 +8,7 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
+import com.eveningoutpost.dexdrip.GlucoseMeter.GlucoseReadingRx;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -59,6 +60,8 @@ public class BloodTest extends Model {
     public String uuid;
 
 
+    public GlucoseReadingRx glucoseReadingRx;
+
     // patches and saves
     public Long saveit() {
         fixUpTable();
@@ -82,6 +85,16 @@ public class BloodTest extends Model {
             UserError.Log.e(TAG, "Either timestamp or mgdl is zero - cannot create reading");
             return null;
         }
+
+        final long now = JoH.tsl();
+        if (timestamp_ms > now) {
+            if ((timestamp_ms - now) > 600000) {
+                UserError.Log.wtf(TAG, "Timestamp is > 10 minutes in the future! Something is wrong: " + JoH.dateTimeText(timestamp_ms));
+                return null;
+            }
+            timestamp_ms = now; // force to now if it showed up to 10 mins in the future
+        }
+
         final BloodTest match = getForPreciseTimestamp(timestamp_ms, CLOSEST_READING_MS);
         if (match == null) {
             // TODO wider check for dupes?

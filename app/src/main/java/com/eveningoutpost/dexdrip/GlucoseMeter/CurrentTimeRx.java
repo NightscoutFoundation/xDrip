@@ -16,6 +16,7 @@ public class CurrentTimeRx extends BluetoothCHelper {
     public int year, month, day, hour, minute, second;
     public long time;
     public long timediff;
+    public long timediff_calculated;
 
     public CurrentTimeRx(byte[] packet) {
 
@@ -32,7 +33,8 @@ public class CurrentTimeRx extends BluetoothCHelper {
             final Calendar calendar = Calendar.getInstance();
             calendar.set(year, month - 1, day, hour, minute, second);
             time = calendar.getTimeInMillis();
-            timediff = System.currentTimeMillis() - time; // ms behind local clock
+            timediff_calculated = System.currentTimeMillis() - time; // ms behind local clock
+            timediff = -timediff_calculated; // use timediff, set to 0 otherwise
         }
     }
 
@@ -41,7 +43,7 @@ public class CurrentTimeRx extends BluetoothCHelper {
     }
 
     public String toString() {
-        return "timediff: " + timediff + "  year: " + year + " month: " + month + " day: " + day + " hour: " + hour + " minute: " + minute + " second: " + second + " ts: " + time;
+        return "timediff: " + timediff_calculated + "  year: " + year + " month: " + month + " day: " + day + " hour: " + hour + " minute: " + minute + " second: " + second + " ts: " + time;
     }
 }
 

@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -383,8 +384,29 @@ public class GcmActivity extends Activity {
                 dialog.dismiss();
             }
         });
-        AlertDialog alert = builder.create();
+        final AlertDialog alert = builder.create();
         alert.show();
+     // Hide after some seconds
+        final Handler handler  = new Handler();
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (alert.isShowing()) {
+                    alert.dismiss();
+                }
+            }
+        };
+
+        alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                handler.removeCallbacks(runnable);
+            }
+        });
+
+        handler.postDelayed(runnable, 120000);
+        
+        
     }
 
     public static void sendMotionUpdate(final long timestamp, final int activity) {

@@ -721,6 +721,7 @@ public class Preferences extends PreferenceActivity {
             final Preference useCustomSyncKey = findPreference("use_custom_sync_key");
             final Preference CustomSyncKey = findPreference("custom_sync_key");
             final PreferenceCategory collectionCategory = (PreferenceCategory) findPreference("collection_category");
+            final PreferenceCategory flairCategory = (PreferenceCategory) findPreference("xdrip_plus_display_colorset9_android5plus");
             //final PreferenceScreen updateScreen = (PreferenceScreen) findPreference("xdrip_plus_update_settings");
             final PreferenceScreen loggingScreen = (PreferenceScreen) findPreference("xdrip_logging_adv_settings");
             final PreferenceScreen motionScreen = (PreferenceScreen) findPreference("xdrip_plus_motion_settings");
@@ -730,6 +731,7 @@ public class Preferences extends PreferenceActivity {
             final PreferenceCategory alertsCategory = (PreferenceCategory) findPreference("alerts_category");
             final Preference disableAlertsStaleDataMinutes = findPreference("disable_alerts_stale_data_minutes");
             final PreferenceScreen calibrationSettingsScreen = (PreferenceScreen) findPreference("xdrip_plus_calibration_settings");
+            final PreferenceScreen colorScreen = (PreferenceScreen) findPreference("xdrip_plus_color_settings");
             final Preference adrian_calibration_mode = findPreference("adrian_calibration_mode");
             final Preference extraTagsForLogs = findPreference("extra_tags_for_logging");
             final Preference enableBF = findPreference("enable_bugfender");
@@ -949,7 +951,7 @@ public class Preferences extends PreferenceActivity {
 
             final boolean engineering_mode = this.prefs.getBoolean("engineering_mode",false);
 
-            if (engineering_mode) {
+            //if (engineering_mode) {
                 // populate the list
                 PluggableCalibration.setListPreferenceData(currentCalibrationPlugin);
 
@@ -962,7 +964,7 @@ public class Preferences extends PreferenceActivity {
                         return true;
                     }
                 });
-            }
+            //}
 
             if (!DexCollectionType.hasLibre(collectionType)) {
                 collectionCategory.removePreference(nfcSettings);
@@ -1005,6 +1007,12 @@ public class Preferences extends PreferenceActivity {
                     }
                 }
 
+                if (Build.VERSION.SDK_INT < 21) {
+                    try {
+                        colorScreen.removePreference(flairCategory);
+                    } catch (Exception e) { //
+                    }
+                }
 
                 if (collectionType == DexCollectionType.DexcomG5) {
                     try {
@@ -1032,7 +1040,7 @@ public class Preferences extends PreferenceActivity {
 
                 if (!engineering_mode) {
                     try {
-                        getPreferenceScreen().removePreference(motionScreen);
+                        //getPreferenceScreen().removePreference(motionScreen);
                         calibrationSettingsScreen.removePreference(adrian_calibration_mode);
                     } catch (NullPointerException e) {
                         Log.wtf(TAG, "Nullpointer with engineering mode s ", e);

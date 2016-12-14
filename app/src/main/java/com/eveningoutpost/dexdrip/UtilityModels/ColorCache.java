@@ -54,7 +54,9 @@ public class ColorCache {
         color_widget_chart_background("color_widget_chart_background"),
         color_secondary_glucose_value("color_secondary_glucose_value"),
         color_step_counter1("color_step_counter1"),
-        color_step_counter2("color_step_counter2");
+        color_step_counter2("color_step_counter2"),
+        color_upper_flair_bar("color_upper_flair_bar"),
+        color_lower_flair_bar("color_lower_flair_bar");
 
         String internalName;
 
