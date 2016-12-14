@@ -879,22 +879,22 @@ public class JoH {
                 int type = intent.getIntExtra(BluetoothDevice.EXTRA_PAIRING_VARIANT, BluetoothDevice.ERROR);
                 if ((mBluetoothDeviceAddress != null) && (device.getAddress().equals(mBluetoothDeviceAddress))) {
                     try {
-                        Log.d(TAG, "Pairing type: " + type);
+                        UserError.Log.e(TAG, "Pairing type: " + type);
                         device.setPairingConfirmation(true);
                         JoH.static_toast_short("Pairing");
                         broadcastReceiver.abortBroadcast();
                     } catch (Exception e) {
-                        Log.e(TAG, "Could not set pairing confirmation due to exception: " + e);
+                        UserError.Log.e(TAG, "Could not set pairing confirmation due to exception: " + e);
                         if (JoH.ratelimit("failed pair confirmation", 200)) {
                             JoH.static_toast_long("Failed to pair, may need to do it via Android Settings");
                             device.createBond(); // for what it is worth
                         }
                     }
                 } else {
-                    Log.w(TAG, "Received pairing request for not our device: " + device.getAddress());
+                    UserError.Log.e(TAG, "Received pairing request for not our device: " + device.getAddress());
                 }
             } else {
-                Log.w(TAG, "Device was null in pairing receiver");
+                UserError.Log.e(TAG, "Device was null in pairing receiver");
             }
         }
     }

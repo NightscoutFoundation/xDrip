@@ -148,7 +148,8 @@ public class G5CollectionService extends Service {
     // test params
     private static final boolean ignoreLocalBondingState = false; // don't try to bond gives: GATT_ERR_UNLIKELY but no more 133s
     private static final boolean delayOnBond = false; // delay while bonding also gives ERR_UNLIKELY but no more 133s
-    private static final boolean tryPreBondWithDelay = true; // prebond with delay seems to help
+    private static final boolean tryPreBondWithDelay = false; // prebond with delay seems to help
+    private static final boolean tryOnDemandBondWithDelay = true; // bond when requested
     private static final boolean delayOn133Errors = true; // add some delays with 133 errors
     private static final boolean useKeepAlive = true; // add some delays with 133 errors
 
@@ -197,7 +198,13 @@ public class G5CollectionService extends Service {
                 final BluetoothDevice parcel_device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // TODO do we need to filter on the last 2 characters of the device name here?
                 currentBondState = parcel_device.getBondState();
-                Log.d(TAG, "onReceive UPDATE Name " + parcel_device.getName() + " Value " + parcel_device.getAddress() + " Bond state " + parcel_device.getBondState() + bondState(parcel_device.getBondState()));
+                final String bond_state_extra = intent.getStringExtra(BluetoothDevice.EXTRA_BOND_STATE);
+                final String previous_bond_state_extra = intent.getStringExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE);
+
+                Log.d(TAG, "onReceive UPDATE Name " + parcel_device.getName() + " Value " + parcel_device.getAddress()
+                        + " Bond state " + parcel_device.getBondState() + bondState(parcel_device.getBondState())
+                        + " " + ((bond_state_extra != null) ? "bs: "+bond_state_extra : "")
+                        + ((previous_bond_state_extra != null) ? (" vs " + previous_bond_state_extra) : ""));
             }
         }
     };
@@ -1292,7 +1299,11 @@ public class G5CollectionService extends Service {
                             AuthChallengeTxMessage authChallengeTx = new AuthChallengeTxMessage(challengeHash);
                             Log.i(TAG, "Auth Challenge: " + Arrays.toString(authChallengeTx.byteSequence));
                             characteristic.setValue(authChallengeTx.byteSequence);
-                            mGatt.writeCharacteristic(characteristic);
+                            if (mGatt != null) {
+                                mGatt.writeCharacteristic(characteristic);
+                            } else {
+                                Log.e(TAG, "mGatt was null when trying to write in opcode 3 reply");
+                            }
                         }
                         break;
 
@@ -1310,6 +1321,15 @@ public class G5CollectionService extends Service {
                             waitFor(1500);
                             Log.e(TAG, "Delayed response to onRead finished");
                         }
+
+                        if ((code == 7) && (tryOnDemandBondWithDelay)) {
+                            Log.e(TAG,"Trying ondemand bond with delay!");
+                            isBondedOrBonding = true;
+                            device.createBond();
+                            waitFor(1600);
+                            Log.e(TAG,"ondemandbond delay finished");
+                        }
+
                         Log.i(TAG, "Read code: " + code + " - Transmitter NOT already authenticated?");
                         sendAuthRequestTxMessage(characteristic);
                         break;
@@ -1376,14 +1396,14 @@ public class G5CollectionService extends Service {
                 //Log.e(TAG, "filtered: " + sensorRx.filtered);
                 disconnected133 = 0; // reset as we got a reading
                 disconnected59 = 0;
-                Log.e(TAG, "unfiltered: " + sensorRx.unfiltered);
+                Log.e(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered);
                 doDisconnectMessage(gatt, characteristic);
                 processNewTransmitterData(sensorRx.unfiltered, sensorRx.filtered, sensor_battery_level, new Date().getTime());
             } else if (firstByte == GlucoseRxMessage.opcode) {
                 disconnected133 = 0; // reset as we got a reading
                 disconnected59 = 0;
                 GlucoseRxMessage glucoseRx = new GlucoseRxMessage(characteristic.getValue());
-                Log.e(TAG, "glucose unfiltered: " + glucoseRx.unfiltered);
+                Log.e(TAG, "SUCCESS!! glucose unfiltered: " + glucoseRx.unfiltered);
                 doDisconnectMessage(gatt, characteristic);
                 processNewTransmitterData(glucoseRx.unfiltered, glucoseRx.filtered, 216, new Date().getTime());
             } else {
@@ -1407,7 +1427,10 @@ public class G5CollectionService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             if ((device != null) && (device.getAddress() != null)) {
+                Log.e(TAG,"Processing mPairingRequestReceiver");
                 JoH.doPairingRequest(context, this, intent, device.getAddress());
+            } else {
+                Log.e(TAG,"Received pairing request but device was null");
             }
         }
     };
@@ -1568,6 +1591,7 @@ public class G5CollectionService extends Service {
                 + (ignoreLocalBondingState ? "ignoreLocalBondingState " : "")
                 + (delayOnBond ? "delayOnBond " : "")
                 + (delayOn133Errors ? "delayOn133Errors " : "")
+                + (tryOnDemandBondWithDelay ? "tryOnDemandBondWithDelay " : "")
                 + (tryPreBondWithDelay ? "tryPreBondWithDelay " : ""));
     }
 
