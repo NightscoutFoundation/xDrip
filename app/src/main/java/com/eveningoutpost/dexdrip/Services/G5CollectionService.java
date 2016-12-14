@@ -198,8 +198,8 @@ public class G5CollectionService extends Service {
                 final BluetoothDevice parcel_device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // TODO do we need to filter on the last 2 characters of the device name here?
                 currentBondState = parcel_device.getBondState();
-                final String bond_state_extra = intent.getStringExtra(BluetoothDevice.EXTRA_BOND_STATE);
-                final String previous_bond_state_extra = intent.getStringExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE);
+                final Integer bond_state_extra = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE,-1);
+                final Integer previous_bond_state_extra = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE,-1);
 
                 Log.d(TAG, "onReceive UPDATE Name " + parcel_device.getName() + " Value " + parcel_device.getAddress()
                         + " Bond state " + parcel_device.getBondState() + bondState(parcel_device.getBondState())
@@ -1326,7 +1326,7 @@ public class G5CollectionService extends Service {
                             Log.e(TAG,"Trying ondemand bond with delay!");
                             isBondedOrBonding = true;
                             device.createBond();
-                            waitFor(1600);
+                            waitFor(15000); // are we ok to do this on this thread?
                             Log.e(TAG,"ondemandbond delay finished");
                         }
 
