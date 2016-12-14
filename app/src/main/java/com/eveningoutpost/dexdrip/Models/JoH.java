@@ -886,8 +886,13 @@ public class JoH {
                     } catch (Exception e) {
                         UserError.Log.e(TAG, "Could not set pairing confirmation due to exception: " + e);
                         if (JoH.ratelimit("failed pair confirmation", 200)) {
-                            JoH.static_toast_long("Failed to pair, may need to do it via Android Settings");
-                            device.createBond(); // for what it is worth
+                            // BluetoothDevice.PAIRING_VARIANT_CONSENT)
+                            if (type == 3) {
+                                JoH.static_toast_long("Please confirm the bluetooth pairing request");
+                            } else {
+                                JoH.static_toast_long("Failed to pair, may need to do it via Android Settings");
+                                device.createBond(); // for what it is worth
+                            }
                         }
                     }
                 } else {
