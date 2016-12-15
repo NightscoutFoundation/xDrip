@@ -186,21 +186,27 @@ class CompareCgms {
     static java.text.DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     static TimeZone tz = TimeZone.getDefault();
     final static String NO_DATA = "------------------------";
+    final static int GRACE_MINUTES = 3; // This is the time that we allow two meters to be different from one other.
+                                        // In other words, if we have a finger reading at 19:00 we will also accept a manual
+                                        // reading from 19:03 as it has happened before.
 
     public static void main(String[] args) throws Exception {
 
-        List<CgmData> libreManual = readLibre("c:\\temp\\libre.txt", "17/11/2016 18:42", LibreReading.MANUAL, null);
-        List<CgmData> libreContinus = readLibre("c:\\temp\\libre.txt", "17/11/2016 18:42", LibreReading.CONTINUS, null);
+        List<CgmData> libreManual = readLibre("c:\\temp\\snir_libre_13_12_2016.txt", "17/11/2016 18:42", LibreReading.MANUAL, null);
+        List<CgmData> libreContinus = readLibre("c:\\temp\\snir_libre_13_12_2016.txt", "17/11/2016 18:42", LibreReading.CONTINUS, null);
 
-        List<FingerPricksData> fpData = readFreeStyleFingerPricks("c:\\temp\\fingers.txt");
+        List<FingerPricksData> fpData = readFreeStyleFingerPricks("c:\\temp\\fingers13_12_16.txt");
 
-        List<Sensor> sensors = ReadSensors("C:\\Users\\nirit\\Downloads\\export20161207-003506-follower.sqlite");
+        List<Sensor> sensors = ReadSensors(".\\export20161214-001727.sqlite");
         List<CgmData> xDripBgReadings = readxDripBgReadings(
-                "C:\\Users\\nirit\\Downloads\\export20161207-003506-follower.sqlite", "17/11/2016 18:42", sensors);
+                ".\\export20161214-001727.sqlite", "17/11/2016 18:42", sensors);
 
         // Now we have all the data, let's print it...
         printResults(fpData, xDripBgReadings, libreManual, libreContinus);
-
+        
+        // Write the fingerpricks data, dexcom data and libre data to different files, by time in order to
+        // be able to plot everything in one graph.
+        plotResults(fpData, xDripBgReadings, libreManual, libreContinus);
     }
 
     static void printResults(List<FingerPricksData> fpDataList, List<CgmData> xDripBgReadings,
@@ -222,17 +228,49 @@ class CompareCgms {
             // Create the libre data if needed
             String libre = CreateLibreResults(fingerPricksData, libreManual, libreContinus, libreHistogram);
 
-            System.out.printf("%s %4.0f  %30s %30s\n", df.format(new Date(fingerPricksData.timeMs)),
+            System.out.printf("%s %4.0f  %30s %30s\r\n", df.format(new Date(fingerPricksData.timeMs)),
                     (float) fingerPricksData.bg, xDrip, libre);
         }
         
-        System.out.println("xDrip histogram\n");
+        System.out.println("xDrip histogram\r\n");
         xDripHistogram.Print();
         
-        System.out.println("\n\nxLibre histogram\n");
+        System.out.println("\r\n\nxLibre histogram\r\n");
         libreHistogram.Print();
         sensorCalibrationTableWriter.Flush();
 
+    }
+    
+    static void plotResults(List<FingerPricksData> fpDataList, List<CgmData> xDripBgReadings,
+            List<CgmData> libreManual, List<CgmData> libreContinus) throws IOException{
+        
+        // Write the finger pricks data
+        String fileName = "finger_pricks.csv";
+        FileWriter writer = new FileWriter(fileName);
+        for (FingerPricksData fingerPricksData : fpDataList) {
+            writer.append(df.format(new Date(fingerPricksData.timeMs))+ ", " + fingerPricksData.bg + "\r\n");
+        }
+        writer.flush();
+        writer.close();
+        
+        // Write the data of dexcom
+        fileName = "xdrip_bg_values.csv";
+        writer = new FileWriter(fileName);
+        for (CgmData cgmData : xDripBgReadings) {
+            writer.append(df.format(new Date(cgmData.timeMs))+ ", " + cgmData.bg + "\r\n");
+        }
+        writer.flush();
+        writer.close();
+        
+        // Write the automatic data of libre
+        fileName = "libre_continus_values.csv";
+        writer = new FileWriter(fileName);
+        for (CgmData cgmData : libreContinus) {
+            writer.append(df.format(new Date(cgmData.timeMs))+ ", " + cgmData.bg + "\r\n");
+        }
+        writer.flush();
+        writer.close();
+        
     }
 
     // Prepare a string that represents what xDrip has to say about the given
@@ -263,7 +301,7 @@ class CompareCgms {
     static boolean isTooFar(FingerPricksData fpData, CgmData cgmData) {
         double libreTimeDiffMinutes = (fpData.timeMs - cgmData.timeMs) / 60000.0;
 
-        if (libreTimeDiffMinutes < 0) {
+        if (libreTimeDiffMinutes < -GRACE_MINUTES) {
             System.err.printf("Point is too far away...");
         }
 
@@ -275,8 +313,9 @@ class CompareCgms {
     // Xdrip will look for it's closest reading and create it's result based on
     // what it has found.
     static String CreateLibreResults(FingerPricksData fpData, List<CgmData> libreManual, List<CgmData> libreContinus, SympleHystograme libreHistogram) {
-        CgmData librePoint = getClosestPrecidingReading(libreManual, fpData.timeMs);
         String description = "";
+        CgmData librePoint = getClosestPrecidingReading(libreManual, fpData.timeMs + GRACE_MINUTES * 60000); // give extra 3 minutes for time differences.
+        
         if (librePoint == null || isTooFar(fpData, librePoint)) {
             librePoint = getClosestPrecidingReading(libreContinus, fpData.timeMs);
             if (librePoint == null || isTooFar(fpData, librePoint)) {
@@ -310,7 +349,7 @@ class CompareCgms {
             CgmData cgmData = li.previous();
             // System.out.println("Checking object with time " + df.format(new
             // Date(cgmData.timeMs)));
-            if (cgmData.timeMs < time) {
+            if (cgmData.timeMs <= time) {
                 // We have found the first data before our data, return it.
                 // System.out.println("found ??????????????????????????");
                 return cgmData;
