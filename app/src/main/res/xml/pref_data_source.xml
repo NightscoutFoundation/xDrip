@@ -97,13 +97,14 @@
 
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="engineering_mode"
             android:key="g5_non_raw_method"
-            android:summary="Newer G5 firmware doesn't work with the method previously used. Experimental mode to try to resolve this."
-            android:title="TEST G5 Post Nov 2016 mode" />
+            android:summary="Experimental mode which doesn't use raw data"
+            android:title="Use calibrated data as source" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="run_ble_scan_constantly"
-            android:summary="Some devices work better when scanning constantly, others do not. If reading is reliable when this setting is not selected, you should have improved battery life. Turn this setting on if you are missing readings at high rates and unexpected times."
+            android:summary="Some devices work better when scanning constantly, others do not. If reading is reliable when this setting is not selected, you should have improved battery life. Normally best to keep this disabled"
             android:title="Scan for G5 constantly" />
         <CheckBoxPreference
             android:defaultValue="false"
@@ -111,9 +112,9 @@
             android:summary="This is crucial for some Android devices to properly connect, but can cause missed readings when other UI intensive activities are in use."
             android:title="Force G5 to UI Thread" />
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="always_get_new_keys"
-            android:summary="This will attempt a full authentication each read attempt. Redundant if Unbond before each read is also selected."
+            android:summary="This will attempt a full authentication each read attempt. Needed for newer G5 transmitter firmware versions."
             android:title="Authenticate G5 before each read" />
         <CheckBoxPreference
             android:defaultValue="false"
