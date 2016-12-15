@@ -121,9 +121,10 @@ public class xDripWidget extends AppWidgetProvider {
                     // TODO make a couple of getters in dg for these functions
                     extrastring = " "+dg.extra_string + ((dg.from_plugin) ? " " + context.getString(R.string.p_in_circle) : "");
                     estimated_delta = dg.delta_mgdl;
+                    // TODO properly illustrate + standardize warning level
+                    if (dg.warning > 1) slope_arrow = "";
                 }
-                // TODO properly illustrate + standardize warning level
-                if (dg.warning>1) slope_arrow="";
+
                 // TODO use dg stale calculation and/or preformatted text
                 if ((new Date().getTime()) - Home.stale_data_millis() - lastBgreading.timestamp > 0) {
 //                estimate = lastBgreading.calculated_value;
