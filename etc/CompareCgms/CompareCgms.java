@@ -189,17 +189,28 @@ class CompareCgms {
     final static int GRACE_MINUTES = 3; // This is the time that we allow two meters to be different from one other.
                                         // In other words, if we have a finger reading at 19:00 we will also accept a manual
                                         // reading from 19:03 as it has happened before.
+    
+    public static void printUsageAndExit() {
+        System.err.println("Usage of program:\r\n");
+        System.err.println("java -classpath ./sqlite-jdbc-3.8.7.jar;.  CompareCgms <finger_pricks_file> <start date> <dexcom_file> <libre_file> \r\n");
+        System.err.println("date format is dd/MM/yyyy HH:mm\r\n");
+        System.err.println("See readme file for more info");
+        System.exit(1);
+    }
 
     public static void main(String[] args) throws Exception {
 
-        List<CgmData> libreManual = readLibre("c:\\temp\\snir_libre_13_12_2016.txt", "17/11/2016 18:42", LibreReading.MANUAL, null);
-        List<CgmData> libreContinus = readLibre("c:\\temp\\snir_libre_13_12_2016.txt", "17/11/2016 18:42", LibreReading.CONTINUS, null);
+        if(args.length != 4) {
+            printUsageAndExit();
+        }
+        
+        List<FingerPricksData> fpData = readFreeStyleFingerPricks(args[0]);
+        
+        List<Sensor> sensors = ReadSensors(args[2]);
+        List<CgmData> xDripBgReadings = readxDripBgReadings(args[2], args[1], sensors);
 
-        List<FingerPricksData> fpData = readFreeStyleFingerPricks("c:\\temp\\fingers13_12_16.txt");
-
-        List<Sensor> sensors = ReadSensors(".\\export20161214-001727.sqlite");
-        List<CgmData> xDripBgReadings = readxDripBgReadings(
-                ".\\export20161214-001727.sqlite", "17/11/2016 18:42", sensors);
+        List<CgmData> libreManual = readLibre(args[3], args[1], LibreReading.MANUAL, null);
+        List<CgmData> libreContinus = readLibre(args[3], args[1], LibreReading.CONTINUS, null);
 
         // Now we have all the data, let's print it...
         printResults(fpData, xDripBgReadings, libreManual, libreContinus);
