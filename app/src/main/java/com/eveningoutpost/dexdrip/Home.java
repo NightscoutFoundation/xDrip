@@ -1797,7 +1797,7 @@ public class Home extends ActivityWithMenu {
             btnVehicleMode.setVisibility(View.INVISIBLE);
         }
 
-        if (isG5Share) showcasemenu(SHOWCASE_G5FIRMWARE); // nov 2016 firmware warning
+        //if (isG5Share) showcasemenu(SHOWCASE_G5FIRMWARE); // nov 2016 firmware warning resolved 15/12/2016
         //showcasemenu(1); // 3 dot menu
 
     }
