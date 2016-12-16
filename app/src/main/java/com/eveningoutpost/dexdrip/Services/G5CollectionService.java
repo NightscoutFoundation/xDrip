@@ -278,17 +278,6 @@ public class G5CollectionService extends Service {
             if ((!service_running) && (keep_running)) {
                 service_running = true;
 
-                // extra debugging
-                if (useG5NewMethod()) {
-                    if (!Home.getPreferencesStringDefaultBlank("extra_tags_for_logging").contains("G5CollectionService:v")) {
-                        Home.setPreferencesString("extra_tags_for_logging", "G5CollectionService:v,");
-                        String extraLogs = Home.getPreferencesStringDefaultBlank("extra_tags_for_logging");
-                        UserError.ExtraLogTags.readPreference(extraLogs);
-                    }
-                    Home.setPreferencesBoolean("enable_bugfender", true);
-                    xdrip.initBF();
-                }
-
                 Log.d(TAG, "onG5StartCommand wakeup: "+JoH.dateTimeText(JoH.tsl()));
                 Log.e(TAG, "settingsToString: " + settingsToString());
 
