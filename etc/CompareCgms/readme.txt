@@ -2,10 +2,10 @@ What is this program used to:
 ===================================
 
 This program is used to compare finger pricks data to results of two CGMs:
-1) xDrip that is using Dexcom G4 sensors.
+1) xDrip that is using Dexcom G4 sensors. (Should likely work with other input sources)
 2) Abbott libre (the official model).
 
-In the future, and once I'll find a way to read the data directly, it can also be used to compare
+In the future, and once I'll find a way to read the libre data directly, it can also be used to compare
 the different algorithms that are used for converting sensor data to BG.
 
 I have (tried to) write the program in order that adding different data should be relatively easy.
@@ -14,7 +14,7 @@ I guess that if this program will grow, we will need to split it to more files.
 Libre data is composed from two types:
 1) Manual scans that were done.
 2) Automatic data that is saved by the sensor. It points are 15 minutes apart.
-The main issue that I see here, is that abbott "changed the history" which means that they fix
+The main issue that I see here, is that abbott "changes the history" which means that they fix
 the past data once they have more information. 
 However, if one needs to decide at real time which bolus to give he does not have that information.
 As a result, I try to compare finger pricks data to manual scan and not to automatic data wherever it
@@ -37,11 +37,12 @@ The files are:
 1) finger pricks data in the format that is created by abbott freestyle lite meter.
      From freestyle copilot program choose File->Export and choose csv format to create it.
 2) xDrip database file.
-     From xdrip-plus select export data base, and open the zip file.
+     From xdrip-plus select export data base, and share the zip file.
 3) Free style libre data.
      Use Freestyle libre program and choose file export data.
 
-The data is the first time to start the calculation.
+Since there might be a lot of data in this files, the date is used as the first date of comparison. (In
+other words, data before this date is ignored).
 
 
 The output of the program:
@@ -100,12 +101,13 @@ Next the program creates the following files:
 3) Files that describe the sensors calibration file. 
    The file name is Sensor+start data, for example: Sensor03_12_201601_52.csv
    Each of this files has 3 fields
-     dexcom raw data, fingers bg, days from sensor start 
+     dexcom raw data, fingers bg, days from sensor start.
+     For example:
      122.128, 108.0, 0.03564219907407407 
    In order to create a calibration graph using gnuplot use:
       set key autotitle columnhead
       plot "Sensor25_11_201600_32.csv"
-   Hope you will have a straight line.
+   Hope you will have a straight line :-)
 
 4) 3 files that contain the data of the different measurments methods. 
    Files are: finger_pricks.csv, libre_continus_values.csv, xdrip_bg_values.csv
@@ -125,6 +127,11 @@ Next the program creates the following files:
 
 How to build/run
 ===============================
-"C:\Program Files\Java\jdk1.8.0_05\bin\javac.exe" -classpath . CompareCgms.java
-"C:\Program Files\Java\jdk1.8.0_05\bin\java.exe" -classpath ./sqlite-jdbc-3.8.7.jar;.  CompareCgms c:\\temp\\fingers13_12_16.txt "17/11/2016 18:42" .\\export20161214-001727.sqlite c:\\temp\\snir_libre_13_12_2016.txt 
+compile:
+  "C:\Program Files\Java\jdk1.8.0_05\bin\javac.exe" -classpath . CompareCgms.java
+run:
+  "C:\Program Files\Java\jdk1.8.0_05\bin\java.exe" -classpath ./sqlite-jdbc-3.8.7.jar;.  CompareCgms <abbott_fingers.txt> <date> <xdrip_db.sqlite> <libre_file.txt>
+
+for example:
+  "C:\Program Files\Java\jdk1.8.0_05\bin\java.exe" -classpath ./sqlite-jdbc-3.8.7.jar;.  CompareCgms c:\\temp\\fingers13_12_16.txt "17/11/2016 18:42" .\\export20161214-001727.sqlite c:\\temp\\snir_libre_13_12_2016.txt 
 
