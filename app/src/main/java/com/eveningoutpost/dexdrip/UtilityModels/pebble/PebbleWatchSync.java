@@ -171,7 +171,7 @@ public class PebbleWatchSync extends Service {
                 Log.d(TAG, "receiveLogData: uuid:" + logUuid + " started: " + JoH.dateTimeText(timestamp * 1000) + " tag:" + tag + " data: " + data);
                 if (Home.getPreferencesBoolean("use_pebble_health", true)) {
                     if ((tag != null) && (data != null)) {
-                        final int s = (int) (long) tag;
+                        final int s = ((int) (long) tag) & 0xfffffff7; // alternator
 
                         switch (s) {
                             case HEARTRATE_LOG:
