@@ -77,6 +77,7 @@ public class BluetoothGlucoseMeter extends Service {
     private static final UUID CONTEXT_CHARACTERISTIC = UUID.fromString("00002a34-0000-1000-8000-00805f9b34fb");
     private static final UUID RECORDS_CHARACTERISTIC = UUID.fromString("00002a52-0000-1000-8000-00805f9b34fb");
     private static final UUID TIME_CHARACTERISTIC = UUID.fromString("00002a2b-0000-1000-8000-00805f9b34fb");
+    private static final UUID DATE_TIME_CHARACTERISTIC = UUID.fromString("00002a08-0000-1000-8000-00805f9b34fb");
 
     private static final UUID CONTOUR_1022 = UUID.fromString("00001022-0002-11e2-9e96-0800200c9a66");
     private static final UUID CONTOUR_1025 = UUID.fromString("00001025-0002-11e2-9e96-0800200c9a66");
@@ -241,12 +242,20 @@ public class BluetoothGlucoseMeter extends Service {
                     UserError.Log.d(TAG, "Got time characteristic read data");
                     ct = new CurrentTimeRx(characteristic.getValue());
                     statusUpdate("Device time: " + ct.toNiceString());
-
+                } else if (characteristic.getUuid().equals(DATE_TIME_CHARACTERISTIC)) {
+                    UserError.Log.d(TAG, "Got date time characteristic read data");
+                    ct = new CurrentTimeRx(characteristic.getValue());
+                    statusUpdate("Device time: " + ct.toNiceString());
                 } else if (characteristic.getUuid().equals(MANUFACTURER_NAME)) {
                     mLastManufacturer = characteristic.getStringValue(0);
                     UserError.Log.d(TAG, "Manufacturer Name: " + mLastManufacturer);
                     statusUpdate("Device from: " + mLastManufacturer);
 
+                    // Roche Aviva Connect uses a DateTime characteristic instead
+                    if (mLastManufacturer.startsWith("Roche")) {
+                        Bluetooth_CMD.transmute_command(CURRENT_TIME_SERVICE, TIME_CHARACTERISTIC,
+                                GLUCOSE_SERVICE, DATE_TIME_CHARACTERISTIC);
+                    }
                 } else {
                     Log.d(TAG, "Got a different charactersitic! " + characteristic.getUuid().toString());
 
@@ -939,6 +948,23 @@ public class BluetoothGlucoseMeter extends Service {
                 }
             } else {
                 if (d) Log.d(TAG, "check queue age - queue is empty");
+            }
+        }
+
+        private static synchronized void transmute_command(final UUID fromService, final UUID fromCharacteristic,
+                                                           final UUID toService, final UUID toCharacteristic) {
+            try {
+                for (Bluetooth_CMD btc : queue) {
+                    if (btc.service.equals(fromService) && btc.characteristic.equals(fromCharacteristic)) {
+                        btc.service = toService;
+                        btc.characteristic = toCharacteristic;
+                        Log.d(TAG, "Transmuted service: " + fromService + " -> " + toService);
+                        Log.d(TAG, "Transmuted charact: " + fromCharacteristic + " -> " + toCharacteristic);
+                        break; // currently we only ever need to do one so break for speed
+                    }
+                }
+            } catch (Exception e) {
+                Log.wtf("Got exception in transmute: ", e);
             }
         }
 
