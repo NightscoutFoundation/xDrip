@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.eveningoutpost.dexdrip"
-    android:installLocation="internalOnly">
+    android:installLocation="internalOnly"
+    package="com.eveningoutpost.dexdrip">
+
+    <!-- To receive data from HAPP. -->
+    <uses-permission android:name="com.eveningoutpost.dexdrip.permissions.RECEIVE_EXTERNAL_STATUSLINE" />
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -93,7 +96,11 @@
                     android:scheme="wear" />
             </intent-filter>
         </service>
-
+        <service
+            android:name=".wearintegration.ExternalStatusService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
         <activity
             android:name=".Tables.BgReadingTable"
             android:configChanges="orientation|screenSize"
@@ -153,17 +160,22 @@
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".wearintegration.ExternalStatusBroadcastReceiver" android:exported="true" >
+            <intent-filter> <action android:name="com.eveningoutpost.dexdrip.ExternalStatusline" /> </intent-filter>
+        </receiver>
 
         <activity
             android:name=".Tables.CalibrationDataTable"
             android:label="@string/calibration_data_table" />
 
-        <service android:name=".GcmListenerSvc">
+        <service
+            android:name=".GcmListenerSvc">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".MyInstanceIDListenerService">
+        <service
+            android:name=".MyInstanceIDListenerService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>

@@ -58,6 +58,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String WEARABLE_DATA_PATH = "/nightscout_watch_data";
     private static final String WEARABLE_RESEND_PATH = "/nightscout_watch_data_resend";
     private static final String OPEN_SETTINGS = "/openwearsettings";
+    private static final String NEW_STATUS_PATH = "/sendstatustowear";
     private static final String SYNC_DB_PATH = "/syncweardb";//KS
     private static final String SYNC_BGS_PATH = "/syncwearbgs";//KS
     private static final String WEARABLE_BG_DATA_PATH = "/nightscout_watch_bg_data";//KS
@@ -349,6 +350,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     public void onDataChanged(DataEventBuffer dataEvents) {
 
         DataMap dataMap;
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());//KS
 
         for (DataEvent event : dataEvents) {
 
@@ -362,6 +364,13 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
 
+                } else if (path.equals(NEW_STATUS_PATH)) {
+                    dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
+                    Intent messageIntent = new Intent();
+                    messageIntent.setAction(Intent.ACTION_SEND);
+                    messageIntent.putExtra("status", dataMap.toBundle());
+                    Log.d(TAG, "onDataChanged NEW_STATUS_PATH=" + path);
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
                 } else if (path.equals(WEARABLE_DATA_PATH)) {
 
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
@@ -383,7 +392,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     getApplicationContext().startActivity(intent);
                 } else if (path.equals(SYNC_DB_PATH)) {//KS
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH=" + path);
-                    final PowerManager.WakeLock wl = JoH.getWakeLock("watchlistener-SYNC_DB_PATH",120000);
+                    final PowerManager.WakeLock wl = JoH.getWakeLock(getApplicationContext(), "watchlistener-SYNC_DB_PATH",120000);
                     TransmitterData last_bg = TransmitterData.last();
                     if (last_bg != null && last_send_previous <= last_bg.timestamp) {
                         Log.d(TAG, "onDataChanged SYNC_DB_PATH requestData for last_send_previous < last_bg.timestamp:" + JoH.dateTimeText(last_send_previous) + "<="+ JoH.dateTimeText(last_bg.timestamp));
@@ -491,11 +500,16 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         prefs.putString("highValue", high.toString());
         prefs.putString("lowValue", low.toString());
 
-        if (change) {
+        final boolean g5_non_raw_method = dataMap.getBoolean("g5_non_raw_method", false);
+        prefs.putBoolean("g5_non_raw_method", g5_non_raw_method);
+        final String extra_tags_for_logging = dataMap.getString("extra_tags_for_logging", "");
+        prefs.putString("extra_tags_for_logging", extra_tags_for_logging);
+
+        //if (change) {
             prefs.commit();
             //sendPrefSettings();
             //processConnectG5();
-        }
+        //}
         enable_wearG5 = mPrefs.getBoolean("enable_wearG5", false);
         force_wearG5 = mPrefs.getBoolean("force_wearG5", false);
         node_wearG5 = mPrefs.getString("node_wearG5", "");

@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
-import android.app.NotificationManager;
+//import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,17 +14,17 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Shader;
+import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.support.wearable.watchface.WatchFaceStyle;
-import android.support.v4.app.NotificationCompat;
+//import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.wearable.view.WatchViewStub;
-import android.support.wearable.watchface.WatchFaceService;
+import android.support.wearable.watchface.WatchFaceStyle;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowInsets;
@@ -33,10 +33,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.wearable.DataMap;
-import com.ustwo.clockwise.WatchFace;
-import com.ustwo.clockwise.WatchFaceTime;
-import com.ustwo.clockwise.WatchMode;
-import com.ustwo.clockwise.WatchShape;
+import com.ustwo.clockwise.wearable.WatchFace;
+import com.ustwo.clockwise.common.WatchFaceTime;
+import com.ustwo.clockwise.common.WatchMode;
+import com.ustwo.clockwise.common.WatchShape;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,9 +59,8 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     public int highColor = Color.YELLOW;
     public int lowColor = Color.RED;
     public int midColor = Color.WHITE;
-    public int lowColorWatchMode = Color.RED;
     public int pointSize = 2;
-    public boolean singleLine = false;
+    public boolean lowResMode = false;
     public boolean layoutSet = false;
     public int missed_readings_alert_id = 818;
     public BgGraphBuilder bgGraphBuilder;
@@ -83,6 +82,9 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     private String rawString = "000 | 000 | 000";
     private String batteryString = "--";
     private String sgvString = "--";
+    private String externalStatusString = "no status";
+    private TextView statusView;
+    private long chartTapTime = 0l;
     private Rect mCardRect = new Rect(0,0,0,0);
 
     @Override
@@ -128,8 +130,9 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
                 mDelta = (TextView) stub.findViewById(R.id.delta);
                 mRelativeLayout = (RelativeLayout) stub.findViewById(R.id.main_layout);
                 chart = (LineChartView) stub.findViewById(R.id.chart);
+                statusView = (TextView) stub.findViewById(R.id.aps_status);
                 layoutSet = true;
-                showAgoRawBatt();
+                showAgeAndStatus();
                 mRelativeLayout.measure(specW, specH);
                 mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                         mRelativeLayout.getMeasuredHeight());
@@ -139,6 +142,47 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         wakeLock.acquire(50);
     }
 
+    @Override
+    protected void onTapCommand(int tapType, int x, int y, long eventTime) {
+
+        if (tapType == TAP_TYPE_TAP&&
+                x >=chart.getLeft() &&
+                x <= chart.getRight()&&
+                y >= chart.getTop() &&
+                y <= chart.getBottom()){
+            if (eventTime - chartTapTime < 800){
+                changeChartTimeframe();
+            }
+            chartTapTime = eventTime;
+        }
+    }
+
+    private void changeChartTimeframe() {
+        int timeframe = Integer.parseInt(sharedPrefs.getString("chart_timeframe", "3"));
+        timeframe = (timeframe%5) + 1;
+        sharedPrefs.edit().putString("chart_timeframe", "" + timeframe).commit();
+    }
+
+    protected void onWatchModeChanged(WatchMode watchMode) {
+
+        if(lowResMode ^ isLowRes(watchMode)){ //if there was a change in lowResMode
+            lowResMode = isLowRes(watchMode);
+            setColor();
+        } else if (! sharedPrefs.getBoolean("dark", true)){
+            //in bright mode: different colours if active:
+            setColor();
+        }
+    }
+
+    private boolean isLowRes(WatchMode watchMode) {
+        return (watchMode == WatchMode.LOW_BIT) || (watchMode == WatchMode.LOW_BIT_BURN_IN) || (watchMode == WatchMode.LOW_BIT_BURN_IN);
+    }
+
+
+    @Override
+    protected WatchFaceStyle getWatchFaceStyle(){
+        return new WatchFaceStyle.Builder(this).setAcceptsTapEvents(true).build();
+    }
     public int ageLevel() {
         if(timeSince() <= (1000 * 60 * 12)) {
             return 1;
@@ -200,7 +244,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
                 wakeLock.acquire(50);
                 final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BIGChart.this);
                 mTime.setText(timeFormat.format(System.currentTimeMillis()));
-                showAgoRawBatt();
+                showAgeAndStatus();
 
                 if (ageLevel() <= 0) {
                     mSgv.setPaintFlags(mSgv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -222,8 +266,9 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     public class MessageReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            DataMap dataMap = DataMap.fromBundle(intent.getBundleExtra("data"));
-            if (layoutSet) {
+            Bundle bundle = intent.getBundleExtra("data");
+            if (layoutSet && bundle !=null) {
+                DataMap dataMap = DataMap.fromBundle(bundle);
                 wakeLock.acquire(50);
                 sgvLevel = dataMap.getLong("sgvLevel");
                 batteryLevel = dataMap.getInt("batteryLevel");
@@ -242,7 +287,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
                 final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BIGChart.this);
                 mTime.setText(timeFormat.format(System.currentTimeMillis()));
 
-                showAgoRawBatt();
+                showAgeAndStatus();
 
                 String delta = dataMap.getString("delta");
                 if (delta.endsWith(" mg/dl")) {
@@ -263,7 +308,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
 
                 //start animation?
                 // dataMap.getDataMapArrayList("entries") == null -> not on "resend data".
-                if (sharedPrefs.getBoolean("animation", false) && dataMap.getDataMapArrayList("entries") == null && (sgvString.equals("100") || sgvString.equals("5.5") || sgvString.equals("5,5"))) {
+                if (!lowResMode && (sharedPrefs.getBoolean("animation", false) && dataMap.getDataMapArrayList("entries") == null && (sgvString.equals("100") || sgvString.equals("5.5") || sgvString.equals("5,5")))) {
                     startAnimation();
                 }
 
@@ -271,29 +316,45 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
             } else {
                 Log.d("ERROR: ", "DATA IS NOT YET SET");
             }
+            //status
+            bundle = intent.getBundleExtra("status");
+            if (layoutSet && bundle != null) {
+                DataMap dataMap = DataMap.fromBundle(bundle);
+                wakeLock.acquire(50);
+                externalStatusString = dataMap.getString("externalStatusString");
+
+                showAgeAndStatus();
+
+                mRelativeLayout.measure(specW, specH);
+                mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
+                        mRelativeLayout.getMeasuredHeight());
+                invalidate();
+                setColor();
+            }
         }
     }
 
-    private void showAgoRawBatt() {
 
-        if( mTimestamp == null){
-            return;
+    private void showAgeAndStatus() {
+
+        if( mTimestamp != null){
+            mTimestamp.setText(readingAge(true));
         }
-        mTimestamp.setText(readingAge(true));
+
+        boolean showStatus = sharedPrefs.getBoolean("showExternalStatus", true);
+
+        if(showStatus){
+            statusView.setText(externalStatusString);
+            statusView.setVisibility(View.VISIBLE);
+        } else {
+            statusView.setVisibility(View.GONE);
+        }
     }
 
     public void setColor() {
-        if (getCurrentWatchMode() == WatchMode.INTERACTIVE) {
-            lowColorWatchMode = Color.RED;
-        }
-        else {
-            //RED is not supported in Ambient mode on WatchMode=LOW_BIT sa Sony SmartWatch 3
-            //Therefore, use a cold color to indicate a low value
-            int prefColor = Integer.parseInt(sharedPrefs.getString("ambient_lowcolor", "3"));
-            int[] rainbow = {Color.CYAN, Color.GREEN, Color.RED, Color.WHITE};
-            lowColorWatchMode = rainbow[prefColor-1];
-        }
-        if (sharedPrefs.getBoolean("dark", false)) {
+        if(lowResMode){
+            setColorLowRes();
+        } else if (sharedPrefs.getBoolean("dark", true)) {
             setColorDark();
         } else {
             setColorBright();
@@ -307,7 +368,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key){
         setColor();
         if(layoutSet){
-            showAgoRawBatt();
+            showAgeAndStatus();
             mRelativeLayout.measure(specW, specH);
             mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                     mRelativeLayout.getMeasuredHeight());
@@ -403,44 +464,49 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         Log.d("onCardPeek", "WatchFace.onCardPeek: getWidth()=" + getWidth() + " getHeight()=" + getHeight() + " cardWidth=" + cardWidth + " cardHeight=" + cardHeight);
     }
 
-    @Override
-    protected void onWatchModeChanged(WatchMode watchMode) {
-        Log.d("onWatchModeChanged", "WatchFace.onWatchModeChanged: watchMode=" + watchMode.name());
-        invalidate();
-        setColor();
+
+    protected void setColorLowRes() {
+        mTime.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+        statusView.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_statusView));
+        mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
+        mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
+        mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
+        mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_Timestamp));
+        if (chart != null) {
+            highColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
+            lowColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
+            midColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
+            pointSize = 2;
+            setupCharts();
+        }
+
     }
 
     protected void setColorDark() {
-        Log.d("setColorDark", "WatchMode=" + getCurrentWatchMode());
-
-        mTime.setTextColor(Color.WHITE);
-        mRelativeLayout.setBackgroundColor(Color.BLACK);
+        mTime.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+        statusView.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_statusView));
+        mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
         if (sgvLevel == 1) {
-            mSgv.setTextColor(Color.YELLOW);
-            mDelta.setTextColor(Color.YELLOW);
+            mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor));
+            mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor));
         } else if (sgvLevel == 0) {
-            mSgv.setTextColor(Color.WHITE);
-            mDelta.setTextColor(Color.WHITE);
+            mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
+            mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
         } else if (sgvLevel == -1) {
-            mSgv.setTextColor(lowColorWatchMode);
-            mDelta.setTextColor(lowColorWatchMode);
+            mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_lowColor));
+            mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_lowColor));
         }
-
 
         if (ageLevel == 1) {
-            mTimestamp.setTextColor(Color.WHITE);
+            mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_Timestamp));
         } else {
-            mTimestamp.setTextColor(lowColorWatchMode);
+            mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_TimestampOld));
         }
 
-        if (batteryLevel == 1) {
-        } else {
-        }
         if (chart != null) {
-            highColor = Color.YELLOW;
-            lowColor = lowColorWatchMode;
-            midColor = Color.WHITE;
-            singleLine = false;
+            highColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor);
+            lowColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_lowColor);
+            midColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
             pointSize = 2;
             setupCharts();
         }
@@ -450,63 +516,37 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
 
     protected void setColorBright() {
 
-        Log.d("setColorBright", "WatchMode=" + getCurrentWatchMode());
         if (getCurrentWatchMode() == WatchMode.INTERACTIVE) {
-            mRelativeLayout.setBackgroundColor(Color.WHITE);
+            mTime.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_bigchart_time));
+            statusView.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_bigchart_status));
+            mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_background));
             if (sgvLevel == 1) {
-                mSgv.setTextColor(ChartUtils.COLOR_ORANGE);
-                mDelta.setTextColor(ChartUtils.COLOR_ORANGE);
+                mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_highColor));
+                mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_highColor));
             } else if (sgvLevel == 0) {
-                mSgv.setTextColor(Color.BLACK);
-                mDelta.setTextColor(Color.BLACK);
+                mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_midColor));
+                mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_midColor));
             } else if (sgvLevel == -1) {
-                mSgv.setTextColor(Color.RED);
-                mDelta.setTextColor(Color.RED);
+                mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_lowColor));
+                mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_lowColor));
             }
 
             if (ageLevel == 1) {
-                mTimestamp.setTextColor(Color.BLACK);
+                mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_mTimestamp1));
             } else {
-                mTimestamp.setTextColor(Color.RED);
+                mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_mTimestamp));
             }
 
-
-            mTime.setTextColor(Color.BLACK);
             if (chart != null) {
-                highColor = ChartUtils.COLOR_ORANGE;
-                midColor = Color.BLUE;
-                lowColor = Color.RED;
-                singleLine = false;
+                highColor = ContextCompat.getColor(getApplicationContext(), R.color.light_highColor);
+                lowColor = ContextCompat.getColor(getApplicationContext(), R.color.light_lowColor);
+                midColor = ContextCompat.getColor(getApplicationContext(), R.color.light_midColor);
                 pointSize = 2;
                 setupCharts();
             }
         } else {
-            //RED is not supported in Ambient mode on WatchMode=LOW_BIT sa Sony SmartWatch 3
-            //Therefore, use a cold color to indicate a low value
-            mRelativeLayout.setBackgroundColor(Color.BLACK);
-            if (sgvLevel == 1) {
-                mSgv.setTextColor(Color.YELLOW);
-                mDelta.setTextColor(Color.YELLOW);
-            } else if (sgvLevel == 0) {
-                mSgv.setTextColor(Color.WHITE);
-                mDelta.setTextColor(Color.WHITE);
-            } else if (sgvLevel == -1) {
-                mSgv.setTextColor(lowColorWatchMode);
-                mDelta.setTextColor(lowColorWatchMode);
-            }
-            mTimestamp.setTextColor(Color.WHITE);
-
-            mTime.setTextColor(Color.WHITE);
-            if (chart != null) {
-                highColor = Color.YELLOW;
-                midColor = Color.WHITE;
-                lowColor = lowColorWatchMode;
-                singleLine = true;
-                pointSize = 2;
-                setupCharts();
-            }
+            setColorDark();
         }
-
     }
 
 
@@ -579,7 +619,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     public void setupCharts() {
         if(bgDataList.size() > 0) { //Dont crash things just because we dont have values, people dont like crashy things
             int timeframe = Integer.parseInt(sharedPrefs.getString("chart_timeframe", "5"));
-            if (singleLine) {
+            if (lowResMode) {
                 bgGraphBuilder = new BgGraphBuilder(getApplicationContext(), bgDataList, pointSize, midColor, timeframe);
             } else {
                 bgGraphBuilder = new BgGraphBuilder(getApplicationContext(), bgDataList, pointSize, highColor, lowColor, midColor, timeframe);

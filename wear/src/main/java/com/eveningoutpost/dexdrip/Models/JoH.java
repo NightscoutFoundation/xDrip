@@ -1,18 +1,29 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -23,25 +34,29 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
+import android.view.View;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.utils.BestGZIPOutputStream;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
@@ -56,8 +71,9 @@ import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 import java.util.zip.Inflater;
+
+//KS import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
 
 /**
  * Created by jamorham on 06/01/16.
@@ -103,11 +119,21 @@ public class JoH {
         return new Date().getTime();
     }
 
+    // TODO can we optimize this with System.currentTimeMillis ?
     public static long tsl() {
         return new Date().getTime();
     }
 
+    public static long msSince(long when) {
+        return (tsl() - when);
+    }
+
+    public static long absMsSince(long when) {
+        return Math.abs(tsl() - when);
+    }
+
     public static String bytesToHex(byte[] bytes) {
+        if (bytes == null) return "<empty>";
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
             int v = bytes[j] & 0xFF;
@@ -155,7 +181,7 @@ public class JoH {
     public static byte[] compressStringToBytes(String string) {
         try {
             ByteArrayOutputStream output = new ByteArrayOutputStream(string.length());
-            GZIPOutputStream gzipped_data = new GZIPOutputStream(output);
+            BestGZIPOutputStream gzipped_data = new BestGZIPOutputStream(output);
             gzipped_data.write(string.getBytes(Charset.forName("UTF-8")));
             gzipped_data.close();
             byte[] compressed = output.toByteArray();
@@ -170,7 +196,7 @@ public class JoH {
     public static byte[] compressBytesToBytes(byte[] bytes) {
         try {
             ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length);
-            GZIPOutputStream gzipped_data = new GZIPOutputStream(output);
+            BestGZIPOutputStream gzipped_data = new BestGZIPOutputStream(output);
             gzipped_data.write(bytes);
             gzipped_data.close();
             byte[] compressed = output.toByteArray();
@@ -405,6 +431,15 @@ public class JoH {
         }
     }
 
+/*//KS    public static void fixActionBar(AppCompatActivity context) {
+        try {
+            context.getSupportActionBar().setDisplayShowHomeEnabled(true);
+            context.getSupportActionBar().setIcon(R.drawable.ic_launcher);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception with supportactionbar: " + e.toString());
+
+        }
+    }*/
 
     public static HashMap<String, Object> JsonStringtoMap(String json) {
         return new Gson().fromJson(json, new TypeToken<HashMap<String, Object>>() {
@@ -417,8 +452,16 @@ public class JoH {
         return sd.format(date);
     }
 
+    public static String hourMinuteString(long timestamp) {
+        return android.text.format.DateFormat.format("kk:mm", timestamp).toString();
+    }
+
     public static String dateTimeText(long timestamp) {
-        return android.text.format.DateFormat.format("yyyy-MM-dd HH:mm:ss", timestamp).toString();
+        return android.text.format.DateFormat.format("yyyy-MM-dd kk:mm:ss", timestamp).toString();
+    }
+
+    public static String dateText(long timestamp) {
+        return android.text.format.DateFormat.format("yyyy-MM-dd", timestamp).toString();
     }
 
     public static double tolerantParseDouble(String str) throws NumberFormatException {
@@ -453,7 +496,9 @@ public class JoH {
         final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         final boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnected();
-        return isConnected && ((activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) || (activeNetwork.getType() == ConnectivityManager.TYPE_ETHERNET));
+        return isConnected && ((activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)
+                || (activeNetwork.getType() == ConnectivityManager.TYPE_ETHERNET)
+                || (activeNetwork.getType() == ConnectivityManager.TYPE_BLUETOOTH));
     }
 
     public static boolean isMobileDataOrEthernetConnected() {
@@ -583,6 +628,20 @@ public class JoH {
         static_toast(context, msg, Toast.LENGTH_LONG);
     }
 
+    public static synchronized void playResourceAudio(int id) {
+        playSoundUri(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + xdrip.getAppContext().getPackageName() + "/" + id);
+    }
+
+    public static synchronized void playSoundUri(String soundUri) {
+        try {
+            JoH.getWakeLock("joh-playsound", 10000);
+            final MediaPlayer player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(soundUri));
+            player.start();
+        } catch (Exception e) {
+            Log.wtf(TAG, "Failed to play audio: " + soundUri + " exception:" + e);
+        }
+    }
+
     public static String urlEncode(String source) {
         try {
             return URLEncoder.encode(source, "UTF-8");
@@ -603,6 +662,145 @@ public class JoH {
             return null;
         }
     }
+
+    public static void goFullScreen(boolean fullScreen, View decorView) {
+
+        if (fullScreen) {
+            if (Build.VERSION.SDK_INT >= 19) {
+                decorView.setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            } else {
+                decorView.setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_FULLSCREEN);
+            }
+        } else {
+            decorView.setSystemUiVisibility(0); // TODO will this need revisiting in later android vers?
+        }
+    }
+
+
+/*//KS    public static Bitmap screenShot(View view, String annotation) {
+
+        if (view == null) {
+            static_toast_long("View is null in screenshot!");
+            return null;
+        }
+        final int width = view.getWidth();
+        final int height = view.getHeight();
+        Log.d(TAG, "Screenshot called: " + width + "," + height);
+        final Bitmap bitmap = Bitmap.createBitmap(width,
+                height, Bitmap.Config.ARGB_8888);
+
+        final Canvas canvas = new Canvas(bitmap);
+        if (Home.getPreferencesBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
+            Paint paint = new Paint();
+            paint.setColor(Color.WHITE);
+            paint.setStyle(Paint.Style.FILL);
+            canvas.drawRect(0, 0, width, height, paint);
+        }
+
+
+        view.destroyDrawingCache();
+        view.layout(0, 0, width, height);
+        view.draw(canvas);
+
+        if (annotation != null) {
+            final int offset = (annotation != null) ? 40 : 0;
+            final Bitmap bitmapf = Bitmap.createBitmap(width,
+                    height + offset, Bitmap.Config.ARGB_8888);
+            final Canvas canvasf = new Canvas(bitmapf);
+
+            Paint paint = new Paint();
+            if (Home.getPreferencesBooleanDefaultFalse(SHOW_STATISTICS_PRINT_COLOR)) {
+                paint.setColor(Color.WHITE);
+                paint.setStyle(Paint.Style.FILL);
+                canvasf.drawRect(0, 0, width, offset, paint);
+                paint.setColor(Color.BLACK);
+            } else {
+                paint.setColor(Color.GRAY);
+            }
+            paint.setTextSize(20);
+            // paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));
+            canvasf.drawBitmap(bitmap, 0, offset, paint);
+            canvasf.drawText(annotation, 50, (offset / 2) + 5, paint);
+            bitmap.recycle();
+            return bitmapf;
+        }
+
+        return bitmap;
+    }*/
+
+    public static Bitmap screenShot2(View view) {
+        Log.d(TAG, "Screenshot2 called: " + view.getWidth() + "," + view.getHeight());
+        view.setDrawingCacheEnabled(true);
+        view.buildDrawingCache(true);
+        final Bitmap bitmap = view.getDrawingCache(true);
+        return bitmap;
+    }
+
+
+    public static void bitmapToFile(Bitmap bitmap, String path, String fileName) {
+
+        if (bitmap == null) return;
+        Log.d(TAG, "bitmapToFile: " + bitmap.getWidth() + "x" + bitmap.getHeight());
+        File dir = new File(path);
+        if (!dir.exists())
+            dir.mkdirs();
+        final File file = new File(path, fileName);
+        try {
+            FileOutputStream output = new FileOutputStream(file);
+            final boolean result = bitmap.compress(Bitmap.CompressFormat.PNG, 80, output);
+            output.flush();
+            output.close();
+            Log.d(TAG, "Bitmap compress result: " + result);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception writing bitmap to file: " + e);
+        }
+    }
+
+    public static void shareImage(Context context, File file) {
+        Uri uri = Uri.fromFile(file);
+        final Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.setType("image/*");
+        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "");
+        intent.putExtra(android.content.Intent.EXTRA_TEXT, "");
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        try {
+            context.startActivity(Intent.createChooser(intent, "Share"));
+        } catch (ActivityNotFoundException e) {
+            static_toast_long("No suitable app to show an image!");
+        }
+    }
+
+    public static void wakeUpIntent(Context context, long delayMs, PendingIntent pendingIntent) {
+        final long wakeTime = JoH.tsl() + delayMs;
+        Log.d(TAG, "Scheduling wakeup intent: " + dateTimeText(wakeTime));
+        final AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+        } else
+            alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+    }
+
+/*//KS    public static void scheduleNotification(Context context, String title, String body, int delaySeconds, int notification_id) {
+        final Intent notificationIntent = new Intent(context, Home.class).putExtra(Home.SHOW_NOTIFICATION, title).putExtra("notification_body", body).putExtra("notification_id", notification_id);
+        final PendingIntent pendingIntent = PendingIntent.getActivity(context, notification_id, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Log.d(TAG, "Scheduling notification: " + title + " / " + body);
+        wakeUpIntent(context, delaySeconds * 1000, pendingIntent);
+    }*/
+
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, boolean onetime) {
         final NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);
@@ -677,8 +875,51 @@ public class JoH {
         }
     }
 
+    public static boolean isAirplaneModeEnabled(Context context) {
+        return Settings.Global.getInt(context.getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
+    }
+
+    @TargetApi(19)
+    public static void doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress) {
+        if (BluetoothDevice.ACTION_PAIRING_REQUEST.equals(intent.getAction())) {
+            final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+            if (device != null) {
+                int type = intent.getIntExtra(BluetoothDevice.EXTRA_PAIRING_VARIANT, BluetoothDevice.ERROR);
+                if ((mBluetoothDeviceAddress != null) && (device.getAddress().equals(mBluetoothDeviceAddress))) {
+                    try {
+                        UserError.Log.e(TAG, "Pairing type: " + type);
+                        device.setPairingConfirmation(true);
+                        JoH.static_toast_short("Pairing");
+                        broadcastReceiver.abortBroadcast();
+                    } catch (Exception e) {
+                        UserError.Log.e(TAG, "Could not set pairing confirmation due to exception: " + e);
+                        if (JoH.ratelimit("failed pair confirmation", 200)) {
+                            // BluetoothDevice.PAIRING_VARIANT_CONSENT)
+                            if (type == 3) {
+                                JoH.static_toast_long("Please confirm the bluetooth pairing request");
+                            } else {
+                                JoH.static_toast_long("Failed to pair, may need to do it via Android Settings");
+                                device.createBond(); // for what it is worth
+                            }
+                        }
+                    }
+                } else {
+                    UserError.Log.e(TAG, "Received pairing request for not our device: " + device.getAddress());
+                }
+            } else {
+                UserError.Log.e(TAG, "Device was null in pairing receiver");
+            }
+        }
+    }
+
     public synchronized static void setBluetoothEnabled(Context context, boolean state) {
         try {
+
+            if (isAirplaneModeEnabled(context)) {
+                UserError.Log.e(TAG, "Not setting bluetooth to state: " + state + " due to airplane mode being enabled");
+                return;
+            }
+
             if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2) {
 
                 final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
@@ -727,7 +968,7 @@ public class JoH {
         new Thread() {
             @Override
             public void run() {
-                final PowerManager.WakeLock wl = getWakeLock(context, "restart-bluetooth", 60000);//KS add context
+                final PowerManager.WakeLock wl = getWakeLock("restart-bluetooth", 60000);
                 Log.d(TAG, "Restarting bluetooth");
                 try {
                     if (startInMs > 0) {

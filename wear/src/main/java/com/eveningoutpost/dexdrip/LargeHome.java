@@ -1,9 +1,10 @@
 package com.eveningoutpost.dexdrip;
 
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 
-import com.ustwo.clockwise.WatchMode;
+import com.ustwo.clockwise.common.WatchMode;
 
 public class LargeHome extends BaseWatchFace {
 
@@ -15,60 +16,57 @@ public class LargeHome extends BaseWatchFace {
         performViewSetup();
     }
 
-
     @Override
     protected void setColorDark(){
-        //Log.d("setColorDark", "WatchMode=" + getCurrentWatchMode());
-        mTime.setTextColor(Color.WHITE);
-        mRelativeLayout.setBackgroundColor(Color.BLACK);
-        mLinearLayout.setBackgroundColor(Color.WHITE);
+        mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mLinearLayout));
+        mTime.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+        mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
         if (sgvLevel == 1) {
-            mSgv.setTextColor(Color.YELLOW);
-            mDirection.setTextColor(Color.YELLOW);
-            mDelta.setTextColor(Color.YELLOW);
+            mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor));
+            mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor));
+            mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor));
         } else if (sgvLevel == 0) {
-            mSgv.setTextColor(Color.WHITE);
-            mDirection.setTextColor(Color.WHITE);
-            mDelta.setTextColor(Color.WHITE);
+            mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
+            mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
+            mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
         } else if (sgvLevel == -1) {
-            mSgv.setTextColor(lowColorWatchMode);
-            mDirection.setTextColor(lowColorWatchMode);
-            mDelta.setTextColor(lowColorWatchMode);
+            mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_lowColor));
+            mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_lowColor));
+            mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_lowColor));
         }
+
         if (ageLevel == 1) {
-            mTimestamp.setTextColor(Color.BLACK);
+            mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTimestamp1_home));
         } else {
-            mTimestamp.setTextColor(Color.RED);
+            mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_TimestampOld));
         }
 
         if (batteryLevel == 1) {
-            mUploaderBattery.setTextColor(Color.BLACK);
+            mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
         } else {
-            mUploaderBattery.setTextColor(Color.RED);
+            mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBatteryEmpty));
         }
 
-        mRaw.setTextColor(Color.BLACK);
+        mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mStatus_home));
     }
-
-
 
     @Override
     protected void setColorBright() {
         if (getCurrentWatchMode() == WatchMode.INTERACTIVE) {
-            mRelativeLayout.setBackgroundColor(Color.WHITE);
-            mLinearLayout.setBackgroundColor(Color.BLACK);
+            mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_stripe_background));
+            mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_background));
             if (sgvLevel == 1) {
-                mSgv.setTextColor(Color.YELLOW);
-                mDirection.setTextColor(Color.YELLOW);
-                mDelta.setTextColor(Color.YELLOW);
+                mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_highColor));
+                mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_highColor));
+                mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_highColor));
             } else if (sgvLevel == 0) {
-                mSgv.setTextColor(Color.BLACK);
-                mDirection.setTextColor(Color.BLACK);
-                mDelta.setTextColor(Color.BLACK);
+                mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_midColor));
+                mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_midColor));
+                mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_midColor));
             } else if (sgvLevel == -1) {
-                mSgv.setTextColor(Color.RED);
-                mDirection.setTextColor(Color.RED);
-                mDelta.setTextColor(Color.RED);
+                mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_lowColor));
+                mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_lowColor));
+                mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_lowColor));
             }
 
             if (ageLevel == 1) {
@@ -82,11 +80,9 @@ public class LargeHome extends BaseWatchFace {
             } else {
                 mUploaderBattery.setTextColor(Color.RED);
             }
-            mRaw.setTextColor(Color.WHITE);
+            mStatus.setTextColor(Color.WHITE);
             mTime.setTextColor(Color.BLACK);
         } else {
-            //RED is not supported in Ambient mode on WatchMode=LOW_BIT sa Sony SmartWatch 3
-            //Therefore, use a cold color to indicate a low value
             mRelativeLayout.setBackgroundColor(Color.BLACK);
             mLinearLayout.setBackgroundColor(Color.LTGRAY);
             if (sgvLevel == 1) {
@@ -98,15 +94,28 @@ public class LargeHome extends BaseWatchFace {
                 mDirection.setTextColor(Color.WHITE);
                 mDelta.setTextColor(Color.WHITE);
             } else if (sgvLevel == -1) {
-                mSgv.setTextColor(lowColorWatchMode);
-                mDirection.setTextColor(lowColorWatchMode);
-                mDelta.setTextColor(lowColorWatchMode);
+                mSgv.setTextColor(Color.RED);
+                mDirection.setTextColor(Color.RED);
+                mDelta.setTextColor(Color.RED);
             }
 
             mUploaderBattery.setTextColor(Color.BLACK);
             mTimestamp.setTextColor(Color.BLACK);
-            mRaw.setTextColor(Color.BLACK);
+            mStatus.setTextColor(Color.BLACK);
             mTime.setTextColor(Color.WHITE);
         }
+    }
+
+    @Override
+    protected void setColorLowRes() {
+        mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mLinearLayout));
+        mTime.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+        mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
+        mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
+        mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
+        mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
+        mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTimestamp1_home));
+        mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
+        mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mStatus_home));
     }
 }

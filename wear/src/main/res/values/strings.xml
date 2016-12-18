@@ -3,20 +3,6 @@
 
     <string name="app_name">XDrip Prefs.</string>
 
-    <string-array name="ambient_lowcolor">
-        <item>CYAN</item>
-        <item>GREEN</item>
-        <item>RED</item>
-        <item>WHITE</item>
-
-    </string-array>
-    <string-array name="ambient_lowcolor_values">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-    </string-array>
-
     <string-array name="chart_timeframe">
         <item>1 hour</item>
         <item>2 hours</item>

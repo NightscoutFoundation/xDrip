@@ -13,7 +13,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    //buildToolsVersion "22.0.1"
     buildToolsVersion '23.0.3'
 
     lintOptions {
@@ -35,14 +34,37 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors {
+        full {
+            applicationId = "com.eveningoutpost.dexdrip"
+            resValue "string", "label_xdrip", "XDrip"
+            resValue "string", "label_xdrip_large", "XDrip(Large)"
+            resValue "string", "label_xdrip_big_chart", "XDrip(BigChart)"
+            resValue "string", "label_xdrip_circle", "XDrip(Circle)"
+            resValue "string", "label_xdrip_activity", "XDrip Prefs."
+            resValue "string", "app_settings", "XDrip Settings"
+        }
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        flatDir {
+            dirs 'libs'
+        }
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.ustwo.android:clockwise-wearable:1.0.2'
     compile 'com.google.android.support:wearable:1.4.0'
     compile 'com.google.android.gms:play-services-wearable:9.4.0'
+    //compile 'com.ustwo.android:clockwise-wearable:1.0.2'
+    compile files('libs/hellocharts-library-1.5.5.jar')
+    compile(name:'ustwo-clockwise-debug', ext:'aar')
+    compile 'me.denley.wearpreferenceactivity:wearpreferenceactivity:0.5.0'
     compile 'com.google.code.gson:gson:2.4'
 
 }
