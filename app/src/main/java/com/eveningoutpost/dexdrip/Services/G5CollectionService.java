@@ -965,7 +965,7 @@ public class G5CollectionService extends Service {
         }
 
 
-        private void processOnStateChange(final BluetoothGatt gatt, final int status, final int newState) {
+        private synchronized void processOnStateChange(final BluetoothGatt gatt, final int status, final int newState) {
             switch (newState) {
 
 
@@ -1332,9 +1332,10 @@ public class G5CollectionService extends Service {
                             waitingBondConfirmation = 1; // waiting
                             device.createBond();
 
-                            for (int counter = 0; counter < 15; counter++) {
+                            for (int counter = 0; counter < 12; counter++) {
                                 if (waitingBondConfirmation != 1) {
                                     Log.e(TAG, "Received bond confirmation after: " + counter + " seconds. status: " + waitingBondConfirmation);
+                                    waitFor(5000); // extra delay
                                     break;
                                 } else {
                                     waitFor(1000);
