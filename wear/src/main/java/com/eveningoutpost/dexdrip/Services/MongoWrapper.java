@@ -1,3 +1,4 @@
+/*
 package com.eveningoutpost.dexdrip.Services;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
@@ -159,3 +160,4 @@ public class MongoWrapper {
 
 
 }
+*/

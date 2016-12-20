@@ -61,7 +61,7 @@ dependencies {
     compile 'com.google.android.support:wearable:1.4.0'
     compile 'com.google.android.gms:play-services-wearable:9.4.0'
     //compile 'com.ustwo.android:clockwise-wearable:1.0.2'
-    compile files('libs/hellocharts-library-1.5.5.jar')
+    //compile files('libs/hellocharts-library-1.5.5.jar')
     compile(name:'ustwo-clockwise-debug', ext:'aar')
     compile 'me.denley.wearpreferenceactivity:wearpreferenceactivity:0.5.0'
     compile 'com.google.code.gson:gson:2.4'
