@@ -35,7 +35,7 @@
 	<string name="title_activity_double_calibration">Calibração dupla</string>
 	<string name="title_activity_calibration_override">Substituir calibração</string>
 	<string name="pref_header_cloud_storage">Armazenamento na núvem</string>
-	<string name="auto_configure_title">Configure Auto</string>
+	<string name="auto_configure_title">Configurar automaticamente</string>
 	<string name="prefs_auto_config_summary">Configuração automática usando um código de barras.</string>
 	<string name="scan_share2_barcode">Barcode Compartilhar varredura</string>
 	<string name="pref_share2_scan_barcode_summary">Ou digitalizar o código de barras no receptor share</string>
@@ -87,6 +87,7 @@
 	<string name="export_submenu">Importação / exportação características</string>
 	<string name="action_resend_to_watch">Reenviar glucose para assistir</string>
 	<string name="action_open_watch_setting">Abra Definições no desgaste</string>
+	<string name="action_sync_watch_db">Redefinir Usar DB</string>
 	<string name="erase">Apagar</string>
 	<string name="interface_tips_from_start">Todas as dicas de interface mostrará novamente a partir do início</string>
 	<string name="note_button">Nota Botão</string>
@@ -96,6 +97,7 @@
 	<string name="undo_button">Desfazer Botão</string>
 	<string name="showcase_undo">O botão Undo pode passo para trás através Tratamento Simulações, calibrações e Notas\n\nDepois de 30 minutos ele vai se esconder novamente</string>
 	<string name="add_note">Adicionar nota</string>
+	<string name="blood_test">Teste de sangue</string>
 	<string name="title_activity_profile_editor">Editor de tratamento perfil</string>
 	<string name="first_use_menu_to_scan">Primeiro use o menu para fazer a varredura para o dispositivo BT ou alterar a fonte de dados nas configurações!</string>
 	<string name="first_configure_ip_address">Primeiro, configure os endereços IP wi-fi leitor Wixel ou url periquito</string>
@@ -156,7 +158,7 @@
 	<string name="automatic_update_check">Verificação de atualização automática</string>
 	<string name="update_channel">Update Channel</string>
 	<string name="send_crash_errors_to_developer">Enviar erros de colisão para o desenvolvedor</string>
-	<string name="automatic_crash_reporting">Relatórios automática Bater</string>
+	<string name="automatic_crash_reporting">Relatorio de erro automatico</string>
 	<string name="send_feedback_message">Enviar comentários Mensagem</string>
 	<string name="copying_settings">Configurações de cópia</string>
 	<string name="show_settings_qr_codes">Mostrar códigos QR Configurações</string>
@@ -195,11 +197,20 @@
 	<string name="run_collector_in_foreground">Execute Collector em primeiro plano</string>
 	<string name="shows_a_persistent_notification">Mostra um gráfico notificação persistente, visíveis na tela de bloqueio e impede android matando o serviço.</string>
 	<string name="list_of_receivers">Lista de receptores</string>
+	<string name="extra_tags_for_logging">Tags extras para o registo</string>
+	<string name="extra_tags_dialog_message">As tags inseridas aqui será registrado em xDrip. O formato é tag: nível. Nível pode ser v, d, i. Por exemplo bgreading: i, DexCollectionService: v. Este tags serão registrados com baixa prioridade ao erro e lista de eventos.</string>
+	<string name="extra_tags_dialog_title">Introduzir mais tags que estar conectado</string>
 	<string name="data_source_settings">Configurações de fonte de dados</string>
 	<string name="smart_watch_features">Características relógio inteligente</string>
 	<string name="wear_integration">Desgaste Integração</string>
 	<string name="send_data_to_android_wear_watch">Enviar dados para watchface Android Wear.</string>
 	<string name="android_wear_integration">Integração Android Wear</string>
+	<string name="pref_enable_wearG5">Ativar Wear G5 Collection Service</string>
+	<string name="pref_summary_enable_wearG5">Conectar-se vestir para G5 quando o telefone está fora de alcance</string>
+	<string name="pref_force_wearG5">Força Wear Serviço G5 Colecção</string>
+	<string name="pref_summary_force_wearG5">Telefone força para usar Wear Collection Service G5</string>
+	<string name="pref_node_wearG5">Device Service Coleção correndo G5</string>
+	<string name="pref_summary_node_wearG5">Telefone Força para usar esta Wear Collection Service G5</string>
 	<string name="pebble_integration">Integração Pebble</string>
 	<string name="send_data_to_pebble_watchface">Enviar dados para Pebble watchface.</string>
 	<string name="pebble_watch_integration">Pebble Assista Integração</string>
@@ -223,7 +234,7 @@
 	<string name="manage_followers">Gerenciar Seguidores</string>
 	<string name="manage_existing_followers">Gerencie seus seguidores existentes e convidar novos.</string>
 	<string name="glucose_calibration_and_other_alerts">Glicose, calibração e outros alertas</string>
-	<string name="alert_volume_profile">Alerta de perfil de volume</string>
+	<string name="alert_volume_profile">Perfil de volume de alerta</string>
 	<string name="smart_alerting">Alerta inteligente</string>
 	<string name="dont_alarm_during_phone_calls">Não alarme durante as chamadas telefónicas</string>
 	<string name="start_snoozed">Iniciar Adiado</string>
@@ -293,13 +304,14 @@
 	<string name="enter_second_bg_value">Digite Segundo BG Valor</string>
 	<string name="language_editor">Editor de idiomas</string>
 	<string name="configure_missed_readings">Configurar Leituras não atendidas</string>
+	<string name="install_pebble_snooze_control_app">Instale Pebble Snooze Control App</string>
 	<string name="install_pebble_classic_trend_watchface">Instale Pebble clássico Tendência watchface</string>
 	<string name="install_pebble_trend_watchface">Instale Pebble Tendência watchface</string>
 	<string name="install_pebble_watchface">Instale Pebble watchface</string>
 	<string name="glucose_history">História de glicose</string>
 	<string name="import_database">Importação de banco de dados</string>
 	<string name="sensor_table">Tabela Sensor</string>
-	<string name="bg_readings_table">Bg Leituras Tabela</string>
+	<string name="bg_readings_table">Tabela de leituras BG</string>
 	<string name="long_press_to_split_or_delete">Pressão longa para Split ou Excluir</string>
 	<string name="press_and_hold_on_the_background_to_split_or_delete">Pressione e segure no fundo para Split ou excluir um bloco de tempo</string>
 	<string name="search">Pesquisa</string>
@@ -335,7 +347,7 @@
 	<string name="new_version_date_colon">"Data Nova Versão: "</string>
 	<string name="old_version_date_colon">"Date versão antiga: "</string>
 	<string name="speak_your_note_text">Fale a sua texto da nota</string>
-	<string name="alarm_if_above_high_value">Alarme se acima alto valor</string>
+	<string name="alarm_if_above_high_value">Alarme se acima valor alto</string>
 	<string name="for_longer_than_minutes">por mais de (minutos)</string>
 	<string name="choose_sound_used_for_persistent_high_alarm">Escolha o som usado para alarme de alta persistente.</string>
 	<string name="persistent_high_sound">Persistente alta de som</string>
@@ -400,7 +412,7 @@
 	<string name="treatment_color_dark">Tratamento escuro Cor</string>
 	<string name="predictive_color">Predictive Cor</string>
 	<string name="predictive_color_dark">Predictive cor escura</string>
-	<string name="average_and_target_lines">Média e Alvo Lines</string>
+	<string name="average_and_target_lines">Média e linhas alvo</string>
 	<string name="eight_hour_average_line">8 horas Linha Média</string>
 	<string name="twenty_four_hour_average_line">24 horas Linha Média</string>
 	<string name="glucose_target_line">Glicose Linha de Alvos</string>
@@ -444,6 +456,7 @@
 	<string name="override_phone_silent_mode_colon">Telefone Override modo silencioso:</string>
 	<string name="vibrate_on_alert">Vibrar em alerta</string>
 	<string name="test_alert">alerta de teste</string>
+	<string name="disable_alert">desativar alerta</string>
 	<string name="save_alert">salvar alerta</string>
 	<string name="remove_alert">remover alerta</string>
 	<string name="snooze_alert_before_it_fires">soneca de alerta antes de incêndios</string>
@@ -474,4 +487,10 @@
 	<string name="upload_logs">Carregar Logs</string>
 	<string name="short_off_text_for_switches">FORA</string>
 	<string name="short_on_text_for_switches">EM</string>
+	<string name="install_pebble_apps">Instale Pebble Apps</string>
+	<string name="sliding_24_hour_window_summary">Use últimas 24 horas em vez de tempo desde a meia-noite para as estatísticas.</string>
+	<string name="sliding_24_hour_window">Janela de correr</string>
+	<string name="split">Dividido</string>
+	<string name="delete">Excluir</string>
+	<string name="title_activity_btglucose_meter">Medidor de digitalização</string>
 </resources>
