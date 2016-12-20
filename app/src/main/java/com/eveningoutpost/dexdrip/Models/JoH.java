@@ -49,6 +49,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.utils.BestGZIPOutputStream;
+import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -331,6 +332,16 @@ public class JoH {
         }
     }
 
+    // compare stored byte array hashes
+    public static synchronized boolean differentBytes(String name, byte[] bytes) {
+        final String id = "differentBytes-" + name;
+        final String last_hash = PersistentStore.getString(id);
+        final String this_hash = CipherUtils.getSHA256(bytes);
+        if (this_hash.equals(last_hash)) return false;
+        PersistentStore.setString(id, this_hash);
+        return true;
+    }
+
     // return true if below rate limit (persistent version)
     public static synchronized boolean pratelimit(String name, int seconds) {
         // check if over limit
@@ -583,6 +594,12 @@ public class JoH {
     public static boolean runOnUiThreadDelayed(Runnable theRunnable, long delay) {
         final Handler mainHandler = new Handler(xdrip.getAppContext().getMainLooper());
         return mainHandler.postDelayed(theRunnable, delay);
+    }
+
+    public static void removeUiThreadRunnable(Runnable theRunnable)
+    {
+        final Handler mainHandler = new Handler(xdrip.getAppContext().getMainLooper());
+        mainHandler.removeCallbacks(theRunnable);
     }
 
     public static void static_toast(final Context context, final String msg, final int length) {
