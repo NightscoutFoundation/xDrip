@@ -41,6 +41,7 @@
 -dontwarn obj.objenesis.instantiator.sun.UnsafeFactoryInstantiator
 -dontwarn sun.misc.Unsafe
 -dontwarn ar.com.hjg.pngj.**
+-dontwarn com.ustwo.clockwise.**
 
 -keep class com.nightscout.** { *; }
 -keep class com.squareup.** { *; }
@@ -55,3 +56,4 @@
 -keep class com.eveningoutpost.dexdrip.Models.** { *; }
 -keep class ar.com.hjg.pngj.** { *; }
 -keep class android.support.v7.widget.SearchView { *; }
+-keep class com.ustwo.clockwise.** { *; }

@@ -26,6 +26,15 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0.2"
+
+        applicationId = "com.eveningoutpost.dexdrip"
+        resValue "string", "label_xdrip", "XDrip"
+        resValue "string", "label_xdrip_large", "XDrip(Large)"
+        resValue "string", "label_xdrip_big_chart", "XDrip(BigChart)"
+        resValue "string", "label_xdrip_circle", "XDrip(Circle)"
+        resValue "string", "label_xdrip_activity", "XDrip Prefs."
+        resValue "string", "app_settings", "XDrip Settings"
+
     }
     buildTypes {
         release {
@@ -34,17 +43,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    productFlavors {
-        full {
-            applicationId = "com.eveningoutpost.dexdrip"
-            resValue "string", "label_xdrip", "XDrip"
-            resValue "string", "label_xdrip_large", "XDrip(Large)"
-            resValue "string", "label_xdrip_big_chart", "XDrip(BigChart)"
-            resValue "string", "label_xdrip_circle", "XDrip(Circle)"
-            resValue "string", "label_xdrip_activity", "XDrip Prefs."
-            resValue "string", "app_settings", "XDrip Settings"
-        }
-    }
+
 }
 
 allprojects {
