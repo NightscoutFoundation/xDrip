@@ -91,6 +91,10 @@ public class ShareRest {
             username = sharedPreferences.getString("dexcom_account_name", null);
             password = sharedPreferences.getString("dexcom_account_password", null);
             serialNumber = sharedPreferences.getString("share_key", null);
+            if (sharedPreferences.getBoolean("engineering_mode", false)) {
+                final String share_test_key = sharedPreferences.getString("share_test_key", "").trim();
+                if (share_test_key.length() > 4) serialNumber = share_test_key;
+            }
             sharedPreferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
             if ("".equals(sessionId)) // migrate previous empty sessionIds to null;
                 sessionId = null;

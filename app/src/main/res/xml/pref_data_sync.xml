@@ -75,6 +75,12 @@
                     android:key="cloud_storage_api_base"
                     android:title="@string/pref_title_api_url" />
 
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="skip_lan_uploads_when_no_lan"
+                    android:summary="For local servers with 192.168.x.x addresses, skip uploads when there is no local network connectivity."
+                    android:title="Skip LAN uploads" />
+
             </PreferenceScreen>
 
             <PreferenceScreen
@@ -112,6 +118,12 @@
                     android:key="share_key"
                     android:shouldDisableView="true"
                     android:title="10 Character Dexcom Receiver Serial Number" />
+                <EditTextPreference
+                    android:defaultValue="SM"
+                    android:dependency="engineering_mode"
+                    android:key="share_test_key"
+                    android:shouldDisableView="true"
+                    android:title="10 Character Test Mode Serial Number" />
                 <Preference
                     android:dependency="share_upload"
                     android:summary="@string/manage_existing_followers"

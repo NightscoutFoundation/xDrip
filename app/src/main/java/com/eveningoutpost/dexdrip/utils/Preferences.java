@@ -951,6 +951,14 @@ public class Preferences extends PreferenceActivity {
 
             final boolean engineering_mode = this.prefs.getBoolean("engineering_mode",false);
 
+            if (!engineering_mode) {
+                try {
+                    ((PreferenceScreen) findPreference("dexcom_server_upload_screen")).removePreference(findPreference("share_test_key"));
+                } catch (Exception e) {
+                    //
+                }
+            }
+
             //if (engineering_mode) {
                 // populate the list
                 PluggableCalibration.setListPreferenceData(currentCalibrationPlugin);
