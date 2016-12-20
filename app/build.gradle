@@ -156,7 +156,8 @@ task AutoTestRig() << {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     wearApp project(':wear')
-    testCompile 'com.squareup.okhttp:mockwebserver:2.5.0'
+    //weapApp files('../wear/build/outputs/apk/wear_release.apk')
+    //testCompile 'com.squareup.okhttp:mockwebserver:2.5.0'
     compile('com.github.nightscout:android-uploader:CORE_FOR_XDRIP') {
         transitive = false;
     }
@@ -172,7 +173,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-wearable:9.4.0'
     compile 'com.google.android.gms:play-services-location:9.4.0'
     compile "com.google.android.gms:play-services-gcm:9.4.0"
-    compile 'com.squareup.okhttp:okhttp:2.5.0'
+    compile 'com.squareup.okhttp:okhttp:2.7.5'
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'

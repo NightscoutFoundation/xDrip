@@ -159,17 +159,21 @@ public class UploaderQueue extends Model {
 
     public static void cleanQueue() {
         // delete all completed records > 24 hours old
-        new Delete()
-                .from(UploaderQueue.class)
-                .where("timestamp < ?", JoH.tsl() - 86400000L)
-                .where("bitfield_wanted == bitfield_complete")
-                .execute();
+        try {
+            new Delete()
+                    .from(UploaderQueue.class)
+                    .where("timestamp < ?", JoH.tsl() - 86400000L)
+                    .where("bitfield_wanted == bitfield_complete")
+                    .execute();
 
-        // delete everything > 7 days old
-        new Delete()
-                .from(UploaderQueue.class)
-                .where("timestamp < ?", JoH.tsl() - 86400000L * 7L)
-                .execute();
+            // delete everything > 7 days old
+            new Delete()
+                    .from(UploaderQueue.class)
+                    .where("timestamp < ?", JoH.tsl() - 86400000L * 7L)
+                    .execute();
+        } catch (Exception e) {
+            UserError.Log.d(TAG,"Exception cleaning uploader queue: "+e);
+        }
     }
 
 
