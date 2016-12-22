@@ -63,8 +63,8 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
-import com.eveningoutpost.dexdrip.xdrip;
 */
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
@@ -125,6 +125,7 @@ public class G5CollectionService extends Service {
     private Boolean isBondedOrBonding = false;
     private Boolean isBonded = false;
     private int currentBondState = 0;
+    private int waitingBondConfirmation = 0; // 0 = not waiting, 1 = waiting, 2 = received
     public static boolean keep_running = true;
 
     private ScanSettings settings;
@@ -204,13 +205,26 @@ public class G5CollectionService extends Service {
                 final BluetoothDevice parcel_device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // TODO do we need to filter on the last 2 characters of the device name here?
                 currentBondState = parcel_device.getBondState();
-                final Integer bond_state_extra = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE,-1);
-                final Integer previous_bond_state_extra = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE,-1);
+                final int bond_state_extra = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, -1);
+                final int previous_bond_state_extra = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, -1);
 
-                Log.d(TAG, "onReceive UPDATE Name " + parcel_device.getName() + " Value " + parcel_device.getAddress()
-                        + " Bond state " + parcel_device.getBondState() + bondState(parcel_device.getBondState())
-                        + " " + ((bond_state_extra != null) ? "bs: "+bond_state_extra : "")
-                        + ((previous_bond_state_extra != null) ? (" vs " + previous_bond_state_extra) : ""));
+                Log.e(TAG, "onReceive UPDATE Name " + parcel_device.getName() + " Value " + parcel_device.getAddress()
+                        + " Bond state " + parcel_device.getBondState() + bondState(parcel_device.getBondState()) + " "
+                        + "bs: " + bondState(bond_state_extra) + " was " + bondState(previous_bond_state_extra));
+
+                try {
+                    // TODO check getBondState() or bond_state_extra ?
+                    if (parcel_device.getBondState() == BluetoothDevice.BOND_BONDED) {
+                        if (parcel_device.getAddress().equals(device.getAddress())) {
+                            if (waitingBondConfirmation == 1) {
+                                waitingBondConfirmation = 2; // received
+                                Log.e(TAG, "Bond confirmation received!");
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.wtf(TAG, "Got exception trying to process bonded confirmation: ", e);
+                }
             }
         }
     };
@@ -270,6 +284,7 @@ public class G5CollectionService extends Service {
        // new AuthRequestTxMessage(16);
        // fullAuthenticate();
 
+        xdrip.checkAppContext(getApplicationContext());
         final PowerManager.WakeLock wl = JoH.getWakeLock("g5-start-service", 120000);
         try {
             if ((!service_running) && (keep_running)) {
@@ -968,7 +983,7 @@ public class G5CollectionService extends Service {
         }
 
 
-        private void processOnStateChange(final BluetoothGatt gatt, final int status, final int newState) {
+        private synchronized void processOnStateChange(final BluetoothGatt gatt, final int status, final int newState) {
             switch (newState) {
 
 
@@ -1337,8 +1352,19 @@ public class G5CollectionService extends Service {
                         if ((code == 7) && (tryOnDemandBondWithDelay)) {
                             Log.e(TAG,"Trying ondemand bond with delay!");
                             isBondedOrBonding = true;
+                            waitingBondConfirmation = 1; // waiting
                             device.createBond();
-                            waitFor(15000); // are we ok to do this on this thread?
+
+                            for (int counter = 0; counter < 12; counter++) {
+                                if (waitingBondConfirmation != 1) {
+                                    Log.e(TAG, "Received bond confirmation after: " + counter + " seconds. status: " + waitingBondConfirmation);
+                                    waitFor(5000); // extra delay
+                                    break;
+                                } else {
+                                    waitFor(1000);
+                                }
+                            }
+
                             Log.e(TAG,"ondemandbond delay finished");
                         }
 
@@ -1582,7 +1608,11 @@ public class G5CollectionService extends Service {
 
     // TODO this could be cached for performance
     private boolean useG5NewMethod() {
-        return Home.getPreferencesBooleanDefaultFalse("g5_non_raw_method");
+        return Home.getPreferencesBooleanDefaultFalse("g5_non_raw_method") && (Home.getPreferencesBooleanDefaultFalse("engineering_mode"));
+    }
+
+    private boolean engineeringMode() {
+        return Home.getPreferencesBooleanDefaultFalse("engineering_mode");
     }
 
     private boolean g5BluetoothWatchdog() {
@@ -1604,6 +1634,7 @@ public class G5CollectionService extends Service {
                 + (delayOnBond ? "delayOnBond " : "")
                 + (delayOn133Errors ? "delayOn133Errors " : "")
                 + (tryOnDemandBondWithDelay ? "tryOnDemandBondWithDelay " : "")
+                + (engineeringMode() ? "engineeringMode " : "")
                 + (tryPreBondWithDelay ? "tryPreBondWithDelay " : ""));
     }
 

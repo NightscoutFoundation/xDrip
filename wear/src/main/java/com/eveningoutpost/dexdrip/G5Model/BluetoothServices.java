@@ -140,7 +140,7 @@ public class BluetoothServices {
     private static final int GATT_CONN_TERMINATE_PEER_USER = 0x13;   /*  HCI_ERR_PEER_USER 0x13 connection terminate by peer user  */
     private static final int GATT_CONN_TERMINATE_LOCAL_HOST = 0x16; /*     HCI_ERR_CONN_CAUSE_LOCAL_HOST   /* 0x16 connectionterminated by local host  */
     // private static final int GATT_CONN_FAIL_ESTABLISH            HCI_ERR_CONN_FAILED_ESTABLISHMENT/* 0x03E connection fail to establish  */
-    // private static final int GATT_CONN_LMP_TIMEOUT               HCI_ERR_LMP_RESPONSE_TIMEOUT     /* 0x22 connection fail for LMP response tout */
+    private static final int GATT_CONN_LMP_TIMEOUT  = 0x22;       /* HCI_ERR_LMP_RESPONSE_TIMEOUT     /* 0x22 connection fail for LMP response tout */
     // private static final int GATT_CONN_CANCEL                    L2CAP_CONN_CANCEL                /* 0x0100 L2CAP connection cancelled  */
 
     private static final int HCI_ERR_UNDEFINED_0x31 = 0x31;
@@ -174,6 +174,7 @@ public class BluetoothServices {
         statusToName.put(GATT_CONN_TERMINATE_PEER_USER, "Connection terminated by peer");
         statusToName.put(GATT_CONN_TERMINATE_LOCAL_HOST, "Connection terminated by local host");
         statusToName.put(HCI_ERR_UNACCEPT_CONN_INTERVAL, "HCI Unacceptable connection interval??");
+        statusToName.put(GATT_CONN_LMP_TIMEOUT, "Link manager protocol timeout");
     }
 
     public static String getUUIDName(UUID uuid) {
