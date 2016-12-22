@@ -32,6 +32,7 @@ import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.common.primitives.Bytes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -277,7 +278,7 @@ public class GcmActivity extends Activity {
             if (JoH.ratelimit("gcm-btmm-send", 4)) {
                 final byte[] this_btmm = BloodTest.toMultiMessage(BloodTest.last(12));
                 if (JoH.differentBytes("gcm-btmm-last-send", this_btmm)) {
-                    sendMessage("btmm", JoH.compressBytesToBytes(this_btmm));
+                    sendMessage("btmm", JoH.compressBytesforPayload(this_btmm));
                     Home.staticRefreshBGCharts();
                 } else {
                     Log.d(TAG, "btmm message is identical to previously sent");
@@ -630,7 +631,7 @@ public class GcmActivity extends Activity {
                 if (d) Log.d(TAG, "sending data len " + ce_payload.length() + " " + ce_payload);
             } else {
                 if ((bpayload != null) && (bpayload.length > 0)) {
-                    data.putString("payload", CipherUtils.encryptBytesToString(bpayload));
+                    data.putString("payload", CipherUtils.encryptBytesToString(Bytes.concat(bpayload, JoH.bchecksum(bpayload)))); // don't double sum
                 } else if (payload.length() > 0) {
                     data.putString("payload", CipherUtils.encryptString(payload));
                 } else {

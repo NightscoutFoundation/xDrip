@@ -37,6 +37,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
@@ -134,7 +135,13 @@ public class GcmListenerSvc extends FirebaseMessagingService {
 
                         case "btmm":
                             bpayload = CipherUtils.decryptStringToBytes(payload);
-                            Log.d(TAG, "Binary payload received: length: " + bpayload.length + " orig: " + payload.length());
+                            if (JoH.checkChecksum(bpayload)) {
+                                bpayload = Arrays.copyOfRange(bpayload, 0, bpayload.length - 4);
+                                Log.d(TAG, "Binary payload received: length: " + bpayload.length + " orig: " + payload.length());
+                            } else {
+                                Log.e(TAG, "Invalid binary payload received, possible key mismatch");
+                                bpayload = null;
+                            }
                             payload = "binary";
                             break;
 

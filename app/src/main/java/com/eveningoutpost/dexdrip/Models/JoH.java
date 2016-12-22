@@ -51,6 +51,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.utils.BestGZIPOutputStream;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.google.common.primitives.Bytes;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -61,6 +62,8 @@ import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -192,6 +195,10 @@ public class JoH {
             Log.e(TAG, "Exception in compress: " + e.toString());
             return new byte[0];
         }
+    }
+
+    public static byte[] compressBytesforPayload(byte[] bytes) {
+        return compressBytesToBytes(Bytes.concat(bytes, bchecksum(bytes)));
     }
 
     public static byte[] compressBytesToBytes(byte[] bytes) {
@@ -999,5 +1006,27 @@ public class JoH {
                 }
             }
         }.start();
+    }
+
+    public static long checksum(byte[] bytes) {
+        if (bytes == null) return 0;
+        final CRC32 crc = new CRC32();
+        crc.update(bytes);
+        return crc.getValue();
+    }
+
+    public static byte[] bchecksum(byte[] bytes) {
+        final long c = checksum(bytes);
+        final byte[] buf = new byte[4];
+        ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN).putInt((int) c);
+        return buf;
+    }
+
+    public static boolean checkChecksum(byte[] bytes) {
+        if ((bytes == null) || (bytes.length < 4)) return false;
+        final CRC32 crc = new CRC32();
+        crc.update(bytes, 0, bytes.length - 4);
+        final long buffer_crc = (ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getInt(bytes.length - 4));
+        return buffer_crc == crc.getValue();
     }
 }

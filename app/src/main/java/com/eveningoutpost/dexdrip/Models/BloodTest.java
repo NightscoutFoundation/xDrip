@@ -220,8 +220,8 @@ public class BloodTest extends Model {
                 }
                 Home.staticRefreshBGCharts();
             }
-        } catch (IOException e) {
-            UserError.Log.e(TAG, "exception processFromMessage: ", e);
+        } catch (IOException | NullPointerException | IllegalStateException e) {
+            UserError.Log.e(TAG, "exception processFromMessage: " + e);
         }
     }
 
