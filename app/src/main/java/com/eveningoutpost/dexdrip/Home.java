@@ -1749,6 +1749,7 @@ public class Home extends ActivityWithMenu {
             btnRedo.setVisibility(View.INVISIBLE);
         }
         boolean isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
+        boolean isLimter = CollectionServiceStarter.isLimitter(getApplicationContext());
         // port this lot to DexCollectionType to avoid multiple lookups of the same preference
         boolean isDexbridgeWixel = CollectionServiceStarter.isDexBridgeOrWifiandDexBridge();
         boolean isWifiBluetoothWixel = CollectionServiceStarter.isWifiandBTWixel(getApplicationContext());
@@ -1762,7 +1763,7 @@ public class Home extends ActivityWithMenu {
         if (isG5Share) {
             updateCurrentBgInfoCommon(notificationText);
         }
-        if (isBTWixel || isDexbridgeWixel || isWifiBluetoothWixel) {
+        if (isBTWixel || isLimter || isDexbridgeWixel || isWifiBluetoothWixel) {
             updateCurrentBgInfoForBtBasedWixel(notificationText);
         }
         if (isWifiWixel || isWifiBluetoothWixel) {
