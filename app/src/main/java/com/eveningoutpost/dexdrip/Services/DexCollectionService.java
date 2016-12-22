@@ -117,6 +117,7 @@ public class DexCollectionService extends Service {
         }
         Context context = getApplicationContext();
         if (CollectionServiceStarter.isBTWixel(context)
+                || CollectionServiceStarter.isLimitter(context)
                 || CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()
                 || CollectionServiceStarter.isWifiandBTWixel(context)
                 || CollectionServiceStarter.isFollower(context)) {
@@ -170,7 +171,8 @@ public class DexCollectionService extends Service {
     }
 
     public void setRetryTimer() {
-        if (CollectionServiceStarter.isBTWixel(getApplicationContext())
+        if (CollectionServiceStarter.isBTWixel(getApplicationContext()) 
+                || CollectionServiceStarter.isLimitter(getApplicationContext())
                 || CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()
                 || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())) {
             long retry_in;
@@ -196,6 +198,7 @@ public class DexCollectionService extends Service {
 
     public void setFailoverTimer() {
         if (CollectionServiceStarter.isBTWixel(getApplicationContext())
+                || CollectionServiceStarter.isLimitter(getApplicationContext())
                 || CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()
                 || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())
                 || CollectionServiceStarter.isFollower(getApplicationContext())) {

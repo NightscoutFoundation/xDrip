@@ -93,6 +93,7 @@ public class NavDrawerBuilder {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
             if (CollectionServiceStarter.isBTWixel(context) ||
+                    CollectionServiceStarter.isLimitter(context) ||
                     CollectionServiceStarter.isBTShare(context) ||
                     CollectionServiceStarter.isWifiandBTWixel(context) ||
                     CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()) {
