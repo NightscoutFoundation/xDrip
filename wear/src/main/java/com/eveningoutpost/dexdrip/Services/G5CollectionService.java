@@ -158,6 +158,7 @@ public class G5CollectionService extends Service {
     private static final boolean tryOnDemandBondWithDelay = true; // bond when requested
     private static final boolean delayOn133Errors = true; // add some delays with 133 errors
     private static final boolean useKeepAlive = true; // add some delays with 133 errors
+    private static final boolean simpleBondWait = true; // possible UI thread issue but apparently more reliable
 
 
     StringBuilder log = new StringBuilder();
@@ -1355,13 +1356,18 @@ public class G5CollectionService extends Service {
                             waitingBondConfirmation = 1; // waiting
                             device.createBond();
 
-                            for (int counter = 0; counter < 12; counter++) {
-                                if (waitingBondConfirmation != 1) {
-                                    Log.e(TAG, "Received bond confirmation after: " + counter + " seconds. status: " + waitingBondConfirmation);
-                                    waitFor(5000); // extra delay
-                                    break;
-                                } else {
-                                    waitFor(1000);
+                            if (simpleBondWait) {
+                                Log.e(TAG, "Using simple wait for 15 secs");
+                                waitFor(15000); // are we ok to do this on this thread?
+                            } else {
+                                for (int counter = 0; counter < 12; counter++) {
+                                    if (waitingBondConfirmation != 1) {
+                                        Log.e(TAG, "Received bond confirmation after: " + counter + " seconds. status: " + waitingBondConfirmation);
+                                        waitFor(5000); // extra delay
+                                        break;
+                                    } else {
+                                        waitFor(1000);
+                                    }
                                 }
                             }
 

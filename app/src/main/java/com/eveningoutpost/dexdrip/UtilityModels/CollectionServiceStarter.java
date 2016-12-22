@@ -143,6 +143,7 @@ public class CollectionServiceStarter {
 
     public void start(Context context, String collection_method) {
         this.mContext = context;
+        xdrip.checkAppContext(context);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
 
         if (isBTWixel(collection_method) || isDexbridgeWixel(collection_method)) {
