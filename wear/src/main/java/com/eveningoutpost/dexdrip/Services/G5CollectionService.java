@@ -63,8 +63,8 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
-import com.eveningoutpost.dexdrip.xdrip;
 */
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
@@ -284,6 +284,7 @@ public class G5CollectionService extends Service {
        // new AuthRequestTxMessage(16);
        // fullAuthenticate();
 
+        xdrip.checkAppContext(getApplicationContext());
         final PowerManager.WakeLock wl = JoH.getWakeLock("g5-start-service", 120000);
         try {
             if ((!service_running) && (keep_running)) {

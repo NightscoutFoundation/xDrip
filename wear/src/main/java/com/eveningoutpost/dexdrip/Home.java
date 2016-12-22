@@ -30,6 +30,7 @@ public class Home extends BaseWatchFace {
 
         //KS copied from app/Home
         Home.context = getApplicationContext();
+        xdrip.checkAppContext(getApplicationContext());
         set_is_follower(); // not sure if we actually need this and associated logic? (jamorham)
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
