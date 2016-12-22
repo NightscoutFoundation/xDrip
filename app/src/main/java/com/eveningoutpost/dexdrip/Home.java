@@ -92,10 +92,10 @@ import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.gson.Gson;
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.SnackbarManager;
-import com.nispok.snackbar.enums.SnackbarType;
-import com.nispok.snackbar.listeners.ActionClickListener;
+//import com.nispok.snackbar.Snackbar;
+//import com.nispok.snackbar.SnackbarManager;
+//import com.nispok.snackbar.enums.SnackbarType;
+//import com.nispok.snackbar.listeners.ActionClickListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -2656,14 +2656,17 @@ public class Home extends ActivityWithMenu {
                 protected void onPostExecute(String filename) {
                     super.onPostExecute(filename);
                     if (filename != null) {
-                        SnackbarManager.show(
+
+                        snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), "Share database..."), Home.this);
+
+                    /*    SnackbarManager.show(
                                 Snackbar.with(Home.this)
                                         .type(SnackbarType.MULTI_LINE)
                                         .duration(4000)
                                         .text(getString(R.string.exported_to) + filename) // text to display
                                         .actionLabel("Share") // action button label
                                         .actionListener(new SnackbarUriListener(Uri.fromFile(new File(filename)))),
-                                Home.this);
+                                Home.this);*/
                     } else {
                         Toast.makeText(Home.this, R.string.could_not_export_database, Toast.LENGTH_LONG).show();
                     }
@@ -2698,14 +2701,17 @@ public class Home extends ActivityWithMenu {
                 protected void onPostExecute(String filename) {
                     super.onPostExecute(filename);
                     if (filename != null) {
-                        SnackbarManager.show(
+
+                        snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), "Share database..."), Home.this);
+
+                       /* SnackbarManager.show(
                                 Snackbar.with(Home.this)
                                         .type(SnackbarType.MULTI_LINE)
                                         .duration(4000)
                                         .text("Exported to " + filename) // text to display
                                         .actionLabel("Share") // action button label
                                         .actionListener(new SnackbarUriListener(Uri.fromFile(new File(filename)))),
-                                Home.this);
+                                Home.this);*/
                     } else {
                         Toast.makeText(Home.this, "Could not export CSV :(", Toast.LENGTH_LONG).show();
                     }
@@ -2894,7 +2900,20 @@ public class Home extends ActivityWithMenu {
 
     }
 
-    class SnackbarUriListener implements ActionClickListener {
+    private View.OnClickListener makeSnackBarUriLauncher(final Uri uri, final String text) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                shareIntent.setType("application/octet-stream");
+                Home.this.startActivity(Intent.createChooser(shareIntent, text));
+            }
+        };
+    }
+
+   /* class SnackbarUriListener implements ActionClickListener {
         Uri uri;
 
         SnackbarUriListener(Uri uri) {
@@ -2909,7 +2928,7 @@ public class Home extends ActivityWithMenu {
             shareIntent.setType("application/octet-stream");
             startActivity(Intent.createChooser(shareIntent, "Share database..."));
         }
-    }
+    }*/
 
 
     class MyActionItemTarget implements Target {

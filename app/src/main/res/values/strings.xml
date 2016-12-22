@@ -121,6 +121,7 @@
     <string name="showcase_undo">The Undo Button can step backwards through Treatment Simulations, Calibrations and Notes\n\nAfter 30 minutes it will hide again</string>
     <string name="add_note">Add Note</string>
     <string name="blood_test">Blood Test</string>
+    <string name="share">Share</string>
     <string name="title_activity_profile_editor">Treatment Profile Editor</string>
     <string name="first_use_menu_to_scan">First use the menu to scan for your BT device or change the Data Source in Settings!</string>
     <string name="first_configure_ip_address">First configure your wifi wixel reader ip addresses or parakeet url</string>
