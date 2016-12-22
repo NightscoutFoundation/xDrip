@@ -14,25 +14,24 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Base64;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -229,8 +228,11 @@ public class GcmActivity extends Activity {
     }
 
     private static String sendMessage(final String action, final String payload) {
-        if (cease_all_activity) return null;
         return sendMessage(myIdentity(), action, payload);
+    }
+
+    private static String sendMessage(final String action, final byte[] bpayload) {
+        return sendMessage(myIdentity(), action, bpayload);
     }
 
     private static String sendMessage(final String identity, final String action, final String payload) {
@@ -239,7 +241,19 @@ public class GcmActivity extends Activity {
         new Thread() {
             @Override
             public void run() {
-                sendMessageNow(identity, action, payload);
+                sendMessageNow(identity, action, payload, null);
+            }
+        }.start();
+        return "sent async";
+    }
+
+    private static String sendMessage(final String identity, final String action, final byte[] bpayload) {
+        if (cease_all_activity) return null;
+        if (identity == null) return null;
+        new Thread() {
+            @Override
+            public void run() {
+                sendMessageNow(identity, action, "", bpayload);
             }
         }.start();
         return "sent async";
@@ -253,6 +267,22 @@ public class GcmActivity extends Activity {
             PersistentStore.appendString("gcm-bgs-batch-queue", bgReading.toJSON(false), "^");
             PersistentStore.setLong("gcm-bgs-batch-time", JoH.tsl());
             processBgsBatch(false);
+        }
+    }
+
+    // called only from interactive or evaluated new data
+    public synchronized static void syncBloodTests() {
+        Log.d(TAG, "syncBloodTests called");
+        if (Home.get_master_or_follower()) {
+            if (JoH.ratelimit("gcm-btmm-send", 4)) {
+                final byte[] this_btmm = BloodTest.toMultiMessage(BloodTest.last(12));
+                if (JoH.differentBytes("gcm-btmm-last-send", this_btmm)) {
+                    sendMessage("btmm", JoH.compressBytesToBytes(this_btmm));
+                    Home.staticRefreshBGCharts();
+                } else {
+                    Log.d(TAG, "btmm message is identical to previously sent");
+                }
+            }
         }
     }
 
@@ -573,7 +603,7 @@ public class GcmActivity extends Activity {
         sendMessage(myIdentity(), "clc", "");
     }
 
-    private static synchronized String sendMessageNow(String identity, String action, String payload) {
+    private static synchronized String sendMessageNow(String identity, String action, String payload, byte[] bpayload) {
 
         Log.i(TAG, "Sendmessage called: " + identity + " " + action + " " + payload);
         String msg;
@@ -593,13 +623,15 @@ public class GcmActivity extends Activity {
             data.putString("action", action);
             data.putString("identity", identity);
 
-            if(action.equals("sensorupdate") ) {
+            if (action.equals("sensorupdate")) {
                 final String ce_payload = CipherUtils.compressEncryptString(payload);
                 Log.i(TAG, "sensor length CipherUtils.encryptBytes ce_payload length: " + ce_payload.length());
                 data.putString("payload", ce_payload);
-                if (d) Log.d(TAG, "sending data len " + ce_payload.length()+ " " + ce_payload);
+                if (d) Log.d(TAG, "sending data len " + ce_payload.length() + " " + ce_payload);
             } else {
-                if (payload.length() > 0) {
+                if ((bpayload != null) && (bpayload.length > 0)) {
+                    data.putString("payload", CipherUtils.encryptBytesToString(bpayload));
+                } else if (payload.length() > 0) {
                     data.putString("payload", CipherUtils.encryptString(payload));
                 } else {
                     data.putString("payload", "");

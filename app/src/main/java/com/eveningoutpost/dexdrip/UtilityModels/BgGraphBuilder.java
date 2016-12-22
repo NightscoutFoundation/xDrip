@@ -27,6 +27,7 @@ import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
@@ -72,6 +73,8 @@ import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 
 class PointValueExtended extends PointValue {
 
+    public static final int BloodTest = 1;
+
     public PointValueExtended(float x, float y, String note_param) {
         super(x, y);
         note = note_param;
@@ -88,6 +91,8 @@ class PointValueExtended extends PointValue {
 
     float calculatedFilteredValue;
     String note;
+    int type = 0;
+    String uuid;
 }
 
 public class BgGraphBuilder {
@@ -921,7 +926,9 @@ public class BgGraphBuilder {
             // enumerate blood tests
             try {
                 for (BloodTest bloodtest : bloodtests) {
-                    final PointValue this_point = new PointValue((float) (bloodtest.timestamp / FUZZER), (float) unitized(bloodtest.mgdl));
+                    final PointValueExtended this_point = new PointValueExtended((float) (bloodtest.timestamp / FUZZER), (float) unitized(bloodtest.mgdl));
+                    this_point.type = PointValueExtended.BloodTest;
+                    this_point.uuid = bloodtest.uuid;
                     // exclude any which have been used for calibration
                     boolean matches = false;
                     for (PointValue calibration_point : calibrationValues) {
@@ -1854,17 +1861,22 @@ public class BgGraphBuilder {
 
             String filtered = "";
             String alternate = "";
+            String uuid = "";
+            int type = 0;
             try {
                 PointValueExtended pve = (PointValueExtended) pointValue;
-                if(pve.calculatedFilteredValue != -1) {
-                    filtered = " (" + Math.round(pve.calculatedFilteredValue*10) / 10d +")";
+                type = pve.type;
+                if (pve.calculatedFilteredValue != -1) {
+                    filtered = " (" + Math.round(pve.calculatedFilteredValue * 10) / 10d + ")";
                 }
-                if (pve.note!=null)
-                {
-                    alternate=pve.note;
+                if (pve.note != null) {
+                    alternate = pve.note;
+                }
+                if (pve.uuid != null) {
+                    uuid = pve.uuid;
                 }
             } catch (ClassCastException e) {
-               // Log.e(TAG, "Error casting a point from pointValue to PointValueExtended", e);
+                // Log.e(TAG, "Error casting a point from pointValue to PointValueExtended", e);
             }
 
             final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(context);
@@ -1873,20 +1885,33 @@ public class BgGraphBuilder {
             final double ypos = pointValue.getY();
 
             final String message;
-            if (alternate.length()>0) {
-                message = timeFormat.format(time) + "    "+alternate;
+            if (alternate.length() > 0) {
+                message = timeFormat.format(time) + "    " + alternate;
             } else {
-                message = timeFormat.format(time) + "      " + (Math.round(pointValue.getY() * 10) / 10d) + " "+unit() +  filtered;
+                message = timeFormat.format(time) + "      " + (Math.round(pointValue.getY() * 10) / 10d) + " " + unit() + filtered;
             }
 
-            final View.OnClickListener mOnClickListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Home.startHomeWithExtra(xdrip.getAppContext(), Home.CREATE_TREATMENT_NOTE, time.toString(), Double.toString(ypos));
-                }
-            };
-            Home.snackBar(message, mOnClickListener, callerActivity);
-
+            switch (type) {
+                case PointValueExtended.BloodTest:
+                    final String fuuid = uuid;
+                    final View.OnClickListener mBtOnClickListener = new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Home.startHomeWithExtra(xdrip.getAppContext(), Home.BLOOD_TEST_ACTION, time.toString(), fuuid);
+                        }
+                    };
+                    Home.snackBar(R.string.blood_test, message, mBtOnClickListener, callerActivity);
+                    break;
+                default:
+                    final View.OnClickListener mOnClickListener = new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Home.startHomeWithExtra(xdrip.getAppContext(), Home.CREATE_TREATMENT_NOTE, time.toString(), Double.toString(ypos));
+                        }
+                    };
+                    Home.snackBar(R.string.add_note, message, mOnClickListener, callerActivity);
+                    break;
+            }
         }
 
         @Override
