@@ -19,6 +19,7 @@ import android.support.v7.app.NotificationCompat;
 import android.util.Base64;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -121,32 +122,45 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                 JoH.releaseWakeLock(wl);
                 return;
             }
-
+            byte[] bpayload = null;
             if (payload == null) payload = "";
+            if (action == null) action = "null";
 
             if (payload.length() > 16) {
                 if (GoogleDriveInterface.keyInitialized()) {
-                    
-                    if(action.equals("sensorupdate")) {
-                        try {
-                            Log.i(TAG, "payload for sensorupdate " + payload);
-                            byte[] inbytes = Base64.decode(payload, Base64.NO_WRAP);
-                            byte[] inbytes1 = JoH.decompressBytesToBytes(CipherUtils.decryptBytes(inbytes));
-                            payload = new String(inbytes1, "UTF-8");
-                            Log.d(TAG, "inbytes size = " + inbytes.length + " inbytes1 size " + inbytes1.length + "payload len " +payload.length());
-                        } catch (UnsupportedEncodingException e) {
-                            Log.e(TAG, "Got unsupported encoding on UTF8 " + e.toString());
-                            payload = "";
-                        }
-                    } else {
-                        String decrypted_payload = CipherUtils.decryptString(payload);
-                        if (decrypted_payload.length() > 0) {
-                            payload = decrypted_payload;
-                        } else {
-                            Log.e(TAG, "Couldn't decrypt payload!");
-                            payload = "";
-                            Home.toaststaticnext("Having problems decrypting incoming data - check keys");
-                        }
+
+                    // handle binary message types
+                    switch (action) {
+
+                        case "btmm":
+                            bpayload = CipherUtils.decryptStringToBytes(payload);
+                            Log.d(TAG, "Binary payload received: length: " + bpayload.length + " orig: " + payload.length());
+                            payload = "binary";
+                            break;
+
+                        default:
+
+                            if (action.equals("sensorupdate")) {
+                                try {
+                                    Log.i(TAG, "payload for sensorupdate " + payload);
+                                    byte[] inbytes = Base64.decode(payload, Base64.NO_WRAP);
+                                    byte[] inbytes1 = JoH.decompressBytesToBytes(CipherUtils.decryptBytes(inbytes));
+                                    payload = new String(inbytes1, "UTF-8");
+                                    Log.d(TAG, "inbytes size = " + inbytes.length + " inbytes1 size " + inbytes1.length + "payload len " + payload.length());
+                                } catch (UnsupportedEncodingException e) {
+                                    Log.e(TAG, "Got unsupported encoding on UTF8 " + e.toString());
+                                    payload = "";
+                                }
+                            } else {
+                                String decrypted_payload = CipherUtils.decryptString(payload);
+                                if (decrypted_payload.length() > 0) {
+                                    payload = decrypted_payload;
+                                } else {
+                                    Log.e(TAG, "Couldn't decrypt payload!");
+                                    payload = "";
+                                    Home.toaststaticnext("Having problems decrypting incoming data - check keys");
+                                }
+                            }
                     }
                 } else {
                     Log.e(TAG, "Couldn't decrypt as key not initialized");
@@ -157,9 +171,9 @@ public class GcmListenerSvc extends FirebaseMessagingService {
             Log.i(TAG, "Got action: " + action + " with payload: " + payload);
             lastMessageReceived = JoH.ts();
 
-            if (action == null) action = "null";
+
             // new treatment
-            if (action.equals("nt") && (payload != null)) {
+            if (action.equals("nt")) {
                 Log.i(TAG, "Attempting GCM push to Treatment");
                 GcmActivity.pushTreatmentFromPayloadString(payload);
             } else if (action.equals("dat")) {
@@ -357,8 +371,15 @@ public class GcmListenerSvc extends FirebaseMessagingService {
             } else if (action.equals("sensor_calibrations_update")) {
                 if (Home.get_master()) {
                     Log.i(TAG, "Received request for sensor calibration update");
-                    GcmActivity.syncSensor(Sensor.currentSensor() ,false);
+                    GcmActivity.syncSensor(Sensor.currentSensor(), false);
                 }
+            } else if (action.equals("btmm")) {
+                if (Home.get_master_or_follower()) {
+                    BloodTest.processFromMultiMessage(bpayload);
+                } else {
+                    Log.i(TAG, "Receive multi blood test but we are neither master or follower");
+                }
+
             } else {
                 Log.e(TAG, "Received message action we don't know about: " + action);
             }

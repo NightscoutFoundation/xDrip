@@ -130,6 +130,7 @@ public class Home extends ActivityWithMenu {
     public final static String START_SPEECH_RECOGNITION = "START_APP_SPEECH_RECOGNITION";
     public final static String START_TEXT_RECOGNITION = "START_APP_TEXT_RECOGNITION";
     public final static String CREATE_TREATMENT_NOTE = "CREATE_TREATMENT_NOTE";
+    public final static String BLOOD_TEST_ACTION = "BLOOD_TEST_ACTION";
     public final static String HOME_FULL_WAKEUP = "HOME_FULL_WAKEUP";
     public final static String GCM_RESOLUTION_ACTIVITY = "GCM_RESOLUTION_ACTIVITY";
     public final static String SNOOZE_CONFIRM_DIALOG = "SNOOZE_CONFIRM_DIALOG";
@@ -460,7 +461,7 @@ public class Home extends ActivityWithMenu {
         activityVisible = true;
 
         // handle incoming extras
-        Bundle bundle = getIntent().getExtras();
+        final Bundle bundle = getIntent().getExtras();
         processIncomingBundle(bundle);
 
         checkBadSettings();
@@ -709,6 +710,62 @@ public class Home extends ActivityWithMenu {
                 JoH.showNotification(bundle.getString(SHOW_NOTIFICATION), bundle.getString("notification_body"), pendingIntent, notification_id, true, true, true);
             } else if (bundle.getString(Home.BLUETOOTH_METER_CALIBRATION) != null) {
                 processFingerStickCalibration(JoH.tolerantParseDouble(bundle.getString(Home.BLUETOOTH_METER_CALIBRATION)),JoH.tolerantParseDouble(bundle.getString(Home.BLUETOOTH_METER_CALIBRATION+"2")));
+            } else if (bundle.getString(Home.BLOOD_TEST_ACTION) != null) {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Blood Test Action");
+                builder.setMessage("What would you like to do?");
+                final String bt_uuid = bundle.getString(Home.BLOOD_TEST_ACTION + "2");
+                if (bt_uuid != null) {
+                    final BloodTest bt = BloodTest.byUUID(bt_uuid);
+                    if (bt != null) {
+                         builder.setNeutralButton("Nothing", new DialogInterface.OnClickListener() {
+                             public void onClick(DialogInterface dialog, int which) {
+                                 dialog.dismiss();
+                             }
+                         });
+
+                        builder.setPositiveButton("Calibrate", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                final long time_since = JoH.msSince(bt.timestamp);
+                                Home.startHomeWithExtra(xdrip.getAppContext(), Home.BLUETOOTH_METER_CALIBRATION, BgGraphBuilder.unitized_string_static(bt.mgdl), Long.toString(time_since));
+                                bt.addState(BloodTest.STATE_CALIBRATION);
+                                GcmActivity.syncBloodTests();
+
+                            }
+                        });
+
+                        builder.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+                                builder.setTitle("Confirm Delete");
+                                builder.setMessage("Are you sure you want to delete this Blood Test result?");
+                                builder.setPositiveButton("Yes, Delete", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        bt.removeState(BloodTest.STATE_VALID);
+                                        GcmActivity.syncBloodTests();
+                                        staticRefreshBGCharts();
+                                        JoH.static_toast_short("Deleted!");
+                                    }
+                                });
+                                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                final AlertDialog alert = builder.create();
+                                alert.show();
+                            }
+                        });
+                        final AlertDialog alert = builder.create();
+                        alert.show();
+                    } else {
+                        JoH.static_toast_long("Could not find blood test data!! " + bt_uuid);
+                    }
+                }
             }
         }
     }
@@ -996,9 +1053,7 @@ public class Home extends ActivityWithMenu {
             BloodTest.cleanup(-100000);
         } else if (allWords.contentEquals("delete all persistent store")) {
             SdcardImportExport.deletePersistentStore();
-        }
-
-        if (allWords.contentEquals("clear battery warning")) {
+        } else if (allWords.contentEquals("clear battery warning")) {
             try {
                 final Sensor sensor = Sensor.currentSensor();
                 if (sensor != null) {
@@ -1621,6 +1676,10 @@ public class Home extends ActivityWithMenu {
     public static boolean get_master() {
         // TODO optimize this
         return (!get_follower()) && (Home.getPreferencesBooleanDefaultFalse("plus_follow_master"));
+    }
+
+    public static boolean get_master_or_follower() {
+        return get_follower() || get_master();
     }
 
     public static boolean get_holo() {
@@ -2506,7 +2565,7 @@ public class Home extends ActivityWithMenu {
                             Home.startHomeWithExtra(xdrip.getAppContext(), Home.CREATE_TREATMENT_NOTE, Long.toString(timestamp), Double.toString(position));
                         }
                     };
-                    Home.snackBar(getString(R.string.added)+":    " + treatment_text, mOnClickListener, mActivity);
+                    Home.snackBar(R.string.add_note, getString(R.string.added) + ":    " + treatment_text, mOnClickListener, mActivity);
                 }
 
                 if (getPreferencesBooleanDefaultFalse("default_to_voice_notes")) showcasemenu(SHOWCASE_NOTE_LONG);
@@ -2785,13 +2844,13 @@ public class Home extends ActivityWithMenu {
         }
     }
 
-    public static void snackBar(String message, View.OnClickListener mOnClickListener, Activity activity) {
+    public static void snackBar(int buttonString, String message, View.OnClickListener mOnClickListener, Activity activity) {
 
         android.support.design.widget.Snackbar.make(
 
                 activity.findViewById(android.R.id.content),
                 message, android.support.design.widget.Snackbar.LENGTH_LONG)
-                .setAction(R.string.add_note, mOnClickListener)
+                .setAction(buttonString, mOnClickListener)
                 //.setActionTextColor(Color.RED)
                 .show();
     }

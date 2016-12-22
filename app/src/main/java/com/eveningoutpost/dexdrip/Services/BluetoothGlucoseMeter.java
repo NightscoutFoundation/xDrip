@@ -27,6 +27,7 @@ import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.GlucoseMeter.CurrentTimeRx;
 import com.eveningoutpost.dexdrip.GlucoseMeter.GlucoseReadingRx;
 import com.eveningoutpost.dexdrip.Home;
@@ -573,6 +574,8 @@ public class BluetoothGlucoseMeter extends Service {
     // decide what to do with newest data
     private synchronized void evaluateLastRecords() {
         if (lastBloodTest != null) {
+            GcmActivity.syncBloodTests();
+
             final GlucoseReadingRx lastGlucoseRecord = lastBloodTest.glucoseReadingRx;
             if ((lastGlucoseRecord != null) && (lastGlucoseRecord.device != null) && (ct != null)) {
                 final String sequence_id = "last-btm-sequence-" + lastGlucoseRecord.device;
