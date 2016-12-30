@@ -299,8 +299,8 @@ public class BgSendQueue extends Model {
         dataMap.putLong("sgvLevel", sgvLevel(bg.calculated_value, sPrefs, bgGraphBuilder));
         dataMap.putInt("batteryLevel", (battery>=30)?1:0);
         dataMap.putDouble("sgvDouble", bg.calculated_value);
-        dataMap.putDouble("high", inMgdl(highMark, sPrefs));
-        dataMap.putDouble("low", inMgdl(lowMark, sPrefs));
+        dataMap.putDouble("high", highMark);//inMgdl(highMark, sPrefs));//KS Fix for mmol on graph Y-axis in wear standalone mode
+        dataMap.putDouble("low", lowMark);//inMgdl(lowMark, sPrefs));
         //TODO: Add raw again
         //dataMap.putString("rawString", threeRaw((prefs.getString("units", "mgdl").equals("mgdl"))));
         return dataMap;
