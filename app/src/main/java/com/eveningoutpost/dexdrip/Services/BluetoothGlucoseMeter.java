@@ -558,6 +558,10 @@ public class BluetoothGlucoseMeter extends Service {
                 }
             }
 
+        } else if (RECORDS_CHARACTERISTIC.equals(characteristic.getUuid())) {
+            UserError.Log.d(TAG, "Change notification for RECORDS: " + JoH.bytesToHex(characteristic.getValue()));
+        } else if (CONTEXT_CHARACTERISTIC.equals(characteristic.getUuid())) {
+            UserError.Log.d(TAG, "Change notification for CONTEXT: " + JoH.bytesToHex(characteristic.getValue()));
         } else {
             UserError.Log.e(TAG, "Unknown characteristic change: " + characteristic.getUuid().toString() + " " + JoH.bytesToHex(characteristic.getValue()));
         }
