@@ -204,9 +204,9 @@ public class BestGlucose {
             estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
             // TODO handle ratio when period is not dexcom period?
             double estimated_delta_by_minute = estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000);
-            dg.unitized_delta_no_units = BgGraphBuilder.unitizedDeltaStringRaw(false, true, estimated_delta_by_minute, doMgdl);
+            dg.unitized_delta_no_units = BgGraphBuilder.unitizedDeltaStringRaw(false, true, estimated_delta, doMgdl);
             // TODO optimize adding units
-            dg.unitized_delta = BgGraphBuilder.unitizedDeltaStringRaw(true, true, estimated_delta_by_minute, doMgdl);
+            dg.unitized_delta = BgGraphBuilder.unitizedDeltaStringRaw(true, true, estimated_delta, doMgdl);
             slope_arrow = BgReading.slopeToArrowSymbol(estimated_delta_by_minute); // delta by minute
             slope_name = BgReading.slopeName(estimated_delta_by_minute);
             extrastring = "\u26A0"; // warning symbol !
