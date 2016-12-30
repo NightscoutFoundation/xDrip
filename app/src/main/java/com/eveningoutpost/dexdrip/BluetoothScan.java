@@ -326,43 +326,44 @@ public class BluetoothScan extends ListActivityWithMenu {
                 JoH.static_toast_long(msg);
                 using_transmiter = true;
             }
+
+            prefs.edit().putBoolean("use_transmiter_pl_bluetooth", using_transmiter).apply();
+
+            if (device.getName().toLowerCase().contains("dexcom")) {
+                if (!CollectionServiceStarter.isBTShare(getApplicationContext())) {
+                    prefs.edit().putString("dex_collection_method", "DexcomShare").apply();
+                    prefs.edit().putBoolean("calibration_notifications", false).apply();
+                }
+                if (prefs.getString("share_key", "SM00000000").compareTo("SM00000000") == 0 || prefs.getString("share_key", "SM00000000").length() < 10) {
+                    requestSerialNumber(prefs);
+                } else returnToHome();
+
+            } else if (device.getName().toLowerCase().contains("bridge")) {
+                if (!CollectionServiceStarter.isDexBridgeOrWifiandDexBridge())
+                    prefs.edit().putString("dex_collection_method", "DexbridgeWixel").apply();
+                if (prefs.getString("dex_txid", "00000").compareTo("00000") == 0 || prefs.getString("dex_txid", "00000").length() < 5) {
+                    requestTransmitterId(prefs);
+                } else returnToHome();
+
+            } else if (device.getName().toLowerCase().contains("drip")) {
+                if (!
+                        (CollectionServiceStarter.isBTWixel(getApplicationContext())
+                                || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())
+                        ) || CollectionServiceStarter.isLimitter()) {
+                    prefs.edit().putString("dex_collection_method", "BluetoothWixel").apply();
+                }
+                returnToHome();
+            } else if (device.getName().toLowerCase().contains("limitter")) {
+                if (!CollectionServiceStarter.isLimitter()) {
+                    prefs.edit().putString("dex_collection_method", "LimiTTer").apply();
+                }
+                returnToHome();
+            } else {
+                returnToHome();
+            }
+
         } catch (UnsupportedEncodingException | NullPointerException e) {
-            //
-        }
-
-        prefs.edit().putBoolean("use_transmiter_pl_bluetooth",using_transmiter).apply();
-
-        if (device.getName().toLowerCase().contains("dexcom")) {
-            if (!CollectionServiceStarter.isBTShare(getApplicationContext())) {
-                prefs.edit().putString("dex_collection_method", "DexcomShare").apply();
-                prefs.edit().putBoolean("calibration_notifications", false).apply();
-            }
-            if (prefs.getString("share_key", "SM00000000").compareTo("SM00000000") == 0 || prefs.getString("share_key", "SM00000000").length() < 10) {
-                requestSerialNumber(prefs);
-            } else returnToHome();
-
-        } else if (device.getName().toLowerCase().contains("bridge")) {
-            if (!CollectionServiceStarter.isDexBridgeOrWifiandDexBridge())
-                prefs.edit().putString("dex_collection_method", "DexbridgeWixel").apply();
-            if (prefs.getString("dex_txid", "00000").compareTo("00000") == 0 || prefs.getString("dex_txid", "00000").length() < 5) {
-                requestTransmitterId(prefs);
-            } else returnToHome();
-
-        } else if (device.getName().toLowerCase().contains("drip")) {
-            if (!
-                    (CollectionServiceStarter.isBTWixel(getApplicationContext())
-                            || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())
-                    ) || CollectionServiceStarter.isLimitter()) {
-                prefs.edit().putString("dex_collection_method", "BluetoothWixel").apply();
-            }
-            returnToHome();
-        } else if (device.getName().toLowerCase().contains("limitter")) {
-            if (!CollectionServiceStarter.isLimitter()) {
-                prefs.edit().putString("dex_collection_method", "LimiTTer").apply();
-            }
-            returnToHome();
-        } else {
-            returnToHome();
+            Log.d(TAG, "Got exception in listitemclick: " + e);
         }
     }
 
@@ -381,13 +382,13 @@ public class BluetoothScan extends ListActivityWithMenu {
         private ArrayList<BluetoothDevice> mLeDevices;
         private LayoutInflater mInflator;
 
-        public LeDeviceListAdapter() {
+        LeDeviceListAdapter() {
             super();
             mLeDevices = new ArrayList<>();
             mInflator = BluetoothScan.this.getLayoutInflater();
         }
 
-        public void addDevice(BluetoothDevice device) {
+        void addDevice(BluetoothDevice device) {
             if(!mLeDevices.contains(device)) {
                 mLeDevices.add(device);
                 notifyDataSetChanged();

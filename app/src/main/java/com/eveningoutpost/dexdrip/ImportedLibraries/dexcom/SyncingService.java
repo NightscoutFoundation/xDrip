@@ -234,10 +234,15 @@ public class SyncingService extends IntentService {
     private boolean acquireSerialDevice() {
         UsbDevice found_device = findDexcom();
 
-        if(mUsbManager == null) {
+        if (mUsbManager == null) {
             Log.w("CALIBRATION-CHECK-IN: ", "USB manager is null");
+            return false;
         }
 
+        if (dexcom == null) {
+            Log.e(TAG, "dex device == null");
+            return false;
+        }
 
         if( mUsbManager.hasPermission(dexcom)) {                                           // the system is allowing us to poke around this device
 
