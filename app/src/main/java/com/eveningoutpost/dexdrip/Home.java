@@ -526,6 +526,7 @@ public class Home extends ActivityWithMenu {
             builder.setPositiveButton("YES, Calibrate", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     calintent.putExtra("note_only", "false");
+                    calintent.putExtra("from_interactive", "true");
                     startIntentThreadWithDelayedRefresh(calintent);
                     dialog.dismiss();
                 }
@@ -572,6 +573,7 @@ public class Home extends ActivityWithMenu {
                         builder.setPositiveButton("YES, Calibrate", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 calintent.putExtra("note_only","false");
+                                calintent.putExtra("from_interactive", "true");
                                 startIntentThreadWithDelayedRefresh(calintent);
                                 dialog.dismiss();
                             }
@@ -580,7 +582,7 @@ public class Home extends ActivityWithMenu {
                         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                calintent.putExtra("note_only","true");
+                                calintent.putExtra("note_only", "true");
                                 startIntentThreadWithDelayedRefresh(calintent);
                                 dialog.dismiss();
                             }
@@ -673,6 +675,8 @@ public class Home extends ActivityWithMenu {
                     showNoteTextInputDialog(null, Long.parseLong(bundle.getString(Home.CREATE_TREATMENT_NOTE)), JoH.tolerantParseDouble(bundle.getString(Home.CREATE_TREATMENT_NOTE + "2")));
                 } catch (NullPointerException e) {
                     Log.d(TAG, "Got null point exception during CREATE_TREATMENT_NOTE Intent");
+                } catch (NumberFormatException e) {
+                    JoH.static_toast_long("Number error: " + e);
                 }
             } else if (bundle.getString(Home.HOME_FULL_WAKEUP) != null) {
                 if (!JoH.isScreenOn()) {
@@ -709,7 +713,11 @@ public class Home extends ActivityWithMenu {
                 final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
                 JoH.showNotification(bundle.getString(SHOW_NOTIFICATION), bundle.getString("notification_body"), pendingIntent, notification_id, true, true, true);
             } else if (bundle.getString(Home.BLUETOOTH_METER_CALIBRATION) != null) {
-                processFingerStickCalibration(JoH.tolerantParseDouble(bundle.getString(Home.BLUETOOTH_METER_CALIBRATION)),JoH.tolerantParseDouble(bundle.getString(Home.BLUETOOTH_METER_CALIBRATION+"2")));
+                try {
+                    processFingerStickCalibration(JoH.tolerantParseDouble(bundle.getString(Home.BLUETOOTH_METER_CALIBRATION)), JoH.tolerantParseDouble(bundle.getString(Home.BLUETOOTH_METER_CALIBRATION + "2")));
+                } catch (NumberFormatException e) {
+                    JoH.static_toast_long("Number error: " + e);
+                }
             } else if (bundle.getString(Home.BLOOD_TEST_ACTION) != null) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Blood Test Action");

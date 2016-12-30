@@ -133,13 +133,13 @@ public class GcmActivity extends Activity {
         return newCalibrationArray[0];
     }
     
-    public static String newCalibrationToJson(double bgValue, String uuid) {
+    public static String newCalibrationToJson(double bgValue, String uuid, long offset) {
         NewCalibration newCalibrationArray[] = new NewCalibration[1];
         NewCalibration newCalibration = new NewCalibration();
         newCalibration.bgValue = bgValue;
         newCalibration.uuid = uuid;
         newCalibration.timestamp = JoH.tsl();
-        newCalibration.offset = 0;
+        newCalibration.offset = offset;
         newCalibrationArray[0] = newCalibration;
         
         Gson gson = new GsonBuilder()
@@ -581,8 +581,8 @@ public class GcmActivity extends Activity {
         sendMessage(myIdentity(), "cal", tosend);
     }
     
-    public static void pushCalibration2(double bgValue, String uuid) {
-        Log.i(TAG, "pushCalibration2 called");
+    public static void pushCalibration2(double bgValue, String uuid, long offset) {
+        Log.i(TAG, "pushCalibration2 called: " + JoH.qs(bgValue, 1) + " " + uuid + " " + offset);
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         final String unit = prefs.getString("units", "mgdl");
@@ -596,7 +596,7 @@ public class GcmActivity extends Activity {
             JoH.static_toast_long("Calibration out of range: " + bgValue + " mg/dl");
             return ;
         }
-        String json = newCalibrationToJson(bgValue, uuid);
+        String json = newCalibrationToJson(bgValue, uuid, offset);
         GcmActivity.sendMessage(myIdentity(), "cal2", json);
     }
 

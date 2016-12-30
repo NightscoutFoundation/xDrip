@@ -49,6 +49,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), getString(R.string.add_calibration), this);
         automatedCalibration();
     }
+
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         mNavigationDrawerFragment.swapContext(position);
@@ -57,7 +58,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
     // jamorham - receive automated calibration via broadcast intent / tasker receiver
     public synchronized void automatedCalibration() {
 
-        final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-autocalib",60000);
+        final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-autocalib", 60000);
 
 
         Bundle extras = getIntent().getExtras();
@@ -65,11 +66,11 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
             final String string_value = extras.getString("bg_string");
             final String bg_age = extras.getString("bg_age");
             final String from_external = extras.getString("from_external", "false");
+            final String from_interactive = extras.getString("from_interactive", "false");
             final String note_only = extras.getString("note_only", "false");
             final String allow_undo = extras.getString("allow_undo", "false");
 
-            if ((Sensor.isActive()
-                    || PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("dex_collection_method", "").equals("Follower"))) {
+            if ((Sensor.isActive() || Home.get_follower())) {
 
                 if (!TextUtils.isEmpty(string_value)) {
                     if (!TextUtils.isEmpty(bg_age)) {
@@ -78,7 +79,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                             @Override
                             public void run() {
 
-                                final PowerManager.WakeLock wlt = JoH.getWakeLock("xdrip-autocalibt",60000);
+                                final PowerManager.WakeLock wlt = JoH.getWakeLock("xdrip-autocalibt", 60000);
 
                                 long bgAgeNumber = Long.parseLong(bg_age);
                                 long localEstimatedInterstitialLagSeconds = 0;
@@ -93,15 +94,26 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
 
                                 if (calValue > 0) {
                                     if (calValue != lastExternalCalibrationValue) {
-                                        lastExternalCalibrationValue = calValue;
-                                        Calibration calibration = Calibration.create(calValue, bgAgeNumber, getApplicationContext(), (note_only.equals("true")), localEstimatedInterstitialLagSeconds);
-                                        if ((calibration != null) && allow_undo.equals("true")) {
-                                            UndoRedo.addUndoCalibration(calibration.uuid);
-                                        }
-                                        final boolean wear_integration = Home.getPreferencesBoolean("wear_sync", false);//KS
-                                        if (wear_integration) {
-                                            android.util.Log.d("AddCalibration", "start WatchUpdaterService with ACTION_SYNC_CALIBRATION");
-                                            startService(new Intent(getApplicationContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_CALIBRATION));
+
+                                        if (!Home.get_follower()) {
+                                            lastExternalCalibrationValue = calValue;
+                                            Calibration calibration = Calibration.create(calValue, bgAgeNumber, getApplicationContext(), (note_only.equals("true")), localEstimatedInterstitialLagSeconds);
+                                            if ((calibration != null) && allow_undo.equals("true")) {
+                                                UndoRedo.addUndoCalibration(calibration.uuid);
+                                            }
+                                            final boolean wear_integration = Home.getPreferencesBoolean("wear_sync", false);//KS
+                                            if (wear_integration) {
+                                                android.util.Log.d("AddCalibration", "start WatchUpdaterService with ACTION_SYNC_CALIBRATION");
+                                                startService(new Intent(getApplicationContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_CALIBRATION));
+                                            }
+                                        } else {
+                                            // follower sends the calibration data onwards only if sourced from interactive request
+                                            if (from_interactive.equals("true")) {
+                                                Log.d(TAG,"Interactive calibration and we are follower so sending to master");
+                                                sendFollowerCalibration(calValue, bgAgeNumber);
+                                            } else {
+                                                Log.d(TAG,"Not an interactive calibration so not sending to master");
+                                            }
                                         }
 
                                     } else {
@@ -142,16 +154,15 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View v) {
 
-                if ((Sensor.isActive()
-                        || PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("dex_collection_method", "").equals("Follower"))) {
-                    EditText value = (EditText) findViewById(R.id.bg_value);
+                if ((Sensor.isActive() || Home.get_follower())) {
+                    final EditText value = (EditText) findViewById(R.id.bg_value);
                     final String string_value = value.getText().toString();
                     if (!TextUtils.isEmpty(string_value)) {
 
                         try {
                             final double calValue = JoH.tolerantParseDouble(string_value);
 
-                            if(!Home.get_follower()) {
+                            if (!Home.get_follower()) {
                                 Calibration calibration = Calibration.create(calValue, getApplicationContext());
                                 if (calibration != null) {
                                     UndoRedo.addUndoCalibration(calibration.uuid);
@@ -160,7 +171,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                         android.util.Log.d("AddCalibration", "start WatchUpdaterService with ACTION_SYNC_CALIBRATION");
                                         startService(new Intent(v.getContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_CALIBRATION));
                                     }
-    
+
                                 } else {
                                     Log.e(TAG, "Calibration creation resulted in null");
                                     JoH.static_toast_long("Could not create calibration!");
@@ -168,10 +179,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                 }
                             } else if (Home.get_follower()) {
                                 // Sending the data for the master to update the main tables.
-                                String uuid = UUID.randomUUID().toString();
-                                GcmActivity.pushCalibration2(calValue, uuid);
-                                UndoRedo.addUndoCalibration(uuid);
-                                JoH.static_toast_long("Calibration sent to master for processing");
+                                sendFollowerCalibration(calValue, 0); // default offset is 0
                             }
                             Intent tableIntent = new Intent(v.getContext(), Home.class);
                             startActivity(tableIntent);
@@ -180,8 +188,8 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                             Log.e(TAG, "Number format exception ", e);
                             Home.toaststatic("Got error parsing number in calibration");
                         }
-                           // }
-                       // }.start();
+                        // }
+                        // }.start();
                         finish();
                     } else {
                         value.setError("Calibration Can Not be blank");
@@ -192,5 +200,14 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
             }
         });
 
+    }
+
+    // helper function for sending calibrations to master when we are follower
+    public static void sendFollowerCalibration(double calValue, long offset) {
+        Log.d(TAG, "sendFollowerCalibration: " + calValue + " " + offset);
+        final String uuid = UUID.randomUUID().toString();
+        GcmActivity.pushCalibration2(calValue, uuid, offset);
+        UndoRedo.addUndoCalibration(uuid);
+        JoH.static_toast_long("Calibration sent to master for processing");
     }
 }

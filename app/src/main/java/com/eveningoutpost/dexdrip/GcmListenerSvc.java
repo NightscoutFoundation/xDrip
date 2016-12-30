@@ -29,6 +29,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.WebAppHelper;
@@ -232,7 +233,8 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                             bg_age += timediff;
                         }
                         Log.i(TAG, "Processing remote CAL " + newCalibration.bgValue + " age: " + bg_age);
-                        calintent.putExtra("bg_string", "" + newCalibration.bgValue);
+
+                        calintent.putExtra("bg_string", "" + (Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl") ? newCalibration.bgValue : newCalibration.bgValue * Constants.MGDL_TO_MMOLL));
                         calintent.putExtra("bg_age", "" + bg_age);
                         if (timediff < 3600) {
                             getApplicationContext().startActivity(calintent);
