@@ -39,15 +39,15 @@ import java.util.concurrent.TimeUnit;
 
 public class WixelReader extends AsyncTask<String, Void, Void > {
 
-    private final static String TAG = WixelReader.class.getName();
-    private static BgToSpeech bgToSpeech;
+    private final static String TAG = WixelReader.class.getSimpleName();
+    //private static BgToSpeech bgToSpeech;
 
     private static OkHttpClient httpClient = null;
 
     private final Context mContext;
-    PowerManager.WakeLock wakeLock;
+    private PowerManager.WakeLock wakeLock;
 
-    private final static long DEXCOM_PERIOD=300000;
+    private final static long DEXCOM_PERIOD = 300000;
     
     private static int lockCounter = 0;
     
@@ -55,7 +55,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
     static int i = 0;
     static int added = 5;
 
-    public WixelReader(Context ctx) {
+    WixelReader(Context ctx) {
         mContext = ctx.getApplicationContext();
         PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "WifiReader");
@@ -73,27 +73,21 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
     public static boolean IsConfigured(Context ctx) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         String recieversIpAddresses = prefs.getString("wifi_recievers_addresses", "");
-        if(recieversIpAddresses == null || recieversIpAddresses.equals("") ) {
-            return false;
-        }
-        return true;
+        return !recieversIpAddresses.equals("");
     }
 
-    public static boolean almostEquals( TransmitterRawData e1, TransmitterRawData e2)
+    static boolean almostEquals(TransmitterRawData e1, TransmitterRawData e2)
     {
         if (e1 == null || e2==null) {
             return false;
         }
         // relative time is in ms
-        if ((Math.abs(e1.CaptureDateTime - e2.CaptureDateTime) < 120 * 1000 ) &&
-                (e1.TransmissionId == e2.TransmissionId)) {
-            return true;
-        }
-        return false;
+        return (Math.abs(e1.CaptureDateTime - e2.CaptureDateTime) < 120 * 1000) &&
+                (e1.TransmissionId == e2.TransmissionId);
     }
 
  // last in the array, is first in time
-    public static List<TransmitterRawData> Merge2Lists(List<TransmitterRawData> list1 , List<TransmitterRawData> list2)
+    private static List<TransmitterRawData> Merge2Lists(List<TransmitterRawData> list1, List<TransmitterRawData> list2)
     {
         List<TransmitterRawData> merged = new LinkedList <TransmitterRawData>();
         while (true) {
@@ -123,7 +117,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         return merged;
     }
 
-    public static List<TransmitterRawData> MergeLists(List <List<TransmitterRawData>> allTransmitterRawData)
+    private static List<TransmitterRawData> MergeLists(List<List<TransmitterRawData>> allTransmitterRawData)
     {
         List<TransmitterRawData> MergedList;
         MergedList = allTransmitterRawData.remove(0);
@@ -134,7 +128,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         return MergedList;
     }
 
-    public static List<TransmitterRawData> ReadHost(String hostAndIp, int numberOfRecords)
+    private static List<TransmitterRawData> ReadHost(String hostAndIp, int numberOfRecords)
     {
         int port;
         System.out.println("Reading From " + hostAndIp);
@@ -175,7 +169,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         return ret;
     }
 
-    public static List<TransmitterRawData> ReadFromMongo(String dbury, int numberOfRecords)
+    private static List<TransmitterRawData> ReadFromMongo(String dbury, int numberOfRecords)
     {
         Log.i(TAG, "Reading From " + dbury);
     	List<TransmitterRawData> tmpList;
@@ -208,7 +202,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
 
 
     // read from http source like cloud hosted parakeet receiver.cgi / json.get
-    public static List<TransmitterRawData> readHttpJson(String url, int numberOfRecords) {
+    private static List<TransmitterRawData> readHttpJson(String url, int numberOfRecords) {
         List<TransmitterRawData> trd_list = new LinkedList<TransmitterRawData>();
         int processNumberOfRecords = numberOfRecords;
         // get more records to ensure we can handle coexistence of parakeet and usb-python-wixel
@@ -463,7 +457,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
     }
 
     
-    public void readData()
+    private void readData()
     {
         Long LastReportedTime = 0L;
     	TransmitterData lastTransmitterData = TransmitterData.last();
@@ -495,7 +489,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         
         Calibration lastCalibration = Calibration.lastValid();
         if(lastCalibration != null) {
-            startReadTime = Math.max(startReadTime, (long)(lastCalibration.timestamp));
+            startReadTime = Math.max(startReadTime, lastCalibration.timestamp);
         }
         Long gapTime = new Date().getTime() - startReadTime + 120000;
         int packetsToRead = (int) (gapTime / (5 * 60000));
@@ -537,7 +531,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
     }
 
 
-    public void setSerialDataToTransmitterRawData(int raw_data, int filtered_data ,int sensor_battery_leve, Long CaptureTime) {
+    private void setSerialDataToTransmitterRawData(int raw_data, int filtered_data, int sensor_battery_leve, Long CaptureTime) {
 
         TransmitterData transmitterData = TransmitterData.create(raw_data, filtered_data, sensor_battery_leve, CaptureTime);
         if (transmitterData != null) {
@@ -545,7 +539,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
             if (sensor != null) {
                 BgReading bgReading = BgReading.create(transmitterData.raw_data, filtered_data, mContext, CaptureTime);
 
-                sensor.latest_battery_level = (sensor.latest_battery_level!=0)?Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level):transmitterData.sensor_battery_level;;
+                sensor.latest_battery_level = (sensor.latest_battery_level!=0)?Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level):transmitterData.sensor_battery_level;
                 sensor.save();
             } else {
                 Log.d(TAG, "No Active Sensor, Data only stored in Transmitter Data");
@@ -553,7 +547,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         }
     }
     
-    static Long timeForNextReadFake() {
+  /*  static Long timeForNextReadFake() {
         return 10000L;
     }
     
@@ -571,5 +565,5 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         Log.d(TAG, "calling setSerialDataToTransmitterRawData " + fakedRaw);
         setSerialDataToTransmitterRawData(fakedRaw, fakedRaw ,215, new Date().getTime());
         Log.d(TAG, "returned from setSerialDataToTransmitterRawData " + fakedRaw);
-    }
+    }*/
 }
