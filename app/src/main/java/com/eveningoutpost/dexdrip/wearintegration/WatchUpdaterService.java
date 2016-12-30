@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
+import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -90,7 +91,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private final static Integer sendBgCount = 4;//KS
     private boolean wear_integration = false;
     private boolean pebble_integration = false;
-    private boolean is_using_g5 = false;
+    private boolean is_using_bt = false;
     private SharedPreferences mPrefs;
     private SharedPreferences.OnSharedPreferenceChangeListener mPreferencesListener;
 
@@ -133,6 +134,8 @@ public class WatchUpdaterService extends WearableListenerService implements
         boolean force_wearG5 = dataMap.getBoolean("force_wearG5", false);
         String node_wearG5 = dataMap.getString("node_wearG5", "");
         String dex_txid = dataMap.getString("dex_txid", "");
+        int bridge_battery = dataMap.getInt("bridge_battery", -1);//Used in DexCollectionService
+
         boolean change = false;
 
         SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(this).edit();
@@ -150,6 +153,12 @@ public class WatchUpdaterService extends WearableListenerService implements
             Log.d(TAG, "syncPrefData commit force_wearG5:" + force_wearG5);
         }
 
+        if (bridge_battery != mPrefs.getInt("bridge_battery", -1)) {//Used by DexCollectionService
+            change = true;
+            prefs.putInt("bridge_battery", bridge_battery);
+            Log.d(TAG, "syncPrefData commit bridge_battery: " + bridge_battery);
+        }
+
         if (/*enable_wearG5 &&*/ enable_wearG5 != mPrefs.getBoolean("enable_wearG5", false)) {
             change = true;
             prefs.putBoolean("enable_wearG5", enable_wearG5);
@@ -161,13 +170,13 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
         else if (!dex_txid.equals(mPrefs.getString("dex_txid", "default"))) {
             sendPrefSettings();
-            processConnectG5();
+            processConnect();
         }
     }
 
     //Assumes Wear is connected to phone
-    private void processConnectG5() {//KS
-        Log.d(TAG, "processConnectG5 enter");
+    private void processConnect() {//KS
+        Log.d(TAG, "processConnect enter");
         wear_integration = mPrefs.getBoolean("wear_sync", false);
         boolean enable_wearG5 = mPrefs.getBoolean("enable_wearG5", false);
         boolean force_wearG5 = mPrefs.getBoolean("force_wearG5", false);
@@ -176,22 +185,22 @@ public class WatchUpdaterService extends WearableListenerService implements
             if (enable_wearG5) {
                 initWearData();
                 if (force_wearG5) {
-                    Log.d(TAG, "processConnectG5 force_wearG5=true - stopBtG5Service");
-                    stopBtG5Service();
+                    Log.d(TAG, "processConnect force_wearG5=true - stopBtService");
+                    stopBtService();
                 }
                 else {
-                    Log.d(TAG, "processConnectG5 force_wearG5=false - startBtG5Service");
-                    startBtG5Service();
+                    Log.d(TAG, "processConnect force_wearG5=false - startBtService");
+                    startBtService();
                 }
             }
             else {
-                Log.d(TAG, "processConnectG5 enable_wearG5=false - startBtG5Service");
-                startBtG5Service();
+                Log.d(TAG, "processConnect enable_wearG5=false - startBtService");
+                startBtService();
             }
         }
         else {
-            Log.d(TAG, "processConnectG5 wear_integration=false - startBtG5Service");
-            startBtG5Service();
+            Log.d(TAG, "processConnect wear_integration=false - startBtService");
+            startBtService();
         }
     }
 
@@ -307,7 +316,8 @@ public class WatchUpdaterService extends WearableListenerService implements
     public void onCreate() {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         wear_integration = mPrefs.getBoolean("wear_sync", false);
-        is_using_g5 = (getDexCollectionType() == DexCollectionType.DexcomG5);
+        //is_using_g5 = (getDexCollectionType() == DexCollectionType.DexcomG5);
+        is_using_bt = DexCollectionType.hasBluetooth();
         if (wear_integration) {
             googleApiConnect();
         }
@@ -322,7 +332,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                 Log.d(TAG, "onSharedPreferenceChanged enter key=" + key);
                 pebble_integration = mPrefs.getBoolean("pebble_sync", false);
                 sendPrefSettings();
-                processConnectG5();
+                processConnect();
             }
         };
         mPrefs.registerOnSharedPreferenceChangeListener(mPreferencesListener);
@@ -331,7 +341,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private void setSettings() {
         Log.d(TAG, "setSettings enter");
         pebble_integration = mPrefs.getBoolean("pebble_sync", false);
-        processConnectG5();
+        processConnect();
         if (wear_integration) {
             if (googleApiClient == null) googleApiConnect();
             Log.d(TAG, "setSettings wear_sync changed to True.");
@@ -368,11 +378,11 @@ public class WatchUpdaterService extends WearableListenerService implements
             initWearData();
             //Only stop service if Phone will rely on Wear Collection Service
             if (mPrefs.getBoolean("force_wearG5", false)) {
-                Log.d(TAG, "onPeerConnected force_wearG5=true Phone stopBtG5Service and continue to use Wear G5 BT Collector");
-                stopBtG5Service();
+                Log.d(TAG, "onPeerConnected force_wearG5=true Phone stopBtService and continue to use Wear G5 BT Collector");
+                stopBtService();
             } else {
-                Log.d(TAG, "onPeerConnected onPeerConnected force_wearG5=false Phone startBtG5Service");
-                startBtG5Service();
+                Log.d(TAG, "onPeerConnected onPeerConnected force_wearG5=false Phone startBtService");
+                startBtService();
             }
         }
     }
@@ -385,15 +395,31 @@ public class WatchUpdaterService extends WearableListenerService implements
         Log.d(TAG, "onPeerDisconnected peer name & ID: " + name + "|" + id);
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         if (sharedPrefs.getBoolean("watch_integration", false)) {
-            Log.d(TAG, "onPeerDisconnected watch_integration=true Phone startBtG5Service");
-            startBtG5Service();
+            Log.d(TAG, "onPeerDisconnected watch_integration=true Phone startBtService");
+            startBtService();
         }
+    }
+    private void startBtService() {//KS
+        Log.d(TAG, "startBtService");
+        is_using_bt = DexCollectionType.hasBluetooth();//(getDexCollectionType() == DexCollectionType.DexcomG5)
+        if (is_using_bt) {
+            CollectionServiceStarter.startCollectionService(getApplicationContext());
+        } else {
+            Log.d(TAG, "Not starting any BT Collector service as it is not our data source");
+        }
+    }
+
+    private void stopBtService() {
+        Log.d(TAG, "stopService call stopService");
+        CollectionServiceStarter.stopBtService(getApplicationContext());
+        Log.d(TAG, "stopBtService should have called onDestroy");
     }
 
     private void startBtG5Service() {//KS
         Log.d(TAG, "startBtG5Service");
-        is_using_g5 = (getDexCollectionType() == DexCollectionType.DexcomG5);
-        if (is_using_g5) {
+        //is_using_g5 = (getDexCollectionType() == DexCollectionType.DexcomG5);
+        is_using_bt = DexCollectionType.hasBluetooth();
+        if (is_using_bt) {
             Context myContext = getApplicationContext();
             Log.d(TAG, "startBtG5Service start G5CollectionService");
             myContext.startService(new Intent(myContext, G5CollectionService.class));
@@ -419,7 +445,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
 
         if (wear_integration) {
-            is_using_g5 = (getDexCollectionType() == DexCollectionType.DexcomG5); // refresh
+            is_using_bt = DexCollectionType.hasBluetooth();//(getDexCollectionType() == DexCollectionType.DexcomG5)
             if (googleApiClient.isConnected()) {
                 if (ACTION_RESEND.equals(action)) {
                     resendData();
@@ -448,7 +474,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                     sendData();
                     if (!mPrefs.getBoolean("force_wearG5", false)
                             && mPrefs.getBoolean("enable_wearG5",false)
-                            && (is_using_g5)) { //KS only send BGs if using Phone's G5 Collector Server
+                            && (is_using_bt)) { //KS only send BGs if using Phone's G5 Collector Server
                         sendWearBgData(1);
                         Log.d(TAG, "onStartCommand Action=" + " Path=" + WEARABLE_BG_DATA_PATH);
                     }
@@ -566,11 +592,11 @@ public class WatchUpdaterService extends WearableListenerService implements
                         if (enable_wearG5) {
                             //Only stop service if Phone will rely on Wear Collection Service
                             if (force_wearG5 && isConnectedToWearable) {
-                                Log.d(TAG, "CheckWearableConnected onPeerConnected force_wearG5=true Phone stopBtG5Service and continue to use Wear G5 BT Collector");
-                                stopBtG5Service();
+                                Log.d(TAG, "CheckWearableConnected onPeerConnected force_wearG5=true Phone stopBtService and continue to use Wear G5 BT Collector");
+                                stopBtService();
                             } else {
-                                Log.d(TAG, "CheckWearableConnected onPeerConnected force_wearG5=false Phone startBtG5Service");
-                                startBtG5Service();
+                                Log.d(TAG, "CheckWearableConnected onPeerConnected force_wearG5=false Phone startBtService");
+                                startBtService();
                             }
                         }
                     }
@@ -578,8 +604,8 @@ public class WatchUpdaterService extends WearableListenerService implements
                         //onPeerDisconnected
                         Log.d(TAG, "CheckWearableConnected onPeerDisconnected");
                         if (sharedPrefs.getBoolean("wear_sync", false)) {
-                            Log.d(TAG, "CheckWearableConnected onPeerDisconnected wear_sync=true Phone startBtG5Service");
-                            startBtG5Service();
+                            Log.d(TAG, "CheckWearableConnected onPeerDisconnected wear_sync=true Phone startBtService");
+                            startBtService();
                         }
                     }
                 } else {
@@ -770,7 +796,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         wear_integration = mPrefs.getBoolean("wear_sync", false);
         if (wear_integration) {
             Log.d(TAG, "sendPrefSettings wear_sync=true");
-            dexCollector = mPrefs.getString("dex_collection_method", "DexcomG5");
+            dexCollector = mPrefs.getString(DexCollectionType.DEX_COLLECTION_METHOD, "DexcomG5");
             enable_wearG5 = mPrefs.getBoolean("enable_wearG5", false);
             force_wearG5 = mPrefs.getBoolean("force_wearG5", false);
             node_wearG5 = mPrefs.getString("node_wearG5", "");
@@ -779,8 +805,17 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMap.putBoolean("enable_wearG5", enable_wearG5);
             dataMap.putBoolean("force_wearG5", force_wearG5);
             dataMap.putString("node_wearG5", node_wearG5);
+            dataMap.putString("share_key", mPrefs.getString("share_key", "SM00000000"));//Used by DexShareCollectionService
+            //Advanced Bluetooth Settings used by G4+xBridge DexCollectionService - temporarily just use the Phone's settings
+            dataMap.putBoolean("use_transmiter_pl_bluetooth", mPrefs.getBoolean("use_transmiter_pl_bluetooth", false));
+            dataMap.putBoolean("automatically_turn_bluetooth_on", mPrefs.getBoolean("automatically_turn_bluetooth_on", true));
+            dataMap.putBoolean("bluetooth_excessive_wakelocks", mPrefs.getBoolean("bluetooth_excessive_wakelocks", true));
+            dataMap.putBoolean("close_gatt_on_ble_disconnect", mPrefs.getBoolean("close_gatt_on_ble_disconnect", true));
+            dataMap.putBoolean("bluetooth_frequent_reset", mPrefs.getBoolean("bluetooth_frequent_reset", false));
+            dataMap.putBoolean("bluetooth_watchdog", mPrefs.getBoolean("bluetooth_watchdog", false));
+            dataMap.putInt("bridge_battery", mPrefs.getInt("bridge_battery", -1));
         }
-        is_using_g5 = (getDexCollectionType() == DexCollectionType.DexcomG5);
+        is_using_bt = DexCollectionType.hasBluetooth();
 
         Double highMark = Double.parseDouble(mPrefs.getString("highValue", "170"));
         Double lowMark = Double.parseDouble(mPrefs.getString("lowValue", "70"));
@@ -796,7 +831,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     }
 
     private void sendSensorData() {//KS
-        if (is_using_g5) {
+        if (is_using_bt) {
             if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
                 googleApiConnect();
             }
@@ -923,7 +958,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     }
 
     private void initWearData() {
-        if (is_using_g5) {
+        if (is_using_bt) {
             Log.d(TAG, "***initWearData***");
             sendSensorData();
             sendWearCalibrationData(sendCalibrationCount);
