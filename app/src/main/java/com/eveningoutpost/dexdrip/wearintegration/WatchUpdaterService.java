@@ -531,9 +531,6 @@ public class WatchUpdaterService extends WearableListenerService implements
                                     googleApiClient, CAPABILITY_WEAR_APP,
                                     CapabilityApi.FILTER_REACHABLE).await();
                     CapabilityInfo nodes = capResult.getCapability();
-                    updateWearSyncBgsCapability(nodes);
-                    int count = nodes.getNodes().size();//KS
-                    Log.d(TAG, "doInBackground connected.  CapabilityApi.GetCapabilityResult mWearNodeID=" + (mWearNodeId != null ? mWearNodeId : "") + " count=" + count);//KS
                     SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                     SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
                     boolean enable_wearG5 = sharedPrefs.getBoolean("enable_wearG5", false);
@@ -541,6 +538,9 @@ public class WatchUpdaterService extends WearableListenerService implements
                     String node_wearG5 = mPrefs.getString("node_wearG5", "");
 
                     if (nodes != null && nodes.getNodes().size() > 0) {
+                        updateWearSyncBgsCapability(nodes);
+                        int count = nodes.getNodes().size();
+                        Log.d(TAG, "doInBackground connected.  CapabilityApi.GetCapabilityResult mWearNodeID=" + (mWearNodeId != null ? mWearNodeId : "") + " count=" + count);//KS
                         boolean isConnectedToWearable = false;
                         for (Node peer : nodes.getNodes()) {
 

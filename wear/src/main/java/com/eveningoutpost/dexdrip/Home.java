@@ -111,7 +111,7 @@ public class Home extends BaseWatchFace {
         mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
         mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
         mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
-        mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_Timestamp));
+        mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTimestamp1_home));
         if (chart != null) {
             highColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
             lowColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
