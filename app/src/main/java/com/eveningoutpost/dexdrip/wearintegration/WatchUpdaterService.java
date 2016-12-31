@@ -823,8 +823,8 @@ public class WatchUpdaterService extends WearableListenerService implements
         dataMap.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
         dataMap.putString("dex_txid", mPrefs.getString("dex_txid", "ABCDEF"));
         dataMap.putString("units", mPrefs.getString("units", "mgdl"));
-        dataMap.putDouble("high", inMgdl(highMark, mPrefs));
-        dataMap.putDouble("low", inMgdl(lowMark, mPrefs));
+        dataMap.putDouble("high", highMark);//inMgdl(highMark, mPrefs));//KS Fix for mmol on graph Y-axis in wear standalone mode
+        dataMap.putDouble("low", lowMark);//inMgdl(lowMark, mPrefs));//KS Fix for mmol on graph Y-axis in wear standalone mode
         dataMap.putBoolean("g5_non_raw_method",  mPrefs.getBoolean("g5_non_raw_method", false));
         dataMap.putString("extra_tags_for_logging",  Home.getPreferencesStringDefaultBlank("extra_tags_for_logging"));
         new SendToDataLayerThread(WEARABLE_PREF_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap);
