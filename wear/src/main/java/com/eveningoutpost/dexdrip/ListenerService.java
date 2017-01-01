@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
@@ -797,6 +798,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     }
 
     private boolean checkLocationPermissions() {//KS
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true;
         Context myContext = getApplicationContext();
         mLocationPermissionApproved =
                 ActivityCompat.checkSelfPermission(
