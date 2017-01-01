@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by stephenblack on 12/26/14.
@@ -93,6 +94,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
     private GoogleApiClient googleApiClient;
     private static long lastRequest = 0;
+    private DataRequester mDataRequester = null;
+    static final int GET_CAPABILITIES_TIMEOUT_MS = 5000;
 
     public class DataRequester extends AsyncTask<Void, Void, Void> {
         final String path;
@@ -102,7 +105,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             path = thispath;
             payload = thispayload;
             Sensor.InitDb(context);//ensure database has already been initialized
-            Log.d(TAG, "DataRequester: " + thispath);
+            Log.d(TAG, "DataRequester DataRequester: " + thispath + " lastRequest:" + JoH.dateTimeText(lastRequest));
         }
 
         @Override
@@ -113,6 +116,10 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             String node_wearG5 = sharedPrefs.getString("node_wearG5", ""); //KS
             Log.d(TAG, "doInBackground enter enable_wearG5=" + enable_wearG5 + " force_wearG5=" + force_wearG5 + " node_wearG5=" + node_wearG5);//KS
 
+            if (isCancelled()) {
+                Log.d(TAG, "doInBackground CANCELLED programmatically");
+                return null;
+            }
             if ((googleApiClient != null) && (googleApiClient.isConnected())) {
                 if (!path.equals(ACTION_RESEND) || (System.currentTimeMillis() - lastRequest > 20 * 1000)) { // enforce 20-second debounce period
                     lastRequest = System.currentTimeMillis();
@@ -123,16 +130,22 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     Node getnode = localnodes != null ? localnodes.getNode() : null;
                     localnode = getnode != null ?  getnode.getDisplayName() + "|" + getnode.getId() : "";
                     Log.d(TAG, "doInBackground.  getLocalNode name=" + localnode);
-                    CapabilityApi.GetCapabilityResult capResult =
+                    CapabilityApi.GetCapabilityResult capabilityResult =
                             Wearable.CapabilityApi.getCapability(
                                     googleApiClient, CAPABILITY_PHONE_APP,
-                                    CapabilityApi.FILTER_REACHABLE).await();
-                    CapabilityInfo nodes = capResult.getCapability();
-                    updatePhoneSyncBgsCapability(nodes);
-
-                    int count = nodes.getNodes().size();//KS
+                                    CapabilityApi.FILTER_REACHABLE).await(GET_CAPABILITIES_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                    if (!capabilityResult.getStatus().isSuccess()) {
+                        Log.e(TAG, "doInBackground Failed to get capabilities, status: " + capabilityResult.getStatus().getStatusMessage());
+                        return null;
+                    }
+                    CapabilityInfo capabilityInfo = capabilityResult.getCapability();
+                    int count = 0;
+                    if (capabilityInfo != null) {
+                        updatePhoneSyncBgsCapability(capabilityInfo);
+                        count = capabilityInfo.getNodes().size();
+                    }
                     Log.d(TAG, "doInBackground connected.  CapabilityApi.GetCapabilityResult mPhoneNodeID=" + (mPhoneNodeId != null ? mPhoneNodeId : "") + " count=" + count);//KS
-                    if (count > 0) {//KS
+                    if (count > 0) {
                         if (enable_wearG5) {
                             if (force_wearG5) {
                                 startBtService();
@@ -142,7 +155,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                             }
                         }
 
-                        for (Node node : nodes.getNodes()) {
+                        for (Node node : capabilityInfo.getNodes()) {
 
                             if (enable_wearG5) {//KS
                                 DataMap datamap = getWearTransmitterData(288);//KS 36 data for last 3 hours; 288 for 1 day
@@ -183,6 +196,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 }
             }
             return null;
+        }
+
+        @Override
+        protected void onCancelled() {
+            Log.d(TAG, "DataRequester AsyncTask doInBackground was cancelled");
         }
     }
 
@@ -270,7 +288,22 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
     private void sendData(String path, byte[] payload) {
         if (path == null) return;
-        new DataRequester(this, path, payload).execute();
+        if (mDataRequester != null) {
+            Log.d(TAG, "sendData DataRequester != null lastRequest:" + JoH.dateTimeText(lastRequest));
+            if (mDataRequester.getStatus() != AsyncTask.Status.FINISHED) {
+                Log.d(TAG, "sendData DataRequester.cancel");
+                mDataRequester.cancel(true);
+            }
+            mDataRequester = null;
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            Log.d(TAG, "sendData SDK < M call execute lastRequest:" + JoH.dateTimeText(lastRequest));
+            mDataRequester = (DataRequester)new DataRequester(this, path, payload).execute();
+        }
+        else {
+            Log.d(TAG, "sendData SDK >= M call executeOnExecutor lastRequest:" + JoH.dateTimeText(lastRequest));
+            mDataRequester = (DataRequester)new DataRequester(this, path, payload).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
     }
 
     private void googleApiConnect() {
@@ -851,6 +884,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     }
 
     public static void requestData(Context context) {
+        Log.d(TAG, "requestData (Context context) ENTER");
         Intent intent = new Intent(context, ListenerService.class);
         intent.setAction(ACTION_RESEND);
         context.startService(intent);

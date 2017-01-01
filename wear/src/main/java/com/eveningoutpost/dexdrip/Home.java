@@ -279,6 +279,17 @@ public class Home extends BaseWatchFace {
         return false;
     }
 
+    public static boolean setPreferencesInt(final String pref, final int num) {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs != null) {
+            prefs.edit().putInt(pref, num).apply();
+            return true;
+        }
+        return false;
+    }
+
     public static boolean setPreferencesString(final String pref, final String str) {
         if ((prefs == null) && (xdrip.getAppContext() != null)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());

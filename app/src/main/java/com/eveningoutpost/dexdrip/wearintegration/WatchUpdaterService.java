@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 
@@ -83,6 +84,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String CAPABILITY_WEAR_APP = "wear_app_sync_bgs";
     private static final String MESSAGE_PATH_WEAR = "/wear_message_path";
     private String mWearNodeId = null;
+    static final int GET_CAPABILITIES_TIMEOUT_MS = 5000;
 
     private static final String TAG = "jamorham watchupdater";
     private static GoogleApiClient googleApiClient;
@@ -552,11 +554,18 @@ public class WatchUpdaterService extends WearableListenerService implements
                     String localnode = node != null ?  node.getDisplayName() + "|" + node.getId() : "";
                     Log.d(TAG, "doInBackground.  getLocalNode name=" + localnode);
                     Log.d(TAG, "doInBackground connected.  localnode=" + localnode);//KS
-                    CapabilityApi.GetCapabilityResult capResult =
+                    CapabilityApi.GetCapabilityResult capabilityResult =
                             Wearable.CapabilityApi.getCapability(
                                     googleApiClient, CAPABILITY_WEAR_APP,
-                                    CapabilityApi.FILTER_REACHABLE).await();
-                    CapabilityInfo nodes = capResult.getCapability();
+                                    CapabilityApi.FILTER_REACHABLE).await(GET_CAPABILITIES_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                    CapabilityInfo nodes;
+                    if (!capabilityResult.getStatus().isSuccess()) {
+                        Log.e(TAG, "doInBackground Failed to get capabilities, status: " + capabilityResult.getStatus().getStatusMessage());
+                        nodes = null;
+                    }
+                    else {
+                        nodes = capabilityResult.getCapability();
+                    }
                     SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                     SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
                     boolean enable_wearG5 = sharedPrefs.getBoolean("enable_wearG5", false);
