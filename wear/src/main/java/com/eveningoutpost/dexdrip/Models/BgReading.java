@@ -22,7 +22,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 //KS import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 //KS import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
-//KS import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -1019,7 +1019,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
     public void calculateAgeAdjustedRawValue(){
         final double adjust_for = AGE_ADJUSTMENT_TIME - time_since_sensor_started;
-        if ((adjust_for > 0)) { //KS && (!DexCollectionType.hasLibre())) {
+        if ((adjust_for > 0) && (!DexCollectionType.hasLibre())) {
             age_adjusted_raw_value = ((AGE_ADJUSTMENT_FACTOR * (adjust_for / AGE_ADJUSTMENT_TIME)) * raw_data) + raw_data;
             Log.i(TAG, "calculateAgeAdjustedRawValue: RAW VALUE ADJUSTMENT FROM:" + raw_data + " TO: " + age_adjusted_raw_value);
         } else {

@@ -46,11 +46,11 @@
     <string name="notify_title">Location Permission</string>
     <string name="notify_text">xDrip requires Location access permission</string>
 
-    <string name="pref_xdrip_g5_settings">XDrip G5 Settings</string>
-    <string name="pref_enable_wearG5">Enable G5 Collection</string>
-    <string name="pref_summary_enable_wearG5">Connect to G5 when phone is out-of-range</string>
-    <string name="pref_force_wearG5">Force G5 Collection</string>
-    <string name="pref_summary_force_wearG5">Force phone to use Wear G5 Collection Service</string>
+    <string name="pref_xdrip_g5_settings">XDrip BT Settings</string>
+    <string name="pref_enable_wearG5">Enable BT Collection</string>
+    <string name="pref_summary_enable_wearG5">Connect to Dexcom when phone is out-of-range</string>
+    <string name="pref_force_wearG5">Force BT Collection</string>
+    <string name="pref_summary_force_wearG5">Force phone to use Wear Collection Service</string>
     <string name="pref_run_ble_scan_constantly">Scan for G5 constantly</string>
     <string name="pref_summary_run_ble_scan_constantly">Some devices work better when scanning constantly, others do not. If reading is reliable when this setting is not selected, you should have improved battery life. Turn this setting on if you are missing readings at high rates and unexpected times.</string>
     <string name="pref_run_G5_ble_tasks_on_uithread">Force G5 to UI Thread</string>

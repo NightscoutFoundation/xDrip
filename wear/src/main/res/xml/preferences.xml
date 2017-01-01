@@ -7,11 +7,12 @@
         android:key="collection_category"
         android:selectable="false">
 
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="g5_collection_method"
-            android:summary=""
-            android:title="G5 Collection Method"/>
+        <Preference
+            android:defaultValue="DexcomG5"
+            android:key="dex_collection_method"
+            android:summary="DexcomG5"
+            android:title="Dex Collection Method"
+            android:editable="false"/>
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_wearG5"

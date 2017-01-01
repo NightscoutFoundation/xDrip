@@ -111,6 +111,7 @@ public class Home extends BaseWatchFace {
         mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
         mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
         mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
+        mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
         mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTimestamp1_home));
         if (chart != null) {
             highColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
@@ -273,6 +274,17 @@ public class Home extends BaseWatchFace {
         }
         if (prefs != null) {
             prefs.edit().putBoolean(pref, lng).apply();
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean setPreferencesInt(final String pref, final int num) {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs != null) {
+            prefs.edit().putInt(pref, num).apply();
             return true;
         }
         return false;
