@@ -81,16 +81,14 @@ public class TransmitterData extends Model {
 
             if (data.length > 1) { 
                 transmitterData.sensor_battery_level = Integer.parseInt(data[1]);
-                /* //KS
                 if (data.length > 2) {
                     try {
                         Home.setPreferencesInt("bridge_battery", Integer.parseInt(data[2]));
-                        if (Home.get_master()) GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery",-1));
+                        //if (Home.get_master()) GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery",-1));
                     } catch (Exception e) {
                         Log.e(TAG, "Got exception processing classic wixel or limitter battery value: " + e.toString());
                     }
                 }
-                */
             }
             transmitterData.raw_data = Integer.parseInt(data[0]);
             transmitterData.filtered_data = Integer.parseInt(data[0]);
