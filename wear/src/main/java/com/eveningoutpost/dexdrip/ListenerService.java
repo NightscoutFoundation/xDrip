@@ -180,7 +180,19 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                     });
                                 }
                             }
-                            Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), path, payload);
+                            Log.d(TAG, "doInBackground WEARABLE_RESEND_PATH path=" + path + " nodeID=" + node.getId() + " nodeName=" + node.getDisplayName());
+                            PendingResult<MessageApi.SendMessageResult> result = Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), path, payload);
+                            result.setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
+                                @Override
+                                public void onResult(MessageApi.SendMessageResult sendMessageResult) {
+                                    if (!sendMessageResult.getStatus().isSuccess()) {
+                                        Log.e(TAG, "ERROR: failed to send request ACTION_RESEND to phone: " + sendMessageResult.getStatus().getStatusMessage());
+                                    }
+                                    else {
+                                        Log.i(TAG, "Sent request ACTION_RESEND to phone: " + sendMessageResult.getStatus().getStatusMessage());
+                                    }
+                                }
+                            });
                         }
                     }
                     else {
@@ -416,6 +428,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     messageIntent.setAction(Intent.ACTION_SEND);
                     messageIntent.putExtra("data", dataMap.toBundle());
                     LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
+                    Log.d(TAG, "onDataChanged WEARABLE_DATA_PATH=" + path);
                 } else if (path.equals(WEARABLE_TREATMENT_PAYLOAD)) {
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Intent intent = new Intent(getApplicationContext(), Simulation.class);

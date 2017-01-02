@@ -89,7 +89,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
 
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "CreateWakelock");
-        wakeLock.acquire(30000);
+        wakeLock.acquire(50);//KS 30000
 
         Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE))
                 .getDefaultDisplay();
@@ -112,7 +112,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         prepareLayout();
         prepareDrawTime();
 
-        //ListenerService.requestData(this); //usually connection is not set up yet
+        ListenerService.requestData(this); //usually connection is not set up yet  //KS uncomment
 
         wakeLock.release();
     }
@@ -541,7 +541,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
             PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
             PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                     "MyWakelockTag");
-            wakeLock.acquire(30000);
+            wakeLock.acquire(50);//KS 30000
 
             Bundle bundle = intent.getBundleExtra("data");
             if (bundle!= null) {

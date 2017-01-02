@@ -728,9 +728,11 @@ public class WatchUpdaterService extends WearableListenerService implements
     }
 
     private void resendData() {
+        Log.d(TAG, "resendData ENTER");
         if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
             googleApiConnect();
         }
+        Log.d(TAG, "resendData googleApiClient connected ENTER");
         long startTime = new Date().getTime() - (60000 * 60 * 24);
         BgReading last_bg = BgReading.last();
         if (last_bg != null) {
@@ -742,6 +744,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                 for (BgReading bg : graph_bgs) {
                     dataMaps.add(dataMap(bg, mPrefs, bgGraphBuilder));
                 }
+                entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
                 entries.putDataMapArrayList("entries", dataMaps);
 
                 new SendToDataLayerThread(WEARABLE_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, entries);
