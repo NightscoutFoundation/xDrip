@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
+import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;//KS
 import com.eveningoutpost.dexdrip.Models.Calibration;//KS
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -67,6 +69,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String WEARABLE_CALIBRATION_DATA_PATH = "/nightscout_watch_cal_data";//KS
     private static final String WEARABLE_SENSOR_DATA_PATH = "/nightscout_watch_sensor_data";//KS
     private static final String WEARABLE_PREF_DATA_PATH = "/nightscout_watch_pref_data";//KS
+    private static final String WEARABLE_ACTIVEBTDEVICE_DATA_PATH = "/nightscout_watch_sensor_data";//KS
     private static final String DATA_ITEM_RECEIVED_PATH = "/data-item-received";//KS
     private static final String ACTION_RESEND = "com.dexdrip.stephenblack.nightwatch.RESEND_DATA";
     private static final String ACTION_SENDDATA = "com.dexdrip.stephenblack.nightwatch.SEND_DATA";
@@ -440,6 +443,10 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
                     syncSensorData(dataMap, getApplicationContext());
+                } else if (path.equals(WEARABLE_ACTIVEBTDEVICE_DATA_PATH)) {//KS
+                    dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
+                    Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
+                    syncActiveBtDeviceData(dataMap, getApplicationContext());
                 } else if (path.equals(WEARABLE_CALIBRATION_DATA_PATH)) {//KS
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
@@ -623,6 +630,39 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         Log.e(TAG, "syncSensorData Failed to createUpdate new Sensor for uuid=" + uuid);
                 } else
                     Log.d(TAG, "syncSensorData Sensor already exists with uuid=" + uuid);
+            }
+        }
+    }
+
+    private void syncActiveBtDeviceData(DataMap dataMap, Context context) {//KS
+        Log.d(TAG, "syncActiveBtDeviceData");
+        if (dataMap != null) {
+            String name = dataMap.getString("name", "");
+            String address = dataMap.getString("address", "");
+            Boolean connected = dataMap.getBoolean("connected", false);
+            Log.d(TAG, "syncActiveBtDeviceData add ActiveBluetoothDevice for name=" + name + " address=" + address + " connected=" + connected);
+            Sensor.InitDb(context);//ensure database has already been initialized
+            if (name != null && !name.isEmpty() && address != null && !address.isEmpty()) {
+                final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                synchronized (ActiveBluetoothDevice.table_lock) {
+                    ActiveBluetoothDevice btDevice = new Select().from(ActiveBluetoothDevice.class)
+                            .orderBy("_ID desc")
+                            .executeSingle();
+
+                    prefs.edit().putString("last_connected_device_address", address).apply();
+                    if (btDevice == null) {
+                        ActiveBluetoothDevice newBtDevice = new ActiveBluetoothDevice();
+                        newBtDevice.name = name;
+                        newBtDevice.address = address;
+                        newBtDevice.connected = connected;
+                        newBtDevice.save();
+                    } else {
+                        btDevice.name = name;
+                        btDevice.address = address;
+                        btDevice.connected = connected;
+                        btDevice.save();
+                    }
+                }
             }
         }
     }
