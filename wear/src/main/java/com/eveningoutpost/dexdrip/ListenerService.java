@@ -69,7 +69,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String WEARABLE_CALIBRATION_DATA_PATH = "/nightscout_watch_cal_data";//KS
     private static final String WEARABLE_SENSOR_DATA_PATH = "/nightscout_watch_sensor_data";//KS
     private static final String WEARABLE_PREF_DATA_PATH = "/nightscout_watch_pref_data";//KS
-    private static final String WEARABLE_ACTIVEBTDEVICE_DATA_PATH = "/nightscout_watch_sensor_data";//KS
+    private static final String WEARABLE_ACTIVEBTDEVICE_DATA_PATH = "/nightscout_watch_activebtdevice_data";//KS
     private static final String DATA_ITEM_RECEIVED_PATH = "/data-item-received";//KS
     private static final String ACTION_RESEND = "com.dexdrip.stephenblack.nightwatch.RESEND_DATA";
     private static final String ACTION_SENDDATA = "com.dexdrip.stephenblack.nightwatch.SEND_DATA";
