@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -61,12 +62,14 @@ public class WatchUpdaterService extends WearableListenerService implements
     public static final String ACTION_SYNC_SENSOR = WatchUpdaterService.class.getName().concat(".SyncSensor");//KS
     public static final String ACTION_SYNC_CALIBRATION = WatchUpdaterService.class.getName().concat(".SyncCalibration");//KS
     public static final String ACTION_SEND_STATUS = WatchUpdaterService.class.getName().concat(".SendStatus");//KS
+    public static final String ACTION_SYNC_ACTIVEBTDEVICE = WatchUpdaterService.class.getName().concat(".SyncActiveBtDevice");//KS
     private static final String SYNC_DB_PATH = "/syncweardb";//KS
     private static final String SYNC_BGS_PATH = "/syncwearbgs";//KS
     private static final String WEARABLE_CALIBRATION_DATA_PATH = "/nightscout_watch_cal_data";//KS
     private static final String WEARABLE_BG_DATA_PATH = "/nightscout_watch_bg_data";//KS
     private static final String WEARABLE_SENSOR_DATA_PATH = "/nightscout_watch_sensor_data";//KS
     private static final String WEARABLE_PREF_DATA_PATH = "/nightscout_watch_pref_data";//KS
+    private static final String WEARABLE_ACTIVEBTDEVICE_DATA_PATH = "/nightscout_watch_activebtdevice_data";//KS
     private static final String DATA_ITEM_RECEIVED_PATH = "/data-item-received";//KS
     private static final String WEARABLE_DATA_PATH = "/nightscout_watch_data";
     private static final String WEARABLE_RESEND_PATH = "/nightscout_watch_data_resend";
@@ -464,6 +467,9 @@ public class WatchUpdaterService extends WearableListenerService implements
                 } else if (ACTION_SYNC_SENSOR.equals(action)) {//KS
                     Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_SENSOR + " Path=" + WEARABLE_SENSOR_DATA_PATH);
                     sendSensorData();
+                } else if (ACTION_SYNC_ACTIVEBTDEVICE.equals(action)) {//KS
+                    Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_ACTIVEBTDEVICE + " Path=" + WEARABLE_ACTIVEBTDEVICE_DATA_PATH);
+                    sendActiveBtDeviceData();
                 } else if (ACTION_SYNC_CALIBRATION.equals(action)) {//KS
                     Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_CALIBRATION + " Path=" + WEARABLE_CALIBRATION_DATA_PATH);
 
@@ -864,7 +870,32 @@ public class WatchUpdaterService extends WearableListenerService implements
                 }
             }
         } else {
-            Log.d(TAG, "Not sending sensor data as we are not using G5");
+            Log.d(TAG, "Not sending sensor data as we are not using bt");
+        }
+    }
+
+    private void sendActiveBtDeviceData() {//KS
+        if (is_using_bt) {
+            if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
+                googleApiConnect();
+            }
+            ActiveBluetoothDevice btDevice = ActiveBluetoothDevice.first();
+            if (btDevice != null) {
+                if (wear_integration) {
+                    DataMap dataMap = new DataMap();
+                    Log.d(TAG, "sendActiveBtDeviceData name=" + btDevice.name + " address=" + btDevice.address + " connected=" + btDevice.connected);
+
+                    dataMap.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
+
+                    dataMap.putString("name", btDevice.name);
+                    dataMap.putString("address", btDevice.address);
+                    dataMap.putBoolean("connected", btDevice.connected);
+
+                    new SendToDataLayerThread(WEARABLE_ACTIVEBTDEVICE_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap);
+                }
+            }
+        } else {
+            Log.d(TAG, "Not sending activebluetoothdevice data as we are not using bt");
         }
     }
 
@@ -970,6 +1001,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         if (is_using_bt) {
             Log.d(TAG, "***initWearData***");
             sendSensorData();
+            sendActiveBtDeviceData();
             sendWearCalibrationData(sendCalibrationCount);
             sendWearBgData(sendBgCount);
         } else {
