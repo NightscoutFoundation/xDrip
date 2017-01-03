@@ -113,6 +113,16 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
         @Override
         protected Void doInBackground(Void... params) {
+            // force reconnection if it is not present
+            if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
+                try {
+                    Log.d(TAG,"doInBackground: forcing google api reconnection");
+                    googleApiConnect();
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    //
+                }
+            }
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());//KS
             boolean enable_wearG5 = sharedPrefs.getBoolean("enable_wearG5", false); //KS
             boolean force_wearG5 = sharedPrefs.getBoolean("force_wearG5", false); //KS
@@ -129,8 +139,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
                     //NodeApi.GetConnectedNodesResult nodes =
                     //        Wearable.NodeApi.getConnectedNodes(googleApiClient).await();
-                    NodeApi.GetLocalNodeResult localnodes = Wearable.NodeApi.getLocalNode(googleApiClient).await();
-                    Node getnode = localnodes != null ? localnodes.getNode() : null;
+                    NodeApi.GetLocalNodeResult localnodes = Wearable.NodeApi.getLocalNode(googleApiClient).await(60, TimeUnit.SECONDS);
+                    Node getnode = localnodes.getNode();
                     localnode = getnode != null ?  getnode.getDisplayName() + "|" + getnode.getId() : "";
                     Log.d(TAG, "doInBackground.  getLocalNode name=" + localnode);
                     CapabilityApi.GetCapabilityResult capabilityResult =
@@ -193,9 +203,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     Log.d(TAG, "Debounce limit hit - not sending");
                 }
             } else {
-                Log.d(TAG, "Not connected for sending");
+                Log.d(TAG, "Not connected for sending: api "+((googleApiClient == null) ? "is NULL!" : "not null"));
                 if (googleApiClient != null) {
                     googleApiClient.connect();
+                } else {
+                    googleApiConnect();
                 }
             }
             return null;
