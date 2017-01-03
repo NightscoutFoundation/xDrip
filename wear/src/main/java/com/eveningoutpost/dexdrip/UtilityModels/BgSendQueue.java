@@ -105,7 +105,7 @@ public class BgSendQueue extends Model {
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "sendQueue");
-        wakeLock.acquire();
+        wakeLock.acquire(120000);
         try {
             if (!is_follower) addToQueue(bgReading, operation_type);
 
