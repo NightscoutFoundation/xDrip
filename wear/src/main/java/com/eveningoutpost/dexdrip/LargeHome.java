@@ -46,6 +46,11 @@ public class LargeHome extends BaseWatchFace {
         } else {
             mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBatteryEmpty));
         }
+        if (batteryLevel == 1) {
+            mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
+        } else {
+            mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBatteryEmpty));
+        }
 
         mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mStatus_home));
     }
@@ -79,6 +84,11 @@ public class LargeHome extends BaseWatchFace {
                 mUploaderBattery.setTextColor(Color.WHITE);
             } else {
                 mUploaderBattery.setTextColor(Color.RED);
+            }
+            if (batteryLevel == 1) {
+                mUploaderXBattery.setTextColor(Color.WHITE);
+            } else {
+                mUploaderXBattery.setTextColor(Color.RED);
             }
             mStatus.setTextColor(Color.WHITE);
             mTime.setTextColor(Color.BLACK);
@@ -116,6 +126,7 @@ public class LargeHome extends BaseWatchFace {
         mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
         mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTimestamp1_home));
         mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
+        mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
         mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mStatus_home));
     }
 }

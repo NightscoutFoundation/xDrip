@@ -58,7 +58,13 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="showExternalStatus"
-            android:title="Show Loop Status"
+            android:title="@string/pref_showExternalStatus"
+            app:wear_iconOff="@drawable/settings_off"
+            app:wear_iconOn="@drawable/settings_on" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="display_bridge_battery"
+            android:title="@string/pref_display_bridge_battery"
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
 

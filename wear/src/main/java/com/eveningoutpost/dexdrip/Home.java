@@ -94,6 +94,11 @@ public class Home extends BaseWatchFace {
         } else {
             mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBatteryEmpty));
         }
+        if (mXBatteryLevel == 1) {
+            mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
+        } else {
+            mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBatteryEmpty));
+        }
 
         mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mStatus_home));
 
@@ -113,6 +118,9 @@ public class Home extends BaseWatchFace {
         mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
         mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
         mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTimestamp1_home));
+        mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
+        mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
+        mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mStatus_home));
         if (chart != null) {
             highColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
             lowColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
@@ -154,6 +162,12 @@ public class Home extends BaseWatchFace {
             } else {
                 mUploaderBattery.setTextColor(Color.RED);
             }
+            if (mXBatteryLevel == 1) {
+                mUploaderXBattery.setTextColor(Color.WHITE);
+            } else {
+                mUploaderXBattery.setTextColor(Color.RED);
+            }
+
             mStatus.setTextColor(Color.WHITE);
 
             mTime.setTextColor(Color.BLACK);
