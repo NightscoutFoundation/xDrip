@@ -113,6 +113,16 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
         @Override
         protected Void doInBackground(Void... params) {
+            // force reconnection if it is not present
+            if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
+                try {
+                    Log.d(TAG,"doInBackground: forcing google api reconnection");
+                    googleApiConnect();
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    //
+                }
+            }
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());//KS
             boolean enable_wearG5 = sharedPrefs.getBoolean("enable_wearG5", false); //KS
             boolean force_wearG5 = sharedPrefs.getBoolean("force_wearG5", false); //KS

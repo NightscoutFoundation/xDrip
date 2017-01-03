@@ -61,6 +61,16 @@
     <string name="pref_summary_always_unbond_G5">This will remove the G5 from your device\'s paired device list, and attempt a full authentication and bonding with each read attempt.</string>
     <string name="pref_ambient_lowcolor">Ambient Low Color</string>
     <string name="pref_summary_ambient_lowcolor">Ambient Low Color. Note, RED is not supported on LOW-BIT devices, eg., Sony SmartWatch 3.</string>
+    <string name="pref_showExternalStatus">Show Loop Status</string>
+    <string name="pref_display_bridge_battery">Display Bridge Battery</string>
+    <string name="label_display_external_status">Status: </string>
+    <string name="label_display_external_status_abbrv">S: </string>
+    <string name="label_display_uploader">Uploader: %1$s%%</string>
+    <string name="label_display_uploader_abbrv">U: %1$s%%</string>
+    <string name="label_display_bridge_battery_percent">Bridge: %1$s%%</string>
+    <string name="label_display_bridge_battery_volt">Bridge: %1$smV</string>
+    <string name="label_display_bridge_battery_percent_abbrv">B: %1$s%%</string>
+    <string name="label_display_bridge_battery_volt_abbrv">B: %1$smV</string>
 
     <!-- Location Settings -->
     <string name="location_not_found_title">Location Is Not Enabled</string>
