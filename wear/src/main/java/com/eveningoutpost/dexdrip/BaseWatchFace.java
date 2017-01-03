@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
@@ -27,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.android.gms.wearable.DataMap;
 import com.ustwo.clockwise.common.WatchMode;
 import com.ustwo.clockwise.wearable.WatchFace;
@@ -44,11 +46,14 @@ import lecho.lib.hellocharts.view.LineChartView;
 public  abstract class BaseWatchFace extends WatchFace implements SharedPreferences.OnSharedPreferenceChangeListener {
     public final static IntentFilter INTENT_FILTER;
     public static final long[] vibratePattern = {0,400,300,400,300,400};
-    public TextView mTime, mSgv, mDirection, mTimestamp, mUploaderBattery, mDelta, mRaw, mStatus;
+    public TextView mTime, mSgv, mDirection, mTimestamp, mUploaderBattery, mUploaderXBattery, mDelta, mRaw, mStatus;
     public RelativeLayout mRelativeLayout;
     public LinearLayout mLinearLayout;
     public long sgvLevel = 0;
     public int batteryLevel = 1;
+    public int mXBatteryLevel = 1;
+    public int mXBattery = 0;
+    public boolean mShowXBattery = false;
     public int ageLevel = 1;
     public int highColor = Color.YELLOW;
     public int lowColor = Color.RED;
@@ -73,6 +78,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     protected SharedPreferences sharedPrefs;
     private String rawString = "000 | 000 | 000";
     private String batteryString = "--";
+    private String xbatteryString = "--";
     private String sgvString = "--";
     private String externalStatusString = "no status";
     private String avgDelta = "";
@@ -120,12 +126,13 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 mStatus = (TextView) stub.findViewById(R.id.externaltstatus);
                 mRaw = (TextView) stub.findViewById(R.id.raw);
                 mUploaderBattery = (TextView) stub.findViewById(R.id.uploader_battery);
+                mUploaderXBattery = (TextView) stub.findViewById(R.id.uploader_xbattery);
                 mDelta = (TextView) stub.findViewById(R.id.delta);
                 mRelativeLayout = (RelativeLayout) stub.findViewById(R.id.main_layout);
                 mLinearLayout = (LinearLayout) stub.findViewById(R.id.secondary_layout);
                 chart = (LineChartView) stub.findViewById(R.id.chart);
                 layoutSet = true;
-                showAgoRawBattStatus();
+                showAgoRawBattStatus(false);
                 mRelativeLayout.measure(specW, specH);
                 mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                         mRelativeLayout.getMeasuredHeight());
@@ -196,7 +203,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 wakeLock.acquire(50);
                 final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BaseWatchFace.this);
                 mTime.setText(timeFormat.format(System.currentTimeMillis()));
-                showAgoRawBattStatus();
+                showAgoRawBattStatus(true);
 
                 if (ageLevel() <= 0) {
                     mSgv.setPaintFlags(mSgv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -228,7 +235,6 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 sgvString = dataMap.getString("sgvString");
                 batteryString = dataMap.getString("battery");
                 mSgv.setText(dataMap.getString("sgvString"));
-
                 if(ageLevel()<=0) {
                     mSgv.setPaintFlags(mSgv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 } else {
@@ -243,7 +249,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 delta = dataMap.getString("delta");
 
 
-                showAgoRawBattStatus();
+                showAgoRawBattStatus(false);
 
 
                 if (chart != null) {
@@ -265,7 +271,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 wakeLock.acquire(50);
                 externalStatusString = dataMap.getString("externalStatusString");
 
-                showAgoRawBattStatus();
+                showAgoRawBattStatus(false);
 
                 mRelativeLayout.measure(specW, specH);
                 mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
@@ -276,7 +282,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         }
     }
 
-    private void showAgoRawBattStatus() {
+    private void showAgoRawBattStatus(boolean onTimeChanged) {
 
         boolean showAvgDelta = sharedPrefs.getBoolean("showAvgDelta", false);
         mDelta.setText(delta);
@@ -304,19 +310,46 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             mUploaderBattery.setText("Uploader: " + batteryString + "%");
         }
         */
+        //xBridge Battery:
+        mShowXBattery = false;
+        if (sharedPrefs.getBoolean("enable_wearG5", false) && sharedPrefs.getBoolean("display_bridge_battery", false)) {
+            mShowXBattery = true;
+            if (DexCollectionType.hasBattery()) {
+                mXBattery = sharedPrefs.getInt("bridge_battery", 0);
+            }
+            else if (!onTimeChanged){//watch - only request battery every 5 minutes or on startup
+                IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+                Intent batteryStatus = getApplicationContext().registerReceiver(null, ifilter);
+                int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+                mXBattery = level;
+            }
+        }
+        mXBatteryLevel = (mXBattery >= 30) ? 1 : 0;
+        Log.d("showAgoRawBattStatus", "mShowXBattery=" + mShowXBattery + " mXBattery=" + mXBattery);
+        if (mShowXBattery && mXBattery > 0) {//see app/home.java displayCurrentInfo()
+            xbatteryString = "" + mXBattery;
+            //mUploaderXBattery.setText((showStatus ? "B: " : "Bridge: ") + xbatteryString + ((mXBattery < 200) ? "%" : "mV"));
+            if (mXBattery < 200)
+                mUploaderXBattery.setText(getResources().getString(R.string.label_display_bridge_battery_percent_abbrv, xbatteryString));
+            else
+                mUploaderXBattery.setText(getResources().getString(R.string.label_display_bridge_battery_volt_abbrv, xbatteryString));
+            mUploaderXBattery.setVisibility(View.VISIBLE);
+        }
+        else
+            mUploaderXBattery.setVisibility(View.GONE);
 
-        if(showStatus){
+        if(showStatus || mShowXBattery){
             //use short forms
             mTimestamp.setText(readingAge(true));
-            mUploaderBattery.setText("U: " + batteryString + "%");
+            mUploaderBattery.setText(getResources().getString(R.string.label_display_uploader_abbrv, batteryString));//"U: " + batteryString + "%"
         } else {
             mTimestamp.setText(readingAge(false));
-            mUploaderBattery.setText("Uploader: " + batteryString + "%");
+            mUploaderBattery.setText(getResources().getString(R.string.label_display_uploader, batteryString));//"Uploader: " + batteryString + "%"
         }
 
         if (showStatus) {
             mStatus.setVisibility(View.VISIBLE);
-            mStatus.setText("S: " + externalStatusString);
+            mStatus.setText(getResources().getString(R.string.label_display_external_status_abbrv) + externalStatusString);//"S: "
         } else {
             mStatus.setVisibility(View.GONE);
         }
@@ -353,7 +386,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key){
         setColor();
         if(layoutSet){
-            showAgoRawBattStatus();
+            showAgoRawBattStatus(false);
             mRelativeLayout.measure(specW, specH);
             mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                     mRelativeLayout.getMeasuredHeight());

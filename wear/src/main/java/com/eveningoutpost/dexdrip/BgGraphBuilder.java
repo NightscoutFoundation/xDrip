@@ -6,6 +6,7 @@ import android.text.format.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -17,6 +18,8 @@ import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.Viewport;
+
+import static com.eveningoutpost.dexdrip.Models.JoH.cloneObject;
 
 /**
  * Created by stephenblack on 11/15/14.
@@ -43,7 +46,8 @@ public class BgGraphBuilder {
     private List<PointValue> lowValues = new ArrayList<PointValue>();
     public Viewport viewport;
 
-    public BgGraphBuilder(Context context, List<BgWatchData> aBgList, int aPointSize, int aMidColor, int timespan) {
+    // ambient mode version
+    BgGraphBuilder(Context context, List<BgWatchData> aBgList, int aPointSize, int aMidColor, int timespan) {
         end_time = new Date().getTime() + (1000 * 60 * 6 * timespan); //Now plus 30 minutes padding (for 5 hours. Less if less.)
         start_time = new Date().getTime()  - (1000 * 60 * 60 * timespan); //timespan hours ago
         this.bgDataList = aBgList;
@@ -56,6 +60,7 @@ public class BgGraphBuilder {
         this.lowColor = aMidColor;
         this.highColor = aMidColor;
         this.timespan = timespan;
+        Collections.sort(aBgList);
     }
 
     public BgGraphBuilder(Context context, List<BgWatchData> aBgList, int aPointSize, int aHighColor, int aLowColor, int aMidColor, int timespan) {
@@ -84,10 +89,48 @@ public class BgGraphBuilder {
         List<Line> lines = new ArrayList<Line>();
         lines.add(highLine());
         lines.add(lowLine());
-        lines.add(inRangeValuesLine());
+        if (singleLine) {
+            lines.addAll(autoSplitLine(inRangeValuesLine(),10));
+        } else {
+            lines.add(inRangeValuesLine());
+        }
         lines.add(lowValuesLine());
         lines.add(highValuesLine());
         return lines;
+    }
+    // auto split a line - jump thresh in minutes
+    private ArrayList<Line> autoSplitLine(Line macroline, final float jumpthresh) {
+        ArrayList<Line> linearray = new ArrayList<>();
+        float lastx = -999999;
+
+        List<PointValue> macropoints = macroline.getValues();
+        List<PointValue> thesepoints = new ArrayList<>();
+
+        if (macropoints.size() > 0) {
+            final float endmarker = macropoints.get(macropoints.size() - 1).getX();
+            for (PointValue thispoint : macropoints) {
+
+                // a jump too far for a line? make it a new one
+                if (((lastx != -999999) && (Math.abs(thispoint.getX() - lastx) > jumpthresh))
+                        || thispoint.getX() == endmarker) {
+
+                    if (thispoint.getX() == endmarker) {
+                        thesepoints.add(thispoint);
+                    }
+                    Line line = (Line) cloneObject(macroline); // aieeee
+                    try {
+                        line.setValues(thesepoints);
+                        linearray.add(line);
+                    } catch (NullPointerException e) {
+                    //
+                    }
+                        thesepoints = new ArrayList<PointValue>();
+                }
+                lastx = thispoint.getX();
+                thesepoints.add(thispoint); // grow current line list
+            }
+        }
+        return linearray;
     }
 
     public Line highValuesLine() {
@@ -108,13 +151,16 @@ public class BgGraphBuilder {
         return lowValuesLine;
     }
 
-    public Line inRangeValuesLine() {
+    private Line inRangeValuesLine() {
         Line inRangeValuesLine = new Line(inRangeValues);
         inRangeValuesLine.setColor(midColor);
+        // some problem with hellocharts at low resolutions maybe, but lines and cubic lines work so use those instead
         if(singleLine) {
+            inRangeValuesLine.setPointRadius(pointSize);
+            inRangeValuesLine.setCubic(true); // maybe a bit horrible cpu wise but seems to remove artifacts in tests so far
             inRangeValuesLine.setHasLines(true);
             inRangeValuesLine.setHasPoints(false);
-            inRangeValuesLine.setStrokeWidth(pointSize);
+            inRangeValuesLine.setStrokeWidth(pointSize*2); // or maybe should just be 4
         } else {
             inRangeValuesLine.setPointRadius(pointSize);
             inRangeValuesLine.setHasPoints(true);

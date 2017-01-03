@@ -35,7 +35,7 @@ public enum DexCollectionType {
     private static final HashSet<DexCollectionType> usesLibre = new HashSet<>();
     private static final HashSet<DexCollectionType> usesBattery = new HashSet<>();
 
-    private static final String DEX_COLLECTION_METHOD = "dex_collection_method";
+    public static final String DEX_COLLECTION_METHOD = "dex_collection_method";
 
     public static boolean does_have_filtered = false; // TODO this could get messy with GC
 

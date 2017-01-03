@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.google.android.gms.wearable.DataMap;
 import com.ustwo.clockwise.wearable.WatchFace;
 import com.ustwo.clockwise.common.WatchFaceTime;
@@ -88,33 +89,35 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         super.onCreate();
 
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "CreateWakelock");
+        final PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "CreateWakelock");
         wakeLock.acquire(30000);
+        try {
 
-        Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE))
-                .getDefaultDisplay();
-        display.getSize(displaySize);
+            Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE))
+                    .getDefaultDisplay();
+            display.getSize(displaySize);
 
-        specW = View.MeasureSpec.makeMeasureSpec(displaySize.x,
-                View.MeasureSpec.EXACTLY);
-        specH = View.MeasureSpec.makeMeasureSpec(displaySize.y,
-                View.MeasureSpec.EXACTLY);
+            specW = View.MeasureSpec.makeMeasureSpec(displaySize.x,
+                    View.MeasureSpec.EXACTLY);
+            specH = View.MeasureSpec.makeMeasureSpec(displaySize.y,
+                    View.MeasureSpec.EXACTLY);
 
-        sharedPrefs = PreferenceManager
-                .getDefaultSharedPreferences(this);
-        sharedPrefs.registerOnSharedPreferenceChangeListener(this);
+            sharedPrefs = PreferenceManager
+                    .getDefaultSharedPreferences(this);
+            sharedPrefs.registerOnSharedPreferenceChangeListener(this);
 
-        //register Message Receiver
-        LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, new IntentFilter(Intent.ACTION_SEND));
+            //register Message Receiver
+            LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, new IntentFilter(Intent.ACTION_SEND));
 
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        myLayout = inflater.inflate(R.layout.modern_layout, null);
-        prepareLayout();
-        prepareDrawTime();
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            myLayout = inflater.inflate(R.layout.modern_layout, null);
+            prepareLayout();
+            prepareDrawTime();
 
-        //ListenerService.requestData(this); //usually connection is not set up yet
-
-        wakeLock.release();
+            ListenerService.requestData(this); //usually connection is not set up yet  //KS uncomment
+        } finally {
+            wakeLock.release();
+        }
     }
 
 
@@ -538,46 +541,44 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
     public class MessageReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-            PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                    "MyWakelockTag");
-            wakeLock.acquire(30000);
-
-            Bundle bundle = intent.getBundleExtra("data");
-            if (bundle!= null) {
-                DataMap dataMap = DataMap.fromBundle(bundle);
-                setSgvLevel((int) dataMap.getLong("sgvLevel"));
-                Log.d("CircleWatchface", "sgv level : " + getSgvLevel());
-                setSgvString(dataMap.getString("sgvString"));
-                Log.d("CircleWatchface", "sgv string : " + getSgvString());
-                setRawString(dataMap.getString("rawString"));
-                setDelta(dataMap.getString("delta"));
-                setDatetime(dataMap.getDouble("timestamp"));
-                addToWatchSet(dataMap);
+            final PowerManager.WakeLock wl = JoH.getWakeLock("circle-message-receiver", 60000);
+            try {
+                Bundle bundle = intent.getBundleExtra("data");
+                if (bundle != null) {
+                    DataMap dataMap = DataMap.fromBundle(bundle);
+                    setSgvLevel((int) dataMap.getLong("sgvLevel"));
+                    Log.d("CircleWatchface", "sgv level : " + getSgvLevel());
+                    setSgvString(dataMap.getString("sgvString"));
+                    Log.d("CircleWatchface", "sgv string : " + getSgvString());
+                    setRawString(dataMap.getString("rawString"));
+                    setDelta(dataMap.getString("delta"));
+                    setDatetime(dataMap.getDouble("timestamp"));
+                    addToWatchSet(dataMap);
 
 
-                //start animation?
-                // dataMap.getDataMapArrayList("entries") == null -> not on "resend data".
-                if (sharedPrefs.getBoolean("animation", false) && dataMap.getDataMapArrayList("entries") == null && (getSgvString().equals("100") || getSgvString().equals("5.5") || getSgvString().equals("5,5"))) {
-                    startAnimation();
+                    //start animation?
+                    // dataMap.getDataMapArrayList("entries") == null -> not on "resend data".
+                    if (sharedPrefs.getBoolean("animation", false) && dataMap.getDataMapArrayList("entries") == null && (getSgvString().equals("100") || getSgvString().equals("5.5") || getSgvString().equals("5,5"))) {
+                        startAnimation();
+                    }
+
+                    prepareLayout();
+                    prepareDrawTime();
+                    invalidate();
                 }
+                //status
+                bundle = intent.getBundleExtra("status");
+                if (bundle != null) {
+                    DataMap dataMap = DataMap.fromBundle(bundle);
+                    setStatusString(dataMap.getString("externalStatusString"));
 
-                prepareLayout();
-                prepareDrawTime();
-                invalidate();
+                    prepareLayout();
+                    prepareDrawTime();
+                    invalidate();
+                }
+            } finally {
+                JoH.releaseWakeLock(wl);
             }
-            //status
-            bundle = intent.getBundleExtra("status");
-            if (bundle != null) {
-                DataMap dataMap = DataMap.fromBundle(bundle);
-                wakeLock.acquire(50);
-                setStatusString(dataMap.getString("externalStatusString"));
-
-                prepareLayout();
-                prepareDrawTime();
-                invalidate();
-            }
-            wakeLock.release();
         }
     }
 

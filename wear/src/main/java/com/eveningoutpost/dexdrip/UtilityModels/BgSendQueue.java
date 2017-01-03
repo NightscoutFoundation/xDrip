@@ -105,7 +105,7 @@ public class BgSendQueue extends Model {
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "sendQueue");
-        wakeLock.acquire();
+        wakeLock.acquire(120000);
         try {
             if (!is_follower) addToQueue(bgReading, operation_type);
 
@@ -299,8 +299,8 @@ public class BgSendQueue extends Model {
         dataMap.putLong("sgvLevel", sgvLevel(bg.calculated_value, sPrefs, bgGraphBuilder));
         dataMap.putInt("batteryLevel", (battery>=30)?1:0);
         dataMap.putDouble("sgvDouble", bg.calculated_value);
-        dataMap.putDouble("high", highMark);//inMgdl(highMark, sPrefs));//KS Fix for mmol on graph Y-axis in wear standalone mode
-        dataMap.putDouble("low", lowMark);//inMgdl(lowMark, sPrefs));
+        dataMap.putDouble("high", inMgdl(highMark, sPrefs));
+        dataMap.putDouble("low", inMgdl(lowMark, sPrefs));
         //TODO: Add raw again
         //dataMap.putString("rawString", threeRaw((prefs.getString("units", "mgdl").equals("mgdl"))));
         return dataMap;

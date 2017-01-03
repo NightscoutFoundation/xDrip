@@ -11,6 +11,7 @@ import android.preference.PreferenceScreen;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 public class NWPreferences extends PreferenceActivity {
 
@@ -18,6 +19,7 @@ public class NWPreferences extends PreferenceActivity {
     public PreferenceScreen screen;
     public PreferenceCategory category;
     public Preference collectionMethod;
+    private static final String TAG = NWPreferences.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,15 +30,38 @@ public class NWPreferences extends PreferenceActivity {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         screen = (PreferenceScreen) findPreference("preferenceScreen");
         category = (PreferenceCategory) findPreference("collection_category");
-        collectionMethod = findPreference("g5_collection_method");
+        collectionMethod = findPreference("dex_collection_method");
+        bindPreferenceSummaryToValue(collectionMethod);
         listenForChangeInSettings();
         setCollectionPrefs();
     }
 
+    private static void bindPreferenceSummaryToValue(Preference preference) {
+        try {
+            preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+            sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
+                    PreferenceManager
+                            .getDefaultSharedPreferences(preference.getContext())
+                            .getString(preference.getKey(), ""));
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception binding preference summary: " + e.toString());
+        }
+    }
+
+    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object value) {
+            String stringValue = value.toString();
+            Log.d(TAG, "Set preference summary: " + stringValue);
+            preference.setSummary(stringValue);
+            return true;
+        }
+    };
+
     public SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
 
-        if(key.compareTo("g5_collection_method") == 0) {
+        if(key.compareTo("dex_collection_method") == 0) {
             setCollectionPrefs();
         }
 
@@ -49,7 +74,8 @@ public class NWPreferences extends PreferenceActivity {
     }
 
     public void setCollectionPrefs() {
-        if (mPrefs.getBoolean("g5_collection_method", false)) {//DexCollectionType.DexcomG5
+        //if (mPrefs.getBoolean("dex_collection_method", false)) {//DexCollectionType.DexcomG5
+        if (DexCollectionType.hasBluetooth()) {
             screen.addPreference(category);
             Log.d("NWPreferences", "setCollectionPrefs addPreference category");
         }
@@ -59,7 +85,7 @@ public class NWPreferences extends PreferenceActivity {
         }
 
         if (collectionMethod != null && category != null) {
-            category.removePreference(collectionMethod);
+            //category.removePreference(collectionMethod);
         }
 
     }

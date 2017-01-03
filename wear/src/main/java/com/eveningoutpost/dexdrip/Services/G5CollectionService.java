@@ -94,7 +94,7 @@ import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class G5CollectionService extends Service {
 
-    public final static String TAG = G5CollectionService.class.getSimpleName();
+    public final static String TAG = "wear" + G5CollectionService.class.getSimpleName();
 
     private static final Object short_lock = new Object();
     private final Object mLock = new Object();
