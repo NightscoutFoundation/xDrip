@@ -422,8 +422,12 @@ public class GcmActivity extends Activity {
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                if (alert.isShowing()) {
-                    alert.dismiss();
+                try {
+                    if (alert.isShowing()) {
+                        alert.dismiss();
+                    }
+                } catch (IllegalArgumentException e) {
+                    Log.e(TAG, "Got exception trying to auto-dismiss dialog: " + e);
                 }
             }
         };
