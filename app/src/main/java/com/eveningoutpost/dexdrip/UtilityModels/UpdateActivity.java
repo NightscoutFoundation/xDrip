@@ -117,7 +117,7 @@ public class UpdateActivity extends AppCompatActivity {
                         }
 
 
-                        Request request = new Request.Builder()
+                        final Request request = new Request.Builder()
                                 // Mozilla header facilitates compression
                                 .header("User-Agent", "Mozilla/5.0")
                                 .header("Connection", "close")
@@ -331,9 +331,13 @@ public class UpdateActivity extends AppCompatActivity {
                     filename = matcher.group(1);
                 } else {
                     filename = "";
+                        final Matcher matcher2 = Pattern.compile("/([^/]*?.apk)").matcher(URL);
+                        if (matcher2.find()) {
+                            filename = matcher2.group(1);
+                        }
                 }
                 if (filename.length() < 5) {
-                    filename = "xDrip-plus-" + Integer.toString(newversion);
+                    filename = "xDrip-plus-" + Integer.toString(newversion) + ".apk";
                 }
 
                 Log.d(TAG, "Filename: " + filename);
