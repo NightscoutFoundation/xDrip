@@ -21,7 +21,7 @@
                 android:key="bg_alerts_screen"
                 android:title="@string/glucose_alerts_settings">
                 <ListPreference
-                    android:defaultValue="ascending"
+                    android:defaultValue="High"
                     android:entries="@array/BgAlertProfileEntries"
                     android:entryValues="@array/BgAlertProfileValues"
                     android:key="bg_alert_profile"
