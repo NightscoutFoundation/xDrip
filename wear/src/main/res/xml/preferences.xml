@@ -10,8 +10,8 @@
         <Preference
             android:defaultValue="DexcomG5"
             android:key="dex_collection_method"
-            android:summary="DexcomG5"
-            android:title="Dex Collection Method"
+            android:summary="@string/pref_summary_bt_collection_method"
+            android:title="@string/pref_bt_collection_method"
             android:editable="false"/>
         <CheckBoxPreference
             android:defaultValue="false"
@@ -55,19 +55,6 @@
         android:key="category"
         android:selectable="false">
 
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="showExternalStatus"
-            android:title="@string/pref_showExternalStatus"
-            app:wear_iconOff="@drawable/settings_off"
-            app:wear_iconOn="@drawable/settings_on" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="display_bridge_battery"
-            android:title="@string/pref_display_bridge_battery"
-            app:wear_iconOff="@drawable/settings_off"
-            app:wear_iconOn="@drawable/settings_on" />
-
         <CheckBoxPreference android:title="Dark"
             android:defaultValue="true"
             android:summary="Dark theme"
@@ -84,6 +71,34 @@
             android:summary="Show Raw on ???."
             android:key="showRawNoise" />
          -->
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="showExternalStatus"
+            android:title="@string/pref_show_external_status"
+            android:summary="@string/pref_summary_show_external_status"
+            app:wear_iconOff="@drawable/settings_off"
+            app:wear_iconOn="@drawable/settings_on" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="showBridgeBattery"
+            android:title="@string/pref_show_bridge_battery"
+            android:summary="@string/pref_summary_show_bridge_battery"
+            app:wear_iconOff="@drawable/settings_off"
+            app:wear_iconOn="@drawable/settings_on" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="showOpaqueCard"
+            android:title="@string/pref_show_opaque_card"
+            android:summary="@string/pref_summary_show_opaque_card"
+            app:wear_iconOff="@drawable/settings_off"
+            app:wear_iconOn="@drawable/settings_on" />
+        <ListPreference
+            android:key="toggle_fontsize"
+            android:title="@string/pref_toggle_fontsize"
+            android:summary="@string/pref_summary_toggle_fontsize"
+            android:entries="@array/toggle_fontsize"
+            android:entryValues="@array/toggle_fontsize_values"
+            android:defaultValue="1" />
 
         <ListPreference
             android:key="chart_timeframe"

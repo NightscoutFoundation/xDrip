@@ -13,6 +13,7 @@
         android:weightSum="1">
 
         <LinearLayout
+            android:id="@+id/directiondelta_layout"
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

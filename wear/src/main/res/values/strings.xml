@@ -18,6 +18,15 @@
         <item>4</item>
         <item>5</item>
     </string-array>
+
+    <string-array name="toggle_fontsize">
+        <item>10</item>
+        <item>12</item>
+    </string-array>
+    <string-array name="toggle_fontsize_values">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
     <string name="title_activity_simulation">Spoken Treatment</string>
     <string name="hello_round">Hello Round World!</string>
     <string name="hello_square">Hello Square World!</string>
@@ -47,9 +56,11 @@
     <string name="notify_text">xDrip requires Location access permission</string>
 
     <string name="pref_xdrip_g5_settings">XDrip BT Settings</string>
-    <string name="pref_enable_wearG5">Enable BT Collection</string>
-    <string name="pref_summary_enable_wearG5">Connect to Dexcom when phone is out-of-range</string>
-    <string name="pref_force_wearG5">Force BT Collection</string>
+    <string name="pref_bt_collection_method">BT Collector</string>
+    <string name="pref_summary_bt_collection_method">BT Collection Service</string>
+    <string name="pref_enable_wearG5">Enable Collector</string>
+    <string name="pref_summary_enable_wearG5">Connect to BT Collector when phone is out-of-range</string>
+    <string name="pref_force_wearG5">Force Collector</string>
     <string name="pref_summary_force_wearG5">Force phone to use Wear Collection Service</string>
     <string name="pref_run_ble_scan_constantly">Scan for G5 constantly</string>
     <string name="pref_summary_run_ble_scan_constantly">Some devices work better when scanning constantly, others do not. If reading is reliable when this setting is not selected, you should have improved battery life. Turn this setting on if you are missing readings at high rates and unexpected times.</string>
@@ -59,18 +70,28 @@
     <string name="pref_summary_always_get_new_keys">This will attempt a full authentication each read attempt. Redundant if Unbond before each read is also selected.</string>
     <string name="pref_always_unbond_G5">Unbond G5 before each read"</string>
     <string name="pref_summary_always_unbond_G5">This will remove the G5 from your device\'s paired device list, and attempt a full authentication and bonding with each read attempt.</string>
-    <string name="pref_ambient_lowcolor">Ambient Low Color</string>
-    <string name="pref_summary_ambient_lowcolor">Ambient Low Color. Note, RED is not supported on LOW-BIT devices, eg., Sony SmartWatch 3.</string>
-    <string name="pref_showExternalStatus">Show Loop Status</string>
-    <string name="pref_display_bridge_battery">Display Bridge Battery</string>
-    <string name="label_display_external_status">Status: </string>
-    <string name="label_display_external_status_abbrv">S: </string>
-    <string name="label_display_uploader">Uploader: %1$s%%</string>
-    <string name="label_display_uploader_abbrv">U: %1$s%%</string>
-    <string name="label_display_bridge_battery_percent">Bridge: %1$s%%</string>
-    <string name="label_display_bridge_battery_volt">Bridge: %1$smV</string>
-    <string name="label_display_bridge_battery_percent_abbrv">B: %1$s%%</string>
-    <string name="label_display_bridge_battery_volt_abbrv">B: %1$smV</string>
+    <string name="pref_show_external_status">Show Status</string>
+    <string name="pref_summary_show_external_status">Show Loop Status</string>
+    <string name="pref_show_bridge_battery">Show Bridge</string>
+    <string name="pref_summary_show_bridge_battery">Show Bridge Battery</string>
+    <string name="label_show_external_status">Status: </string>
+    <string name="label_show_external_status_abbrv">S: </string>
+    <string name="label_show_uploader">Uploader: %1$s%%</string>
+    <string name="label_show_uploader_abbrv">U: %1$s%%</string>
+    <string name="label_show_bridge_battery_percent">Bridge: %1$s%%</string>
+    <string name="label_show_bridge_battery_volt">Bridge: %1$smV</string>
+    <string name="label_show_bridge_battery_percent_abbrv">B: %1$s%%</string>
+    <string name="label_show_bridge_battery_volt_abbrv">B: %1$smV</string>
+    <string name="label_minuteago_zero_abbrv">--\'</string>
+    <string name="label_minuteago_zero">-- Minute ago</string>
+    <string name="label_minuteago_abbrv">%1$d\'</string>
+    <string name="label_minuteago">%1$d Minute ago</string>
+    <string name="label_minuteago_abbrv_pl">%1$d\'</string>
+    <string name="label_minuteago_pl">%1$d Minutes ago</string>
+    <string name="pref_toggle_fontsize">Small Font</string>
+    <string name="pref_summary_toggle_fontsize">Fontsize of small text in status and delta time</string>
+    <string name="pref_show_opaque_card">Opaque Card</string>
+    <string name="pref_summary_show_opaque_card">Show cards with opaque background</string>
 
     <!-- Location Settings -->
     <string name="location_not_found_title">Location Is Not Enabled</string>
