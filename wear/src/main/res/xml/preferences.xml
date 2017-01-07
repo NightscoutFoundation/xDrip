@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:key="preferenceScreen">
     <PreferenceCategory
-        android:title="@string/pref_xdrip_g5_settings"
+        android:title="@string/pref_xdrip_bt_settings"
         android:key="collection_category"
         android:selectable="false">
 
@@ -24,12 +24,16 @@
             android:key="force_wearG5"
             android:summary="@string/pref_summary_force_wearG5"
             android:title="@string/pref_force_wearG5"/>
+        <PreferenceScreen
+            android:key="button_xdrip_g5_settings_category_key"
+            android:title="@string/pref_xdrip_g5_settings"
+            android:persistent="false">
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="enable_wearG5"
             android:key="run_ble_scan_constantly"
             android:summary="@string/pref_summary_run_ble_scan_constantly"
-            android:title="@string/pref_summary_run_ble_scan_constantly" />
+            android:title="@string/pref_run_ble_scan_constantly" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="enable_wearG5"
@@ -48,10 +52,11 @@
             android:key="always_unbond_G5"
             android:summary="@string/pref_summary_always_unbond_G5"
             android:title="@string/pref_always_unbond_G5"/>
+    </PreferenceScreen>
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="XDrip Watch Settings"
+        android:title="@string/pref_xdrip_watch_settings"
         android:key="category"
         android:selectable="false">
 
@@ -102,47 +107,52 @@
 
         <ListPreference
             android:key="chart_timeframe"
-            android:title="Chart Timeframe"
-            android:summary="Chart Timeframe"
+            android:title="@string/pref_chart_time"
+            android:summary="@string/pref_summary_chart_time"
             android:entries="@array/chart_timeframe"
             android:entryValues="@array/chart_timeframe_values"
             android:defaultValue="5" />
 
-        <CheckBoxPreference android:title="Show Ago"
+        <PreferenceScreen
+            android:key="button_circlewf_category_key"
+            android:title="@string/pref_circlewf_settings"
+            android:persistent="false">
+        <CheckBoxPreference android:title="@string/pref_show_ago"
             android:defaultValue="true"
-            android:summary="Minutes since last reading. (Circle WF)"
+            android:summary="@string/pref_summary_show_ago"
             android:key="showAgo" />
 
-        <CheckBoxPreference android:title="Show Delta"
+        <CheckBoxPreference android:title="@string/pref_show_delta"
             android:defaultValue="true"
-            android:summary="Show delta. (Circle WF)"
+            android:summary="@string/pref_summary_show_delta"
             android:key="showDelta" />
 
-        <CheckBoxPreference android:title="Show BG"
+        <CheckBoxPreference android:title="@string/pref_show_bg"
             android:defaultValue="true"
-            android:summary="Show BG. (Circle WF)"
+            android:summary="@string/pref_summary_show_bg"
             android:key="showBG" />
 
-        <CheckBoxPreference android:title="Show Big Numbers"
+        <CheckBoxPreference android:title="@string/pref_show_bignumbers"
             android:defaultValue="false"
-            android:summary="Big numbers. (Circle WF)"
+            android:summary="@string/pref_summary_show_bignumbers"
             android:key="showBigNumbers" />
 
-        <CheckBoxPreference android:title="Show Ring History"
+        <CheckBoxPreference android:title="@string/pref_show_ring_history"
             android:defaultValue="false"
-            android:summary="Graphical history. (Circle WF)"
+            android:summary="@string/pref_summary_show_ring_history"
             android:key="showRingHistory" />
 
-        <CheckBoxPreference android:title="Light Ring History"
+        <CheckBoxPreference android:title="@string/pref_show_light_ring_history"
             android:defaultValue="true"
-            android:summary="Less eyecandy. (Circle WF)"
+            android:summary="@string/pref_summary_show_light_ring_histor"
             android:key="softRingHistory" />
 
 
-        <CheckBoxPreference android:title="Show Animations"
+        <CheckBoxPreference android:title="@string/pref_show_animations"
             android:defaultValue="true"
-            android:summary="Animations. (Circle WF)"
+            android:summary="@string/pref_summary_show_animations"
             android:key="animation" />
+        </PreferenceScreen>
 
     </PreferenceCategory>
 </PreferenceScreen>

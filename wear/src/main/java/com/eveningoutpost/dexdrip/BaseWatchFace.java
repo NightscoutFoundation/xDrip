@@ -103,6 +103,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 .getDefaultSharedPreferences(this);
         sharedPrefs.registerOnSharedPreferenceChangeListener(this);
         smallFontsizeArray = getResources().getStringArray(R.array.toggle_fontsize);
+        externalStatusString = getResources().getString(R.string.init_external_status);
     }
 
     @Override
