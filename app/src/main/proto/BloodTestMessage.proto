@@ -1,0 +1,16 @@
+// created by jamorham
+
+syntax = "proto2";
+
+package xdrip.bloodtestmessage;
+
+option java_package = "com.eveningoutpost.dexdrip.messages";
+
+message BloodTestMessage {
+    optional sint64 timestamp = 1;
+    optional double mgdl = 2;
+    optional sint64 created_timestamp = 3;
+    optional sint64 state = 4;
+    optional string source = 5;
+    optional string uuid = 6;
+}

@@ -4,6 +4,7 @@ package com.eveningoutpost.dexdrip;
  * Created by jamorham on 11/01/16.
  */
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -15,7 +16,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.support.v7.app.NotificationCompat;
 import android.util.Base64;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -135,12 +135,13 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                     switch (action) {
 
                         case "btmm":
+                        case "bgmm":
                             bpayload = CipherUtils.decryptStringToBytes(payload);
                             if (JoH.checkChecksum(bpayload)) {
                                 bpayload = Arrays.copyOfRange(bpayload, 0, bpayload.length - 4);
                                 Log.d(TAG, "Binary payload received: length: " + bpayload.length + " orig: " + payload.length());
                             } else {
-                                Log.e(TAG, "Invalid binary payload received, possible key mismatch");
+                                Log.e(TAG, "Invalid binary payload received, possible key mismatch: ");
                                 bpayload = null;
                             }
                             payload = "binary";
@@ -388,6 +389,12 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                 } else {
                     Log.i(TAG, "Receive multi blood test but we are neither master or follower");
                 }
+            } else if (action.equals("bgmm")) {
+                if (Home.get_follower()) {
+                    BgReading.processFromMultiMessage(bpayload);
+                } else {
+                    Log.i(TAG, "Receive multi glucose readings but we are not a follower");
+                }
 
             } else {
                 Log.e(TAG, "Received message action we don't know about: " + action);
@@ -446,7 +453,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+        Notification.Builder notificationBuilder = (Notification.Builder) new Notification.Builder(this)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle(title)
                 .setContentText(body)

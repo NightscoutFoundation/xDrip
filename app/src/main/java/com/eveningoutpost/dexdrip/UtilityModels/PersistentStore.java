@@ -3,7 +3,9 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.google.common.primitives.Bytes;
 
 /**
  * Created by jamorham on 23/09/2016.
@@ -50,6 +52,18 @@ public class PersistentStore {
         String current = getString(name);
         if (current.length() > 0) current += delimiter;
         setString(name, current + value);
+    }
+
+    public static void appendBytes(String name, byte[] value) {
+        setBytes(name, Bytes.concat(getBytes(name), value));
+    }
+
+    public static byte[] getBytes(String name) {
+        return JoH.base64decodeBytes(getString(name));
+    }
+
+    public static void setBytes(String name, byte[] value) {
+        setString(name, JoH.base64encodeBytes(value));
     }
 
     public static long getLong(String name) {

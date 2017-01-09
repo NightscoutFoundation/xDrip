@@ -96,6 +96,7 @@ public class GcmActivity extends Activity {
     private static final int MAX_RECURSION = 30;
     private static final int MAX_QUEUE_SIZE = 300;
     private static final int RELIABLE_MAX_PAYLOAD = 1800;
+    private static final int RELIABLE_MAX_BINARY_PAYLOAD = 1400;
     private static final boolean d = false; // debug
 
 
@@ -265,7 +266,7 @@ public class GcmActivity extends Activity {
         if (JoH.ratelimit("gcm-bgs-batch", 15)) {
             GcmActivity.sendMessage("bgs", bgReading.toJSON(true));
         } else {
-            PersistentStore.appendString("gcm-bgs-batch-queue", bgReading.toJSON(false), "^");
+            PersistentStore.appendBytes("gcm-bgs-batch-queue", bgReading.toMessage());
             PersistentStore.setLong("gcm-bgs-batch-time", JoH.tsl());
             processBgsBatch(false);
         }
@@ -288,12 +289,12 @@ public class GcmActivity extends Activity {
     }
 
     private synchronized static void processBgsBatch(boolean send_now) {
-        final String value = PersistentStore.getString("gcm-bgs-batch-queue");
-        Log.d(TAG, "Processing BgsBatch: length: " + value.length() + " now:" + send_now);
-        if ((send_now) || (value.length() > 700)) {
-            if (value.length() > 0) {
+        final byte[] value = PersistentStore.getBytes("gcm-bgs-batch-queue");
+        Log.d(TAG, "Processing BgsBatch: length: " + value.length + " now:" + send_now);
+        if ((send_now) || (value.length > (RELIABLE_MAX_BINARY_PAYLOAD - 100))) {
+            if (value.length > 0) {
                 PersistentStore.setString("gcm-bgs-batch-queue", "");
-                GcmActivity.sendMessage("bgs", value);
+                GcmActivity.sendMessage("bgmm", value);
             }
             Log.d(TAG, "Sent batch");
         } else {
