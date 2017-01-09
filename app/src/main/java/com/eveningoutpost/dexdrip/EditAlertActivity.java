@@ -887,8 +887,10 @@ public class EditAlertActivity extends ActivityWithMenu {
     public void testAlert() {
         // Check that values are ok.
         double threshold = parseDouble(alertThreshold.getText().toString());
-        if(Double.isNaN(threshold))
+        if(Double.isNaN(threshold)) {
+          JoH.static_toast_long("Threshold number is not valid");
             return;
+        }
 
         threshold = unitsConvertFromDisp(threshold);
 
@@ -919,6 +921,15 @@ public class EditAlertActivity extends ActivityWithMenu {
         String mp3_file = audioPath;
         try {
             int defaultSnooze = safeGetDefaultSnooze();
+
+            if (Home.getPreferencesBooleanDefaultFalse("start_snoozed"))  {
+                JoH.static_toast_long("Start Snoozed setting means alert would normally start silent");
+            } else if (Home.getPreferencesStringDefaultBlank("bg_alert_profile").equals("ascending")) {
+                JoH.static_toast_long("Ascending Volume Profile means it will start silent");
+            } else if (Home.getPreferencesStringDefaultBlank("bg_alert_profile").equals("Silent")) {
+                JoH.static_toast_long("Volume Profile is set to silent!");
+            }
+
             AlertType.testAlert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, vibrate, mContext);
         } catch (NullPointerException e) {
             JoH.static_toast_long("Snooze value is not a number - cannot test");
