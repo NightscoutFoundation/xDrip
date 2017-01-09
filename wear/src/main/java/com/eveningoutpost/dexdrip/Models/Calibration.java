@@ -19,10 +19,9 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
-//KS import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 //KS import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
-//KS import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -104,6 +103,7 @@ class TestParameters extends SlopeParameters {
 @Table(name = "Calibration", id = BaseColumns._ID)
 public class Calibration extends Model {
     private final static String TAG = Calibration.class.getSimpleName();
+    private final static double note_only_marker = 0.000001d;
 
     @Expose
     @Column(name = "timestamp", index = true)
@@ -433,10 +433,10 @@ public class Calibration extends Model {
     }
 
     public static Calibration create(double bg, long timeoffset, Context context) {
-        return create(bg, timeoffset, context, false);
+        return create(bg, timeoffset, context, false, 0);
     }
 
-    public static Calibration create(double bg, long timeoffset, Context context, boolean note_only) {
+    public static Calibration create(double bg, long timeoffset, Context context, boolean note_only, long estimatedInterstitialLagSeconds) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final String unit = prefs.getString("units", "mgdl");
         final boolean adjustPast = prefs.getBoolean("rewrite_history", true);
@@ -468,7 +468,7 @@ public class Calibration extends Model {
                 bgReading = BgReading.last(is_follower);
             } else {
                 // get closest bg reading we can find with a cut off at 15 minutes max time
-                bgReading = BgReading.getForPreciseTimestamp(new Date().getTime() - (timeoffset * 1000), (15 * 60 * 1000));
+                bgReading = BgReading.getForPreciseTimestamp(new Date().getTime() - ((timeoffset - estimatedInterstitialLagSeconds) * 1000 ), (15 * 60 * 1000));
             }
             if (bgReading != null) {
                 calibration.sensor = sensor;
@@ -567,9 +567,10 @@ public class Calibration extends Model {
             }
 
             // less than 5 calibrations in last 4 days? cast the net wider if in extended mode
-            if ((calibrations.size() < 5) && extended) {
+            final int ccount = calibrations.size();
+            if ((ccount < 5) && extended) {
                 calibrations = allForSensorLimited(5);
-                if (calibrations.size() >= 5) {
+                if (calibrations.size() > ccount) {
                     Home.toaststaticnext("Calibrated using data beyond last 4 days");
                 }
             }
@@ -639,9 +640,9 @@ public class Calibration extends Model {
     @NonNull
     private static SlopeParameters getSlopeParameters() {
 
-        //KS if (CollectionServiceStarter.isLimitter()) {
-        //     return new LiParameters();
-        // }
+        if (CollectionServiceStarter.isLimitter()) {
+            return new LiParameters();
+        }
 
         if (Home.getPreferencesBooleanDefaultFalse("engineering_mode") && Home.getPreferencesBooleanDefaultFalse("adrian_calibration_mode")) {
             JoH.static_toast_long("Using possibly UNSAFE Adrian calibration mode!");
@@ -725,34 +726,41 @@ public class Calibration extends Model {
         if (calibrations.size() >= 3) {
             final int denom = bgReadings.size();
             //Calibration latestCalibration = calibrations.get(0);
-            final Calibration latestCalibration = Calibration.lastValid();
-            int i = 0;
-            for (BgReading bgReading : bgReadings) {
-                final double oldYValue = bgReading.calculated_value;
-                final double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
-                final double new_calculated_value = ((newYvalue * (denom - i)) + (oldYValue * (i))) / denom;
-                // if filtered == raw then rewrite them both because this would not happen if filtered data was from real source
-                if (bgReading.filtered_calculated_value == bgReading.calculated_value) {
-                    bgReading.filtered_calculated_value = new_calculated_value;
-                }
-                bgReading.calculated_value = new_calculated_value;
+            try {
+                final Calibration latestCalibration = Calibration.lastValid();
+                int i = 0;
+                for (BgReading bgReading : bgReadings) {
+                    final double oldYValue = bgReading.calculated_value;
+                    final double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
+                    final double new_calculated_value = ((newYvalue * (denom - i)) + (oldYValue * (i))) / denom;
+                    // if filtered == raw then rewrite them both because this would not happen if filtered data was from real source
+                    if (bgReading.filtered_calculated_value == bgReading.calculated_value) {
+                        bgReading.filtered_calculated_value = new_calculated_value;
+                    }
+                    bgReading.calculated_value = new_calculated_value;
 
-                bgReading.save();
-                i += 1;
+                    bgReading.save();
+                    i += 1;
+                }
+            } catch (NullPointerException e) {
+                Log.wtf(TAG, "Null pointer in AdjustRecentReadings >=3: " + e);
             }
             // initial calibration
         } else if (calibrations.size() == 2) {
             //Calibration latestCalibration = calibrations.get(0);
-            final Calibration latestCalibration = Calibration.lastValid();
-            for (BgReading bgReading : bgReadings) {
-                final double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
-                if (bgReading.filtered_calculated_value == bgReading.calculated_value) {
-                    bgReading.filtered_calculated_value = newYvalue;
+            try {
+                final Calibration latestCalibration = Calibration.lastValid();
+                for (BgReading bgReading : bgReadings) {
+                    final double newYvalue = (bgReading.age_adjusted_raw_value * latestCalibration.slope) + latestCalibration.intercept;
+                    if (bgReading.filtered_calculated_value == bgReading.calculated_value) {
+                        bgReading.filtered_calculated_value = newYvalue;
+                    }
+                    bgReading.calculated_value = newYvalue;
+                    BgReading.updateCalculatedValue(bgReading);
+                    bgReading.save();
                 }
-                bgReading.calculated_value = newYvalue;
-                BgReading.updateCalculatedValue(bgReading);
-                bgReading.save();
-
+            } catch (NullPointerException e) {
+                Log.wtf(TAG, "Null pointer in AdjustRecentReadings ==2: " + e);
             }
         }
 
@@ -990,7 +998,6 @@ public class Calibration extends Model {
                 .where("Sensor = ? ", sensor.getId())
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
-                .where("timestamp > ?", (new Date().getTime() - (60000 * 60 * 24 * 4)))
                 .orderBy("timestamp desc")
                 .limit(limit)
                 .execute();

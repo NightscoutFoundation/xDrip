@@ -1395,7 +1395,7 @@ public class G5CollectionService extends Service {
             byte[] buffer = characteristic.getValue();
             byte firstByte = buffer[0];
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && gatt != null) {
-                mGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
+                gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
             }
             Log.d(TAG, "Received opcode reply: " + JoH.bytesToHex(new byte[] { firstByte }));
             if (firstByte == 0x2f) {

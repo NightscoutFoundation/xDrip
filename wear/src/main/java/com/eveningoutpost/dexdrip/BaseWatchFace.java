@@ -18,6 +18,7 @@ import android.preference.PreferenceManager;
 //KS import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.wearable.view.WatchViewStub;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Display;
@@ -49,11 +50,13 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public TextView mTime, mSgv, mDirection, mTimestamp, mUploaderBattery, mUploaderXBattery, mDelta, mRaw, mStatus;
     public RelativeLayout mRelativeLayout;
     public LinearLayout mLinearLayout;
+    public LinearLayout mDirectionDelta;
     public long sgvLevel = 0;
     public int batteryLevel = 1;
     public int mXBatteryLevel = 1;
     public int mXBattery = 0;
     public boolean mShowXBattery = false;
+    String[] smallFontsizeArray;// = getResources().getStringArray(R.array.toggle_fontsize);
     public int ageLevel = 1;
     public int highColor = Color.YELLOW;
     public int lowColor = Color.RED;
@@ -78,7 +81,6 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     protected SharedPreferences sharedPrefs;
     private String rawString = "000 | 000 | 000";
     private String batteryString = "--";
-    private String xbatteryString = "--";
     private String sgvString = "--";
     private String externalStatusString = "no status";
     private String avgDelta = "";
@@ -100,6 +102,8 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(this);
         sharedPrefs.registerOnSharedPreferenceChangeListener(this);
+        smallFontsizeArray = getResources().getStringArray(R.array.toggle_fontsize);
+        externalStatusString = getResources().getString(R.string.init_external_status);
     }
 
     @Override
@@ -130,6 +134,8 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 mDelta = (TextView) stub.findViewById(R.id.delta);
                 mRelativeLayout = (RelativeLayout) stub.findViewById(R.id.main_layout);
                 mLinearLayout = (LinearLayout) stub.findViewById(R.id.secondary_layout);
+                mDirectionDelta = (LinearLayout) stub.findViewById(R.id.directiondelta_layout);
+                setSmallFontsize(false);
                 chart = (LineChartView) stub.findViewById(R.id.chart);
                 layoutSet = true;
                 showAgoRawBattStatus(false);
@@ -140,6 +146,31 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         });
         ListenerService.requestData(this);
         wakeLock.acquire(50);
+    }
+
+    public void setSmallFontsize(boolean toggle) {
+        int fontvalue = Integer.parseInt(sharedPrefs.getString("toggle_fontsize", "1"));
+        fontvalue = toggle ? (fontvalue%smallFontsizeArray.length) + 1 : fontvalue;
+        int fontsize =  Integer.parseInt(smallFontsizeArray[fontvalue-1]);
+        Log.d("setSmallFontsize", "fontsize=" + fontsize + " fontvalue=" + fontvalue);
+        mDelta.setTextSize(fontsize);
+        setStatusTextSize(fontsize);
+        if (fontvalue == 1) {
+            mStatus.setMaxLines(1);
+            mStatus.setEllipsize(TextUtils.TruncateAt.END);
+        } else {
+            mStatus.setMaxLines(Integer.MAX_VALUE);
+            mStatus.setEllipsize(null);
+        }
+        if (toggle) sharedPrefs.edit().putString("toggle_fontsize", "" + fontvalue).commit();
+    }
+
+    private void setStatusTextSize(int size) {
+        mDelta.setTextSize(size);
+        mTimestamp.setTextSize(size);
+        mUploaderBattery.setTextSize(size);
+        mUploaderXBattery.setTextSize(size);
+        mStatus.setTextSize(size);
     }
 
     public int ageLevel() {
@@ -155,12 +186,26 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     }
 
     public String readingAge(boolean shortString) {
-        if (datetime == 0) { return shortString?"--'":"-- Minute ago"; }
+        if (datetime == 0) {
+            //return shortString?"--'":"-- Minute ago";
+            if (shortString)
+                return (getResources().getString(R.string.label_minuteago_zero_abbrv));
+            else
+                return (getResources().getString(R.string.label_minuteago_zero));
+        }
         int minutesAgo = (int) Math.floor(timeSince()/(1000*60));
         if (minutesAgo == 1) {
-            return minutesAgo + (shortString?"'":" Minute ago");
+            //return minutesAgo + (shortString?"'":" Minute ago");
+            if (shortString)
+                return (getResources().getString(R.string.label_minuteago_abbrv, minutesAgo));
+            else
+                return (getResources().getString(R.string.label_minuteago, minutesAgo));
         }
-        return minutesAgo + (shortString?"'":" Minutes ago");
+        //return minutesAgo + (shortString?"'":" Minutes ago");
+        if (shortString)
+            return (getResources().getString(R.string.label_minuteago_abbrv, minutesAgo));
+        else
+            return (getResources().getString(R.string.label_minuteago_pl, minutesAgo));
     }
 
     @Override
@@ -185,13 +230,15 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         if(layoutSet) {
             this.mRelativeLayout.draw(canvas);
             Log.d("onDraw", "draw");
-            int cardWidth = mCardRect.width();
-            int cardHeight = mCardRect.height();
-            if (cardHeight > 0 && cardWidth > 0 && getCurrentWatchMode() != WatchMode.INTERACTIVE) {
-                Paint paint = new Paint();
-                paint.setColor(Color.BLACK);
-                paint.setStrokeWidth(0);
-                canvas.drawRect(mCardRect, paint);
+            if (sharedPrefs.getBoolean("showOpaqueCard", true)) {
+                int cardWidth = mCardRect.width();
+                int cardHeight = mCardRect.height();
+                if (cardHeight > 0 && cardWidth > 0 && getCurrentWatchMode() != WatchMode.INTERACTIVE) {
+                    Paint paint = new Paint();
+                    paint.setColor(Color.BLACK);
+                    paint.setStrokeWidth(0);
+                    canvas.drawRect(mCardRect, paint);
+                }
             }
         }
     }
@@ -284,6 +331,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
 
     private void showAgoRawBattStatus(boolean onTimeChanged) {
 
+        String xbatteryString = "--";
         boolean showAvgDelta = sharedPrefs.getBoolean("showAvgDelta", false);
         mDelta.setText(delta);
         if(showAvgDelta){
@@ -310,18 +358,26 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             mUploaderBattery.setText("Uploader: " + batteryString + "%");
         }
         */
+        mRaw.setVisibility(View.GONE);
+
         //xBridge Battery:
         mShowXBattery = false;
-        if (sharedPrefs.getBoolean("enable_wearG5", false) && sharedPrefs.getBoolean("display_bridge_battery", false)) {
+        if (sharedPrefs.getBoolean("enable_wearG5", false) && sharedPrefs.getBoolean("showBridgeBattery", false)) {
             mShowXBattery = true;
             if (DexCollectionType.hasBattery()) {
                 mXBattery = sharedPrefs.getInt("bridge_battery", 0);
             }
             else if (!onTimeChanged){//watch - only request battery every 5 minutes or on startup
-                IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+                IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);//from BgSendQueue
                 Intent batteryStatus = getApplicationContext().registerReceiver(null, ifilter);
                 int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
                 mXBattery = level;
+                int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+                if (level == -1 || scale == -1) {
+                    mXBattery = 50;
+                }
+                else
+                    mXBattery = (int) (((float) level / (float) scale) * 100.0f);
             }
         }
         mXBatteryLevel = (mXBattery >= 30) ? 1 : 0;
@@ -329,10 +385,18 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         if (mShowXBattery && mXBattery > 0) {//see app/home.java displayCurrentInfo()
             xbatteryString = "" + mXBattery;
             //mUploaderXBattery.setText((showStatus ? "B: " : "Bridge: ") + xbatteryString + ((mXBattery < 200) ? "%" : "mV"));
-            if (mXBattery < 200)
-                mUploaderXBattery.setText(getResources().getString(R.string.label_display_bridge_battery_percent_abbrv, xbatteryString));
-            else
-                mUploaderXBattery.setText(getResources().getString(R.string.label_display_bridge_battery_volt_abbrv, xbatteryString));
+            if (mXBattery < 200) {
+                if (showStatus)
+                    mUploaderXBattery.setText(getResources().getString(R.string.label_show_bridge_battery_percent_abbrv, xbatteryString));
+                else
+                    mUploaderXBattery.setText(getResources().getString(R.string.label_show_bridge_battery_percent, xbatteryString));
+            }
+            else {
+                if (showStatus)
+                    mUploaderXBattery.setText(getResources().getString(R.string.label_show_bridge_battery_volt_abbrv, xbatteryString));
+                else
+                    mUploaderXBattery.setText(getResources().getString(R.string.label_show_bridge_battery_volt, xbatteryString));
+            }
             mUploaderXBattery.setVisibility(View.VISIBLE);
         }
         else
@@ -341,15 +405,20 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         if(showStatus || mShowXBattery){
             //use short forms
             mTimestamp.setText(readingAge(true));
-            mUploaderBattery.setText(getResources().getString(R.string.label_display_uploader_abbrv, batteryString));//"U: " + batteryString + "%"
+            //mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader_abbrv, batteryString));//"U: " + batteryString + "%"
         } else {
             mTimestamp.setText(readingAge(false));
-            mUploaderBattery.setText(getResources().getString(R.string.label_display_uploader, batteryString));//"Uploader: " + batteryString + "%"
+            //mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader, batteryString));//"Uploader: " + batteryString + "%"
         }
+
+        if (showStatus)
+            mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader_abbrv, batteryString));//"U: " + batteryString + "%"
+        else
+            mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader, batteryString));//"Uploader: " + batteryString + "%"
 
         if (showStatus) {
             mStatus.setVisibility(View.VISIBLE);
-            mStatus.setText(getResources().getString(R.string.label_display_external_status_abbrv) + externalStatusString);//"S: "
+            mStatus.setText(getResources().getString(R.string.label_show_external_status_abbrv) + externalStatusString);//"S: "
         } else {
             mStatus.setVisibility(View.GONE);
         }
@@ -384,6 +453,18 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key){
+        setColor();
+        if(layoutSet){
+            showAgoRawBattStatus(false);
+            setSmallFontsize(false);
+            mRelativeLayout.measure(specW, specH);
+            mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
+                    mRelativeLayout.getMeasuredHeight());
+        }
+        invalidate();
+    }
+
+    public void invalidateWatchface() {
         setColor();
         if(layoutSet){
             showAgoRawBattStatus(false);
@@ -424,11 +505,13 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
 
     @Override
     protected void onCardPeek(Rect peekCardRect) {
-        mCardRect = peekCardRect;
-        displayCard();
-        int cardWidth = peekCardRect.width();
-        int cardHeight = peekCardRect.height();
-        Log.d("onCardPeek", "WatchFace.onCardPeek: getWidth()=" + getWidth() + " getHeight()=" + getHeight() + " cardWidth=" + cardWidth + " cardHeight=" + cardHeight);
+        if (sharedPrefs.getBoolean("showOpaqueCard", true)) {
+            mCardRect = peekCardRect;
+            displayCard();
+            int cardWidth = peekCardRect.width();
+            int cardHeight = peekCardRect.height();
+            Log.d("onCardPeek", "WatchFace.onCardPeek: getWidth()=" + getWidth() + " getHeight()=" + getHeight() + " cardWidth=" + cardWidth + " cardHeight=" + cardHeight);
+        }
     }
 
     protected abstract void setColorDark();

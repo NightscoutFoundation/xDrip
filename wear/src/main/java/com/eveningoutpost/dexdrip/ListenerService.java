@@ -8,8 +8,8 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;//KS
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;//KS
-import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.*;
+import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import android.Manifest;
@@ -26,7 +26,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -53,6 +52,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.inMgdl;
+import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.sgvLevel;
 
 /**
  * Created by stephenblack on 12/26/14.
@@ -435,13 +437,15 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     Log.d(TAG, "onDataChanged NEW_STATUS_PATH=" + path);
                     LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
                 } else if (path.equals(WEARABLE_DATA_PATH)) {
-
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
+                    Log.d(TAG, "onDataChanged WEARABLE_DATA_PATH=" + path);
+                    if (resetDataToLatest(dataMap, getApplicationContext())) {
+                        Log.d(TAG, "onDataChanged dataMap reset to watch BgReading.Last()");
+                    }
                     Intent messageIntent = new Intent();
                     messageIntent.setAction(Intent.ACTION_SEND);
                     messageIntent.putExtra("data", dataMap.toBundle());
                     LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
-                    Log.d(TAG, "onDataChanged WEARABLE_DATA_PATH=" + path);
                 } else if (path.equals(WEARABLE_TREATMENT_PAYLOAD)) {
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Intent intent = new Intent(getApplicationContext(), Simulation.class);
@@ -499,6 +503,43 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 }
             }
         }
+    }
+
+    private boolean resetDataToLatest(DataMap dataMap, Context context) {//KS
+        if (dataMap != null) {
+            Double dmTimestamp = dataMap.getDouble("timestamp");
+            Log.d(TAG, "resetDataToLatest dataMap.datetime=" + JoH.dateTimeText(dmTimestamp.longValue()) + " dataMap.sgvDouble=" + dataMap.getDouble("sgvDouble"));
+            Sensor.InitDb(context);//ensure database has already been initialized
+            final BgReading last = BgReading.last();
+            if (last != null) {
+                long bgTimestamp = last.timestamp;
+                Log.d(TAG, "resetDataToLatest last.timestamp=" + JoH.dateTimeText(bgTimestamp) + " last.calculated_value=" + last.calculated_value);
+                if (bgTimestamp > dmTimestamp) {
+                    dataMap(dataMap, last, mPrefs, new com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder(context));
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static void dataMap(DataMap dataMap, BgReading bg, SharedPreferences sPrefs, com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder bgGraphBuilder) {//KS
+        Log.d(TAG, "dataMap bgTimestamp=" + JoH.dateTimeText(bg.timestamp) + " calculated_value=" + bg.calculated_value);
+        //Double highMark = Double.parseDouble(sPrefs.getString("highValue", "140"));
+        //Double lowMark = Double.parseDouble(sPrefs.getString("lowValue", "60"));
+        //int battery = BgSendQueue.getBatteryLevel(context.getApplicationContext());
+        dataMap.putString("sgvString", bgGraphBuilder.unitized_string(bg.calculated_value));
+        dataMap.putString("slopeArrow", bg.slopeArrow());
+        dataMap.putDouble("timestamp", bg.timestamp); //TODO: change that to long (was like that in NW)
+        dataMap.putString("delta", bgGraphBuilder.unitizedDeltaString(true, true));
+        //dataMap.putString("battery", "" + battery);
+        dataMap.putLong("sgvLevel", sgvLevel(bg.calculated_value, sPrefs, bgGraphBuilder));
+        //dataMap.putInt("batteryLevel", (battery>=30)?1:0);
+        dataMap.putDouble("sgvDouble", bg.calculated_value);
+        //dataMap.putDouble("high", inMgdl(highMark, sPrefs));
+        //dataMap.putDouble("low", inMgdl(lowMark, sPrefs));
+        //TODO: Add raw again
+        //dataMap.putString("rawString", threeRaw((prefs.getString("units", "mgdl").equals("mgdl"))));
     }
 
     private synchronized void syncPrefData(DataMap dataMap) {//KS

@@ -12,6 +12,7 @@
         android:textAlignment="center">
 
         <LinearLayout
+            android:id="@+id/directiondelta_layout"
             android:orientation="horizontal"
             android:layout_width="147dp"
             android:layout_height="wrap_content"
