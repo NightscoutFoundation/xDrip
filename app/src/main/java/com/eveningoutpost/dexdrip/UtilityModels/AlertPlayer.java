@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -12,7 +13,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
 
 import com.eveningoutpost.dexdrip.EditAlertActivity;
 import com.eveningoutpost.dexdrip.GcmActivity;
@@ -409,7 +409,7 @@ public class AlertPlayer {
         String content = "BG LEVEL ALERT: " + bgValue + "  (@" + JoH.hourMinuteString() + ")";
         Intent intent = new Intent(ctx, SnoozeActivity.class);
 
-        NotificationCompat.Builder  builder = new NotificationCompat.Builder(ctx)
+        Notification.Builder  builder = new Notification.Builder(ctx)
             .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
             .setContentTitle(title)
             .setContentText(content)
@@ -453,7 +453,7 @@ public class AlertPlayer {
         }
         Log.ueh("Alerting",content);
         NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotifyMgr.cancel(Notifications.exportAlertNotificationId);
+        //mNotifyMgr.cancel(Notifications.exportAlertNotificationId); // this appears to confuse android wear version 2.0.0.141773014.gms even though it shouldn't - can we survive without this?
         mNotifyMgr.notify(Notifications.exportAlertNotificationId, builder.build());
 
         if (Home.getPreferencesBooleanDefaultFalse("broadcast_to_pebble") && (Home.getPreferencesBooleanDefaultFalse("pebble_vibe_alerts"))) {
