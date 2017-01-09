@@ -2,11 +2,13 @@ package com.eveningoutpost.dexdrip;
 
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
+import android.support.wearable.watchface.WatchFaceStyle;
 import android.view.LayoutInflater;
 
 import com.ustwo.clockwise.common.WatchMode;
 
 public class LargeHome extends BaseWatchFace {
+    private long fontsizeTapTime = 0l;
 
     @Override
     public void onCreate() {
@@ -14,6 +16,30 @@ public class LargeHome extends BaseWatchFace {
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         layoutView = inflater.inflate(R.layout.activity_home_large, null);
         performViewSetup();
+    }
+
+    @Override
+    protected void onTapCommand(int tapType, int x, int y, long eventTime) {
+
+        if (tapType == TAP_TYPE_TAP&&
+                ((x >=mDirectionDelta.getLeft() &&
+                        x <= mDirectionDelta.getRight()&&
+                        y >= mDirectionDelta.getTop() &&
+                        y <= mDirectionDelta.getBottom()) ||
+                        (x >=mLinearLayout.getLeft() &&
+                                x <= mLinearLayout.getRight()&&
+                                y >= mLinearLayout.getTop() &&
+                                y <= mLinearLayout.getBottom()) )) {
+            if (eventTime - fontsizeTapTime < 800) {
+                setSmallFontsize(true);
+            }
+            fontsizeTapTime = eventTime;
+        }
+    }
+
+    @Override
+    protected WatchFaceStyle getWatchFaceStyle(){
+        return new WatchFaceStyle.Builder(this).setAcceptsTapEvents(true).build();
     }
 
     @Override

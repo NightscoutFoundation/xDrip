@@ -23,6 +23,7 @@ public class Home extends BaseWatchFace {
     private static boolean is_follower_set = false;
     private static SharedPreferences prefs;
     private long chartTapTime = 0l;
+    private long fontsizeTapTime = 0l;
 
     @Override
     public void onCreate() {
@@ -51,6 +52,20 @@ public class Home extends BaseWatchFace {
                 changeChartTimeframe();
             }
             chartTapTime = eventTime;
+        }
+        if (tapType == TAP_TYPE_TAP&&
+                ((x >=mDirectionDelta.getLeft() &&
+                x <= mDirectionDelta.getRight()&&
+                y >= mDirectionDelta.getTop() &&
+                y <= mDirectionDelta.getBottom()) ||
+                 (x >=mLinearLayout.getLeft() &&
+                  x <= mLinearLayout.getRight()&&
+                  y >= mLinearLayout.getTop() &&
+                  y <= mLinearLayout.getBottom()) )) {
+            if (eventTime - fontsizeTapTime < 800) {
+                setSmallFontsize(true);
+            }
+            fontsizeTapTime = eventTime;
         }
     }
 
