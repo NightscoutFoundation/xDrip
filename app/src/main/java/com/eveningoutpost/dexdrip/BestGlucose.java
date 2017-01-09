@@ -11,6 +11,7 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
@@ -43,6 +44,7 @@ public class BestGlucose {
         public double mgdl = -1;    // displayable mgdl figure
         public double unitized_value = -1; // in local units
         public double delta_mgdl = 0; // displayable delta mgdl figure
+        public double slope = 0; // slope metric mgdl/ms
         public int warning = -1;  // warning level
         public long mssince = -1;
         public long timestamp = -1; // timestamp of reading
@@ -204,6 +206,7 @@ public class BestGlucose {
             estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
             // TODO handle ratio when period is not dexcom period?
             double estimated_delta_by_minute = estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000);
+            dg.slope = estimated_delta_by_minute / 60000;
             dg.unitized_delta_no_units = BgGraphBuilder.unitizedDeltaStringRaw(false, true, estimated_delta, doMgdl);
             // TODO optimize adding units
             dg.unitized_delta = BgGraphBuilder.unitizedDeltaStringRaw(true, true, estimated_delta, doMgdl);
@@ -227,9 +230,10 @@ public class BestGlucose {
             if (time_delta < 0) Log.wtf(TAG, "Time delta is negative! : " + time_delta);
             //slope_arrow = lastBgReading.slopeArrow(); // internalize this for plugins
             double slope = calculateSlope(estimate, timestamp, previous_estimate, previous_timestamp);
+            dg.slope = slope;
             slope_arrow = BgReading.slopeToArrowSymbol(slope * 60000); // slope by minute
             slope_name = BgReading.slopeName(slope * 60000);
-            Log.d(TAG, "No noise option slope by minute: " + (slope * 60000));
+            Log.d(TAG, "No noise option slope by minute: " + JoH.qs(slope * 60000, 5));
         }
 
         // TODO bit more work on deltas etc needed here
@@ -253,6 +257,18 @@ public class BestGlucose {
         dg.extra_string = extrastring;
         dg.delta_name = slope_name;
 
+        // fail safe for excessive raw data values - this may want
+        // to be moved one day
+        if (lastBgReading.raw_data > Constants.MAX_RAW) {
+            dg.delta_arrow = "!";
+            dg.unitized = ">!?";
+            dg.mgdl = 0;
+            dg.delta_mgdl = 0;
+            dg.unitized_value = 0;
+            dg.unitized_delta = "";
+            dg.slope = 0;
+        }
+
         if (d)
             Log.d(TAG, "dg result: " + dg.unitized + " previous: " + BgGraphBuilder.unitized_string(previous_estimate, doMgdl));
         return dg;
@@ -274,7 +290,7 @@ public class BestGlucose {
         return BgGraphBuilder.unitizedDeltaStringRaw(showUnit, highGranularity, value, doMgdl);
     }
 
-    public static double calculateSlope(double value1, long timestamp1, double value2, long timestamp2) {
+    private static double calculateSlope(double value1, long timestamp1, double value2, long timestamp2) {
         if (timestamp1 == timestamp2 || value1 == value2) {
             return 0;
         } else {
