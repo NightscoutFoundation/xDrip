@@ -26,46 +26,49 @@ public class DailyIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("DailyIntentService", 120000);
-        if (JoH.pratelimit("daily-intent-service", 60000)) {
-            Log.i(TAG, "DailyIntentService onHandleIntent Starting");
-            Long start = JoH.tsl();
-            // prune old database records
-            try {
-                UserError.cleanup();
-            } catch (Exception e) {
-                Log.e(TAG, "DailyIntentService exception on UserError ", e);
-            }
-            try {
-                BgSendQueue.cleanQueue();
+        try {
+            if (JoH.pratelimit("daily-intent-service", 60000)) {
+                Log.i(TAG, "DailyIntentService onHandleIntent Starting");
+                Long start = JoH.tsl();
+                // prune old database records
+                try {
+                    UserError.cleanup();
+                } catch (Exception e) {
+                    Log.e(TAG, "DailyIntentService exception on UserError ", e);
+                }
+                try {
+                    BgSendQueue.cleanQueue();
 
-            } catch (Exception e) {
-                Log.e(TAG, "DailyIntentService exception on BgSendQueue ", e);
+                } catch (Exception e) {
+                    Log.e(TAG, "DailyIntentService exception on BgSendQueue ", e);
+                }
+                try {
+                    CalibrationSendQueue.cleanQueue();
+                } catch (Exception e) {
+                    Log.e(TAG, "DailyIntentService exception on CalibrationSendQueue ", e);
+                }
+                try {
+                    UploaderQueue.cleanQueue();
+                } catch (Exception e) {
+                    Log.e(TAG, "DailyIntentService exception on UploaderQueue ", e);
+                }
+                try {
+                    PebbleMovement.cleanup(Home.getPreferencesInt("retention_pebble_movement", 180));
+                } catch (Exception e) {
+                    Log.e(TAG, "DailyIntentService exception on PebbleMovement ", e);
+                }
+                try {
+                    checkForAnUpdate(getApplicationContext());
+                } catch (Exception e) {
+                    Log.e(TAG, "DailyIntentService exception on checkForAnUpdate ", e);
+                }
+                Log.i(TAG, "DailyIntentService onHandleIntent exiting after " + ((JoH.tsl() - start) / 1000) + " seconds");
+                //} else {
+                // Log.e(TAG, "DailyIntentService exceeding rate limit");
             }
-            try {
-                CalibrationSendQueue.cleanQueue();
-            } catch (Exception e) {
-                Log.e(TAG, "DailyIntentService exception on CalibrationSendQueue ", e);
-            }
-            try {
-                UploaderQueue.cleanQueue();
-            } catch (Exception e) {
-                Log.e(TAG, "DailyIntentService exception on UploaderQueue ", e);
-            }
-            try {
-                PebbleMovement.cleanup(Home.getPreferencesInt("retention_pebble_movement", 180));
-            } catch (Exception e) {
-                Log.e(TAG, "DailyIntentService exception on PebbleMovement ", e);
-            }
-            try {
-                checkForAnUpdate(getApplicationContext());
-            } catch (Exception e) {
-                Log.e(TAG, "DailyIntentService exception on checkForAnUpdate ", e);
-            }
-            Log.i(TAG, "DailyIntentService onHandleIntent exiting after " + ((JoH.tsl() - start) / 1000) + " seconds");
-        } else {
-            Log.e(TAG, "DailyIntentService exceeding rate limit");
+        } finally {
+            JoH.releaseWakeLock(wl);
         }
-        JoH.releaseWakeLock(wl);
     }
 
 }

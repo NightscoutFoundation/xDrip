@@ -1,0 +1,13 @@
+// created by jamorham
+
+syntax = "proto2";
+
+package xdrip.bgreadingmessage;
+
+option java_package = "com.eveningoutpost.dexdrip.messages";
+
+import "BgReadingMessage.proto";
+
+message BgReadingMultiMessage {
+    repeated BgReadingMessage bgreading_message = 1;
+}

@@ -176,6 +176,12 @@
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/pref_title_broadcast_enabled" />
             <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="broadcast_data_through_intents"
+                android:key="broadcast_data_use_best_glucose"
+                android:summary="Use noise smoothing and plugins etc (if enabled) for broadcasted value"
+                android:title="Send Display Glucose" />
+            <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="broadcast_data_through_intents"
                 android:key="broadcast_data_through_intents_without_permission"

@@ -1,0 +1,13 @@
+// created by jamorham
+
+syntax = "proto2";
+
+package xdrip.bloodtestmessage;
+
+option java_package = "com.eveningoutpost.dexdrip.messages";
+
+import "BloodTestMessage.proto";
+
+message BloodTestMultiMessage {
+    repeated BloodTestMessage bloodtest_message = 1;
+}

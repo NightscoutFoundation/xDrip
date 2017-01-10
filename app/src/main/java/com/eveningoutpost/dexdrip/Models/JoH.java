@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
@@ -34,7 +35,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
@@ -52,6 +52,7 @@ import com.eveningoutpost.dexdrip.utils.BestGZIPOutputStream;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.primitives.Bytes;
+import com.google.common.primitives.UnsignedInts;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -268,11 +269,33 @@ public class JoH {
     public static String base64decode(String input) {
         try {
             return new String(Base64.decode(input.getBytes("UTF-8"), Base64.NO_WRAP), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException | IllegalArgumentException e) {
             Log.e(TAG, "Got unsupported encoding: " + e);
             return "decode-error";
         }
     }
+
+
+    public static String base64encodeBytes(byte[] input) {
+        try {
+            return new String(Base64.encode(input, Base64.NO_WRAP), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            Log.e(TAG, "Got unsupported encoding: " + e);
+            return "encode-error";
+        }
+    }
+
+    public static byte[] base64decodeBytes(String input) {
+        try {
+            return Base64.decode(input.getBytes("UTF-8"), Base64.NO_WRAP);
+        } catch (UnsupportedEncodingException | IllegalArgumentException e) {
+            Log.e(TAG, "Got unsupported encoding: " + e);
+            return new byte[0];
+        }
+    }
+
+
+
 
     public static String ucFirst(String input) {
         return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
@@ -819,7 +842,7 @@ public class JoH {
 
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, boolean onetime) {
-        final NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);
+        final Notification.Builder mBuilder = notificationBuilder(title, content, intent);
         final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
         if (vibrate) mBuilder.setVibrate(vibratePattern);
         mBuilder.setLights(0xff00ff00, 300, 1000);
@@ -835,8 +858,8 @@ public class JoH {
         mNotifyMgr.notify(notificationId, mBuilder.build());
     }
 
-    private static NotificationCompat.Builder notificationBuilder(String title, String content, PendingIntent intent) {
-        return new NotificationCompat.Builder(xdrip.getAppContext())
+    private static Notification.Builder notificationBuilder(String title, String content, PendingIntent intent) {
+        return new Notification.Builder(xdrip.getAppContext())
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setContentTitle(title)
                 .setContentText(content)
@@ -1026,7 +1049,7 @@ public class JoH {
         if ((bytes == null) || (bytes.length < 4)) return false;
         final CRC32 crc = new CRC32();
         crc.update(bytes, 0, bytes.length - 4);
-        final long buffer_crc = (ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getInt(bytes.length - 4));
+        final long buffer_crc = UnsignedInts.toLong(ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getInt(bytes.length - 4));
         return buffer_crc == crc.getValue();
     }
 }

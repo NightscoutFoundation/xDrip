@@ -23,17 +23,22 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
+import com.eveningoutpost.dexdrip.messages.BgReadingMessage;
+import com.eveningoutpost.dexdrip.messages.BgReadingMultiMessage;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.internal.bind.DateTypeAdapter;
+import com.squareup.wire.Wire;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -314,21 +319,26 @@ public class BgReading extends Model implements ShareUploadableBg {
         return null;
     }
 
-    public static BgReading getForPreciseTimestamp(double timestamp, double precision) {
-        Sensor sensor = Sensor.currentSensor();
-        if (sensor != null) {
-            BgReading bgReading = new Select()
+    static BgReading getForPreciseTimestamp(double timestamp, double precision) {
+        return getForPreciseTimestamp(timestamp, precision, true);
+    }
+
+    static BgReading getForPreciseTimestamp(double timestamp, double precision, boolean lock_to_sensor) {
+        final Sensor sensor = Sensor.currentSensor();
+        if ((sensor != null) || !lock_to_sensor) {
+            final BgReading bgReading = new Select()
                     .from(BgReading.class)
-                    .where("Sensor = ? ", sensor.getId())
-                    .where("timestamp <= ?", (timestamp + (60 * 1000))) // 1 minute padding (should never be that far off, but why not)
-                    .orderBy("timestamp desc")
+                    .where(lock_to_sensor ? "Sensor = ?" : "timestamp > ?", (lock_to_sensor ? sensor.getId() : 0))
+                    .where("timestamp <= ?", (timestamp + precision))
+                    .where("timestamp >= ?", (timestamp - precision))
+                    .orderBy("abs(timestamp - " + timestamp + ") asc")
                     .executeSingle();
-            if (bgReading != null && Math.abs(bgReading.timestamp - timestamp) < precision) { //cool, so was it actually within 4 minutes of that bg reading?
+            if (bgReading != null && Math.abs(bgReading.timestamp - timestamp) < precision) { //cool, so was it actually within precision of that bg reading?
                 Log.i(TAG, "getForPreciseTimestamp: Found a BG timestamp match");
                 return bgReading;
             }
         }
-        Log.w(TAG, "getForPreciseTimestamp: No luck finding a BG timestamp match: " + JoH.dateTimeText((long) timestamp) + " precision:" + precision);
+        Log.w(TAG, "getForPreciseTimestamp: No luck finding a BG timestamp match: " + JoH.dateTimeText((long) timestamp) + " precision:" + precision + " Sensor: " + ((sensor == null) ? "null" : sensor.getId()));
         return null;
     }
 
@@ -801,12 +811,12 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .execute();
     }
 
-    public static BgReading findByUuid(String uuid) {
+   /* public static BgReading findByUuid(String uuid) {
         return new Select()
                 .from(BgReading.class)
                 .where("uuid = ?", uuid)
                 .executeSingle();
-    }
+    }*/
 
     public static double estimated_bg(double timestamp) {
         timestamp = timestamp + BESTOFFSET;
@@ -856,7 +866,7 @@ public class BgReading extends Model implements ShareUploadableBg {
         if (bgr != null) {
             try {
                 if (readingNearTimeStamp(bgr.timestamp) == null) {
-                    bgr.FixCalibration(bgr);
+                    FixCalibration(bgr);
                     bgr.save();
                     if (do_notification) {
                         xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
@@ -914,6 +924,14 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    public static BgReading byUUID(String uuid) {
+        if (uuid == null) return null;
+        return new Select()
+                .from(BgReading.class)
+                .where("uuid = ?", uuid)
+                .executeSingle();
+    }
+
 
     public static BgReading fromJSON(String json) {
         if (json.length()==0)
@@ -928,6 +946,85 @@ public class BgReading extends Model implements ShareUploadableBg {
             Log.d(TAG, "Got exception parsing BgReading json: " + e.toString());
             Home.toaststaticnext("Error on BGReading sync, probably decryption key mismatch");
             return null;
+        }
+    }
+
+    private BgReadingMessage toMessageNative() {
+        return new BgReadingMessage.Builder()
+                .timestamp(timestamp)
+                //.a(a)
+                //.b(b)
+                //.c(c)
+                .age_adjusted_raw_value(age_adjusted_raw_value)
+                .calculated_value(calculated_value)
+                .filtered_calculated_value(filtered_calculated_value)
+                .calibration_flag(calibration_flag)
+                .raw_calculated(raw_calculated)
+                .raw_data(raw_data)
+                .calculated_value_slope(calculated_value_slope)
+                //.calibration_uuid(calibration_uuid)
+                .uuid(uuid)
+                .build();
+    }
+
+    public byte[] toMessage() {
+        final List<BgReading> btl = new ArrayList<>();
+        btl.add(this);
+        return toMultiMessage(btl);
+    }
+
+    public static byte[] toMultiMessage(List<BgReading> bgl) {
+        if (bgl == null) return null;
+        final List<BgReadingMessage> BgReadingMessageList = new ArrayList<>();
+        for (BgReading bg : bgl) {
+            BgReadingMessageList.add(bg.toMessageNative());
+        }
+        return BgReadingMultiMessage.ADAPTER.encode(new BgReadingMultiMessage(BgReadingMessageList));
+    }
+
+    private static final long CLOSEST_READING_MS = 290000;
+    private static void processFromMessage(BgReadingMessage btm) {
+        if ((btm != null) && (btm.uuid != null) && (btm.uuid.length() == 36)) {
+            BgReading bg = byUUID(btm.uuid);
+            if (bg != null) {
+                // we already have this uuid and we don't have a circumstance to update the record, so quick return here
+                return;
+            }
+            if (bg == null) {
+                bg = getForPreciseTimestamp(Wire.get(btm.timestamp, BgReadingMessage.DEFAULT_TIMESTAMP), CLOSEST_READING_MS, false);
+                if (bg != null) {
+                    UserError.Log.wtf(TAG, "Error matches a different uuid with the same timestamp: " + bg.uuid + " vs " + btm.uuid + " skipping!");
+                    return;
+                }
+                bg = new BgReading();
+            }
+
+            bg.timestamp = Wire.get(btm.timestamp, BgReadingMessage.DEFAULT_TIMESTAMP);
+            bg.calculated_value = Wire.get(btm.calculated_value, BgReadingMessage.DEFAULT_CALCULATED_VALUE);
+            bg.filtered_calculated_value = Wire.get(btm.filtered_calculated_value, BgReadingMessage.DEFAULT_FILTERED_CALCULATED_VALUE);
+            bg.calibration_flag = Wire.get(btm.calibration_flag, BgReadingMessage.DEFAULT_CALIBRATION_FLAG);
+            bg.raw_calculated = Wire.get(btm.raw_calculated, BgReadingMessage.DEFAULT_RAW_CALCULATED);
+            bg.raw_data = Wire.get(btm.raw_data, BgReadingMessage.DEFAULT_RAW_DATA);
+            bg.calculated_value_slope = Wire.get(btm.calculated_value_slope, BgReadingMessage.DEFAULT_CALCULATED_VALUE_SLOPE);
+            bg.calibration_uuid = btm.calibration_uuid;
+            bg.uuid = btm.uuid;
+            bg.save();
+        } else {
+            UserError.Log.wtf(TAG, "processFromMessage uuid is null or invalid");
+        }
+    }
+
+    public synchronized static void processFromMultiMessage(byte[] payload) {
+        try {
+            final BgReadingMultiMessage bgmm = BgReadingMultiMessage.ADAPTER.decode(payload);
+            if ((bgmm != null) && (bgmm.bgreading_message != null)) {
+                for (BgReadingMessage btm : bgmm.bgreading_message) {
+                    processFromMessage(btm);
+                }
+                Home.staticRefreshBGCharts();
+            }
+        } catch (IOException | NullPointerException | IllegalStateException e) {
+            UserError.Log.e(TAG, "exception processFromMessage: " + e);
         }
     }
 

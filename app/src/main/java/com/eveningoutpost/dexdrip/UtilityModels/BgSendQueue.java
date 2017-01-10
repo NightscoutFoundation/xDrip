@@ -106,7 +106,7 @@ public class BgSendQueue extends Model {
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "sendQueue");
-        wakeLock.acquire();
+        wakeLock.acquire(120000);
         try {
             if (!is_follower) {
                 addToQueue(bgReading, operation_type);
@@ -127,26 +127,41 @@ public class BgSendQueue extends Model {
                     context.startService(new Intent(context, WidgetUpdateService.class));
                 }
             }
-
+            BestGlucose.DisplayGlucose dg = null;
             if (prefs.getBoolean("broadcast_data_through_intents", false)) {
                 Log.i("SENSOR QUEUE:", "Broadcast data");
                 final Bundle bundle = new Bundle();
-                bundle.putDouble(Intents.EXTRA_BG_ESTIMATE, bgReading.calculated_value);
 
-                //TODO: change back to bgReading.calculated_value_slope if it will also get calculated for Share data
-                // bundle.putDouble(Intents.EXTRA_BG_SLOPE, bgReading.calculated_value_slope);
-                bundle.putDouble(Intents.EXTRA_BG_SLOPE, BgReading.currentSlope());
-                if (bgReading.hide_slope) {
-                    bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, "9");
+                // use display glucose if enabled and available
+                if ((prefs.getBoolean("broadcast_data_use_best_glucose", false)) && ((dg = BestGlucose.getDisplayGlucose()) != null)) {
+                    bundle.putDouble(Intents.EXTRA_BG_ESTIMATE, dg.mgdl);
+                    bundle.putDouble(Intents.EXTRA_BG_SLOPE, dg.slope);
+                    // hide slope possibly needs to be handled properly
+                    if (bgReading.hide_slope) {
+                        bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, "9"); // not sure if this is right has been this way for a long time
+                    } else {
+                        bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, dg.delta_name);
+                    }
                 } else {
-                    bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, bgReading.slopeName());
+                    // standard xdrip-classic data set
+                    bundle.putDouble(Intents.EXTRA_BG_ESTIMATE, bgReading.calculated_value);
+
+                    //TODO: change back to bgReading.calculated_value_slope if it will also get calculated for Share data
+                    // bundle.putDouble(Intents.EXTRA_BG_SLOPE, bgReading.calculated_value_slope);
+                    bundle.putDouble(Intents.EXTRA_BG_SLOPE, BgReading.currentSlope());
+                    if (bgReading.hide_slope) {
+                        bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, "9"); // not sure if this is right but has been this way for a long time
+                    } else {
+                        bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, bgReading.slopeName());
+                    }
                 }
+
                 bundle.putInt(Intents.EXTRA_SENSOR_BATTERY, getBatteryLevel(context));
                 bundle.putLong(Intents.EXTRA_TIMESTAMP, bgReading.timestamp);
 
                 //raw value
                 double slope = 0, intercept = 0, scale = 0, filtered = 0, unfiltered = 0, raw = 0;
-                Calibration cal = Calibration.last();
+                Calibration cal = Calibration.lastValid();
                 if (cal != null) {
                     // slope/intercept/scale like uploaded to NightScout (NightScoutUploader.java)
                     if (cal.check_in) {
@@ -174,8 +189,7 @@ public class BgSendQueue extends Model {
                 Intent intent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE);
                 intent.putExtras(bundle);
                 intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-
-
+                
                 if (prefs.getBoolean("broadcast_data_through_intents_without_permission", false)) {
                     context.sendBroadcast(intent);
                 } else {
@@ -233,7 +247,7 @@ public class BgSendQueue extends Model {
 
             //Text to speech
             if ((!quick) && (prefs.getBoolean("bg_to_speech", false))) {
-                final BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
+                if (dg == null) dg = BestGlucose.getDisplayGlucose();
                 if (dg != null) {
                     BgToSpeech.speak(dg.mgdl, dg.timestamp);
                 } else {

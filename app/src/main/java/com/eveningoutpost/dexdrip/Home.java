@@ -446,10 +446,8 @@ public class Home extends ActivityWithMenu {
 
         if (screen_width <= 320) { small_width =true; small_screen = true; }
         if (screen_height <= 320) { small_height = true; small_screen = true; }
-        final int refdpi = 320;
+        //final int refdpi = 320;
         Log.d(TAG, "Width height: " + screen_width + " " + screen_height+" DPI:"+dm.densityDpi);
-
-
 
 
         JoH.fixActionBar(this);
@@ -2073,7 +2071,7 @@ public class Home extends ActivityWithMenu {
             // detect broken data from G5 or other sources
             if ((lastBgReading.raw_data != 0) && (lastBgReading.raw_data * 2 == lastBgReading.filtered_data)) {
                 if (JoH.ratelimit("g5-corrupt-data-warning", 1200)) {
-                    final String msg = "filtered data appears to be exactly double raw sensor data which looks completely wrong! " + lastBgReading.raw_data;
+                    final String msg = "filtered data is exactly double raw sensor data which looks wrong! (Transmitter maybe dead)" + lastBgReading.raw_data;
                     toaststaticnext(msg);
                 }
             }
