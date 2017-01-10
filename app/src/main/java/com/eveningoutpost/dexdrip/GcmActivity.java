@@ -24,6 +24,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
@@ -720,7 +721,11 @@ public class GcmActivity extends FauxActivity {
             }
         };
 
-        if (checkPlayServices()) {
+        final Boolean play_result = checkPlayServices();
+        if (play_result == null) {
+            Log.d(TAG, "Indeterminate result for play services");
+            PlusSyncService.backoff_a_lot();
+        } else if (play_result) {
             final Intent intent = new Intent(xdrip.getAppContext(), RegistrationIntentService.class);
             xdrip.getAppContext().startService(intent);
         } else {
@@ -733,8 +738,12 @@ public class GcmActivity extends FauxActivity {
 
     // for starting FauxActivity
     public void jumpStart() {
-        Log.d(TAG,"jumpStart() called");
-        onCreate(null);
+        Log.d(TAG, "jumpStart() called");
+        if (JoH.ratelimit("gcm-jumpstart", 5)) {
+            onCreate(null);
+        } else {
+            Log.d(TAG, "Ratelimiting jumpstart");
+        }
     }
 
     @Override
@@ -831,11 +840,11 @@ public class GcmActivity extends FauxActivity {
      * the Google Play Store or enable it in the device's system settings.
      */
 
-    private static boolean checkPlayServices() {
+    private static Boolean checkPlayServices() {
         return checkPlayServices(xdrip.getAppContext(), null);
     }
 
-    static boolean checkPlayServices(Context context, Activity activity) {
+    static Boolean checkPlayServices(Context context, Activity activity) {
         if (cease_all_activity) return false;
         final GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(context);
@@ -847,7 +856,9 @@ public class GcmActivity extends FauxActivity {
                                 .show();
                     } else {
                         if (JoH.ratelimit(Home.GCM_RESOLUTION_ACTIVITY, 60)) {
+                            //apiAvailability.showErrorNotification(context, resultCode);
                             Home.startHomeWithExtra(context, Home.GCM_RESOLUTION_ACTIVITY, "1");
+                            return null;
                         } else {
                             Log.e(TAG, "Ratelimit exceeded for " + Home.GCM_RESOLUTION_ACTIVITY);
                         }
