@@ -32,6 +32,7 @@ import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
@@ -1029,6 +1030,17 @@ public class JoH {
                 }
             }
         }.start();
+    }
+
+    public static Map<String, String> bundleToMap(Bundle bundle) {
+        final HashMap<String, String> map = new HashMap<>();
+        for (String key : bundle.keySet()) {
+            Object value = bundle.get(key);
+            if (value != null) {
+                map.put(key, value.toString());
+            }
+        }
+        return map;
     }
 
     public static long checksum(byte[] bytes) {

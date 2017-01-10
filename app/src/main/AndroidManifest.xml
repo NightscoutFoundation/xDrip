@@ -113,14 +113,14 @@
             android:name=".ImportDatabaseActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/import_database" />
-        <activity
+        <!--<activity
             android:name=".GoogleDriveInterface"
             android:label="Sync Data"
             android:theme="@android:style/Theme.NoDisplay" />
         <activity
             android:name=".GcmActivity"
             android:label="GCM connect"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@android:style/Theme.NoDisplay" />-->
         <activity
             android:name=".AddCalibration"
             android:configChanges="orientation|screenSize"

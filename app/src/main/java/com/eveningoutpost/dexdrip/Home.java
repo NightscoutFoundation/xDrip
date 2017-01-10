@@ -2687,12 +2687,12 @@ public class Home extends ActivityWithMenu {
             return true;
         }
 
-        // jamorham additions
+       /* // jamorham additions
         if (item.getItemId() == R.id.synctreatments) {
             startActivity(new Intent(this, GoogleDriveInterface.class));
             return true;
 
-        }
+        }*/
         ///
 
 

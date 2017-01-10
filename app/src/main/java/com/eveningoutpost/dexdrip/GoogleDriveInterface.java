@@ -4,26 +4,15 @@ package com.eveningoutpost.dexdrip;
  * Created by jamorham on 08/01/16.
  */
 
-import android.app.Activity;
-import android.content.Intent;
-import android.content.IntentSender.SendIntentException;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
+
 //import com.google.android.gms.drive.Drive;
 //import com.google.android.gms.drive.DriveApi.DriveContentsResult;
 //import com.google.android.gms.drive.DriveApi.MetadataBufferResult;
@@ -42,24 +31,14 @@ import com.google.android.gms.common.api.Status;
 //import com.google.android.gms.drive.query.Query;
 //import com.google.android.gms.drive.query.SearchableField;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 
 //public class GoogleDriveInterface extends Activity implements ConnectionCallbacks,
 //        OnConnectionFailedListener {
-public class GoogleDriveInterface extends Activity {
+public class GoogleDriveInterface extends FauxActivity {
 
-    public static final Charset my_charset = Charset.forName("ISO-8859-1");
+
     private static final String TAG = "jamorham drive";
-    private static final int REQUEST_CODE_CREATOR = 2;
-    private static final int REQUEST_CODE_RESOLUTION = 3;
-    public static boolean staticGetFolderFileList = false;
+
     public static boolean isRunning = false;
     private static GoogleApiClient mGoogleApiClient;
     //   private static DriveId ourFolderID = null;
@@ -67,44 +46,51 @@ public class GoogleDriveInterface extends Activity {
     private static String ourFolderResourceIDHash = null;
     private static String ourFolderResourceKeyHash = null;
     private static SharedPreferences prefs;
-    private final String my_folder_name = "jamorham-xDrip+sync";
-    private final boolean use_app_folder = true;
-    private final double max_sync_file_age = 1000 * 60 * 60 * 24;
 
     /*
-       final private ResultCallback<DriveFolder.DriveFileResult> fileCallback = new
-               ResultCallback<DriveFolder.DriveFileResult>() {
-                   @Override
-                   public void onResult(DriveFolder.DriveFileResult result) {
-                       if (!result.getStatus().isSuccess()) {
-                           showMessage("Error while trying to create the file");
-                           return;
-                       }
-                       Log.d(TAG, "Created a file in App Folder: "
-                               + result.getDriveFile().getDriveId());
-                   }
-               };
-       final private ResultCallback<DriveResource.MetadataResult> metadataRetrievedCallback = new
-               ResultCallback<DriveResource.MetadataResult>() {
-                   @Override
-                   public void onResult(DriveResource.MetadataResult result) {
-                       if (!result.getStatus().isSuccess()) {
-                           Log.v(TAG, "Problem while trying to fetch metadata.");
-                           return;
-                       }
+    private static final int REQUEST_CODE_CREATOR = 2;
+    private static final int REQUEST_CODE_RESOLUTION = 3;
+    public static boolean staticGetFolderFileList = false;
+    public static final Charset my_charset = Charset.forName("ISO-8859-1");
 
-                       Metadata metadata = result.getMetadata();
-                       if (metadata.isTrashed()) {
-                           Log.v(TAG, "Folder is trashed");
-                       } else {
-                           Log.v(TAG, "Folder is not trashed");
-                       }
+   private final String my_folder_name = "jamorham-xDrip+sync";
+   private final boolean use_app_folder = true;
+   private final double max_sync_file_age = 1000 * 60 * 60 * 24;
 
-                   }
-               };
-       /**
-        * Callback when call to trash or untrash is complete.
-        */
+
+      final private ResultCallback<DriveFolder.DriveFileResult> fileCallback = new
+              ResultCallback<DriveFolder.DriveFileResult>() {
+                  @Override
+                  public void onResult(DriveFolder.DriveFileResult result) {
+                      if (!result.getStatus().isSuccess()) {
+                          showMessage("Error while trying to create the file");
+                          return;
+                      }
+                      Log.d(TAG, "Created a file in App Folder: "
+                              + result.getDriveFile().getDriveId());
+                  }
+              };
+      final private ResultCallback<DriveResource.MetadataResult> metadataRetrievedCallback = new
+              ResultCallback<DriveResource.MetadataResult>() {
+                  @Override
+                  public void onResult(DriveResource.MetadataResult result) {
+                      if (!result.getStatus().isSuccess()) {
+                          Log.v(TAG, "Problem while trying to fetch metadata.");
+                          return;
+                      }
+
+                      Metadata metadata = result.getMetadata();
+                      if (metadata.isTrashed()) {
+                          Log.v(TAG, "Folder is trashed");
+                      } else {
+                          Log.v(TAG, "Folder is not trashed");
+                      }
+
+                  }
+              };
+      /**
+       * Callback when call to trash or untrash is complete.
+       */
     /*
     private final ResultCallback<Status> trashStatusCallback =
             new ResultCallback<Status>() {
@@ -345,11 +331,11 @@ public class GoogleDriveInterface extends Activity {
             return ourFolderResourceKeyHash;
         }
 
-      //  if (ourFolderID == null) {
-      //      return "";
-      //  }
+        //  if (ourFolderID == null) {
+        //      return "";
+        //  }
         if (ourFolderResourceID == null) {
-            UserError.Log.wtf(TAG,"Invalid null sync key!!!");
+            UserError.Log.wtf(TAG, "Invalid null sync key!!!");
             return CipherUtils.getRandomHexKey();
         }
         if (ourFolderResourceKeyHash == null) {
@@ -362,7 +348,7 @@ public class GoogleDriveInterface extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
-        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         startup();
     }
 
@@ -420,19 +406,18 @@ public class GoogleDriveInterface extends Activity {
 
                 });
     }*/
-
-    void startup() {
+    private void startup() {
         isRunning = true;
         // if (!prefs.getBoolean("use_custom_sync_key", true)) {
         if (false) {
-      //      connectGoogleAPI();
+            //      connectGoogleAPI();
         } else {
             Log.d(TAG, "Using custom sync key");
             shutdown();
         }
     }
 
-    void shutdown() {
+    private void shutdown() {
         if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
             Log.i(TAG, "DISCONNECTED GOOGLE DRIVE API");
