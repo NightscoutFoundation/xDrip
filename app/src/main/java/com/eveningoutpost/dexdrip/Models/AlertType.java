@@ -540,7 +540,7 @@ public class AlertType extends Model {
             at.override_silent_mode = override_silent_mode;
             at.default_snooze = snooze;
             at.vibrate = vibrate;
-            AlertPlayer.getPlayer().startAlert(context, false, at, "TEST");
+            AlertPlayer.getPlayer().startAlert(context, false, at, "TEST", false);
     }
 
     // Time is calculated in minutes. that is 01:20 means 80 minutes.
