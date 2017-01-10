@@ -400,6 +400,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 sendPrefSettings();
                 processConnect();
             }
+            else if(key.compareTo("bridge_battery") == 0 && key.compareTo(DexCollectionType.DEX_COLLECTION_METHOD) == 0){
+                sendPrefSettings();
+            }
             else if(key.compareTo("dex_txid") == 0 || key.compareTo(DexCollectionType.DEX_COLLECTION_METHOD) == 0){
                 processConnect();
             }

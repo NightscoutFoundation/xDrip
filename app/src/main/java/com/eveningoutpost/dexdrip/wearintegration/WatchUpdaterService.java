@@ -336,8 +336,10 @@ public class WatchUpdaterService extends WearableListenerService implements
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                 Log.d(TAG, "onSharedPreferenceChanged enter key=" + key);
                 pebble_integration = mPrefs.getBoolean("pebble_sync", false);
-                sendPrefSettings();
-                processConnect();
+                if(key.compareTo("bridge_battery") != 0){
+                    sendPrefSettings();
+                    processConnect();
+                }
             }
         };
         mPrefs.registerOnSharedPreferenceChangeListener(mPreferencesListener);
@@ -477,15 +479,16 @@ public class WatchUpdaterService extends WearableListenerService implements
                     final boolean adjustPast = mPrefs.getBoolean("rewrite_history", true);
                     Log.d(TAG, "onStartCommand adjustRecentBgReadings for rewrite_history=" + adjustPast);
                     sendWearBgData(adjustPast ? 30 : 2);//wear may not have all BGs if force_wearG5=false, so send BGs from phone
+                    sendData();//ensure BgReading.Last is displayed on watch
 
                 } else {
-                    sendData();
                     if (!mPrefs.getBoolean("force_wearG5", false)
                             && mPrefs.getBoolean("enable_wearG5",false)
                             && (is_using_bt)) { //KS only send BGs if using Phone's G5 Collector Server
                         sendWearBgData(1);
                         Log.d(TAG, "onStartCommand Action=" + " Path=" + WEARABLE_BG_DATA_PATH);
                     }
+                    sendData();//ensure BgReading.Last is displayed on watch
                 }
             } else {
                 googleApiClient.connect();
@@ -798,6 +801,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         dataMap.putDouble("sgvDouble", bg.calculated_value);
         dataMap.putDouble("high", inMgdl(highMark, sPrefs));
         dataMap.putDouble("low", inMgdl(lowMark, sPrefs));
+        dataMap.putInt("bridge_battery", mPrefs.getInt("bridge_battery", -1));//Used in DexCollectionService
 
         //TODO: Add raw again
         //dataMap.putString("rawString", threeRaw((prefs.getString("units", "mgdl").equals("mgdl"))));
@@ -1007,6 +1011,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             sendActiveBtDeviceData();
             sendWearCalibrationData(sendCalibrationCount);
             sendWearBgData(sendBgCount);
+            sendData();//ensure BgReading.Last is displayed on watch
         } else {
             Log.d(TAG, "Not doing initWearData as we are not using G5 as data source");
         }
