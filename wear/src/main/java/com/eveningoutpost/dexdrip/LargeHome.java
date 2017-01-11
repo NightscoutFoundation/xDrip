@@ -72,7 +72,7 @@ public class LargeHome extends BaseWatchFace {
         } else {
             mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBatteryEmpty));
         }
-        if (batteryLevel == 1) {
+        if (mXBatteryLevel == 1) {
             mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
         } else {
             mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBatteryEmpty));

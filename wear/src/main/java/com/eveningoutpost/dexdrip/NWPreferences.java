@@ -19,6 +19,8 @@ public class NWPreferences extends PreferenceActivity {
     public PreferenceScreen screen;
     public PreferenceCategory category;
     public Preference collectionMethod;
+    public PreferenceCategory watchcategory;
+    public Preference showBridgeBattery;
     private static final String TAG = NWPreferences.class.getSimpleName();
 
     @Override
@@ -31,6 +33,8 @@ public class NWPreferences extends PreferenceActivity {
         screen = (PreferenceScreen) findPreference("preferenceScreen");
         category = (PreferenceCategory) findPreference("collection_category");
         collectionMethod = findPreference("dex_collection_method");
+        showBridgeBattery = findPreference("showBridgeBattery");
+        watchcategory = (PreferenceCategory) findPreference("category");
         bindPreferenceSummaryToValue(collectionMethod);
         listenForChangeInSettings();
         setCollectionPrefs();
@@ -82,6 +86,14 @@ public class NWPreferences extends PreferenceActivity {
         else {
             screen.removePreference(category);
             Log.d("NWPreferences", "setCollectionPrefs removePreference category");
+        }
+        if (DexCollectionType.hasBattery()) {
+            watchcategory.addPreference(showBridgeBattery);
+            Log.d("NWPreferences", "setCollectionPrefs addPreference showBridgeBattery");
+        }
+        else {
+            watchcategory.removePreference(showBridgeBattery);
+            Log.d("NWPreferences", "setCollectionPrefs removePreference showBridgeBattery");
         }
 
         if (collectionMethod != null && category != null) {

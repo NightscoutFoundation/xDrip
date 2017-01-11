@@ -84,7 +84,7 @@
             app:wear_iconOff="@drawable/settings_off"
             app:wear_iconOn="@drawable/settings_on" />
         <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="showBridgeBattery"
             android:title="@string/pref_show_bridge_battery"
             android:summary="@string/pref_summary_show_bridge_battery"

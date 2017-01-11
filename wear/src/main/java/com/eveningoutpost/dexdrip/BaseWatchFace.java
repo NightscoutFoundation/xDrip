@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
 //KS import android.app.NotificationManager;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.android.gms.wearable.DataMap;
 import com.ustwo.clockwise.common.WatchMode;
@@ -54,7 +56,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public long sgvLevel = 0;
     public int batteryLevel = 1;
     public int mXBatteryLevel = 1;
-    public int mXBattery = 0;
+    public int xBattery = -1;
     public boolean mShowXBattery = false;
     String[] smallFontsizeArray;// = getResources().getStringArray(R.array.toggle_fontsize);
     public int ageLevel = 1;
@@ -138,7 +140,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 setSmallFontsize(false);
                 chart = (LineChartView) stub.findViewById(R.id.chart);
                 layoutSet = true;
-                showAgoRawBattStatus(false);
+                showAgoRawBattStatus();
                 mRelativeLayout.measure(specW, specH);
                 mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                         mRelativeLayout.getMeasuredHeight());
@@ -250,7 +252,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 wakeLock.acquire(50);
                 final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BaseWatchFace.this);
                 mTime.setText(timeFormat.format(System.currentTimeMillis()));
-                showAgoRawBattStatus(true);
+                showAgoRawBattStatus();
 
                 if (ageLevel() <= 0) {
                     mSgv.setPaintFlags(mSgv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -281,6 +283,9 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 rawString = dataMap.getString("rawString");
                 sgvString = dataMap.getString("sgvString");
                 batteryString = dataMap.getString("battery");
+                xBattery = dataMap.getInt("bridge_battery", -1);
+                mXBatteryLevel = (xBattery >= 30) ? 1 : 0;
+                Log.d("onReceive", "batteryString=" + batteryString + " batteryLevel=" + batteryLevel + " xBattery=" + xBattery + " sgvString=" + sgvString);
                 mSgv.setText(dataMap.getString("sgvString"));
                 if(ageLevel()<=0) {
                     mSgv.setPaintFlags(mSgv.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -296,7 +301,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 delta = dataMap.getString("delta");
 
 
-                showAgoRawBattStatus(false);
+                showAgoRawBattStatus();
 
 
                 if (chart != null) {
@@ -318,7 +323,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 wakeLock.acquire(50);
                 externalStatusString = dataMap.getString("externalStatusString");
 
-                showAgoRawBattStatus(false);
+                showAgoRawBattStatus();
 
                 mRelativeLayout.measure(specW, specH);
                 mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
@@ -329,9 +334,8 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         }
     }
 
-    private void showAgoRawBattStatus(boolean onTimeChanged) {
+    private void showAgoRawBattStatus() {
 
-        String xbatteryString = "--";
         boolean showAvgDelta = sharedPrefs.getBoolean("showAvgDelta", false);
         mDelta.setText(delta);
         if(showAvgDelta){
@@ -362,30 +366,14 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
 
         //xBridge Battery:
         mShowXBattery = false;
-        if (sharedPrefs.getBoolean("enable_wearG5", false) && sharedPrefs.getBoolean("showBridgeBattery", false)) {
+        if (sharedPrefs.getBoolean("showBridgeBattery", false) && xBattery > 0 && DexCollectionType.hasBattery()) {
             mShowXBattery = true;
-            if (DexCollectionType.hasBattery()) {
-                mXBattery = sharedPrefs.getInt("bridge_battery", 0);
-            }
-            else if (!onTimeChanged){//watch - only request battery every 5 minutes or on startup
-                IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);//from BgSendQueue
-                Intent batteryStatus = getApplicationContext().registerReceiver(null, ifilter);
-                int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-                mXBattery = level;
-                int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-                if (level == -1 || scale == -1) {
-                    mXBattery = 50;
-                }
-                else
-                    mXBattery = (int) (((float) level / (float) scale) * 100.0f);
-            }
         }
-        mXBatteryLevel = (mXBattery >= 30) ? 1 : 0;
-        Log.d("showAgoRawBattStatus", "mShowXBattery=" + mShowXBattery + " mXBattery=" + mXBattery);
-        if (mShowXBattery && mXBattery > 0) {//see app/home.java displayCurrentInfo()
-            xbatteryString = "" + mXBattery;
+        Log.d("showAgoRawBattStatus", "mShowXBattery=" + mShowXBattery + " xBattery=" + xBattery);
+        if (mShowXBattery) {//see app/home.java displayCurrentInfo()
             //mUploaderXBattery.setText((showStatus ? "B: " : "Bridge: ") + xbatteryString + ((mXBattery < 200) ? "%" : "mV"));
-            if (mXBattery < 200) {
+            String xbatteryString = "" + xBattery;
+            if (xBattery < 200) {
                 if (showStatus)
                     mUploaderXBattery.setText(getResources().getString(R.string.label_show_bridge_battery_percent_abbrv, xbatteryString));
                 else
@@ -405,16 +393,28 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         if(showStatus || mShowXBattery){
             //use short forms
             mTimestamp.setText(readingAge(true));
-            //mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader_abbrv, batteryString));//"U: " + batteryString + "%"
         } else {
             mTimestamp.setText(readingAge(false));
-            //mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader, batteryString));//"Uploader: " + batteryString + "%"
         }
 
-        if (showStatus)
-            mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader_abbrv, batteryString));//"U: " + batteryString + "%"
-        else
-            mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader, batteryString));//"Uploader: " + batteryString + "%"
+        if((sharedPrefs.getBoolean("enable_wearG5", false) && sharedPrefs.getBoolean("force_wearG5", false)) ||
+                (sharedPrefs.getBoolean("enable_wearG5", false) && isServiceRunning(G5CollectionService.class))){//G5CollectionService.class
+            Log.d("isServiceRunning", "wearG5CollectionService is running");
+            int wearBattery = getWearBatteryLevel(getApplication());
+            String wearBatteryString = "" + wearBattery;
+            batteryLevel = (wearBattery >= 30) ? 1 : 0;
+            if (showStatus || mShowXBattery)
+                mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader_wear_abbrv, wearBatteryString));//"W: " + batteryString + "%"
+            else
+                mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader_wear, wearBatteryString));//"Wear: " + batteryString + "%"
+        }
+        else {//Phone Collector
+            Log.d("isServiceRunning", "wearG5CollectionService is NOT running");
+            if (showStatus || mShowXBattery)
+                mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader_abbrv, batteryString));//"U: " + batteryString + "%"
+            else
+                mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader, batteryString));//"Uploader: " + batteryString + "%"
+        }
 
         if (showStatus) {
             mStatus.setVisibility(View.VISIBLE);
@@ -422,6 +422,28 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         } else {
             mStatus.setVisibility(View.GONE);
         }
+    }
+
+    // Custom method to determine whether a service is running
+    private boolean isServiceRunning(Class<?> serviceClass){//Class<?> serviceClass
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        // Loop through the running services
+        for(ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) return true;
+        }
+        return false;
+    }
+
+    public static int getWearBatteryLevel(Context context) {
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);//from BgSendQueue
+        Intent batteryStatus = context.registerReceiver(null, ifilter);
+        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        if (level == -1 || scale == -1) {
+            return 50;
+        }
+        else
+            return (int) (((float) level / (float) scale) * 100.0f);
     }
 
     public void setColor() {
@@ -455,7 +477,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key){
         setColor();
         if(layoutSet){
-            showAgoRawBattStatus(false);
+            showAgoRawBattStatus();
             setSmallFontsize(false);
             mRelativeLayout.measure(specW, specH);
             mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
@@ -467,7 +489,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public void invalidateWatchface() {
         setColor();
         if(layoutSet){
-            showAgoRawBattStatus(false);
+            showAgoRawBattStatus();
             mRelativeLayout.measure(specW, specH);
             mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                     mRelativeLayout.getMeasuredHeight());
@@ -523,7 +545,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         int maxDelay = 16;
         if (sharedPrefs.getBoolean("enable_wearG5", false)) {
             maxDelay = 4;
-            Log.d("BIGChart", "missedReadingAlert Enter minutes_since " + minutes_since + " call requestData if >= 4 minutes mod 5");//KS
+            Log.d("BaseWatchFace", "missedReadingAlert Enter minutes_since " + minutes_since + " call requestData if >= 4 minutes mod 5");//KS
         }
 
         if (minutes_since >= maxDelay && ((minutes_since - maxDelay) % 5) == 0) {//KS TODO reduce time for debugging; add notifications
@@ -542,7 +564,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         double low = dataMap.getDouble("low");
         double timestamp = dataMap.getDouble("timestamp");
 
-        Log.d("addToWatchSet", "entry=" + dataMap);
+        //Log.d("addToWatchSet", "entry=" + dataMap);
 
         final int size = bgDataList.size();
         BgWatchData bgdata = new BgWatchData(sgv, high, low, timestamp);
@@ -550,10 +572,10 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             if (bgDataList.contains(bgdata)) {
                 int i = bgDataList.indexOf(bgdata);
                 BgWatchData bgd = bgDataList.get(bgDataList.indexOf(bgdata));
-                Log.d("addToWatchSet", "replace indexOf=" + i + " bgDataList.sgv=" + bgd.sgv + " bgDataList.timestamp" + bgd.timestamp);
+                //Log.d("addToWatchSet", "replace indexOf=" + i + " bgDataList.sgv=" + bgd.sgv + " bgDataList.timestamp" + bgd.timestamp);
                 bgDataList.set(i, bgdata);
             } else {
-                Log.d("addToWatchSet", "add " + " entry.sgv=" + bgdata.sgv + " entry.timestamp" + bgdata.timestamp);
+                //Log.d("addToWatchSet", "add " + " entry.sgv=" + bgdata.sgv + " entry.timestamp" + bgdata.timestamp);
                 bgDataList.add(bgdata);
             }
         }

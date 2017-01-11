@@ -301,6 +301,7 @@ public class BgSendQueue extends Model {
         dataMap.putDouble("sgvDouble", bg.calculated_value);
         dataMap.putDouble("high", inMgdl(highMark, sPrefs));
         dataMap.putDouble("low", inMgdl(lowMark, sPrefs));
+        dataMap.putInt("bridge_battery", sPrefs.getInt("bridge_battery", -1));//Used in DexCollectionService
         //TODO: Add raw again
         //dataMap.putString("rawString", threeRaw((prefs.getString("units", "mgdl").equals("mgdl"))));
         return dataMap;

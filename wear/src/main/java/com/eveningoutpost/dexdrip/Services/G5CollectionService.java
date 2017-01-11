@@ -285,7 +285,9 @@ public class G5CollectionService extends Service {
        // new AuthRequestTxMessage(16);
        // fullAuthenticate();
 
-        xdrip.checkAppContext(getApplicationContext());
+        Context context = getApplicationContext();
+        xdrip.checkAppContext(context);
+        Sensor.InitDb(context);//ensure db is initialized
         final PowerManager.WakeLock wl = JoH.getWakeLock("g5-start-service", 120000);
         try {
             if ((!service_running) && (keep_running)) {
