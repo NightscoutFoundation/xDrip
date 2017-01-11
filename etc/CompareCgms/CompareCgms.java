@@ -204,7 +204,7 @@ class CompareCgms {
             printUsageAndExit();
         }
         
-        List<FingerPricksData> fpData = readFreeStyleFingerPricks(args[0]);
+        List<FingerPricksData> fpData = readFreeStyleFingerPricks(args[0], args[1]);
         
         List<Sensor> sensors = ReadSensors(args[2]);
         List<CgmData> xDripBgReadings = readxDripBgReadings(args[2], args[1], sensors);
@@ -371,12 +371,20 @@ class CompareCgms {
     }
 
     // Read finger pricks data
-    static List<FingerPricksData> readFreeStyleFingerPricks(String FileName) throws IOException {
+    static List<FingerPricksData> readFreeStyleFingerPricks(String FileName, String startTime) throws IOException {
         // Format of the file is:
         // DATEEVENT TIMESLOT EVENTTYPE DEVICE_MODEL DEVICE_ID
         // VENDOR_EVENT_TYPE_ID VENDOR_EVENT_ID KEY0
         // 42703.9444444444 6 1 Abbott BG Meter DCGT224-N2602 0 189 0 0 0 189
         // 42703.8416666667 5 1 Abbott BG Meter DCGT224-N2602 0 116 0 0 0 116
+
+        java.util.Date startDate = null;
+        try {
+            startDate = df.parse(startTime); //
+        } catch (ParseException e) {
+            System.err.println("Error parsing date/time");
+            System.exit(2);
+        }
 
         List<FingerPricksData> fpData = new ArrayList<FingerPricksData>();
 
@@ -396,7 +404,10 @@ class CompareCgms {
             double bgVal = Integer.parseInt(splited[8]);
             //System.out.println("finger pricks: " + df.format(new Date(time)) + " " + bgVal);
 
-            fpData.add(0, new FingerPricksData(time, bgVal));
+            Date date = new Date(time);
+            if (startDate.before(date)) {
+                fpData.add(0, new FingerPricksData(time, bgVal));
+            }
         }
 
         br.close();
@@ -405,7 +416,8 @@ class CompareCgms {
         Collections.sort(fpData, new Comparator<FingerPricksData>() {
             @Override
             public int compare(final FingerPricksData object1, final FingerPricksData object2) {
-                return (int) (object1.timeMs - object2.timeMs);
+                 Long ob1 = new Long(object1.timeMs);
+                 return new Long(object1.timeMs).compareTo(object2.timeMs);
             }
         });
 
