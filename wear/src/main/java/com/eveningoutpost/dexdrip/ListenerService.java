@@ -1030,27 +1030,19 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     }
 
     @Override
+    public void onCapabilityChanged(CapabilityInfo capabilityInfo) {
+        updatePhoneSyncBgsCapability(capabilityInfo);
+        Log.d(TAG, "onCapabilityChanged mPhoneNodeID:" + mPhoneNodeId);
+    }
+
+    @Override
     public void onConnected(Bundle bundle) {
-        CapabilityApi.CapabilityListener capabilityListener =
-                new CapabilityApi.CapabilityListener() {
-                    @Override
-                    public void onCapabilityChanged(CapabilityInfo capabilityInfo) {
-                        updatePhoneSyncBgsCapability(capabilityInfo);
-                        Log.d(TAG, "onConnected onCapabilityChanged mPhoneNodeID:" + mPhoneNodeId);
-                    }
-                };
-
-        Wearable.CapabilityApi.addCapabilityListener(
-                googleApiClient,
-                capabilityListener,
-                CAPABILITY_PHONE_APP);
-
+        Log.d(TAG, "onConnected call requestData");
         requestData();
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
     }
 
     @Override
