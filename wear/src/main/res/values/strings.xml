@@ -78,6 +78,8 @@
     <string name="init_external_status">no status</string>
     <string name="label_show_external_status">Status: </string>
     <string name="label_show_external_status_abbrv">S: </string>
+    <string name="label_show_uploader_wear">Wear: %1$s%%</string>
+    <string name="label_show_uploader_wear_abbrv">W: %1$s%%</string>
     <string name="label_show_uploader">Uploader: %1$s%%</string>
     <string name="label_show_uploader_abbrv">U: %1$s%%</string>
     <string name="label_show_bridge_battery_percent">Bridge: %1$s%%</string>
