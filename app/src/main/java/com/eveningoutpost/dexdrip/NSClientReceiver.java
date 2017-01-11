@@ -141,9 +141,9 @@ public class NSClientReceiver extends BroadcastReceiver {
             }
 
             //jsonObject.put("calibration_flag", calibration_flag);
-            jsonObject.put("filtered_data", (sgv_map.get("filtered") != null) ? sgv_map.get("filtered") : 1);
+            jsonObject.put("filtered_data", (sgv_map.get("filtered") != null) ? (((double) sgv_map.get("filtered")) / 1000) : 1);
             //jsonObject.put("raw_calculated", raw_calculated);
-            jsonObject.put("raw_data", (sgv_map.get("unfiltered") != null) ? sgv_map.get("unfiltered") : 1);
+            jsonObject.put("raw_data", (sgv_map.get("unfiltered") != null) ? (((double) sgv_map.get("unfiltered")) / 1000) : 1);
             Double slope = BgReading.slopefromName(sgv_map.get("direction").toString());
             jsonObject.put("calculated_value_slope", slope);
             if (BgReading.isSlopeNameInvalid(sgv_map.get("direction").toString())) {
