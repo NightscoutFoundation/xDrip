@@ -35,7 +35,7 @@ class MediaPlayerCreaterHelper {
     
     private final static String TAG = AlertPlayer.class.getSimpleName();
 
-    Object lock1_ = new Object();
+    final Object lock1_ = new Object();
     boolean mplayerCreated_ = false;
     MediaPlayer mediaPlayer_ = null;
     
@@ -133,15 +133,21 @@ public class AlertPlayer {
     }
 
     public synchronized void stopAlert(Context ctx, boolean ClearData, boolean clearIfSnoozeFinished) {
+        stopAlert(ctx, ClearData, clearIfSnoozeFinished, true);
+    }
+
+    public synchronized void stopAlert(Context ctx, boolean ClearData, boolean clearIfSnoozeFinished, boolean cancelNotification) {
 
         Log.d(TAG, "stopAlert: stop called ClearData " + ClearData + "  ThreadID " + Thread.currentThread().getId());
         if (ClearData) {
             ActiveBgAlert.ClearData();
         }
-        if(clearIfSnoozeFinished) {
+        if (clearIfSnoozeFinished) {
             ActiveBgAlert.ClearIfSnoozeFinished();
         }
-        notificationDismiss(ctx);
+        if (cancelNotification) {
+            notificationDismiss(ctx);
+        }
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
@@ -204,7 +210,7 @@ public class AlertPlayer {
             return;
         }
         if(activeBgAlert.ready_to_alarm()) {
-            stopAlert(ctx, false, false);
+            stopAlert(ctx, false, false, false); // also don't cancel notification
 
             int timeFromStartPlaying = activeBgAlert.getUpdatePlayTime();
             AlertType alert = AlertType.get_alert(activeBgAlert.alert_uuid);
