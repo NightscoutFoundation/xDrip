@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -8,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.preference.PreferenceManager;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -163,7 +163,7 @@ public class ParakeetHelper {
                     PendingIntent.FLAG_ONE_SHOT);
 
             Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(xdrip.getAppContext())
+            Notification.Builder notificationBuilder =  new Notification.Builder(xdrip.getAppContext())
                     .setSmallIcon(R.drawable.ic_launcher)
                     .setLargeIcon(BitmapFactory.decodeResource(xdrip.getAppContext().getResources(), R.drawable.jamorham_parakeet_marker))
                     .setContentTitle(title)

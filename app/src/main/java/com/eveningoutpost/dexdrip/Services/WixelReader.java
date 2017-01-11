@@ -10,6 +10,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.MapsActivity;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
@@ -259,7 +260,9 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
                     // themselves from actual parakeet data even though both can coexist on the
                     // parakeet web service.
 
-                    ParakeetHelper.checkParakeetNotifications(trd.CaptureDateTime, trd.GeoLocation);
+                    if (JoH.ratelimit("parakeet-check-notification", 9)) {
+                        ParakeetHelper.checkParakeetNotifications(trd.CaptureDateTime, trd.GeoLocation);
+                    }
                     if ((trd.GeoLocation != null)) {
                         if (!trd.GeoLocation.equals("-15,-15")) {
                             try {
