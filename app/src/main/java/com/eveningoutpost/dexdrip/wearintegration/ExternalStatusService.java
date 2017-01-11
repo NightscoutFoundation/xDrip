@@ -6,15 +6,6 @@ import android.content.Intent;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.content.WakefulBroadcastReceiver;
-import android.util.Log;
-
-import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Models.UserError;
-import com.eveningoutpost.dexdrip.utils.Preferences;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.wearable.Wearable;
-
-import java.util.Date;
 
 /**
  * Created by adrian on 14/02/16.
@@ -38,18 +29,18 @@ public class ExternalStatusService extends IntentService{
         if (intent == null)
             return;
 
-        final String action = intent.getAction();
-
         try {
+            final String action = intent.getAction();
+            if (action == null) return;
 
             if (ACTION_NEW_EXTERNAL_STATUSLINE.equals(action)) {
                 String statusline = intent.getStringExtra(EXTRA_STATUSLINE);
+                if (statusline != null) {
 
-                if(statusline.length() > MAX_LEN){
-                    statusline = statusline.substring(0, MAX_LEN);
-                }
+                    if (statusline.length() > MAX_LEN) {
+                        statusline = statusline.substring(0, MAX_LEN);
+                    }
 
-                if(statusline != null) {
                     // send to wear
                     if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("wear_sync", false)) {
                         startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SEND_STATUS).putExtra("externalStatusString", statusline));
@@ -59,7 +50,7 @@ public class ExternalStatusService extends IntentService{
                         */
                         PowerManager powerManager = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
                         powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                                "quickFix4").acquire(15000);
+                                "externalStatusService").acquire(15000);
                     }
                 }
             }
