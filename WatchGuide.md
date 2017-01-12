@@ -25,14 +25,24 @@ These settings are listed in order of dependency.
 
   Force Wear may also provide better BT connectivity over that provided by the smartphone.  For example, some users find that the Sony Smartwatch 3 provides better BT connectivity than their smartphone.
 
+###Syncing Phone and Wear Preferences
+Note, xDrip+ and Wear will sync their co-existing preferences.  Preference syncing takes the following precedence on connection:
+1. xDrip+ app startup.  xDrip+ will send its preferences to the watch and the watch will update its values to the phone.
+2. On re-connect, the wear app will send its preferences to the phone and phone will update its values to the watch.
+
+For example, if the user changes the Force Wear preference on the watch, it will immediately be synced with the phone, or synced upon connection.
+
 ###Syncing BGs and Wear Database
 * Sync DB - The watch data is saved in the watch database.  The watch will attempt to sync with the phone upon connection until all delta data have been synced. So, for example, if you have 8 hours of overnight data, the watch will attempt to send those upon initial connection with the phone.
 * Reset Wear DB - The watch data exists on the phone until you **Reset Wear DB** on the phone via the xDrip+ upper right menu or until the app is uninstalled.
 * UserError Table - Similar to the xDrip+ phone app, UserError log messages are saved in the watch UserError table.
   - View Events Log - Users can view log messages on the phone via the xDrip+ upper right menu item **View Events Log**.
   - Less Common Settings (LCS) - Extra Logging Settings - **Extra tags for logging**: As with the xDrip+ phone app, specific log entries can be enabled by entering the extra tag and severity level preference via the xDrip+ phone app.
+
 ###XDrip Prefs Overview
-The watch XDrip Prefs app is used to set the xDrip+ wear app preferences. The following list the new preferences used in the standalone version.
+The watch XDrip Prefs app is used to set the xDrip+ wear app preferences.
+
+The following list the new preferences used in the standalone version.
 * BT Settings - provides the Wear Integration preferences listed above.
   - XDrip G5 Settings - similar to those provided by the xDrip+ app, such as **Scan for G5 Contantly**.  As with the xDrip+ app, they should only be enabled if the watch has connectivity issues.  For example, the Sony Smartwatch 3 (SW3) does not require any of these setting.
     - The one exception is the **Auth G5/Read**.  This should be enabled if using the latest, Dexcom G5 transmitter firmware (released in November 2016, firmware 1.0.4.10, or newer than firmware 1.0.0.17).
