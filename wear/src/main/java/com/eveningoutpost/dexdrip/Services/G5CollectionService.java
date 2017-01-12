@@ -595,7 +595,9 @@ public class G5CollectionService extends Service {
                 isScanning = false;
                 if (!isConnected) {
                     mLEScanner.startScan(filters, settings, mScanCallback);
-                    Log.w(TAG, "scan cycle start");
+                    if (JoH.ratelimit("g5-scan-log",60)) {
+                        Log.w(TAG, "scan cycle start");
+                    }
                 }
                 isScanning = true;
             } catch (IllegalStateException | NullPointerException is) {
