@@ -50,7 +50,9 @@ import com.eveningoutpost.dexdrip.G5Model.SensorRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.SensorTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.Transmitter;
 import com.eveningoutpost.dexdrip.G5Model.TransmitterStatus;
+import com.eveningoutpost.dexdrip.G5Model.VersionRequestTxMessage;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -154,6 +156,7 @@ public class G5CollectionService extends Service {
     private static final boolean delayOn133Errors = true; // add some delays with 133 errors
     private static final boolean useKeepAlive = true; // add some delays with 133 errors
     private static final boolean simpleBondWait = true; // possible UI thread issue but apparently more reliable
+    private static final boolean getVersionDetails = false; // test option
 
 
     StringBuilder log = new StringBuilder();
@@ -919,12 +922,21 @@ public class G5CollectionService extends Service {
     // Sends the disconnect tx message to our bt device.
     private synchronized void doDisconnectMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
            Log.d(TAG, "doDisconnectMessage() start");
-           mGatt.setCharacteristicNotification(controlCharacteristic, false);
+           gatt.setCharacteristicNotification(controlCharacteristic, false);
            final DisconnectTxMessage disconnectTx = new DisconnectTxMessage();
            characteristic.setValue(disconnectTx.byteSequence);
-           mGatt.writeCharacteristic(characteristic);
-           mGatt.disconnect();
+           gatt.writeCharacteristic(characteristic);
+           gatt.disconnect();
            Log.d(TAG, "doDisconnectMessage() finished");
+    }
+
+
+    private synchronized void doVersionRequestMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        Log.d(TAG, "doVersionRequestMessage() start");
+        final VersionRequestTxMessage versionTx = new VersionRequestTxMessage();
+        characteristic.setValue(versionTx.byteSequence);
+        gatt.writeCharacteristic(characteristic);
+        Log.d(TAG, "doVersionRequestMessage() finished");
     }
 
     private synchronized void discoverServices() {
@@ -1419,7 +1431,11 @@ public class G5CollectionService extends Service {
                 disconnected133 = 0; // reset as we got a reading
                 disconnected59 = 0;
                 Log.e(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered);
-                doDisconnectMessage(gatt, characteristic);
+                if (getVersionDetails) {
+                    doVersionRequestMessage(gatt, characteristic);
+                } else {
+                    doDisconnectMessage(gatt, characteristic);
+                }
                 processNewTransmitterData(sensorRx.unfiltered, sensorRx.filtered, sensor_battery_level, new Date().getTime());
             } else if (firstByte == GlucoseRxMessage.opcode) {
                 disconnected133 = 0; // reset as we got a reading
@@ -1428,6 +1444,10 @@ public class G5CollectionService extends Service {
                 Log.e(TAG, "SUCCESS!! glucose unfiltered: " + glucoseRx.unfiltered);
                 doDisconnectMessage(gatt, characteristic);
                 processNewTransmitterData(glucoseRx.unfiltered, glucoseRx.filtered, 216, new Date().getTime());
+            } else if (firstByte == 0x53) {
+                Log.d(TAG, "Got opcode: " + firstByte);
+                Log.wtf(TAG, HexDump.dumpHexString(characteristic.getValue()));
+                doDisconnectMessage(gatt, characteristic);
             } else {
                 Log.e(TAG,"onCharacteristic CHANGED unexpected opcode: "+firstByte+" (have not disconnected!)");
             }
