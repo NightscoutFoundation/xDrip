@@ -63,7 +63,7 @@ For example, if the user changes the Force Wear preference on the watch, it will
 ###XDrip Prefs Overview
 The watch XDrip Prefs app is used to set the xDrip+ wear app preferences.
 
-The following list the new preferences used in the standalone version.
+The following lists the new preferences used in the standalone version.
 ####XDrip BT Settings
 
   Provides the Wear Integration preferences listed above and the following:
