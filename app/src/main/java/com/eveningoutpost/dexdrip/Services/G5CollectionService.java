@@ -50,9 +50,9 @@ import com.eveningoutpost.dexdrip.G5Model.SensorRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.SensorTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.Transmitter;
 import com.eveningoutpost.dexdrip.G5Model.TransmitterStatus;
+import com.eveningoutpost.dexdrip.G5Model.VersionRequestRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.VersionRequestTxMessage;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
@@ -61,6 +61,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -156,7 +157,7 @@ public class G5CollectionService extends Service {
     private static final boolean delayOn133Errors = true; // add some delays with 133 errors
     private static final boolean useKeepAlive = true; // add some delays with 133 errors
     private static final boolean simpleBondWait = true; // possible UI thread issue but apparently more reliable
-    private static final boolean getVersionDetails = false; // test option
+    private static final boolean getVersionDetails = true; // try to load firmware version details
 
 
     StringBuilder log = new StringBuilder();
@@ -1431,7 +1432,7 @@ public class G5CollectionService extends Service {
                 disconnected133 = 0; // reset as we got a reading
                 disconnected59 = 0;
                 Log.e(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered);
-                if (getVersionDetails) {
+                if ((getVersionDetails) && (!haveFirmwareDetails())) {
                     doVersionRequestMessage(gatt, characteristic);
                 } else {
                     doDisconnectMessage(gatt, characteristic);
@@ -1444,17 +1445,57 @@ public class G5CollectionService extends Service {
                 Log.e(TAG, "SUCCESS!! glucose unfiltered: " + glucoseRx.unfiltered);
                 doDisconnectMessage(gatt, characteristic);
                 processNewTransmitterData(glucoseRx.unfiltered, glucoseRx.filtered, 216, new Date().getTime());
-            } else if (firstByte == 0x53) {
-                Log.d(TAG, "Got opcode: " + firstByte);
-                Log.wtf(TAG, HexDump.dumpHexString(characteristic.getValue()));
+            } else if (firstByte == VersionRequestRxMessage.opcode) {
+                if (!setStoredFirmwareBytes(defaultTransmitter.transmitterId, characteristic.getValue())) {
+                    Log.wtf(TAG, "Could not save out firmware version!");
+                }
                 doDisconnectMessage(gatt, characteristic);
             } else {
-                Log.e(TAG,"onCharacteristic CHANGED unexpected opcode: "+firstByte+" (have not disconnected!)");
+                Log.e(TAG, "onCharacteristic CHANGED unexpected opcode: " + firstByte + " (have not disconnected!)");
             }
             Log.e(TAG, "OnCharacteristic CHANGED finished: ");
         }
     };
     // end BluetoothGattCallback
+
+    private boolean haveFirmwareDetails() {
+        return defaultTransmitter.transmitterId.length() == 6 && getStoredFirmwareBytes(defaultTransmitter.transmitterId).length >= 10;
+    }
+
+    private static byte[] getStoredFirmwareBytes(String transmitterId) {
+        if (transmitterId.length() != 6) return new byte[0];
+        return PersistentStore.getBytes("g5-firmware-" + transmitterId);
+    }
+
+    private static boolean setStoredFirmwareBytes(String transmitterId, byte[] data) {
+        if (transmitterId.length() != 6) return false;
+        if (data.length < 10) return false;
+        PersistentStore.setBytes("g5-firmware-" + transmitterId, data);
+        return true;
+    }
+
+    public static VersionRequestRxMessage getFirmwareDetails(String tx_id) {
+        try {
+            byte[] stored = getStoredFirmwareBytes(tx_id);
+            if ((stored != null) && (stored.length > 9)) {
+                return new VersionRequestRxMessage(stored);
+            }
+        } catch (Exception e) {
+            Log.wtf(TAG, "Exception in getFirmwareDetails: " + e);
+            return null;
+        }
+        return null;
+    }
+
+    public static String getFirmwareVersionString(String tx_id) {
+        VersionRequestRxMessage vr = getFirmwareDetails(tx_id);
+        if (vr != null) {
+            return "FW: "+vr.firmware_version_string;
+        } else {
+            return "";
+        }
+    }
+
 
 
     private synchronized void sendAuthRequestTxMessage(BluetoothGattCharacteristic characteristic) {
