@@ -14,6 +14,9 @@ The wear standalone feature is enabled via the following xDrip+ Settings located
 
 These settings are listed in order of dependency.
 
+<img align="middle" src="./images/prefs-wear.png" title="xDrip+ Wear Integration Preferences">
+[xDrip+ Wear Integration Preferences](images/prefs-wear.png)
+
 * **Enable Wear**
 
   If you ONLY want to use the watch in standalone mode when the phone is out-of-range, then just select the Enable Wear checkbox. This simply enables the BT collection service on the watch to only run it when the phone is out-of-range. Upon reconnecting to the phone, the watch will stop its BT collection service and send its BG readings. The phone will sync the received readings and startup its own BT collection service. There may be a delay, perhaps up to 14 minutes, on some smartphones (eg., if the smartphone has poor BT connectivity) to get an initial bg reading after it is switched back to the phone. The watch BT collector usually gets the very next reading with no delay.
@@ -43,7 +46,7 @@ For example, if the user changes the Force Wear preference on the watch, it will
 The watch XDrip Prefs app is used to set the xDrip+ wear app preferences.
 
 The following list the new preferences used in the standalone version.
-* BT Settings - provides the Wear Integration preferences listed above.
+* XDrip BT Settings - provides the Wear Integration preferences listed above and the following:
   - XDrip G5 Settings - similar to those provided by the xDrip+ app, such as **Scan for G5 Contantly**.  As with the xDrip+ app, they should only be enabled if the watch has connectivity issues.  For example, the Sony Smartwatch 3 (SW3) does not require any of these setting.
     - The one exception is the **Auth G5/Read**.  This should be enabled if using the latest, Dexcom G5 transmitter firmware (released in November 2016, firmware 1.0.4.10, or newer than firmware 1.0.0.17).
 
@@ -61,12 +64,14 @@ Watchface tap feature is now implemented for the following preferences:
 ####Battery Usage
 The wear app supports the display of two battery usage options:
 * Bridge - displays the wixel or LimiTTer battery usage.  The Show Bridge Battery must be enabled to display the bridge battery usage.
-* Uploader or Wear - will display the battery usage of the device running the collection service. So, if Enable Wear and Force Wear prefs are enabled, it will display the WATCH battery usage.  If only Enable Wear is enabled, then it will display whichever device is actually running the collection service.  If neither prefs are enabled, it displays the phone's battery usage.  The label, "Uploader" or "Wear" corresponds to the device.  "Uploader" for phone which is the default, and "Wear" for the watch.  This will allow users to identify which device is running the collection service.
+* Uploader or Wear - will display the battery usage of the device running the collection service.  So, if Enable Wear and Force Wear prefs are enabled, it will display the **watch** battery usage.  If only Enable Wear is enabled, then it will display the battery usage of whichever device is actually running the collection service.  If neither prefs are enabled, it displays the phone's battery usage.  The label, **Uploader** or **Wear** corresponds to the device running the collector.  **Uploader** for phone which is the default, and **Wear** for the watch.  This will allow users to identify which device is running the collection service.
 
 ##Troubleshooting xDrip+ Wear
-The BT Collector connects to the transmitter every 5 mins by design. This is how BLE works. The following provides some troubleshooting suggestions if readings are not receiving every 5 minutes.
+The BT Collector connects to the transmitter every 5 mins by design. This is how the Collector's BLE works. The following provides some troubleshooting suggestions if readings are not being receiving every 5 minutes.
 
-###Confirm phone and watch are connected via phone's Android Wear app.
+###Confirm the following in Android Wear app on phone
+- Watch is connected.
+- Watch Settings always-on screen is enabled.  This will prevent watch doze mode from shutting down the BT Collector.
 
   To verify devices are connected, check the phone Android Wear app.  Android wear (on the watch) displays the **cloud** icon if the devices are not in-range, or if the user manually disconnects the devices in Android Wear.
 	
@@ -77,14 +82,14 @@ The BT Collector connects to the transmitter every 5 mins by design. This is how
 ###Confirm Collection Method is consistent on both phone and watch.
 
   Confirm the phone's Harware Data Source preference matches the watch's BT Collector preference.  The watch's BT Collector preference is a read-only preference.  It gets set based on the phone's Hardware Data Source preference. The following values correspond to the collectors:
-    - BluetoothWixel("BluetoothWixel"),
-    - DexcomShare("DexcomShare"),
-    - DexbridgeWixel("DexbridgeWixel"),
-    - LimiTTer("LimiTTer"),
-    - WifiWixel("WifiWixel"),
-    - DexcomG5("DexcomG5"),
-    - WifiDexBridgeWixel("WifiDexbridgeWixel"),
-    - LibreAlarm("LibreAlarm")
+   - BluetoothWixel("BluetoothWixel"),
+   - DexcomShare("DexcomShare"),
+   - DexbridgeWixel("DexbridgeWixel"),
+   - LimiTTer("LimiTTer"),
+   - WifiWixel("WifiWixel"),
+   - DexcomG5("DexcomG5"),
+   - WifiDexBridgeWixel("WifiDexbridgeWixel"),
+   - LibreAlarm("LibreAlarm")
 
 ###Confirm Collector device exists under Watch Settings->Bluetooth -> Devices.
 
@@ -99,12 +104,16 @@ The BT Collector connects to the transmitter every 5 mins by design. This is how
 
   The watch app does not yet support Noise smoothing.  Therefore, to confirm BG readings are consistently calculated on both phone and watch, it is best to turn off Noise Smoothing on the phone.
 
-  xDrip+ Display Settings - **Show Noise workings** when enabled:
-  - BG Original and BG Estimate will display on the home screen when Show Noise Workings is enabled.
-  - BG Original should correspond to your watch value, and the BG Estimate correspond to your phone value.
+  - xDrip+ Display Settings - **Show Noise workings**
 
-  For ease of confirming consistent BG readings on phone and watch, disable Noise Smoothing:
-  - xDrip+ Display Settings - **Smooth Sensor Noise** should be set to OFF.
+    When Show Noise Workings is enabled, **BG Original** and **BG Estimate** will display on the home screen.
+    - BG Original should correspond to your watch value, and
+    - BG Estimate should correspond to your phone value.
+
+  - xDrip+ Display Settings - **Smooth Sensor Noise**
+
+    For ease of confirming consistent BG readings on phone and watch, disable Noise Smoothing:
+
 
 ###Confirm Collector runs on the Phone with Wear Integration
 
@@ -117,29 +126,29 @@ This will allow your phone to use the G5 collector as normal when both phone and
 
 After you confirm that you are get a reading on your phone, enable **Force Wear**, either on the phone or watch XDrip Prefs.
 
-This will force the watch to use its BT collector when in-range with the phone, and force the phone to stop its BT collector service. Also, ensure that your **Android Wear** phone app is indeed connected to your watch. You should confirm you do not see a **cloud** icon on your watch to indicate you are connected connected. Go back into phone prefs Wear Integration and confirm that your watch is indeed running its BT collector. You should see the watch device name + uuid in the **Device running Collection Service**.
-You should also see the collection method that corresponds to the phone's Hardware Data Source under BT Collector on the watch in XDrip Prefs.
+This will force the watch to use its BT collector, and force the phone to stop its BT collector service discussed next.
 
 ###Confirm Collector runs on the Watch with Wear Integration
-  Ensure Wear Integration preferences are set as follows:
+  Ensure Wear Integration preferences are set as follows on both phone and watch:
   - **Wear Integration** is enabled.
   - **Enable Wear** is selected.
   - **Force Wear** is selected.
+  - **Device running Collection Service** corresponds to the watch display name + uuid.
+  - XDrip Prefs **BT Collector** corresponds to phone's Hardware Data Source.
+
+  Confirm Environment:
+  - Disable engineering mode.
+  - Disable Calibration plugin (incl. Adrian calibration mode).
+  - Disable then re-enable Wear Integration.
+  - Enable Force Wear.
+  - Show raw values.
+  - Smooth sensor noise off.
+  - Reset Wear DB, restart Watch, restart phone.
+  - Confirm phone and watch are connected via Android Wear.
+  - Change Watchface to big chart and then back to standard xDrip.
 
   Confirm Environment:
   - Disable engineering mode
-  - Disable Calibration plugin (incl. Adrian calibration mode)
-  - Disable then re-enable Wear Integration
-  - Enable Force Wear
-  - Show raw values
-  - Smooth sensor noise off
-  - Reset Wear DB, restart Watch, restart phone.
-  - Change Watchface to big chart and then back to standard xDrip
-
-###Confirm Android Wear app on phone displays watch is connected.  If disconnected, reconnect.
-###Confirm the following in Android Wear app on phone
-- Watch is connected.
-- Watch Settings always-on screen is enabled.  This will prevent watch doze mode from shutting down the BT Collector.
 
 #ADB DEBUG
 Debugging Android Wear
