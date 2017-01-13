@@ -39,6 +39,8 @@ import com.eveningoutpost.dexdrip.G5Model.AuthChallengeRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.AuthChallengeTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.AuthRequestTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.AuthStatusRxMessage;
+import com.eveningoutpost.dexdrip.G5Model.BatteryInfoRxMessage;
+import com.eveningoutpost.dexdrip.G5Model.BatteryInfoTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.BluetoothServices;
 import com.eveningoutpost.dexdrip.G5Model.BondRequestTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.DisconnectTxMessage;
@@ -158,6 +160,7 @@ public class G5CollectionService extends Service {
     private static final boolean useKeepAlive = true; // add some delays with 133 errors
     private static final boolean simpleBondWait = true; // possible UI thread issue but apparently more reliable
     private static final boolean getVersionDetails = true; // try to load firmware version details
+    private static final boolean getBatteryDetails = true; // try to load battery info details
 
 
     StringBuilder log = new StringBuilder();
@@ -947,6 +950,13 @@ public class G5CollectionService extends Service {
         Log.d(TAG, "doVersionRequestMessage() finished");
     }
 
+    private synchronized void doBatteryInfoRequestMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        Log.d(TAG, "doBatteryInfoMessage() start");
+        characteristic.setValue(new BatteryInfoTxMessage().byteSequence);
+        gatt.writeCharacteristic(characteristic);
+        Log.d(TAG, "doBatteryInfoMessage() finished");
+    }
+
     private synchronized void discoverServices() {
         if (JoH.ratelimit("G5-discservices", 2)) {
 
@@ -1441,6 +1451,8 @@ public class G5CollectionService extends Service {
                 Log.e(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered);
                 if ((getVersionDetails) && (!haveFirmwareDetails())) {
                     doVersionRequestMessage(gatt, characteristic);
+                } else if ((getBatteryDetails) && (!haveCurrentBatteryStatus())) {
+                    doBatteryInfoRequestMessage(gatt, characteristic);
                 } else {
                     doDisconnectMessage(gatt, characteristic);
                 }
@@ -1457,6 +1469,11 @@ public class G5CollectionService extends Service {
                     Log.wtf(TAG, "Could not save out firmware version!");
                 }
                 doDisconnectMessage(gatt, characteristic);
+            } else if (firstByte == BatteryInfoRxMessage.opcode) {
+                if (!setStoredBatteryBytes(defaultTransmitter.transmitterId, characteristic.getValue())) {
+                    Log.wtf(TAG, "Could not save out battery data!");
+                }
+                doDisconnectMessage(gatt, characteristic);
             } else {
                 Log.e(TAG, "onCharacteristic CHANGED unexpected opcode: " + firstByte + " (have not disconnected!)");
             }
@@ -1469,6 +1486,10 @@ public class G5CollectionService extends Service {
         return defaultTransmitter.transmitterId.length() == 6 && getStoredFirmwareBytes(defaultTransmitter.transmitterId).length >= 10;
     }
 
+    private boolean haveCurrentBatteryStatus() {
+        return defaultTransmitter.transmitterId.length() == 6 && JoH.msSince(PersistentStore.getLong("g5-battery-from" + defaultTransmitter.transmitterId)) < 7200;
+    }
+
     private static byte[] getStoredFirmwareBytes(String transmitterId) {
         if (transmitterId.length() != 6) return new byte[0];
         return PersistentStore.getBytes("g5-firmware-" + transmitterId);
@@ -1478,6 +1499,15 @@ public class G5CollectionService extends Service {
         if (transmitterId.length() != 6) return false;
         if (data.length < 10) return false;
         PersistentStore.setBytes("g5-firmware-" + transmitterId, data);
+        return true;
+    }
+
+    private static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
+        if (transmitterId.length() != 6) return false;
+        if (data.length < 10) return false;
+        Log.wtf(TAG, "Saving battery data: " + JoH.bytesToHex(data));
+        PersistentStore.setBytes("g5-battery-" + transmitterId, data);
+        PersistentStore.setLong("g5-battery-from" + transmitterId, JoH.tsl());
         return true;
     }
 

@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.app.AlarmManager;
 import android.annotation.TargetApi;
+import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -22,17 +22,10 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.text.Html;
 import android.text.SpannableString;
-import android.text.style.StrikethroughSpan;
-import android.text.style.UnderlineSpan;
-import android.widget.TextView;
-
-import com.eveningoutpost.dexdrip.BestGlucose;
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.AddCalibration;
+import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.DoubleCalibrationActivity;
 import com.eveningoutpost.dexdrip.EditAlertActivity;
 import com.eveningoutpost.dexdrip.Home;
@@ -41,22 +34,23 @@ import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.CalibrationRequest;
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
-import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
+import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 
 /**
  * Created by stephenblack on 11/28/14.
@@ -94,12 +88,12 @@ public class Notifications extends IntentService {
     Bitmap iconBitmap;
     Bitmap notifiationBitmap;
 
-    final int BgNotificationId = 001;
-    final int calibrationNotificationId = 002;
-    final int doubleCalibrationNotificationId = 003;
-    final int extraCalibrationNotificationId = 004;
+    final static int BgNotificationId = 001;
+    final static int calibrationNotificationId = 002;
+    final static int doubleCalibrationNotificationId = 003;
+    final static int extraCalibrationNotificationId = 004;
     public static final int exportCompleteNotificationId = 005;
-    final int ongoingNotificationId = 8811;
+    final static int ongoingNotificationId = 8811;
     public static final int exportAlertNotificationId = 006;
     public static final int uncleanAlertNotificationId = 007;
     public static final int missedAlertNotificationId = 010;
@@ -515,7 +509,7 @@ public class Notifications extends IntentService {
         return createWearBitmap(System.currentTimeMillis() - 60000 * 60 * hours, System.currentTimeMillis());
     }
 
-    private Notification createExtensionPage(long hours) {
+   /* private Notification createExtensionPage(long hours) {
         return new NotificationCompat.Builder(mContext)
                 .extend(new NotificationCompat.WearableExtender()
                                 .setBackground(createWearBitmap(hours))
@@ -523,7 +517,7 @@ public class Notifications extends IntentService {
                                 .setHintAvoidBackgroundClipping(true)
                 )
                 .build();
-    }
+    }*/
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public synchronized Notification createOngoingNotification(BgGraphBuilder bgGraphBuilder, Context context) {
@@ -697,7 +691,7 @@ public class Notifications extends IntentService {
         }
 
         NotificationManager mNotifyMgr = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotifyMgr.cancel(notificationId);
+        //mNotifyMgr.cancel(notificationId);
         mNotifyMgr.notify(notificationId, mBuilder.build());
     }
 
@@ -861,7 +855,7 @@ public class Notifications extends IntentService {
                 }
             }
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotifyMgr.cancel(notificatioId);
+            //mNotifyMgr.cancel(notificatioId);
             //Log.d(TAG, "Notify");
             Log.ueh("Other Alert",message);
             mNotifyMgr.notify(notificatioId, mBuilder.build());
