@@ -1,22 +1,24 @@
 # xDrip+ Wear Setup and Troubleshooting Guide
-- [Enable xDrip+ Android Wear Integration](#enable-xdrip Android Wear Integration)
-    - [Syncing Phone and Wear Preferences](#syncing-phone and Wear Preferences)
-    - [Syncing BGs and Wear Database](#syncing-bgs and Wear Database)
-    - [XDrip Prefs Overview](#xdrip-prefs Overview)
-        - [Watchface Tap Feature](#watchface-tap Feature)
+- [Enable xDrip+ Android Wear Integration](#enable-xdrip-android-wear-integration)
+    - [Syncing Phone and Wear Preferences](#syncing-phone-and-wear-preferences)
+    - [Syncing BGs and Wear Database](#syncing-bgs-and-wear-database)
+    - [XDrip Prefs Overview](#xdrip-prefs-overview)
+        - [XDrip BT Settings](#xdrip-bt-settings)
+        - [XDrip Watchface Settings](#xdrip-wWatchface-settings)
+        - [Watchface Tap Feature](#watchface-tap-feature)
         - [Battery Usage](#battery-usage)
-- [Troubleshooting xDrip+ Wear](#troubleshooting-xdrip Wear)
-    - [Confirm the following in Android Wear app on phone](#confirm-the following in Android Wear app on phone)
-    - [Confirm Wear Integration preferences are consistent on both phone and watch.](#confirm-wear Integration preferences are consistent on both phone and watch)
-    - [Confirm Collection Method is consistent on both phone and watch.](#confirm-collection Method is consistent on both phone and watch.)
-    - [Confirm Collector device exists under Watch Settings->Bluetooth -> Devices.](#confirm-collector device exists under Watch Settings BT Devices.)
-    - [Confirm Calibration Preferences are consistent on both phone and watch.](#confirm-calibration Preferences are consistent on both phone and watch.)
-    - [Confirm Noise Preferences are consistent on both phone and watch.](#confirm-noise Preferences are consistent on both phone and watch.)
-    - [Confirm Collector runs on the Phone with Wear Integration](#confirm-collector runs on the Phone with Wear Integration)
-    - [Confirm Collector runs on the Watch with Wear Integration](#confirm-collector runs on the Watch with Wear Integration)
-    - [Debugging Android Wear](#Debugging Android Wear)
+- [Troubleshooting xDrip+ Wear](#troubleshooting-xdrip-wear)
+    - [Confirm the following in Android Wear app on phone](#confirm-the-following-in-android-wear-app-on-phone)
+    - [Confirm Wear Integration preferences are consistent on both phone and watch.](#confirm-wear-integration-preferences-are-consistent-on-both-phone-and-watch)
+    - [Confirm Collection Method is consistent on both phone and watch.](#confirm-collection-method-is-consistent-on-both-phone-and-watch.)
+    - [Confirm Collector device exists under Watch Settings->Bluetooth -> Devices.](#confirm-collector-device-exists-under-watch-settings-bt-devices.)
+    - [Confirm Calibration Preferences are consistent on both phone and watch.](#confirm-calibration-preferences-are-consistent-on-both-phone-and-watch.)
+    - [Confirm Noise Preferences are consistent on both phone and watch.](#confirm-noise-preferences-are-consistent-on-both-phone-and-watch.)
+    - [Confirm Collector runs on the Phone with Wear Integration](#confirm-collector-runs-on-the-phone-with-wear-integration)
+    - [Confirm Collector runs on the Watch with Wear Integration](#confirm-collector-runs-on-the-watch-with-wear-integration)
+    - [Debugging Android Wear](#debugging-android-wear)
 
-##Enable xDrip Android Wear Integration
+##Enable xDrip+ Android Wear Integration
 xDrip+ supports wear integration through its wear app.  The xDrip+ wear app is installed with the standard xDrip+ apk.  The latest release supports a standalone version which allows the wear app to communicate directly with the Bluetooth collector, whether it is a Dexcom G5, a Dexcom G4 + xBridge, or a Libre LimiTTer.
 
 The wear standalone feature is enabled via the following xDrip+ Settings located under **Smart Watch Features**, and corresponding watch **XDrip Prefs** settings:
@@ -62,11 +64,15 @@ For example, if the user changes the Force Wear preference on the watch, it will
 The watch XDrip Prefs app is used to set the xDrip+ wear app preferences.
 
 The following list the new preferences used in the standalone version.
-* XDrip BT Settings - provides the Wear Integration preferences listed above and the following:
-  - XDrip G5 Settings - similar to those provided by the xDrip+ app, such as **Scan for G5 Contantly**.  As with the xDrip+ app, they should only be enabled if the watch has connectivity issues.  For example, the Sony Smartwatch 3 (SW3) does not require any of these setting.
+#### XDrip BT Settings
+
+  Provides the Wear Integration preferences listed above and the following:
+  - XDrip G5 Settings
+
+    Similar to those provided by the xDrip+ app, such as **Scan for G5 Contantly**.  As with the xDrip+ app, they should only be enabled if the watch has connectivity issues.  For example, the Sony Smartwatch 3 (SW3) does not require any of these setting.
     - The one exception is the **Auth G5/Read**.  This should be enabled if using the latest, Dexcom G5 transmitter firmware (released in November 2016, firmware 1.0.4.10, or newer than firmware 1.0.0.17).
 
-* XDrip Watchface Settings
+#### XDrip Watchface Settings
   - Show Status - Show Loop Status on the XDrip and XDrip(Large) watchfaces.  This will display the HAPP status message containing Basal%, IOB, COB.
   - Opaque Card - Show notifications cards with opaque background.  This will allow cards to be read more easily in ambient mode.
   - Small Font - Fontsize of small text in status and delta time fields on the XDrip and XDrip(Large) watchfaces.
