@@ -1,32 +1,48 @@
 # xDrip+ Wear Setup and Troubleshooting Guide
-##Enable xDrip+ Android Wear Integration
+- [Enable xDrip+ Android Wear Integration](#enable-xdrip Android Wear Integration)
+    - [Syncing Phone and Wear Preferences](#syncing-phone and Wear Preferences)
+    - [Syncing BGs and Wear Database](#syncing-bgs and Wear Database)
+    - [XDrip Prefs Overview](#xdrip-prefs Overview)
+        - [Watchface Tap Feature](#watchface-tap Feature)
+        - [Battery Usage](#battery-usage)
+- [Troubleshooting xDrip+ Wear](#troubleshooting-xdrip Wear)
+    - [Confirm the following in Android Wear app on phone](#confirm-the following in Android Wear app on phone)
+    - [Confirm Wear Integration preferences are consistent on both phone and watch.](#confirm-wear Integration preferences are consistent on both phone and watch)
+    - [Confirm Collection Method is consistent on both phone and watch.](#confirm-collection Method is consistent on both phone and watch.)
+    - [Confirm Collector device exists under Watch Settings->Bluetooth -> Devices.](#confirm-collector device exists under Watch Settings BT Devices.)
+    - [Confirm Calibration Preferences are consistent on both phone and watch.](#confirm-calibration Preferences are consistent on both phone and watch.)
+    - [Confirm Noise Preferences are consistent on both phone and watch.](#confirm-noise Preferences are consistent on both phone and watch.)
+    - [Confirm Collector runs on the Phone with Wear Integration](#confirm-collector runs on the Phone with Wear Integration)
+    - [Confirm Collector runs on the Watch with Wear Integration](#confirm-collector runs on the Watch with Wear Integration)
+    - [Debugging Android Wear](#Debugging Android Wear)
+
+##Enable xDrip Android Wear Integration
 xDrip+ supports wear integration through its wear app.  The xDrip+ wear app is installed with the standard xDrip+ apk.  The latest release supports a standalone version which allows the wear app to communicate directly with the Bluetooth collector, whether it is a Dexcom G5, a Dexcom G4 + xBridge, or a Libre LimiTTer.
 
 The wear standalone feature is enabled via the following xDrip+ Settings located under **Smart Watch Features**, and corresponding watch **XDrip Prefs** settings:
 
-|Phone        Settings              | Watch       Prefs| Description             |
+|Phone Settings                     | Watch Settings   | Description             |
 | --------------------------------- | ---------------- | ------------------------|
 | Android Wear Integration          | NA               | Enables Wear integration|
 | Enable Wear Collection Service    | Enable Collector | Enables the BT Collector to run on the wear device when the smartphone is out-of-range.|
 | Force Wear Collection Service     | Force Collector  | Forces the BT Collector to run on the wear device even when the smartphone is in-range.|
 | Device running Collection Service | NA               | Read-only; Displays the wear device running the BT Collector.  This will be the watch display name + uuid when Force Wear is enabled. |
-| NA                                | BT Collector     | Read-only; Corresponds to xDrip+ Setting - Hardware Data Source.  For example, if the xDrip+ is set to G5 Transmitter (test), then the wear app BT Collector will display **DexcomG5**. |
+| NA                                | BT Collector     | Read-only; Corresponds to xDrip+ Setting - **Hardware Data Source**.  For example, if the xDrip+ is set to **G5 Transmitter (test)**, then the wear app BT Collector will display **DexcomG5**. |
 
 These settings are listed in order of dependency.
 
 <img align="middle" src="./images/prefs-wear-sync.png" title="xDrip+ Wear Integration Preferences">
-[xDrip+ Wear Integration Preferences](images/prefs-wear-sync.png)
 
 * **Enable Wear**
 
-  If you ONLY want to use the watch in standalone mode when the phone is out-of-range, then just select the Enable Wear checkbox. This simply enables the BT collection service on the watch to only run it when the phone is out-of-range. Upon reconnecting to the phone, the watch will stop its BT collection service and send its BG readings. The phone will sync the received readings and startup its own BT collection service. There may be a delay, perhaps up to 14 minutes, on some smartphones (eg., if the smartphone has poor BT connectivity) to get an initial bg reading after it is switched back to the phone. The watch BT collector usually gets the very next reading with no delay.
+  If you ONLY want to use the watch in standalone mode when the phone is out-of-range, then just select the Enable Wear checkbox. This simply enables the BT collection service on the watch to run only when the phone is out-of-range. Upon reconnecting to the phone, the watch will stop its BT collection service and send its BG readings. The phone will sync the received readings and startup its own BT collection service. There may be a delay, perhaps up to 14 minutes, on some smartphones (eg., if the smartphone has poor BT connectivity) to get an initial bg reading after it is switched back to the phone. The watch BT collector usually gets the very next reading with no delay.
 * **Force Wear**
 
-  Enabling **Force Wear** will cause xDrip+ to only use the watch BT collection service.  The watch BT collection service will sync each bg reading with the phone as readings are received from the collector, or upon reconnecting to the phone.  **Force Wear** for everyday use has the advantage of offloading some of the proccessing required on the smartphone to the watch, thus saving battery and CPU usage on the smartphone.
+  Enabling **Force Wear** will cause xDrip+ to use the watch BT collection service.  The watch BT collection service will sync each bg reading with the phone as readings are received from the collector, or upon reconnecting to the phone.  **Force Wear** for everyday use has the advantage of offloading some of the proccessing required on the smartphone to the watch, thus saving battery and CPU usage on the smartphone.
 
-  However, this offloading means the watch battery may not last as long as when not using Force Wear.  For example, some users find that the Sony Smartwatch 3 (SW3) can use 20%+ overnight (7-8 hrs) when unplugged and running G5 collector and always-on screen.
+  However, this offloading means the watch battery may not last as long as when not using Force Wear.  As an example, some users find that the Sony Smartwatch 3 (SW3) can use 20%+ overnight (7-8 hrs) when unplugged and running G5 collector and always-on screen.
 
-  Force Wear may also provide better BT connectivity over that provided by the smartphone.  For example, some users find that the Sony Smartwatch 3 provides better BT connectivity than their smartphone.
+  Force Wear may also provide better BT connectivity over that provided by the smartphone.  As an example, some users find that the SW3 provides better BT connectivity than their smartphone.
 
 ###Syncing Phone and Wear Preferences
 Note, xDrip+ and Wear will sync their co-existing preferences.  Preference syncing takes the following precedence on connection:
@@ -66,7 +82,7 @@ The wear app supports the display of two battery usage options:
 * Bridge - displays the wixel or LimiTTer battery usage.  The Show Bridge Battery must be enabled to display the bridge battery usage.
 * Uploader or Wear - will display the battery usage of the device running the collection service.  So, if Enable Wear and Force Wear prefs are enabled, it will display the **watch** battery usage.  If only Enable Wear is enabled, then it will display the battery usage of whichever device is actually running the collection service.  If neither prefs are enabled, it displays the phone's battery usage.  The label, **Uploader** or **Wear** corresponds to the device running the collector.  **Uploader** for phone which is the default, and **Wear** for the watch.  This will allow users to identify which device is running the collection service.
 
-##Troubleshooting xDrip+ Wear
+##Troubleshooting xDrip Wear
 The BT Collector connects to the transmitter every 5 mins by design. This is how the Collector's BLE works. The following provides some troubleshooting suggestions if readings are not being receiving every 5 minutes.
 
 ###Confirm the following in Android Wear app on phone
@@ -91,7 +107,7 @@ The BT Collector connects to the transmitter every 5 mins by design. This is how
    - WifiDexBridgeWixel("WifiDexbridgeWixel"),
    - LibreAlarm("LibreAlarm")
 
-###Confirm Collector device exists under Watch Settings->Bluetooth -> Devices.
+###Confirm Collector device exists under Watch Settings BT Devices.
 
   Once the BT Collection Service executes it will perform a BT scan, and upon detecting the BT Collector device, will populated the Watch Settings under Bluetooth Devices.  Typically it will show as disconnected as it only connects briefly to receive the BG reading.
 
@@ -151,7 +167,7 @@ This will force the watch to use its BT collector, and force the phone to stop i
   - Disable engineering mode
 
 #ADB DEBUG
-Debugging Android Wear
+###Debugging Android Wear
 http://www.androidpolice.com/2014/07/05/how-to-android-wear-enable-debugging-take-screenshots-unlock-the-bootloader-and-root-the-lg-g-watch/
 1. Open Settings.
    1. Tap on Wear's watch face. This will take you to the voice prompt. Be sure to hit the watch face instead of a notification card.
