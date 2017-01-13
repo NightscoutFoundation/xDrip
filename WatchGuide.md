@@ -175,6 +175,7 @@ This will force the watch to use its BT collector, and force the phone to stop i
 #ADB DEBUG
 ###Debugging Android Wear
 http://www.androidpolice.com/2014/07/05/how-to-android-wear-enable-debugging-take-screenshots-unlock-the-bootloader-and-root-the-lg-g-watch/
+
 1. Open Settings.
    1. Tap on Wear's watch face. This will take you to the voice prompt. Be sure to hit the watch face instead of a notification card.
    2. Wear will wait up to 3 seconds for you to say something, then it'll change to a scrollable list of native actions. You can speed this up by swiping up or tapping on the voice prompt.
