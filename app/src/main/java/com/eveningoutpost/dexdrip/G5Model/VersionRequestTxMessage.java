@@ -13,7 +13,7 @@ import java.nio.ByteBuffer;
 public class VersionRequestTxMessage extends TransmitterMessage {
 
     private final static String TAG = G5CollectionService.TAG; // meh
-    byte opcode = 0x4A;//0x52;
+    byte opcode = 0x4A;
     private byte[] crc = CRC.calculate(opcode);
 
     public VersionRequestTxMessage() {
