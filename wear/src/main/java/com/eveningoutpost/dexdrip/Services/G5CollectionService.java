@@ -64,6 +64,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 */
+import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.UnsupportedEncodingException;
@@ -94,7 +95,7 @@ import static com.eveningoutpost.dexdrip.G5Model.BluetoothServices.getUUIDName;
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class G5CollectionService extends Service {
 
-    public final static String TAG = "wear" + G5CollectionService.class.getSimpleName();
+    public final static String TAG = G5CollectionService.class.getSimpleName();
 
     private static final Object short_lock = new Object();
     private final Object mLock = new Object();
@@ -297,13 +298,16 @@ public class G5CollectionService extends Service {
                 Log.e(TAG, "settingsToString: " + settingsToString());
                 //Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
                 //stopScan();
-                /*if (!CollectionServiceStarter.isBTG5(xdrip.getAppContext())) {
+                boolean wear_sync = prefs.getBoolean("wear_sync", false);
+                boolean enable_wearG5 = prefs.getBoolean("enable_wearG5", false);
+                boolean force_wearG5 = prefs.getBoolean("force_wearG5", false);
+                if (!CollectionServiceStarter.isBTG5(xdrip.getAppContext()) || (wear_sync && enable_wearG5 && force_wearG5)) {
                     Log.e(TAG,"Shutting down as no longer using G5 data source");
                     service_running = false;
                     keep_running = false;
                     stopSelf();
                     return START_NOT_STICKY;
-                } else {*/
+                } else {
 
                     scanCycleCount = 0;
                     mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -326,7 +330,7 @@ public class G5CollectionService extends Service {
                     service_running=false;
 
                     return START_STICKY;
-                //}
+                }
             } else {
                 Log.e(TAG,"G5 service already active!");
                 keepAlive();
@@ -541,7 +545,9 @@ public class G5CollectionService extends Service {
 
         if (!keep_running) return;
         if (JoH.ratelimit("G5-timeout",60) || !scan_scheduled) {
-            Log.d(TAG,"cycleScan running");
+            if (JoH.ratelimit("g5-scan-log",60)) {
+                Log.d(TAG, "cycleScan running");
+            }
             scan_scheduled=true;
             //Log.e(TAG, "Scheduling cycle scan, delay: " + delay);
             final Timer single_timer = new Timer();
@@ -595,7 +601,9 @@ public class G5CollectionService extends Service {
                 isScanning = false;
                 if (!isConnected) {
                     mLEScanner.startScan(filters, settings, mScanCallback);
-                    Log.w(TAG, "scan cycle start");
+                    if (JoH.ratelimit("g5-scan-log",60)) {
+                        Log.w(TAG, "scan cycle start");
+                    }
                 }
                 isScanning = true;
             } catch (IllegalStateException | NullPointerException is) {

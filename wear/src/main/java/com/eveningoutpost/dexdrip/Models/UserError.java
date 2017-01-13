@@ -231,11 +231,16 @@ public class UserError extends Model {
          * 
          */
         public static void readPreference(String extraLogs) {
+            extraLogs = extraLogs.trim();
             if (extraLogs.length() > 0) UserErrorLow(TAG, "called with string " + extraLogs);
             extraTags.clear();
-            
-            String []tags = extraLogs.split(",");
-            if(tags.length == 0) {
+
+            // allow splitting to work with a single entry and no delimiter zzz
+            if ((extraLogs.length() > 1) && (!extraLogs.contains(","))) {
+                extraLogs += ",";
+            }
+            String[] tags = extraLogs.split(",");
+            if (tags.length == 0) {
                 return;
             }
             
@@ -247,7 +252,7 @@ public class UserError extends Model {
         
         static void parseTag(String tag) {
             // Format is tag:level for example  Alerts:i
-            String[] tagAndLevel = tag.split(":");
+            String[] tagAndLevel = tag.trim().split(":");
             if(tagAndLevel.length != 2) {
                 Log.e(TAG, "Failed to parse " + tag);
                 return;
@@ -275,15 +280,7 @@ public class UserError extends Model {
         
         static boolean shouldLogTag(String tag, int level) {
             Integer levelForTag = extraTags.get(tag.toLowerCase());
-            if(levelForTag == null) {
-                return false;
-            }
-            
-            if(level >= levelForTag) {
-                return true;
-            }
-            
-            return false;
+            return levelForTag != null && level >= levelForTag;
         }
         
     }
