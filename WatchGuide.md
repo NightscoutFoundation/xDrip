@@ -15,7 +15,7 @@ The wear standalone feature is enabled via the following xDrip+ Settings located
 These settings are listed in order of dependency.
 
 <img align="middle" src="./images/prefs-wear.png" title="xDrip+ Wear Integration Preferences">
-[xDrip+ Wear Integration Preferences](images/prefs-wear.png)
+[xDrip+ Wear Integration Preferences](images/prefs-wear-sync.png)
 
 * **Enable Wear**
 
