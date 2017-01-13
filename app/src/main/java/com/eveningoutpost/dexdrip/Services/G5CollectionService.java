@@ -289,7 +289,10 @@ public class G5CollectionService extends Service {
 
                 //Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
                 //stopScan();
-                if (!CollectionServiceStarter.isBTG5(xdrip.getAppContext())) {
+                boolean wear_sync = prefs.getBoolean("wear_sync", false);
+                boolean enable_wearG5 = prefs.getBoolean("enable_wearG5", false);
+                boolean force_wearG5 = prefs.getBoolean("force_wearG5", false);
+                if (!CollectionServiceStarter.isBTG5(xdrip.getAppContext()) || (wear_sync && enable_wearG5 && force_wearG5)) {
                     Log.e(TAG,"Shutting down as no longer using G5 data source");
                     service_running = false;
                     keep_running = false;
@@ -525,7 +528,9 @@ public class G5CollectionService extends Service {
 
         if (!keep_running) return;
         if (JoH.ratelimit("G5-timeout",60) || !scan_scheduled) {
-            Log.d(TAG,"cycleScan running");
+            if (JoH.ratelimit("g5-scan-log",60)) {
+                Log.d(TAG, "cycleScan running");
+            }
             scan_scheduled=true;
             //Log.e(TAG, "Scheduling cycle scan, delay: " + delay);
             final Timer single_timer = new Timer();
@@ -579,7 +584,9 @@ public class G5CollectionService extends Service {
                 isScanning = false;
                 if (!isConnected) {
                     mLEScanner.startScan(filters, settings, mScanCallback);
-                    Log.w(TAG, "scan cycle start");
+                    if (JoH.ratelimit("g5-scan-log",60)) {
+                        Log.w(TAG, "scan cycle start");
+                    }
                 }
                 isScanning = true;
             } catch (IllegalStateException | NullPointerException is) {
