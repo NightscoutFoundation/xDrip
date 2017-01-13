@@ -4,16 +4,16 @@
     - [Syncing BGs and Wear Database](#syncing-bgs-and-wear-database)
     - [XDrip Prefs Overview](#xdrip-prefs-overview)
         - [XDrip BT Settings](#xdrip-bt-settings)
-        - [XDrip Watchface Settings](#xdrip-wWatchface-settings)
+        - [XDrip Watchface Settings](#xdrip-watchface-settings)
         - [Watchface Tap Feature](#watchface-tap-feature)
         - [Battery Usage](#battery-usage)
 - [Troubleshooting xDrip+ Wear](#troubleshooting-xdrip-wear)
     - [Confirm the following in Android Wear app on phone](#confirm-the-following-in-android-wear-app-on-phone)
-    - [Confirm Wear Integration preferences are consistent on both phone and watch.](#confirm-wear-integration-preferences-are-consistent-on-both-phone-and-watch)
-    - [Confirm Collection Method is consistent on both phone and watch.](#confirm-collection-method-is-consistent-on-both-phone-and-watch.)
-    - [Confirm Collector device exists under Watch Settings->Bluetooth -> Devices.](#confirm-collector-device-exists-under-watch-settings-bt-devices.)
-    - [Confirm Calibration Preferences are consistent on both phone and watch.](#confirm-calibration-preferences-are-consistent-on-both-phone-and-watch.)
-    - [Confirm Noise Preferences are consistent on both phone and watch.](#confirm-noise-preferences-are-consistent-on-both-phone-and-watch.)
+    - [Confirm Wear Integration preferences are consistent on both phone and watch](#confirm-wear-integration-preferences-are-consistent-on-both-phone-and-watch)
+    - [Confirm Collection Method is consistent on both phone and watch](#confirm-collection-method-is-consistent-on-both-phone-and-watch)
+    - [Confirm Collector device exists under Watch Settings->Bluetooth -> Devices](#confirm-collector-device-exists-under-watch-settings-bt-devices)
+    - [Confirm Calibration Preferences are consistent on both phone and watch](#confirm-calibration-preferences-are-consistent-on-both-phone-and-watch)
+    - [Confirm Noise Preferences are consistent on both phone and watch](#confirm-noise-preferences-are-consistent-on-both-phone-and-watch)
     - [Confirm Collector runs on the Phone with Wear Integration](#confirm-collector-runs-on-the-phone-with-wear-integration)
     - [Confirm Collector runs on the Watch with Wear Integration](#confirm-collector-runs-on-the-watch-with-wear-integration)
     - [Debugging Android Wear](#debugging-android-wear)
@@ -64,7 +64,7 @@ For example, if the user changes the Force Wear preference on the watch, it will
 The watch XDrip Prefs app is used to set the xDrip+ wear app preferences.
 
 The following list the new preferences used in the standalone version.
-#### XDrip BT Settings
+####XDrip BT Settings
 
   Provides the Wear Integration preferences listed above and the following:
   - XDrip G5 Settings
@@ -72,7 +72,7 @@ The following list the new preferences used in the standalone version.
     Similar to those provided by the xDrip+ app, such as **Scan for G5 Contantly**.  As with the xDrip+ app, they should only be enabled if the watch has connectivity issues.  For example, the Sony Smartwatch 3 (SW3) does not require any of these setting.
     - The one exception is the **Auth G5/Read**.  This should be enabled if using the latest, Dexcom G5 transmitter firmware (released in November 2016, firmware 1.0.4.10, or newer than firmware 1.0.0.17).
 
-#### XDrip Watchface Settings
+####XDrip Watchface Settings
   - Show Status - Show Loop Status on the XDrip and XDrip(Large) watchfaces.  This will display the HAPP status message containing Basal%, IOB, COB.
   - Opaque Card - Show notifications cards with opaque background.  This will allow cards to be read more easily in ambient mode.
   - Small Font - Fontsize of small text in status and delta time fields on the XDrip and XDrip(Large) watchfaces.
@@ -97,11 +97,11 @@ The BT Collector connects to the transmitter every 5 mins by design. This is how
 
   To verify devices are connected, check the phone Android Wear app.  Android wear (on the watch) displays the **cloud** icon if the devices are not in-range, or if the user manually disconnects the devices in Android Wear.
 	
-###Confirm Wear Integration preferences are consistent on both phone and watch.
+###Confirm Wear Integration preferences are consistent on both phone and watch
 
   **Enable Wear** and  **Force Wear** should have same settings on phone and watch.  If not, reset them accordingly.  The xDrip+ should sync these values whenever the user modifies them or at application startup, but both phone and watch must be connected and in-range for syncing to be performed.  See **Confirm phone and watch are connected** above.
 
-###Confirm Collection Method is consistent on both phone and watch.
+###Confirm Collection Method is consistent on both phone and watch
 
   Confirm the phone's Harware Data Source preference matches the watch's BT Collector preference.  The watch's BT Collector preference is a read-only preference.  It gets set based on the phone's Hardware Data Source preference. The following values correspond to the collectors:
    - BluetoothWixel("BluetoothWixel"),
@@ -113,16 +113,16 @@ The BT Collector connects to the transmitter every 5 mins by design. This is how
    - WifiDexBridgeWixel("WifiDexbridgeWixel"),
    - LibreAlarm("LibreAlarm")
 
-###Confirm Collector device exists under Watch Settings BT Devices.
+###Confirm Collector device exists under Watch Settings BT Devices
 
   Once the BT Collection Service executes it will perform a BT scan, and upon detecting the BT Collector device, will populated the Watch Settings under Bluetooth Devices.  Typically it will show as disconnected as it only connects briefly to receive the BG reading.
 
-###Confirm Calibration Preferences are consistent on both phone and watch.
+###Confirm Calibration Preferences are consistent on both phone and watch
 
   The watch app does not yet support Calibration Plugins.  Therefore, to confirm BG readings are consistently calculated on both phone and watch, it is best to turn off Calibration Plugins on the phone.
   - LCS - **Advanced Calibration** - all should be off, including **Adrian calibration mode**.
 
-###Confirm Noise Preferences are consistent on both phone and watch.
+###Confirm Noise Preferences are consistent on both phone and watch
 
   The watch app does not yet support Noise smoothing.  Therefore, to confirm BG readings are consistently calculated on both phone and watch, it is best to turn off Noise Smoothing on the phone.
 
