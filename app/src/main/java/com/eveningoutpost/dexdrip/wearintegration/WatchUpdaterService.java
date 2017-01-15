@@ -453,45 +453,49 @@ public class WatchUpdaterService extends WearableListenerService implements
 
         if (wear_integration) {
             is_using_bt = DexCollectionType.hasBluetooth();//(getDexCollectionType() == DexCollectionType.DexcomG5)
-            if (googleApiClient.isConnected()) {
-                if (ACTION_RESEND.equals(action)) {
-                    resendData();
-                } else if (ACTION_OPEN_SETTINGS.equals(action)) {
-                    sendNotification(OPEN_SETTINGS_PATH, "openSettings");//KS add args
-                } else if (ACTION_SEND_STATUS.equals(action)) {//KS added for HAPP
-                    //https://github.com/StephenBlackWasAlreadyTaken/xDrip-Experimental
-                    Log.d(TAG, "onStartCommand Action=" + ACTION_SEND_STATUS + " externalStatusString=" + intent.getStringExtra("externalStatusString"));
-                    sendStatus(intent.getStringExtra("externalStatusString"));
-                } else if (ACTION_SYNC_DB.equals(action)) {//KS
-                    Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_DB + " Path=" + SYNC_DB_PATH);
-                    sendNotification(SYNC_DB_PATH, "syncDB");
-                    initWearData();
-                } else if (ACTION_SYNC_SENSOR.equals(action)) {//KS
-                    Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_SENSOR + " Path=" + WEARABLE_SENSOR_DATA_PATH);
-                    sendSensorData();
-                } else if (ACTION_SYNC_ACTIVEBTDEVICE.equals(action)) {//KS
-                    Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_ACTIVEBTDEVICE + " Path=" + WEARABLE_ACTIVEBTDEVICE_DATA_PATH);
-                    sendActiveBtDeviceData();
-                } else if (ACTION_SYNC_CALIBRATION.equals(action)) {//KS
-                    Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_CALIBRATION + " Path=" + WEARABLE_CALIBRATION_DATA_PATH);
+            if (googleApiClient != null) {
+                if (googleApiClient.isConnected()) {
+                    if (ACTION_RESEND.equals(action)) {
+                        resendData();
+                    } else if (ACTION_OPEN_SETTINGS.equals(action)) {
+                        sendNotification(OPEN_SETTINGS_PATH, "openSettings");//KS add args
+                    } else if (ACTION_SEND_STATUS.equals(action)) {//KS added for HAPP
+                        //https://github.com/StephenBlackWasAlreadyTaken/xDrip-Experimental
+                        Log.d(TAG, "onStartCommand Action=" + ACTION_SEND_STATUS + " externalStatusString=" + intent.getStringExtra("externalStatusString"));
+                        sendStatus(intent.getStringExtra("externalStatusString"));
+                    } else if (ACTION_SYNC_DB.equals(action)) {//KS
+                        Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_DB + " Path=" + SYNC_DB_PATH);
+                        sendNotification(SYNC_DB_PATH, "syncDB");
+                        initWearData();
+                    } else if (ACTION_SYNC_SENSOR.equals(action)) {//KS
+                        Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_SENSOR + " Path=" + WEARABLE_SENSOR_DATA_PATH);
+                        sendSensorData();
+                    } else if (ACTION_SYNC_ACTIVEBTDEVICE.equals(action)) {//KS
+                        Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_ACTIVEBTDEVICE + " Path=" + WEARABLE_ACTIVEBTDEVICE_DATA_PATH);
+                        sendActiveBtDeviceData();
+                    } else if (ACTION_SYNC_CALIBRATION.equals(action)) {//KS
+                        Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_CALIBRATION + " Path=" + WEARABLE_CALIBRATION_DATA_PATH);
 
-                    sendWearCalibrationData(sendCalibrationCount);
-                    final boolean adjustPast = mPrefs.getBoolean("rewrite_history", true);
-                    Log.d(TAG, "onStartCommand adjustRecentBgReadings for rewrite_history=" + adjustPast);
-                    sendWearBgData(adjustPast ? 30 : 2);//wear may not have all BGs if force_wearG5=false, so send BGs from phone
-                    sendData();//ensure BgReading.Last is displayed on watch
+                        sendWearCalibrationData(sendCalibrationCount);
+                        final boolean adjustPast = mPrefs.getBoolean("rewrite_history", true);
+                        Log.d(TAG, "onStartCommand adjustRecentBgReadings for rewrite_history=" + adjustPast);
+                        sendWearBgData(adjustPast ? 30 : 2);//wear may not have all BGs if force_wearG5=false, so send BGs from phone
+                        sendData();//ensure BgReading.Last is displayed on watch
 
-                } else {
-                    if (!mPrefs.getBoolean("force_wearG5", false)
-                            && mPrefs.getBoolean("enable_wearG5",false)
-                            && (is_using_bt)) { //KS only send BGs if using Phone's G5 Collector Server
-                        sendWearBgData(1);
-                        Log.d(TAG, "onStartCommand Action=" + " Path=" + WEARABLE_BG_DATA_PATH);
+                    } else {
+                        if (!mPrefs.getBoolean("force_wearG5", false)
+                                && mPrefs.getBoolean("enable_wearG5", false)
+                                && (is_using_bt)) { //KS only send BGs if using Phone's G5 Collector Server
+                            sendWearBgData(1);
+                            Log.d(TAG, "onStartCommand Action=" + " Path=" + WEARABLE_BG_DATA_PATH);
+                        }
+                        sendData();//ensure BgReading.Last is displayed on watch
                     }
-                    sendData();//ensure BgReading.Last is displayed on watch
+                } else {
+                    googleApiClient.connect();
                 }
             } else {
-                googleApiClient.connect();
+                Log.wtf(TAG, "GoogleAPI client is null!");
             }
         }
 
