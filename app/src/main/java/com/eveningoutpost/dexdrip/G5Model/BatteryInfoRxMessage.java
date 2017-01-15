@@ -35,8 +35,8 @@ public class BatteryInfoRxMessage extends TransmitterMessage {
                 voltagea = getUnsignedShort(data);
                 voltageb = getUnsignedShort(data);
                 resist = getUnsignedShort(data);
-                runtime = data.get();
-                temperature = data.get();
+                runtime = getUnsignedByte(data);
+                temperature = data.get(); // not sure if signed or not, but <0c or >127C seems unlikely!
             } else {
                 UserError.Log.wtf(TAG, "Invalid opcode for BatteryInfoRxMessage");
             }
