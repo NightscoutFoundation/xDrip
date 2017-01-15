@@ -226,13 +226,15 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         if(layoutSet) {
             this.mRelativeLayout.draw(canvas);
             Log.d("onDraw", "draw");
-            int cardWidth = mCardRect.width();
-            int cardHeight = mCardRect.height();
-            if (cardHeight > 0 && cardWidth > 0 && getCurrentWatchMode() != WatchMode.INTERACTIVE) {
-                Paint paint = new Paint();
-                paint.setColor(Color.BLACK);
-                paint.setStrokeWidth(0);
-                canvas.drawRect(mCardRect, paint);
+            if (sharedPrefs.getBoolean("showOpaqueCard", true)) {
+                int cardWidth = mCardRect.width();
+                int cardHeight = mCardRect.height();
+                if (cardHeight > 0 && cardWidth > 0 && getCurrentWatchMode() != WatchMode.INTERACTIVE) {
+                    Paint paint = new Paint();
+                    paint.setColor(Color.BLACK);
+                    paint.setStrokeWidth(0);
+                    canvas.drawRect(mCardRect, paint);
+                }
             }
         }
     }
@@ -457,11 +459,13 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
 
     @Override
     protected void onCardPeek(Rect peekCardRect) {
-        mCardRect = peekCardRect;
-        displayCard();
-        int cardWidth = peekCardRect.width();
-        int cardHeight = peekCardRect.height();
-        Log.d("onCardPeek", "WatchFace.onCardPeek: getWidth()=" + getWidth() + " getHeight()=" + getHeight() + " cardWidth=" + cardWidth + " cardHeight=" + cardHeight);
+        if (sharedPrefs.getBoolean("showOpaqueCard", true)) {
+            mCardRect = peekCardRect;
+            displayCard();
+            int cardWidth = peekCardRect.width();
+            int cardHeight = peekCardRect.height();
+            Log.d("onCardPeek", "WatchFace.onCardPeek: getWidth()=" + getWidth() + " getHeight()=" + getHeight() + " cardWidth=" + cardWidth + " cardHeight=" + cardHeight);
+        }
     }
 
 
