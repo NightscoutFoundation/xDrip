@@ -13,4 +13,8 @@ public abstract class TransmitterMessage {
         byte[] newData;
 
     }
+
+    public static int getUnsignedShort(ByteBuffer data) {
+        return ((data.get() & 0xff) + ((data.get() & 0xff) << 8));
+    }
 }

@@ -127,7 +127,7 @@
     <string name="first_configure_ip_address">First configure your wifi wixel reader ip addresses or parakeet url</string>
     <string name="now_start_your_sensor">Now start your sensor or check Settings</string>
     <string name="please_wait_while_sensor_warms_up">Please wait while sensor warms up! (</string>
-    <string name="minutes_with_bracket"> minutes)</string>
+    <string name="minutes_with_bracket">" minutes)"</string>
     <string name="possible_bad_calibration">Possible bad calibration slope, please have a glass of water, wash hands, then recalibrate in a few!</string>
     <string name="please_wait_need_two_readings_first">Please wait, need 2 readings from transmitter first.</string>
     <string name="please_enter_two_calibrations_to_get_started">Please enter two calibrations to get started!</string>

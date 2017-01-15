@@ -64,6 +64,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -150,6 +151,8 @@ public class G5CollectionService extends Service {
     private int scanCycleCount = 0;
     private boolean delays = false;
 
+    private static String lastState = "Not running";
+
 
     // test params
     private static final boolean ignoreLocalBondingState = false; // don't try to bond gives: GATT_ERR_UNLIKELY but no more 133s
@@ -161,6 +164,8 @@ public class G5CollectionService extends Service {
     private static final boolean simpleBondWait = true; // possible UI thread issue but apparently more reliable
     private static final boolean getVersionDetails = true; // try to load firmware version details
     private static final boolean getBatteryDetails = true; // try to load battery info details
+
+    private static final long BATTERY_READ_PERIOD_MS = 1000 * 60 * 60 * 12; // how often to poll battery data (12 hours)
 
 
     StringBuilder log = new StringBuilder();
@@ -289,6 +294,7 @@ public class G5CollectionService extends Service {
                 Log.d(TAG, "onG5StartCommand wakeup: "+JoH.dateTimeText(JoH.tsl()));
                 Log.e(TAG, "settingsToString: " + settingsToString());
 
+                lastState = "Started: "+JoH.hourMinuteString(JoH.tsl());
 
                 //Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
                 //stopScan();
@@ -401,6 +407,7 @@ public class G5CollectionService extends Service {
         }
 //        BgToSpeech.tearDownTTS();
         Log.i(TAG, "SERVICE STOPPED");
+        lastState="Stopped";
     }
 
     public synchronized void keepAlive() {
@@ -587,6 +594,7 @@ public class G5CollectionService extends Service {
                 isScanning = false;
                 if (!isConnected) {
                     mLEScanner.startScan(filters, settings, mScanCallback);
+                    lastState="Scanning";
                     if (JoH.ratelimit("g5-scan-log",60)) {
                         Log.w(TAG, "scan cycle start");
                     }
@@ -919,7 +927,7 @@ public class G5CollectionService extends Service {
     private synchronized void connectGatt(BluetoothDevice mDevice) {
         Log.i(TAG, "mGatt Null, connecting...");
         Log.i(TAG, "connectToDevice On Main Thread? " + isOnMainThread());
-
+        lastState="Found, Connecting";
         if (delayOn133Errors && max133RetryCounter > 1) {
             // should we only be looking at disconnected 133 here?
             Log.e(TAG, "Adding a delay before connecting to 133 count of: " + max133RetryCounter);
@@ -1448,6 +1456,7 @@ public class G5CollectionService extends Service {
                 //Log.e(TAG, "filtered: " + sensorRx.filtered);
                 disconnected133 = 0; // reset as we got a reading
                 disconnected59 = 0;
+                lastState="Success getting data";
                 Log.e(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered);
                 if ((getVersionDetails) && (!haveFirmwareDetails())) {
                     doVersionRequestMessage(gatt, characteristic);
@@ -1486,8 +1495,10 @@ public class G5CollectionService extends Service {
         return defaultTransmitter.transmitterId.length() == 6 && getStoredFirmwareBytes(defaultTransmitter.transmitterId).length >= 10;
     }
 
+    private final static String G5_BATTERY_FROM_MARKER = "g5-battery-from";
+
     private boolean haveCurrentBatteryStatus() {
-        return defaultTransmitter.transmitterId.length() == 6 && JoH.msSince(PersistentStore.getLong("g5-battery-from" + defaultTransmitter.transmitterId)) < 7200;
+        return defaultTransmitter.transmitterId.length() == 6 && (JoH.msSince(PersistentStore.getLong(G5_BATTERY_FROM_MARKER + defaultTransmitter.transmitterId)) < BATTERY_READ_PERIOD_MS);
     }
 
     private static byte[] getStoredFirmwareBytes(String transmitterId) {
@@ -1502,13 +1513,24 @@ public class G5CollectionService extends Service {
         return true;
     }
 
+    private static final String G5_BATTERY_MARKER = "g5-battery-";
+
     private static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
         if (transmitterId.length() != 6) return false;
         if (data.length < 10) return false;
-        Log.wtf(TAG, "Saving battery data: " + JoH.bytesToHex(data));
-        PersistentStore.setBytes("g5-battery-" + transmitterId, data);
-        PersistentStore.setLong("g5-battery-from" + transmitterId, JoH.tsl());
+        Log.wtf(TAG, "Saving battery data: " + new BatteryInfoRxMessage(data).toString());
+        PersistentStore.setBytes(G5_BATTERY_MARKER + transmitterId, data);
+        PersistentStore.setLong(G5_BATTERY_FROM_MARKER + transmitterId, JoH.tsl());
         return true;
+    }
+
+    private static BatteryInfoRxMessage getBatteryDetails(String tx_id) {
+        try {
+            return new BatteryInfoRxMessage(PersistentStore.getBytes(G5_BATTERY_MARKER + tx_id));
+        } catch (Exception e) {
+            Log.wtf(TAG, "Exception in getFirmwareDetails: " + e);
+            return null;
+        }
     }
 
     public static VersionRequestRxMessage getFirmwareDetails(String tx_id) {
@@ -1527,12 +1549,11 @@ public class G5CollectionService extends Service {
     public static String getFirmwareVersionString(String tx_id) {
         VersionRequestRxMessage vr = getFirmwareDetails(tx_id);
         if (vr != null) {
-            return "FW: "+vr.firmware_version_string;
+            return "FW: " + vr.firmware_version_string;
         } else {
             return "";
         }
     }
-
 
 
     private synchronized void sendAuthRequestTxMessage(BluetoothGattCharacteristic characteristic) {
@@ -1718,6 +1739,43 @@ public class G5CollectionService extends Service {
                 + (tryOnDemandBondWithDelay ? "tryOnDemandBondWithDelay " : "")
                 + (engineeringMode() ? "engineeringMode " : "")
                 + (tryPreBondWithDelay ? "tryPreBondWithDelay " : ""));
+    }
+
+    // data for MegaStatus
+    public static List<StatusItem> megaStatus() {
+        final List<StatusItem> l = new ArrayList<>();
+
+        l.add(new StatusItem("Phone Service State", lastState));
+
+
+        String tx_id = Home.getPreferencesStringDefaultBlank("dex_txid");
+
+        l.add(new StatusItem("Transmitter ID", tx_id));
+        // get firmware details
+        VersionRequestRxMessage vr = getFirmwareDetails(tx_id);
+        if ((vr != null) && (vr.firmware_version_string.length() > 0)) {
+
+            l.add(new StatusItem("Firmware Version Code", vr.firmware_version_string));
+            l.add(new StatusItem("Bluetooth Version Code", vr.bluetooth_firmware_version_string));
+            l.add(new StatusItem("Other Version Code", vr.other_firmware_version));
+            l.add(new StatusItem("Hardware Version", vr.hardwarev));
+            l.add(new StatusItem("ASIC", vr.asic));
+        }
+
+        BatteryInfoRxMessage bt = getBatteryDetails(tx_id);
+        long last_battery_query = PersistentStore.getLong(G5_BATTERY_FROM_MARKER + tx_id);
+        if ((bt != null) && (last_battery_query > 0)) {
+            l.add(new StatusItem("Battery Last queried", JoH.dateTimeText(last_battery_query)));
+            l.add(new StatusItem("Transmitter Status", TransmitterStatus.getBatteryLevel(vr.status).toString()));
+            l.add(new StatusItem("Transmitter Days", bt.runtime));
+            l.add(new StatusItem("Voltage A", bt.voltagea));
+            l.add(new StatusItem("Voltage B", bt.voltageb));
+            l.add(new StatusItem("Resistance", bt.resist));
+            l.add(new StatusItem("Temperature", bt.temperature + " \u2103"));
+        }
+
+
+        return l;
     }
 
 }

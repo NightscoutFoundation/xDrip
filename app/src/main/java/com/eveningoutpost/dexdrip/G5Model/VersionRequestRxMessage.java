@@ -38,7 +38,7 @@ public class VersionRequestRxMessage extends TransmitterMessage {
                 bluetooth_firmware_version_string = dottedStringFromData(data, 4);
                 hardwarev = data.get();
                 other_firmware_version = dottedStringFromData(data, 3);
-                asic = ((data.get() & 0xff) + ((data.get() & 0xff) << 8)); // check signed vs unsigned & byte order!!
+                asic = getUnsignedShort(data); // check signed vs unsigned & byte order!!
             }
         }
     }
