@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    android:installLocation="internalOnly"
-    package="com.eveningoutpost.dexdrip">
+    package="com.eveningoutpost.dexdrip"
+    android:installLocation="internalOnly">
 
     <!-- To receive data from HAPP. -->
     <uses-permission android:name="com.eveningoutpost.dexdrip.permissions.RECEIVE_EXTERNAL_STATUSLINE" />
@@ -99,8 +99,8 @@
         <service
             android:name=".wearintegration.ExternalStatusService"
             android:enabled="true"
-            android:exported="false" >
-        </service>
+            android:exported="false"></service>
+
         <activity
             android:name=".Tables.BgReadingTable"
             android:configChanges="orientation|screenSize"
@@ -113,14 +113,16 @@
             android:name=".ImportDatabaseActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/import_database" />
-        <!--<activity
+        <!--
+        <activity
             android:name=".GoogleDriveInterface"
             android:label="Sync Data"
             android:theme="@android:style/Theme.NoDisplay" />
         <activity
             android:name=".GcmActivity"
             android:label="GCM connect"
-            android:theme="@android:style/Theme.NoDisplay" />-->
+            android:theme="@android:style/Theme.NoDisplay" />
+        -->
         <activity
             android:name=".AddCalibration"
             android:configChanges="orientation|screenSize"
@@ -160,22 +162,24 @@
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".wearintegration.ExternalStatusBroadcastReceiver" android:exported="true" >
-            <intent-filter> <action android:name="com.eveningoutpost.dexdrip.ExternalStatusline" /> </intent-filter>
+        <receiver
+            android:name=".wearintegration.ExternalStatusBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.eveningoutpost.dexdrip.ExternalStatusline" />
+            </intent-filter>
         </receiver>
 
         <activity
             android:name=".Tables.CalibrationDataTable"
             android:label="@string/calibration_data_table" />
 
-        <service
-            android:name=".GcmListenerSvc">
+        <service android:name=".GcmListenerSvc">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service
-            android:name=".MyInstanceIDListenerService">
+        <service android:name=".MyInstanceIDListenerService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
@@ -279,7 +283,7 @@
             android:name=".NFCScanningX"
             android:configChanges="orientation|screenSize"
             android:label="NFC Scanning"
-            android:launchMode="singleTask"></activity>
+            android:launchMode="singleTask" />
 
         <service
             android:name=".Services.DexShareCollectionService"
@@ -511,14 +515,16 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".GlucoseMeter.BTGlucoseMeterActivity"
-            android:label="@string/title_activity_btglucose_meter"
             android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_btglucose_meter"
             android:parentActivityName=".Home">
-
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.eveningoutpost.dexdrip.Home" />
         </activity>
+        <activity
+            android:name=".MegaStatus"
+            android:label="@string/system_status"></activity>
     </application>
 
 </manifest>
