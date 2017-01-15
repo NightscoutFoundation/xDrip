@@ -777,7 +777,6 @@ public class Home extends ActivityWithMenu {
     }
 
 
-
     public static void startHomeWithExtra(Context context, String extra, String text) {
         startHomeWithExtra(context, extra, text, "");
     }
@@ -789,10 +788,13 @@ public class Home extends ActivityWithMenu {
         intent.putExtra(extra + "2", even_more);
         context.startActivity(intent);
     }
+
     public void crowdTranslate(MenuItem x) {
-        startActivity(new Intent(this,LanguageEditor.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-     }
+        startActivity(new Intent(this, LanguageEditor.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+    }
+
     public void testFeature(MenuItem x) {
+        startActivity(new Intent(this, MegaStatus.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
     public void viewEventLog(MenuItem x) {
@@ -1904,7 +1906,7 @@ public class Home extends ActivityWithMenu {
         final long now = System.currentTimeMillis();
         if (Sensor.currentSensor().started_at + 60000 * 60 * 2 >= now) {
             double waitTime = (Sensor.currentSensor().started_at + 60000 * 60 * 2 - now) / 60000.0;
-            notificationText.setText(getString(R.string.please_wait_while_sensor_warms_up) + String.format("%.2f", waitTime) + getString(R.string.minutes_with_bracket));
+            notificationText.setText(getString(R.string.please_wait_while_sensor_warms_up) + JoH.qs(waitTime,0) + getString(R.string.minutes_with_bracket));
             showUncalibratedSlope();
             return;
         }
