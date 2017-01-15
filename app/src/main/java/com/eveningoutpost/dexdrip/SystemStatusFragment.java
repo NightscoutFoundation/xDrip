@@ -84,6 +84,7 @@ public class SystemStatusFragment extends Fragment {
         current_device = (TextView) v.findViewById(R.id.remembered_device);
 
         notes = (TextView) v.findViewById(R.id.other_notes);
+        notes.setText("");
 
         restart_collection_service = (Button) v.findViewById(R.id.restart_collection_service);
         forget_device = (Button) v.findViewById(R.id.forget_device);
@@ -139,6 +140,10 @@ public class SystemStatusFragment extends Fragment {
         setTransmitterStatus();
         setNotes();
         futureDataCheck();
+
+        if (notes.getText().length()==0) {
+            notes.setText("Swipe for more status pages!");
+        }
     }
 
     private void setTransmitterStatus() {
