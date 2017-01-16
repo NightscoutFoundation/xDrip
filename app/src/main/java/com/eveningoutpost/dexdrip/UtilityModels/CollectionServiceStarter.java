@@ -272,10 +272,12 @@ public class CollectionServiceStarter {
     }
 
     public CollectionServiceStarter(Context context) {
+        if (context == null) context = xdrip.getAppContext();
         this.mContext = context;
     }
 
     public static void restartCollectionService(Context context) {
+        if (context == null) context = xdrip.getAppContext();
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
         collectionServiceStarter.stopBtShareService();
         collectionServiceStarter.stopBtWixelService();

@@ -24,8 +24,10 @@ import android.widget.TextView;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
+import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,12 @@ public class MegaStatus extends ActivityWithMenu {
 
     private static final String menu_name = "Mega Status";
     private static final String TAG = "MegaStatus";
+    private static final long autoFreshDelay = 500;
+
+    private static boolean activityVisible = false;
+    private static boolean autoFreshRunning = false;
+    private static Runnable autoRunnable;
+    private static int currentPage = 0;
 
     private static final ArrayList<String> sectionList = new ArrayList<>();
     private static final ArrayList<String> sectionTitles = new ArrayList<>();
@@ -60,9 +68,13 @@ public class MegaStatus extends ActivityWithMenu {
         if (sectionList.isEmpty()) {
 
             addAsection("Classic Status Page", "Legacy System Status");
-            addAsection(G5_STATUS, "G5 Collector and Transmitter Status");
-            addAsection(IP_COLLECTOR, "Wifi Wixel / Parakeet Status");
-            addAsection("Misc", "Currently Empty");
+            if (DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5) {
+                addAsection(G5_STATUS, "G5 Collector and Transmitter Status");
+            }
+            if (DexCollectionType.hasWifi()) {
+                addAsection(IP_COLLECTOR, "Wifi Wixel / Parakeet Status");
+            }
+            //addAsection("Misc", "Currently Empty");
 
         } else {
             UserError.Log.d(TAG, "Section list already populated");
@@ -70,17 +82,22 @@ public class MegaStatus extends ActivityWithMenu {
     }
 
     private static void populate(MegaStatusListAdapter la, String section) {
-        UserError.Log.d(TAG, "Populating: " + section);
-        la.clear();
+        if ((la == null) || (section == null)) {
+            UserError.Log.e(TAG, "Adapter or Section were null in populate()");
+            return;
+        }
+
+        la.clear(false);
         switch (section) {
 
             case G5_STATUS:
                 la.addRows(G5CollectionService.megaStatus());
                 break;
             case IP_COLLECTOR:
-                la.addRow(new StatusItem("lorem", "ipsum"));
+                la.addRows(WifiCollectionService.megaStatus());
                 break;
         }
+        la.changed();
     }
 
     @Override
@@ -95,14 +112,36 @@ public class MegaStatus extends ActivityWithMenu {
         setContentView(R.layout.activity_mega_status);
         JoH.fixActionBar(this);
 
+        sectionList.clear();
+        sectionTitles.clear();
         populateSectionList();
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+            UserError.Log.d(TAG,"Page selected: " + position);
+                currentPage=position;
+                startAutoFresh();
+        }});
     }
 
+    @Override
+    public void onPause() {
+        activityVisible = false;
+        super.onPause();
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        activityVisible = true;
+        if (autoRunnable != null) startAutoFresh();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -124,6 +163,31 @@ public class MegaStatus extends ActivityWithMenu {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private synchronized void startAutoFresh() {
+        if (autoFreshRunning) return;
+        if (autoRunnable == null) autoRunnable = new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    if ((activityVisible) && (autoFreshRunning) && (currentPage != 0)) {
+                        MegaStatus.populate(MegaStatusAdapters.get(currentPage), sectionList.get(currentPage));
+                        JoH.runOnUiThreadDelayed(autoRunnable, autoFreshDelay);
+                    } else {
+                        UserError.Log.d(TAG, "AutoFresh shutting down");
+                        autoFreshRunning = false;
+                    }
+                } catch (Exception e) {
+                    UserError.Log.e(TAG, "Exception in auto-fresh: " + e);
+                    autoFreshRunning = false;
+                }
+            }
+        };
+
+        JoH.runOnUiThreadDelayed(autoRunnable, 200);
+        autoFreshRunning = true;
     }
 
     /**
@@ -227,9 +291,9 @@ public class MegaStatus extends ActivityWithMenu {
             notifyDataSetChanged();
         }
 
-        public void clear() {
+        public void clear(boolean refresh) {
             statusRows.clear();
-            notifyDataSetChanged();
+            if (refresh) notifyDataSetChanged();
         }
 
         @Override

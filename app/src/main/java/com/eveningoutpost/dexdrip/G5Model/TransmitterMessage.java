@@ -14,7 +14,12 @@ public abstract class TransmitterMessage {
 
     }
 
-    public static int getUnsignedShort(ByteBuffer data) {
+    static int getUnsignedShort(ByteBuffer data) {
         return ((data.get() & 0xff) + ((data.get() & 0xff) << 8));
     }
+
+    static int getUnsignedByte(ByteBuffer data) {
+        return ((data.get() & 0xff));
+    }
+
 }

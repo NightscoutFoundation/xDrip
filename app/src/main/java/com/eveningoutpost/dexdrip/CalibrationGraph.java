@@ -148,6 +148,7 @@ public class CalibrationGraph extends ActivityWithMenu {
 
     @NonNull
     public List<Line> getCalibrationsLine(List<Calibration> calibrations, int color) {
+        if (calibrations == null) return new ArrayList<>();
         List<PointValue> values = new ArrayList<PointValue>();
         List<PointValue> valuesb = new ArrayList<PointValue>();
         List<PointValue> valuesc = new ArrayList<PointValue>();

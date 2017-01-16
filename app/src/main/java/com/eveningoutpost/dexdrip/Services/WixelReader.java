@@ -15,6 +15,7 @@ import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -29,9 +30,12 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 
@@ -44,6 +48,8 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
     //private static BgToSpeech bgToSpeech;
 
     private static OkHttpClient httpClient = null;
+    private static final HashMap<String,String> hostStatus = new HashMap<>();
+    private static final HashMap<String,Long> hostStatusTime = new HashMap<>();
 
     private final Context mContext;
     private PowerManager.WakeLock wakeLock;
@@ -146,12 +152,14 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         } catch (NumberFormatException nfe) {
             System.out.println("Invalid port " +hosts[1]);
             Log.e(TAG, "Invalid hostAndIp " + hostAndIp, nfe);
+            statusLog(hosts[0], JoH.hourMinuteString() + " Invalid Port: "+hostAndIp);
             return null;
 
         }
         if (port < 10 || port > 65536) {
             System.out.println("Invalid port " +hosts[1]);
             Log.e(TAG, "Invalid hostAndIp " + hostAndIp);
+            statusLog(hosts[0], JoH.hourMinuteString() + " Invalid Host/Port: "+hostAndIp);
             return null;
 
         }
@@ -196,7 +204,17 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
     	}
 
     	MongoWrapper mt = new MongoWrapper(dbury, collection, "CaptureDateTime", "MachineNameNotUsed");
-    	return mt.ReadFromMongo(numberOfRecords);
+        List<TransmitterRawData> rd = mt.ReadFromMongo(numberOfRecords);
+        if (rd != null) {
+            long newest_timestamp = 0;
+            for (TransmitterRawData r : rd) {
+                if (newest_timestamp < r.getCaptureDateTime()) {
+                    statusLog(dbury, JoH.hourMinuteString() + " OK data from:", r.getCaptureDateTime());
+                    newest_timestamp = r.getCaptureDateTime();
+                }
+            }
+        }
+        return rd;
     }
 
 
@@ -209,7 +227,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         // get more records to ensure we can handle coexistence of parakeet and usb-python-wixel
         // TODO make this work on preference option for the feature
         if (true) numberOfRecords = numberOfRecords + 1;
-
+        long newest_timestamp = 0;
         try {
 
             if (httpClient == null) {
@@ -274,6 +292,10 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
                             // look a little further if we see usb-wixel data on parakeet app engine
                             processNumberOfRecords = numberOfRecords + 1;
                         }
+                    }
+                    if (newest_timestamp < trd.getCaptureDateTime()) {
+                        statusLog(url, JoH.hourMinuteString() + " OK data from:", trd.getCaptureDateTime());
+                        newest_timestamp = trd.CaptureDateTime;
                     }
                     trd_list.add(0, trd);
                     //  System.out.println( trd.toTableString());
@@ -342,6 +364,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
     public static List<TransmitterRawData> Read(String hostName,int port, int numberOfRecords)
     {
         List<TransmitterRawData> trd_list = new LinkedList<TransmitterRawData>();
+        long newest_timestamp = 0;
         try
         {
             Log.i(TAG, "Read called");
@@ -386,6 +409,11 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
                 trd.CaptureDateTime = System.currentTimeMillis() - trd.RelativeTime;
                 MapsActivity.newMapLocation(trd.GeoLocation,trd.CaptureDateTime);
 
+                if (newest_timestamp < trd.getCaptureDateTime()) {
+                    statusLog(hostName, JoH.hourMinuteString() + " OK data from:", trd.getCaptureDateTime());
+                    newest_timestamp = trd.getCaptureDateTime();
+                }
+
                 trd_list.add(0,trd);
                 //  System.out.println( trd.toTableString());
                 if(trd_list.size() == numberOfRecords) {
@@ -399,9 +427,11 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
             return trd_list;
         }catch(SocketTimeoutException s) {
             Log.e(TAG, "Socket timed out! " + s.toString());
+            statusLog(hostName, JoH.hourMinuteString() + " " + s.toString());
         }
         catch(IOException e) {
             Log.e(TAG, "cought IOException! "+ e.toString());
+            statusLog(hostName, JoH.hourMinuteString() + " " + e.toString());
         }
         return trd_list;
     }
@@ -569,4 +599,24 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         setSerialDataToTransmitterRawData(fakedRaw, fakedRaw ,215, new Date().getTime());
         Log.d(TAG, "returned from setSerialDataToTransmitterRawData " + fakedRaw);
     }*/
+
+    // data for MegaStatus
+    static List<StatusItem> megaStatus() {
+        final List<StatusItem> l = new ArrayList<>();
+        for (Map.Entry<String, String> entry : hostStatus.entrySet()) {
+            final long status_time = hostStatusTime.get(entry.getKey());
+            l.add(new StatusItem(entry.getKey(), entry.getValue() + ((status_time != 0) ? (" " + JoH.niceTimeSince(status_time) + " " + "ago") : "")));
+        }
+        return l;
+    }
+
+    static void statusLog(String key, String msg) {
+        statusLog(key, msg, 0); // default no time since
+    }
+
+    // timestamp or 0 = don't use or -1 = now
+    static void statusLog(String key, String msg, long time) {
+        hostStatus.put(key, msg);
+        hostStatusTime.put(key, (time != -1) ? time : JoH.tsl());
+    }
 }

@@ -506,6 +506,33 @@ public class JoH {
         return android.text.format.DateFormat.format("yyyy-MM-dd", timestamp).toString();
     }
 
+    public static String niceTimeSince(long t) {
+        return niceTimeScalar(msSince(t));
+    }
+    // temporary
+    public static String niceTimeScalar(long t) {
+        String unit = "second";
+        t = t / 1000;
+        if (t > 60) {
+            unit = "minute";
+            t = t / 60;
+            if (t > 60) {
+                unit = "hour";
+                t = t / 60;
+                if (t > 24) {
+                    unit = "day";
+                    t = t / 24;
+                    if (t > 28) {
+                        unit = "week";
+                        t = t / 7;
+                    }
+                }
+            }
+        }
+        if (t != 1) unit = unit + "s";
+        return qs((double) t, 0) + " " + unit;
+    }
+
     public static double tolerantParseDouble(String str) throws NumberFormatException {
         return Double.parseDouble(str.replace(",", "."));
 
