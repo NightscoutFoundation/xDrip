@@ -7,6 +7,7 @@ import com.eveningoutpost.dexdrip.Models.Calibration;//KS
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;//KS
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;//KS
 import com.eveningoutpost.dexdrip.UtilityModels.*;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
@@ -67,6 +68,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String NEW_STATUS_PATH = "/sendstatustowear";
     private static final String SYNC_DB_PATH = "/syncweardb";//KS
     private static final String SYNC_BGS_PATH = "/syncwearbgs";//KS
+    private static final String SYNC_LOGS_PATH = "/syncwearlogs";
+    private static final String WEARABLE_INITDB_PATH = "/nightscout_watch_data_initdb";
     private static final String WEARABLE_BG_DATA_PATH = "/nightscout_watch_bg_data";//KS
     private static final String WEARABLE_CALIBRATION_DATA_PATH = "/nightscout_watch_cal_data";//KS
     private static final String WEARABLE_SENSOR_DATA_PATH = "/nightscout_watch_sensor_data";//KS
@@ -86,7 +89,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     // Wear
     private static final String CAPABILITY_WEAR_APP = "wear_app_sync_bgs";
     private static final String MESSAGE_PATH_WEAR = "/wear_message_path";
-    private String mPhoneNodeId = null;
+    //private String mPhoneNodeId = null;
     private String localnode= null;
 
     private static final String TAG = "jamorham listener";
@@ -94,6 +97,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static boolean mLocationPermissionApproved;//KS
     private static long last_send_previous = 0;//KS
     final private static String pref_last_send_previous = "last_send_previous";
+    private static long last_send_previous_log = 0;
+    final private static String pref_last_send_previous_log = "last_send_previous_log";
+    private static boolean doDeleteDB = false;
     private boolean is_using_bt = false;
     private static int aggressive_backoff_timer = 120;
 
@@ -131,6 +137,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 boolean enable_wearG5 = sharedPrefs.getBoolean("enable_wearG5", false); //KS
                 boolean force_wearG5 = sharedPrefs.getBoolean("force_wearG5", false); //KS
                 String node_wearG5 = sharedPrefs.getString("node_wearG5", ""); //KS
+                boolean sync_wear_logs = sharedPrefs.getBoolean("sync_wear_logs", false); //KS
                 Log.d(TAG, "doInBackground enter enable_wearG5=" + enable_wearG5 + " force_wearG5=" + force_wearG5 + " node_wearG5=" + node_wearG5);//KS
 
                 if (isCancelled()) {
@@ -157,11 +164,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         }
                         CapabilityInfo capabilityInfo = capabilityResult.getCapability();
                         int count = 0;
+                        Node phoneNode = null;
                         if (capabilityInfo != null) {
-                            updatePhoneSyncBgsCapability(capabilityInfo);
+                            phoneNode = updatePhoneSyncBgsCapability(capabilityInfo);
                             count = capabilityInfo.getNodes().size();
                         }
-                        Log.d(TAG, "doInBackground connected.  CapabilityApi.GetCapabilityResult mPhoneNodeID=" + (mPhoneNodeId != null ? mPhoneNodeId : "") + " count=" + count);//KS
+                        Log.d(TAG, "doInBackground connected.  CapabilityApi.GetCapabilityResult mPhoneNodeID=" + (phoneNode != null ? phoneNode.getId() : "") + " count=" + count);//KS
                         if (count > 0) {
                             if (enable_wearG5) {
                                 if (force_wearG5) {
@@ -173,37 +181,24 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
                             for (Node node : capabilityInfo.getNodes()) {
 
-                                if (enable_wearG5) {//KS
-                                    DataMap datamap = getWearTransmitterData(288);//KS 36 data for last 3 hours; 288 for 1 day
-                                    if (datamap != null) {//while
-                                        Log.d(TAG, "doInBackground send Wear Data BGs to phone path:" + SYNC_BGS_PATH + " and node:" + node.getId() + " and node:" + node.getDisplayName());
-                                        Log.d(TAG, "doInBackground send Wear datamap:" + datamap);
-
-                                        PendingResult<MessageApi.SendMessageResult> result = Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), SYNC_BGS_PATH, datamap.toByteArray());
-                                        result.setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
-                                            @Override
-                                            public void onResult(MessageApi.SendMessageResult sendMessageResult) {
-                                                if (!sendMessageResult.getStatus().isSuccess()) {
-                                                    Log.e(TAG, "ERROR: failed to send Wear BGs to phone: " + sendMessageResult.getStatus().getStatusMessage());
-                                                } else {
-                                                    Log.i(TAG, "Sent Wear BGs to phone: " + sendMessageResult.getStatus().getStatusMessage());
-                                                }
-                                            }
-                                        });
-                                    }
+                                if (path.equals(WEARABLE_INITDB_PATH)) {
+                                    sendMessagePayload(node, "WEARABLE_INITDB_PATH", WEARABLE_INITDB_PATH, null);
                                 }
-                                Log.d(TAG, "doInBackground WEARABLE_RESEND_PATH path=" + path + " nodeID=" + node.getId() + " nodeName=" + node.getDisplayName());
-                                PendingResult<MessageApi.SendMessageResult> result = Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), path, payload);
-                                result.setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
-                                    @Override
-                                    public void onResult(MessageApi.SendMessageResult sendMessageResult) {
-                                        if (!sendMessageResult.getStatus().isSuccess()) {
-                                            Log.e(TAG, "ERROR: failed to send request ACTION_RESEND to phone: " + sendMessageResult.getStatus().getStatusMessage());
-                                        } else {
-                                            Log.i(TAG, "Sent request ACTION_RESEND to phone: " + sendMessageResult.getStatus().getStatusMessage());
+                                else {
+                                    if (enable_wearG5) {//KS
+                                        DataMap datamap = getWearTransmitterData(288);//KS 36 data for last 3 hours; 288 for 1 day
+                                        if (datamap != null) {
+                                            sendMessagePayload(node, "SYNC_BGS_PATH", SYNC_BGS_PATH, datamap.toByteArray());
+                                        }
+                                        if (sync_wear_logs) {
+                                            datamap = getWearLogData(1000);//100K max / sendMessage; UserError gen @10K messages just for G5CollectionService; UserError 2300 recs = @150K over @4 hrs when "scan cycle start" was logging / 5 secs.
+                                            if (datamap != null) {
+                                                sendMessagePayload(node, "SYNC_LOGS_PATH", SYNC_LOGS_PATH, datamap.toByteArray());
+                                            }
                                         }
                                     }
-                                });
+                                    sendMessagePayload(node, "WEARABLE_RESEND_PATH", path, payload);
+                                }
                             }
                         } else {
                             if (enable_wearG5) {//KS
@@ -226,6 +221,21 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             } finally {
                 JoH.releaseWakeLock(wl);
             }
+        }
+
+        private void sendMessagePayload(Node node, String pathdesc, String path, byte[] payload) {
+            Log.d(TAG, "doInBackground " + pathdesc + "=" + path + " nodeID=" + node.getId() + " nodeName=" + node.getDisplayName());
+            PendingResult<MessageApi.SendMessageResult> result = Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), path, payload);
+            result.setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
+                @Override
+                public void onResult(MessageApi.SendMessageResult sendMessageResult) {
+                    if (!sendMessageResult.getStatus().isSuccess()) {
+                        Log.e(TAG, "ERROR: failed to send request Status=" + sendMessageResult.getStatus().getStatusMessage());
+                    } else {
+                        Log.i(TAG, "Sent request Status=: " + sendMessageResult.getStatus().getStatusMessage());
+                    }
+                }
+            });
         }
 
         @Override
@@ -268,6 +278,39 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         return null;
     }
 
+    private DataMap getWearLogData(int count) {
+        if(googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) { googleApiConnect(); }
+
+        Log.d(TAG, "getWearLogData last_send_previous_log:" + JoH.dateTimeText(last_send_previous_log));
+
+        UserError last_log = UserError.last();
+        if (last_log != null) {
+            Log.d(TAG, "getWearLogData last_log.timestamp:" + JoH.dateTimeText((long)last_log.timestamp));
+        }
+
+        if (last_log != null && last_send_previous_log <= last_log.timestamp) {//startTime
+            Log.d(TAG, "getWearLogData last_send_previous_log < last_bg.timestamp:" + JoH.dateTimeText((long)last_log.timestamp));
+            List<UserError> logs = UserError.latestAsc(count, last_send_previous_log);
+            if (!logs.isEmpty()) {
+                Log.d(TAG, "getWearLogData count = " + logs.size());
+                DataMap entries = dataMap(last_log);
+                final ArrayList<DataMap> dataMaps = new ArrayList<>(logs.size());
+                for (UserError log : logs) {
+                    dataMaps.add(dataMap(log));
+                    //Log.d(TAG, "getWearLogData timestamp:" + JoH.dateTimeText(((long)log.timestamp)));
+                    //long last_send_sucess = (long)log.timestamp + 1;
+                    //Log.d(TAG, "getWearLogData set last_send_sucess:" + JoH.dateTimeText(last_send_sucess) + " Log:" + log.toString());
+                }
+                entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
+                entries.putDataMapArrayList("entries", dataMaps);
+                return entries;
+            }
+            else
+                Log.d(TAG, "getWearLogData log count = 0");
+        }
+        return null;
+    }
+
     private void sendPrefSettings() {//KS
 
         if(googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) { googleApiConnect(); }
@@ -302,6 +345,14 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             prefs.putString("node_wearG5", node_wearG5);
             prefs.commit();
         }
+    }
+
+    private DataMap dataMap(UserError bg) {
+        DataMap dataMap = new DataMap();
+        String json = bg.toS();
+        //Log.d(TAG, "dataMap BG GSON: " + json);
+        dataMap.putString("entry", json);
+        return dataMap;
     }
 
     private DataMap dataMap(TransmitterData bg) {//KS
@@ -378,6 +429,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         xdrip.checkAppContext(getApplicationContext());
         final PowerManager.WakeLock wl = JoH.getWakeLock("watchlistener-onstart",60000);
         last_send_previous = PersistentStore.getLong(pref_last_send_previous); // 0 if undef
+        last_send_previous_log = PersistentStore.getLong(pref_last_send_previous_log); // 0 if undef
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());//KS
         listenForChangeInSettings();//KS
         is_using_bt = DexCollectionType.hasBluetooth();
@@ -464,14 +516,20 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 } else if (path.equals(SYNC_DB_PATH)) {//KS
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH=" + path);
                     final PowerManager.WakeLock wl = JoH.getWakeLock(getApplicationContext(), "watchlistener-SYNC_DB_PATH",120000);
-                    TransmitterData last_bg = TransmitterData.last();
-                    if (last_bg != null && last_send_previous <= last_bg.timestamp) {
-                        Log.d(TAG, "onDataChanged SYNC_DB_PATH requestData for last_send_previous < last_bg.timestamp:" + JoH.dateTimeText(last_send_previous) + "<="+ JoH.dateTimeText(last_bg.timestamp));
-                        requestData();
+                    if (isSafeToDeleteDB()) {
+                        doDeleteDB = false;
+                        Sensor.DeleteAndInitDb(getApplicationContext());
+                        PersistentStore.setLong(pref_last_send_previous, 0);
+                        PersistentStore.setLong(pref_last_send_previous_log, 0);
+                    }
+                    else {
+                        doDeleteDB = true;
+                        Log.d(TAG, "onDataChanged SYNC_DB_PATH=" + path + " Unable to delete wear DB; wear data needs syncing.");
                     }
                     JoH.releaseWakeLock(wl);
-                    Sensor.DeleteAndInitDb(getApplicationContext());
-                    PersistentStore.setLong(pref_last_send_previous, 0);
+                } else if (path.equals(SYNC_LOGS_PATH)) {
+                    Log.d(TAG, "onDataChanged SYNC_LOGS_PATH=" + path);
+                    requestData();
                 } else if (path.equals(WEARABLE_SENSOR_DATA_PATH)) {//KS
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
@@ -495,17 +553,54 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 } else if (path.equals(DATA_ITEM_RECEIVED_PATH)) {//KS
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
-                    long timeOfLastBG = dataMap.getLong("timeOfLastBG", 0);
-                    if (timeOfLastBG > 0) {
-                        Log.d(TAG, "onDataChanged received from sendDataReceived current last_send_previous=" + JoH.dateTimeText(last_send_previous));
-                        Log.d(TAG, "onDataChanged received from sendDataReceived timeOfLastBG=" + JoH.dateTimeText(timeOfLastBG) + " Path=" + path);
-                        last_send_previous = timeOfLastBG;
-                        PersistentStore.setLong(pref_last_send_previous, last_send_previous);
-                        Log.d(TAG, "onDataChanged received from sendDataReceived update last_send_previous=" + JoH.dateTimeText(last_send_previous));
+                    String type = dataMap.getString("type", "");
+                    long timeOfLastEntry = dataMap.getLong("timeOfLastEntry", 0);
+                    if (type != null && !type.isEmpty() && timeOfLastEntry > 0) {
+                        switch (type) {
+                            case "BG":
+                                Log.d(TAG, "onDataChanged received from sendDataReceived current last_send_previous=" + JoH.dateTimeText(last_send_previous));
+                                Log.d(TAG, "onDataChanged received from sendDataReceived timeOfLastEntry=" + JoH.dateTimeText(timeOfLastEntry) + " Path=" + path);
+                                last_send_previous = timeOfLastEntry;
+                                PersistentStore.setLong(pref_last_send_previous, last_send_previous);
+                                Log.d(TAG, "onDataChanged received from sendDataReceived update last_send_previous=" + JoH.dateTimeText(last_send_previous));
+                                break;
+                            case "LOG":
+                                Log.d(TAG, "onDataChanged received from sendDataReceived current last_send_previous_log=" + JoH.dateTimeText(last_send_previous_log));
+                                Log.d(TAG, "onDataChanged received from sendDataReceived timeOfLastEntry=" + JoH.dateTimeText(timeOfLastEntry) + " Path=" + path);
+                                last_send_previous_log = timeOfLastEntry;
+                                PersistentStore.setLong(pref_last_send_previous_log, last_send_previous_log);
+                                Log.d(TAG, "onDataChanged received from sendDataReceived update last_send_previous_log=" + JoH.dateTimeText(last_send_previous_log));
+                                break;
+                        }
+                    }
+                    if (doDeleteDB && isSafeToDeleteDB()) {
+                        doDeleteDB = false;
+                        Sensor.DeleteAndInitDb(getApplicationContext());
+                        PersistentStore.setLong(pref_last_send_previous, 0);
+                        PersistentStore.setLong(pref_last_send_previous_log, 0);
+                        sendData(WEARABLE_INITDB_PATH, null);
                     }
                 }
             }
         }
+    }
+
+    private boolean isSafeToDeleteDB() {
+        TransmitterData last_bg = TransmitterData.last();
+        if (last_bg != null && last_send_previous <= last_bg.timestamp) {
+            Log.d(TAG, "onDataChanged SYNC_DB_PATH requestData for last_send_previous < last_bg.timestamp:" + JoH.dateTimeText(last_send_previous) + "<="+ JoH.dateTimeText(last_bg.timestamp));
+            requestData();
+            return false;
+        }
+        if (mPrefs.getBoolean("sync_wear_logs", false)) {
+            UserError last_log = UserError.last();
+            if (last_log != null && last_send_previous_log <= last_log.timestamp) {
+                Log.d(TAG, "onDataChanged SYNC_DB_PATH requestData for last_send_previous_log < last_log.timestamp:" + JoH.dateTimeText(last_send_previous_log) + "<=" + JoH.dateTimeText((long) last_log.timestamp));
+                requestData();
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean resetDataToLatest(DataMap dataMap, Context context) {//KS
@@ -641,6 +736,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             prefs.putBoolean("bluetooth_frequent_reset", dataMap.getBoolean("bluetooth_frequent_reset", false));
             prefs.putBoolean("bluetooth_watchdog", dataMap.getBoolean("bluetooth_watchdog", false));
             prefs.putInt("bridge_battery", dataMap.getInt("bridge_battery", -1));
+            prefs.putBoolean("sync_wear_logs", dataMap.getBoolean("sync_wear_logs", false));
 
             //if (change) {
             prefs.commit();
@@ -1012,9 +1108,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         context.startService(intent);
     }
 
-    private void updatePhoneSyncBgsCapability(CapabilityInfo capabilityInfo) {
+    private Node updatePhoneSyncBgsCapability(CapabilityInfo capabilityInfo) {
         Set<Node> connectedNodes = capabilityInfo.getNodes();
-        mPhoneNodeId = pickBestNodeId(connectedNodes);
+        Node phoneNode = pickBestNode(connectedNodes);
+        //mPhoneNodeId = pickBestNodeId(connectedNodes);
+        return phoneNode;
     }
 
     private String pickBestNodeId(Set<Node> nodes) {
@@ -1029,10 +1127,22 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         return bestNodeId;
     }
 
+    private Node pickBestNode(Set<Node> nodes) {
+        Node bestNode = null;
+        // Find a nearby node or pick one arbitrarily
+        for (Node node : nodes) {
+            if (node.isNearby()) {
+                return node;
+            }
+            bestNode = node;
+        }
+        return bestNode;
+    }
+
     @Override
     public void onCapabilityChanged(CapabilityInfo capabilityInfo) {
-        updatePhoneSyncBgsCapability(capabilityInfo);
-        Log.d(TAG, "onCapabilityChanged mPhoneNodeID:" + mPhoneNodeId);
+        Node phoneNode = updatePhoneSyncBgsCapability(capabilityInfo);
+        Log.d(TAG, "onCapabilityChanged mPhoneNodeID:" + phoneNode.getId() );//mPhoneNodeId
     }
 
     @Override

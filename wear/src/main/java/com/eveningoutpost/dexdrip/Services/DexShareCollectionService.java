@@ -51,7 +51,7 @@ import rx.functions.Action1;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class DexShareCollectionService extends Service {
-    private final static String TAG = "wear" + DexShareCollectionService.class.getSimpleName();
+    private final static String TAG = DexShareCollectionService.class.getSimpleName();
     //KS private ForegroundServiceStarter foregroundServiceStarter;
     private String mDeviceAddress;
     private String mDeviceName;

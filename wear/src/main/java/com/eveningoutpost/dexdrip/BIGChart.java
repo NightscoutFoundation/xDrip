@@ -48,6 +48,7 @@ import lecho.lib.hellocharts.view.LineChartView;
  * Created by stephenblack on 12/29/14.
  */
 public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPreferenceChangeListener {
+    private final static String TAG = BIGChart.class.getSimpleName();
     public final static IntentFilter INTENT_FILTER;
     public static final long[] vibratePattern = {0,400,300,400,300,400};
     public TextView mTime, mSgv, mTimestamp, mDelta;
@@ -225,7 +226,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     protected void onDraw(Canvas canvas) {
         if(layoutSet) {
             this.mRelativeLayout.draw(canvas);
-            Log.d("onDraw", "draw");
+            Log.d(TAG, "onDraw");
             if (sharedPrefs.getBoolean("showOpaqueCard", true)) {
                 int cardWidth = mCardRect.width();
                 int cardHeight = mCardRect.height();
@@ -316,7 +317,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
 
 
             } else {
-                Log.d("ERROR: ", "DATA IS NOT YET SET");
+                Log.d(TAG, "ERROR: DATA IS NOT YET SET");
             }
             //status
             bundle = intent.getBundleExtra("status");
@@ -401,7 +402,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     }
 
     void startAnimation() {
-        Log.d("CircleWatchface", "start startAnimation");
+        Log.d(TAG, "CircleWatchface start startAnimation");
 
         Thread animator = new Thread() {
 
@@ -433,20 +434,20 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         mRelativeLayout.measure(specW, specH);
         mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                 mRelativeLayout.getMeasuredHeight());
-        Log.d("resetRelativeLayout", "specW=" + specW + " specH=" + specH + " mRelativeLayout.getMeasuredWidth()=" + mRelativeLayout.getMeasuredWidth() + " mRelativeLayout.getMeasuredHeight()=" + mRelativeLayout.getMeasuredHeight());
+        Log.d(TAG, "resetRelativeLayout specW=" + specW + " specH=" + specH + " mRelativeLayout.getMeasuredWidth()=" + mRelativeLayout.getMeasuredWidth() + " mRelativeLayout.getMeasuredHeight()=" + mRelativeLayout.getMeasuredHeight());
     }
 
     private void displayCard() {
         int cardWidth = mCardRect.width();
         int cardHeight = mCardRect.height();
-        Log.d("displayCard", "WatchFace.onCardPeek: getWidth()=" + getWidth() + " getHeight()=" + getHeight() + " cardWidth=" + cardWidth + " cardHeight=" + cardHeight);
+        Log.d(TAG, "displayCard WatchFace.onCardPeek: getWidth()=" + getWidth() + " getHeight()=" + getHeight() + " cardWidth=" + cardWidth + " cardHeight=" + cardHeight);
 
         if (cardHeight > 0 && cardWidth > 0) {
             if (getCurrentWatchMode() != WatchMode.INTERACTIVE) {
                 // get height of visible area (not including card)
                 int visibleWidth = getWidth() - cardWidth;
                 int visibleHeight = getHeight() - cardHeight;
-                Log.d("onCardPeek", "WatchFace.onCardPeek: visibleWidth=" + visibleWidth + " visibleHeight=" + visibleHeight);
+                Log.d(TAG, "onCardPeek WatchFace.onCardPeek: visibleWidth=" + visibleWidth + " visibleHeight=" + visibleHeight);
                 mRelativeLayout.layout(0, 0, visibleWidth, visibleHeight);
             }
             else
@@ -464,7 +465,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
             displayCard();
             int cardWidth = peekCardRect.width();
             int cardHeight = peekCardRect.height();
-            Log.d("onCardPeek", "WatchFace.onCardPeek: getWidth()=" + getWidth() + " getHeight()=" + getHeight() + " cardWidth=" + cardWidth + " cardHeight=" + cardHeight);
+            Log.d(TAG, "onCardPeek WatchFace.onCardPeek: getWidth()=" + getWidth() + " getHeight()=" + getHeight() + " cardWidth=" + cardWidth + " cardHeight=" + cardHeight);
         }
     }
 
@@ -559,7 +560,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         int maxDelay = 16;
         if (sharedPrefs.getBoolean("enable_wearG5", false)) {
             maxDelay = 4;
-            Log.d("BIGChart", "missedReadingAlert Enter minutes_since " + minutes_since + " call requestData if >= 4 minutes mod 5");//KS
+            Log.d(TAG, "missedReadingAlert Enter minutes_since " + minutes_since + " call requestData if >= 4 minutes mod 5");//KS
         }
 
         if (minutes_since >= maxDelay && ((minutes_since - maxDelay) % 5) == 0) {//KS TODO reduce time for debugging; add notifications
@@ -578,7 +579,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         double low = dataMap.getDouble("low");
         double timestamp = dataMap.getDouble("timestamp");
 
-        Log.d("addToWatchSet", "entry=" + dataMap);
+        Log.d(TAG, "addToWatchSet entry=" + dataMap);
 
         final int size = bgDataList.size();
         BgWatchData bgdata = new BgWatchData(sgv, high, low, timestamp);
@@ -586,10 +587,10 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
             if (bgDataList.contains(bgdata)) {
                 int i = bgDataList.indexOf(bgdata);
                 BgWatchData bgd = bgDataList.get(bgDataList.indexOf(bgdata));
-                Log.d("addToWatchSet", "replace indexOf=" + i + " bgDataList.sgv=" + bgd.sgv + " bgDataList.timestamp" + bgd.timestamp);
+                Log.d(TAG, "addToWatchSet replace indexOf=" + i + " bgDataList.sgv=" + bgd.sgv + " bgDataList.timestamp" + bgd.timestamp);
                 bgDataList.set(i, bgdata);
             } else {
-                Log.d("addToWatchSet", "add " + " entry.sgv=" + bgdata.sgv + " entry.timestamp" + bgdata.timestamp);
+                Log.d(TAG, "addToWatchSet add " + " entry.sgv=" + bgdata.sgv + " entry.timestamp" + bgdata.timestamp);
                 bgDataList.add(bgdata);
             }
         }
@@ -600,11 +601,11 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
 
     public void addToWatchSet(DataMap dataMap) {
 
-        Log.d("addToWatchSet", "bgDataList.size()=" + bgDataList.size());
+        Log.d(TAG, "addToWatchSet bgDataList.size()=" + bgDataList.size());
 
         ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
         if (entries != null) {
-            Log.d("addToWatchSet", "entries.size()=" + entries.size());
+            Log.d(TAG, "addToWatchSet entries.size()=" + entries.size());
             for (DataMap entry : entries) {
                 addDataMap(entry);
             }

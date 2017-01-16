@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
+//KS import android.app.AlarmManager;
+//KS import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,7 +24,7 @@ import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.IOException;
-import java.util.Calendar;
+//KS import java.util.Calendar;
 
 /**
  * Created by stephenblack on 12/22/14.
@@ -32,7 +32,7 @@ import java.util.Calendar;
 public class CollectionServiceStarter {
     private Context mContext;
 
-    private final static String TAG = "wear" + CollectionServiceStarter.class.getSimpleName();
+    private final static String TAG = CollectionServiceStarter.class.getSimpleName();
 
     public static boolean isFollower(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getString("dex_collection_method", "").equals("Follower");
@@ -314,7 +314,7 @@ public class CollectionServiceStarter {
     }
 
     public void startBtG5Service() {//private
-        Log.d(TAG, "starting G5 share service");
+        Log.d(TAG, "starting G5 service");
         //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
         G5CollectionService.keep_running = true;
         this.mContext.startService(new Intent(this.mContext, G5CollectionService.class));
@@ -372,7 +372,7 @@ public class CollectionServiceStarter {
     */
 
     private void stopG5ShareService() {
-        Log.d(TAG, "stopping G5  service");
+        Log.d(TAG, "stopping G5 service");
         G5CollectionService.keep_running = false; // ensure zombie stays down
         this.mContext.stopService(new Intent(this.mContext, G5CollectionService.class));
     }
