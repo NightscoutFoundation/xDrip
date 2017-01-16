@@ -20,6 +20,8 @@ import com.google.android.gms.gcm.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 public class RegistrationIntentService extends IntentService {
@@ -36,7 +38,15 @@ public class RegistrationIntentService extends IntentService {
         final PowerManager.WakeLock wl = JoH.getWakeLock("registration-intent", 120000);
         try {
             GcmActivity.senderid = getString(R.string.gcm_defaultSenderId);
-            final String token = FirebaseInstanceId.getInstance().getToken();
+            String token = FirebaseInstanceId.getInstance().getToken();
+            try {
+                final JSONObject json = new JSONObject(token);
+                final String json_token = json.getString("token");
+                if (json_token.length() > 10) token = json_token;
+                Log.d(TAG, "Used json method");
+            } catch (Exception e) {
+                //
+            }
             Log.i(TAG, "GCM Registration Token: " + token);
             GcmActivity.token = token;
             subscribeTpcs(token);
