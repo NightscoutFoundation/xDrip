@@ -841,7 +841,7 @@ public class G5CollectionService extends Service {
         };
     }
 
-    public synchronized void fullAuthenticate() {
+    public synchronized void fullAuthenticate(BluetoothGatt gatt) {
         Log.e(TAG, "fullAuthenticate() start");
         if (alwaysUnbond()) {
             forgetDevice();
@@ -849,7 +849,7 @@ public class G5CollectionService extends Service {
         try {
             Log.i(TAG, "Start Auth Process(fullAuthenticate)");
             if (authCharacteristic != null) {
-                sendAuthRequestTxMessage(authCharacteristic);
+                sendAuthRequestTxMessage(gatt, authCharacteristic);
             } else {
                 Log.e(TAG, "fullAuthenticate: authCharacteristic is NULL!");
             }
@@ -1120,7 +1120,7 @@ public class G5CollectionService extends Service {
 
                 //TODO : ADD option in settings!
                 if (alwaysAuthenticate() || alwaysUnbond()) {
-                    fullAuthenticate();
+                    fullAuthenticate(gatt);
                 } else {
                     authenticate();
                 }
@@ -1318,7 +1318,7 @@ public class G5CollectionService extends Service {
                             }
                         } else {
                             Log.i(TAG, "Transmitter NOT already authenticated");
-                            sendAuthRequestTxMessage(characteristic);
+                            sendAuthRequestTxMessage(gatt, characteristic);
                         }
                         break;
 
@@ -1385,7 +1385,7 @@ public class G5CollectionService extends Service {
                         }
 
                         Log.i(TAG, "Read code: " + code + " - Transmitter NOT already authenticated?");
-                        sendAuthRequestTxMessage(characteristic);
+                        sendAuthRequestTxMessage(gatt, characteristic);
                         break;
                 }
 
@@ -1469,12 +1469,17 @@ public class G5CollectionService extends Service {
     // end BluetoothGattCallback
 
 
-    private synchronized void sendAuthRequestTxMessage(BluetoothGattCharacteristic characteristic) {
+    private synchronized void sendAuthRequestTxMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         Log.e(TAG, "Sending new AuthRequestTxMessage to " + getUUIDName(characteristic.getUuid()) + " ...");
         authRequest = new AuthRequestTxMessage(getTokenSize());
         Log.i(TAG, "AuthRequestTX: " + JoH.bytesToHex(authRequest.byteSequence));
         characteristic.setValue(authRequest.byteSequence);
         mGatt.writeCharacteristic(characteristic);
+        if (gatt != null) {
+            gatt.writeCharacteristic(characteristic);
+        } else {
+            Log.e(TAG, "Cannot send AuthRequestTx as supplied gatt is null!");
+        }
     }
 
     private final BroadcastReceiver mPairingRequestRecevier = new BroadcastReceiver() {
