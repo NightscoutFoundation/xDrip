@@ -33,7 +33,6 @@ import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 import java.lang.reflect.Method;
 import java.text.DateFormat;
@@ -125,7 +124,7 @@ public class SystemStatusFragment extends Fragment {
 
     private void set_current_values() {
         activeBluetoothDevice = ActiveBluetoothDevice.first();
-        mBluetoothManager = (BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE);
+        mBluetoothManager = (BluetoothManager) safeGetContext().getSystemService(Context.BLUETOOTH_SERVICE);
         setVersionName();
         setCollectionMethod();
         setCurrentDevice();
@@ -200,8 +199,8 @@ public class SystemStatusFragment extends Fragment {
     private void setVersionName() {
         String versionName;
         try {
-            versionName = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), PackageManager.GET_META_DATA).versionName;
-            int versionNumber = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), PackageManager.GET_META_DATA).versionCode;
+            versionName = safeGetContext().getPackageManager().getPackageInfo(safeGetContext().getPackageName(), PackageManager.GET_META_DATA).versionName;
+            int versionNumber = safeGetContext().getPackageManager().getPackageInfo(safeGetContext().getPackageName(), PackageManager.GET_META_DATA).versionCode;
             versionName += "\nCode: " + BuildConfig.buildVersion + "\nDowngradable to: " + versionNumber;
             version_name_view.setText(versionName);
         } catch (PackageManager.NameNotFoundException e) {
@@ -361,7 +360,7 @@ public class SystemStatusFragment extends Fragment {
                 v.setEnabled(false);
                 JoH.static_toast_short("Restarting Collector!");
                 v.setAlpha(0.2f);
-                CollectionServiceStarter.restartCollectionService(getActivity());
+                CollectionServiceStarter.restartCollectionService(safeGetContext());
                 set_current_values();
                 JoH.runOnUiThreadDelayed(new Runnable() {
                     @Override
@@ -404,7 +403,7 @@ public class SystemStatusFragment extends Fragment {
                                 set_current_values();
                                 mHandler2.postDelayed(new Runnable() {
                                     public void run() {
-                                        CollectionServiceStarter.restartCollectionService(getActivity());
+                                        CollectionServiceStarter.restartCollectionService(safeGetContext());
                                         set_current_values();
                                     }
                                 }, 5000);
@@ -454,5 +453,13 @@ public class SystemStatusFragment extends Fragment {
 
     private Handler mHandler = new Handler();
     private Handler mHandler2 = new Handler();
+
+    private Context safeGetContext() {
+        if (isAdded()) {
+            return getActivity();
+        } else {
+            return xdrip.getAppContext();
+        }
+    }
 
 }
