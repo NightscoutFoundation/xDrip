@@ -843,7 +843,7 @@ public class G5CollectionService extends Service {
         try {
             Log.i(TAG, "Start Auth Process(fullAuthenticate)");
             if (authCharacteristic != null) {
-                sendAuthRequestTxMessage(authCharacteristic);
+                sendAuthRequestTxMessage(mGatt, authCharacteristic);
             } else {
                 Log.e(TAG, "fullAuthenticate: authCharacteristic is NULL!");
             }
@@ -1323,7 +1323,7 @@ public class G5CollectionService extends Service {
                             }
                         } else {
                             Log.i(TAG, "Transmitter NOT already authenticated");
-                            sendAuthRequestTxMessage(characteristic);
+                            sendAuthRequestTxMessage(gatt, characteristic);
                         }
                         break;
 
@@ -1391,7 +1391,7 @@ public class G5CollectionService extends Service {
                         }
 
                         Log.i(TAG, "Read code: " + code + " - Transmitter NOT already authenticated?");
-                        sendAuthRequestTxMessage(characteristic);
+                        sendAuthRequestTxMessage(gatt, characteristic);
                         break;
                 }
 
@@ -1556,12 +1556,16 @@ public class G5CollectionService extends Service {
     }
 
 
-    private synchronized void sendAuthRequestTxMessage(BluetoothGattCharacteristic characteristic) {
+    private synchronized void sendAuthRequestTxMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         Log.e(TAG, "Sending new AuthRequestTxMessage to " + getUUIDName(characteristic.getUuid()) + " ...");
         authRequest = new AuthRequestTxMessage(getTokenSize());
         Log.i(TAG, "AuthRequestTX: " + JoH.bytesToHex(authRequest.byteSequence));
         characteristic.setValue(authRequest.byteSequence);
-        mGatt.writeCharacteristic(characteristic);
+        if (gatt != null) {
+            gatt.writeCharacteristic(characteristic);
+        } else {
+            Log.e(TAG, "Cannot send AuthRequestTx as supplied gatt is null!");
+        }
     }
 
     private final BroadcastReceiver mPairingRequestRecevier = new BroadcastReceiver() {
@@ -1765,7 +1769,7 @@ public class G5CollectionService extends Service {
         BatteryInfoRxMessage bt = getBatteryDetails(tx_id);
         long last_battery_query = PersistentStore.getLong(G5_BATTERY_FROM_MARKER + tx_id);
         if ((bt != null) && (last_battery_query > 0)) {
-            l.add(new StatusItem("Battery Last queried", JoH.dateTimeText(last_battery_query)));
+            l.add(new StatusItem("Battery Last queried", JoH.niceTimeSince(last_battery_query)+" "+"ago"));
             l.add(new StatusItem("Transmitter Status", TransmitterStatus.getBatteryLevel(vr.status).toString()));
             l.add(new StatusItem("Transmitter Days", bt.runtime));
             l.add(new StatusItem("Voltage A", bt.voltagea));
