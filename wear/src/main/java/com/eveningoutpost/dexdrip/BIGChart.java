@@ -579,7 +579,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         double low = dataMap.getDouble("low");
         double timestamp = dataMap.getDouble("timestamp");
 
-        Log.d(TAG, "addToWatchSet entry=" + dataMap);
+        //Log.d(TAG, "addToWatchSet entry=" + dataMap);
 
         final int size = bgDataList.size();
         BgWatchData bgdata = new BgWatchData(sgv, high, low, timestamp);
@@ -587,10 +587,10 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
             if (bgDataList.contains(bgdata)) {
                 int i = bgDataList.indexOf(bgdata);
                 BgWatchData bgd = bgDataList.get(bgDataList.indexOf(bgdata));
-                Log.d(TAG, "addToWatchSet replace indexOf=" + i + " bgDataList.sgv=" + bgd.sgv + " bgDataList.timestamp" + bgd.timestamp);
+                //Log.d(TAG, "addToWatchSet replace indexOf=" + i + " bgDataList.sgv=" + bgd.sgv + " bgDataList.timestamp" + bgd.timestamp);
                 bgDataList.set(i, bgdata);
             } else {
-                Log.d(TAG, "addToWatchSet add " + " entry.sgv=" + bgdata.sgv + " entry.timestamp" + bgdata.timestamp);
+                //Log.d(TAG, "addToWatchSet add " + " entry.sgv=" + bgdata.sgv + " entry.timestamp" + bgdata.timestamp);
                 bgDataList.add(bgdata);
             }
         }

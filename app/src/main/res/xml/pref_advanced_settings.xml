@@ -49,12 +49,6 @@
                 android:summary="@string/pref_summary_wear_logs_prefix"
                 android:title="@string/pref_wear_logs_prefix"
                 android:textIsSelectable="true"/>
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:dependency="enable_wearG5"
-                android:key="reset_wear_db_daily"
-                android:summary="@string/pref_summary_reset_wear_db_daily"
-                android:title="@string/pref_reset_wear_db_daily"/>
         </PreferenceCategory>
         <PreferenceCategory
             android:key="pebble_integration"

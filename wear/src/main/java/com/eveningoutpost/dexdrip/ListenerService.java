@@ -69,6 +69,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String SYNC_DB_PATH = "/syncweardb";//KS
     private static final String SYNC_BGS_PATH = "/syncwearbgs";//KS
     private static final String SYNC_LOGS_PATH = "/syncwearlogs";
+    private static final String CLEAR_LOGS_PATH = "/clearwearlogs";
     private static final String WEARABLE_INITDB_PATH = "/nightscout_watch_data_initdb";
     private static final String WEARABLE_BG_DATA_PATH = "/nightscout_watch_bg_data";//KS
     private static final String WEARABLE_CALIBRATION_DATA_PATH = "/nightscout_watch_cal_data";//KS
@@ -182,7 +183,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                             for (Node node : capabilityInfo.getNodes()) {
 
                                 if (path.equals(WEARABLE_INITDB_PATH)) {
-                                    sendMessagePayload(node, "WEARABLE_INITDB_PATH", WEARABLE_INITDB_PATH, null);
+                                    sendMessagePayload(node, "WEARABLE_INITDB_PATH", WEARABLE_INITDB_PATH, null);//TODO once confirm not needed
                                 }
                                 else {
                                     if (enable_wearG5) {//KS
@@ -224,8 +225,17 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
 
         private void sendMessagePayload(Node node, String pathdesc, String path, byte[] payload) {
-            Log.d(TAG, "doInBackground " + pathdesc + "=" + path + " nodeID=" + node.getId() + " nodeName=" + node.getDisplayName());
-            PendingResult<MessageApi.SendMessageResult> result = Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), path, payload);
+            Log.d(TAG, "doInBackground " + pathdesc + "=" + path + " nodeID=" + node.getId() + " nodeName=" + node.getDisplayName() + ((payload != null) ? (" payload.length=" + payload.length) : ""));
+
+            //TEST**************************************************************************
+            boolean bBenchmark = false;//true;
+            if (bBenchmark && !pathdesc.equals("WEARABLE_RESEND_PATH") && payload != null) {
+                sendMessagePayloadTest(node, pathdesc, path, payload);
+                return;
+            }
+            //******************************************************************************
+
+            PendingResult<MessageApi.SendMessageResult> result = Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), path, payload);//Async
             result.setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
                 @Override
                 public void onResult(MessageApi.SendMessageResult sendMessageResult) {
@@ -236,6 +246,57 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     }
                 }
             });
+        }
+
+        public byte[] concat(byte[] a, byte[] b) {
+            int aLen = a.length;
+            int bLen = b.length;
+            byte[] c= new byte[aLen+bLen];
+            System.arraycopy(a, 0, c, 0, aLen);
+            System.arraycopy(b, 0, c, aLen, bLen);
+            return c;
+        }
+
+        private void sendMessagePayloadTest(Node node, String pathdesc, String path, byte[] payload) {
+            if (payload != null) {//TEST
+
+                sendMessagePayloadTest2(node, pathdesc, path, payload);
+
+                byte[] payloadTest = payload;
+                //Dup payload to create large array; WatchUpdaterService should NOT process this array when length > 5000
+                int currentOffset = 0;
+                while (payloadTest.length < 100000) {
+                    payloadTest = concat(payloadTest, payloadTest);
+                    if (payloadTest.length > 100000) {
+                        System.arraycopy(payloadTest, 0, payloadTest, 0, 100000);
+                        break;
+                    }
+                }
+                sendMessagePayloadTest2(node, pathdesc+"_DUP", path+"_DUP", payloadTest);
+            }
+            else
+                Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), path, payload).await();//Synchronous
+        }
+
+        private void sendMessagePayloadTest2(Node node, String pathdesc, String path, byte[] payload) {
+            byte[] comprPayload;
+            //******************************************************************************
+            JoH.benchmark(null);
+            comprPayload = JoH.compressBytesToBytes((payload));
+            JoH.benchmark(pathdesc + " JoH.compressBytesToBytes Decompressed length=" + payload.length + " Compressed length=" + comprPayload.length);
+
+            //******************************************************************************
+            // SEND TWICE
+            // 1. NOT compressed
+            JoH.benchmark(null);
+            Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), path, payload).await();//Synchronous
+            JoH.benchmark(pathdesc + " sendMessage Decompressed");
+
+            //******************************************************************************
+            // 2. Compressed; this payload will not be processed in WatchUpdaterService.decompressBytes() as it will just be for testing
+            JoH.benchmark(null);
+            Wearable.MessageApi.sendMessage(googleApiClient, node.getId(), path+"_COMPRESS", comprPayload).await();//Synchronous
+            JoH.benchmark(pathdesc + " sendMessage COMPRESSED");
         }
 
         @Override
@@ -421,17 +482,24 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             startBtService();
         }
     }
+    @Override
+    public void onCreate() {
+        Log.d(TAG, "onCreate entered");
+        Context context = getApplicationContext();
+        Home.setAppContext(context);
+        xdrip.checkAppContext(context);
+        Sensor.InitDb(context);
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        listenForChangeInSettings();
+        super.onCreate();
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand entered");
-        Home.setAppContext(getApplicationContext());
-        xdrip.checkAppContext(getApplicationContext());
         final PowerManager.WakeLock wl = JoH.getWakeLock("watchlistener-onstart",60000);
         last_send_previous = PersistentStore.getLong(pref_last_send_previous); // 0 if undef
         last_send_previous_log = PersistentStore.getLong(pref_last_send_previous_log); // 0 if undef
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());//KS
-        listenForChangeInSettings();//KS
         is_using_bt = DexCollectionType.hasBluetooth();
         if (intent != null && ACTION_RESEND.equals(intent.getAction())) {
             googleApiConnect();
@@ -516,6 +584,10 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 } else if (path.equals(SYNC_DB_PATH)) {//KS
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH=" + path);
                     final PowerManager.WakeLock wl = JoH.getWakeLock(getApplicationContext(), "watchlistener-SYNC_DB_PATH",120000);
+                    Sensor.DeleteAndInitDb(getApplicationContext());
+                    PersistentStore.setLong(pref_last_send_previous, 0);
+                    PersistentStore.setLong(pref_last_send_previous_log, 0);
+                    /* TODO remove once confirm not needed
                     if (isSafeToDeleteDB()) {
                         doDeleteDB = false;
                         Sensor.DeleteAndInitDb(getApplicationContext());
@@ -525,11 +597,18 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     else {
                         doDeleteDB = true;
                         Log.d(TAG, "onDataChanged SYNC_DB_PATH=" + path + " Unable to delete wear DB; wear data needs syncing.");
-                    }
+                    }*/
                     JoH.releaseWakeLock(wl);
                 } else if (path.equals(SYNC_LOGS_PATH)) {
                     Log.d(TAG, "onDataChanged SYNC_LOGS_PATH=" + path);
                     requestData();
+                } else if (path.equals(CLEAR_LOGS_PATH)) {
+                    Log.d(TAG, "onDataChanged CLEAR_LOGS_PATH=" + path);
+                    try {
+                        UserError.cleanup();
+                    } catch (Exception e) {
+                        Log.e(TAG, "onDataChanged CLEAR_LOGS_PATH exception on UserError ", e);
+                    }
                 } else if (path.equals(WEARABLE_SENSOR_DATA_PATH)) {//KS
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
@@ -573,13 +652,14 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                 break;
                         }
                     }
+                    /* TODO remove once confirm not needed
                     if (doDeleteDB && isSafeToDeleteDB()) {
                         doDeleteDB = false;
                         Sensor.DeleteAndInitDb(getApplicationContext());
                         PersistentStore.setLong(pref_last_send_previous, 0);
                         PersistentStore.setLong(pref_last_send_previous_log, 0);
                         sendData(WEARABLE_INITDB_PATH, null);
-                    }
+                    }*/
                 }
             }
         }
@@ -1142,7 +1222,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     @Override
     public void onCapabilityChanged(CapabilityInfo capabilityInfo) {
         Node phoneNode = updatePhoneSyncBgsCapability(capabilityInfo);
-        Log.d(TAG, "onCapabilityChanged mPhoneNodeID:" + phoneNode.getId() );//mPhoneNodeId
+        Log.d(TAG, "onCapabilityChanged mPhoneNodeID:" + (phoneNode != null ? phoneNode.getId() : "") );//mPhoneNodeId
     }
 
     @Override
