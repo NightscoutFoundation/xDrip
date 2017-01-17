@@ -186,9 +186,7 @@ public class Profile {
         double diff_mmol = target_mmol - mmol;
         if (diff_mmol > 0) {
             addcarbs = getCarbsToRaiseByMmolBetweenTwoTimes(diff_mmol, timeNow, endGameTime);
-        }
-
-        if (diff_mmol < 0) {
+        } else if (diff_mmol < 0) {
             addinsulin = getInsulinToLowerByMmolBetweenTwoTimes(diff_mmol * -1, timeNow, endGameTime);
         }
         return new double[]{addcarbs, addinsulin};
