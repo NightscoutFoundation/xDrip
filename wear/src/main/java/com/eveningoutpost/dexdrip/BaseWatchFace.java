@@ -399,8 +399,8 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         }
 
         if((sharedPrefs.getBoolean("enable_wearG5", false) && sharedPrefs.getBoolean("force_wearG5", false)) ||
-                (sharedPrefs.getBoolean("enable_wearG5", false) && isServiceRunning(G5CollectionService.class))){//G5CollectionService.class
-            Log.d(TAG, "isServiceRunning G5CollectionService is running");
+                (sharedPrefs.getBoolean("enable_wearG5", false) && G5CollectionService.isRunning())){//isServiceRunning(G5CollectionService.class)
+            Log.d(TAG, "G5CollectionService.isRunning lastState: " + G5CollectionService.getLastState());
             int wearBattery = getWearBatteryLevel(getApplication());
             String wearBatteryString = "" + wearBattery;
             batteryLevel = (wearBattery >= 30) ? 1 : 0;
@@ -410,7 +410,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader_wear, wearBatteryString));//"Wear: " + batteryString + "%"
         }
         else {//Phone Collector
-            Log.d(TAG, "isServiceRunning G5CollectionService is NOT running");
+            Log.d(TAG, "G5CollectionService.isRunning lastState: " + G5CollectionService.getLastState());
             if (showStatus || mShowXBattery)
                 mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader_abbrv, batteryString));//"U: " + batteryString + "%"
             else

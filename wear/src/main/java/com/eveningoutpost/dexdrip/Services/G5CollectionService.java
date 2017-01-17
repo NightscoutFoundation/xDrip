@@ -1819,4 +1819,13 @@ public class G5CollectionService extends Service {
         return l;
     }
 
+    // Status for Watchface
+    public static boolean isRunning() {
+        return lastState.equals("Not Running") || lastState.equals("Stopped") ? false : true;
+    }
+
+    // Status for Watchface
+    public static String getLastState() {
+        return lastState;
+    }
 }
