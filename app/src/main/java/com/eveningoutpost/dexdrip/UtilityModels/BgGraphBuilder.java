@@ -2,12 +2,14 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
@@ -1325,10 +1327,10 @@ public class BgGraphBuilder {
                     if ((iobinfo != null) && (prediction_enabled) && (simulation_enabled)) {
 
                         double predict_weight = 0.1;
-
+                        boolean iob_shown_already = false;
                         for (Iob iob : iobinfo) {
 
-                            double activity = iob.activity;
+                            //double activity = iob.activity;
                             if ((iob.iob > 0) || (iob.cob > 0) || (iob.jActivity > 0) || (iob.jCarbImpact > 0)) {
                                 fuzzed_timestamp = iob.timestamp / FUZZER;
                                 if (d) Log.d(TAG, "iob timestamp: " + iob.timestamp);
@@ -1401,19 +1403,23 @@ public class BgGraphBuilder {
                                     if (d)
                                         Log.d(TAG, "Predictive hours updated to: " + predictivehours);
                                 } else {
-                                    if ((fuzzed_timestamp == end_time - 4) && (iob.iob > 0)) {
+                                    Log.d(TAG, "IOB DEBUG: " + (fuzzed_timestamp - end_time) + " " + iob.iob);
+                                    if (!iob_shown_already && (Math.abs(fuzzed_timestamp - end_time) < 5) && (iob.iob > 0)) {
+                                        iob_shown_already = true;
                                         // show current iob
-                                        double position = 12.4 * bgScale; // this is for mmol - needs generic for mg/dl
-                                        if (Math.abs(predictedbg - position) < (2 * bgScale)) {
-                                            position = 7.0 * bgScale;
-                                        }
+                                      //  double position = 12.4 * bgScale; // this is for mmol - needs generic for mg/dl
+                                      //  if (Math.abs(predictedbg - position) < (2 * bgScale)) {
+                                      //      position = 7.0 * bgScale;
+                                      //  }
 
-                                        PointValue iv = new PointValue((float) fuzzed_timestamp, (float) position);
+                                       // PointValue iv = new PointValue((float) fuzzed_timestamp, (float) position);
                                         DecimalFormat df = new DecimalFormat("#");
                                         df.setMaximumFractionDigits(2);
                                         df.setMinimumIntegerDigits(1);
-                                        iv.setLabel("IoB: " + df.format(iob.iob));
-                                        annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
+                                      //  iv.setLabel("IoB: " + df.format(iob.iob));
+                                        Home.updateStatusLine("iob", df.format(iob.iob));
+                                      //  annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
+
                                     }
                                 }
 
@@ -1430,28 +1436,32 @@ public class BgGraphBuilder {
 
                     double[] evaluation;
                     if (prediction_enabled && simulation_enabled) {
-                        if (doMgdl) {
-                            // These routines need to understand how the profile is defined to use native instead of scaled
-                            evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
-                        } else {
-                            evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
+                        // if (doMgdl) {
+                        // These routines need to understand how the profile is defined to use native instead of scaled
+                        evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
+                        // } else {
+                        //    evaluation = Profile.evaluateEndGameMmol(predictedbg, lasttimestamp * FUZZER, end_time * FUZZER);
 
-                        }
+                        // }
 
+                        String bwp_update = "";
                         if (d)
                             Log.i(TAG, "Predictive BWP: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
-                        if ((low_occurs_at < 1) && (Home.getPreferencesBooleanDefaultFalse("show_bwp"))) {
+                        if (((low_occurs_at < 1) || Home.getPreferencesBooleanDefaultFalse("always_show_bwp")) && (Home.getPreferencesBooleanDefaultFalse("show_bwp"))) {
                             if (evaluation[0] > Profile.minimum_carb_recommendation) {
-                                PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));
-                                iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));
-                                annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
-                            }
-                            if (evaluation[1] > Profile.minimum_insulin_recommendation) {
-                                PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (11 * bgScale));
-                                iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
-                                annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
+                                //PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));
+                                //iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));
+                                bwp_update = "\u224F" + " Carbs: " + JoH.qs(evaluation[0], 0);
+                                //annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
+                            } else if (evaluation[1] > Profile.minimum_insulin_recommendation) {
+                                //PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (11 * bgScale));
+                                //iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
+
+                                bwp_update = "\u224F" + " Insulin: " + JoH.qs(evaluation[1], 1) + ((low_occurs_at > 0) ? (" " + "\u26A0") : ""); // warning symbol
+                                //annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
                             }
                         }
+                        Home.updateStatusLine("bwp", bwp_update); // always send so we can blank if needed
                     }
 
                 } catch (Exception e) {

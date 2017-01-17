@@ -294,7 +294,7 @@ public class G5CollectionService extends Service {
                 Log.d(TAG, "onG5StartCommand wakeup: "+JoH.dateTimeText(JoH.tsl()));
                 Log.e(TAG, "settingsToString: " + settingsToString());
 
-                lastState = "Started: "+JoH.hourMinuteString(JoH.tsl());
+                lastState = "Started: "+JoH.hourMinuteString();
 
                 //Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
                 //stopScan();
@@ -1456,7 +1456,7 @@ public class G5CollectionService extends Service {
                 //Log.e(TAG, "filtered: " + sensorRx.filtered);
                 disconnected133 = 0; // reset as we got a reading
                 disconnected59 = 0;
-                lastState="Success getting data";
+                lastState = "Got data OK: " + JoH.hourMinuteString();
                 Log.e(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered);
                 if ((getVersionDetails) && (!haveFirmwareDetails())) {
                     doVersionRequestMessage(gatt, characteristic);
@@ -1507,6 +1507,7 @@ public class G5CollectionService extends Service {
     }
 
     private static boolean setStoredFirmwareBytes(String transmitterId, byte[] data) {
+        UserError.Log.e(TAG, "Store: VersionRX dbg: " + JoH.bytesToHex(data));
         if (transmitterId.length() != 6) return false;
         if (data.length < 10) return false;
         PersistentStore.setBytes("g5-firmware-" + transmitterId, data);
@@ -1516,6 +1517,7 @@ public class G5CollectionService extends Service {
     private static final String G5_BATTERY_MARKER = "g5-battery-";
 
     private static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
+        UserError.Log.e(TAG, "Store: BatteryRX dbg: " + JoH.bytesToHex(data));
         if (transmitterId.length() != 6) return false;
         if (data.length < 10) return false;
         Log.wtf(TAG, "Saving battery data: " + new BatteryInfoRxMessage(data).toString());
@@ -1759,11 +1761,11 @@ public class G5CollectionService extends Service {
         VersionRequestRxMessage vr = getFirmwareDetails(tx_id);
         if ((vr != null) && (vr.firmware_version_string.length() > 0)) {
 
-            l.add(new StatusItem("Firmware Version Code", vr.firmware_version_string));
-            l.add(new StatusItem("Bluetooth Version Code", vr.bluetooth_firmware_version_string));
-            l.add(new StatusItem("Other Version Code", vr.other_firmware_version));
+            l.add(new StatusItem("Firmware Version", vr.firmware_version_string));
+            l.add(new StatusItem("Bluetooth Version", vr.bluetooth_firmware_version_string));
+            l.add(new StatusItem("Other Version", vr.other_firmware_version));
             l.add(new StatusItem("Hardware Version", vr.hardwarev));
-            l.add(new StatusItem("ASIC", vr.asic));
+           if (vr.asic != 61440) l.add(new StatusItem("ASIC", vr.asic)); // TODO color code
         }
 
         BatteryInfoRxMessage bt = getBatteryDetails(tx_id);

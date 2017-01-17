@@ -28,7 +28,6 @@ public class VersionRequestRxMessage extends TransmitterMessage {
 
 
     public VersionRequestRxMessage(byte[] packet) {
-        UserError.Log.e(TAG, "VersionRX dbg: " + JoH.bytesToHex(packet));
         if (packet.length >= 18) {
             // TODO check CRC??
             data = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);

@@ -2,6 +2,7 @@
 package com.eveningoutpost.dexdrip.UtilityModels.pebble.watchface;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,9 +15,11 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 
@@ -58,10 +61,14 @@ public class InstallPebbleWatchFace extends AppCompatActivity {
             if (ContextCompat.checkSelfPermission(getApplicationContext(),
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
-                toast("Need permission to write watchface");
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_STORAGE);
+                final Activity activity = this;
+                JoH.show_ok_dialog(activity, "Please Allow Permission", "Need storage permission to install watchface", new Runnable() {
+                    @Override
+                    public void run() {
+                        ActivityCompat.requestPermissions(activity,
+                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_STORAGE);
+                    }
+                });
                 return false;
             }
         }

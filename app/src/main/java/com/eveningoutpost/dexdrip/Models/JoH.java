@@ -14,10 +14,12 @@ import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -36,7 +38,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ContextThemeWrapper;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
 import android.util.Base64;
@@ -87,7 +91,7 @@ import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRI
  * lazy helper class for utilities
  */
 public class JoH {
-    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
     private final static String TAG = "jamorham JoH";
     private final static boolean debug_wakelocks = false;
 
@@ -489,9 +493,10 @@ public class JoH {
     }
 
     public static String hourMinuteString() {
-        Date date = new Date();
-        SimpleDateFormat sd = new SimpleDateFormat("HH:mm");
-        return sd.format(date);
+        // Date date = new Date();
+        // SimpleDateFormat sd = new SimpleDateFormat("HH:mm");
+        //  return sd.format(date);
+        return hourMinuteString(JoH.tsl());
     }
 
     public static String hourMinuteString(long timestamp) {
@@ -693,6 +698,27 @@ public class JoH {
 
     public static void static_toast_long(Context context, final String msg) {
         static_toast(context, msg, Toast.LENGTH_LONG);
+    }
+
+    public static void show_ok_dialog(final Activity activity, String title, String message, final Runnable runnable) {
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(activity, R.style.AppTheme));
+            builder.setTitle(title);
+            builder.setMessage(message);
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    if (runnable != null) {
+                        runOnUiThreadDelayed(runnable, 10);
+                    }
+                }
+            });
+
+            builder.create().show();
+        } catch (Exception e) {
+            Log.wtf(TAG, "show_dialog exception: " + e);
+            static_toast_long(message);
+        }
     }
 
     public static synchronized void playResourceAudio(int id) {
