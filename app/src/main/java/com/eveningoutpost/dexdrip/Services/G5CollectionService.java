@@ -314,8 +314,12 @@ public class G5CollectionService extends Service {
                     mBluetoothAdapter = mBluetoothManager.getAdapter();
 
                     if (mGatt != null) {
-                        mGatt.close();
-                        mGatt = null;
+                        try {
+                            Log.d(TAG, "onStartCommand mGatt != null; mGatt.close() and set to null.");
+                            mGatt.close();
+                            mGatt = null;
+                        } catch (NullPointerException e) { //
+                        }
                     }
 
                     if (Sensor.isActive()) {
@@ -1164,7 +1168,11 @@ public class G5CollectionService extends Service {
             Log.i(TAG, "onDescriptorWrite On Main Thread? " + isOnMainThread());
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.e(TAG, "Writing to characteristic: " + getUUIDName(descriptor.getCharacteristic().getUuid()));
-                mGatt.writeCharacteristic(descriptor.getCharacteristic());
+                if (mGatt != null) {
+                    mGatt.writeCharacteristic(descriptor.getCharacteristic());
+                } else {
+                    Log.e(TAG, "mGatt was null when trying to write UUID descriptor");
+                }
             } else {
                 Log.e(TAG, "not writing characteristic due to Unknown error writing descriptor");
             }
@@ -1213,7 +1221,11 @@ public class G5CollectionService extends Service {
                                 Log.e(TAG, "Adding a delay before reading characteristic with 133 count of: " + max133RetryCounter);
                                 waitFor(300);
                             }
-                            mGatt.readCharacteristic(characteristic);
+                            if (mGatt != null) {
+                                mGatt.readCharacteristic(characteristic);
+                            } else {
+                                Log.e(TAG, "mGatt was null when trying to read KeepAliveTxMessage");
+                            }
                         } else {
                             Log.e(TAG, "Auth ow: got keepalive");
                             if (useKeepAlive) {
@@ -1257,7 +1269,11 @@ public class G5CollectionService extends Service {
             Log.d(TAG,"performBondWrite() started");
             final BondRequestTxMessage bondRequest = new BondRequestTxMessage();
             characteristic.setValue(bondRequest.byteSequence);
-            mGatt.writeCharacteristic(characteristic);
+            if (mGatt != null) {
+                mGatt.writeCharacteristic(characteristic);
+            } else {
+                Log.e(TAG, "mGatt was null when trying to write bondRequest");
+            }
             if (delayOnBond) {
                 Log.e(TAG, "Delaying before bond");
                 waitFor(1000);
@@ -1317,7 +1333,11 @@ public class G5CollectionService extends Service {
                                 Log.e(TAG,"Trying keepalive..");
                                 final KeepAliveTxMessage keepAliveRequest = new KeepAliveTxMessage(25);
                                 characteristic.setValue(keepAliveRequest.byteSequence);
-                                mGatt.writeCharacteristic(characteristic);
+                                if (mGatt != null) {
+                                    mGatt.writeCharacteristic(characteristic);
+                                } else {
+                                    Log.e(TAG, "mGatt was null when trying to write keepAliveRequest");
+                                }
                             } else {
                              performBondWrite(characteristic);
                             }

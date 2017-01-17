@@ -39,6 +39,8 @@ import com.eveningoutpost.dexdrip.G5Model.AuthChallengeRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.AuthChallengeTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.AuthRequestTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.AuthStatusRxMessage;
+import com.eveningoutpost.dexdrip.G5Model.BatteryInfoRxMessage;
+import com.eveningoutpost.dexdrip.G5Model.BatteryInfoTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.BluetoothServices;
 import com.eveningoutpost.dexdrip.G5Model.BondRequestTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.DisconnectTxMessage;
@@ -50,6 +52,8 @@ import com.eveningoutpost.dexdrip.G5Model.SensorRxMessage;
 import com.eveningoutpost.dexdrip.G5Model.SensorTxMessage;
 import com.eveningoutpost.dexdrip.G5Model.Transmitter;
 import com.eveningoutpost.dexdrip.G5Model.TransmitterStatus;
+import com.eveningoutpost.dexdrip.G5Model.VersionRequestRxMessage;
+import com.eveningoutpost.dexdrip.G5Model.VersionRequestTxMessage;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -57,14 +61,11 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
-
-//KS not needed
-/*
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
-import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
-import com.eveningoutpost.dexdrip.utils.BgToSpeech;
-*/
-import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+//KS import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
+//KS import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.UnsupportedEncodingException;
@@ -151,6 +152,8 @@ public class G5CollectionService extends Service {
     public Context mContext;//KS
     private boolean delays = false;
 
+    private static String lastState = "Not running";
+
 
     // test params
     private static final boolean ignoreLocalBondingState = false; // don't try to bond gives: GATT_ERR_UNLIKELY but no more 133s
@@ -160,7 +163,10 @@ public class G5CollectionService extends Service {
     private static final boolean delayOn133Errors = true; // add some delays with 133 errors
     private static final boolean useKeepAlive = true; // add some delays with 133 errors
     private static final boolean simpleBondWait = true; // possible UI thread issue but apparently more reliable
+    private static final boolean getVersionDetails = true; // try to load firmware version details
+    private static final boolean getBatteryDetails = true; // try to load battery info details
 
+    private static final long BATTERY_READ_PERIOD_MS = 1000 * 60 * 60 * 12; // how often to poll battery data (12 hours)
 
     StringBuilder log = new StringBuilder();
 
@@ -280,12 +286,6 @@ public class G5CollectionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-       // byte[] testbytes =  { 0x31,0x00,0x68,0x0a,0x00,0x00,(byte)0x8a,0x71,0x57,0x00,(byte)0xcc,0x00,0x06,(byte)0xff,(byte)0xc4,0x2a } ;
-       // GlucoseRxMessage rx = new GlucoseRxMessage(testbytes);
-       // new AuthRequestTxMessage(8);
-       // new AuthRequestTxMessage(16);
-       // fullAuthenticate();
-
         Context context = getApplicationContext();
         xdrip.checkAppContext(context);
         Sensor.InitDb(context);//ensure db is initialized
@@ -296,6 +296,9 @@ public class G5CollectionService extends Service {
 
                 Log.d(TAG, "onG5StartCommand wakeup: "+JoH.dateTimeText(JoH.tsl()));
                 Log.e(TAG, "settingsToString: " + settingsToString());
+
+                lastState = "Started: "+JoH.hourMinuteString();
+
                 //Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
                 //stopScan();
                 boolean wear_sync = prefs.getBoolean("wear_sync", false);
@@ -317,6 +320,7 @@ public class G5CollectionService extends Service {
                         try {
                             Log.d(TAG, "onStartCommand mGatt != null; mGatt.close() and set to null.");
                             mGatt.close();
+                            mGatt = null;
                         } catch (NullPointerException e) { //
                         }
                     }
@@ -418,6 +422,7 @@ public class G5CollectionService extends Service {
         }
 //        BgToSpeech.tearDownTTS();
         Log.i(TAG, "SERVICE STOPPED");
+        lastState="Stopped";
     }
 
     public synchronized void keepAlive() {
@@ -604,6 +609,7 @@ public class G5CollectionService extends Service {
                 isScanning = false;
                 if (!isConnected) {
                     mLEScanner.startScan(filters, settings, mScanCallback);
+                    lastState="Scanning";
                     if (JoH.ratelimit("g5-scan-log",60)) {
                         Log.w(TAG, "scan cycle start");
                     }
@@ -844,7 +850,7 @@ public class G5CollectionService extends Service {
         };
     }
 
-    public synchronized void fullAuthenticate(BluetoothGatt gatt) {
+    public synchronized void fullAuthenticate() {
         Log.e(TAG, "fullAuthenticate() start");
         if (alwaysUnbond()) {
             forgetDevice();
@@ -852,7 +858,7 @@ public class G5CollectionService extends Service {
         try {
             Log.i(TAG, "Start Auth Process(fullAuthenticate)");
             if (authCharacteristic != null) {
-                sendAuthRequestTxMessage(gatt, authCharacteristic);
+                sendAuthRequestTxMessage(mGatt, authCharacteristic);
             } else {
                 Log.e(TAG, "fullAuthenticate: authCharacteristic is NULL!");
             }
@@ -936,7 +942,7 @@ public class G5CollectionService extends Service {
     private synchronized void connectGatt(BluetoothDevice mDevice) {
         Log.i(TAG, "mGatt Null, connecting...");
         Log.i(TAG, "connectToDevice On Main Thread? " + isOnMainThread());
-
+        lastState="Found, Connecting";
         if (delayOn133Errors && max133RetryCounter > 1) {
             // should we only be looking at disconnected 133 here?
             Log.e(TAG, "Adding a delay before connecting to 133 count of: " + max133RetryCounter);
@@ -950,12 +956,28 @@ public class G5CollectionService extends Service {
     // Sends the disconnect tx message to our bt device.
     private synchronized void doDisconnectMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
            Log.d(TAG, "doDisconnectMessage() start");
-           mGatt.setCharacteristicNotification(controlCharacteristic, false);
+           gatt.setCharacteristicNotification(controlCharacteristic, false);
            final DisconnectTxMessage disconnectTx = new DisconnectTxMessage();
            characteristic.setValue(disconnectTx.byteSequence);
-           mGatt.writeCharacteristic(characteristic);
-           mGatt.disconnect();
+           gatt.writeCharacteristic(characteristic);
+           gatt.disconnect();
            Log.d(TAG, "doDisconnectMessage() finished");
+    }
+
+
+    private synchronized void doVersionRequestMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        Log.d(TAG, "doVersionRequestMessage() start");
+        final VersionRequestTxMessage versionTx = new VersionRequestTxMessage();
+        characteristic.setValue(versionTx.byteSequence);
+        gatt.writeCharacteristic(characteristic);
+        Log.d(TAG, "doVersionRequestMessage() finished");
+    }
+
+    private synchronized void doBatteryInfoRequestMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        Log.d(TAG, "doBatteryInfoMessage() start");
+        characteristic.setValue(new BatteryInfoTxMessage().byteSequence);
+        gatt.writeCharacteristic(characteristic);
+        Log.d(TAG, "doBatteryInfoMessage() finished");
     }
 
     private synchronized void discoverServices() {
@@ -1123,7 +1145,7 @@ public class G5CollectionService extends Service {
 
                 //TODO : ADD option in settings!
                 if (alwaysAuthenticate() || alwaysUnbond()) {
-                    fullAuthenticate(gatt);
+                    fullAuthenticate();
                 } else {
                     authenticate();
                 }
@@ -1162,7 +1184,11 @@ public class G5CollectionService extends Service {
             Log.i(TAG, "onDescriptorWrite On Main Thread? " + isOnMainThread());
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.e(TAG, "Writing to characteristic: " + getUUIDName(descriptor.getCharacteristic().getUuid()));
-                mGatt.writeCharacteristic(descriptor.getCharacteristic());
+                if (mGatt != null) {
+                    mGatt.writeCharacteristic(descriptor.getCharacteristic());
+                } else {
+                    Log.e(TAG, "mGatt was null when trying to write UUID descriptor");
+                }
             } else {
                 Log.e(TAG, "not writing characteristic due to Unknown error writing descriptor");
             }
@@ -1211,7 +1237,11 @@ public class G5CollectionService extends Service {
                                 Log.e(TAG, "Adding a delay before reading characteristic with 133 count of: " + max133RetryCounter);
                                 waitFor(300);
                             }
-                            mGatt.readCharacteristic(characteristic);
+                            if (mGatt != null) {
+                                mGatt.readCharacteristic(characteristic);
+                            } else {
+                                Log.e(TAG, "mGatt was null when trying to read KeepAliveTxMessage");
+                            }
                         } else {
                             Log.e(TAG, "Auth ow: got keepalive");
                             if (useKeepAlive) {
@@ -1255,7 +1285,11 @@ public class G5CollectionService extends Service {
             Log.d(TAG,"performBondWrite() started");
             final BondRequestTxMessage bondRequest = new BondRequestTxMessage();
             characteristic.setValue(bondRequest.byteSequence);
-            mGatt.writeCharacteristic(characteristic);
+            if (mGatt != null) {
+                mGatt.writeCharacteristic(characteristic);
+            } else {
+                Log.e(TAG, "mGatt was null when trying to write bondRequest");
+            }
             if (delayOnBond) {
                 Log.e(TAG, "Delaying before bond");
                 waitFor(1000);
@@ -1315,7 +1349,11 @@ public class G5CollectionService extends Service {
                                 Log.e(TAG,"Trying keepalive..");
                                 final KeepAliveTxMessage keepAliveRequest = new KeepAliveTxMessage(25);
                                 characteristic.setValue(keepAliveRequest.byteSequence);
-                                mGatt.writeCharacteristic(characteristic);
+                                if (mGatt != null) {
+                                    mGatt.writeCharacteristic(characteristic);
+                                } else {
+                                    Log.e(TAG, "mGatt was null when trying to write keepAliveRequest");
+                                }
                             } else {
                              performBondWrite(characteristic);
                             }
@@ -1453,8 +1491,15 @@ public class G5CollectionService extends Service {
                 //Log.e(TAG, "filtered: " + sensorRx.filtered);
                 disconnected133 = 0; // reset as we got a reading
                 disconnected59 = 0;
+                lastState = "Got data OK: " + JoH.hourMinuteString();
                 Log.e(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered);
-                doDisconnectMessage(gatt, characteristic);
+                if ((getVersionDetails) && (!haveFirmwareDetails())) {
+                    doVersionRequestMessage(gatt, characteristic);
+                } else if ((getBatteryDetails) && (!haveCurrentBatteryStatus())) {
+                    doBatteryInfoRequestMessage(gatt, characteristic);
+                } else {
+                    doDisconnectMessage(gatt, characteristic);
+                }
                 processNewTransmitterData(sensorRx.unfiltered, sensorRx.filtered, sensor_battery_level, new Date().getTime());
             } else if (firstByte == GlucoseRxMessage.opcode) {
                 disconnected133 = 0; // reset as we got a reading
@@ -1463,13 +1508,89 @@ public class G5CollectionService extends Service {
                 Log.e(TAG, "SUCCESS!! glucose unfiltered: " + glucoseRx.unfiltered);
                 doDisconnectMessage(gatt, characteristic);
                 processNewTransmitterData(glucoseRx.unfiltered, glucoseRx.filtered, 216, new Date().getTime());
+            } else if (firstByte == VersionRequestRxMessage.opcode) {
+                if (!setStoredFirmwareBytes(defaultTransmitter.transmitterId, characteristic.getValue())) {
+                    Log.wtf(TAG, "Could not save out firmware version!");
+                }
+                doDisconnectMessage(gatt, characteristic);
+            } else if (firstByte == BatteryInfoRxMessage.opcode) {
+                if (!setStoredBatteryBytes(defaultTransmitter.transmitterId, characteristic.getValue())) {
+                    Log.wtf(TAG, "Could not save out battery data!");
+                }
+                doDisconnectMessage(gatt, characteristic);
             } else {
-                Log.e(TAG,"onCharacteristic CHANGED unexpected opcode: "+firstByte+" (have not disconnected!)");
+                Log.e(TAG, "onCharacteristic CHANGED unexpected opcode: " + firstByte + " (have not disconnected!)");
             }
             Log.e(TAG, "OnCharacteristic CHANGED finished: ");
         }
     };
     // end BluetoothGattCallback
+
+    private boolean haveFirmwareDetails() {
+        return defaultTransmitter.transmitterId.length() == 6 && getStoredFirmwareBytes(defaultTransmitter.transmitterId).length >= 10;
+    }
+
+    private final static String G5_BATTERY_FROM_MARKER = "g5-battery-from";
+
+    private boolean haveCurrentBatteryStatus() {
+        return defaultTransmitter.transmitterId.length() == 6 && (JoH.msSince(PersistentStore.getLong(G5_BATTERY_FROM_MARKER + defaultTransmitter.transmitterId)) < BATTERY_READ_PERIOD_MS);
+    }
+
+    private static byte[] getStoredFirmwareBytes(String transmitterId) {
+        if (transmitterId.length() != 6) return new byte[0];
+        return PersistentStore.getBytes("g5-firmware-" + transmitterId);
+    }
+
+    private static boolean setStoredFirmwareBytes(String transmitterId, byte[] data) {
+        UserError.Log.e(TAG, "Store: VersionRX dbg: " + JoH.bytesToHex(data));
+        if (transmitterId.length() != 6) return false;
+        if (data.length < 10) return false;
+        PersistentStore.setBytes("g5-firmware-" + transmitterId, data);
+        return true;
+    }
+
+    private static final String G5_BATTERY_MARKER = "g5-battery-";
+
+    private static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
+        UserError.Log.e(TAG, "Store: BatteryRX dbg: " + JoH.bytesToHex(data));
+        if (transmitterId.length() != 6) return false;
+        if (data.length < 10) return false;
+        Log.wtf(TAG, "Saving battery data: " + new BatteryInfoRxMessage(data).toString());
+        PersistentStore.setBytes(G5_BATTERY_MARKER + transmitterId, data);
+        PersistentStore.setLong(G5_BATTERY_FROM_MARKER + transmitterId, JoH.tsl());
+        return true;
+    }
+
+    private static BatteryInfoRxMessage getBatteryDetails(String tx_id) {
+        try {
+            return new BatteryInfoRxMessage(PersistentStore.getBytes(G5_BATTERY_MARKER + tx_id));
+        } catch (Exception e) {
+            Log.wtf(TAG, "Exception in getFirmwareDetails: " + e);
+            return null;
+        }
+    }
+
+    public static VersionRequestRxMessage getFirmwareDetails(String tx_id) {
+        try {
+            byte[] stored = getStoredFirmwareBytes(tx_id);
+            if ((stored != null) && (stored.length > 9)) {
+                return new VersionRequestRxMessage(stored);
+            }
+        } catch (Exception e) {
+            Log.wtf(TAG, "Exception in getFirmwareDetails: " + e);
+            return null;
+        }
+        return null;
+    }
+
+    public static String getFirmwareVersionString(String tx_id) {
+        VersionRequestRxMessage vr = getFirmwareDetails(tx_id);
+        if (vr != null) {
+            return "FW: " + vr.firmware_version_string;
+        } else {
+            return "";
+        }
+    }
 
 
     private synchronized void sendAuthRequestTxMessage(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
@@ -1477,7 +1598,6 @@ public class G5CollectionService extends Service {
         authRequest = new AuthRequestTxMessage(getTokenSize());
         Log.i(TAG, "AuthRequestTX: " + JoH.bytesToHex(authRequest.byteSequence));
         characteristic.setValue(authRequest.byteSequence);
-        mGatt.writeCharacteristic(characteristic);
         if (gatt != null) {
             gatt.writeCharacteristic(characteristic);
         } else {
@@ -1660,6 +1780,43 @@ public class G5CollectionService extends Service {
                 + (tryOnDemandBondWithDelay ? "tryOnDemandBondWithDelay " : "")
                 + (engineeringMode() ? "engineeringMode " : "")
                 + (tryPreBondWithDelay ? "tryPreBondWithDelay " : ""));
+    }
+
+    // data for MegaStatus
+    public static List<StatusItem> megaStatus() {
+        final List<StatusItem> l = new ArrayList<>();
+
+        l.add(new StatusItem("Phone Service State", lastState));
+
+
+        String tx_id = Home.getPreferencesStringDefaultBlank("dex_txid");
+
+        l.add(new StatusItem("Transmitter ID", tx_id));
+        // get firmware details
+        VersionRequestRxMessage vr = getFirmwareDetails(tx_id);
+        if ((vr != null) && (vr.firmware_version_string.length() > 0)) {
+
+            l.add(new StatusItem("Firmware Version", vr.firmware_version_string));
+            l.add(new StatusItem("Bluetooth Version", vr.bluetooth_firmware_version_string));
+            l.add(new StatusItem("Other Version", vr.other_firmware_version));
+            l.add(new StatusItem("Hardware Version", vr.hardwarev));
+           if (vr.asic != 61440) l.add(new StatusItem("ASIC", vr.asic)); // TODO color code
+        }
+
+        BatteryInfoRxMessage bt = getBatteryDetails(tx_id);
+        long last_battery_query = PersistentStore.getLong(G5_BATTERY_FROM_MARKER + tx_id);
+        if ((bt != null) && (last_battery_query > 0)) {
+            l.add(new StatusItem("Battery Last queried", JoH.niceTimeSince(last_battery_query)+" "+"ago"));
+            l.add(new StatusItem("Transmitter Status", TransmitterStatus.getBatteryLevel(vr.status).toString()));
+            l.add(new StatusItem("Transmitter Days", bt.runtime));
+            l.add(new StatusItem("Voltage A", bt.voltagea));
+            l.add(new StatusItem("Voltage B", bt.voltageb));
+            l.add(new StatusItem("Resistance", bt.resist));
+            l.add(new StatusItem("Temperature", bt.temperature + " \u2103"));
+        }
+
+
+        return l;
     }
 
 }
