@@ -314,8 +314,11 @@ public class G5CollectionService extends Service {
                     mBluetoothAdapter = mBluetoothManager.getAdapter();
 
                     if (mGatt != null) {
-                        mGatt.close();
-                        mGatt = null;
+                        try {
+                            Log.d(TAG, "onStartCommand mGatt != null; mGatt.close() and set to null.");
+                            mGatt.close();
+                        } catch (NullPointerException e) { //
+                        }
                     }
 
                     if (Sensor.isActive()) {
