@@ -1022,25 +1022,30 @@ public class Preferences extends PreferenceActivity {
                     }
                 }
 
+                final PreferenceScreen g5_settings_screen = (PreferenceScreen) findPreference("xdrip_plus_g5_extra_settings");
                 if (collectionType == DexCollectionType.DexcomG5) {
                     try {
                         collectionCategory.addPreference(transmitterId);
-                        collectionCategory.addPreference(g5nonraw);
-                        collectionCategory.addPreference(scanConstantly);
-                        collectionCategory.addPreference(reAuth);
-                        collectionCategory.addPreference(reBond);
-                        collectionCategory.addPreference(runOnMain);
+
+                        collectionCategory.addPreference(g5_settings_screen);
+                        //collectionCategory.addPreference(g5nonraw);
+                        //collectionCategory.addPreference(scanConstantly);
+                        //collectionCategory.addPreference(reAuth);
+                        //collectionCategory.addPreference(reBond);
+                        //collectionCategory.addPreference(runOnMain);
                     } catch (NullPointerException e) {
                         Log.wtf(TAG, "Null pointer adding G5 prefs ", e);
                     }
                 } else {
                     try {
                         // collectionCategory.removePreference(transmitterId);
-                        collectionCategory.removePreference(scanConstantly);
-                        collectionCategory.removePreference(g5nonraw);
-                        collectionCategory.removePreference(reAuth);
-                        collectionCategory.removePreference(reBond);
-                        collectionCategory.removePreference(runOnMain);
+
+                        collectionCategory.removePreference(g5_settings_screen);
+                       // collectionCategory.removePreference(scanConstantly);
+                       // collectionCategory.removePreference(g5nonraw);
+                       // collectionCategory.removePreference(reAuth);
+                       // collectionCategory.removePreference(reBond);
+                       // collectionCategory.removePreference(runOnMain);
                     } catch (NullPointerException e) {
                         Log.wtf(TAG, "Null pointer removing G5 prefs ", e);
                     }

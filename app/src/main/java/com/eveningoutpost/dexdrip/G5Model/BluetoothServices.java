@@ -137,7 +137,7 @@ public class BluetoothServices {
     //private static final int GATT_CONN_UNKNOWN                   0
     //private static final int GATT_CONN_L2C_FAILURE               1                               /* general L2cap failure  */
     //private static final int GATT_CONN_TIMEOUT                   HCI_ERR_CONNECTION_TOUT         /* 0x08 connection timeout  */
-    private static final int GATT_CONN_TERMINATE_PEER_USER = 0x13;   /*  HCI_ERR_PEER_USER 0x13 connection terminate by peer user  */
+    public static final int GATT_CONN_TERMINATE_PEER_USER = 0x13;   /*  HCI_ERR_PEER_USER 0x13 connection terminate by peer user  */
     private static final int GATT_CONN_TERMINATE_LOCAL_HOST = 0x16; /*     HCI_ERR_CONN_CAUSE_LOCAL_HOST   /* 0x16 connectionterminated by local host  */
     // private static final int GATT_CONN_FAIL_ESTABLISH            HCI_ERR_CONN_FAILED_ESTABLISHMENT/* 0x03E connection fail to establish  */
     private static final int GATT_CONN_LMP_TIMEOUT  = 0x22;       /* HCI_ERR_LMP_RESPONSE_TIMEOUT     /* 0x22 connection fail for LMP response tout */
