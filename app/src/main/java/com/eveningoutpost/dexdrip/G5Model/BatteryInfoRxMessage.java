@@ -27,7 +27,6 @@ public class BatteryInfoRxMessage extends TransmitterMessage {
     public int temperature;
 
     public BatteryInfoRxMessage(byte[] packet) {
-        UserError.Log.e(TAG, "BatteryRX dbg: " + JoH.bytesToHex(packet));
         if (packet.length >= 12) {
             data = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);
             if (data.get() == opcode) {

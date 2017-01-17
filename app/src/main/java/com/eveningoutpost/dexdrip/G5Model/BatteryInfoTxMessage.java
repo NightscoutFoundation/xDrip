@@ -21,7 +21,7 @@ public class BatteryInfoTxMessage extends TransmitterMessage {
         data.put(opcode);
         data.put(crc);
         byteSequence = data.array();
-        UserError.Log.d(TAG, "BatteryInfoTx dbg: " + JoH.bytesToHex(byteSequence));
+        UserError.Log.e(TAG, "BatteryInfoTx dbg: " + JoH.bytesToHex(byteSequence));
     }
 }
 

@@ -21,7 +21,7 @@ public class VersionRequestTxMessage extends TransmitterMessage {
         data.put(opcode);
         data.put(crc);
         byteSequence = data.array();
-        UserError.Log.d(TAG, "VersionTx dbg: " + JoH.bytesToHex(byteSequence));
+        UserError.Log.e(TAG, "VersionTx dbg: " + JoH.bytesToHex(byteSequence));
     }
 }
 
