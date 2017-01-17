@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 
 /**
@@ -65,23 +66,33 @@ public class LocationHelper {
      *
      * @param activity The currently visible activity.
      */
-    public static void requestLocationForBluetooth(Activity activity) {
+    public static void requestLocationForBluetooth(final Activity activity) {
         // Location needs to be enabled for Bluetooth discovery on Marshmallow.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
             if (ContextCompat.checkSelfPermission(activity,
                     android.Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
-                toast(activity,"Without Location permission android bluetooth scan doesn't work");
-                ActivityCompat.requestPermissions(activity,
-                        new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
-                        0);
+
+                JoH.show_ok_dialog(activity, "Please Allow Permission", "Without Location permission android bluetooth scan doesn't work", new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ActivityCompat.requestPermissions(activity,
+                                    new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                                    0);
+                        } catch (Exception e) {
+                            JoH.static_toast_long("Got Exception with Location Permission: " + e);
+                        }
+                    }
+                });
             }
 
             LocationHelper.requestLocation(activity);
         }
     }
-    private static void toast(final Activity activity,final String msg) {
+
+/*    private static void toast(final Activity activity,final String msg) {
         try {
             activity.runOnUiThread(new Runnable() {
                 @Override
@@ -93,7 +104,7 @@ public class LocationHelper {
         } catch (Exception e) {
             android.util.Log.e(TAG, "Couldn't display toast: " + msg);
         }
-    }
+    }*/
 
     public static Boolean locationPermission(ActivityWithMenu act) {
         return ActivityCompat.checkSelfPermission(act, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;

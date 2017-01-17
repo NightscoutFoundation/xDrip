@@ -295,7 +295,7 @@ public class Preferences extends PreferenceActivity {
     @Override
     protected void onResume()
     {
-        super.onResume();;
+        super.onResume();
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(ActivityRecognizedService.prefListener);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && DexCollectionType.hasBluetooth()) {
             LocationHelper.requestLocationForBluetooth(this); // double check!
