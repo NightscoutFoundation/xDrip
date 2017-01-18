@@ -375,8 +375,8 @@ public class DexCollectionService extends Service {
                     "DexCollectionService");
             wakeLock1.acquire();
             try {
-                Log.i(TAG, "onCharacteristicChanged entered");
                 final byte[] data = characteristic.getValue();
+                Log.i(TAG, "onCharacteristicChanged entered " + new String(data));
                 if (data != null && data.length > 0) {
                     setSerialDataToTransmitterRawData(data, data.length);
                 }
