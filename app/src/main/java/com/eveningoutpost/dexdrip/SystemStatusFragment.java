@@ -140,9 +140,9 @@ public class SystemStatusFragment extends Fragment {
         setNotes();
         futureDataCheck();
 
-        if (notes.getText().length()==0) {
+       /* if (notes.getText().length()==0) {
             notes.setText("Swipe for more status pages!");
-        }
+        }*/
     }
 
     private void setTransmitterStatus() {

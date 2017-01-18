@@ -183,6 +183,7 @@ public class Home extends ActivityWithMenu {
     private static final int SHOWCASE_VARIANT = 7;
     public static final int SHOWCASE_STATISTICS = 8;
     private static final int SHOWCASE_G5FIRMWARE = 9;
+    static final int SHOWCASE_MEGASTATUS = 10;
     private static double last_speech_time = 0;
     private PreviewLineChartView previewChart;
     private Button stepsButton;
@@ -2453,13 +2454,14 @@ public class Home extends ActivityWithMenu {
             menuItem.setVisible(false);
         }
 
-        menu.findItem(R.id.showmap).setVisible(prefs.getBoolean("plus_extra_features", false));
-        menu.findItem(R.id.parakeetsetup).setVisible(prefs.getBoolean("plus_extra_features", false));
+        boolean parakeet_menu_items = false;
+        if (DexCollectionType.hasWifi()) {
+            parakeet_menu_items = prefs.getBoolean("plus_extra_features", false);
+        }
+        menu.findItem(R.id.showmap).setVisible(parakeet_menu_items);
+        menu.findItem(R.id.parakeetsetup).setVisible(parakeet_menu_items);
 
-        boolean result = super.onCreateOptionsMenu(menu);
-
-
-        return result;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
