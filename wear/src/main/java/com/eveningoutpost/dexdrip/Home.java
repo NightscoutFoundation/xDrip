@@ -17,7 +17,7 @@ import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 public class Home extends BaseWatchFace {
     //KS the following were copied from app/home
     private static Context context;//KS
-    private static final String TAG = "wearHome";//KS
+    private static final String TAG = "Home";//KS
     private static String nexttoast;//KS
     private static boolean is_follower = false;
     private static boolean is_follower_set = false;

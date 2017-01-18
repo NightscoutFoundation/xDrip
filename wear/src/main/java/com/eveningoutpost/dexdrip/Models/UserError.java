@@ -8,6 +8,10 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Home;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
+import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.util.Date;
 import java.util.Hashtable;
@@ -21,19 +25,23 @@ import java.util.List;
 public class UserError extends Model {
 
     private final static String TAG = UserError.class.getSimpleName();
-    
+
+    @Expose
     @Column(name = "shortError")
     public String shortError; // Short error message to be displayed on table
 
+    @Expose
     @Column(name = "message")
     public String message; // Additional text when error is expanded
 
+    @Expose
     @Column(name = "severity", index = true)
     public int severity; // int between 1 and 3, 3 being most severe
 
     // 5 = internal lower level user events
     // 6 = higher granularity user events
 
+    @Expose
     @Column(name = "timestamp", index = true)
     public double timestamp; // Time the error was raised
 
@@ -122,6 +130,51 @@ public class UserError extends Model {
                 .where("severity in ("+levelsString.substring(0,levelsString.length() - 1)+")")
                 .orderBy("timestamp desc")
                 .execute();
+    }
+
+    public static UserError last() {
+        return new Select()
+                .from(UserError.class)
+                .orderBy("_ID desc")
+                .executeSingle();
+    }
+
+    public static List<UserError> latestAsc(int number, long startTime) {
+        return latestAsc(number, startTime, Long.MAX_VALUE);
+    }
+
+    public static List<UserError> latestAsc(int number, long startTime, long endTime) {
+        return new Select()
+                .from(UserError.class)
+                .where("timestamp >= " + Math.max(startTime, 0))
+                .where("timestamp <= " + endTime)
+                .orderBy("timestamp asc")
+                .limit(number)
+                .execute();
+    }
+
+    public String toS() {
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                .serializeSpecialFloatingPointValues()
+                .create();
+
+        return gson.toJson(this);
+    }
+
+    public static UserError getForTimestamp(UserError error) {
+        try {
+            return new Select()
+                    .from(UserError.class)
+                    //.where("timestamp <= ?", (error.timestamp + (60 * 1000))) // 1 minute padding (should never be that far off, but why not)
+                    .where("timestamp == ?", error.timestamp + " message == ?", (error.message ) + " shortError == ?", (error.shortError ))
+                    .orderBy("timestamp desc")
+                    .executeSingle();
+        } catch (Exception e) {
+            Log.e(TAG,"getForTimestamp() Got exception on Select : "+e.toString());
+            return null;
+        }
     }
 
     private static class Cleanup extends AsyncTask<List<UserError>, Integer, Boolean> {

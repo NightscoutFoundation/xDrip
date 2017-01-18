@@ -36,6 +36,19 @@
                 android:inputType="none"
                 android:textIsSelectable="true"
                 android:editable="false"/>
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="enable_wearG5"
+                android:key="sync_wear_logs"
+                android:summary="@string/pref_summary_sync_wear_logs"
+                android:title="@string/pref_sync_wear_logs"/>
+            <EditTextPreference
+                android:defaultValue="wear"
+                android:dependency="sync_wear_logs"
+                android:key="wear_logs_prefix"
+                android:summary="@string/pref_summary_wear_logs_prefix"
+                android:title="@string/pref_wear_logs_prefix"
+                android:textIsSelectable="true"/>
         </PreferenceCategory>
         <PreferenceCategory
             android:key="pebble_integration"

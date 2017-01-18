@@ -2,7 +2,9 @@ package com.eveningoutpost.dexdrip.Services;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -12,11 +14,13 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity.checkForAnUpdate;
 
 public class DailyIntentService extends IntentService {
     private final static String TAG = DailyIntentService.class.getSimpleName();
+    private SharedPreferences mPrefs;
     // DAILY TASKS CAN GO IN HERE!
 
     public DailyIntentService() {
@@ -31,6 +35,10 @@ public class DailyIntentService extends IntentService {
                 Log.i(TAG, "DailyIntentService onHandleIntent Starting");
                 Long start = JoH.tsl();
                 // prune old database records
+                mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                if (mPrefs.getBoolean("wear_sync", false)) {
+                    startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_CLEAR_LOGS));
+                }
                 try {
                     UserError.cleanup();
                 } catch (Exception e) {

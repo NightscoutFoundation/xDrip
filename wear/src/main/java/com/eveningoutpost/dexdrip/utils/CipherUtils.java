@@ -8,6 +8,7 @@ import android.util.Base64;
 import android.util.Log;
 
 //KS import com.eveningoutpost.dexdrip.GoogleDriveInterface;
+import com.eveningoutpost.dexdrip.Models.JoH;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -88,6 +89,18 @@ public class CipherUtils {
         }
     }
 
+    public static String getSHA256(byte[] mydata) {
+        try {
+            MessageDigest digest = java.security.MessageDigest
+                    .getInstance("SHA256");
+            digest.update(mydata);
+            return bytesToHex(digest.digest()).toLowerCase();
+        } catch (NoSuchAlgorithmException e) {
+            Log.e(TAG, "SHA hash exception: " + e.toString());
+            return null;
+        }
+    }
+
     public static String getSHA256(String mykey) {
         try {
             MessageDigest digest = java.security.MessageDigest
@@ -151,20 +164,46 @@ public class CipherUtils {
 
     public static String decryptString(String cipherData) {
         try {
-            byte[] inbytes = Base64.decode(cipherData, Base64.NO_WRAP);
-            return new String(decryptBytes(inbytes), "UTF-8");
+            return new String(decryptStringToBytes(cipherData), "UTF-8");
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Got unsupported encoding on UTF8 " + e.toString());
             return "";
         } catch (IllegalArgumentException e) {
             Log.e(TAG, "Got IllegalArgumentException encoding on UTF8 ", e);
-            return "";           
+            return "";
         }
+    }
+
+    public static byte[] decryptStringToBytes(String cipherData) {
+        byte[] inbytes = Base64.decode(cipherData, Base64.NO_WRAP);
+        byte[] decryptedBytes = decryptBytes(inbytes);
+        if ((decryptedBytes.length > 8)
+                && (decryptedBytes[0] == (byte) 0x1F)
+                && (decryptedBytes[1] == (byte) 0x8B)
+                && (decryptedBytes[2] == (byte) 0x08)
+                && (decryptedBytes[3] == (byte) 0x00)) {
+            decryptedBytes = JoH.decompressBytesToBytes(decryptedBytes);
+        }
+        return decryptedBytes;
     }
 
     public static String encryptString(String plainText) {
         byte[] inbytes = plainText.getBytes(Charset.forName("UTF-8"));
         return Base64.encodeToString(encryptBytes(inbytes), Base64.NO_WRAP);
+    }
+
+    public static String encryptBytesToString(byte[] inbytes) {
+        return Base64.encodeToString(encryptBytes(inbytes), Base64.NO_WRAP);
+    }
+
+    public static String compressEncryptString(String plainText) {
+        return Base64.encodeToString(CipherUtils.encryptBytes(JoH.compressStringToBytes(plainText))
+                , Base64.NO_WRAP);
+    }
+
+    public static String compressEncryptBytes(byte[] plainText) {
+        return Base64.encodeToString(CipherUtils.encryptBytes(JoH.compressBytesToBytes(plainText))
+                , Base64.NO_WRAP);
     }
 
     public static byte[] getRandomKey() {

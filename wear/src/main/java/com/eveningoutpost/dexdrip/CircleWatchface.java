@@ -39,6 +39,7 @@ import java.util.TreeSet;
 
 
 public class CircleWatchface extends WatchFace implements SharedPreferences.OnSharedPreferenceChangeListener {
+    private final static String TAG = CircleWatchface.class.getSimpleName();
     public final float PADDING = 20f;
     public final float CIRCLE_WIDTH = 10f;
     public final int BIG_HAND_WIDTH = 16;
@@ -134,7 +135,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
 
     @Override
     protected synchronized void onDraw(Canvas canvas) {
-        Log.d("CircleWatchface", "start onDraw");
+        Log.d(TAG, "CircleWatchface start onDraw");
         canvas.drawColor(getBackgroundColor());
         drawTime(canvas);
         drawOtherStuff(canvas);
@@ -144,7 +145,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
 
     private synchronized void prepareLayout() {
 
-        Log.d("CircleWatchface", "start startPrepareLayout");
+        Log.d(TAG, "CircleWatchface start startPrepareLayout");
 
         // prepare fields
 
@@ -264,7 +265,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
     }
 
     private synchronized void prepareDrawTime() {
-        Log.d("CircleWatchface", "start prepareDrawTime");
+        Log.d(TAG, "CircleWatchface start prepareDrawTime");
 
         hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY) % 12;
         minute = Calendar.getInstance().get(Calendar.MINUTE);
@@ -316,7 +317,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         rect = new RectF(PADDING, PADDING, (float) (displaySize.x - PADDING), (float) (displaySize.y - PADDING));
         rectDelete = new RectF(PADDING - CIRCLE_WIDTH / 2, PADDING - CIRCLE_WIDTH / 2, (float) (displaySize.x - PADDING + CIRCLE_WIDTH / 2), (float) (displaySize.y - PADDING + CIRCLE_WIDTH / 2));
         overlapping = ALWAYS_HIGHLIGT_SMALL || areOverlapping(angleSMALL, angleSMALL + SMALL_HAND_WIDTH + NEAR, angleBig, angleBig + BIG_HAND_WIDTH + NEAR);
-        Log.d("CircleWatchface", "end prepareDrawTime");
+        Log.d(TAG, "CircleWatchface end prepareDrawTime");
 
     }
 
@@ -399,7 +400,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
     }
 
     public void drawOtherStuff(Canvas canvas) {
-        Log.d("CircleWatchface", "start onDrawOtherStuff. bgDataList.size(): " + bgDataList.size());
+        Log.d(TAG, "CircleWatchface start onDrawOtherStuff. bgDataList.size(): " + bgDataList.size());
 
         if (isAnimated()) return; // too many repaints when animated
         if (sharedPrefs.getBoolean("showRingHistory", false)) {
@@ -511,7 +512,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
     }
 
     void startAnimation() {
-        Log.d("CircleWatchface", "start startAnimation");
+        Log.d(TAG, "CircleWatchface start startAnimation");
 
         Thread animator = new Thread() {
 
@@ -547,9 +548,9 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
                 if (bundle != null) {
                     DataMap dataMap = DataMap.fromBundle(bundle);
                     setSgvLevel((int) dataMap.getLong("sgvLevel"));
-                    Log.d("CircleWatchface", "sgv level : " + getSgvLevel());
+                    Log.d(TAG, "CircleWatchface sgv level : " + getSgvLevel());
                     setSgvString(dataMap.getString("sgvString"));
-                    Log.d("CircleWatchface", "sgv string : " + getSgvString());
+                    Log.d(TAG, "CircleWatchface sgv string : " + getSgvString());
                     setRawString(dataMap.getString("rawString"));
                     setDelta(dataMap.getString("delta"));
                     setDatetime(dataMap.getDouble("timestamp"));
@@ -588,7 +589,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         double low = dataMap.getDouble("low");
         double timestamp = dataMap.getDouble("timestamp");
 
-        Log.d("addToWatchSet", "entry=" + dataMap);
+        Log.d(TAG, "addToWatchSet entry=" + dataMap);
 
         final int size = bgDataList.size();
         BgWatchData bgdata = new BgWatchData(sgv, high, low, timestamp);
@@ -596,10 +597,10 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
             if (bgDataList.contains(bgdata)) {
                 int i = bgDataList.indexOf(bgdata);
                 BgWatchData bgd = bgDataList.get(bgDataList.indexOf(bgdata));
-                Log.d("addToWatchSet", "replace indexOf=" + i + " bgDataList.sgv=" + bgd.sgv + " bgDataList.timestamp" + bgd.timestamp);
+                Log.d(TAG, "addToWatchSet replace indexOf=" + i + " bgDataList.sgv=" + bgd.sgv + " bgDataList.timestamp" + bgd.timestamp);
                 bgDataList.set(i, bgdata);
             } else {
-                Log.d("addToWatchSet", "add " + " entry.sgv=" + bgdata.sgv + " entry.timestamp" + bgdata.timestamp);
+                Log.d(TAG, "addToWatchSet add " + " entry.sgv=" + bgdata.sgv + " entry.timestamp" + bgdata.timestamp);
                 bgDataList.add(bgdata);
             }
         }
@@ -610,11 +611,11 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
 
     public void addToWatchSet(DataMap dataMap) {
 
-        Log.d("addToWatchSet", "bgDataList.size()=" + bgDataList.size());
+        Log.d(TAG, "addToWatchSet bgDataList.size()=" + bgDataList.size());
 
         ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
         if (entries != null) {
-            Log.d("addToWatchSet", "entries.size()=" + entries.size());
+            Log.d(TAG, "addToWatchSet entries.size()=" + entries.size());
             for (DataMap entry : entries) {
                 addDataMap(entry);
             }
@@ -688,7 +689,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
 
     public void addReadingSoft(Canvas canvas, BgWatchData entry) {
 
-        Log.d("CircleWatchface", "addReadingSoft");
+        Log.d(TAG, "CircleWatchface addReadingSoft");
         double size;
         int color = Color.LTGRAY;
         if (sharedPrefs.getBoolean("dark", false)) {
@@ -704,7 +705,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
     }
 
     public void addReading(Canvas canvas, BgWatchData entry) {
-        Log.d("CircleWatchface", "addReading");
+        Log.d(TAG, "CircleWatchface addReading");
 
         double size;
         int color = Color.LTGRAY;

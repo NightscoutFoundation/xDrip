@@ -63,13 +63,14 @@ For example, if the user changes the Force Wear preference on the watch, it will
 ###XDrip Prefs Overview
 The watch XDrip Prefs app is used to set the xDrip+ wear app preferences.
 
-The following list the new preferences used in the standalone version.
+The following lists the new preferences used in the standalone version.
 ####XDrip BT Settings
 
   Provides the Wear Integration preferences listed above and the following:
   - XDrip G5 Settings
 
-    Similar to those provided by the xDrip+ app, such as **Scan for G5 Contantly**.  As with the xDrip+ app, they should only be enabled if the watch has connectivity issues.  For example, the Sony Smartwatch 3 (SW3) does not require any of these setting.
+    Similar to those provided by the xDrip+ app, such as **Scan for G5 Contantly**.  As with the xDrip+ app, they should only be enabled if the watch has connectivity issues.  For example, the **Sony Smartwatch 3 (SW3)** does not require any of these settings enabled.
+    Whereas, users of the **Moto 360 2nd Gen** watch report the **Unbond G5/Read** pref is required.
     - The one exception is the **Auth G5/Read**.  This should be enabled if using the latest, Dexcom G5 transmitter firmware (released in November 2016, firmware 1.0.4.10, or newer than firmware 1.0.0.17).
 
 ####XDrip Watchface Settings
@@ -96,7 +97,8 @@ The BT Collector connects to the transmitter every 5 mins by design. This is how
 - Watch Settings always-on screen is enabled.  This will prevent watch doze mode from shutting down the BT Collector.
 
   To verify devices are connected, check the phone Android Wear app.  Android wear (on the watch) displays the **cloud** icon if the devices are not in-range, or if the user manually disconnects the devices in Android Wear.
-	
+
+	Similarly, some users have found it necessary to enable the **Stay awake while charging** setting under their watch Settings **Developer Options**.  In testing thus far, only the Moto 360 2nd Gen watch has required this option.
 ###Confirm Wear Integration preferences are consistent on both phone and watch
 
   **Enable Wear** and  **Force Wear** should have same settings on phone and watch.  If not, reset them accordingly.  The xDrip+ should sync these values whenever the user modifies them or at application startup, but both phone and watch must be connected and in-range for syncing to be performed.  See **Confirm phone and watch are connected** above.
@@ -134,9 +136,6 @@ The BT Collector connects to the transmitter every 5 mins by design. This is how
 
   - xDrip+ Display Settings - **Smooth Sensor Noise**
 
-    For ease of confirming consistent BG readings on phone and watch, disable Noise Smoothing:
-
-
 ###Confirm Collector runs on the Phone with Wear Integration
 
   Ensure Wear Integration preferences are set as follows:
@@ -169,8 +168,6 @@ This will force the watch to use its BT collector, and force the phone to stop i
   - Confirm phone and watch are connected via Android Wear.
   - Change Watchface to big chart and then back to standard xDrip.
 
-  Confirm Environment:
-  - Disable engineering mode
 
 #ADB DEBUG
 ###Debugging Android Wear
