@@ -174,8 +174,8 @@ public class NightscoutUploader {
                         doLegacyRESTUploadTo(nightscoutService, glucoseDataSets);
                     }
                 } catch (Exception e) {
-                    Log.e(TAG, "Unable to do REST API Upload " + e.getMessage());
-                    e.printStackTrace();
+                    Log.e(TAG, "Unable to do REST API Upload: " + e.getMessage() + " url: " + baseURI);
+                    //e.printStackTrace();
                     return false;
                 }
             }
@@ -211,7 +211,12 @@ public class NightscoutUploader {
 
                 postDeviceStatus(nightscoutService, secret);
             }
-                postTreatments(nightscoutService,secret);
+
+            try {
+                postTreatments(nightscoutService, secret);
+            } catch (Exception e) {
+                Log.e(TAG, "Exception uploading REST API treatments: " + e.getMessage());
+            }
         }
 
     private void populateV1APIBGEntry(JSONArray array, BgReading record) throws Exception {
