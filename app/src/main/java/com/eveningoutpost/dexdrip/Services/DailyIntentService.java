@@ -35,9 +35,13 @@ public class DailyIntentService extends IntentService {
                 Log.i(TAG, "DailyIntentService onHandleIntent Starting");
                 Long start = JoH.tsl();
                 // prune old database records
-                mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                if (mPrefs.getBoolean("wear_sync", false)) {
-                    startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_CLEAR_LOGS));
+                try {
+                    mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    if (mPrefs.getBoolean("wear_sync", false)) {
+                        startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_CLEAR_LOGS));
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "DailyIntentService exception on watch clear logs ", e);
                 }
                 try {
                     UserError.cleanup();
