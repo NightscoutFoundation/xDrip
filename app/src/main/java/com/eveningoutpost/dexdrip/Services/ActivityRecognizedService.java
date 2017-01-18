@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.utils.WebAppHelper;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -644,6 +645,12 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         }
     }
 
+    private static void startupInfo() {
+        if (ShotStateStore.hasShot(Home.SHOWCASE_MOTION_DETECTION)) return;
+        Home.startHomeWithExtra(xdrip.getAppContext(), Home.ACTIVITY_SHOWCASE_INFO, "");
+    }
+
+
     public static SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
 
@@ -658,6 +665,8 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
                         if (d) Log.d(TAG, "Starting on preference change");
                         resetRequestedReceivedCounters();
                         startActivityRecogniser(xdrip.getAppContext());
+
+                        startupInfo();
                     }
                     break;
                 case "act_as_motion_master":
