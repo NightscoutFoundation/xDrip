@@ -753,19 +753,25 @@ public class WatchUpdaterService extends WearableListenerService implements
                     case WEARABLE_CANCEL_TREATMENT:
                         cancelTreatment(getApplicationContext(), "");
                         break;
-                    case SYNC_BGS_PATH + "_DUP"://TEST ignore only for benchmark
-                    case SYNC_LOGS_PATH + "_DUP":
-                        Log.d(TAG, "Benchmark: onMessageReceived _DUP - ignore, just for test!");
+                    case SYNC_BGS_PATH + "_BM"://TEST ignore only for benchmark
+                    case SYNC_LOGS_PATH + "_BM":
+                    case SYNC_BGS_PATH + "_BM_DUP":
+                    case SYNC_LOGS_PATH + "_BM_DUP":
+                    case SYNC_BGS_PATH + "_BM_RAND":
+                    case SYNC_LOGS_PATH + "_BM_RAND":
+                        Log.d(TAG, "onMessageReceived Ignore, just for test!");
                         decomprBytes = event.getData();
                         if (decomprBytes != null) {
-                            Log.d(TAG, "Benchmark: event.getData().length=" + decomprBytes.length);
+                            //Log.d(TAG, "Benchmark: " + event.getPath() + "event.getData().length=" + decomprBytes.length);
                         }
                         break;
-                    case SYNC_BGS_PATH + "_DUP_COMPRESS"://TEST ignore only for benchmark
-                    case SYNC_LOGS_PATH + "_DUP_COMPRESS":
-                    case SYNC_BGS_PATH + "_COMPRESS":
-                    case SYNC_LOGS_PATH + "_COMPRESS":
-                        Log.d(TAG, "onMessageReceived SYNC_BGS_PATH_COMPRESS SYNC_LOGS_PATH_COMPRESS");
+                    case SYNC_BGS_PATH + "_BM_COMPRESS"://TEST ignore only for benchmark
+                    case SYNC_LOGS_PATH + "_BM_COMPRESS":
+                    case SYNC_BGS_PATH + "_BM_DUP_COMPRESS":
+                    case SYNC_LOGS_PATH + "_BM_DUP_COMPRESS":
+                    case SYNC_BGS_PATH + "_BM_RAND_COMPRESS":
+                    case SYNC_LOGS_PATH + "_BM_RAND_COMPRESS":
+                        Log.d(TAG, "onMessageReceived Ignore, just for test!");
                         decomprBytes = decompressBytes(event.getPath(), event.getData());
                         break;
                     case SYNC_BGS_PATH://KS
@@ -819,14 +825,14 @@ public class WatchUpdaterService extends WearableListenerService implements
                 && (bytes[3] == (byte) 0x00)) {
             JoH.benchmark(null);
             decomprBytes =  JoH.decompressBytesToBytes(bytes);
-            JoH.benchmark(pathdesc + " JoH.decompressBytesToBytes Compressed length=" + bytes.length + " Decompressed length=" + decomprBytes.length);
-            return null; //decomprBytes;  TEST don't return since this function will be called TWICE while TESTING only
+            JoH.benchmark(pathdesc + " JoH.decompressBytesToBytes from length=" + bytes.length + " to length=" + decomprBytes.length);
+            return null; //TODO return decomprBytes;
         }
         else {
             JoH.benchmark(null);
             JoH.benchmark(pathdesc + " JoH.decompressBytesToBytes Not Compressed; Decompressed length=" + bytes.length);
             JoH.benchmark("DataMap is not compressed!  Process as normal.");
-            return bytes;
+            return null;//TODO return bytes;
         }
     }
 

@@ -1562,7 +1562,7 @@ public class G5CollectionService extends Service {
 
     private static final String G5_BATTERY_MARKER = "g5-battery-";
 
-    private static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
+    public static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
         UserError.Log.e(TAG, "Store: BatteryRX dbg: " + JoH.bytesToHex(data));
         if (transmitterId.length() != 6) return false;
         if (data.length < 10) return false;
@@ -1572,7 +1572,7 @@ public class G5CollectionService extends Service {
         return true;
     }
 
-    private static BatteryInfoRxMessage getBatteryDetails(String tx_id) {
+    public static BatteryInfoRxMessage getBatteryDetails(String tx_id) {
         try {
             return new BatteryInfoRxMessage(PersistentStore.getBytes(G5_BATTERY_MARKER + tx_id));
         } catch (Exception e) {

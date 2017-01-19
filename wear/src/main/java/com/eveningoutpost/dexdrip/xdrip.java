@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip;
 
 import android.app.Application;
 import android.content.Context;
+import android.preference.PreferenceManager;
 
 import java.util.Locale;
 
@@ -21,6 +22,7 @@ public class xdrip extends Application {
     public void onCreate() {
         xdrip.context = getApplicationContext();
         super.onCreate();
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
 
      }
 
