@@ -1,6 +1,9 @@
 package com.eveningoutpost.dexdrip.utils;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Services.DexCollectionService;
+import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
+import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -106,6 +109,17 @@ public enum DexCollectionType {
 
     public static boolean hasFiltered() {
         return does_have_filtered || usesFiltered.contains(getDexCollectionType());
+    }
+
+    public static Class<?> getCollectorServiceClass() {
+        switch (getDexCollectionType()) {
+            case DexcomG5:
+                return G5CollectionService.class;
+            case DexcomShare:
+                return DexShareCollectionService.class;
+            default:
+                return DexCollectionService.class;
+        }
     }
 
 }

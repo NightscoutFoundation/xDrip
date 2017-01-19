@@ -398,9 +398,18 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             mTimestamp.setText(readingAge(false));
         }
 
-        if((sharedPrefs.getBoolean("enable_wearG5", false) && sharedPrefs.getBoolean("force_wearG5", false)) ||
-                (sharedPrefs.getBoolean("enable_wearG5", false) && G5CollectionService.isRunning())){//isServiceRunning(G5CollectionService.class)
-            Log.d(TAG, "G5CollectionService.isRunning lastState: " + G5CollectionService.getLastState());
+        boolean enable_wearG5 = sharedPrefs.getBoolean("enable_wearG5", false);
+        boolean force_wearG5 = sharedPrefs.getBoolean("force_wearG5", false);
+        boolean isCollectorRunning = (enable_wearG5 && force_wearG5);
+        if (!isCollectorRunning && enable_wearG5) {
+            Class<?> serviceClass = DexCollectionType.getCollectorServiceClass();
+            if (serviceClass != null) {
+                Log.d(TAG, "DexCollectionType.getCollectorServiceClass(): " + serviceClass.getName());
+                isCollectorRunning = isServiceRunning(serviceClass);
+            }
+        }
+        if (isCollectorRunning) {//Wear Collector
+            Log.d(TAG, DexCollectionType.getDexCollectionType() + " is running.");
             int wearBattery = getWearBatteryLevel(getApplication());
             String wearBatteryString = "" + wearBattery;
             batteryLevel = (wearBattery >= 30) ? 1 : 0;
@@ -410,7 +419,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader_wear, wearBatteryString));//"Wear: " + batteryString + "%"
         }
         else {//Phone Collector
-            Log.d(TAG, "G5CollectionService.isRunning lastState: " + G5CollectionService.getLastState());
+            Log.d(TAG, "Collector running on phone");
             if (showStatus || mShowXBattery)
                 mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader_abbrv, batteryString));//"U: " + batteryString + "%"
             else
@@ -427,10 +436,13 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
 
     // Custom method to determine whether a service is running
     private boolean isServiceRunning(Class<?> serviceClass){//Class<?> serviceClass
-        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        // Loop through the running services
-        for(ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) return true;
+        if (serviceClass != null) {
+            ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+            // Loop through the running services
+            for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
+                //Log.d(TAG, "isServiceRunning: getClassName=" + service.service.getClassName() + " getShortClassName=" + service.service.getShortClassName());
+                if (serviceClass.getName().equals(service.service.getClassName())) return true;
+            }
         }
         return false;
     }
