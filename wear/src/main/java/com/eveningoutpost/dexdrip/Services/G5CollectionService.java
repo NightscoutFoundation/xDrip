@@ -104,6 +104,11 @@ public class G5CollectionService extends Service {
     private static boolean service_running = false;
     private static boolean scan_scheduled = false;
 
+    private static byte lastOnReadCode = (byte)0xff;
+    private static int successes = 0;
+    private static int failures = 0;
+    private boolean force_always_authenticate = false;
+
     //KS private ForegroundServiceStarter foregroundServiceStarter;
 
     public Service service;
@@ -1056,6 +1061,16 @@ public class G5CollectionService extends Service {
                         stopScan();
                     }
                     Log.e(TAG, "STATE_DISCONNECTED: " + getStatusName(status));
+
+                    // do we keep failing right after attempting bonding? make sure alwaysAuthenticate is enabled if so..
+                    if (status == BluetoothServices.GATT_CONN_TERMINATE_PEER_USER) {
+                        failures++;
+                        if (!alwaysAuthenticate() && (successes == 0) && (failures > 1) && (lastOnReadCode == 7)) {
+                            Log.wtf(TAG, "Force enabling AlwaysAuthenticate mode!");
+                            force_always_authenticate = true;
+                        }
+                    }
+
                     if (mGatt != null) {
                         try {
                             mGatt.close();
@@ -1314,7 +1329,7 @@ public class G5CollectionService extends Service {
                 //Transmitter defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
                 Log.e(TAG,"processOncRead: code:"+code);
                 mBluetoothAdapter = mBluetoothManager.getAdapter();
-
+                lastOnReadCode = code;
                 switch (code) {
                     case 5:
                         authStatus = new AuthStatusRxMessage(buffer);
@@ -1492,6 +1507,8 @@ public class G5CollectionService extends Service {
                 disconnected133 = 0; // reset as we got a reading
                 disconnected59 = 0;
                 lastState = "Got data OK: " + JoH.hourMinuteString();
+                successes++;
+                failures=0;
                 Log.e(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered);
                 if ((getVersionDetails) && (!haveFirmwareDetails())) {
                     doVersionRequestMessage(gatt, characteristic);
@@ -1501,11 +1518,19 @@ public class G5CollectionService extends Service {
                     doDisconnectMessage(gatt, characteristic);
                 }
                 processNewTransmitterData(sensorRx.unfiltered, sensorRx.filtered, sensor_battery_level, new Date().getTime());
+                // was this the first success after we force enabled always_authenticate?
+                if (force_always_authenticate && (successes == 1)) {
+                    Log.wtf(TAG, "We apparently only got a reading after forcing the Always Authenticate option");
+                    Home.toaststaticnext("Please Enable G5 Always Authenticate debug option!");
+                    // TODO should we actually change the settings here?
+                }
             } else if (firstByte == GlucoseRxMessage.opcode) {
                 disconnected133 = 0; // reset as we got a reading
                 disconnected59 = 0;
                 GlucoseRxMessage glucoseRx = new GlucoseRxMessage(characteristic.getValue());
                 Log.e(TAG, "SUCCESS!! glucose unfiltered: " + glucoseRx.unfiltered);
+                successes++;
+                failures=0;
                 doDisconnectMessage(gatt, characteristic);
                 processNewTransmitterData(glucoseRx.unfiltered, glucoseRx.filtered, 216, new Date().getTime());
             } else if (firstByte == VersionRequestRxMessage.opcode) {
@@ -1551,7 +1576,7 @@ public class G5CollectionService extends Service {
 
     private static final String G5_BATTERY_MARKER = "g5-battery-";
 
-    private static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
+    public static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
         UserError.Log.e(TAG, "Store: BatteryRX dbg: " + JoH.bytesToHex(data));
         if (transmitterId.length() != 6) return false;
         if (data.length < 10) return false;
@@ -1561,7 +1586,7 @@ public class G5CollectionService extends Service {
         return true;
     }
 
-    private static BatteryInfoRxMessage getBatteryDetails(String tx_id) {
+    public static BatteryInfoRxMessage getBatteryDetails(String tx_id) {
         try {
             return new BatteryInfoRxMessage(PersistentStore.getBytes(G5_BATTERY_MARKER + tx_id));
         } catch (Exception e) {
@@ -1741,7 +1766,7 @@ public class G5CollectionService extends Service {
     private boolean alwaysAuthenticate() {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        return sharedPreferences.getBoolean("always_get_new_keys", false);
+        return force_always_authenticate || sharedPreferences.getBoolean("always_get_new_keys", false);
     }
 
     private boolean enforceMainThread() {

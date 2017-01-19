@@ -76,6 +76,7 @@ import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import java.util.zip.Inflater;
 
 //KS import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
@@ -206,6 +207,21 @@ public class JoH {
         try {
             ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length);
             BestGZIPOutputStream gzipped_data = new BestGZIPOutputStream(output);
+            gzipped_data.write(bytes);
+            gzipped_data.close();
+            byte[] compressed = output.toByteArray();
+            output.close();
+            return compressed;
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in compress: " + e.toString());
+            return new byte[0];
+        }
+    }
+
+    public static byte[] compressBytesToBytesGzip(byte[] bytes) {
+        try {
+            ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length);
+            GZIPOutputStream gzipped_data = new GZIPOutputStream(output);
             gzipped_data.write(bytes);
             gzipped_data.close();
             byte[] compressed = output.toByteArray();
