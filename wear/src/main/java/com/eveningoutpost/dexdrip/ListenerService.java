@@ -70,6 +70,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String SYNC_LOGS_PATH = "/syncwearlogs";
     private static final String CLEAR_LOGS_PATH = "/clearwearlogs";
     private static final String WEARABLE_INITDB_PATH = "/nightscout_watch_data_initdb";
+    private static final String WEARABLE_INITPREFS_PATH = "/nightscout_watch_data_initprefs";
     private static final String WEARABLE_BG_DATA_PATH = "/nightscout_watch_bg_data";//KS
     private static final String WEARABLE_CALIBRATION_DATA_PATH = "/nightscout_watch_cal_data";//KS
     private static final String WEARABLE_SENSOR_DATA_PATH = "/nightscout_watch_sensor_data";//KS
@@ -107,6 +108,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static boolean bBenchmarkLogs = false;
     private static boolean bBenchmarkRandom = false;
     private static boolean bBenchmarkDup = false;
+    private static boolean bInitPrefs = true;
 
     public class DataRequester extends AsyncTask<Void, Void, Void> {
         final String path;
@@ -181,6 +183,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
                             for (Node node : capabilityInfo.getNodes()) {
 
+                                if (bInitPrefs) {
+                                    Log.d(TAG, "doInBackground Request Phone's Preferences: WEARABLE_INITPREFS_PATH");
+                                    sendMessagePayload(node, "WEARABLE_INITPREFS_PATH", WEARABLE_INITPREFS_PATH, null);
+                                    bInitPrefs = false;
+                                }
                                 if (path.equals(WEARABLE_INITDB_PATH)) {
                                     sendMessagePayload(node, "WEARABLE_INITDB_PATH", WEARABLE_INITDB_PATH, null);//TODO once confirm not needed
                                 }
@@ -202,7 +209,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                             }
                         } else {
                             if (enable_wearG5) {//KS
-                                Log.d(TAG, "doInBackground connected but getConnectedNodes returns 0.  start G5 service");
+                                Log.d(TAG, "doInBackground connected but getConnectedNodes returns 0.  Start BT service");
                                 startBtService();
                             }
                         }
@@ -492,7 +499,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
         SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(this).edit();
         if (!node_wearG5.equals(dataMap.getString("node_wearG5", ""))) {
-            Log.d(TAG, "syncPrefData save to SharedPreferences - node_wearG5:" + dataMap.getString("node_wearG5", ""));
+            Log.d(TAG, "sendPrefSettings save to SharedPreferences - node_wearG5:" + dataMap.getString("node_wearG5", ""));
             prefs.putString("node_wearG5", node_wearG5);
             prefs.commit();
         }
@@ -817,7 +824,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             Log.d(TAG, "syncPrefData dataMap=" + dataMap);
 
             String dexCollector = dataMap.getString(DexCollectionType.DEX_COLLECTION_METHOD, "None");//BluetoothWixel "DexcomG5"
-            Log.d(TAG, "syncPrefData dataMap dexCollector=" + dexCollector + " mPrefs DexCollectionType.DEX_COLLECTION_METHOD:" + mPrefs.getString(DexCollectionType.DEX_COLLECTION_METHOD, "DexcomG5"));
+            Log.d(TAG, "syncPrefData dataMap dexCollector=" + dexCollector + " mPrefs DexCollectionType.DEX_COLLECTION_METHOD:" + mPrefs.getString(DexCollectionType.DEX_COLLECTION_METHOD, "xxxxxxxx"));
             DexCollectionType collectionType = DexCollectionType.getType(dexCollector);
 
             Log.d(TAG, "syncPrefData dataMap dexCollector:" + dexCollector + " mPrefs dex_collection_method=" + mPrefs.getString(DexCollectionType.DEX_COLLECTION_METHOD, "xxxxxxxx"));
@@ -916,6 +923,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             force_wearG5 = mPrefs.getBoolean("force_wearG5", false);
             node_wearG5 = mPrefs.getString("node_wearG5", "");
             Log.d(TAG, "syncPrefData exit enable_wearG5: " + enable_wearG5 + " force_wearG5:" + force_wearG5 + " node_wearG5:" + node_wearG5);
+
+            if (enable_wearG5 && is_using_bt && !Sensor.isActive()) {
+                Log.d(TAG, "syncPrefData No Active Sensor!! Request WEARABLE_INITDB_PATH before starting BT Collection Service: " + DexCollectionType.getDexCollectionType());
+                sendData(WEARABLE_INITDB_PATH, null);
+            }
+
         } finally {
             JoH.releaseWakeLock(wl);
         }
@@ -1183,7 +1196,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         Log.d(TAG, "startBtService");
         if (is_using_bt) {
             if (checkLocationPermissions()) {
-                Log.d(TAG, "startBtService start Dex Collection Service: " + DexCollectionType.getDexCollectionType());
+                Log.d(TAG, "startBtService start BT Collection Service: " + DexCollectionType.getDexCollectionType());
                 if (restartWatchDog())
                     stopBtService();
                 CollectionServiceStarter.startCollectionService(getApplicationContext());
