@@ -123,5 +123,6 @@
 
     <string name="persistent_high_for_greater_than">Persistent High for > </string>
     <string name="space_mins">" mins"</string>
+    <string name="notify_collector_started">%1$s Collector Started on Watch</string>
 
 </resources>

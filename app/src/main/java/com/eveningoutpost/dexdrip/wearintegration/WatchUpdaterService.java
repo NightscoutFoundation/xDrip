@@ -62,6 +62,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     public static final String ACTION_SYNC_DB = WatchUpdaterService.class.getName().concat(".SyncDB");//KS
     public static final String ACTION_SYNC_LOGS = WatchUpdaterService.class.getName().concat(".SyncLogs");//KS
     public static final String ACTION_CLEAR_LOGS = WatchUpdaterService.class.getName().concat(".ClearLogs");//KS
+    public static final String ACTION_START_COLLECTOR = WatchUpdaterService.class.getName().concat(".StartCollector");//KS
     public static final String ACTION_SYNC_SENSOR = WatchUpdaterService.class.getName().concat(".SyncSensor");//KS
     public static final String ACTION_SYNC_CALIBRATION = WatchUpdaterService.class.getName().concat(".SyncCalibration");//KS
     public static final String ACTION_SEND_STATUS = WatchUpdaterService.class.getName().concat(".SendStatus");//KS
@@ -70,6 +71,8 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String SYNC_BGS_PATH = "/syncwearbgs";//KS
     private static final String SYNC_LOGS_PATH = "/syncwearlogs";
     private static final String CLEAR_LOGS_PATH = "/clearwearlogs";
+    private static final String START_COLLECTOR_PATH = "/startcollector";
+    private static final String WEARABLE_REPLYMSG_PATH = "/nightscout_watch_data_replymsg";
     private static final String WEARABLE_INITDB_PATH = "/nightscout_watch_data_initdb";
     private static final String WEARABLE_INITPREFS_PATH = "/nightscout_watch_data_initprefs";
     private static final String WEARABLE_CALIBRATION_DATA_PATH = "/nightscout_watch_cal_data";//KS
@@ -516,6 +519,9 @@ public class WatchUpdaterService extends WearableListenerService implements
                         Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_DB + " Path=" + SYNC_DB_PATH);
                         sendNotification(SYNC_DB_PATH, "syncDB");
                         initWearData();
+                    } else if (ACTION_START_COLLECTOR.equals(action)) {//KS
+                        Log.d(TAG, "onStartCommand Action=" + ACTION_START_COLLECTOR + " Path=" + START_COLLECTOR_PATH);
+                        sendNotification(START_COLLECTOR_PATH, "startCOLLECTOR");
                     } else if (ACTION_SYNC_LOGS.equals(action)) {//KS
                         Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_LOGS + " Path=" + SYNC_LOGS_PATH);
                         sendNotification(SYNC_LOGS_PATH, "syncLOG");
@@ -798,6 +804,17 @@ public class WatchUpdaterService extends WearableListenerService implements
                     case WEARABLE_INITDB_PATH:
                         Log.d(TAG, "onMessageReceived WEARABLE_INITDB_PATH");
                         initWearData();
+                        break;
+                    case WEARABLE_REPLYMSG_PATH:
+                        Log.d(TAG, "onMessageReceived WEARABLE_REPLYMSG_PATH");
+                        dataMap = DataMap.fromByteArray(event.getData());
+                        if (dataMap != null) {
+                            Log.d(TAG, "onMessageReceived WEARABLE_REPLYMSG_PATH dataMap=" + dataMap);
+                            String msg = dataMap.getString("msg", "");
+                            if (msg != null && !msg.isEmpty()) {
+                                JoH.static_toast_short(msg);
+                            }
+                        }
                         break;
                     case WEARABLE_INITPREFS_PATH:
                         Log.d(TAG, "onMessageReceived WEARABLE_INITPREFS_PATH");

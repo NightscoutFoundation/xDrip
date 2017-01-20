@@ -69,6 +69,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String SYNC_BGS_PATH = "/syncwearbgs";//KS
     private static final String SYNC_LOGS_PATH = "/syncwearlogs";
     private static final String CLEAR_LOGS_PATH = "/clearwearlogs";
+    private static final String START_COLLECTOR_PATH = "/startcollector";
+    private static final String WEARABLE_REPLYMSG_PATH = "/nightscout_watch_data_replymsg";
     private static final String WEARABLE_INITDB_PATH = "/nightscout_watch_data_initdb";
     private static final String WEARABLE_INITPREFS_PATH = "/nightscout_watch_data_initprefs";
     private static final String WEARABLE_BG_DATA_PATH = "/nightscout_watch_bg_data";//KS
@@ -189,7 +191,10 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                     bInitPrefs = false;
                                 }
                                 if (path.equals(WEARABLE_INITDB_PATH)) {
-                                    sendMessagePayload(node, "WEARABLE_INITDB_PATH", WEARABLE_INITDB_PATH, null);//TODO once confirm not needed
+                                    sendMessagePayload(node, "WEARABLE_INITDB_PATH", WEARABLE_INITDB_PATH, null);
+                                }
+                                else if (path.equals(WEARABLE_REPLYMSG_PATH)) {
+                                    sendMessagePayload(node, "WEARABLE_REPLYMSG_PATH", path, payload);
                                 }
                                 else {
                                     if (enable_wearG5) {//KS
@@ -706,6 +711,18 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     } catch (Exception e) {
                         Log.e(TAG, "onDataChanged CLEAR_LOGS_PATH exception on UserError ", e);
                     }
+                } else if (path.equals(START_COLLECTOR_PATH)) {
+                    Log.d(TAG, "onDataChanged START_COLLECTOR_PATH=" + path);
+                    if (processConnect()) {
+                        String msg = getResources().getString(R.string.notify_collector_started, DexCollectionType.getDexCollectionType());
+                        dataMap = new DataMap();
+                        dataMap.putString("msg", msg);
+                        Intent messageIntent = new Intent();
+                        messageIntent.setAction(Intent.ACTION_SEND);
+                        messageIntent.putExtra("msg", dataMap.toBundle());
+                        LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
+                        sendData(WEARABLE_REPLYMSG_PATH, dataMap.toByteArray());
+                    }
                 } else if (path.equals(WEARABLE_SENSOR_DATA_PATH)) {//KS
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
@@ -941,10 +958,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     }
 
     //Assumes Wear is connected to phone
-    private void processConnect() {//KS
+    private boolean processConnect() {//KS
         Log.d(TAG, "processConnect enter");
         boolean enable_wearG5 = mPrefs.getBoolean("enable_wearG5", false);
         boolean force_wearG5 = mPrefs.getBoolean("force_wearG5", false);
+        boolean bStarted = false;
         if (enable_wearG5) {
             Log.d(TAG, "processConnect enable_wearG5=true");
             if (!force_wearG5){
@@ -954,6 +972,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             }
             else {
                 Log.d(TAG, "processConnect force_wearG5=true - startBtService");
+                bStarted = true;
                 startBtService();
             }
         }
@@ -962,6 +981,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             stopBtService();
             ListenerService.requestData(this);
         }
+        return bStarted;
     }
 
     private void syncSensorData(DataMap dataMap, Context context) {//KS

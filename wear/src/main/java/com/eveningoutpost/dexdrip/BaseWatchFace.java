@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.android.gms.wearable.DataMap;
@@ -274,9 +275,16 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public class MessageReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Bundle bundle = intent.getBundleExtra("data");
+            DataMap dataMap;
+            Bundle bundle = intent.getBundleExtra("msg");
             if (layoutSet && bundle != null) {
-                DataMap dataMap = DataMap.fromBundle(bundle);
+                dataMap = DataMap.fromBundle(bundle);
+                String msg = dataMap.getString("msg", "");
+                JoH.static_toast_short(msg);
+            }
+            bundle = intent.getBundleExtra("data");
+            if (layoutSet && bundle != null) {
+                dataMap = DataMap.fromBundle(bundle);
                 wakeLock.acquire(50);
                 sgvLevel = dataMap.getLong("sgvLevel");
                 batteryLevel = dataMap.getInt("batteryLevel");
@@ -320,7 +328,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             //status
             bundle = intent.getBundleExtra("status");
             if (layoutSet && bundle != null) {
-                DataMap dataMap = DataMap.fromBundle(bundle);
+                dataMap = DataMap.fromBundle(bundle);
                 wakeLock.acquire(50);
                 externalStatusString = dataMap.getString("externalStatusString");
 

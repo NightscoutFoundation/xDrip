@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
@@ -33,6 +34,7 @@ import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.lang.reflect.Method;
 import java.text.DateFormat;
@@ -360,6 +362,10 @@ public class SystemStatusFragment extends Fragment {
                 v.setEnabled(false);
                 JoH.static_toast_short("Restarting Collector!");
                 v.setAlpha(0.2f);
+                prefs = PreferenceManager.getDefaultSharedPreferences(safeGetContext());
+                if (prefs.getBoolean("wear_sync", false)) {
+                    safeGetContext().startService(new Intent(safeGetContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_START_COLLECTOR));
+                }
                 CollectionServiceStarter.restartCollectionService(safeGetContext());
                 set_current_values();
                 JoH.runOnUiThreadDelayed(new Runnable() {
