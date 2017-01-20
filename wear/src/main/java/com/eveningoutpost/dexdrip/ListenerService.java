@@ -525,7 +525,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         sendData(WEARABLE_RESEND_PATH, null);
     }
 
-    private void sendData(String path, byte[] payload) {
+    private synchronized void sendData(String path, byte[] payload) {
         if (path == null) return;
         if (mDataRequester != null) {
             Log.d(TAG, "sendData DataRequester != null lastRequest:" + JoH.dateTimeText(lastRequest));
