@@ -817,6 +817,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         //dataMap.putString("rawString", threeRaw((prefs.getString("units", "mgdl").equals("mgdl"))));
     }
 
+    private boolean fuzzyNodeCompare(String left, String right) {
+        final String regex = "\\|\\S+$";
+        return left.replaceFirst(regex, "").equals(right.replaceFirst(regex, ""));
+    }
+
     private synchronized void syncPrefData(DataMap dataMap) {//KS
         SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(this).edit();
         final PowerManager.WakeLock wl = JoH.getWakeLock(getApplicationContext(), "watchlistener-SYNC_PREF_DATA",120000);
@@ -854,7 +859,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 node_wearG5 = localnode;
                 Log.d(TAG, "syncPrefData node_wearG5 set empty string to localnode:" + localnode);
             }
-            if (!node_wearG5.equals(localnode)) {
+            //if (!node_wearG5.equals(localnode)) {
+            if (!fuzzyNodeCompare(localnode,node_wearG5)) {
                 //change = true;
                 force_wearG5 = false;
             }
