@@ -83,7 +83,7 @@ public class SystemStatusFragment extends Fragment {
         current_device = (TextView) v.findViewById(R.id.remembered_device);
 
         notes = (TextView) v.findViewById(R.id.other_notes);
-        notes.setText("");
+
 
         restart_collection_service = (Button) v.findViewById(R.id.restart_collection_service);
         forget_device = (Button) v.findViewById(R.id.forget_device);
@@ -123,6 +123,7 @@ public class SystemStatusFragment extends Fragment {
     //}
 
     private void set_current_values() {
+        notes.setText("");
         activeBluetoothDevice = ActiveBluetoothDevice.first();
         mBluetoothManager = (BluetoothManager) safeGetContext().getSystemService(Context.BLUETOOTH_SERVICE);
         setVersionName();
@@ -307,6 +308,7 @@ public class SystemStatusFragment extends Fragment {
 
     private void setNotes() {
         try {
+
             if ((mBluetoothManager == null) || ((android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) && (mBluetoothManager.getAdapter() == null))) {
                 notes.append("\n- This device does not seem to support bluetooth");
             } else {
