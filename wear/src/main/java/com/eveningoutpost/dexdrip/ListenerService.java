@@ -816,11 +816,14 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         try {
             Log.d(TAG, "syncPrefData dataMap=" + dataMap);
 
-            String dexCollector = dataMap.getString(DexCollectionType.DEX_COLLECTION_METHOD, "DexcomG5");//BluetoothWixel
+            String dexCollector = dataMap.getString(DexCollectionType.DEX_COLLECTION_METHOD, "None");//BluetoothWixel "DexcomG5"
             Log.d(TAG, "syncPrefData dataMap dexCollector=" + dexCollector + " mPrefs DexCollectionType.DEX_COLLECTION_METHOD:" + mPrefs.getString(DexCollectionType.DEX_COLLECTION_METHOD, "DexcomG5"));
             DexCollectionType collectionType = DexCollectionType.getType(dexCollector);
-            if (!dexCollector.equals(mPrefs.getString(DexCollectionType.DEX_COLLECTION_METHOD, "DexcomG5"))) {
-                Log.d(TAG, "syncPrefData dexCollector:" + dexCollector);
+
+            Log.d(TAG, "syncPrefData dataMap dexCollector:" + dexCollector + " mPrefs dex_collection_method=" + mPrefs.getString(DexCollectionType.DEX_COLLECTION_METHOD, "xxxxxxxx"));
+
+            if (!dexCollector.equals(mPrefs.getString(DexCollectionType.DEX_COLLECTION_METHOD, "xxxxxxxx"))) {
+                Log.d(TAG, "syncPrefData dexCollector:" + dexCollector + " collectionType.name=" + collectionType.name());
                 DexCollectionType.setDexCollectionType(collectionType);
                 stopBtService();
             }
