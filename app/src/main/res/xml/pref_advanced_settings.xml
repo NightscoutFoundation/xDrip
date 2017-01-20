@@ -48,6 +48,7 @@
                 android:key="wear_logs_prefix"
                 android:summary="@string/pref_summary_wear_logs_prefix"
                 android:title="@string/pref_wear_logs_prefix"
+                android:editable="true"/>
                 android:textIsSelectable="true"/>
         </PreferenceCategory>
         <PreferenceCategory

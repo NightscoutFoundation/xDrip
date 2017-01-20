@@ -71,6 +71,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String SYNC_LOGS_PATH = "/syncwearlogs";
     private static final String CLEAR_LOGS_PATH = "/clearwearlogs";
     private static final String WEARABLE_INITDB_PATH = "/nightscout_watch_data_initdb";
+    private static final String WEARABLE_INITPREFS_PATH = "/nightscout_watch_data_initprefs";
     private static final String WEARABLE_CALIBRATION_DATA_PATH = "/nightscout_watch_cal_data";//KS
     private static final String WEARABLE_BG_DATA_PATH = "/nightscout_watch_bg_data";//KS
     private static final String WEARABLE_SENSOR_DATA_PATH = "/nightscout_watch_sensor_data";//KS
@@ -797,6 +798,10 @@ public class WatchUpdaterService extends WearableListenerService implements
                     case WEARABLE_INITDB_PATH:
                         Log.d(TAG, "onMessageReceived WEARABLE_INITDB_PATH");
                         initWearData();
+                        break;
+                    case WEARABLE_INITPREFS_PATH:
+                        Log.d(TAG, "onMessageReceived WEARABLE_INITPREFS_PATH");
+                        sendPrefSettings();
                         break;
                     case WEARABLE_PREF_DATA_PATH:
                         dataMap = DataMap.fromByteArray(event.getData());
