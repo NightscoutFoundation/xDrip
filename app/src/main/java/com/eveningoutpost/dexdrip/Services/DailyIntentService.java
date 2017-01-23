@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
+import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
@@ -73,6 +74,11 @@ public class DailyIntentService extends IntentService {
                     checkForAnUpdate(getApplicationContext());
                 } catch (Exception e) {
                     Log.e(TAG, "DailyIntentService exception on checkForAnUpdate ", e);
+                }
+                try {
+                    if (Home.get_master_or_follower()) RollCall.pruneOld(0);
+                } catch (Exception e) {
+                    Log.e(TAG, "exception on RollCall prune "+ e);
                 }
                 Log.i(TAG, "DailyIntentService onHandleIntent exiting after " + ((JoH.tsl() - start) / 1000) + " seconds");
                 //} else {

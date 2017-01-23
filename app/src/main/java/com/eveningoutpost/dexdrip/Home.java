@@ -1761,6 +1761,10 @@ public class Home extends ActivityWithMenu {
         return Home.is_follower;
     }
 
+    public static boolean get_engineering_mode() {
+        return Home.getPreferencesBooleanDefaultFalse("engineering_mode");
+    }
+
     public static boolean get_master() {
         // TODO optimize this
         return (!get_follower()) && (Home.getPreferencesBooleanDefaultFalse("plus_follow_master"));

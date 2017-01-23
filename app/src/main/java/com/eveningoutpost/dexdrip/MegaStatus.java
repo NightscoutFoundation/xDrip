@@ -24,7 +24,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Services.DoNothingService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
@@ -68,6 +70,7 @@ public class MegaStatus extends ActivityWithMenu {
 
     private static final String G5_STATUS = "G5 Status";
     private static final String IP_COLLECTOR = "IP Collector";
+    private static final String XDRIP_PLUS_SYNC = "Followers";
 
     private void populateSectionList() {
 
@@ -79,6 +82,9 @@ public class MegaStatus extends ActivityWithMenu {
             }
             if (DexCollectionType.hasWifi()) {
                 addAsection(IP_COLLECTOR, "Wifi Wixel / Parakeet Status");
+            }
+            if (Home.get_master_or_follower()) {
+                addAsection(XDRIP_PLUS_SYNC,"xDrip+ Sync Group");
             }
             //addAsection("Misc", "Currently Empty");
 
@@ -101,6 +107,11 @@ public class MegaStatus extends ActivityWithMenu {
                 break;
             case IP_COLLECTOR:
                 la.addRows(WifiCollectionService.megaStatus());
+                break;
+            case XDRIP_PLUS_SYNC:
+                la.addRows(DoNothingService.megaStatus());
+                la.addRows(GcmListenerSvc.megaStatus());
+                la.addRows(RollCall.megaStatus());
                 break;
         }
         la.changed();
