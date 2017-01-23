@@ -31,7 +31,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.android.gms.wearable.DataMap;
 import com.ustwo.clockwise.common.WatchMode;

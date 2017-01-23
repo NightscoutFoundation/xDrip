@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
@@ -22,6 +23,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.common.ConnectionResult;
@@ -62,15 +64,19 @@ public class WatchUpdaterService extends WearableListenerService implements
     public static final String ACTION_SYNC_DB = WatchUpdaterService.class.getName().concat(".SyncDB");//KS
     public static final String ACTION_SYNC_LOGS = WatchUpdaterService.class.getName().concat(".SyncLogs");//KS
     public static final String ACTION_CLEAR_LOGS = WatchUpdaterService.class.getName().concat(".ClearLogs");//KS
+    public static final String ACTION_STATUS_COLLECTOR = WatchUpdaterService.class.getName().concat(".StatusCollector");//KS
     public static final String ACTION_START_COLLECTOR = WatchUpdaterService.class.getName().concat(".StartCollector");//KS
     public static final String ACTION_SYNC_SENSOR = WatchUpdaterService.class.getName().concat(".SyncSensor");//KS
     public static final String ACTION_SYNC_CALIBRATION = WatchUpdaterService.class.getName().concat(".SyncCalibration");//KS
     public static final String ACTION_SEND_STATUS = WatchUpdaterService.class.getName().concat(".SendStatus");//KS
     public static final String ACTION_SYNC_ACTIVEBTDEVICE = WatchUpdaterService.class.getName().concat(".SyncActiveBtDevice");//KS
+    public final static String ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE
+            = "com.eveningoutpost.dexdrip.BLUETOOTH_COLLECTION_SERVICE_UPDATE";
     private static final String SYNC_DB_PATH = "/syncweardb";//KS
     private static final String SYNC_BGS_PATH = "/syncwearbgs";//KS
     private static final String SYNC_LOGS_PATH = "/syncwearlogs";
     private static final String CLEAR_LOGS_PATH = "/clearwearlogs";
+    private static final String STATUS_COLLECTOR_PATH = "/statuscollector";
     private static final String START_COLLECTOR_PATH = "/startcollector";
     private static final String WEARABLE_REPLYMSG_PATH = "/nightscout_watch_data_replymsg";
     private static final String WEARABLE_INITDB_PATH = "/nightscout_watch_data_initdb";
@@ -83,6 +89,8 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String DATA_ITEM_RECEIVED_PATH = "/data-item-received";//KS
     private static final String WEARABLE_DATA_PATH = "/nightscout_watch_data";
     private static final String WEARABLE_RESEND_PATH = "/nightscout_watch_data_resend";
+    private static final String WEARABLE_FIELD_SENDPATH = "field_xdrip_plus_sendpath";
+    private static final String WEARABLE_FIELD_PAYLOAD = "field_xdrip_plus_payload";
     public static final String WEARABLE_VOICE_PAYLOAD = "/xdrip_plus_voice_payload";
     public static final String WEARABLE_APPROVE_TREATMENT = "/xdrip_plus_approve_treatment";
     public static final String WEARABLE_CANCEL_TREATMENT = "/xdrip_plus_cancel_treatment";
@@ -90,12 +98,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String WEARABLE_TOAST_NOTIFICATON = "/xdrip_plus_toast";
     private static final String OPEN_SETTINGS_PATH = "/openwearsettings";
     private static final String NEW_STATUS_PATH = "/sendstatustowear";//KS
-    // Phone
-    private static final String CAPABILITY_PHONE_APP = "phone_app_sync_bgs";
-    private static final String MESSAGE_PATH_PHONE = "/phone_message_path";
-    // Wear
     private static final String CAPABILITY_WEAR_APP = "wear_app_sync_bgs";
-    private static final String MESSAGE_PATH_WEAR = "/wear_message_path";
     private String mWearNodeId = null;
     static final int GET_CAPABILITIES_TIMEOUT_MS = 5000;
 
@@ -142,6 +145,25 @@ public class WatchUpdaterService extends WearableListenerService implements
             Wearable.DataApi.putDataItem(googleApiClient, putDataRequest);
         } else {
             Log.e(TAG, "sendDataReceived No connection to wearable available!");
+        }
+    }
+
+    private void syncFieldData(DataMap dataMap) {
+        String dex_txid = dataMap.getString("dex_txid", "");
+        byte[] G5_BATTERY_MARKER = dataMap.getByteArray(G5CollectionService.G5_BATTERY_MARKER);
+        byte[] G5_FIRMWARE_MARKER = dataMap.getByteArray(G5CollectionService.G5_FIRMWARE_MARKER);
+        if (dex_txid != null && dex_txid.equals(mPrefs.getString("dex_txid", "default"))) {
+            if (G5_BATTERY_MARKER != null) {
+                long watch_last_battery_query = dataMap.getLong(G5CollectionService.G5_BATTERY_FROM_MARKER);
+                long phone_last_battery_query = PersistentStore.getLong(G5CollectionService.G5_BATTERY_FROM_MARKER + dex_txid);
+                if (watch_last_battery_query > phone_last_battery_query) {
+                    G5CollectionService.setStoredBatteryBytes(dex_txid, G5_BATTERY_MARKER);
+                    PersistentStore.setLong(G5CollectionService.G5_BATTERY_FROM_MARKER + dex_txid, watch_last_battery_query);
+                }
+            }
+            if (G5_FIRMWARE_MARKER != null) {
+                G5CollectionService.setStoredFirmwareBytes(dex_txid, G5_FIRMWARE_MARKER);
+            }
         }
     }
 
@@ -522,6 +544,9 @@ public class WatchUpdaterService extends WearableListenerService implements
                     } else if (ACTION_START_COLLECTOR.equals(action)) {//KS
                         Log.d(TAG, "onStartCommand Action=" + ACTION_START_COLLECTOR + " Path=" + START_COLLECTOR_PATH);
                         sendNotification(START_COLLECTOR_PATH, "startCOLLECTOR");
+                    } else if (ACTION_STATUS_COLLECTOR.equals(action)) {//KS
+                        Log.d(TAG, "onStartCommand Action=" + ACTION_STATUS_COLLECTOR + " Path=" + STATUS_COLLECTOR_PATH);
+                        sendNotification(STATUS_COLLECTOR_PATH, "statusCOLLECTOR");
                     } else if (ACTION_SYNC_LOGS.equals(action)) {//KS
                         Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_LOGS + " Path=" + SYNC_LOGS_PATH);
                         sendNotification(SYNC_LOGS_PATH, "syncLOG");
@@ -811,9 +836,27 @@ public class WatchUpdaterService extends WearableListenerService implements
                         if (dataMap != null) {
                             Log.d(TAG, "onMessageReceived WEARABLE_REPLYMSG_PATH dataMap=" + dataMap);
                             String msg = dataMap.getString("msg", "");
-                            if (msg != null && !msg.isEmpty()) {
-                                JoH.static_toast_short(msg);
+                            String action_path = dataMap.getString("action_path", "");
+                            if (msg != null && !msg.isEmpty() && action_path != null && !action_path.isEmpty()) {
+                                switch (action_path) {
+                                    case START_COLLECTOR_PATH:
+                                        JoH.static_toast_short(msg);
+                                        break;
+                                    case STATUS_COLLECTOR_PATH:
+                                        Log.d(TAG, "onMessageReceived WEARABLE_REPLYMSG_PATH send LocalBroadcastManager ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE=" + ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE);
+                                        final Intent intent = new Intent(ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE);
+                                        intent.putExtra("data", msg);
+                                        LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(intent);
+                                        break;
+                                }
                             }
+                        }
+                        break;
+                    case WEARABLE_FIELD_SENDPATH:
+                        dataMap = DataMap.fromByteArray(event.getData());
+                        if (dataMap != null) {
+                            Log.d(TAG, "onMessageReceived WEARABLE_FIELD_SENDPATH dataMap=" + dataMap);
+                            syncFieldData(dataMap);
                         }
                         break;
                     case WEARABLE_INITPREFS_PATH:

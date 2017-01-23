@@ -1555,7 +1555,8 @@ public class G5CollectionService extends Service {
         return defaultTransmitter.transmitterId.length() == 6 && getStoredFirmwareBytes(defaultTransmitter.transmitterId).length >= 10;
     }
 
-    private final static String G5_BATTERY_FROM_MARKER = "g5-battery-from";
+    public final static String G5_FIRMWARE_MARKER = "g5-firmware-";
+    public final static String G5_BATTERY_FROM_MARKER = "g5-battery-from";
 
     private boolean haveCurrentBatteryStatus() {
         return defaultTransmitter.transmitterId.length() == 6 && (JoH.msSince(PersistentStore.getLong(G5_BATTERY_FROM_MARKER + defaultTransmitter.transmitterId)) < BATTERY_READ_PERIOD_MS);
@@ -1574,7 +1575,7 @@ public class G5CollectionService extends Service {
         return true;
     }
 
-    private static final String G5_BATTERY_MARKER = "g5-battery-";
+    public static final String G5_BATTERY_MARKER = "g5-battery-";
 
     public static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
         UserError.Log.e(TAG, "Store: BatteryRX dbg: " + JoH.bytesToHex(data));
