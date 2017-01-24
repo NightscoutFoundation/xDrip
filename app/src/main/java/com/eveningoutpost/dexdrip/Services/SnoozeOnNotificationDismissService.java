@@ -30,7 +30,7 @@ public class SnoozeOnNotificationDismissService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        String alertType = intent.getStringExtra("alertType"); // Replace by constant
+        final String alertType = (intent != null) ? intent.getStringExtra("alertType") : "null intent"; // Replace by constant
         Log.e(TAG, "SnoozeOnNotificationDismissService called source = " + alertType);
         if(alertType.equals("bg_alerts")  ) {
             snoozeBgAlert();

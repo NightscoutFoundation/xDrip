@@ -71,6 +71,7 @@ import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Experience;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
@@ -505,6 +506,10 @@ public class Home extends ActivityWithMenu {
 
         if ((checkedeula) && (!getString(R.string.app_name).equals("xDrip+"))) {
             showcasemenu(SHOWCASE_VARIANT);
+        }
+
+        if (Experience.isNewbie()) {
+            Log.d(TAG, "Do something for newbie");
         }
 
     }
@@ -2469,6 +2474,9 @@ public class Home extends ActivityWithMenu {
         }
         menu.findItem(R.id.showmap).setVisible(parakeet_menu_items);
         menu.findItem(R.id.parakeetsetup).setVisible(parakeet_menu_items);
+
+        boolean got_data = Experience.gotData();
+        menu.findItem(R.id.crowdtranslate).setVisible(got_data);
 
         return super.onCreateOptionsMenu(menu);
     }
