@@ -89,6 +89,7 @@ class SendToDataLayerThread extends AsyncTask<DataMap,Void,Void> {
                     PutDataMapRequest putDMR = PutDataMapRequest.create(path);
                     state = 5;
                     putDMR.getDataMap().putAll(dataMap);
+                    putDMR.setUrgent();
                     state = 6;
                     PutDataRequest request = putDMR.asPutDataRequest();
                     state = 7;

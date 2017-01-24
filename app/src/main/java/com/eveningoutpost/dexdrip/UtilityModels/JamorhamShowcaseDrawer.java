@@ -20,26 +20,33 @@ public class JamorhamShowcaseDrawer extends StandardShowcaseDrawer {
     private static final int ALPHA_HIGH_PERCENT = 223;
     private final float outerRadius;
     private final float innerRadius;
+    private final int alpha;
 
 
     public JamorhamShowcaseDrawer(Resources resources, Resources.Theme theme) {
         super(resources, theme);
         outerRadius = resources.getDimension(R.dimen.showcase_radius_outer);
         innerRadius = resources.getDimension(R.dimen.showcase_radius_inner);
+        alpha = ALPHA_HIGH_PERCENT;
     }
 
     public JamorhamShowcaseDrawer(Resources resources, Resources.Theme theme, float outerRadiusp, float innerRadiusp) {
+        this(resources, theme, outerRadiusp, innerRadiusp, ALPHA_HIGH_PERCENT);
+    }
+
+    public JamorhamShowcaseDrawer(Resources resources, Resources.Theme theme, float outerRadiusp, float innerRadiusp, int malpha) {
         super(resources, theme);
 
         final float scale = resources.getDisplayMetrics().density;
         outerRadius = outerRadiusp*scale;
         innerRadius = innerRadiusp*scale;
+        alpha = malpha;
     }
 
     @Override
     public void drawShowcase(Bitmap buffer, float x, float y, float scaleMultiplier) {
         Canvas bufferCanvas = new Canvas(buffer);
-        eraserPaint.setAlpha(ALPHA_HIGH_PERCENT);
+        eraserPaint.setAlpha(alpha);
         bufferCanvas.drawCircle(x, y, outerRadius, eraserPaint);
         eraserPaint.setAlpha(0);
         bufferCanvas.drawCircle(x, y, innerRadius, eraserPaint);

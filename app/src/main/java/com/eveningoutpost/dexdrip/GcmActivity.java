@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -63,6 +64,7 @@ public class GcmActivity extends FauxActivity {
     public static double last_sync_fill = 0;
     private static int bg_sync_backoff = 0;
     private static double last_ping_request = 0;
+    private static long last_rlcl_request = 0;
     public static AtomicInteger msgId = new AtomicInteger(1);
     public static String token = null;
     public static String senderid = null;
@@ -338,9 +340,17 @@ public class GcmActivity extends FauxActivity {
         if ((JoH.ts() - last_ping_request) > (60 * 1000 * 15)) {
             last_ping_request = JoH.ts();
             Log.d(TAG, "Sending ping");
-            if (JoH.pratelimit("gcm-ping", 1199)) GcmActivity.sendMessage("ping", "");
+            if (JoH.pratelimit("gcm-ping", 1199)) GcmActivity.sendMessage("ping", new RollCall().toS());
         } else {
             Log.d(TAG, "Already requested ping recently");
+        }
+    }
+
+    public static void requestRollCall() {
+        if (JoH.tsl() - last_rlcl_request > (60 * 1000)) {
+            last_rlcl_request = JoH.tsl();
+            if (JoH.pratelimit("gcm-rlcl", 3600))
+                GcmActivity.sendMessage("rlcl", new RollCall().toS());
         }
     }
 
@@ -670,6 +680,7 @@ public class GcmActivity extends FauxActivity {
         switch (action) {
             // one shot action types where multi queuing is not needed
             case "ping":
+            case "rlcl":
             case "sbr":
             case "bfr":
                 synchronized (queue_lock) {

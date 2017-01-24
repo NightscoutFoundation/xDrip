@@ -374,6 +374,10 @@ public class BgReading extends Model implements ShareUploadableBg {
             return bgReading;
         }
 
+        if (raw_data == 0) {
+            Log.e(TAG,"Warning: raw_data is 0 in BgReading.create()");
+        }
+
         Calibration calibration = Calibration.lastValid();
         if (calibration == null) {
             Log.d(TAG, "create: No calibration yet");

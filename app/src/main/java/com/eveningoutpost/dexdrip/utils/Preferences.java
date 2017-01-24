@@ -295,7 +295,7 @@ public class Preferences extends PreferenceActivity {
     @Override
     protected void onResume()
     {
-        super.onResume();;
+        super.onResume();
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(ActivityRecognizedService.prefListener);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && DexCollectionType.hasBluetooth()) {
             LocationHelper.requestLocationForBluetooth(this); // double check!
@@ -715,8 +715,8 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValue(pebbleSpecialText);
             // Pebble Trend - END
 
-            final Preference node_wearG5 = findPreference("node_wearG5");//KS
             bindPreferenceSummaryToValue(findPreference("node_wearG5"));//KS
+            bindPreferenceSummaryToValue(findPreference("wear_logs_prefix"));
 
             final Preference useCustomSyncKey = findPreference("use_custom_sync_key");
             final Preference CustomSyncKey = findPreference("custom_sync_key");
@@ -1022,25 +1022,30 @@ public class Preferences extends PreferenceActivity {
                     }
                 }
 
+                final PreferenceScreen g5_settings_screen = (PreferenceScreen) findPreference("xdrip_plus_g5_extra_settings");
                 if (collectionType == DexCollectionType.DexcomG5) {
                     try {
                         collectionCategory.addPreference(transmitterId);
-                        collectionCategory.addPreference(g5nonraw);
-                        collectionCategory.addPreference(scanConstantly);
-                        collectionCategory.addPreference(reAuth);
-                        collectionCategory.addPreference(reBond);
-                        collectionCategory.addPreference(runOnMain);
+
+                        collectionCategory.addPreference(g5_settings_screen);
+                        //collectionCategory.addPreference(g5nonraw);
+                        //collectionCategory.addPreference(scanConstantly);
+                        //collectionCategory.addPreference(reAuth);
+                        //collectionCategory.addPreference(reBond);
+                        //collectionCategory.addPreference(runOnMain);
                     } catch (NullPointerException e) {
                         Log.wtf(TAG, "Null pointer adding G5 prefs ", e);
                     }
                 } else {
                     try {
                         // collectionCategory.removePreference(transmitterId);
-                        collectionCategory.removePreference(scanConstantly);
-                        collectionCategory.removePreference(g5nonraw);
-                        collectionCategory.removePreference(reAuth);
-                        collectionCategory.removePreference(reBond);
-                        collectionCategory.removePreference(runOnMain);
+
+                        collectionCategory.removePreference(g5_settings_screen);
+                       // collectionCategory.removePreference(scanConstantly);
+                       // collectionCategory.removePreference(g5nonraw);
+                       // collectionCategory.removePreference(reAuth);
+                       // collectionCategory.removePreference(reBond);
+                       // collectionCategory.removePreference(runOnMain);
                     } catch (NullPointerException e) {
                         Log.wtf(TAG, "Null pointer removing G5 prefs ", e);
                     }

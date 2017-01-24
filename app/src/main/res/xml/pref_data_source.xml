@@ -94,33 +94,37 @@
             android:summary="@string/shows_a_persistent_notification"
             android:title="@string/run_collector_in_foreground" />
 
-
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dependency="engineering_mode"
-            android:key="g5_non_raw_method"
-            android:summary="Experimental mode which doesn't use raw data"
-            android:title="Use calibrated data as source" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="run_ble_scan_constantly"
-            android:summary="Some devices work better when scanning constantly, others do not. If reading is reliable when this setting is not selected, you should have improved battery life. Normally best to keep this disabled"
-            android:title="Scan for G5 constantly" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="run_G5_ble_tasks_on_uithread"
-            android:summary="This is crucial for some Android devices to properly connect, but can cause missed readings when other UI intensive activities are in use."
-            android:title="Force G5 to UI Thread" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="always_get_new_keys"
-            android:summary="This will attempt a full authentication each read attempt. Needed for newer G5 transmitter firmware versions."
-            android:title="Authenticate G5 before each read" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="always_unbond_G5"
-            android:summary="This will remove the G5 from your device's paired device list, and attempt a full authentication and bonding with each read attempt."
-            android:title="Unbond G5 before each read" />
+        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:key="xdrip_plus_g5_extra_settings"
+            android:summary="Advanced G5 settings for rare situations"
+            android:title="G5 Debug Settings">
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="run_ble_scan_constantly"
+                android:summary="Some devices work better when scanning constantly, others do not. If reading is reliable when this setting is not selected, you should have improved battery life. Normally best to keep this disabled"
+                android:title="Scan for G5 constantly" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="run_G5_ble_tasks_on_uithread"
+                android:summary="This is crucial for some Android devices to properly connect, but can cause missed readings when other UI intensive activities are in use."
+                android:title="Force G5 to UI Thread" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="always_get_new_keys"
+                android:summary="This will attempt a full authentication each read attempt. Needed for newer G5 transmitter firmware versions."
+                android:title="Authenticate G5 before each read" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="always_unbond_G5"
+                android:summary="This will remove the G5 from your device's paired device list, and attempt a full authentication and bonding with each read attempt."
+                android:title="Unbond G5 before each read" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="engineering_mode"
+                android:key="g5_non_raw_method"
+                android:summary="Experimental mode which doesn't use raw data"
+                android:title="Use calibrated data as source" />
+        </PreferenceScreen>
 
         <EditTextPreference
             android:defaultValue=""
@@ -128,6 +132,6 @@
             android:dialogTitle="@string/wifi_recievers_dialog_title"
             android:inputType="textUri"
             android:key="wifi_recievers_addresses"
-            android:title="@string/list_of_receivers"/>
+            android:title="@string/list_of_receivers" />
     </PreferenceCategory>
 </PreferenceScreen>

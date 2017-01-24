@@ -33,6 +33,7 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -92,10 +93,6 @@ import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.gson.Gson;
-//import com.nispok.snackbar.Snackbar;
-//import com.nispok.snackbar.SnackbarManager;
-//import com.nispok.snackbar.enums.SnackbarType;
-//import com.nispok.snackbar.listeners.ActionClickListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -124,6 +121,11 @@ import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPlugin;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
 
+//import com.nispok.snackbar.Snackbar;
+//import com.nispok.snackbar.SnackbarManager;
+//import com.nispok.snackbar.enums.SnackbarType;
+//import com.nispok.snackbar.listeners.ActionClickListener;
+
 
 public class Home extends ActivityWithMenu {
     private final static String TAG = "jamorham: " + Home.class.getSimpleName();
@@ -136,6 +138,7 @@ public class Home extends ActivityWithMenu {
     public final static String SNOOZE_CONFIRM_DIALOG = "SNOOZE_CONFIRM_DIALOG";
     public final static String SHOW_NOTIFICATION = "SHOW_NOTIFICATION";
     public final static String BLUETOOTH_METER_CALIBRATION = "BLUETOOTH_METER_CALIBRATION";
+    public final static String ACTIVITY_SHOWCASE_INFO = "ACTIVITY_SHOWCASE_INFO";
     public final static int SENSOR_READY_ID = 4912;
     public static String menu_name = "Home Screen";
     public static boolean activityVisible = false;
@@ -156,6 +159,7 @@ public class Home extends ActivityWithMenu {
     private boolean isG5Share;
     private BroadcastReceiver _broadcastReceiver;
     private BroadcastReceiver newDataReceiver;
+    private BroadcastReceiver statusReceiver;
     private LineChartView chart;
     private ImageButton btnSpeak;
     private ImageButton btnNote;
@@ -181,6 +185,8 @@ public class Home extends ActivityWithMenu {
     private static final int SHOWCASE_VARIANT = 7;
     public static final int SHOWCASE_STATISTICS = 8;
     private static final int SHOWCASE_G5FIRMWARE = 9;
+    static final int SHOWCASE_MEGASTATUS = 10;
+    public static final int SHOWCASE_MOTION_DETECTION = 11;
     private static double last_speech_time = 0;
     private PreviewLineChartView previewChart;
     private Button stepsButton;
@@ -214,6 +220,9 @@ public class Home extends ActivityWithMenu {
     private static final boolean oneshot = true;
     private static ShowcaseView myShowcase;
     private static Activity mActivity;
+
+    private static String statusIOB = "";
+    private static String statusBWP = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -282,23 +291,30 @@ public class Home extends ActivityWithMenu {
             if (!pm.isIgnoringBatteryOptimizations(packageName) &&
                     !prefs.getBoolean("requested_ignore_battery_optimizations_new", false)) {
                 Log.d(TAG, "Requesting ignore battery optimization");
-                try {
-                    // ignoring battery optimizations required for constant connection
-                    // to peripheral device - eg CGM transmitter.
-                    final Intent intent = new Intent();
-                    intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-                    intent.setData(Uri.parse("package:" + packageName));
-                    startActivity(intent);
-                    if (PersistentStore.incrementLong("asked_battery_optimization") < 5) {
-                        JoH.static_toast_long("Select YES for best performance!");
-                    } else {
-                        JoH.static_toast_long("This app needs battery optimization whitelisting or it will not work well. Please reset app preferences");
-                    }
 
-                } catch (ActivityNotFoundException e) {
-                    final String msg = "Device does not appear to support battery optimization whitelisting!";
-                    JoH.static_toast_short(msg);
-                    UserError.Log.wtf(TAG, msg);
+                if (PersistentStore.incrementLong("asked_battery_optimization") < 40) {
+                    JoH.show_ok_dialog(this, "Please Allow Permission", "xDrip+ needs whitelisting for proper performance", new Runnable() {
+
+                        @Override
+                        public void run() {
+                            try {
+                                final Intent intent = new Intent();
+
+                                // ignoring battery optimizations required for constant connection
+                                // to peripheral device - eg CGM transmitter.
+                                intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                                intent.setData(Uri.parse("package:" + packageName));
+                                startActivity(intent);
+
+                            } catch (ActivityNotFoundException e) {
+                                final String msg = "Device does not appear to support battery optimization whitelisting!";
+                                JoH.static_toast_short(msg);
+                                UserError.Log.wtf(TAG, msg);
+                            }
+                        }
+                    });
+                } else {
+                    JoH.static_toast_long("This app needs battery optimization whitelisting or it will not work well. Please reset app preferences");
                 }
             }
         }
@@ -458,6 +474,26 @@ public class Home extends ActivityWithMenu {
         }
         activityVisible = true;
 
+
+        statusReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                final String bwp = intent.getStringExtra("bwp");
+                if (bwp != null) {
+                    statusBWP = bwp;
+                    refreshStatusLine();
+                } else {
+                    final String iob = intent.getStringExtra("iob");
+                    if (iob != null) {
+                        statusIOB = iob;
+                        refreshStatusLine();
+                    }
+                }
+            }
+        };
+
+
         // handle incoming extras
         final Bundle bundle = getIntent().getExtras();
         processIncomingBundle(bundle);
@@ -471,6 +507,28 @@ public class Home extends ActivityWithMenu {
             showcasemenu(SHOWCASE_VARIANT);
         }
 
+    }
+
+    ////
+
+    private void refreshStatusLine() {
+        try {
+            String status = ((statusIOB.length() > 0) ? ("IoB: " + statusIOB) : "")
+                    + ((statusBWP.length()>0) ? (" "+statusBWP) : "");
+            Log.d(TAG, "Refresh Status Line: " + status);
+            //if (status.length() > 0) {
+                getSupportActionBar().setSubtitle(status);
+           // }
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Could not set subtitle due to null pointer exception: " + e);
+        }
+    }
+
+    public static void updateStatusLine(String key, String value) {
+        final Intent homeStatus = new Intent(Intents.HOME_STATUS_ACTION);
+        homeStatus.putExtra(key, value);
+        LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(homeStatus);
+        Log.d(TAG, "Home Status update: " + key + " / " + value);
     }
 
     private void checkBadSettings()
@@ -716,6 +774,8 @@ public class Home extends ActivityWithMenu {
                 } catch (NumberFormatException e) {
                     JoH.static_toast_long("Number error: " + e);
                 }
+            } else if (bundle.getString(Home.ACTIVITY_SHOWCASE_INFO) != null) {
+                showcasemenu(SHOWCASE_MOTION_DETECTION);
             } else if (bundle.getString(Home.BLOOD_TEST_ACTION) != null) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Blood Test Action");
@@ -777,7 +837,6 @@ public class Home extends ActivityWithMenu {
     }
 
 
-
     public static void startHomeWithExtra(Context context, String extra, String text) {
         startHomeWithExtra(context, extra, text, "");
     }
@@ -789,10 +848,13 @@ public class Home extends ActivityWithMenu {
         intent.putExtra(extra + "2", even_more);
         context.startActivity(intent);
     }
+
     public void crowdTranslate(MenuItem x) {
-        startActivity(new Intent(this,LanguageEditor.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-     }
+        startActivity(new Intent(this, LanguageEditor.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+    }
+
     public void testFeature(MenuItem x) {
+        startActivity(new Intent(this, MegaStatus.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
     public void viewEventLog(MenuItem x) {
@@ -1454,6 +1516,11 @@ public class Home extends ActivityWithMenu {
         checkEula();
         set_is_follower();
 
+        // status line must only have current bwp/iob data
+        statusIOB="";
+        statusBWP="";
+        refreshStatusLine();
+
         if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             this.currentBgValueText.setTextSize(100);
             this.notificationText.setTextSize(40);
@@ -1482,8 +1549,16 @@ public class Home extends ActivityWithMenu {
                 updateHealthInfo("new_data");
             }
         };
+
+
+
+
         registerReceiver(_broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         registerReceiver(newDataReceiver, new IntentFilter(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA));
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(statusReceiver,
+                new IntentFilter(Intents.HOME_STATUS_ACTION));
+
         holdViewport.set(0, 0, 0, 0);
 
         if (invalidateMenu) {
@@ -1667,6 +1742,13 @@ public class Home extends ActivityWithMenu {
                 UserError.Log.e(TAG, "newDataReceiver not registered", e);
             }
         }
+
+        try {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(statusReceiver);
+        } catch (Exception e) {
+            Log.e(TAG, "Exception unregistering broadcast receiver: "+ e);
+        }
+
     }
 
     private static void set_is_follower() {
@@ -1677,6 +1759,10 @@ public class Home extends ActivityWithMenu {
     public static boolean get_follower() {
         if (!is_follower_set) set_is_follower();
         return Home.is_follower;
+    }
+
+    public static boolean get_engineering_mode() {
+        return Home.getPreferencesBooleanDefaultFalse("engineering_mode");
     }
 
     public static boolean get_master() {
@@ -1904,7 +1990,7 @@ public class Home extends ActivityWithMenu {
         final long now = System.currentTimeMillis();
         if (Sensor.currentSensor().started_at + 60000 * 60 * 2 >= now) {
             double waitTime = (Sensor.currentSensor().started_at + 60000 * 60 * 2 - now) / 60000.0;
-            notificationText.setText(getString(R.string.please_wait_while_sensor_warms_up) + String.format("%.2f", waitTime) + getString(R.string.minutes_with_bracket));
+            notificationText.setText(getString(R.string.please_wait_while_sensor_warms_up) + JoH.qs(waitTime,0) + getString(R.string.minutes_with_bracket));
             showUncalibratedSlope();
             return;
         }
@@ -2377,13 +2463,14 @@ public class Home extends ActivityWithMenu {
             menuItem.setVisible(false);
         }
 
-        menu.findItem(R.id.showmap).setVisible(prefs.getBoolean("plus_extra_features", false));
-        menu.findItem(R.id.parakeetsetup).setVisible(prefs.getBoolean("plus_extra_features", false));
+        boolean parakeet_menu_items = false;
+        if (DexCollectionType.hasWifi()) {
+            parakeet_menu_items = prefs.getBoolean("plus_extra_features", false);
+        }
+        menu.findItem(R.id.showmap).setVisible(parakeet_menu_items);
+        menu.findItem(R.id.parakeetsetup).setVisible(parakeet_menu_items);
 
-        boolean result = super.onCreateOptionsMenu(menu);
-
-
-        return result;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -2406,13 +2493,21 @@ public class Home extends ActivityWithMenu {
 
                 switch (option) {
 
-                    case SHOWCASE_G5FIRMWARE:
+                    case SHOWCASE_MOTION_DETECTION:
+                        target= new ViewTarget(R.id.btnNote, this); // dummy
+                        size1=0;
+                        size2=0;
+                        title="Motion Detection Warning";
+                        message="Activity Motion Detection is experimental and only some phones are compatible. Its main purpose is to detect vehicle mode.\n\nIn tests it seems higher end phones are the most likely to properly support the sensors needed for it to work.  It may also drain your battery.\n\nFor exercise related movement, Smartwatch step counters work better.";
+                        break;
+
+                 /*   case SHOWCASE_G5FIRMWARE:
                         target= new ViewTarget(R.id.btnNote, this); // dummy
                         size1=0;
                         size2=0;
                         title="G5 Firmware Warning";
                         message="Transmitters containing updated firmware which started shipping around 20th Nov 2016 appear to be currently incompatible with xDrip+\n\nWork will continue to try to resolve this issue but at the time of writing there is not yet a solution.  For the latest updates you can select the Alpha or Nightly update channel.";
-                        break;
+                        break;*/
 
                     case SHOWCASE_VARIANT:
                         target= new ViewTarget(R.id.btnNote, this); // dummy

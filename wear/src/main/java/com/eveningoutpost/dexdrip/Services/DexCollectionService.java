@@ -58,7 +58,7 @@ import java.util.UUID;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class DexCollectionService extends Service {
-    private final static String TAG = "wear" + DexCollectionService.class.getSimpleName();
+    private final static String TAG = DexCollectionService.class.getSimpleName();
     private SharedPreferences prefs;
     //KS private BgToSpeech bgToSpeech;
     public DexCollectionService dexCollectionService;

@@ -103,7 +103,7 @@ public class NavDrawerBuilder {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
             this.nav_drawer_options.add(aContext.getString(R.string.system_status));
-            this.nav_drawer_intents.add(new Intent(context, SystemStatus.class));
+            this.nav_drawer_intents.add(new Intent(context, MegaStatus.class));
         }
 
         boolean bg_alerts = prefs.getBoolean("bg_alerts_from_main_menu", false);

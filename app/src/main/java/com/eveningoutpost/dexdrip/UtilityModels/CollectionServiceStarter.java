@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.DailyIntentService;
@@ -272,10 +273,12 @@ public class CollectionServiceStarter {
     }
 
     public CollectionServiceStarter(Context context) {
+        if (context == null) context = xdrip.getAppContext();
         this.mContext = context;
     }
 
     public static void restartCollectionService(Context context) {
+        if (context == null) context = xdrip.getAppContext();
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
         collectionServiceStarter.stopBtShareService();
         collectionServiceStarter.stopBtWixelService();
@@ -387,6 +390,7 @@ public class CollectionServiceStarter {
     private void startFollowerThread() {
         Log.d(TAG, "starting follower service");
         this.mContext.startService(new Intent(this.mContext, DoNothingService.class));
+        if (Home.get_follower()) GcmActivity.requestPing();
     }
 
     private void stopFollowerThread() {

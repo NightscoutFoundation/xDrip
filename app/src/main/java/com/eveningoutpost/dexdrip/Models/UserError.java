@@ -10,6 +10,7 @@ import com.activeandroid.query.Select;
 import com.bugfender.sdk.Bugfender;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.google.gson.annotations.Expose;
 
 import java.util.Date;
 import java.util.Hashtable;
@@ -23,19 +24,23 @@ import java.util.List;
 public class UserError extends Model {
 
     private final static String TAG = UserError.class.getSimpleName();
-    
+
+    @Expose
     @Column(name = "shortError")
     public String shortError; // Short error message to be displayed on table
 
+    @Expose
     @Column(name = "message")
     public String message; // Additional text when error is expanded
 
+    @Expose
     @Column(name = "severity", index = true)
     public int severity; // int between 1 and 3, 3 being most severe
 
     // 5 = internal lower level user events
     // 6 = higher granularity user events
 
+    @Expose
     @Column(name = "timestamp", index = true)
     public double timestamp; // Time the error was raised
 

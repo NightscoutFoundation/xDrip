@@ -127,7 +127,7 @@
     <string name="first_configure_ip_address">First configure your wifi wixel reader ip addresses or parakeet url</string>
     <string name="now_start_your_sensor">Now start your sensor or check Settings</string>
     <string name="please_wait_while_sensor_warms_up">Please wait while sensor warms up! (</string>
-    <string name="minutes_with_bracket"> minutes)</string>
+    <string name="minutes_with_bracket">" minutes)"</string>
     <string name="possible_bad_calibration">Possible bad calibration slope, please have a glass of water, wash hands, then recalibrate in a few!</string>
     <string name="please_wait_need_two_readings_first">Please wait, need 2 readings from transmitter first.</string>
     <string name="please_enter_two_calibrations_to_get_started">Please enter two calibrations to get started!</string>
@@ -235,6 +235,12 @@
     <string name="pref_summary_force_wearG5">Force phone to use Wear Collection Service</string>
     <string name="pref_node_wearG5">Device running Collection Service</string>
     <string name="pref_summary_node_wearG5">Force phone to use this Wear Collection Service</string>
+
+    <string name="pref_sync_wear_logs">Sync Wear Logs</string>
+    <string name="pref_summary_sync_wear_logs">Send Wear logs to Event Viewer</string>
+    <string name="pref_wear_logs_prefix">Wear Log Prefix</string>
+    <string name="pref_summary_wear_logs_prefix">Prefix used for Wear log entries</string>
+
     <string name="pebble_integration">Pebble Integration</string>
     <string name="send_data_to_pebble_watchface">Send data to Pebble Watchface.</string>
     <string name="pebble_watch_integration">Pebble Watch Integration</string>

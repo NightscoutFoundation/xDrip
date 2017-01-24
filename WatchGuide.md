@@ -21,7 +21,9 @@
 ##Enable xDrip+ Android Wear Integration
 xDrip+ supports wear integration through its wear app.  The xDrip+ wear app is installed with the standard xDrip+ apk.  The latest release supports a standalone version which allows the wear app to communicate directly with the Bluetooth collector, whether it is a Dexcom G5, a Dexcom G4 + xBridge, or a Libre LimiTTer.
 
-The wear standalone feature is enabled via the following xDrip+ Settings located under **Smart Watch Features**, and corresponding watch **XDrip Prefs** settings:
+The wear standalone feature is enabled via the following xDrip+ Settings located under **Smart Watch Features**, and corresponding watch **XDrip Prefs** settings.
+
+<img align="middle" src="./images/prefs-wear-sync.png" title="xDrip+ Wear Integration Preferences">
 
 |Phone Settings                     | Watch Settings   | Description             |
 | --------------------------------- | ---------------- | ------------------------|
@@ -29,11 +31,11 @@ The wear standalone feature is enabled via the following xDrip+ Settings located
 | Enable Wear Collection Service    | Enable Collector | Enables the BT Collector to run on the wear device when the smartphone is out-of-range.|
 | Force Wear Collection Service     | Force Collector  | Forces the BT Collector to run on the wear device even when the smartphone is in-range.|
 | Device running Collection Service | NA               | Read-only; Displays the wear device running the BT Collector.  This will be the watch display name + uuid when Force Wear is enabled. |
-| NA                                | BT Collector     | Read-only; Corresponds to xDrip+ Setting - **Hardware Data Source**.  For example, if the xDrip+ is set to **G5 Transmitter (test)**, then the wear app BT Collector will display **DexcomG5**. |
+| NA                                | BT Collector     | Read-only; Corresponds to xDrip+ Setting -> **Hardware Data Source**.  For example, if the **Hardware Data Source** is set to **G5 Transmitter (test)**, then the wear app BT Collector will display **DexcomG5**. |
+| Sync Wear Logs                    | NA               | Triggers Wear log entries to be synced to the phone. You can view the logs on your phone using xDrip+ app's upper, right menu item, **View Events Log**. You need to enable ExtraLogTags in xDrip+ Settings -> LCS -> Extra Logging Settings -> **Extra tags for logging** to enable log generation for services s.a. **G5CollectionService:v**.|
+| Wear Log Prefix                   | NA               | The wear event logs are prefixed with the **Wear Log Prefix**.  If you tap it, you'll see that it defaults to **Wear** but you can enter something else, or nothing. This prefix helps to distinguish where the log entry was generated since services are similarly named on both devices. For example, **wearG5CollectionService** indicates the log was generated on the wear device.|
 
-These settings are listed in order of dependency.
-
-<img align="middle" src="./images/prefs-wear-sync.png" title="xDrip+ Wear Integration Preferences">
+These settings are listed in order of dependency.  Note, the XDrip BT Settings will only be visible when Wear Integration is enabled on the phone.
 
 * **Enable Wear**
 
@@ -63,14 +65,15 @@ For example, if the user changes the Force Wear preference on the watch, it will
 ###XDrip Prefs Overview
 The watch XDrip Prefs app is used to set the xDrip+ wear app preferences.
 
-The following list the new preferences used in the standalone version.
+The following lists the new preferences used in the standalone version.
 ####XDrip BT Settings
 
   Provides the Wear Integration preferences listed above and the following:
   - XDrip G5 Settings
 
-    Similar to those provided by the xDrip+ app, such as **Scan for G5 Contantly**.  As with the xDrip+ app, they should only be enabled if the watch has connectivity issues.  For example, the Sony Smartwatch 3 (SW3) does not require any of these setting.
-    - The one exception is the **Auth G5/Read**.  This should be enabled if using the latest, Dexcom G5 transmitter firmware (released in November 2016, firmware 1.0.4.10, or newer than firmware 1.0.0.17).
+    Wear provides G5 BT settings similar to those provided by the xDrip+ app, such as **Scan for G5 Contantly**, under **G5 Debug Settings**.  As with the xDrip+ app, they should only be enabled if the watch has connectivity issues.  For example, many users find that the **Sony Smartwatch 3 (SW3)** does not require any of these settings enabled.
+    Whereas, users of the **Moto 360 2nd Gen** watch report the **Unbond G5/Read** pref is required.
+    - The one exception is the **Auth G5/Read**.  This should be enabled if using the latest, Dexcom G5 transmitter firmware (released in November 2016, **firmware 1.0.4.10**, or newer than **firmware 1.0.0.17**).
 
 ####XDrip Watchface Settings
   - Show Status - Show Loop Status on the XDrip and XDrip(Large) watchfaces.  This will display the HAPP status message containing Basal%, IOB, COB.
@@ -96,7 +99,8 @@ The BT Collector connects to the transmitter every 5 mins by design. This is how
 - Watch Settings always-on screen is enabled.  This will prevent watch doze mode from shutting down the BT Collector.
 
   To verify devices are connected, check the phone Android Wear app.  Android wear (on the watch) displays the **cloud** icon if the devices are not in-range, or if the user manually disconnects the devices in Android Wear.
-	
+
+	Similarly, some users have found it necessary to enable the **Stay awake while charging** setting under their watch Settings **Developer Options**.  In testing thus far, only the Moto 360 2nd Gen watch has required this option.
 ###Confirm Wear Integration preferences are consistent on both phone and watch
 
   **Enable Wear** and  **Force Wear** should have same settings on phone and watch.  If not, reset them accordingly.  The xDrip+ should sync these values whenever the user modifies them or at application startup, but both phone and watch must be connected and in-range for syncing to be performed.  See **Confirm phone and watch are connected** above.
@@ -134,9 +138,6 @@ The BT Collector connects to the transmitter every 5 mins by design. This is how
 
   - xDrip+ Display Settings - **Smooth Sensor Noise**
 
-    For ease of confirming consistent BG readings on phone and watch, disable Noise Smoothing:
-
-
 ###Confirm Collector runs on the Phone with Wear Integration
 
   Ensure Wear Integration preferences are set as follows:
@@ -169,8 +170,6 @@ This will force the watch to use its BT collector, and force the phone to stop i
   - Confirm phone and watch are connected via Android Wear.
   - Change Watchface to big chart and then back to standard xDrip.
 
-  Confirm Environment:
-  - Disable engineering mode
 
 #ADB DEBUG
 ###Debugging Android Wear

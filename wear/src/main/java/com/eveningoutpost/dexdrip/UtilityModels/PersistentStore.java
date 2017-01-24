@@ -3,7 +3,9 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.google.common.primitives.Bytes;
 
 /**
  * Created by jamorham on 23/09/2016.
@@ -39,7 +41,29 @@ public class PersistentStore {
 
     public static void setString(String name, String value) {
         init_prefs();
-        prefs.edit().putString(name, value).apply(); // TODO check if commit needed
+        prefs.edit().putString(name, value).apply();
+    }
+
+    public static void appendString(String name, String value) {
+        setString(name, getString(name) + value);
+    }
+
+    public static void appendString(String name, String value, String delimiter) {
+        String current = getString(name);
+        if (current.length() > 0) current += delimiter;
+        setString(name, current + value);
+    }
+
+    public static void appendBytes(String name, byte[] value) {
+        setBytes(name, Bytes.concat(getBytes(name), value));
+    }
+
+    public static byte[] getBytes(String name) {
+        return JoH.base64decodeBytes(getString(name));
+    }
+
+    public static void setBytes(String name, byte[] value) {
+        setString(name, JoH.base64encodeBytes(value));
     }
 
     public static long getLong(String name) {
@@ -50,6 +74,16 @@ public class PersistentStore {
     public static void setLong(String name, long value) {
         init_prefs();
         prefs.edit().putLong(name, value).apply();
+    }
+
+    public static boolean getBoolean(String name) {
+        init_prefs();
+        return prefs.getBoolean(name, false);
+    }
+
+    public static void setBoolean(String name, boolean value) {
+        init_prefs();
+        prefs.edit().putBoolean(name, value).apply();
     }
 
     public static long incrementLong(String name) {

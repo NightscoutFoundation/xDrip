@@ -31,6 +31,7 @@ import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
@@ -50,6 +51,8 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.utils.BestGZIPOutputStream;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.google.common.primitives.Bytes;
+import com.google.common.primitives.UnsignedInts;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -60,6 +63,8 @@ import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -71,6 +76,7 @@ import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import java.util.zip.Inflater;
 
 //KS import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
@@ -81,7 +87,7 @@ import java.util.zip.Inflater;
  * lazy helper class for utilities
  */
 public class JoH {
-    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
     private final static String TAG = "jamorham JoH";
     private final static boolean debug_wakelocks = false;
 
@@ -193,10 +199,29 @@ public class JoH {
         }
     }
 
+    public static byte[] compressBytesforPayload(byte[] bytes) {
+        return compressBytesToBytes(Bytes.concat(bytes, bchecksum(bytes)));
+    }
+
     public static byte[] compressBytesToBytes(byte[] bytes) {
         try {
             ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length);
             BestGZIPOutputStream gzipped_data = new BestGZIPOutputStream(output);
+            gzipped_data.write(bytes);
+            gzipped_data.close();
+            byte[] compressed = output.toByteArray();
+            output.close();
+            return compressed;
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in compress: " + e.toString());
+            return new byte[0];
+        }
+    }
+
+    public static byte[] compressBytesToBytesGzip(byte[] bytes) {
+        try {
+            ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length);
+            GZIPOutputStream gzipped_data = new GZIPOutputStream(output);
             gzipped_data.write(bytes);
             gzipped_data.close();
             byte[] compressed = output.toByteArray();
@@ -260,9 +285,28 @@ public class JoH {
     public static String base64decode(String input) {
         try {
             return new String(Base64.decode(input.getBytes("UTF-8"), Base64.NO_WRAP), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException | IllegalArgumentException e) {
             Log.e(TAG, "Got unsupported encoding: " + e);
             return "decode-error";
+        }
+    }
+
+
+    public static String base64encodeBytes(byte[] input) {
+        try {
+            return new String(Base64.encode(input, Base64.NO_WRAP), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            Log.e(TAG, "Got unsupported encoding: " + e);
+            return "encode-error";
+        }
+    }
+
+    public static byte[] base64decodeBytes(String input) {
+        try {
+            return Base64.decode(input.getBytes("UTF-8"), Base64.NO_WRAP);
+        } catch (UnsupportedEncodingException | IllegalArgumentException e) {
+            Log.e(TAG, "Got unsupported encoding: " + e);
+            return new byte[0];
         }
     }
 
@@ -447,9 +491,10 @@ public class JoH {
     }
 
     public static String hourMinuteString() {
-        Date date = new Date();
-        SimpleDateFormat sd = new SimpleDateFormat("HH:mm");
-        return sd.format(date);
+        // Date date = new Date();
+        // SimpleDateFormat sd = new SimpleDateFormat("HH:mm");
+        //  return sd.format(date);
+        return hourMinuteString(JoH.tsl());
     }
 
     public static String hourMinuteString(long timestamp) {
@@ -462,6 +507,33 @@ public class JoH {
 
     public static String dateText(long timestamp) {
         return android.text.format.DateFormat.format("yyyy-MM-dd", timestamp).toString();
+    }
+
+    public static String niceTimeSince(long t) {
+        return niceTimeScalar(msSince(t));
+    }
+    // temporary
+    public static String niceTimeScalar(long t) {
+        String unit = "second";
+        t = t / 1000;
+        if (t > 60) {
+            unit = "minute";
+            t = t / 60;
+            if (t > 60) {
+                unit = "hour";
+                t = t / 60;
+                if (t > 24) {
+                    unit = "day";
+                    t = t / 24;
+                    if (t > 28) {
+                        unit = "week";
+                        t = t / 7;
+                    }
+                }
+            }
+        }
+        if (t != 1) unit = unit + "s";
+        return qs((double) t, 0) + " " + unit;
     }
 
     public static double tolerantParseDouble(String str) throws NumberFormatException {
@@ -990,5 +1062,38 @@ public class JoH {
                 }
             }
         }.start();
+    }
+
+    public static Map<String, String> bundleToMap(Bundle bundle) {
+        final HashMap<String, String> map = new HashMap<>();
+        for (String key : bundle.keySet()) {
+            Object value = bundle.get(key);
+            if (value != null) {
+                map.put(key, value.toString());
+            }
+        }
+        return map;
+    }
+
+    public static long checksum(byte[] bytes) {
+        if (bytes == null) return 0;
+        final CRC32 crc = new CRC32();
+        crc.update(bytes);
+        return crc.getValue();
+    }
+
+    public static byte[] bchecksum(byte[] bytes) {
+        final long c = checksum(bytes);
+        final byte[] buf = new byte[4];
+        ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN).putInt((int) c);
+        return buf;
+    }
+
+    public static boolean checkChecksum(byte[] bytes) {
+        if ((bytes == null) || (bytes.length < 4)) return false;
+        final CRC32 crc = new CRC32();
+        crc.update(bytes, 0, bytes.length - 4);
+        final long buffer_crc = UnsignedInts.toLong(ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getInt(bytes.length - 4));
+        return buffer_crc == crc.getValue();
     }
 }

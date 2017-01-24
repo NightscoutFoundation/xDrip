@@ -69,6 +69,8 @@ public class DexCollectionService extends Service {
     private int mConnectionState = BluetoothProfile.STATE_DISCONNECTING;
     private BluetoothDevice device;
     private BluetoothGattCharacteristic mCharacteristic;
+    // Experimental support for rfduino from Tomasz Stachowicz
+    private BluetoothGattCharacteristic mCharacteristicSend;
     long lastPacketTime;
     private byte[] lastdata = null;
     private Context mContext;
@@ -82,8 +84,11 @@ public class DexCollectionService extends Service {
 
     // Experimental support for "Transmiter PL" from Marek Macner @FPV-UAV
     private final boolean use_transmiter_pl_bluetooth = Home.getPreferencesBooleanDefaultFalse("use_transmiter_pl_bluetooth");
+    private final boolean use_rfduino_bluetooth = Home.getPreferencesBooleanDefaultFalse("use_rfduino_bluetooth");
     private final UUID xDripDataService = use_transmiter_pl_bluetooth ? UUID.fromString(HM10Attributes.TRANSMITER_PL_SERVICE) : UUID.fromString(HM10Attributes.HM_10_SERVICE);
     private final UUID xDripDataCharacteristic = use_transmiter_pl_bluetooth ? UUID.fromString(HM10Attributes.TRANSMITER_PL_RX_TX) : UUID.fromString(HM10Attributes.HM_RX_TX);
+    // Experimental support for rfduino from Tomasz Stachowicz
+    private final UUID xDripDataCharacteristicSend = use_rfduino_bluetooth ? UUID.fromString(HM10Attributes.HM_TX) : UUID.fromString(HM10Attributes.HM_RX_TX);
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -361,6 +366,21 @@ public class DexCollectionService extends Service {
                     descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     mBluetoothGatt.writeDescriptor(descriptor);
                 }
+
+                // Experimental support for rfduino from Tomasz Stachowicz
+                if (use_rfduino_bluetooth) {
+                    BluetoothGattDescriptor descriptor = gattCharacteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
+                    Log.i(TAG, "Transmiter Descriptor found use_rfduino_bluetooth: " + descriptor.getUuid());
+                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    mBluetoothGatt.writeDescriptor(descriptor);
+                    Log.w(TAG, "onServicesDiscovered: use_rfduino_bluetooth send characteristic " + xDripDataCharacteristicSend + " found");
+                    final BluetoothGattCharacteristic gattCharacteristicSend = gattService.getCharacteristic(xDripDataCharacteristicSend);
+                    mCharacteristicSend = gattCharacteristicSend;
+                } else {
+                    mCharacteristicSend = mCharacteristic;
+                }
+
+
             } else {
                 Log.w(TAG, "onServicesDiscovered: characteristic " + xDripDataCharacteristic + " not found");
             }
@@ -426,8 +446,15 @@ public class DexCollectionService extends Service {
 
         byte[] value = message.array();
         Log.i(TAG, "sendBtMessage: sending message");
-        mCharacteristic.setValue(value);
 
+        // Experimental support for rfduino from Tomasz Stachowicz
+        if (use_rfduino_bluetooth ) {
+            Log.w(TAG, "sendBtMessage: use_rfduino_bluetooth");
+            mCharacteristicSend.setValue(value);
+            return mBluetoothGatt.writeCharacteristic(mCharacteristicSend);
+        }
+
+        mCharacteristic.setValue(value);
         return mBluetoothGatt.writeCharacteristic(mCharacteristic);
     }
 
