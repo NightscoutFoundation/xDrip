@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.DoNothingService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
@@ -68,6 +69,7 @@ public class MegaStatus extends ActivityWithMenu {
         MegaStatusAdapters.add(new MegaStatusListAdapter());
     }
 
+    private static final String G4_STATUS = "BT Device";
     private static final String G5_STATUS = "G5 Status";
     private static final String IP_COLLECTOR = "IP Collector";
     private static final String XDRIP_PLUS_SYNC = "Followers";
@@ -77,7 +79,14 @@ public class MegaStatus extends ActivityWithMenu {
         if (sectionList.isEmpty()) {
 
             addAsection("Classic Status Page", "Legacy System Status");
-            if (DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5) {
+
+            final DexCollectionType dexCollectionType = DexCollectionType.getDexCollectionType();
+
+            // probably want a DexCollectionService related set
+            if (DexCollectionType.usesDexCollectionService(dexCollectionType)) {
+                addAsection(G4_STATUS, "Bluetooth Collector Status");
+            }
+            if (dexCollectionType.equals(DexCollectionType.DexcomG5)) {
                 addAsection(G5_STATUS, "G5 Collector and Transmitter Status");
             }
             if (DexCollectionType.hasWifi()) {
@@ -102,6 +111,9 @@ public class MegaStatus extends ActivityWithMenu {
         la.clear(false);
         switch (section) {
 
+            case G4_STATUS:
+                la.addRows(DexCollectionService.megaStatus());
+                break;
             case G5_STATUS:
                 la.addRows(G5CollectionService.megaStatus());
                 break;
