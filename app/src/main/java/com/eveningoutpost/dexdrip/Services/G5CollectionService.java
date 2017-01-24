@@ -154,9 +154,11 @@ public class G5CollectionService extends Service {
     private int maxScanIntervalInMilliseconds = 5 * 1000; //seconds *1k
     private int maxScanCycles = 24;
     private int scanCycleCount = 0;
-    private boolean delays = false;
+    //private boolean delays = false;
+
 
     private static String lastState = "Not running";
+    private static long static_last_timestamp = 0;
 
 
     // test params
@@ -1655,6 +1657,8 @@ public class G5CollectionService extends Service {
         Log.d(TAG,"Dex sensor_battery_level "+ Double.toString(transmitterData.sensor_battery_level));//KS
         Log.d(TAG,"Dex timestamp "+ JoH.dateTimeText(transmitterData.timestamp));//KS
 
+        static_last_timestamp =  transmitterData.timestamp;
+
     }
 
     @SuppressLint("GetInstance")
@@ -1799,6 +1803,9 @@ public class G5CollectionService extends Service {
 
         l.add(new StatusItem("Phone Service State", lastState));
 
+        if (static_last_timestamp > 0) {
+            l.add(new StatusItem("Phone got Glucose", JoH.niceTimeSince(static_last_timestamp) + " ago"));
+        }
 
         String tx_id = Home.getPreferencesStringDefaultBlank("dex_txid");
 
