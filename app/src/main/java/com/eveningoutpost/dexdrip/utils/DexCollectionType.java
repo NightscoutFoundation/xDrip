@@ -106,6 +106,8 @@ public enum DexCollectionType {
 
     public static boolean hasDexcomRaw() { return hasDexcomRaw(getDexCollectionType()); }
 
+    public static boolean usesDexCollectionService(DexCollectionType type) { return usesBtWixel.contains(type) || usesXbridge.contains(type) || type.equals(LimiTTer); }
+
     public static boolean hasDexcomRaw(DexCollectionType type) {
         return usesDexcomRaw.contains(type);
     }
