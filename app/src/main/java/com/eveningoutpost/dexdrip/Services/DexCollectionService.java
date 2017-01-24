@@ -38,6 +38,7 @@ import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.ImportedLibraries.usbserial.util.HexDump;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
@@ -430,8 +431,8 @@ public class DexCollectionService extends Service {
                     "DexCollectionService");
             wakeLock1.acquire();
             try {
-                Log.i(TAG, "onCharacteristicChanged entered");
                 final byte[] data = characteristic.getValue();
+                Log.i(TAG, "onCharacteristicChanged entered " + HexDump.dumpHexString(data));
                 if (data != null && data.length > 0) {
                     setSerialDataToTransmitterRawData(data, data.length);
                 }
