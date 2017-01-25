@@ -349,6 +349,7 @@ public class Notifications extends IntentService {
                     if ((sensor.started_at + (60000 * 60 * 2)) < new Date().getTime()) {
                         doubleCalibrationRequest();
                     } else {
+                        // TODO should be aware of state
                         clearDoubleCalibrationRequest();
                     }
                 } else {
@@ -359,23 +360,26 @@ public class Notifications extends IntentService {
             }
             // bgreadings criteria possibly needs a review
             if (CalibrationRequest.shouldRequestCalibration(bgReading) && (new Date().getTime() - bgReadings.get(2).timestamp <= (60000 * 24))) {
-               if ((!PowerStateReceiver.is_power_connected()) || (Home.getPreferencesBooleanDefaultFalse("calibration_alerts_while_charging"))) {
-                   if (JoH.pratelimit("calibration-request-notification", CALIBRATION_REQUEST_MAX_FREQUENCY)) {
-                       extraCalibrationRequest();
-                   }
-               }
+                if ((!PowerStateReceiver.is_power_connected()) || (Home.getPreferencesBooleanDefaultFalse("calibration_alerts_while_charging"))) {
+                    if (JoH.pratelimit("calibration-request-notification", CALIBRATION_REQUEST_MAX_FREQUENCY)) {
+                        extraCalibrationRequest();
+                    }
+                }
             } else {
+                // TODO should be aware of state
                 clearExtraCalibrationRequest();
             }
-            if (calibrations.size() >= 1 && Math.abs((new Date().getTime() - calibrations.get(0).timestamp)) / (1000 * 60 * 60) > 12) {
+            if (calibrations.size() >= 1 && (Math.abs((new Date().getTime() - calibrations.get(0).timestamp)) / (1000 * 60 * 60) > 12)
+                    && (CalibrationRequest.isSlopeFlatEnough(BgReading.last(true)))) {
                 Log.d("NOTIFICATIONS", "Calibration difference in hours: " + ((new Date().getTime() - calibrations.get(0).timestamp)) / (1000 * 60 * 60));
                 if ((!PowerStateReceiver.is_power_connected()) || (Home.getPreferencesBooleanDefaultFalse("calibration_alerts_while_charging"))) {
-                  // TODO check slope
-                    if (Home.getPreferencesBooleanDefaultFalse("calibration_alerts_repeat") || JoH.pratelimit("calibration-request-notification", CALIBRATION_REQUEST_MIN_FREQUENCY)) {
+                    // TODO check slope
+                    if (JoH.pratelimit("calibration-request-notification", CALIBRATION_REQUEST_MIN_FREQUENCY) || Home.getPreferencesBooleanDefaultFalse("calibration_alerts_repeat")) {
                         calibrationRequest();
                     }
                 }
             } else {
+                // TODO should be aware of state
                 clearCalibrationRequest();
             }
 

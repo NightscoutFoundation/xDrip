@@ -30,7 +30,7 @@ public class CalibrationRequest extends Model {
         calibrationRequest.requestIfBelow = high;
         calibrationRequest.save();
     }
-    public static void createOffset(double center, double distance) {
+    static void createOffset(double center, double distance) {
         CalibrationRequest calibrationRequest = new CalibrationRequest();
         calibrationRequest.requestIfAbove = center + distance;
         calibrationRequest.requestIfBelow = max;
@@ -42,7 +42,7 @@ public class CalibrationRequest extends Model {
         calibrationRequest.save();
     }
 
-    public static void clearAll(){
+    static void clearAll(){
         List<CalibrationRequest> calibrationRequests =  new Select()
                                                             .from(CalibrationRequest.class)
                                                             .execute();
@@ -53,12 +53,22 @@ public class CalibrationRequest extends Model {
         }
     }
 
-    public static boolean shouldRequestCalibration(BgReading bgReading){
-        CalibrationRequest calibrationRequest =  new Select()
+    public static boolean shouldRequestCalibration(BgReading bgReading) {
+        CalibrationRequest calibrationRequest = new Select()
                 .from(CalibrationRequest.class)
                 .where("requestIfAbove < ?", bgReading.calculated_value)
                 .where("requestIfBelow > ?", bgReading.calculated_value)
                 .executeSingle();
-        return (calibrationRequest != null && Math.abs(bgReading.calculated_value_slope * 60000) < 1);
+        return (calibrationRequest != null && isSlopeFlatEnough(bgReading, 1));
+    }
+
+    public static boolean isSlopeFlatEnough(BgReading bgReading) {
+        return isSlopeFlatEnough(bgReading, 1);
+    }
+
+    public static boolean isSlopeFlatEnough(BgReading bgReading, double limit) {
+        if (bgReading == null) return false;
+        // TODO use BestGlucose
+        return Math.abs(bgReading.calculated_value_slope * 60000) < limit;
     }
 }
