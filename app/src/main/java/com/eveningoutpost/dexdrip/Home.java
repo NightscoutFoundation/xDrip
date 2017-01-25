@@ -71,6 +71,7 @@ import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Experience;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
@@ -93,10 +94,6 @@ import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.gson.Gson;
-//import com.nispok.snackbar.Snackbar;
-//import com.nispok.snackbar.SnackbarManager;
-//import com.nispok.snackbar.enums.SnackbarType;
-//import com.nispok.snackbar.listeners.ActionClickListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -125,6 +122,11 @@ import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPlugin;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
 
+//import com.nispok.snackbar.Snackbar;
+//import com.nispok.snackbar.SnackbarManager;
+//import com.nispok.snackbar.enums.SnackbarType;
+//import com.nispok.snackbar.listeners.ActionClickListener;
+
 
 public class Home extends ActivityWithMenu {
     private final static String TAG = "jamorham: " + Home.class.getSimpleName();
@@ -137,6 +139,7 @@ public class Home extends ActivityWithMenu {
     public final static String SNOOZE_CONFIRM_DIALOG = "SNOOZE_CONFIRM_DIALOG";
     public final static String SHOW_NOTIFICATION = "SHOW_NOTIFICATION";
     public final static String BLUETOOTH_METER_CALIBRATION = "BLUETOOTH_METER_CALIBRATION";
+    public final static String ACTIVITY_SHOWCASE_INFO = "ACTIVITY_SHOWCASE_INFO";
     public final static int SENSOR_READY_ID = 4912;
     public static String menu_name = "Home Screen";
     public static boolean activityVisible = false;
@@ -183,6 +186,8 @@ public class Home extends ActivityWithMenu {
     private static final int SHOWCASE_VARIANT = 7;
     public static final int SHOWCASE_STATISTICS = 8;
     private static final int SHOWCASE_G5FIRMWARE = 9;
+    static final int SHOWCASE_MEGASTATUS = 10;
+    public static final int SHOWCASE_MOTION_DETECTION = 11;
     private static double last_speech_time = 0;
     private PreviewLineChartView previewChart;
     private Button stepsButton;
@@ -503,6 +508,10 @@ public class Home extends ActivityWithMenu {
             showcasemenu(SHOWCASE_VARIANT);
         }
 
+        if (Experience.isNewbie()) {
+            Log.d(TAG, "Do something for newbie");
+        }
+
     }
 
     ////
@@ -770,6 +779,8 @@ public class Home extends ActivityWithMenu {
                 } catch (NumberFormatException e) {
                     JoH.static_toast_long("Number error: " + e);
                 }
+            } else if (bundle.getString(Home.ACTIVITY_SHOWCASE_INFO) != null) {
+                showcasemenu(SHOWCASE_MOTION_DETECTION);
             } else if (bundle.getString(Home.BLOOD_TEST_ACTION) != null) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Blood Test Action");
@@ -1755,6 +1766,10 @@ public class Home extends ActivityWithMenu {
         return Home.is_follower;
     }
 
+    public static boolean get_engineering_mode() {
+        return Home.getPreferencesBooleanDefaultFalse("engineering_mode");
+    }
+
     public static boolean get_master() {
         // TODO optimize this
         return (!get_follower()) && (Home.getPreferencesBooleanDefaultFalse("plus_follow_master"));
@@ -2453,13 +2468,17 @@ public class Home extends ActivityWithMenu {
             menuItem.setVisible(false);
         }
 
-        menu.findItem(R.id.showmap).setVisible(prefs.getBoolean("plus_extra_features", false));
-        menu.findItem(R.id.parakeetsetup).setVisible(prefs.getBoolean("plus_extra_features", false));
+        boolean parakeet_menu_items = false;
+        if (DexCollectionType.hasWifi()) {
+            parakeet_menu_items = prefs.getBoolean("plus_extra_features", false);
+        }
+        menu.findItem(R.id.showmap).setVisible(parakeet_menu_items);
+        menu.findItem(R.id.parakeetsetup).setVisible(parakeet_menu_items);
 
-        boolean result = super.onCreateOptionsMenu(menu);
+        boolean got_data = Experience.gotData();
+        menu.findItem(R.id.crowdtranslate).setVisible(got_data);
 
-
-        return result;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -2482,13 +2501,21 @@ public class Home extends ActivityWithMenu {
 
                 switch (option) {
 
-                    case SHOWCASE_G5FIRMWARE:
+                    case SHOWCASE_MOTION_DETECTION:
+                        target= new ViewTarget(R.id.btnNote, this); // dummy
+                        size1=0;
+                        size2=0;
+                        title="Motion Detection Warning";
+                        message="Activity Motion Detection is experimental and only some phones are compatible. Its main purpose is to detect vehicle mode.\n\nIn tests it seems higher end phones are the most likely to properly support the sensors needed for it to work.  It may also drain your battery.\n\nFor exercise related movement, Smartwatch step counters work better.";
+                        break;
+
+                 /*   case SHOWCASE_G5FIRMWARE:
                         target= new ViewTarget(R.id.btnNote, this); // dummy
                         size1=0;
                         size2=0;
                         title="G5 Firmware Warning";
                         message="Transmitters containing updated firmware which started shipping around 20th Nov 2016 appear to be currently incompatible with xDrip+\n\nWork will continue to try to resolve this issue but at the time of writing there is not yet a solution.  For the latest updates you can select the Alpha or Nightly update channel.";
-                        break;
+                        break;*/
 
                     case SHOWCASE_VARIANT:
                         target= new ViewTarget(R.id.btnNote, this); // dummy

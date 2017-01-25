@@ -7,8 +7,10 @@ package com.eveningoutpost.dexdrip;
  *
  */
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -22,12 +24,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Services.DexCollectionService;
+import com.eveningoutpost.dexdrip.Services.DoNothingService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
+import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
+import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,19 +69,31 @@ public class MegaStatus extends ActivityWithMenu {
         MegaStatusAdapters.add(new MegaStatusListAdapter());
     }
 
+    private static final String G4_STATUS = "BT Device";
     private static final String G5_STATUS = "G5 Status";
     private static final String IP_COLLECTOR = "IP Collector";
+    private static final String XDRIP_PLUS_SYNC = "Followers";
 
     private void populateSectionList() {
 
         if (sectionList.isEmpty()) {
 
             addAsection("Classic Status Page", "Legacy System Status");
-            if (DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5) {
+
+            final DexCollectionType dexCollectionType = DexCollectionType.getDexCollectionType();
+
+            // probably want a DexCollectionService related set
+            if (DexCollectionType.usesDexCollectionService(dexCollectionType)) {
+                addAsection(G4_STATUS, "Bluetooth Collector Status");
+            }
+            if (dexCollectionType.equals(DexCollectionType.DexcomG5)) {
                 addAsection(G5_STATUS, "G5 Collector and Transmitter Status");
             }
             if (DexCollectionType.hasWifi()) {
                 addAsection(IP_COLLECTOR, "Wifi Wixel / Parakeet Status");
+            }
+            if (Home.get_master_or_follower()) {
+                addAsection(XDRIP_PLUS_SYNC,"xDrip+ Sync Group");
             }
             //addAsection("Misc", "Currently Empty");
 
@@ -90,11 +111,19 @@ public class MegaStatus extends ActivityWithMenu {
         la.clear(false);
         switch (section) {
 
+            case G4_STATUS:
+                la.addRows(DexCollectionService.megaStatus());
+                break;
             case G5_STATUS:
                 la.addRows(G5CollectionService.megaStatus());
                 break;
             case IP_COLLECTOR:
                 la.addRows(WifiCollectionService.megaStatus());
+                break;
+            case XDRIP_PLUS_SYNC:
+                la.addRows(DoNothingService.megaStatus());
+                la.addRows(GcmListenerSvc.megaStatus());
+                la.addRows(RollCall.megaStatus());
                 break;
         }
         la.changed();
@@ -127,7 +156,9 @@ public class MegaStatus extends ActivityWithMenu {
                 currentPage=position;
                 startAutoFresh();
         }});
+
     }
+
 
     @Override
     public void onPause() {
@@ -141,6 +172,9 @@ public class MegaStatus extends ActivityWithMenu {
         super.onResume();
         activityVisible = true;
         if (autoRunnable != null) startAutoFresh();
+
+        if (sectionList.size() > 1)
+            startupInfo(); // show swipe message if there is a page to swipe to
     }
 
     @Override
@@ -164,6 +198,39 @@ public class MegaStatus extends ActivityWithMenu {
 
         return super.onOptionsItemSelected(item);
     }
+
+    private void startupInfo() {
+
+            final boolean oneshot = true;
+            final int option = Home.SHOWCASE_MEGASTATUS;
+            if ((oneshot) && (ShotStateStore.hasShot(option))) return;
+
+            // This could do with being in a utility static method also used in Home
+            final int size1 = 300;
+            final int size2 = 130;
+            final String title = "Swipe for Different Pages";
+            final String message = "Swipe left and right to see different status tabs.\n\n";
+            final ViewTarget target = new ViewTarget(R.id.pager_title_strip, this);
+            final Activity activity = this;
+
+            JoH.runOnUiThreadDelayed(new Runnable() {
+                                         @Override
+                                         public void run() {
+                                             final ShowcaseView myShowcase = new ShowcaseView.Builder(activity)
+
+                                                     .setTarget(target)
+                                                     .setStyle(R.style.CustomShowcaseTheme2)
+                                                     .setContentTitle(title)
+                                                     .setContentText("\n" + message)
+                                                     .setShowcaseDrawer(new JamorhamShowcaseDrawer(getResources(), getTheme(), size1, size2, 255))
+                                                     .singleShot(oneshot ? option : -1)
+                                                     .build();
+                                             myShowcase.setBackgroundColor(Color.TRANSPARENT);
+                                             myShowcase.show();
+                                         }
+                                     }
+                    , 1500);
+        }
 
     private synchronized void startAutoFresh() {
         if (autoFreshRunning) return;

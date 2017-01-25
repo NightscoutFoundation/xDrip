@@ -23,6 +23,8 @@
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission-sdk-23 android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission-sdk-23 android:name="android.permission.SEND_SMS" />
+
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -524,6 +526,8 @@
         </activity>
         <activity
             android:name=".MegaStatus"
+            android:configChanges="orientation|screenSize"
+            android:parentActivityName=".Home"
             android:label="@string/system_status"></activity>
     </application>
 

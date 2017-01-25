@@ -191,7 +191,7 @@ dependencies {
     compile 'net.tribe7.seeds:seeds-primitives:16.0.1'
     compile 'org.slf4j:slf4j-api:1.7.7'
     compile 'org.apache.commons:commons-math3:3.6'
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
         transitive = true;
     }
     compile 'uk.com.robust-it:cloning:1.9.2'

@@ -174,8 +174,8 @@ public class NightscoutUploader {
                         doLegacyRESTUploadTo(nightscoutService, glucoseDataSets);
                     }
                 } catch (Exception e) {
-                    Log.e(TAG, "Unable to do REST API Upload " + e.getMessage());
-                    e.printStackTrace();
+                    Log.e(TAG, "Unable to do REST API Upload: " + e.getMessage() + " url: " + baseURI);
+                    //e.printStackTrace();
                     return false;
                 }
             }
@@ -211,7 +211,15 @@ public class NightscoutUploader {
 
                 postDeviceStatus(nightscoutService, secret);
             }
-                postTreatments(nightscoutService,secret);
+
+            try {
+                postTreatments(nightscoutService, secret);
+            } catch (Exception e) {
+                Log.e(TAG, "Exception uploading REST API treatments: " + e.getMessage());
+                if (e.getMessage().equals("Not Found")) {
+                    Log.wtf(TAG, "Please ensure careportal plugin is enabled on nightscout for treatment upload");
+                }
+            }
         }
 
     private void populateV1APIBGEntry(JSONArray array, BgReading record) throws Exception {
@@ -337,9 +345,16 @@ public class NightscoutUploader {
         }
     }
 
-        private void postDeviceStatus(NightscoutService nightscoutService, String apiSecret) throws Exception {
-            JSONObject json = new JSONObject();
-            json.put("uploaderBattery", getBatteryLevel());
+    private static final String LAST_NIGHTSCOUT_BATTERY_LEVEL = "last-nightscout-battery-level";
+
+    private void postDeviceStatus(NightscoutService nightscoutService, String apiSecret) throws Exception {
+        JSONObject json = new JSONObject();
+        final int battery_level = getBatteryLevel();
+        final long last_battery_level = PersistentStore.getLong(LAST_NIGHTSCOUT_BATTERY_LEVEL);
+        if (battery_level != last_battery_level) {
+            PersistentStore.setLong(LAST_NIGHTSCOUT_BATTERY_LEVEL, battery_level);
+            json.put("uploaderBattery", battery_level);
+
             RequestBody body = RequestBody.create(MediaType.parse("application/json"), json.toString());
             Response<ResponseBody> r;
             if (apiSecret != null) {
@@ -348,6 +363,7 @@ public class NightscoutUploader {
                 r = nightscoutService.uploadDeviceStatus(body).execute();
             if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
         }
+    }
 
         private boolean doMongoUpload(SharedPreferences prefs, List<BgReading> glucoseDataSets,
                                       List<Calibration> meterRecords,  List<Calibration> calRecords) {

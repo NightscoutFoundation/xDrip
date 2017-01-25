@@ -514,6 +514,10 @@ public class JoH {
     public static String niceTimeSince(long t) {
         return niceTimeScalar(msSince(t));
     }
+
+    public static String niceTimeTill(long t) {
+        return niceTimeScalar(-msSince(t));
+    }
     // temporary
     public static String niceTimeScalar(long t) {
         String unit = "second";
@@ -1002,6 +1006,16 @@ public class JoH {
             } else {
                 UserError.Log.e(TAG, "Device was null in pairing receiver");
             }
+        }
+    }
+
+    public static String getLocalBluetoothName() {
+        try {
+            final String name = BluetoothAdapter.getDefaultAdapter().getName();
+            if (name == null) return "";
+            return name;
+        } catch (Exception e) {
+            return "";
         }
     }
 

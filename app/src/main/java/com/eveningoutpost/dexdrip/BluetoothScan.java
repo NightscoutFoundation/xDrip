@@ -325,6 +325,10 @@ public class BluetoothScan extends ListActivityWithMenu {
 
         // automatically set or unset the option for "Transmiter" device
         boolean using_transmiter = false;
+        // Experimental support for rfduino from Tomasz Stachowicz
+        // automatically set or unset the option for "RFDuino" device
+        boolean using_rfduino = false;
+
         try {
             if (device.getName().toLowerCase().contains("limitter")
                     && (adverts.containsKey(device.getAddress()) && (new String(adverts.get(device.getAddress()), "UTF-8").contains("eLeR")))) {
@@ -335,6 +339,17 @@ public class BluetoothScan extends ListActivityWithMenu {
             }
 
             prefs.edit().putBoolean("use_transmiter_pl_bluetooth", using_transmiter).apply();
+
+            // Experimental support for rfduino from Tomasz Stachowicz
+            if (device.getName().toLowerCase().contains("xbrigde")
+                    && (adverts.containsKey(device.getAddress()) && (new String(adverts.get(device.getAddress()), "UTF-8").contains("rfduino")))) {
+                String msg = "Auto-detected rfduino device!";
+                Log.e(TAG, msg);
+                JoH.static_toast_long(msg);
+                using_rfduino = true;
+            }
+            prefs.edit().putBoolean("use_rfduino_bluetooth", using_rfduino).apply();
+
 
             if (device.getName().toLowerCase().contains("dexcom")) {
                 if (!CollectionServiceStarter.isBTShare(getApplicationContext())) {

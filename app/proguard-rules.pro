@@ -45,8 +45,8 @@
 -keep class com.nightscout.** { *; }
 -keep class com.squareup.** { *; }
 -keep class net.tribe7.** { *; }
--keep class com.mongodb.** { *; }
--keep class com.google.common.** { *; }
+#-keep class com.mongodb.** { *; }
+#-keep class com.google.common.** { *; }
 -keep class okay.** { *; }
 -keep class org.bson.** { *; }
 -keep class org.slf4j.** { *; }

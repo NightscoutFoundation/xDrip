@@ -26,10 +26,12 @@ public class HexDump {
     };
 
     public static String dumpHexString(byte[] array) {
+        if (array == null) return "<null>";
         return dumpHexString(array, 0, array.length);
     }
 
     public static String dumpHexString(byte[] array, int offset, int length) {
+        if (array == null) return "<null>";
         StringBuilder result = new StringBuilder();
 
         byte[] line = new byte[16];

@@ -43,6 +43,7 @@ import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.Calendar;
@@ -103,6 +104,11 @@ public class Notifications extends IntentService {
     public static final int parakeetMissingId = 014;
     public static final int persistentHighAlertNotificationId = 015;
     private static boolean low_notifying = false;
+
+    private static final int CALIBRATION_REQUEST_MAX_FREQUENCY = (60 * 60 * 8); // don't bug for extra calibrations more than every 8 hours
+    private static final int CALIBRATION_REQUEST_MIN_FREQUENCY = (60 * 60 * 12); // don't bug for general calibrations more than every 12 hours
+
+
     SharedPreferences prefs;
 
     public Notifications() {
@@ -325,10 +331,9 @@ public class Notifications extends IntentService {
 
 
         Sensor sensor = Sensor.currentSensor();
-
         // TODO need to check performance of rest of this method when in follower mode
-        List<BgReading> bgReadings = BgReading.latest(3);
-        List<Calibration> calibrations = Calibration.allForSensorInLastFourDays();
+        final List<BgReading> bgReadings = BgReading.latest(3);
+        final List<Calibration> calibrations = Calibration.allForSensorLimited(3);
         if (bgReadings == null || bgReadings.size() < 3) {
             return unclearReading;
         }
@@ -338,11 +343,13 @@ public class Notifications extends IntentService {
         BgReading bgReading = bgReadings.get(0);
 
         if (calibration_notifications) {
+            // TODO this should only clear double calibration once after calibrations are achieved
             if (bgReadings.size() >= 3) {
                 if (calibrations.size() == 0 && (new Date().getTime() - bgReadings.get(2).timestamp <= (60000 * 30)) && sensor != null) {
                     if ((sensor.started_at + (60000 * 60 * 2)) < new Date().getTime()) {
                         doubleCalibrationRequest();
                     } else {
+                        // TODO should be aware of state
                         clearDoubleCalibrationRequest();
                     }
                 } else {
@@ -351,15 +358,28 @@ public class Notifications extends IntentService {
             } else {
                 clearDoubleCalibrationRequest();
             }
+            // bgreadings criteria possibly needs a review
             if (CalibrationRequest.shouldRequestCalibration(bgReading) && (new Date().getTime() - bgReadings.get(2).timestamp <= (60000 * 24))) {
-                extraCalibrationRequest();
+                if ((!PowerStateReceiver.is_power_connected()) || (Home.getPreferencesBooleanDefaultFalse("calibration_alerts_while_charging"))) {
+                    if (JoH.pratelimit("calibration-request-notification", CALIBRATION_REQUEST_MAX_FREQUENCY)) {
+                        extraCalibrationRequest();
+                    }
+                }
             } else {
+                // TODO should be aware of state
                 clearExtraCalibrationRequest();
             }
-            if (calibrations.size() >= 1 && Math.abs((new Date().getTime() - calibrations.get(0).timestamp)) / (1000 * 60 * 60) > 12) {
+            if (calibrations.size() >= 1 && (Math.abs((new Date().getTime() - calibrations.get(0).timestamp)) / (1000 * 60 * 60) > 12)
+                    && (CalibrationRequest.isSlopeFlatEnough(BgReading.last(true)))) {
                 Log.d("NOTIFICATIONS", "Calibration difference in hours: " + ((new Date().getTime() - calibrations.get(0).timestamp)) / (1000 * 60 * 60));
-                calibrationRequest();
+                if ((!PowerStateReceiver.is_power_connected()) || (Home.getPreferencesBooleanDefaultFalse("calibration_alerts_while_charging"))) {
+                    // TODO check slope
+                    if (JoH.pratelimit("calibration-request-notification", CALIBRATION_REQUEST_MIN_FREQUENCY) || Home.getPreferencesBooleanDefaultFalse("calibration_alerts_repeat")) {
+                        calibrationRequest();
+                    }
+                }
             } else {
+                // TODO should be aware of state
                 clearCalibrationRequest();
             }
 
@@ -741,8 +761,8 @@ public class Notifications extends IntentService {
         if ((userNotification == null) || (userNotification.timestamp <= ((new Date().getTime()) - (60000 * calibration_snooze)))) {
             if (userNotification != null) { userNotification.delete(); }
             UserNotification.create("Extra Calibration Requested", "extra_calibration_alert", new Date().getTime());
-            String title = "Calibration Needed";
-            String content = "A calibration entered now will GREATLY increase performance" + "  (@" + JoH.hourMinuteString() + ")";
+            String title = "Calibration Requested";
+            String content = "Increase performance by calibrating now" + "  (@" + JoH.hourMinuteString() + ")";
             Intent intent = new Intent(mContext, AddCalibration.class);
             calibrationNotificationCreate(title, content, intent, extraCalibrationNotificationId);
         }

@@ -22,6 +22,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.RollCall;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Treatments;
@@ -30,6 +31,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.WebAppHelper;
@@ -38,8 +40,10 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 
@@ -48,7 +52,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
     private static final String TAG = "jamorham GCMlis";
     private static SharedPreferences prefs;
     private static byte[] staticKey;
-    public static double lastMessageReceived = 0;
+    public static long lastMessageReceived = 0;
 
     @Override
     public void onSendError(String msgID, Exception exception){
@@ -178,7 +182,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
             }
 
             Log.i(TAG, "Got action: " + action + " with payload: " + payload);
-            lastMessageReceived = JoH.ts();
+            lastMessageReceived = JoH.tsl();
 
 
             // new treatment
@@ -248,7 +252,17 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                 }
                 
             } else if (action.equals("ping")) {
-             // don't respond to wakeup pings
+                if (payload.length() > 0) {
+                    RollCall.Seen(payload);
+                }
+                // don't respond to wakeup pings
+            } else if (action.equals("rlcl")) {
+                if (Home.get_master_or_follower()) {
+                    if (payload.length() > 0) {
+                        RollCall.Seen(payload);
+                    }
+                    GcmActivity.requestPing();
+                }
             } else if (action.equals("p")) {
                 GcmActivity.send_ping_reply();
             } else if (action.equals("q")) {
@@ -443,7 +457,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
     }
 
     public static int lastMessageMinutesAgo() {
-        return (int) ((JoH.ts() - GcmListenerSvc.lastMessageReceived) / 60000);
+        return (int) ((JoH.tsl() - GcmListenerSvc.lastMessageReceived) / 60000);
     }
 
     private void sendNotification(String body, String title) {
@@ -470,6 +484,14 @@ public class GcmListenerSvc extends FirebaseMessagingService {
     private String filter(String source) {
         if (source == null) return null;
         return source.replaceAll("[^a-zA-Z0-9 _.-]", "");
+    }
+
+    // data for MegaStatus
+    public static List<StatusItem> megaStatus() {
+        final List<StatusItem> l = new ArrayList<>();
+        if (lastMessageReceived > 0)
+            l.add(new StatusItem("Network traffic", JoH.niceTimeSince(lastMessageReceived)+ " ago"));
+        return l;
     }
 
 }

@@ -300,7 +300,12 @@
                 android:key="use_transmiter_pl_bluetooth"
                 android:summary="Experimental support for 'Transmiter' device from @FPV-UAV - test only"
                 android:title="Transmiter (PL) support" />
-            </PreferenceScreen>
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="use_rfduino_bluetooth"
+                android:summary="Experimental support for rfduino from Tomasz Stachowicz"
+                android:title="RFDUINO support" />
+        </PreferenceScreen>
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="aggressive_service_restart"
