@@ -94,6 +94,8 @@ public class DexCollectionService extends Service {
 
     private static boolean static_use_transmiter_pl_bluetooth = false;
     private static boolean static_use_rfduino_bluetooth = false;
+    private static String static_last_hexdump;
+    private static String static_last_sent_hexdump;
 
     // Experimental support for "Transmiter PL" from Marek Macner @FPV-UAV
     private final boolean use_transmiter_pl_bluetooth = Home.getPreferencesBooleanDefaultFalse("use_transmiter_pl_bluetooth");
@@ -432,7 +434,11 @@ public class DexCollectionService extends Service {
             wakeLock1.acquire();
             try {
                 final byte[] data = characteristic.getValue();
-                Log.i(TAG, "onCharacteristicChanged entered " + HexDump.dumpHexString(data));
+                final String hexdump = HexDump.dumpHexString(data);
+                if (!hexdump.contains("0x00000000 00      ")) {
+                    static_last_hexdump = hexdump;
+                }
+                Log.i(TAG, "onCharacteristicChanged entered " + hexdump);
                 if (data != null && data.length > 0) {
                     setSerialDataToTransmitterRawData(data, data.length);
                 }
@@ -480,8 +486,10 @@ public class DexCollectionService extends Service {
             return false;
         }
 
-        byte[] value = message.array();
-        Log.i(TAG, "sendBtMessage: sending message");
+        final byte[] value = message.array();
+
+        static_last_sent_hexdump = HexDump.dumpHexString(value);
+        Log.i(TAG, "sendBtMessage: sending message: " + static_last_sent_hexdump);
 
         // Experimental support for rfduino from Tomasz Stachowicz
         if (use_rfduino_bluetooth ) {
@@ -681,15 +689,29 @@ public class DexCollectionService extends Service {
             l.add(new StatusItem("Hardware", "Rfduino"));
         }
 
+        // TODO add LimiTTer info
+
         if (last_transmitter_Data != null) {
-            l.add(new StatusItem("Glucose data from", JoH.niceTimeSince(last_transmitter_Data.timestamp)+" ago"));
+            l.add(new StatusItem("Glucose data from", JoH.niceTimeSince(last_transmitter_Data.timestamp) + " ago"));
         }
         if (last_battery_level > -1) {
-            l.add(new StatusItem("Battery level",last_battery_level));
+            l.add(new StatusItem("Battery level", last_battery_level));
         }
 
-        if (retry_time > 0)   l.add(new StatusItem("Next Retry",JoH.niceTimeTill(retry_time)));
-        if (failover_time > 0)   l.add(new StatusItem("Next Wake up",JoH.niceTimeTill(failover_time)));
+        if (retry_time > 0) l.add(new StatusItem("Next Retry", JoH.niceTimeTill(retry_time)));
+        if (failover_time > 0)
+            l.add(new StatusItem("Next Wake up", JoH.niceTimeTill(failover_time)));
+
+        if (Home.get_engineering_mode() && (static_last_hexdump != null)) {
+            l.add(new StatusItem("Received Data", filterHexdump(static_last_hexdump)));
+        }
+        if (Home.get_engineering_mode() && (static_last_sent_hexdump != null)) {
+            l.add(new StatusItem("Sent Data", filterHexdump(static_last_sent_hexdump)));
+        }
+
         return l;
+    }
+    private static String filterHexdump(String hex) {
+        return hex.replaceAll("[ ]+"," ").replaceAll("\n0x0000[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f] ","\n").replaceFirst("^\n","");
     }
 }
