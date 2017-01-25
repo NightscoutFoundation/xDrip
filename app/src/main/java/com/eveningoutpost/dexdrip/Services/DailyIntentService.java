@@ -37,7 +37,7 @@ public class DailyIntentService extends IntentService {
                 // prune old database records
                 mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 if (mPrefs.getBoolean("wear_sync", false)) {
-                    startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_CLEAR_LOGS));
+                    startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_DB));
                 }
                 try {
                     UserError.cleanup();

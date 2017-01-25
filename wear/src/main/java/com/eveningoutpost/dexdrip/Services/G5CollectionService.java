@@ -954,7 +954,7 @@ public class G5CollectionService extends Service {
             waitFor(600);
             Log.e(TAG, "connectGatt() delay completed");
         }
-        mGatt = mDevice.connectGatt(getApplicationContext(), false, gattCallback);
+        mGatt = mDevice.connectGatt(getApplicationContext(), true, gattCallback);//TEST false -> true
     }
 
 

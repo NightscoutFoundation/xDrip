@@ -266,8 +266,9 @@ public class CollectionServiceStarter {
         collectionServiceStarter.start(context, collection_method);
     }
 
-    public static void startCollectionService(Context context) {
-        Log.d(TAG, "startCollectionService: " + DexCollectionType.getDexCollectionType());
+    public static void startBtService(Context context) {
+        Log.d(TAG, "startBtService: " + DexCollectionType.getDexCollectionType());
+        stopBtService(context);
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
         switch (DexCollectionType.getDexCollectionType()) {
             case DexcomShare:
