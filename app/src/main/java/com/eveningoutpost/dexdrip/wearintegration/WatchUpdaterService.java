@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.wearintegration;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
@@ -22,6 +24,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.common.ConnectionResult;
@@ -52,6 +55,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.ts;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 
 public class WatchUpdaterService extends WearableListenerService implements
@@ -62,14 +66,21 @@ public class WatchUpdaterService extends WearableListenerService implements
     public static final String ACTION_SYNC_DB = WatchUpdaterService.class.getName().concat(".SyncDB");//KS
     public static final String ACTION_SYNC_LOGS = WatchUpdaterService.class.getName().concat(".SyncLogs");//KS
     public static final String ACTION_CLEAR_LOGS = WatchUpdaterService.class.getName().concat(".ClearLogs");//KS
+    public static final String ACTION_STATUS_COLLECTOR = WatchUpdaterService.class.getName().concat(".StatusCollector");//KS
+    public static final String ACTION_START_COLLECTOR = WatchUpdaterService.class.getName().concat(".StartCollector");//KS
     public static final String ACTION_SYNC_SENSOR = WatchUpdaterService.class.getName().concat(".SyncSensor");//KS
     public static final String ACTION_SYNC_CALIBRATION = WatchUpdaterService.class.getName().concat(".SyncCalibration");//KS
     public static final String ACTION_SEND_STATUS = WatchUpdaterService.class.getName().concat(".SendStatus");//KS
     public static final String ACTION_SYNC_ACTIVEBTDEVICE = WatchUpdaterService.class.getName().concat(".SyncActiveBtDevice");//KS
+    public final static String ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE
+            = "com.eveningoutpost.dexdrip.BLUETOOTH_COLLECTION_SERVICE_UPDATE";
     private static final String SYNC_DB_PATH = "/syncweardb";//KS
     private static final String SYNC_BGS_PATH = "/syncwearbgs";//KS
     private static final String SYNC_LOGS_PATH = "/syncwearlogs";
     private static final String CLEAR_LOGS_PATH = "/clearwearlogs";
+    private static final String STATUS_COLLECTOR_PATH = "/statuscollector";
+    private static final String START_COLLECTOR_PATH = "/startcollector";
+    private static final String WEARABLE_REPLYMSG_PATH = "/nightscout_watch_data_replymsg";
     private static final String WEARABLE_INITDB_PATH = "/nightscout_watch_data_initdb";
     private static final String WEARABLE_INITPREFS_PATH = "/nightscout_watch_data_initprefs";
     private static final String WEARABLE_CALIBRATION_DATA_PATH = "/nightscout_watch_cal_data";//KS
@@ -80,6 +91,8 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String DATA_ITEM_RECEIVED_PATH = "/data-item-received";//KS
     private static final String WEARABLE_DATA_PATH = "/nightscout_watch_data";
     private static final String WEARABLE_RESEND_PATH = "/nightscout_watch_data_resend";
+    private static final String WEARABLE_FIELD_SENDPATH = "field_xdrip_plus_sendpath";
+    private static final String WEARABLE_FIELD_PAYLOAD = "field_xdrip_plus_payload";
     public static final String WEARABLE_VOICE_PAYLOAD = "/xdrip_plus_voice_payload";
     public static final String WEARABLE_APPROVE_TREATMENT = "/xdrip_plus_approve_treatment";
     public static final String WEARABLE_CANCEL_TREATMENT = "/xdrip_plus_cancel_treatment";
@@ -87,12 +100,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String WEARABLE_TOAST_NOTIFICATON = "/xdrip_plus_toast";
     private static final String OPEN_SETTINGS_PATH = "/openwearsettings";
     private static final String NEW_STATUS_PATH = "/sendstatustowear";//KS
-    // Phone
-    private static final String CAPABILITY_PHONE_APP = "phone_app_sync_bgs";
-    private static final String MESSAGE_PATH_PHONE = "/phone_message_path";
-    // Wear
     private static final String CAPABILITY_WEAR_APP = "wear_app_sync_bgs";
-    private static final String MESSAGE_PATH_WEAR = "/wear_message_path";
     private String mWearNodeId = null;
     static final int GET_CAPABILITIES_TIMEOUT_MS = 5000;
 
@@ -134,11 +142,30 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMapRequest.getDataMap().putDouble("timestamp", System.currentTimeMillis());
             dataMapRequest.getDataMap().putLong("timeOfLastEntry", timeOfLastEntry);
             dataMapRequest.getDataMap().putString("type", type);
-            dataMapRequest.getDataMap().putString(notification, notification);
+            dataMapRequest.getDataMap().putString("msg", notification);
             PutDataRequest putDataRequest = dataMapRequest.asPutDataRequest();
             Wearable.DataApi.putDataItem(googleApiClient, putDataRequest);
         } else {
             Log.e(TAG, "sendDataReceived No connection to wearable available!");
+        }
+    }
+
+    private void syncFieldData(DataMap dataMap) {
+        String dex_txid = dataMap.getString("dex_txid", "");
+        byte[] G5_BATTERY_MARKER = dataMap.getByteArray(G5CollectionService.G5_BATTERY_MARKER);
+        byte[] G5_FIRMWARE_MARKER = dataMap.getByteArray(G5CollectionService.G5_FIRMWARE_MARKER);
+        if (dex_txid != null && dex_txid.equals(mPrefs.getString("dex_txid", "default"))) {
+            if (G5_BATTERY_MARKER != null) {
+                long watch_last_battery_query = dataMap.getLong(G5CollectionService.G5_BATTERY_FROM_MARKER);
+                long phone_last_battery_query = PersistentStore.getLong(G5CollectionService.G5_BATTERY_FROM_MARKER + dex_txid);
+                if (watch_last_battery_query > phone_last_battery_query) {
+                    G5CollectionService.setStoredBatteryBytes(dex_txid, G5_BATTERY_MARKER);
+                    PersistentStore.setLong(G5CollectionService.G5_BATTERY_FROM_MARKER + dex_txid, watch_last_battery_query);
+                }
+            }
+            if (G5_FIRMWARE_MARKER != null) {
+                G5CollectionService.setStoredFirmwareBytes(dex_txid, G5_FIRMWARE_MARKER);
+            }
         }
     }
 
@@ -217,7 +244,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
     }
 
-    private synchronized void syncTransmitterData(DataMap dataMap) {//KS
+    private synchronized void syncTransmitterData(DataMap dataMap, boolean bBenchmark) {//KS
         Log.d(TAG, "syncTransmitterData");
 
         ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
@@ -234,13 +261,10 @@ public class WatchUpdaterService extends WearableListenerService implements
             Log.d(TAG, "syncTransmitterData add BgReading Table entries count=" + entries.size());
             for (DataMap entry : entries) {
                 if (entry != null) {
-                    Log.d(TAG, "syncTransmitterData add BgReading Table entry=" + entry);
-                    //TransmitterData bgData = gson.fromJson(entry.getString("bgs"), TransmitterData.class);
-                    //Log.d(TAG, "syncTransmitterData bgData=" + bgData);
-                    //TransmitterData bgReading = new TransmitterData();
+                    //Log.d(TAG, "syncTransmitterData add BgReading Table entry=" + entry);
                     String bgrecord = entry.getString("bgs");
                     if (bgrecord != null) {//for (TransmitterData bgData : bgs) {
-                        Log.d(TAG, "syncTransmitterData add TransmitterData Table bgrecord=" + bgrecord);
+                        //Log.d(TAG, "syncTransmitterData add TransmitterData Table bgrecord=" + bgrecord);
                         TransmitterData bgData = gson.fromJson(bgrecord, TransmitterData.class);
                         //TransmitterData bgData = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(bgrecord, TransmitterData.class);
                         TransmitterData exists = TransmitterData.getForTimestamp(bgData.timestamp);
@@ -250,39 +274,41 @@ public class WatchUpdaterService extends WearableListenerService implements
                             Log.d(TAG, "syncTransmitterData BG already exists for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + JoH.dateTimeText(bgData.timestamp) + " raw_data=" + bgData.raw_data);
                         } else {
                             Log.d(TAG, "syncTransmitterData add BG; does NOT exist for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + JoH.dateTimeText(bgData.timestamp) + " raw_data=" + bgData.raw_data);
-                            bgData.save();
+                            if (!bBenchmark) {
+                                bgData.save();
 
-                            //Check
-                            if (TransmitterData.findByUuid(bgData.uuid) != null)
-                                Log.d(TAG, "syncTransmitterData: TransmitterData was saved for uuid:" + bgData.uuid);
-                            else {
-                                Log.e(TAG, "syncTransmitterData: TransmitterData was NOT saved for uuid:" + bgData.uuid);
-                                return;
-                            }
+                                //Check
+                                if (TransmitterData.findByUuid(bgData.uuid) != null)
+                                    Log.d(TAG, "syncTransmitterData: TransmitterData was saved for uuid:" + bgData.uuid);
+                                else {
+                                    Log.e(TAG, "syncTransmitterData: TransmitterData was NOT saved for uuid:" + bgData.uuid);
+                                    return;
+                                }
 
-                            //KS the following is from G5CollectionService processNewTransmitterData()
-                            Sensor sensor = Sensor.currentSensor();
-                            if (sensor == null) {
-                                Log.e(TAG, "syncTransmitterData: No Active Sensor, Data only stored in Transmitter Data");
-                                return;
+                                //KS the following is from G5CollectionService processNewTransmitterData()
+                                Sensor sensor = Sensor.currentSensor();
+                                if (sensor == null) {
+                                    Log.e(TAG, "syncTransmitterData: No Active Sensor, Data only stored in Transmitter Data");
+                                    return;
+                                }
+                                //TODO : LOG if unfiltered or filtered values are zero
+                                Sensor.updateBatteryLevel(sensor, bgData.sensor_battery_level);
+                                Log.i(TAG, "syncTransmitterData: BG timestamp create " + Long.toString(bgData.timestamp));//android.util.Log.i
+                                BgReading bgExists = BgReading.create(bgData.raw_data, bgData.filtered_data, this, bgData.timestamp);
+                                if (bgExists != null)
+                                    Log.d(TAG, "syncTransmitterData BG GSON saved BG: " + bgExists.toS());
+                                else
+                                    Log.e(TAG, "syncTransmitterData BG GSON NOT saved");
                             }
-                            //TODO : LOG if unfiltered or filtered values are zero
-                            Sensor.updateBatteryLevel(sensor, bgData.sensor_battery_level);
-                            android.util.Log.i(TAG, "syncTransmitterData: BG timestamp create " + Long.toString(bgData.timestamp));
-                            BgReading bgExists = BgReading.create(bgData.raw_data, bgData.filtered_data, this, bgData.timestamp);
-                            if (bgExists != null)
-                                Log.d(TAG, "syncTransmitterData BG GSON saved BG: " + bgExists.toS());
-                            else
-                                Log.e(TAG, "syncTransmitterData BG GSON NOT saved");
                         }
                     }
                 }
             }
-            sendDataReceived(DATA_ITEM_RECEIVED_PATH,"DATA_RECEIVED", timeOfLastBG, "BG");
+            sendDataReceived(DATA_ITEM_RECEIVED_PATH,"DATA_RECEIVED_BGS count=" + entries.size(), timeOfLastBG, bBenchmark?"BM":"BG");
         }
     }
 
-    private synchronized void syncLogData(DataMap dataMap) {//KS
+    private synchronized void syncLogData(DataMap dataMap, boolean bBenchmark) {//KS
         Log.d(TAG, "syncLogData");
 
         ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
@@ -314,12 +340,13 @@ public class WatchUpdaterService extends WearableListenerService implements
                             }
                             //Log.d(TAG, "syncLogData add Entry Wear=" + data.toString());
                             //Log.d(TAG, "syncLogData WATCH data.shortError=" + data.shortError + " severity=" + data.severity + " timestamp=" + JoH.dateTimeText((long) data.timestamp));
-                            data.save();
+                            if (!bBenchmark)
+                                data.save();
                         }
                     }
                 }
             }
-            sendDataReceived(DATA_ITEM_RECEIVED_PATH,"DATA_RECEIVED", timeOfLastEntry, "LOG");
+            sendDataReceived(DATA_ITEM_RECEIVED_PATH,"DATA_RECEIVED_LOGS count=" + entries.size(), timeOfLastEntry, bBenchmark?"BM":"LOG");
         }
     }
 
@@ -455,11 +482,40 @@ public class WatchUpdaterService extends WearableListenerService implements
             startBtService();
         }
     }
+
+    // Custom method to determine whether a service is running
+    private boolean isServiceRunning(Class<?> serviceClass){//Class<?> serviceClass
+        if (serviceClass != null) {
+            ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+            // Loop through the running services
+            for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
+                //Log.d(TAG, "isServiceRunning: getClassName=" + service.service.getClassName() + " getShortClassName=" + service.service.getShortClassName());
+                if (serviceClass.getName().equals(service.service.getClassName())) return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isCollectorRunning() {
+        Class<?> serviceClass = DexCollectionType.getCollectorServiceClass();
+        if (serviceClass != null) {
+            Log.d(TAG, "DexCollectionType.getCollectorServiceClass(): " + serviceClass.getName());
+            return isServiceRunning(serviceClass);
+        }
+        return false;
+    }
+
     private void startBtService() {//KS
         Log.d(TAG, "startBtService");
         is_using_bt = DexCollectionType.hasBluetooth();//(getDexCollectionType() == DexCollectionType.DexcomG5)
         if (is_using_bt) {
-            CollectionServiceStarter.startCollectionService(getApplicationContext());
+            if (!isCollectorRunning()) {
+                CollectionServiceStarter.startBtService(getApplicationContext());
+                Log.d(TAG, "startBtService startService");
+            }
+            else {
+                Log.d(TAG, "startBtService collector already running!");
+            }
         } else {
             Log.d(TAG, "Not starting any BT Collector service as it is not our data source");
         }
@@ -516,6 +572,12 @@ public class WatchUpdaterService extends WearableListenerService implements
                         Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_DB + " Path=" + SYNC_DB_PATH);
                         sendNotification(SYNC_DB_PATH, "syncDB");
                         initWearData();
+                    } else if (ACTION_START_COLLECTOR.equals(action)) {//KS
+                        Log.d(TAG, "onStartCommand Action=" + ACTION_START_COLLECTOR + " Path=" + START_COLLECTOR_PATH);
+                        sendNotification(START_COLLECTOR_PATH, "startCOLLECTOR");
+                    } else if (ACTION_STATUS_COLLECTOR.equals(action)) {//KS
+                        Log.d(TAG, "onStartCommand Action=" + ACTION_STATUS_COLLECTOR + " Path=" + STATUS_COLLECTOR_PATH);
+                        sendNotification(STATUS_COLLECTOR_PATH, "statusCOLLECTOR");
                     } else if (ACTION_SYNC_LOGS.equals(action)) {//KS
                         Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_LOGS + " Path=" + SYNC_LOGS_PATH);
                         sendNotification(SYNC_LOGS_PATH, "syncLOG");
@@ -669,7 +731,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                         if (enable_wearG5) {
                             //Only stop service if Phone will rely on Wear Collection Service
                             if (force_wearG5 && isConnectedToWearable) {
-                                Log.d(TAG, "CheckWearableConnected onPeerConnected force_wearG5=true Phone stopBtService and continue to use Wear G5 BT Collector");
+                                Log.d(TAG, "CheckWearableConnected onPeerConnected force_wearG5=true Phone stopBtService and continue to use Wear BT Collector");
                                 stopBtService();
                             } else {
                                 Log.d(TAG, "CheckWearableConnected onPeerConnected force_wearG5=false Phone startBtService");
@@ -767,13 +829,27 @@ public class WatchUpdaterService extends WearableListenerService implements
                         }
                         break;
                     case SYNC_BGS_PATH + "_BM_COMPRESS"://TEST ignore only for benchmark
-                    case SYNC_LOGS_PATH + "_BM_COMPRESS":
                     case SYNC_BGS_PATH + "_BM_DUP_COMPRESS":
+                        Log.d(TAG, "onMessageReceived Ignore, just for test!");
+                        decomprBytes = decompressBytes(event.getPath(), event.getData(), true);//bBenchmark
+                        dataMap = DataMap.fromByteArray(decomprBytes);
+                        if (dataMap != null) {
+                            syncTransmitterData(dataMap, true);//bBenchmark=true
+                        }
+                        break;
+                    case SYNC_LOGS_PATH + "_BM_COMPRESS":
                     case SYNC_LOGS_PATH + "_BM_DUP_COMPRESS":
+                        Log.d(TAG, "onMessageReceived Ignore, just for test!");
+                        decomprBytes = decompressBytes(event.getPath(), event.getData(), true);
+                        dataMap = DataMap.fromByteArray(decomprBytes);
+                        if (dataMap != null) {
+                            syncLogData(dataMap, true);//bBenchmark=true
+                        }
+                        break;
                     case SYNC_BGS_PATH + "_BM_RAND_COMPRESS":
                     case SYNC_LOGS_PATH + "_BM_RAND_COMPRESS":
                         Log.d(TAG, "onMessageReceived Ignore, just for test!");
-                        decomprBytes = decompressBytes(event.getPath(), event.getData());
+                        decomprBytes = decompressBytes(event.getPath(), event.getData(), true);
                         break;
                     case SYNC_BGS_PATH://KS
                         Log.d(TAG, "onMessageReceived SYNC_BGS_PATH");
@@ -781,7 +857,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                             dataMap = DataMap.fromByteArray(event.getData());
                             if (dataMap != null) {
                                 Log.d(TAG, "onMessageReceived SYNC_BGS_PATH dataMap=" + dataMap);
-                                syncTransmitterData(dataMap);
+                                syncTransmitterData(dataMap, false);
                             }
                         }
                         break;
@@ -791,13 +867,42 @@ public class WatchUpdaterService extends WearableListenerService implements
                             dataMap = DataMap.fromByteArray(event.getData());
                             if (dataMap != null) {
                                 Log.d(TAG, "onMessageReceived SYNC_LOGS_PATH dataMap=" + dataMap);
-                                syncLogData(dataMap);
+                                syncLogData(dataMap, false);
                             }
                         }
                         break;
                     case WEARABLE_INITDB_PATH:
                         Log.d(TAG, "onMessageReceived WEARABLE_INITDB_PATH");
                         initWearData();
+                        break;
+                    case WEARABLE_REPLYMSG_PATH:
+                        Log.d(TAG, "onMessageReceived WEARABLE_REPLYMSG_PATH");
+                        dataMap = DataMap.fromByteArray(event.getData());
+                        if (dataMap != null) {
+                            Log.d(TAG, "onMessageReceived WEARABLE_REPLYMSG_PATH dataMap=" + dataMap);
+                            String msg = dataMap.getString("msg", "");
+                            String action_path = dataMap.getString("action_path", "");
+                            if (msg != null && !msg.isEmpty() && action_path != null && !action_path.isEmpty()) {
+                                switch (action_path) {
+                                    case START_COLLECTOR_PATH:
+                                        JoH.static_toast_short(msg);
+                                        break;
+                                    case STATUS_COLLECTOR_PATH:
+                                        Log.d(TAG, "onMessageReceived WEARABLE_REPLYMSG_PATH send LocalBroadcastManager ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE=" + ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE);
+                                        final Intent intent = new Intent(ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE);
+                                        intent.putExtra("data", dataMap.toBundle());//msg
+                                        LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(intent);
+                                        break;
+                                }
+                            }
+                        }
+                        break;
+                    case WEARABLE_FIELD_SENDPATH:
+                        dataMap = DataMap.fromByteArray(event.getData());
+                        if (dataMap != null) {
+                            Log.d(TAG, "onMessageReceived WEARABLE_FIELD_SENDPATH dataMap=" + dataMap);
+                            syncFieldData(dataMap);
+                        }
                         break;
                     case WEARABLE_INITPREFS_PATH:
                         Log.d(TAG, "onMessageReceived WEARABLE_INITPREFS_PATH");
@@ -821,23 +926,32 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
     }
 
-    private byte[] decompressBytes(String pathdesc, byte[] bytes) {
+    private byte[] decompressBytes(String pathdesc, byte[] bytes, boolean bBenchmark) {
         byte[] decomprBytes;
         if ((bytes.length > 8)
                 && (bytes[0] == (byte) 0x1F)
                 && (bytes[1] == (byte) 0x8B)
                 && (bytes[2] == (byte) 0x08)
                 && (bytes[3] == (byte) 0x00)) {
-            JoH.benchmark(null);
-            decomprBytes =  JoH.decompressBytesToBytes(bytes);
-            JoH.benchmark(pathdesc + " JoH.decompressBytesToBytes from length=" + bytes.length + " to length=" + decomprBytes.length);
-            return null; //TODO return decomprBytes;
+            if (bBenchmark) {
+                double benchmark_time = ts();
+                JoH.benchmark(null);
+                decomprBytes = JoH.decompressBytesToBytes(bytes);
+                String msg = pathdesc + " JoH.decompressBytesToBytes from length=" + bytes.length + " to length=" + decomprBytes.length;
+                JoH.benchmark(msg);
+                msg = msg + " " + (ts() - benchmark_time) + " ms";
+                sendDataReceived(DATA_ITEM_RECEIVED_PATH, msg, 1, "BM");//"DATA_RECEIVED"
+                return decomprBytes;
+            }
+            else {
+                decomprBytes = JoH.decompressBytesToBytes(bytes);
+                Log.d(TAG, pathdesc + " JoH.decompressBytesToBytes from length=" + bytes.length + " to length=" + decomprBytes.length);
+                return decomprBytes;
+            }
         }
         else {
-            JoH.benchmark(null);
-            JoH.benchmark(pathdesc + " JoH.decompressBytesToBytes Not Compressed; Decompressed length=" + bytes.length);
-            JoH.benchmark("DataMap is not compressed!  Process as normal.");
-            return null;//TODO return bytes;
+            Log.d(TAG, "Benchmark: decompressBytesToBytes DataMap is not compressed!  Process as normal. length=" + bytes.length);
+            return bytes;
         }
     }
 

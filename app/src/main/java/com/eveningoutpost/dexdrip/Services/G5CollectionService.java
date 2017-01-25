@@ -158,7 +158,9 @@ public class G5CollectionService extends Service {
 
 
     private static String lastState = "Not running";
+    private static String lastStateWatch = "Not running";
     private static long static_last_timestamp = 0;
+    private static long static_last_timestamp_watch = 0;
 
 
     // test params
@@ -1543,7 +1545,8 @@ public class G5CollectionService extends Service {
         return defaultTransmitter.transmitterId.length() == 6 && getStoredFirmwareBytes(defaultTransmitter.transmitterId).length >= 10;
     }
 
-    private final static String G5_BATTERY_FROM_MARKER = "g5-battery-from";
+    public final static String G5_FIRMWARE_MARKER = "g5-firmware-";
+    public final static String G5_BATTERY_FROM_MARKER = "g5-battery-from";
 
     private boolean haveCurrentBatteryStatus() {
         return defaultTransmitter.transmitterId.length() == 6 && (JoH.msSince(PersistentStore.getLong(G5_BATTERY_FROM_MARKER + defaultTransmitter.transmitterId)) < BATTERY_READ_PERIOD_MS);
@@ -1554,7 +1557,7 @@ public class G5CollectionService extends Service {
         return PersistentStore.getBytes("g5-firmware-" + transmitterId);
     }
 
-    private static boolean setStoredFirmwareBytes(String transmitterId, byte[] data) {
+    public static boolean setStoredFirmwareBytes(String transmitterId, byte[] data) {
         UserError.Log.e(TAG, "Store: VersionRX dbg: " + JoH.bytesToHex(data));
         if (transmitterId.length() != 6) return false;
         if (data.length < 10) return false;
@@ -1562,7 +1565,7 @@ public class G5CollectionService extends Service {
         return true;
     }
 
-    private static final String G5_BATTERY_MARKER = "g5-battery-";
+    public static final String G5_BATTERY_MARKER = "g5-battery-";
 
     public static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
         UserError.Log.e(TAG, "Store: BatteryRX dbg: " + JoH.bytesToHex(data));
@@ -1797,14 +1800,26 @@ public class G5CollectionService extends Service {
                 + (tryPreBondWithDelay ? "tryPreBondWithDelay " : ""));
     }
 
+    public static void setWatchStatus(String msg, long last_timestamp) {
+        lastStateWatch = msg;
+        static_last_timestamp_watch = last_timestamp;
+    }
+
     // data for MegaStatus
     public static List<StatusItem> megaStatus() {
         final List<StatusItem> l = new ArrayList<>();
 
         l.add(new StatusItem("Phone Service State", lastState));
-
         if (static_last_timestamp > 0) {
             l.add(new StatusItem("Phone got Glucose", JoH.niceTimeSince(static_last_timestamp) + " ago"));
+        }
+
+        if (Home.getPreferencesBooleanDefaultFalse("wear_sync") &&
+                Home.getPreferencesBooleanDefaultFalse("enable_wearG5")) {
+            l.add(new StatusItem("Watch Service State", lastStateWatch));
+            if (static_last_timestamp_watch > 0) {
+                l.add(new StatusItem("Watch got Glucose", JoH.niceTimeSince(static_last_timestamp_watch) + " ago"));
+            }
         }
 
         String tx_id = Home.getPreferencesStringDefaultBlank("dex_txid");
@@ -1837,4 +1852,16 @@ public class G5CollectionService extends Service {
         return l;
     }
 
+    // Status for Watchface
+    public static boolean isRunning() {
+        return lastState.equals("Not Running") || lastState.equals("Stopped") ? false : true;
+    }
+
+    // Status for Watchface
+    public static String getLastState() {
+        return lastState;
+    }
+    public static long getLastStateTimestamp() {
+        return static_last_timestamp;
+    }
 }

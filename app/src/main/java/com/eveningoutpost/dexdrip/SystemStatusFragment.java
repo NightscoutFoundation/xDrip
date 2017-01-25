@@ -5,13 +5,18 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,9 +35,13 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+import com.google.android.gms.wearable.DataMap;
 
 import java.lang.reflect.Method;
 import java.text.DateFormat;
@@ -40,6 +49,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
+import static com.eveningoutpost.dexdrip.Services.G5CollectionService.setWatchStatus;
 
 
 public class SystemStatusFragment extends Fragment {
@@ -61,11 +72,61 @@ public class SystemStatusFragment extends Fragment {
     private BluetoothAdapter mBluetoothAdapter;
     private ActiveBluetoothDevice activeBluetoothDevice;
     private static final String TAG = "SystemStatus";
+    private BroadcastReceiver serviceDataReceiver;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        Context context = safeGetContext();
+        final PowerManager.WakeLock wl = JoH.getWakeLock("ACTION_STATUS_COLLECTOR",120000);
+        if (prefs.getBoolean("wear_sync", false) && prefs.getBoolean("enable_wearG5", false)) {
+            context.startService(new Intent(context, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_STATUS_COLLECTOR));
+        }
+        JoH.releaseWakeLock(wl);
+        serviceDataReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context ctx, Intent intent) {
+                final String action = intent.getAction();
+                //final String msg = intent.getStringExtra("data");
+                Bundle bundle = intent.getBundleExtra("data");
+                if (bundle != null) {
+                    DataMap dataMap = DataMap.fromBundle(bundle);
+                    String msg = dataMap.getString("msg", "");
+                    long last_timestamp = dataMap.getLong("last_timestamp", 0);
+                    UserError.Log.d(TAG, "serviceDataReceiver onReceive:" + action + " :: " + msg + " last_timestamp :: " + last_timestamp);
+                    switch (action) {
+                        case WatchUpdaterService.ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE:
+                            if (DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomG5)) {
+                                setWatchStatus(msg, last_timestamp);
+                            } else {
+                                setConnectionStatus(msg);//TODO getLastState() in non-G5 Services
+                            }
+                            break;
+                    }
+                }
+            }
+        };
         return inflater.inflate(R.layout.activity_system_status, container, false);
+    }
+    @Override
+    public void onPause() {
+        if (serviceDataReceiver != null) {
+            try {
+                LocalBroadcastManager.getInstance(safeGetContext()).unregisterReceiver(serviceDataReceiver);
+            } catch (IllegalArgumentException e) {
+                UserError.Log.e(TAG, "broadcast receiver not registered", e);
+            }
+        }
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WatchUpdaterService.ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE);
+        LocalBroadcastManager.getInstance(safeGetContext()).registerReceiver(serviceDataReceiver, intentFilter);
     }
 
     @Override
@@ -263,6 +324,12 @@ public class SystemStatusFragment extends Fragment {
         }
     }
 
+    public void setConnectionStatus(String msg) {
+        if (msg != null && !msg.isEmpty()) {
+            connection_status.setText(msg);
+        }
+    }
+
     private void setConnectionStatus() {
         boolean connected = false;
         if (mBluetoothManager != null && activeBluetoothDevice != null) {
@@ -362,6 +429,10 @@ public class SystemStatusFragment extends Fragment {
                 v.setEnabled(false);
                 JoH.static_toast_short("Restarting Collector!");
                 v.setAlpha(0.2f);
+                prefs = PreferenceManager.getDefaultSharedPreferences(safeGetContext());
+                if (prefs.getBoolean("wear_sync", false)) {
+                    safeGetContext().startService(new Intent(safeGetContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_START_COLLECTOR));
+                }
                 CollectionServiceStarter.restartCollectionService(safeGetContext());
                 set_current_values();
                 JoH.runOnUiThreadDelayed(new Runnable() {

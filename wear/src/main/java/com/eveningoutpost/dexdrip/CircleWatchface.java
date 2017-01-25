@@ -544,9 +544,16 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         public void onReceive(Context context, Intent intent) {
             final PowerManager.WakeLock wl = JoH.getWakeLock("circle-message-receiver", 60000);
             try {
-                Bundle bundle = intent.getBundleExtra("data");
+                DataMap dataMap;
+                Bundle bundle = intent.getBundleExtra("msg");
                 if (bundle != null) {
-                    DataMap dataMap = DataMap.fromBundle(bundle);
+                    dataMap = DataMap.fromBundle(bundle);
+                    String msg = dataMap.getString("msg", "");
+                    JoH.static_toast_short(msg);
+                }
+                bundle = intent.getBundleExtra("data");
+                if (bundle != null) {
+                    dataMap = DataMap.fromBundle(bundle);
                     setSgvLevel((int) dataMap.getLong("sgvLevel"));
                     Log.d(TAG, "CircleWatchface sgv level : " + getSgvLevel());
                     setSgvString(dataMap.getString("sgvString"));
@@ -570,7 +577,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
                 //status
                 bundle = intent.getBundleExtra("status");
                 if (bundle != null) {
-                    DataMap dataMap = DataMap.fromBundle(bundle);
+                    dataMap = DataMap.fromBundle(bundle);
                     setStatusString(dataMap.getString("externalStatusString"));
 
                     prepareLayout();
@@ -589,7 +596,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         double low = dataMap.getDouble("low");
         double timestamp = dataMap.getDouble("timestamp");
 
-        Log.d(TAG, "addToWatchSet entry=" + dataMap);
+        //Log.d(TAG, "addToWatchSet entry=" + dataMap);
 
         final int size = bgDataList.size();
         BgWatchData bgdata = new BgWatchData(sgv, high, low, timestamp);
@@ -597,10 +604,10 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
             if (bgDataList.contains(bgdata)) {
                 int i = bgDataList.indexOf(bgdata);
                 BgWatchData bgd = bgDataList.get(bgDataList.indexOf(bgdata));
-                Log.d(TAG, "addToWatchSet replace indexOf=" + i + " bgDataList.sgv=" + bgd.sgv + " bgDataList.timestamp" + bgd.timestamp);
+                //Log.d(TAG, "addToWatchSet replace indexOf=" + i + " bgDataList.sgv=" + bgd.sgv + " bgDataList.timestamp" + bgd.timestamp);
                 bgDataList.set(i, bgdata);
             } else {
-                Log.d(TAG, "addToWatchSet add " + " entry.sgv=" + bgdata.sgv + " entry.timestamp" + bgdata.timestamp);
+                //Log.d(TAG, "addToWatchSet add " + " entry.sgv=" + bgdata.sgv + " entry.timestamp" + bgdata.timestamp);
                 bgDataList.add(bgdata);
             }
         }
