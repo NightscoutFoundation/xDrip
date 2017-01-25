@@ -498,9 +498,14 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
     	    LastReportedTime = lastTransmitterData.timestamp;
 
             // jamorham fix to avoid going twice to network when we just got a packet
-            if ((new Date().getTime() - LastReportedTime) < DEXCOM_PERIOD-2000) {
-            Log.d(TAG, "Already have a recent packet - returning");
-            return;
+            if ((new Date().getTime() - LastReportedTime) < DEXCOM_PERIOD - 2000) {
+                Log.d(TAG, "Already have a recent packet - returning");
+                if (JoH.ratelimit("deferred-msg", 60)) {
+                    statusLog(" Deferred", "Already have recent reading");
+                }
+                return;
+            } else {
+                statusLog(" Deferred", "");
             }
 
 
@@ -605,7 +610,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         final List<StatusItem> l = new ArrayList<>();
         for (Map.Entry<String, String> entry : hostStatus.entrySet()) {
             final long status_time = hostStatusTime.get(entry.getKey());
-            l.add(new StatusItem(entry.getKey(), entry.getValue() + ((status_time != 0) ? (" " + JoH.niceTimeSince(status_time) + " " + "ago") : "")));
+            if (entry.getValue().length()>0) l.add(new StatusItem(entry.getKey(), entry.getValue() + ((status_time != 0) ? (" " + JoH.niceTimeSince(status_time) + " " + "ago") : "")));
         }
         return l;
     }
