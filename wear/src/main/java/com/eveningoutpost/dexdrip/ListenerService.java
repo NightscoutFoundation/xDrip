@@ -742,12 +742,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     stopBtService();
                     if (processConnect()) {
                         msg = getResources().getString(R.string.notify_collector_started, DexCollectionType.getDexCollectionType());
-                        sendReplyMsg (msg, path, true);
+                        sendReplyMsg (msg, 0, path, true);
                     }
                 } else if (path.equals(STATUS_COLLECTOR_PATH)) {
                     Log.d(TAG, "onDataChanged path=" + path);
-                    msg = getCollectorStatus(getApplicationContext());
-                    sendReplyMsg (msg, path, false);
+                    sendCollectorStatus(getApplicationContext(), path);
                     sendPersistentStore();
                 } else if (path.equals(WEARABLE_SENSOR_DATA_PATH)) {//KS
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
@@ -810,9 +809,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
     }
 
-    private String getCollectorStatus (Context context) {
+    private void sendCollectorStatus (Context context, String path) {
+        String msg;
+        long last_timestamp = 0;
         if (DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomG5)) {
-            return G5CollectionService.getLastState();
+            msg = G5CollectionService.getLastState();
+            last_timestamp = G5CollectionService.getLastStateTimestamp();
         }else {//TODO getLastState() in non-G5 Services
             BluetoothManager mBluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
             ActiveBluetoothDevice activeBluetoothDevice = ActiveBluetoothDevice.first();
@@ -825,17 +827,19 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 }
             }
             if (connected) {
-                return "Connected on watch";//TODO getLastState() in non-G5 Services
+                msg = "Connected on watch";//TODO getLastState() in non-G5 Services
             } else {
-                return "Not Connected";
+                msg = "Not Connected";
             }
         }
+        sendReplyMsg (msg, last_timestamp, path, false);
     }
 
-    private synchronized void sendReplyMsg (String msg, String path, boolean showToast) {
+    private synchronized void sendReplyMsg (String msg, long last_timestamp, String path, boolean showToast) {
         Log.d(TAG, "sendReplyMsg msg=" + msg);
         DataMap dataMap = new DataMap();
         dataMap.putString("msg", msg);
+        dataMap.putLong("last_timestamp", last_timestamp);
         dataMap.putString("action_path", path);//eg. START_COLLECTOR_PATH
         Log.d(TAG, "sendReplyMsg dataMap=" + dataMap);
         Intent messageIntent = new Intent();

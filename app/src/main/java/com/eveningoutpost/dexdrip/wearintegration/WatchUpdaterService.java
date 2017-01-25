@@ -890,7 +890,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                                     case STATUS_COLLECTOR_PATH:
                                         Log.d(TAG, "onMessageReceived WEARABLE_REPLYMSG_PATH send LocalBroadcastManager ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE=" + ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE);
                                         final Intent intent = new Intent(ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE);
-                                        intent.putExtra("data", msg);
+                                        intent.putExtra("data", dataMap.toBundle());//msg
                                         LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(intent);
                                         break;
                                 }

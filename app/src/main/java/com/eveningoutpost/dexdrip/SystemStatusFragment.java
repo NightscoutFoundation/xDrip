@@ -41,6 +41,7 @@ import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+import com.google.android.gms.wearable.DataMap;
 
 import java.lang.reflect.Method;
 import java.text.DateFormat;
@@ -79,7 +80,7 @@ public class SystemStatusFragment extends Fragment {
         prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         Context context = safeGetContext();
         final PowerManager.WakeLock wl = JoH.getWakeLock("ACTION_STATUS_COLLECTOR",120000);
-        if (prefs.getBoolean("wear_sync", false) && prefs.getBoolean("enable_wearG5", false) && prefs.getBoolean("force_wearG5", false)) {
+        if (prefs.getBoolean("wear_sync", false) && prefs.getBoolean("enable_wearG5", false)) {
             context.startService(new Intent(context, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_STATUS_COLLECTOR));
         }
         JoH.releaseWakeLock(wl);
@@ -87,17 +88,22 @@ public class SystemStatusFragment extends Fragment {
             @Override
             public void onReceive(Context ctx, Intent intent) {
                 final String action = intent.getAction();
-                final String msg = intent.getStringExtra("data");
-                UserError.Log.d(TAG, "serviceDataReceiver onReceive:" + action + " :: " + msg);
-                switch (action) {
-                    case WatchUpdaterService.ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE:
-                        if (DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomG5)) {
-                            setWatchStatus(msg);
-                        }
-                        else {
-                            setConnectionStatus(msg);//TODO getLastState() in non-G5 Services
-                        }
-                        break;
+                //final String msg = intent.getStringExtra("data");
+                Bundle bundle = intent.getBundleExtra("data");
+                if (bundle != null) {
+                    DataMap dataMap = DataMap.fromBundle(bundle);
+                    String msg = dataMap.getString("msg", "");
+                    long last_timestamp = dataMap.getLong("last_timestamp", 0);
+                    UserError.Log.d(TAG, "serviceDataReceiver onReceive:" + action + " :: " + msg + " last_timestamp :: " + last_timestamp);
+                    switch (action) {
+                        case WatchUpdaterService.ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE:
+                            if (DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomG5)) {
+                                setWatchStatus(msg, last_timestamp);
+                            } else {
+                                setConnectionStatus(msg);//TODO getLastState() in non-G5 Services
+                            }
+                            break;
+                    }
                 }
             }
         };
