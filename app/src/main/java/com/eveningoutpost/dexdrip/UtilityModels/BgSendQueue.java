@@ -39,7 +39,7 @@ import com.rits.cloning.Cloner;
 import java.util.List;
 
 /**
- * Created by stephenblack on 11/7/14.
+ * Created by Emma Black on 11/7/14.
  */
 @Table(name = "BgSendQueue", id = BaseColumns._ID)
 public class BgSendQueue extends Model {

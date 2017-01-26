@@ -22,7 +22,7 @@ import lecho.lib.hellocharts.model.Viewport;
 import static com.eveningoutpost.dexdrip.Models.JoH.cloneObject;
 
 /**
- * Created by stephenblack on 11/15/14.
+ * Created by Emma Black on 11/15/14.
  */
 public class BgGraphBuilder {
     private int timespan;

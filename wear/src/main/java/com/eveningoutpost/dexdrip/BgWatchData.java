@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
 /**
- * Created by stephenblack on 1/7/15.
+ * Created by Emma Black on 1/7/15.
  */
 public class BgWatchData implements Comparable<BgWatchData>{
     public double sgv;

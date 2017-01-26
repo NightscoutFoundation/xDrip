@@ -54,7 +54,7 @@ import retrofit.http.POST;
  * I have modified this class to make it fit my needs
  * Modifications include field remappings and lists instead of arrays
  * A DTO would probably be a better future implementation
- * -Stephen Black
+ * -Emma Black
  */
 public class NightscoutUploader {
 

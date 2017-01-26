@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * Created by stephenblack on 4/15/15.
+ * Created by Emma Black on 4/15/15.
  */
 public class IdempotentMigrations {
     private Context mContext;

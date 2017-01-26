@@ -32,7 +32,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 /**
- * Created by stephenblack on 1/14/15.
+ * Created by Emma Black on 1/14/15.
  */
 @Table(name = "AlertType", id = BaseColumns._ID)
 public class AlertType extends Model {

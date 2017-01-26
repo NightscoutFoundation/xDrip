@@ -44,7 +44,7 @@ import java.util.Date;
 import lecho.lib.hellocharts.view.LineChartView;
 
 /**
- * Created by stephenblack on 12/29/14.
+ * Created by Emma Black on 12/29/14.
  */
 public  abstract class BaseWatchFace extends WatchFace implements SharedPreferences.OnSharedPreferenceChangeListener {
     private final static String TAG = BaseWatchFace.class.getSimpleName();

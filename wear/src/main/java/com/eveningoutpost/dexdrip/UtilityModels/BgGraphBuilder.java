@@ -37,7 +37,7 @@ import lecho.lib.hellocharts.view.Chart;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 /**
- * Created by stephenblack on 11/15/14.
+ * Created by Emma Black on 11/15/14.
  */
 
 class PointValueExtended extends PointValue {

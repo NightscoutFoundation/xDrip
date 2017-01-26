@@ -46,7 +46,7 @@ import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
 
 /**
- * Created by stephenblack on 12/29/14.
+ * Created by Emma Black on 12/29/14.
  */
 public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPreferenceChangeListener {
     private final static String TAG = BIGChart.class.getSimpleName();

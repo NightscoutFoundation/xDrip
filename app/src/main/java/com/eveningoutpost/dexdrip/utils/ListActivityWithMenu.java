@@ -12,7 +12,7 @@ import com.eveningoutpost.dexdrip.R;
 import java.util.List;
 
 /**
- * Created by stephenblack on 6/8/15.
+ * Created by Emma Black on 6/8/15.
  */
 public abstract class ListActivityWithMenu extends ListActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     private int menu_position;

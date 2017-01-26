@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
- * Created by stephenblack on 11/6/14.
+ * Created by Emma Black on 11/6/14.
  */
 
 @Table(name = "TransmitterData", id = BaseColumns._ID)

@@ -65,7 +65,7 @@ import static com.eveningoutpost.dexdrip.Services.G5CollectionService.G5_FIRMWAR
 import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.sgvLevel;
 
 /**
- * Created by stephenblack on 12/26/14.
+ * Created by Emma Black on 12/26/14.
  */
 public class ListenerService extends WearableListenerService implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {

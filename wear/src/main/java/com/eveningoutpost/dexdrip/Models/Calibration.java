@@ -99,7 +99,7 @@ class TestParameters extends SlopeParameters {
 }
 
 /**
- * Created by stephenblack on 10/29/14.
+ * Created by Emma Black on 10/29/14.
  */
 @Table(name = "Calibration", id = BaseColumns._ID)
 public class Calibration extends Model {

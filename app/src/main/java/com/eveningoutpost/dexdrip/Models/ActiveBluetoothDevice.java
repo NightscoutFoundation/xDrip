@@ -8,7 +8,7 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 
 /**
- * Created by stephenblack on 11/3/14.
+ * Created by Emma Black on 11/3/14.
  */
 @Table(name = "ActiveBluetoothDevice", id = BaseColumns._ID)
 public class ActiveBluetoothDevice extends Model {

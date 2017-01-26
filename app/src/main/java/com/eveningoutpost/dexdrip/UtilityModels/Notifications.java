@@ -54,7 +54,7 @@ import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 
 /**
- * Created by stephenblack on 11/28/14.
+ * Created by Emma Black on 11/28/14.
  */
 public class Notifications extends IntentService {
     public static final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};

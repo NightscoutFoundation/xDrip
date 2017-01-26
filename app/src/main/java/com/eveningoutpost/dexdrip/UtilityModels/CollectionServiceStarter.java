@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.Calendar;
 
 /**
- * Created by stephenblack on 12/22/14.
+ * Created by Emma Black on 12/22/14.
  */
 public class CollectionServiceStarter {
     private Context mContext;
