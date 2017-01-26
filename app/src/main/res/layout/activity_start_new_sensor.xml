@@ -16,37 +16,25 @@
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:gravity="center_horizontal">
-                <DatePicker
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:id="@+id/datePicker"
-                    android:datePickerMode="spinner"
-                    android:calendarViewShown="false"
-                    android:layout_weight="0.30" />
-
-                <TimePicker
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:id="@+id/timePicker"
-                    android:layout_centerVertical="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_alignParentStart="true"
-                    android:timePickerMode="spinner"
-                    android:layout_weight="0.30"/>
+                android:gravity="center_horizontal"
+                android:weightSum="1">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Do not hit start sensor unless the sensor is already embedded and the transmitter is connected. \nPLEASE SELECT THE TIME AND DATE THE SENSOR WAS ACTUALLY INSERTED! (as close as you can recall!)"
+                    android:text="Do not hit start sensor unless the sensor is already embedded and the transmitter is connected.\n\n"
                     android:id="@+id/textView"
                     android:layout_above="@+id/startNewSensor"
                     android:layout_toStartOf="@+id/startNewSensor"
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="10dp"
                     android:gravity="center_horizontal"
-                    android:textSize="15sp" />
+                    android:textSize="20sp"
+                    android:layout_weight="0.68"
+                    android:paddingRight="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="10dp" />
 
                 <Button
                     android:layout_width="wrap_content"
