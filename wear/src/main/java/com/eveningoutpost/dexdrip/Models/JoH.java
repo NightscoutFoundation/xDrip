@@ -89,7 +89,7 @@ import java.util.zip.Inflater;
 public class JoH {
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
     private final static String TAG = "jamorham JoH";
-    private final static boolean debug_wakelocks = false;
+    private final static boolean debug_wakelocks = true;
 
     private static double benchmark_time = 0;
     private static Map<String, Double> benchmarks = new HashMap<String, Double>();
@@ -552,6 +552,14 @@ public class JoH {
     public static PowerManager.WakeLock getWakeLock(Context context, final String name, int millis) {//KS
         final PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);//KS
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, name);
+        wl.acquire(millis);
+        if (debug_wakelocks) Log.d(TAG, "getWakeLock: " + name + " " + wl.toString());
+        return wl;
+    }
+
+    public static PowerManager.WakeLock getWakeLock(final int type, final String name, int millis) {//KS
+        final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);//KS
+        PowerManager.WakeLock wl = pm.newWakeLock(type, name);//PowerManager.SCREEN_BRIGHT_WAKE_LOCK
         wl.acquire(millis);
         if (debug_wakelocks) Log.d(TAG, "getWakeLock: " + name + " " + wl.toString());
         return wl;

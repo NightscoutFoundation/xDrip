@@ -14,6 +14,9 @@ import com.ustwo.clockwise.common.WatchMode;
 
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class Home extends BaseWatchFace {
     //KS the following were copied from app/home
     private static Context context;//KS
@@ -354,6 +357,5 @@ public class Home extends BaseWatchFace {
         if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) return (60000 * 13);
         return (60000 * 11);
     }
-
 }
 

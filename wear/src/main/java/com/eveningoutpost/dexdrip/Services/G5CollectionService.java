@@ -173,6 +173,7 @@ public class G5CollectionService extends Service {
     private static final boolean simpleBondWait = true; // possible UI thread issue but apparently more reliable
     private static final boolean getVersionDetails = true; // try to load firmware version details
     private static final boolean getBatteryDetails = true; // try to load battery info details
+    private static final boolean tryForceScreenOn = true; // try to force screen on before scan
 
     private static final long BATTERY_READ_PERIOD_MS = 1000 * 60 * 60 * 12; // how often to poll battery data (12 hours)
 
@@ -611,6 +612,21 @@ public class G5CollectionService extends Service {
 
     private synchronized void scanLogic() {
         if (!keep_running) return;
+
+        Log.e(TAG, "scanLogic call forceScreenOn");
+        if (tryForceScreenOn) {
+            if (enforceMainThread()) {
+                Handler iHandler = new Handler(Looper.getMainLooper());
+                iHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        forceScreenOn();
+                    }
+                });
+            } else {
+                forceScreenOn();
+            }
+        }
         if (JoH.ratelimit("G5-scanlogic", 2)) {
             try {
                 mLEScanner.stopScan(mScanCallback);
@@ -667,12 +683,47 @@ public class G5CollectionService extends Service {
         }
     }
 
+    private synchronized void forceScreenOn() {
+        //Home.startHomeWithExtra(getApplicationContext(), Home.HOME_FULL_WAKEUP, "1");
+        final int timeout = 60000;
+        //if (!JoH.isScreenOn()) {
+            Log.e(TAG, "forceScreenOn set wakelock for SCREEN_BRIGHT_WAKE_LOCK");
+            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            final PowerManager.WakeLock wl = JoH.getWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "SCREEN_BRIGHT_WAKE_LOCK", timeout);
+
+            final Timer t = new Timer();
+            t.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    JoH.releaseWakeLock(wl);
+                    Log.e(TAG, "forceScreenOn releaseWakeLock " + wl.toString());
+                }
+            }, timeout);
+        //}
+        //else Log.e(TAG, "forceScreenOn Screen is already on so not turning on");
+    }
+
     public synchronized void startScan() {
         UserError.Log.e(TAG, "Initial scan?" + isIntialScan);
         if (isScanning) {
             Log.d(TAG, "alreadyScanning");
             scan_interval_timer.cancel();
             return;
+        }
+
+        Log.e(TAG, "startScan call forceScreenOn");
+        if (tryForceScreenOn) {
+            if (enforceMainThread()) {
+                Handler iHandler = new Handler(Looper.getMainLooper());
+                iHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        forceScreenOn();
+                    }
+                });
+            } else {
+                forceScreenOn();
+            }
         }
 
         getTransmitterDetails();
