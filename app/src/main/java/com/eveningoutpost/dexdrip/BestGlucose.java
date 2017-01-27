@@ -47,6 +47,7 @@ public class BestGlucose {
         public double unitized_value = -1; // in local units
         public double delta_mgdl = 0; // displayable delta mgdl figure
         public double slope = 0; // slope metric mgdl/ms
+        public double noise = -1; // noise value
         public int warning = -1;  // warning level
         public long mssince = -1;
         public long timestamp = -1; // timestamp of reading
@@ -191,6 +192,7 @@ public class BestGlucose {
 
         // TODO refresh bggraph if needed based on cache - observe
         BgGraphBuilder.refreshNoiseIfOlderThan(dg.timestamp); // should this be conditional on whether bg_compensate_noise is set?
+        dg.noise = BgGraphBuilder.last_noise;
 
         boolean bg_from_filtered = prefs.getBoolean("bg_from_filtered", false);
         // if noise has settled down then switch off filtered mode
