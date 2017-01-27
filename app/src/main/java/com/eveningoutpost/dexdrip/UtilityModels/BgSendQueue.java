@@ -136,6 +136,10 @@ public class BgSendQueue extends Model {
                 if ((prefs.getBoolean("broadcast_data_use_best_glucose", false)) && ((dg = BestGlucose.getDisplayGlucose()) != null)) {
                     bundle.putDouble(Intents.EXTRA_BG_ESTIMATE, dg.mgdl);
                     bundle.putDouble(Intents.EXTRA_BG_SLOPE, dg.slope);
+
+                    bundle.putDouble(Intents.EXTRA_NOISE, dg.noise);
+                    bundle.putInt(Intents.EXTRA_NOISE_WARNING, dg.warning);
+
                     // hide slope possibly needs to be handled properly
                     if (bgReading.hide_slope) {
                         bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, "9"); // not sure if this is right has been this way for a long time
@@ -145,6 +149,9 @@ public class BgSendQueue extends Model {
                 } else {
                     // standard xdrip-classic data set
                     bundle.putDouble(Intents.EXTRA_BG_ESTIMATE, bgReading.calculated_value);
+
+                    // better to use the display glucose version above
+                    bundle.putDouble(Intents.EXTRA_NOISE, BgGraphBuilder.last_noise);
 
                     //TODO: change back to bgReading.calculated_value_slope if it will also get calculated for Share data
                     // bundle.putDouble(Intents.EXTRA_BG_SLOPE, bgReading.calculated_value_slope);
