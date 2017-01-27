@@ -649,12 +649,12 @@ public class DexCollectionService extends Service {
             return;
         }
 
-        if (use_transmiter_pl_bluetooth && ((transmitterData.raw_data == 100000) || (transmitterData.raw_data == 17764))) {
+        if (use_transmiter_pl_bluetooth && (transmitterData.raw_data == 100000)) {
             Log.wtf(TAG, "Ignoring probably erroneous Transmiter_PL data: " + transmitterData.raw_data);
             return;
         }
 
-        sensor.latest_battery_level = (sensor.latest_battery_level!=0)?Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level):transmitterData.sensor_battery_level;
+        sensor.latest_battery_level = (sensor.latest_battery_level != 0) ? Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level) : transmitterData.sensor_battery_level;
         sensor.save();
 
         last_transmitter_Data = transmitterData;
