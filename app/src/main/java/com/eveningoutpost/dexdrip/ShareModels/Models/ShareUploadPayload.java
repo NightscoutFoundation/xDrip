@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by stephenblack on 3/19/15.
+ * Created by Emma Black on 3/19/15.
  */
 public class ShareUploadPayload {
     @Expose

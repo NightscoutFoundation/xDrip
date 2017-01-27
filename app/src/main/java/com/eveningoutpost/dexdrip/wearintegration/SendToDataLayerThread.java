@@ -20,7 +20,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Created by stephenblack on 12/26/14.
+ * Created by Emma Black on 12/26/14.
  */
 class SendToDataLayerThread extends AsyncTask<DataMap,Void,Void> {
     private GoogleApiClient googleApiClient;

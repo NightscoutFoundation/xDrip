@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.ShareModels.UserAgentInfo;
 import com.google.gson.annotations.Expose;
 
 /**
- * Created by stephenblack on 6/29/15.
+ * Created by Emma Black on 6/29/15.
  */
 public class RuntimeInfo {
 

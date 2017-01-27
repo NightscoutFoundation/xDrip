@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 import java.util.UUID;
 
 /**
- * Created by stephenblack on 2/21/15.
+ * Created by Emma Black on 2/21/15.
  */
 public class RedBearLabAttributes {
     public static UUID CLIENT_CHARACTERISTIC_CONFIG = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");

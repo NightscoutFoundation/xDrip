@@ -10,7 +10,7 @@ import com.activeandroid.query.Select;
 import java.util.List;
 
 /**
- * Created by stephenblack on 12/9/14.
+ * Created by Emma Black on 12/9/14.
  */
 
 @Table(name = "CalibrationRequest", id = BaseColumns._ID)

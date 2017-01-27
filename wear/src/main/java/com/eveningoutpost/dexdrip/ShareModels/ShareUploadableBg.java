@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.ShareModels;
 
 /**
- * Created by stephenblack on 8/10/15.
+ * Created by Emma Black on 8/10/15.
  */
 public interface ShareUploadableBg {
     int getMgdlValue();

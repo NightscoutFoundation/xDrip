@@ -51,6 +51,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
+import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -629,6 +630,7 @@ public class DexCollectionService extends Service {
                     Log.v(TAG, "setSerialDataToTransmitterRawData: Creating TransmitterData at " + timestamp);
                     processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
                     if (Home.get_master()) GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery",-1));
+                    CheckBridgeBattery.checkBridgeBattery();
                 }
             }
         } else {
@@ -647,7 +649,12 @@ public class DexCollectionService extends Service {
             return;
         }
 
-        sensor.latest_battery_level = (sensor.latest_battery_level!=0)?Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level):transmitterData.sensor_battery_level;
+        if (use_transmiter_pl_bluetooth && (transmitterData.raw_data == 100000)) {
+            Log.wtf(TAG, "Ignoring probably erroneous Transmiter_PL data: " + transmitterData.raw_data);
+            return;
+        }
+
+        sensor.latest_battery_level = (sensor.latest_battery_level != 0) ? Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level) : transmitterData.sensor_battery_level;
         sensor.save();
 
         last_transmitter_Data = transmitterData;

@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
- * Created by stephenblack on 10/29/14.
+ * Created by Emma Black on 10/29/14.
  */
 
 @Table(name = "Sensors", id = BaseColumns._ID)

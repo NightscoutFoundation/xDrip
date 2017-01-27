@@ -13,7 +13,7 @@ import com.activeandroid.annotation.Table;
 import com.google.gson.annotations.Expose;
 
 /**
- * Created by stephenblack on 3/16/15.
+ * Created by Emma Black on 3/16/15.
  */
 @Table(name = "ShareGlucose", id = BaseColumns._ID)
 public class ShareGlucose extends Model {

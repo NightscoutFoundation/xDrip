@@ -15,7 +15,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 
 /**
- * Created by stephenblack on 11/29/14.
+ * Created by Emma Black on 11/29/14.
  */
 
 @Table(name = "Notifications", id = BaseColumns._ID)

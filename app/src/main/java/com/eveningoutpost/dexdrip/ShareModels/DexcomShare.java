@@ -16,7 +16,7 @@ import retrofit.http.POST;
 import retrofit.http.Query;
 
 /**
- * Created by stephenblack on 3/16/15.
+ * Created by Emma Black on 3/16/15.
  */
 public interface DexcomShare {
 

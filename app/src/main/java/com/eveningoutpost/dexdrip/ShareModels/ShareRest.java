@@ -39,7 +39,7 @@ import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 
 /**
- * Created by stephenblack on 12/26/14.
+ * Created by Emma Black on 12/26/14.
  */
 public class ShareRest {
     public static String TAG = ShareRest.class.getSimpleName();

@@ -549,6 +549,7 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("falling_bg_val"));
             bindPreferenceSummaryToValue(findPreference("rising_bg_val"));
             bindPreferenceSummaryToValue(findPreference("other_alerts_sound"));
+            bindPreferenceSummaryToValue(findPreference("bridge_battery_alert_level"));
 
             addPreferencesFromResource(R.xml.pref_data_source);
 
@@ -1062,7 +1063,7 @@ public class Preferences extends PreferenceActivity {
 
                 if (!engineering_mode) {
                     try {
-                        //getPreferenceScreen().removePreference(motionScreen);
+                        if (!Experience.gotData()) getPreferenceScreen().removePreference(motionScreen);
                         calibrationSettingsScreen.removePreference(adrian_calibration_mode);
                     } catch (NullPointerException e) {
                         Log.wtf(TAG, "Nullpointer with engineering mode s ", e);

@@ -4,7 +4,7 @@ import com.eveningoutpost.dexdrip.ShareModels.ShareUploadableBg;
 import com.google.gson.annotations.Expose;
 
 /**
- * Created by stephenblack on 3/19/15.
+ * Created by Emma Black on 3/19/15.
  */
 public class Egv {
     @Expose

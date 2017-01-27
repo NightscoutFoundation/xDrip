@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.ShareModels.Models;
 import com.google.gson.annotations.Expose;
 
 /**
- * Created by stephenblack on 7/17/15.
+ * Created by Emma Black on 7/17/15.
  */
 public class InvitationPayload {
     public InvitationPayload(String displayName) {

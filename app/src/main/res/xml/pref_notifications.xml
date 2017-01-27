@@ -270,6 +270,19 @@
                 <PreferenceCategory android:title="@string/other_xdrip_plus_alerts">
                     <SwitchPreference
                         android:defaultValue="true"
+                        android:key="bridge_battery_alerts"
+                        android:summary="Notify when battery level goes below"
+                        android:title="Collector battery alerts" />
+                    <EditTextPreference
+                        android:defaultValue="30"
+                        android:dependency="bridge_battery_alerts"
+                        android:digits="0123456789"
+                        android:inputType="number"
+                        android:key="bridge_battery_alert_level"
+                        android:summary=""
+                        android:title="Low battery percentage" />
+                    <SwitchPreference
+                        android:defaultValue="true"
                         android:key="parakeet_status_alerts"
                         android:summary="@string/notify_when_parakeet_device_stops_checking_in"
                         android:title="@string/parakeet_related_alerts" />

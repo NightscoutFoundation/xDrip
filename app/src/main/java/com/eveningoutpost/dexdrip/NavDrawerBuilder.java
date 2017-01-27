@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by stephenblack on 11/5/14.
+ * Created by Emma Black on 11/5/14.
  */
 public class NavDrawerBuilder {
     private List<Calibration> last_two_calibrations = Calibration.latestValid(2);

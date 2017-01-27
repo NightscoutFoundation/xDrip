@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by stephenblack on 8/4/15.
+ * Created by Emma Black on 8/4/15.
  */
 public class ErrorListAdapter  extends BaseAdapter {
     private List<UserError> list;

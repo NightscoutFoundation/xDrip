@@ -33,24 +33,26 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
     private int sensTopMax = 1;
     private int carbTopMax = 1;
     private Context context;
-    public int first_run = 0;
+    int first_run = 0;
     public int max_position = -1;
     private boolean doMgdl;
 
-    interface ProfileCallBacks {
-
+    public interface TimePickerCallbacks {
         void onTimeUpdated(int newmins);
+    }
+    public interface DatePickerCallbacks {
+        void onDateSet(int year, int month, int day);
     }
 
 
-    public ProfileAdapter(Context ctx, List<ProfileItem> profileList, boolean doMgdl) {
+    ProfileAdapter(Context ctx, List<ProfileItem> profileList, boolean doMgdl) {
         this.profileList = profileList;
         this.context = ctx;
         this.doMgdl = doMgdl;
         calcTopScale();
     }
 
-    public void resetTopMax()
+    void resetTopMax()
     {
         sensTopMax=1;
         carbTopMax=1;
@@ -65,7 +67,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
     }
 
     // calculate top details for this list
-    public void calcTopScale() {
+    void calcTopScale() {
         for (ProfileItem item : profileList) {
             int this_scale = sensibleScale((int) item.sensitivity);
             sensTopScale = Math.max(sensTopScale, this_scale);
@@ -74,7 +76,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
         }
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    class MyViewHolder extends RecyclerView.ViewHolder {
 
         public TextView title, day;
         SeekBar carbsSeekBar, sensSeekBar;
@@ -85,7 +87,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
         int sensitivity_scaling = 1;
         int position = -1;
 
-        public MyViewHolder(View view) {
+        MyViewHolder(View view) {
             super(view);
             title = (TextView) view.findViewById(R.id.title);
 
@@ -253,7 +255,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
                 public void onClick(View v) {
                     TimePickerFragment newFragment = new TimePickerFragment();
                     newFragment.setTimeObject(profileItem.start_min);
-                    newFragment.setTimeCallback(new ProfileCallBacks() {
+                    newFragment.setTimeCallback(new TimePickerCallbacks() {
                         @Override
                         public void onTimeUpdated(int newmins) {
                             profileItem.start_min = newmins;
@@ -274,7 +276,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
                 public void onClick(View v) {
                     TimePickerFragment newFragment = new TimePickerFragment();
                     newFragment.setTimeObject(profileItem.end_min);
-                    newFragment.setTimeCallback(new ProfileCallBacks() {
+                    newFragment.setTimeCallback(new TimePickerCallbacks() {
                         @Override
                         public void onTimeUpdated(int newmins) {
                             profileItem.end_min = newmins;

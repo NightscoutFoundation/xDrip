@@ -11,7 +11,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import java.util.Date;
 
 /**
- * Created by stephenblack on 12/25/14.
+ * Created by Emma Black on 12/25/14.
  */
 public class ForegroundServiceStarter {
     private Service mService;

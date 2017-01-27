@@ -9,7 +9,7 @@ import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 
 /**
- * Created by stephenblack on 11/3/14.
+ * Created by Emma Black on 11/3/14.
  */
 public class AutoStart extends BroadcastReceiver {
     @Override
