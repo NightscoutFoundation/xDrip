@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.Models.GlucoseData;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
+import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.gson.Gson;
 
@@ -126,9 +127,10 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
 
                                 final String data = bundle.getString("data");
                                 final int bridge_battery = bundle.getInt("bridge_battery");
-                                if (bridge_battery > 0)
+                                if (bridge_battery > 0) {
                                     Home.setPreferencesInt("bridge_battery", bridge_battery);
-
+                                    CheckBridgeBattery.checkBridgeBattery();
+                                }
                                 try {
                                     ReadingData.TransferObject object =
                                             new Gson().fromJson(data, ReadingData.TransferObject.class);

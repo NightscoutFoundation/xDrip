@@ -25,6 +25,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.common.ConnectionResult;
@@ -197,6 +198,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             change = true;
             prefs.putInt("bridge_battery", bridge_battery);
             Log.d(TAG, "syncPrefData commit bridge_battery: " + bridge_battery);
+            CheckBridgeBattery.checkBridgeBattery();
         }
 
         if (/*enable_wearG5 &&*/ enable_wearG5 != mPrefs.getBoolean("enable_wearG5", false)) {

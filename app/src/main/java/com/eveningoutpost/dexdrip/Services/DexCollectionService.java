@@ -51,6 +51,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
+import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -629,6 +630,7 @@ public class DexCollectionService extends Service {
                     Log.v(TAG, "setSerialDataToTransmitterRawData: Creating TransmitterData at " + timestamp);
                     processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
                     if (Home.get_master()) GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery",-1));
+                    CheckBridgeBattery.checkBridgeBattery();
                 }
             }
         } else {
@@ -647,7 +649,7 @@ public class DexCollectionService extends Service {
             return;
         }
 
-        if ((use_transmiter_pl_bluetooth) && (transmitterData.raw_data == 100000)) {
+        if (use_transmiter_pl_bluetooth && ((transmitterData.raw_data == 100000) || (transmitterData.raw_data == 17764))) {
             Log.wtf(TAG, "Ignoring probably erroneous Transmiter_PL data: " + transmitterData.raw_data);
             return;
         }

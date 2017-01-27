@@ -549,6 +549,7 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("falling_bg_val"));
             bindPreferenceSummaryToValue(findPreference("rising_bg_val"));
             bindPreferenceSummaryToValue(findPreference("other_alerts_sound"));
+            bindPreferenceSummaryToValue(findPreference("bridge_battery_alert_level"));
 
             addPreferencesFromResource(R.xml.pref_data_source);
 
