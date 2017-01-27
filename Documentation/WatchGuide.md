@@ -72,6 +72,7 @@ For example, if the user changes the Force Wear preference on the watch, it will
   - As with the xDrip+ phone app, specific log entries can be enabled by entering the extra log tag and severity level preference via the xDrip+ phone app settings, Less Common Settings (LCS) - Extra Logging Settings - **Extra tags for logging**.
 
 The following image shows an example of the phone View Events Log containing watch log entries.
+
 <img align="middle" src="./images/prefs-wear-vieweventslog.png" title="xDrip+ Wear Integration Preferences">
 
 ###XDrip Prefs Overview
