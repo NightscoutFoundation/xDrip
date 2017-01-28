@@ -15,7 +15,7 @@ import java.text.DateFormat;
 import java.util.Date;
 
 /**
- * Created by stephenblack on 1/14/15.
+ * Created by Emma Black on 1/14/15.
  */
 @Table(name = "ActiveBgAlert", id = BaseColumns._ID)
 public class ActiveBgAlert extends Model {

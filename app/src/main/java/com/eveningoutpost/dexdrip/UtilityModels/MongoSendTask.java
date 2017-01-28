@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by stephenblack on 12/19/14.
+ * Created by Emma Black on 12/19/14.
  */
 public class MongoSendTask extends AsyncTask<String, Void, Void> {
         private Context context;

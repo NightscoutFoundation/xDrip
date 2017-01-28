@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Created by stephenblack on 3/16/15.
+ * Created by Emma Black on 3/16/15.
  */
 public class ShareAuthenticationBody {
     @Expose

@@ -898,6 +898,10 @@ public class JoH {
         wakeUpIntent(context, delaySeconds * 1000, pendingIntent);
     }
 
+    public static void cancelNotification(int notificationId) {
+        final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotifyMgr.cancel(notificationId);
+    }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, boolean onetime) {
         final Notification.Builder mBuilder = notificationBuilder(title, content, intent);
@@ -911,7 +915,7 @@ public class JoH {
         }
 
         final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        if (!onetime) mNotifyMgr.cancel(notificationId);
+       // if (!onetime) mNotifyMgr.cancel(notificationId);
 
         mNotifyMgr.notify(notificationId, mBuilder.build());
     }

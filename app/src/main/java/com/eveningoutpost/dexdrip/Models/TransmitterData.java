@@ -10,6 +10,7 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.gson.annotations.Expose;
 
@@ -19,7 +20,7 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
- * Created by stephenblack on 11/6/14.
+ * Created by Emma Black on 11/6/14.
  */
 
 @Table(name = "TransmitterData", id = BaseColumns._ID)
@@ -77,13 +78,15 @@ public class TransmitterData extends Model {
                 if (data.length > 2) {
                     try {
                         Home.setPreferencesInt("bridge_battery", Integer.parseInt(data[2]));
-                        if (Home.get_master())
-                            GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery", -1));
+                        if (Home.get_master()) {
+                            GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery", -1)); }
+                        CheckBridgeBattery.checkBridgeBattery();
                     } catch (Exception e) {
                         Log.e(TAG, "Got exception processing classic wixel or limitter battery value: " + e.toString());
                     }
                     if (data.length > 3) {
-                        if (DexCollectionType.getDexCollectionType() == DexCollectionType.LimiTTer) {
+                        if ((DexCollectionType.getDexCollectionType() == DexCollectionType.LimiTTer)
+                                && (!Home.getPreferencesBooleanDefaultFalse("use_transmiter_pl_bluetooth"))) {
                             try {
                                 // reported sensor age in minutes
                                 final Integer sensorAge = Integer.parseInt(data[3]);

@@ -1,5 +1,8 @@
 package com.eveningoutpost.dexdrip;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -9,14 +12,16 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Experience;
+import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
+import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
+import com.eveningoutpost.dexdrip.profileeditor.TimePickerFragment;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.LocationHelper;
@@ -25,21 +30,27 @@ import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import java.util.Calendar;
 import java.util.Date;
 
+import static com.eveningoutpost.dexdrip.Models.BgReading.AGE_ADJUSTMENT_TIME;
+
 
 public class StartNewSensor extends ActivityWithMenu {
-   // public static String menu_name = "Start Sensor";
+    // public static String menu_name = "Start Sensor";
+    private static final String TAG = "StartNewSensor";
     private Button button;
-    private DatePicker dp;
-    private TimePicker tp;
+    //private DatePicker dp;
+    // private TimePicker tp;
+    final Activity activity = this;
+    Calendar ucalendar = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(!Sensor.isActive()) {
+        if (!Sensor.isActive()) {
+            JoH.fixActionBar(this);
             setContentView(R.layout.activity_start_new_sensor);
-            button = (Button)findViewById(R.id.startNewSensor);
-            dp = (DatePicker)findViewById(R.id.datePicker);
-            tp = (TimePicker)findViewById(R.id.timePicker);
+            button = (Button) findViewById(R.id.startNewSensor);
+            //dp = (DatePicker)findViewById(R.id.datePicker);
+            //tp = (TimePicker)findViewById(R.id.timePicker);
             addListenerOnButton();
         } else {
             Intent intent = new Intent(this, StopSensor.class);
@@ -61,8 +72,12 @@ public class StartNewSensor extends ActivityWithMenu {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && DexCollectionType.hasBluetooth()) {
                     if (!LocationHelper.locationPermission(StartNewSensor.this)) {
-                        JoH.static_toast_long("Location permission needed to use Bluetooth!");
-                        requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+                        JoH.show_ok_dialog(activity, "Please Allow Permission", "Location permission needed to use Bluetooth!", new Runnable() {
+                            @Override
+                            public void run() {
+                                activity.requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+                            }
+                        });
                     } else {
                         sensorButtonClick();
                     }
@@ -73,20 +88,86 @@ public class StartNewSensor extends ActivityWithMenu {
         });
     }
 
-    private void sensorButtonClick() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(dp.getYear(), dp.getMonth(), dp.getDayOfMonth(), tp.getCurrentHour(), tp.getCurrentMinute(), 0);
-        long startTime = calendar.getTime().getTime();
 
-        if(new Date().getTime() + 15 * 60000 < startTime ) {
-            Toast.makeText(getApplicationContext(), "ERROR: SENSOR START TIME IN FUTURE", Toast.LENGTH_LONG).show();
+    private void sensorButtonClick() {
+
+
+        ucalendar = Calendar.getInstance();
+        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Did you insert it today?");
+        builder.setMessage("We need to know when the sensor was inserted to improve calculation accuracy.\n\nWas it inserted today?");
+        builder.setPositiveButton("YES, today", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                askSesorInsertionTime();
+            }
+        });
+        builder.setNegativeButton("Not today", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                if (DexCollectionType.hasLibre()) {
+                    ucalendar.add(Calendar.DAY_OF_MONTH, -1);
+                    realStartSensor();
+                } else {
+                    final DatePickerFragment datePickerFragment = new DatePickerFragment();
+                    datePickerFragment.setAllowFuture(false);
+                    datePickerFragment.setEarliestDate(JoH.tsl() - (14 * 24 * 60 * 60 * 1000));
+                    datePickerFragment.setTitle("Which day was it inserted?");
+                    datePickerFragment.setDateCallback(new ProfileAdapter.DatePickerCallbacks() {
+                        @Override
+                        public void onDateSet(int year, int month, int day) {
+                            ucalendar.set(year, month, day);
+                            // Long enough in the past for age adjustment to be meaningless? Skip asking time
+                            if (JoH.tsl() - ucalendar.getTimeInMillis() > (AGE_ADJUSTMENT_TIME + (1000 * 60 * 60 * 24))) {
+                                realStartSensor();
+                            } else {
+                                askSesorInsertionTime();
+                            }
+                        }
+                    });
+
+                    datePickerFragment.show(activity.getFragmentManager(), "DatePicker");
+                }
+            }
+        });
+        builder.create().show();
+    }
+
+    private void askSesorInsertionTime() {
+        final Calendar calendar = Calendar.getInstance();
+
+        TimePickerFragment timePickerFragment = new TimePickerFragment();
+        timePickerFragment.setTime(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+        timePickerFragment.setTitle("What time was it inserted?");
+        timePickerFragment.setTimeCallback(new ProfileAdapter.TimePickerCallbacks() {
+            @Override
+            public void onTimeUpdated(int newmins) {
+                int min = newmins % 60;
+                int hour = (newmins - min) / 60;
+                ucalendar.set(ucalendar.get(Calendar.YEAR), ucalendar.get(Calendar.MONTH), ucalendar.get(Calendar.DAY_OF_MONTH), hour, min);
+                if (DexCollectionType.hasLibre()) {
+                    ucalendar.add(Calendar.HOUR_OF_DAY, -1); // hack for warmup time
+                }
+
+                realStartSensor();
+            }
+        });
+        timePickerFragment.show(activity.getFragmentManager(), "TimePicker");
+    }
+
+    private void realStartSensor() {
+        long startTime = ucalendar.getTime().getTime();
+        Log.d(TAG, "Starting sensor time: " + JoH.dateTimeText(ucalendar.getTime().getTime()));
+
+        if (new Date().getTime() + 15 * 60000 < startTime) {
+            Toast.makeText(this, "ERROR: SENSOR START TIME IN FUTURE", Toast.LENGTH_LONG).show();
             return;
         }
 
         Sensor.create(startTime);
         Log.d("NEW SENSOR", "Sensor started at " + startTime);
 
-        Toast.makeText(getApplicationContext(), "NEW SENSOR STARTED", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "NEW SENSOR STARTED", Toast.LENGTH_LONG).show();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         // TODO add link pickers feature
@@ -99,11 +180,11 @@ public class StartNewSensor extends ActivityWithMenu {
         }
 
         LibreAlarmReceiver.clearSensorStats();
-        JoH.scheduleNotification(this,"Sensor should be ready",getString(R.string.please_enter_two_calibrations_to_get_started), 60*130, Home.SENSOR_READY_ID);
+        JoH.scheduleNotification(this, "Sensor should be ready", getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
 
         CollectionServiceStarter.newStart(getApplicationContext());
         Intent intent;
-        if(prefs.getBoolean("store_sensor_location",true)) {
+        if (prefs.getBoolean("store_sensor_location", true) && Experience.gotData()) {
             intent = new Intent(getApplicationContext(), NewSensorLocation.class);
         } else {
             intent = new Intent(getApplicationContext(), Home.class);
@@ -128,7 +209,7 @@ public class StartNewSensor extends ActivityWithMenu {
         }
     }
 
-    public void oldaddListenerOnButton() {
+    /*public void oldaddListenerOnButton() {
 
         button = (Button)findViewById(R.id.startNewSensor);
 
@@ -159,5 +240,5 @@ public class StartNewSensor extends ActivityWithMenu {
 
         });
 
-    }
+    }*/
 }

@@ -27,7 +27,7 @@ import java.io.IOException;
 //KS import java.util.Calendar;
 
 /**
- * Created by stephenblack on 12/22/14.
+ * Created by Emma Black on 12/22/14.
  */
 public class CollectionServiceStarter {
     private Context mContext;
@@ -266,8 +266,9 @@ public class CollectionServiceStarter {
         collectionServiceStarter.start(context, collection_method);
     }
 
-    public static void startCollectionService(Context context) {
-        Log.d(TAG, "startCollectionService: " + DexCollectionType.getDexCollectionType());
+    public static void startBtService(Context context) {
+        Log.d(TAG, "startBtService: " + DexCollectionType.getDexCollectionType());
+        stopBtService(context);
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
         switch (DexCollectionType.getDexCollectionType()) {
             case DexcomShare:

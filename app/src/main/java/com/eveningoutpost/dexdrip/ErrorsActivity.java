@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by stephenblack on 8/3/15.
+ * Created by Emma Black on 8/3/15.
  */
 public class ErrorsActivity extends ActivityWithMenu {
     public static final String menu_name = "Errors";

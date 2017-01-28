@@ -69,7 +69,7 @@
     <string name="pref_summary_run_G5_ble_tasks_on_uithread">Running on UI Thread is crucial for some Android devices to properly connect, but can cause missed readings when other UI intensive activities are in use.</string>
     <string name="pref_always_get_new_keys">Auth G5/read</string>
     <string name="pref_summary_always_get_new_keys">This will attempt a full authentication each read attempt. Redundant if Unbond before each read is also selected.</string>
-    <string name="pref_always_unbond_G5">Unbond G5/read"</string>
+    <string name="pref_always_unbond_G5">Unbond G5/read</string>
     <string name="pref_summary_always_unbond_G5">This will remove the G5 from your device\'s paired device list, and attempt a full authentication and bonding with each read attempt.</string>
     <string name="pref_show_external_status">Show Status</string>
     <string name="pref_summary_show_external_status">Show Loop Status</string>
@@ -123,5 +123,6 @@
 
     <string name="persistent_high_for_greater_than">Persistent High for > </string>
     <string name="space_mins">" mins"</string>
+    <string name="notify_collector_started">%1$s Collector Started on Watch</string>
 
 </resources>

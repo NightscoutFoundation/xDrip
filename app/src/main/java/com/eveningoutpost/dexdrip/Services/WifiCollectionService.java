@@ -161,7 +161,7 @@ public class WifiCollectionService extends Service {
     public static List<StatusItem> megaStatus() {
         final List<StatusItem> l = new ArrayList<>();
         l.add(new StatusItem("IP Collector Service", lastState));
-        l.add(new StatusItem("Next poll", JoH.niceTimeScalar(PersistentStore.getLong(WIFI_COLLECTION_WAKEUP) - JoH.tsl())));
+        l.add(new StatusItem("Next poll", JoH.niceTimeTill(PersistentStore.getLong(WIFI_COLLECTION_WAKEUP))));
         l.addAll(WixelReader.megaStatus());
         return l;
     }

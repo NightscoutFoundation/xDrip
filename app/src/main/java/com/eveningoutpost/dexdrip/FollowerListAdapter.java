@@ -20,7 +20,7 @@ import retrofit.Response;
 import retrofit.Retrofit;
 
 /**
- * Created by stephenblack on 8/11/15.
+ * Created by Emma Black on 8/11/15.
  */
 public class FollowerListAdapter extends BaseAdapter {
     private List<ExistingFollower> list;

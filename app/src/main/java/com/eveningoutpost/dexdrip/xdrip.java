@@ -24,7 +24,7 @@ import java.util.Locale;
 import io.fabric.sdk.android.Fabric;
 
 /**
- * Created by stephenblack on 3/21/15.
+ * Created by Emma Black on 3/21/15.
  */
 
 public class xdrip extends Application {

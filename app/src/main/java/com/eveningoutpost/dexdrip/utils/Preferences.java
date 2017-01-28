@@ -46,6 +46,7 @@ import com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.Experience;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
@@ -548,6 +549,7 @@ public class Preferences extends PreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("falling_bg_val"));
             bindPreferenceSummaryToValue(findPreference("rising_bg_val"));
             bindPreferenceSummaryToValue(findPreference("other_alerts_sound"));
+            bindPreferenceSummaryToValue(findPreference("bridge_battery_alert_level"));
 
             addPreferencesFromResource(R.xml.pref_data_source);
 
@@ -1022,6 +1024,14 @@ public class Preferences extends PreferenceActivity {
                     }
                 }
 
+                if (!Experience.gotData()) {
+                    try {
+                    collectionCategory.removePreference(runInForeground);
+                    } catch (Exception e) { //
+                    }
+                }
+
+
                 final PreferenceScreen g5_settings_screen = (PreferenceScreen) findPreference("xdrip_plus_g5_extra_settings");
                 if (collectionType == DexCollectionType.DexcomG5) {
                     try {
@@ -1053,7 +1063,7 @@ public class Preferences extends PreferenceActivity {
 
                 if (!engineering_mode) {
                     try {
-                        //getPreferenceScreen().removePreference(motionScreen);
+                        if (!Experience.gotData()) getPreferenceScreen().removePreference(motionScreen);
                         calibrationSettingsScreen.removePreference(adrian_calibration_mode);
                     } catch (NullPointerException e) {
                         Log.wtf(TAG, "Nullpointer with engineering mode s ", e);
@@ -1338,7 +1348,7 @@ public class Preferences extends PreferenceActivity {
                     }
 
 
-                    if (collectionType != DexCollectionType.BluetoothWixel
+                    if ((collectionType != DexCollectionType.BluetoothWixel
                             && collectionType != DexCollectionType.DexcomShare
                             && collectionType != DexCollectionType.WifiWixel
                             && collectionType != DexCollectionType.DexbridgeWixel
@@ -1347,7 +1357,7 @@ public class Preferences extends PreferenceActivity {
                             && collectionType != DexCollectionType.WifiBlueToothWixel
                             && collectionType != DexCollectionType.WifiDexBridgeWixel
                             && collectionType != DexCollectionType.LibreAlarm
-                            ) {
+                            ) || (!Experience.gotData())) {
                         collectionCategory.removePreference(runInForeground);
                     } else {
                         collectionCategory.addPreference(runInForeground);

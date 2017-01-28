@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.Calendar;
 
 /**
- * Created by stephenblack on 12/22/14.
+ * Created by Emma Black on 12/22/14.
  */
 public class CollectionServiceStarter {
     private Context mContext;
@@ -299,8 +299,9 @@ public class CollectionServiceStarter {
         collectionServiceStarter.start(context, collection_method);
     }
 
-    public static void startCollectionService(Context context) {
-        Log.d(TAG, "restartCollectionService");
+    public static void startBtService(Context context) {
+        Log.d(TAG, "startBtService: " + DexCollectionType.getDexCollectionType());
+        stopBtService(context);
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
         switch (DexCollectionType.getDexCollectionType()) {
             case DexcomShare:
@@ -344,7 +345,7 @@ public class CollectionServiceStarter {
     }
 
     private void startBtG5Service() {
-        Log.d(TAG, "starting G5 share service");
+        Log.d(TAG, "starting G5 service");
         //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
         G5CollectionService.keep_running = true;
         this.mContext.startService(new Intent(this.mContext, G5CollectionService.class));

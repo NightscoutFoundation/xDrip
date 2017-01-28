@@ -13,6 +13,7 @@ import com.activeandroid.annotation.Table;
 //KS import com.activeandroid.query.Select;
 import com.activeandroid.query.Select;
 //KS import com.eveningoutpost.dexdrip.GcmActivity;
+import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
@@ -98,7 +99,7 @@ class TestParameters extends SlopeParameters {
 }
 
 /**
- * Created by stephenblack on 10/29/14.
+ * Created by Emma Black on 10/29/14.
  */
 @Table(name = "Calibration", id = BaseColumns._ID)
 public class Calibration extends Model {
@@ -801,6 +802,16 @@ public class Calibration extends Model {
             }
         }
 
+    }
+
+    public static void deleteALL() {
+        try {
+            SQLiteUtils.execSql("delete from CalibrationRequest");
+            SQLiteUtils.execSql("delete from Calibration");
+            Log.d(TAG, "Deleting all Calibration");
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception running deleteALL " + e.toString());
+        }
     }
 
     public static void clearLastCalibration() {

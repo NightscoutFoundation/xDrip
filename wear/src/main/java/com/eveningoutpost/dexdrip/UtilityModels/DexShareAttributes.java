@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.UUID;
 
 /**
- * Created by stephenblack on 2/4/15.
+ * Created by Emma Black on 2/4/15.
  */
 public class DexShareAttributes {
     //Share Service String

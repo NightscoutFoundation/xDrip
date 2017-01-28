@@ -299,8 +299,8 @@ public class PhoneKeypadInputActivity extends Activity {
         String mystring = "";
         mystring += (getValue("time").length() > 0) ? getValue("time") + " time " : "";
         mystring += (getValue("bloodtest").length() > 0) ? getValue("bloodtest") + " blood " : "";
-        mystring += (getValue("carbs").length() > 0) ? getValue("carbs") + " carbs " : "";
-        mystring += (getValue("insulin").length() > 0) ? getValue("insulin") + " units " : "";
+        mystring += (getValue("carbs").length() > 0) ? (!getValue("carbs").equals("0") ? getValue("carbs") + " carbs " : "") : "";
+        mystring += (getValue("insulin").length() > 0) ? (!getValue("insulin").equals("0") ? getValue("insulin") + " units " : "") : "";
 
         if (mystring.length() > 1) {
             //SendData(this, WEARABLE_VOICE_PAYLOAD, mystring.getBytes(StandardCharsets.UTF_8));

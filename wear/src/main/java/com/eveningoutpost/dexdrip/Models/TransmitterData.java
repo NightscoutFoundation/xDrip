@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.Models;
 
+import android.os.AsyncTask;
 import android.provider.BaseColumns;
 
 //KS import com.eveningoutpost.dexdrip.GcmActivity;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Created by stephenblack on 11/6/14.
+ * Created by Emma Black on 11/6/14.
  */
 
 @Table(name = "TransmitterData", id = BaseColumns._ID)
@@ -191,6 +192,17 @@ public class TransmitterData extends Model {
         return null;
     }
 
+    public static void cleanup(long timestamp) {
+        List<TransmitterData> transmitterData = new Select()
+                .from(TransmitterData.class)
+                .where("timestamp < ?", timestamp)
+                .orderBy("timestamp desc")
+                .execute();
+        if (transmitterData != null) Log.d(TAG, "cleanup TransmitterData size=" + transmitterData.size());
+        new Cleanup().execute(transmitterData);
+
+    }
+
     public static TransmitterData findByUuid(String uuid) {//KS
         try {
             return new Select()
@@ -211,6 +223,20 @@ public class TransmitterData extends Model {
                 .create();
 
         return gson.toJson(this);
+    }
+
+    private static class Cleanup extends AsyncTask<List<TransmitterData>, Integer, Boolean> {
+        @Override
+        protected Boolean doInBackground(List<TransmitterData>... errors) {
+            try {
+                for(TransmitterData transmitterData : errors[0]) {
+                    transmitterData.delete();
+                }
+                return true;
+            } catch(Exception e) {
+                return false;
+            }
+        }
     }
 
     /*

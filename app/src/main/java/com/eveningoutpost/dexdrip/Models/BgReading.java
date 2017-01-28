@@ -427,17 +427,25 @@ public class BgReading extends Model implements ShareUploadableBg {
                     }
                 }
 
-                final CalibrationAbstract.CalibrationData pcalibration;
-                final CalibrationAbstract plugin = getCalibrationPluginFromPreferences(); // make sure do this only once
-
-                if ((plugin != null) && ((pcalibration = plugin.getCalibrationData()) != null) && (Home.getPreferencesBoolean("use_pluggable_alg_as_primary", false)))
-                {
-                    Log.d(TAG,"USING CALIBRATION PLUGIN AS PRIMARY!!!");
-                    bgReading.calculated_value = (pcalibration.slope * bgReading.age_adjusted_raw_value) + pcalibration.intercept;
-                    bgReading.filtered_calculated_value = (pcalibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept;
+                if ((bgReading.raw_data != 0) && (bgReading.raw_data * 2 == bgReading.filtered_data)) {
+                    Log.wtf(TAG, "Filtered data is exactly double raw - this is completely wrong - dead transmitter? - blocking glucose calculation");
+                    bgReading.calculated_value = 0;
+                    bgReading.filtered_calculated_value = 0;
+                    bgReading.hide_slope = true;
                 } else {
-                    bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
-                    bgReading.filtered_calculated_value = ((calibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept);
+
+                    // calculate glucose number from raw
+                    final CalibrationAbstract.CalibrationData pcalibration;
+                    final CalibrationAbstract plugin = getCalibrationPluginFromPreferences(); // make sure do this only once
+
+                    if ((plugin != null) && ((pcalibration = plugin.getCalibrationData()) != null) && (Home.getPreferencesBoolean("use_pluggable_alg_as_primary", false))) {
+                        Log.d(TAG, "USING CALIBRATION PLUGIN AS PRIMARY!!!");
+                        bgReading.calculated_value = (pcalibration.slope * bgReading.age_adjusted_raw_value) + pcalibration.intercept;
+                        bgReading.filtered_calculated_value = (pcalibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept;
+                    } else {
+                        bgReading.calculated_value = ((calibration.slope * bgReading.age_adjusted_raw_value) + calibration.intercept);
+                        bgReading.filtered_calculated_value = ((calibration.slope * bgReading.ageAdjustedFiltered()) + calibration.intercept);
+                    }
                 }
             }
 

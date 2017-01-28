@@ -10,7 +10,7 @@ import retrofit.Response;
 import retrofit.Retrofit;
 
 /**
- * Created by stephenblack on 7/31/15.
+ * Created by Emma Black on 7/31/15.
  */
 public class BgUploader {
     public static String TAG = BgUploader.class.getSimpleName();
