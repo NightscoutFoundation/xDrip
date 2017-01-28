@@ -27,11 +27,8 @@ import com.google.gson.Gson;
 
 class NewCalibration {
     double bgValue; // Always in mgdl
-    
     long timestamp;
-    
     long offset;
-    
     String uuid;
 }
 
@@ -40,6 +37,7 @@ public class SendCalibrations {
 
     private final String USER_AGENT = "Mozilla/5.0";
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    // key1 is hard coded in xDrip, no need to change it.
     final protected static String key1 = "ebe5c0df162a50ba232d2d721ea8e3e1c5423bb0-12bd-48c3-8932-c93883dfcf1f";
     final protected static String baseUrl = "https://xdrip-plus-updates.appspot.com/xdrip-plus-send-topic/";
     static final byte[] errorbyte = {};
@@ -50,6 +48,7 @@ public class SendCalibrations {
 
         SendCalibrations http = new SendCalibrations();
 
+        // Per user key, make sure to change it according to your system!!!
         String key = "FDED3FA8DE0463285661EE1AB95A7E29";
         String toppic = createToppic(key);
         
@@ -201,15 +200,9 @@ public class SendCalibrations {
     
     public static String encryptString(String plainText, String key) {
         byte[] inbytes = plainText.getBytes(Charset.forName("UTF-8"));
-        //return Base64.encodeToString(encryptBytes(inbytes, key), Base64.NO_WRAP);
         String encoded = Base64.getEncoder().encodeToString(encryptBytes(inbytes, key));
-        //return Base64.getUrlEncoder().encodeToString(encryptBytes(inbytes, key));
-        
-        //encoded = "Kyf0leFpjlbDW0act/mZxI2KBI8Sn0GMSf/0L/LTlRf5pgWO5RvgI4Ag6xEqUmHZzrPrO5LvMdqlrDD+7NPjB8E8ZrwgAdKBDHOsHyfFVuQb+6k86yHuDgGeOxCE9w6dJYErr7K8q1obemQfne9q5T9E3CyWF+jI+d/O8vAM1IY=";
         encoded = encoded.replaceAll("\\+", "%2b");
         return encoded;
-        
-        
     }
     
     private static String createToppic(String customkey) {
@@ -244,9 +237,6 @@ public class SendCalibrations {
 
         //print result
         System.out.println(response.toString());
-
     }
-
-
 
 }
