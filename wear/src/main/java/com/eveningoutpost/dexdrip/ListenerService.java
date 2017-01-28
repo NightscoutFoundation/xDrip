@@ -8,8 +8,10 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;//KS
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;//KS
 import com.eveningoutpost.dexdrip.UtilityModels.*;
+import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import android.Manifest;
@@ -519,6 +521,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
         dataMap.putString("dex_txid", dex_txid);
         dataMap.putInt("bridge_battery", mPrefs.getInt("bridge_battery", -1));//Used in DexCollectionService
+        dataMap.putInt("nfc_sensor_age", mPrefs.getInt("nfc_sensor_age", -1));//Used in DexCollectionService for LimiTTer
         sendData(WEARABLE_PREF_DATA_PATH, dataMap.toByteArray());
 
         SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(this).edit();
@@ -641,7 +644,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 sendPrefSettings();
                 processConnect();
             }
-            else if(key.compareTo("bridge_battery") == 0){
+            else if(key.compareTo("bridge_battery") == 0 || key.compareTo("nfc_sensor_age") == 0){
                 sendPrefSettings();
             }
             else //if(key.compareTo("dex_txid") == 0 || key.compareTo(DexCollectionType.DEX_COLLECTION_METHOD) == 0){
@@ -811,28 +814,40 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
     private void sendCollectorStatus (Context context, String path) {
         String msg;
-        long last_timestamp = 0;
-        if (DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomG5)) {
-            msg = G5CollectionService.getLastState();
-            last_timestamp = G5CollectionService.getLastStateTimestamp();
-        }else {//TODO getLastState() in non-G5 Services
-            BluetoothManager mBluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
-            ActiveBluetoothDevice activeBluetoothDevice = ActiveBluetoothDevice.first();
-            boolean connected = false;
-            if (mBluetoothManager != null && activeBluetoothDevice != null) {
-                for (BluetoothDevice bluetoothDevice : mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
-                    if (bluetoothDevice.getAddress().compareTo(activeBluetoothDevice.address) == 0) {
-                        connected = true;
+        //long last_timestamp = 0;
+        DataMap dataMap = new DataMap();
+        switch (DexCollectionType.getDexCollectionType()) {
+            case DexcomG5:
+                dataMap = G5CollectionService.getWatchStatus();//msg, last_timestamp
+                break;
+            case DexcomShare://TODO getLastState() in non-G5 Services
+                BluetoothManager mBluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+                ActiveBluetoothDevice activeBluetoothDevice = ActiveBluetoothDevice.first();
+                boolean connected = false;
+                if (mBluetoothManager != null && activeBluetoothDevice != null) {
+                    for (BluetoothDevice bluetoothDevice : mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
+                        if (bluetoothDevice.getAddress().compareTo(activeBluetoothDevice.address) == 0) {
+                            connected = true;
+                        }
                     }
                 }
-            }
-            if (connected) {
-                msg = "Connected on watch";//TODO getLastState() in non-G5 Services
-            } else {
-                msg = "Not Connected";
-            }
+                if (connected) {
+                    msg = "Connected on watch";
+                } else {
+                    msg = "Not Connected";
+                }
+                dataMap.putString("lastState", msg);
+                break;
+            default:
+                dataMap = DexCollectionService.getWatchStatus();
+                break;
         }
-        sendReplyMsg (msg, last_timestamp, path, false);
+        if (dataMap != null) {
+            dataMap.putString("action_path", path);
+        }
+
+        //sendReplyMsg (msg, last_timestamp, path, false);
+        sendData(WEARABLE_REPLYMSG_PATH, dataMap.toByteArray());
     }
 
     private synchronized void sendReplyMsg (String msg, long last_timestamp, String path, boolean showToast) {
@@ -1019,14 +1034,24 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             prefs.putBoolean("close_gatt_on_ble_disconnect", dataMap.getBoolean("close_gatt_on_ble_disconnect", true));
             prefs.putBoolean("bluetooth_frequent_reset", dataMap.getBoolean("bluetooth_frequent_reset", false));
             prefs.putBoolean("bluetooth_watchdog", dataMap.getBoolean("bluetooth_watchdog", false));
-            prefs.putInt("bridge_battery", dataMap.getInt("bridge_battery", -1));
             prefs.putBoolean("sync_wear_logs", dataMap.getBoolean("sync_wear_logs", false));
 
-            //if (change) {
+            prefs.putBoolean("engineering_mode", dataMap.getBoolean("engineering_mode", false));
+
+            if ((DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomG5) ||
+                    DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomShare)) && enable_wearG5) {///TODO confirm wear battery should be used as bridge
+                int wearBatteryLevel = CheckBridgeBattery.getBatteryLevel(Home.getAppContext());
+                Log.i(TAG, "syncPrefData wearBatteryLevel=" + wearBatteryLevel);
+                prefs.putInt("bridge_battery", wearBatteryLevel);//TODO confirm wear battery should be used as bridge
+            }
+
+            prefs.putInt("bridge_battery", dataMap.getInt("bridge_battery", -1));
+            prefs.putBoolean("bridge_battery_alerts", dataMap.getBoolean("bridge_battery_alerts", false));
+            prefs.putString("bridge_battery_alert_level", dataMap.getString("bridge_battery_alert_level", "30"));
+
             prefs.commit();
-            //sendPrefSettings();
-            //processConnect();
-            //}
+
+            CheckBridgeBattery.checkBridgeBattery();
 
             enable_wearG5 = mPrefs.getBoolean("enable_wearG5", false);
             force_wearG5 = mPrefs.getBoolean("force_wearG5", false);

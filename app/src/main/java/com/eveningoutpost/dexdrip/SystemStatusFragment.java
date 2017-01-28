@@ -37,6 +37,8 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Services.DexCollectionService;
+import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -92,15 +94,21 @@ public class SystemStatusFragment extends Fragment {
                 Bundle bundle = intent.getBundleExtra("data");
                 if (bundle != null) {
                     DataMap dataMap = DataMap.fromBundle(bundle);
-                    String msg = dataMap.getString("msg", "");
-                    long last_timestamp = dataMap.getLong("last_timestamp", 0);
+                    String msg = dataMap.getString("lastState", "");
+                    long last_timestamp = dataMap.getLong("timestamp", 0);
                     UserError.Log.d(TAG, "serviceDataReceiver onReceive:" + action + " :: " + msg + " last_timestamp :: " + last_timestamp);
                     switch (action) {
                         case WatchUpdaterService.ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE:
-                            if (DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomG5)) {
-                                setWatchStatus(msg, last_timestamp);
-                            } else {
-                                setConnectionStatus(msg);//TODO getLastState() in non-G5 Services
+                            switch (DexCollectionType.getDexCollectionType()) {
+                                case DexcomG5:
+                                    G5CollectionService.setWatchStatus(dataMap);//msg, last_timestamp
+                                    break;
+                                case DexcomShare:
+                                    setConnectionStatus(msg);//TODO getLastState() in non-G5 Services
+                                    break;
+                                default:
+                                    DexCollectionService.setWatchStatus(dataMap);//msg, last_timestamp
+                                    break;
                             }
                             break;
                     }

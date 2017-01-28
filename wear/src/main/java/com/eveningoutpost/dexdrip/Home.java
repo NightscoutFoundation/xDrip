@@ -20,7 +20,8 @@ import java.util.TimerTask;
 public class Home extends BaseWatchFace {
     //KS the following were copied from app/home
     private static Context context;//KS
-    private static final String TAG = "Home";//KS
+    private static final String TAG = "jamorham: " + Home.class.getSimpleName();
+    public final static String SHOW_NOTIFICATION = "SHOW_NOTIFICATION";
     private static String nexttoast;//KS
     private static boolean is_follower = false;
     private static boolean is_follower_set = false;
@@ -252,6 +253,10 @@ public class Home extends BaseWatchFace {
         return Home.is_follower;
     }
 
+    public static boolean get_engineering_mode() {
+        return Home.getPreferencesBooleanDefaultFalse("engineering_mode");
+    }
+
     public static boolean getPreferencesBoolean(final String pref, boolean def) {
         if ((prefs == null) && (xdrip.getAppContext() != null)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
@@ -298,6 +303,16 @@ public class Home extends BaseWatchFace {
             return prefs.getString(pref, def);
         }
         return "";
+    }
+
+    public static int getPreferencesInt(final String pref, final int def) {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs != null) {
+            return prefs.getInt(pref, def);
+        }
+        return def;
     }
 
     public static boolean setPreferencesBoolean(final String pref, final boolean lng) {

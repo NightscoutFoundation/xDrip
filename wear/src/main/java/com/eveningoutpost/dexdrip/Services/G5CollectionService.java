@@ -67,6 +67,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 //KS import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.google.android.gms.wearable.DataMap;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
@@ -108,6 +109,7 @@ public class G5CollectionService extends Service {
     private static int successes = 0;
     private static int failures = 0;
     private boolean force_always_authenticate = false;
+    private boolean force_always_on_screen = false;//TODO enable for certain phones, eg., Moto360 2G
 
     //KS private ForegroundServiceStarter foregroundServiceStarter;
 
@@ -173,7 +175,6 @@ public class G5CollectionService extends Service {
     private static final boolean simpleBondWait = true; // possible UI thread issue but apparently more reliable
     private static final boolean getVersionDetails = true; // try to load firmware version details
     private static final boolean getBatteryDetails = true; // try to load battery info details
-    private static final boolean tryForceScreenOn = true; // try to force screen on before scan
 
     private static final long BATTERY_READ_PERIOD_MS = 1000 * 60 * 60 * 12; // how often to poll battery data (12 hours)
 
@@ -613,8 +614,8 @@ public class G5CollectionService extends Service {
     private synchronized void scanLogic() {
         if (!keep_running) return;
 
-        Log.e(TAG, "scanLogic call forceScreenOn");
-        if (tryForceScreenOn) {
+        if (alwaysOnScreem()) {
+            Log.e(TAG, "scanLogic call forceScreenOn");
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
                 iHandler.post(new Runnable() {
@@ -711,8 +712,8 @@ public class G5CollectionService extends Service {
             return;
         }
 
-        Log.e(TAG, "startScan call forceScreenOn");
-        if (tryForceScreenOn) {
+        if (alwaysOnScreem()) {
+            Log.e(TAG, "startScan call forceScreenOn");
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
                 iHandler.post(new Runnable() {
@@ -1826,6 +1827,12 @@ public class G5CollectionService extends Service {
         return force_always_authenticate || sharedPreferences.getBoolean("always_get_new_keys", false);
     }
 
+    private boolean alwaysOnScreem() {
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        return force_always_on_screen || sharedPreferences.getBoolean("always-on-screen", false);
+    }
+
     private boolean enforceMainThread() {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -1864,9 +1871,21 @@ public class G5CollectionService extends Service {
                 + (tryPreBondWithDelay ? "tryPreBondWithDelay " : ""));
     }
 
-    public static void setWatchStatus(String msg, long last_timestamp) {
-        lastStateWatch = msg;
-        static_last_timestamp_watch = last_timestamp;
+    // Status for Watchface
+    public static boolean isRunning() {
+        return lastState.equals("Not Running") || lastState.equals("Stopped") ? false : true;
+    }
+
+    public static void setWatchStatus(DataMap dataMap) {
+        lastStateWatch = dataMap.getString("lastState", "");
+        static_last_timestamp_watch = dataMap.getLong("timestamp", 0);
+    }
+
+    public static DataMap getWatchStatus() {
+        DataMap dataMap = new DataMap();
+        dataMap.putString("lastState", lastState);
+        dataMap.putLong("timestamp", static_last_timestamp);
+        return dataMap;
     }
 
     // data for MegaStatus
@@ -1915,11 +1934,6 @@ public class G5CollectionService extends Service {
 
 
         return l;
-    }
-
-    // Status for Watchface
-    public static boolean isRunning() {
-        return lastState.equals("Not Running") || lastState.equals("Stopped") ? false : true;
     }
 
     // Status for Watchface
