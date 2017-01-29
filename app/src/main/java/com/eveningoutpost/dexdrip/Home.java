@@ -565,7 +565,7 @@ public class Home extends ActivityWithMenu {
 
 
     // handle sending the intent
-    private void processFingerStickCalibration(final double glucosenumber, final double timeoffset) {
+    private void processFingerStickCalibration(final double glucosenumber, final double timeoffset, boolean dontask) {
         if (glucosenumber > 0) {
 
             if (timeoffset < 0) {
@@ -580,29 +580,33 @@ public class Home extends ActivityWithMenu {
             calintent.putExtra("allow_undo", "true");
             Log.d(TAG, "processFingerStickCalibration number: " + glucosenumber + " offset: " + timeoffset);
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Use " + JoH.qs(glucosenumber, 1) + " for Calibration?");
-            builder.setMessage("Do you want to use this synced finger-stick blood glucose result to calibrate with?\n\n(you can change when this dialog is displayed in Settings)");
+            if (dontask) {
+                Log.d(TAG, "Proceeding with calibration intent without asking");
+                startIntentThreadWithDelayedRefresh(calintent);
+            } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Use " + JoH.qs(glucosenumber, 1) + " for Calibration?");
+                builder.setMessage("Do you want to use this synced finger-stick blood glucose result to calibrate with?\n\n(you can change when this dialog is displayed in Settings)");
 
-            builder.setPositiveButton("YES, Calibrate", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    calintent.putExtra("note_only", "false");
-                    calintent.putExtra("from_interactive", "true");
-                    startIntentThreadWithDelayedRefresh(calintent);
-                    dialog.dismiss();
-                }
-            });
+                builder.setPositiveButton("YES, Calibrate", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        calintent.putExtra("note_only", "false");
+                        calintent.putExtra("from_interactive", "true");
+                        startIntentThreadWithDelayedRefresh(calintent);
+                        dialog.dismiss();
+                    }
+                });
 
-            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
 
-            AlertDialog alert = builder.create();
-            alert.show();
-
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
         }
     }
 
@@ -775,7 +779,9 @@ public class Home extends ActivityWithMenu {
                 JoH.showNotification(bundle.getString(SHOW_NOTIFICATION), bundle.getString("notification_body"), pendingIntent, notification_id, true, true, true);
             } else if (bundle.getString(Home.BLUETOOTH_METER_CALIBRATION) != null) {
                 try {
-                    processFingerStickCalibration(JoH.tolerantParseDouble(bundle.getString(Home.BLUETOOTH_METER_CALIBRATION)), JoH.tolerantParseDouble(bundle.getString(Home.BLUETOOTH_METER_CALIBRATION + "2")));
+                    processFingerStickCalibration(JoH.tolerantParseDouble(bundle.getString(Home.BLUETOOTH_METER_CALIBRATION)),
+                            JoH.tolerantParseDouble(bundle.getString(Home.BLUETOOTH_METER_CALIBRATION + "2")),
+                            bundle.getString(Home.BLUETOOTH_METER_CALIBRATION + "3") != null && bundle.getString(Home.BLUETOOTH_METER_CALIBRATION + "3").equals("auto"));
                 } catch (NumberFormatException e) {
                     JoH.static_toast_long("Number error: " + e);
                 }
@@ -847,10 +853,15 @@ public class Home extends ActivityWithMenu {
     }
 
     public static void startHomeWithExtra(Context context, String extra, String text, String even_more) {
+        startHomeWithExtra(context, extra, text, even_more, "");
+    }
+
+    public static void startHomeWithExtra(Context context, String extra, String text, String even_more, String even_even_more) {
         Intent intent = new Intent(context, Home.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(extra, text);
         intent.putExtra(extra + "2", even_more);
+        if (even_even_more.length() > 0) intent.putExtra(extra + "3", even_even_more);
         context.startActivity(intent);
     }
 

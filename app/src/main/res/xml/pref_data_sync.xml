@@ -160,17 +160,18 @@
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="bluetooth_meter_play_sounds"
+                android:dependency="bluetooth_meter_enabled"
                 android:summary="Enable this to play sound effects when the meter connects, disconnects or syncs data"
                 android:title="Sound effect indicators" />
             <CheckBoxPreference
                 android:defaultValue="false"
+                android:dependency="bluetooth_meter_enabled"
                 android:key="bluetooth_meter_for_calibrations"
                 android:summary="When a new blood glucose result is received, ask if that should be used to calibrate with"
                 android:title="Use Meter for Calibrations" />
             <CheckBoxPreference
                 android:defaultValue="false"
-                android:enabled="false"
-                android:dependency="bluetooth_meter_for_calibrations"
+                android:dependency="bluetooth_meter_enabled"
                 android:key="bluetooth_meter_for_calibrations_auto"
                 android:summary="Calibrate using new blood glucose readings if the conditions appear right to do so without asking confirmation (experimental)"
                 android:title="Automatic Calibration" />

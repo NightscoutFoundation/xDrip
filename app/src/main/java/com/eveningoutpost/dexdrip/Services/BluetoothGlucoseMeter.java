@@ -47,6 +47,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import static com.eveningoutpost.dexdrip.Models.CalibrationRequest.isSlopeFlatEnough;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.unitized_string_with_units_static;
 
 /**
@@ -592,7 +593,8 @@ public class BluetoothGlucoseMeter extends Service {
                         PersistentStore.setLong(timestamp_id, lastBloodTest.timestamp);
                         Log.d(TAG, "evaluateLastRecords: appears to be a new record: sequence:" + lastGlucoseRecord.sequence);
 
-                        if (Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations")) {
+                        if (Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations")
+                                || Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto")) {
                             final long time_since = JoH.msSince(lastBloodTest.timestamp);
                             if (time_since >= 0) {
                                 if (time_since < (12 * 60 * 60 * 1000)) {
@@ -607,7 +609,26 @@ public class BluetoothGlucoseMeter extends Service {
                                             public void run() {
                                                 Home.staticRefreshBGCharts();
                                                 // requires offset in past
-                                                Home.startHomeWithExtra(xdrip.getAppContext(), Home.BLUETOOTH_METER_CALIBRATION, BgGraphBuilder.unitized_string_static(lastBloodTest.mgdl), Long.toString(time_since));
+
+                                                if ((Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto") && isSlopeFlatEnough())) {
+                                                    Log.d(TAG, "Slope flat enough for auto calibration");
+                                                    Home.startHomeWithExtra(xdrip.getAppContext(),
+                                                            Home.BLUETOOTH_METER_CALIBRATION,
+                                                            BgGraphBuilder.unitized_string_static(lastBloodTest.mgdl),
+                                                            Long.toString(time_since),
+                                                            "auto");
+                                                } else {
+                                                    if (Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations")) {
+                                                        // manual calibration
+                                                        Home.startHomeWithExtra(xdrip.getAppContext(),
+                                                                Home.BLUETOOTH_METER_CALIBRATION,
+                                                                BgGraphBuilder.unitized_string_static(lastBloodTest.mgdl),
+                                                                Long.toString(time_since),
+                                                                "manual");
+                                                    } else {
+                                                        Log.d(TAG, "Not flat enough slope for auto calibration and manual calibration not enabled");
+                                                    }
+                                                }
                                             }
                                         }, 500);
                                     } else {
