@@ -208,6 +208,13 @@
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="Accept Treatments" />
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="accept_broadcast_calibrations"
+                android:summary="Process calibrations received from other apps"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="Accept Calibrations" />
         </PreferenceScreen>
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:key="xdrip_less_common_settings"

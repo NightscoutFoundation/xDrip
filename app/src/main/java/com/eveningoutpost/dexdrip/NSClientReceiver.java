@@ -11,6 +11,7 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 
 import org.json.JSONArray;
@@ -99,10 +100,58 @@ public class NSClientReceiver extends BroadcastReceiver {
                 }
                 break;
 
+
+            case Intents.ACTION_REMOTE_CALIBRATION:
+                if (bundle == null) break;
+
+                // calibration value is in local units, whether you're using mmol or mgdl then it should be as the user would type it
+                //
+                // calibration timestamp is ms since epoch standard
+
+                if (Home.getPreferencesBooleanDefaultFalse("accept_broadcast_calibrations")) {
+
+                    final long calibration_timestamp = bundle.getLong("timestamp", -1);
+                    final double glucose_number = bundle.getDouble("glucose_number", -1);
+
+                    final long timeoffset = JoH.tsl() - calibration_timestamp;
+
+                    if (glucose_number > 0) {
+
+                        if (timeoffset < 0) {
+                            Home.toaststaticnext("Got calibration in the future - cannot process!");
+                            break;
+                        }
+                        UserError.Log.ueh(TAG, "Processing broadcasted calibration: " + JoH.qs(glucose_number, 2) + " offset ms: " + JoH.qs(timeoffset, 0));
+                        final Intent calintent = new Intent(xdrip.getAppContext(), AddCalibration.class);
+                        calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        calintent.putExtra("bg_string", JoH.qs(glucose_number));
+                        calintent.putExtra("bg_age", Long.toString(timeoffset / 1000));
+                        calintent.putExtra("allow_undo", "true");
+                        calintent.putExtra("note_only", "false");
+                        Home.startIntentThreadWithDelayedRefresh(calintent);
+                    } else {
+                        Log.e(TAG,"Received broadcast calibration without glucose number");
+                    }
+
+                } else {
+                    Log.e(TAG, "Received broadcast calibration, but inter-app preference is set to ignore");
+                }
+                break;
+
             default:
                 Log.e(TAG, "Unknown action! " + action);
                 break;
         }
+    }
+
+    public static void testCalibration() {
+        Bundle bundle = new Bundle();
+        bundle.putDouble("glucose_number", 5.5); // format is local format, in this example 5.5 mmol/l
+        bundle.putLong("timestamp", JoH.tsl()-10000);
+        Intent intent = new Intent(Intents.ACTION_REMOTE_CALIBRATION);
+        intent.putExtras(bundle);
+        intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+        xdrip.getAppContext().sendBroadcast(intent);
     }
 
     private void process_TREATMENT_json(String treatment_json) {

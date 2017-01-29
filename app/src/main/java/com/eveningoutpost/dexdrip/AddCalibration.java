@@ -60,8 +60,8 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
 
         final PowerManager.WakeLock wl = JoH.getWakeLock("xdrip-autocalib", 60000);
 
-
-        Bundle extras = getIntent().getExtras();
+        Log.d(TAG, "Auto calibration...");
+        final Bundle extras = getIntent().getExtras();
         if (extras != null) {
             final String string_value = extras.getString("bg_string");
             final String bg_age = extras.getString("bg_age");
@@ -82,48 +82,53 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                 final PowerManager.WakeLock wlt = JoH.getWakeLock("xdrip-autocalibt", 60000);
 
                                 long bgAgeNumber = Long.parseLong(bg_age);
-                                long localEstimatedInterstitialLagSeconds = 0;
 
-                                // most appropriate raw value to calculate calibration
-                                // from should be some time after venous glucose reading
-                                // adjust timestamp for this if we can
-                                if (bgAgeNumber > estimatedInterstitialLagSeconds) {
-                                    localEstimatedInterstitialLagSeconds = estimatedInterstitialLagSeconds;
-                                }
-                                // Sanity checking can go here
+                                if ((bgAgeNumber >= 0) && (bgAgeNumber < 86400)) {
+                                    long localEstimatedInterstitialLagSeconds = 0;
 
-                                if (calValue > 0) {
-                                    if (calValue != lastExternalCalibrationValue) {
+                                    // most appropriate raw value to calculate calibration
+                                    // from should be some time after venous glucose reading
+                                    // adjust timestamp for this if we can
+                                    if (bgAgeNumber > estimatedInterstitialLagSeconds) {
+                                        localEstimatedInterstitialLagSeconds = estimatedInterstitialLagSeconds;
+                                    }
+                                    // Sanity checking can go here
 
-                                        if (!Home.get_follower()) {
-                                            lastExternalCalibrationValue = calValue;
-                                            Calibration calibration = Calibration.create(calValue, bgAgeNumber, getApplicationContext(), (note_only.equals("true")), localEstimatedInterstitialLagSeconds);
-                                            if ((calibration != null) && allow_undo.equals("true")) {
-                                                UndoRedo.addUndoCalibration(calibration.uuid);
-                                            }
-                                            final boolean wear_integration = Home.getPreferencesBoolean("wear_sync", false);//KS
-                                            if (wear_integration) {
-                                                android.util.Log.d("AddCalibration", "start WatchUpdaterService with ACTION_SYNC_CALIBRATION");
-                                                startService(new Intent(getApplicationContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_CALIBRATION));
-                                            }
-                                        } else {
-                                            // follower sends the calibration data onwards only if sourced from interactive request
-                                            if (from_interactive.equals("true")) {
-                                                Log.d(TAG,"Interactive calibration and we are follower so sending to master");
-                                                sendFollowerCalibration(calValue, bgAgeNumber);
+                                    if (calValue > 0) {
+                                        if (calValue != lastExternalCalibrationValue) {
+
+                                            if (!Home.get_follower()) {
+                                                lastExternalCalibrationValue = calValue;
+                                                Calibration calibration = Calibration.create(calValue, bgAgeNumber, getApplicationContext(), (note_only.equals("true")), localEstimatedInterstitialLagSeconds);
+                                                if ((calibration != null) && allow_undo.equals("true")) {
+                                                    UndoRedo.addUndoCalibration(calibration.uuid);
+                                                }
+                                                final boolean wear_integration = Home.getPreferencesBoolean("wear_sync", false);//KS
+                                                if (wear_integration) {
+                                                    android.util.Log.d("AddCalibration", "start WatchUpdaterService with ACTION_SYNC_CALIBRATION");
+                                                    startService(new Intent(getApplicationContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_CALIBRATION));
+                                                }
                                             } else {
-                                                Log.d(TAG,"Not an interactive calibration so not sending to master");
+                                                // follower sends the calibration data onwards only if sourced from interactive request
+                                                if (from_interactive.equals("true")) {
+                                                    Log.d(TAG, "Interactive calibration and we are follower so sending to master");
+                                                    sendFollowerCalibration(calValue, bgAgeNumber);
+                                                } else {
+                                                    Log.d(TAG, "Not an interactive calibration so not sending to master");
+                                                }
                                             }
+
+                                        } else {
+                                            Log.w(TAG, "Ignoring Remote calibration value as identical to last one: " + calValue);
                                         }
 
-                                    } else {
-                                        Log.w(TAG, "Ignoring Remote calibration value as identical to last one: " + calValue);
+                                        if (from_external.equals("true")) {
+                                            Log.d("jamorham calib", "Relaying tasker pushed calibration");
+                                            GcmActivity.pushCalibration(string_value, bg_age);
+                                        }
                                     }
-
-                                    if (from_external.equals("true")) {
-                                        Log.d("jamorham calib", "Relaying tasker pushed calibration");
-                                        GcmActivity.pushCalibration(string_value, bg_age);
-                                    }
+                                } else {
+                                    Log.wtf("CALERROR", "bg age either in future or older than 1 day: " + bgAgeNumber);
                                 }
 
                                 JoH.releaseWakeLock(wlt);
@@ -131,7 +136,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                         }.start();
 
                     } else {
-                        Log.w("CALLERROR", "ERROR during automated calibration - no valid bg age");
+                        Log.w("CALERROR", "ERROR during automated calibration - no valid bg age");
                     }
                 } else {
                     Log.w("CALERROR", "ERROR during automated calibration - no valid value");

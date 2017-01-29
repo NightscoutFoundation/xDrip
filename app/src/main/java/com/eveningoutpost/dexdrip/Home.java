@@ -664,12 +664,12 @@ public class Home extends ActivityWithMenu {
                 }
     }
 
-    private void startIntentThreadWithDelayedRefresh(final Intent intent)
+    static void startIntentThreadWithDelayedRefresh(final Intent intent)
     {
         new Thread() {
             @Override
             public void run() {
-                getApplicationContext().startActivity(intent);
+                xdrip.getAppContext().startActivity(intent);
                 staticRefreshBGCharts();
             }
         }.start();

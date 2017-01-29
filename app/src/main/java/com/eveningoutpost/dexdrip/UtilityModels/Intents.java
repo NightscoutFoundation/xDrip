@@ -16,7 +16,7 @@ public interface Intents {
     String EXTRA_NOISE = "com.eveningoutpost.dexdrip.Extras.Noise";
     String EXTRA_NOISE_WARNING = "com.eveningoutpost.dexdrip.Extras.NoiseWarning";
 
-
+    String ACTION_REMOTE_CALIBRATION = "com.eveningoutpost.dexdrip.NewCalibration";
     String ACTION_NEW_BG_ESTIMATE_NO_DATA = "com.eveningoutpost.dexdrip.BgEstimateNoData";
 
     // From NS Android Client
@@ -26,6 +26,7 @@ public interface Intents {
     String ACTION_REMOVED_TREATMENT = "info.nightscout.client.REMOVED_TREATMENT";
     String ACTION_NEW_PROFILE = "info.nightscout.client.NEW_PROFILE";
     String ACTION_NEW_SGV = "info.nightscout.client.NEW_SGV";
+
 
 
     // Listen on

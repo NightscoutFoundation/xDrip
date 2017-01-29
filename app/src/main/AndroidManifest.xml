@@ -391,6 +391,9 @@
             <intent-filter>
                 <action android:name="info.nightscout.client.NEW_PROFILE" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="com.eveningoutpost.dexdrip.NewCalibration" />
+            </intent-filter>
         </receiver>
         <receiver android:name=".LibreAlarmReceiver">
             <intent-filter>
