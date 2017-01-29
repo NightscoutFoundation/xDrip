@@ -341,7 +341,7 @@ public class BluetoothScan extends ListActivityWithMenu {
             prefs.edit().putBoolean("use_transmiter_pl_bluetooth", using_transmiter).apply();
 
             // Experimental support for rfduino from Tomasz Stachowicz
-            if (device.getName().toLowerCase().contains("xbrigde")
+            if (device.getName().toLowerCase().contains("xbridge")
                     && (adverts.containsKey(device.getAddress()) && (new String(adverts.get(device.getAddress()), "UTF-8").contains("rfduino")))) {
                 String msg = "Auto-detected rfduino device!";
                 Log.e(TAG, msg);
