@@ -690,7 +690,7 @@ public class G5CollectionService extends Service {
         //if (!JoH.isScreenOn()) {
             Log.e(TAG, "forceScreenOn set wakelock for SCREEN_BRIGHT_WAKE_LOCK");
             PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-            final PowerManager.WakeLock wl = JoH.getWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "SCREEN_BRIGHT_WAKE_LOCK", timeout);
+            final PowerManager.WakeLock wl = JoH.getWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "SCREEN_BRIGHT_WAKE_LOCK", timeout);
 
             final Timer t = new Timer();
             t.schedule(new TimerTask() {
