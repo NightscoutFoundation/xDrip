@@ -111,6 +111,10 @@ public final class FireReceiver extends BroadcastReceiver {
                             // bgage is positive age ago of bg test reading in seconds (minus applied later)
 
                             // We push the values to the Calibration Activity
+                            if (message_array.length < 3) {
+                                Log.e(TAG, "Not enough parameters for BG message");
+                                break;
+                            }
                             Intent calintent = new Intent();
                             calintent.setClassName(xdrip.getAppContext().getString(R.string.local_target_package), "com.eveningoutpost.dexdrip.AddCalibration");
                             calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
