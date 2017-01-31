@@ -1,27 +1,30 @@
 package com.eveningoutpost.dexdrip;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.ustwo.clockwise.common.WatchMode;
 
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class Home extends BaseWatchFace {
     //KS the following were copied from app/home
     private static Context context;//KS
     private static final String TAG = "jamorham: " + Home.class.getSimpleName();
     public final static String SHOW_NOTIFICATION = "SHOW_NOTIFICATION";
+    public final static String HOME_FULL_WAKEUP = "HOME_FULL_WAKEUP";
+    public final static String ACTIVITY_SHOWCASE_INFO = "ACTIVITY_SHOWCASE_INFO";
+    public static final int SHOWCASE_MOTION_DETECTION = 11;
     private static String nexttoast;//KS
     private static boolean is_follower = false;
     private static boolean is_follower_set = false;
@@ -61,16 +64,33 @@ public class Home extends BaseWatchFace {
                 ((x >=mDirectionDelta.getLeft() &&
                 x <= mDirectionDelta.getRight()&&
                 y >= mDirectionDelta.getTop() &&
-                y <= mDirectionDelta.getBottom()) ||
-                 (x >=mLinearLayout.getLeft() &&
-                  x <= mLinearLayout.getRight()&&
-                  y >= mLinearLayout.getTop() &&
-                  y <= mLinearLayout.getBottom()) )) {
+                y <= mDirectionDelta.getBottom()) )) {//||
+                 //(x >=mLinearLayout.getLeft() &&
+                  //x <= mLinearLayout.getRight()&&
+                  //y >= mLinearLayout.getTop() &&
+                  //y <= mLinearLayout.getBottom()) )) {
             if (eventTime - fontsizeTapTime < 800) {
                 setSmallFontsize(true);
             }
             fontsizeTapTime = eventTime;
         }
+        if (tapType == TAP_TYPE_TOUCH && statusArea(x, y)) {
+            JoH.static_toast_short(mStatusLine);
+        }
+    }
+
+    private boolean statusArea(int x, int y) {
+        if (((x >=mDirectionDelta.getLeft() &&
+                        //x <= mDirectionDelta.getRight()&&
+                        //y >= mDirectionDelta.getTop() &&
+                        //y <= mDirectionDelta.getBottom()) ||
+                        (x >=mLinearLayout.getLeft() &&
+                                x <= mLinearLayout.getRight()&&
+                                y >= mLinearLayout.getTop() &&
+                                y <= mLinearLayout.getBottom()) )) ) {
+            return true;
+        }
+        return false;
     }
 
     private void changeChartTimeframe() {
@@ -202,6 +222,7 @@ public class Home extends BaseWatchFace {
         }
     }
 
+    //KS from app / Home
     public static Context getAppContext() {
         return Home.context;
     }//KS from app / xdrip.java
@@ -210,7 +231,24 @@ public class Home extends BaseWatchFace {
         Home.context = context;
     }
 
-    //KS Toast Messages from app / Home
+    public static void startHomeWithExtra(Context context, String extra, String text) {
+        startHomeWithExtra(context, extra, text, "");
+    }
+
+    public static void startHomeWithExtra(Context context, String extra, String text, String even_more) {
+        /*Intent intent = new Intent(context, Home.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(extra, text);
+        intent.putExtra(extra + "2", even_more);
+        context.startActivity(intent);*/
+
+        Intent messageIntent = new Intent();
+        messageIntent.setAction(Intent.ACTION_SEND);
+        messageIntent.putExtra(extra, text);
+        Log.d(TAG, "startHomeWithExtra extra=" + extra + " text=" + text);
+        LocalBroadcastManager.getInstance(xdrip.getAppContext()).sendBroadcast(messageIntent);
+    }
+
     public static void toaststatic(final String msg) {
         nexttoast = msg;
         //KS staticRefreshBGCharts();
