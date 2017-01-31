@@ -488,7 +488,9 @@
             android:exported="true" />
 
         <activity android:name=".HelpActivity" />
-        <activity android:name=".Agreement" />
+        <activity
+            android:name=".Agreement"
+            android:label="Nightscout xDrip+" />
         <activity
             android:name=".WearVoiceActivity"
             android:label="Simulation handheld">

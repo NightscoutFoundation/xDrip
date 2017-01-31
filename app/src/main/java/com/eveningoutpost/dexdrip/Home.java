@@ -88,6 +88,7 @@ import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
+import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.SdcardImportExport;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -508,8 +509,34 @@ public class Home extends ActivityWithMenu {
             showcasemenu(SHOWCASE_VARIANT);
         }
 
-        if (Experience.isNewbie()) {
-            Log.d(TAG, "Do something for newbie");
+
+        if ((checkedeula) && Experience.isNewbie() && !Home.getPreferencesStringWithDefault("units", "mgdl").equals("mmol")) {
+            Log.d(TAG, "Newbie mmol prompt");
+            if (Experience.defaultUnitsAreMmol()) {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Glucose units mmol/L or mg/dL");
+                builder.setMessage("Is your typical blood glucose value:\n\n5.5 (mmol/L)\nor\n100 (mg/dL)\n\nPlease select below");
+
+                builder.setNegativeButton("5.5", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        Home.setPreferencesString("units", "mmol");
+                        Preferences.handleUnitsChange(null, "mmol", null);
+                        Home.staticRefreshBGCharts();
+                        toast("Settings updated to mmol/L");
+                    }
+                });
+
+                builder.setPositiveButton("100", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                builder.create().show();
+
+            }
         }
 
     }

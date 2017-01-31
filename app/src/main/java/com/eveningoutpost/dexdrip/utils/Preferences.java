@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utils;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -38,6 +39,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Profile;
 import com.eveningoutpost.dexdrip.Models.UserError.ExtraLogTags;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.R;
@@ -97,9 +99,11 @@ public class Preferences extends PreferenceActivity {
     private static Preference force_english;
     private static Preference nfc_expiry_days;
 
+    private static AllPrefsFragment pFragment;
 
     private void refreshFragments() {
         this.preferenceFragment = new AllPrefsFragment();
+        pFragment = this.preferenceFragment;
         getFragmentManager().beginTransaction().replace(android.R.id.content,
                 this.preferenceFragment).commit();
     }
@@ -287,9 +291,8 @@ public class Preferences extends PreferenceActivity {
             Log.e(TAG, "Failed to set theme");
         }
         super.onCreate(savedInstanceState);
-        this.preferenceFragment = new AllPrefsFragment();
-        getFragmentManager().beginTransaction().replace(android.R.id.content,
-                this.preferenceFragment).commit();
+
+        refreshFragments();
         processExtraData();
     }
 
@@ -308,6 +311,7 @@ public class Preferences extends PreferenceActivity {
     {
         super.onPause();
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(ActivityRecognizedService.prefListener);
+        pFragment = null;
     }
 
     @Override
@@ -517,7 +521,7 @@ public class Preferences extends PreferenceActivity {
         SharedPreferences prefs;
 
         private void setSummary(String pref_name) {
-            try {
+     /*       try {
                 // is there a cleaner way to bind these values when setting programatically?
                 final String pref_val = this.prefs.getString(pref_name, "");
                 findPreference(pref_name).setSummary(pref_val);
@@ -526,7 +530,23 @@ public class Preferences extends PreferenceActivity {
             } catch (Exception e) {
                 Log.e(TAG, "Exception during setSummary: " + e.toString());
             }
+            */
+            setSummary_static(this, pref_name);
         }
+
+        private static void setSummary_static(AllPrefsFragment allPrefsFragment, String pref_name) {
+            try {
+                // is there a cleaner way to bind these values when setting programatically?
+                final String pref_val = allPrefsFragment.prefs.getString(pref_name, "");
+                allPrefsFragment.findPreference(pref_name).setSummary(pref_val);
+                EditTextPreference thispref = (EditTextPreference) allPrefsFragment.findPreference(pref_name);
+                thispref.setText(pref_val);
+            } catch (Exception e) {
+                Log.e(TAG, "Exception during setSummary: " + e.toString());
+            }
+        }
+
+
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -797,11 +817,16 @@ public class Preferences extends PreferenceActivity {
                 }
             });
 
+
+
+
             units_pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
 
-                    try {
+                    handleUnitsChange(preference, newValue, pFragment);
+                   /* try {
                         final Double highVal = Double.parseDouble(AllPrefsFragment.this.prefs.getString("highValue", "0"));
                         final Double lowVal = Double.parseDouble(AllPrefsFragment.this.prefs.getString("lowValue", "0"));
                         final Double default_insulin_sensitivity = Double.parseDouble(AllPrefsFragment.this.prefs.getString("profile_insulin_sensitivity_default", "54"));
@@ -853,7 +878,7 @@ public class Preferences extends PreferenceActivity {
 
                     } catch (Exception e) {
                         Log.e(TAG, "Got excepting processing high/low value preferences: " + e.toString());
-                    }
+                    }*/
                     return true;
                 }
             });
@@ -1099,6 +1124,21 @@ public class Preferences extends PreferenceActivity {
                 }
             }
 
+            try {
+                findPreference("calibration_notifications").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        // clear any pending alerts
+                        final UserNotification userNotification = UserNotification.lastCalibrationAlert();
+                        if (userNotification != null) {
+                            userNotification.delete();
+                        }
+                        return true;
+                    }
+                });
+            } catch (Exception e) {
+                //
+            }
 
             bindPreferenceSummaryToValue(collectionMethod);
             bindPreferenceSummaryToValue(shareKey);
@@ -1440,6 +1480,8 @@ public class Preferences extends PreferenceActivity {
             });
         }
 
+
+
         // all this boiler plate for a dynamic interface seems excessive and boring, I would love to know a helper library to simplify this
         private void set_nfc_expiry_change_listeners() {
             nfc_expiry_days.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -1726,6 +1768,72 @@ public class Preferences extends PreferenceActivity {
                 }
                 return true;
             }
+        }
+    }
+
+    public static void handleUnitsChange(Preference preference, Object newValue, AllPrefsFragment allPrefsFragment) {
+        try {
+            SharedPreferences preferences;
+            if (preference!= null) {
+                preferences = preference.getSharedPreferences();
+            } else {
+                preferences = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+            }
+
+            final Double highVal = Double.parseDouble(preferences.getString("highValue", "0"));
+            final Double lowVal = Double.parseDouble(preferences.getString("lowValue", "0"));
+            final Double default_insulin_sensitivity = Double.parseDouble(preferences.getString("profile_insulin_sensitivity_default", "54"));
+            final Double default_target_glucose = Double.parseDouble(preferences.getString("plus_target_range", "100"));
+
+
+            static_units = newValue.toString();
+            if (newValue.toString().equals("mgdl")) {
+                if (highVal < 36) {
+                    ProfileEditor.convertData(Constants.MMOLL_TO_MGDL);
+                    preferences.edit().putString("highValue", Long.toString(Math.round(highVal * Constants.MMOLL_TO_MGDL))).apply();
+                    preferences.edit().putString("profile_insulin_sensitivity_default", Long.toString(Math.round(default_insulin_sensitivity * Constants.MMOLL_TO_MGDL))).apply();
+                    preferences.edit().putString("plus_target_range", Long.toString(Math.round(default_target_glucose * Constants.MMOLL_TO_MGDL))).apply();
+                    Profile.invalidateProfile();
+                }
+                if (lowVal < 36) {
+                    ProfileEditor.convertData(Constants.MMOLL_TO_MGDL);
+                    preferences.edit().putString("lowValue", Long.toString(Math.round(lowVal * Constants.MMOLL_TO_MGDL))).apply();
+                    preferences.edit().putString("profile_insulin_sensitivity_default", Long.toString(Math.round(default_insulin_sensitivity * Constants.MMOLL_TO_MGDL))).apply();
+                    preferences.edit().putString("plus_target_range", Long.toString(Math.round(default_target_glucose * Constants.MMOLL_TO_MGDL))).apply();
+                    Profile.invalidateProfile();
+                }
+
+            } else {
+                if (highVal > 35) {
+                    ProfileEditor.convertData(Constants.MGDL_TO_MMOLL);
+                    preferences.edit().putString("highValue", JoH.qs(highVal * Constants.MGDL_TO_MMOLL, 1)).apply();
+                    preferences.edit().putString("profile_insulin_sensitivity_default", JoH.qs(default_insulin_sensitivity * Constants.MGDL_TO_MMOLL, 2)).apply();
+                    preferences.edit().putString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL,1)).apply();
+                    Profile.invalidateProfile();
+                }
+                if (lowVal > 35) {
+                    ProfileEditor.convertData(Constants.MGDL_TO_MMOLL);
+                    preferences.edit().putString("lowValue", JoH.qs(lowVal * Constants.MGDL_TO_MMOLL, 1)).apply();
+                    preferences.edit().putString("profile_insulin_sensitivity_default", JoH.qs(default_insulin_sensitivity * Constants.MGDL_TO_MMOLL, 2)).apply();
+                    preferences.edit().putString("plus_target_range", JoH.qs(default_target_glucose * Constants.MGDL_TO_MMOLL,1)).apply();
+                    Profile.invalidateProfile();
+                }
+            }
+            if (preference != null) preference.setSummary(newValue.toString());
+            if (allPrefsFragment != null) {
+                allPrefsFragment.setSummary("highValue");
+                allPrefsFragment.setSummary("lowValue");
+            }
+            if (profile_insulin_sensitivity_default != null) {
+                Log.d(TAG, "refreshing profile insulin sensitivity default display");
+                profile_insulin_sensitivity_default.setTitle(format_insulin_sensitivity(profile_insulin_sensitivity_default.getTitle().toString(), ProfileEditor.minMaxSens(ProfileEditor.loadData(false))));
+
+//                            do_format_insulin_sensitivity(profile_insulin_sensitivity_default, AllPrefsFragment.this.prefs, false, null);
+            }
+            Profile.reloadPreferences(preferences);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Got excepting processing high/low value preferences: " + e.toString());
         }
     }
 
