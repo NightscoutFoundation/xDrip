@@ -8,6 +8,7 @@ import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
+import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
@@ -538,11 +539,11 @@ public class Calibration extends Model {
                 .execute();
     }
 
-    private static void calculate_w_l_s() {
+    private synchronized static void calculate_w_l_s() {
         calculate_w_l_s(false);
     }
 
-    private static void calculate_w_l_s(boolean extended) {
+    private synchronized static void calculate_w_l_s(boolean extended) {
         if (Sensor.isActive()) {
             double l = 0;
             double m = 0;
@@ -552,7 +553,7 @@ public class Calibration extends Model {
             double w;
 
             final SlopeParameters sParams = getSlopeParameters();
-
+            ActiveAndroid.clearCache();
             List<Calibration> calibrations = allForSensorInLastFourDays(); //5 days was a bit much, dropped this to 4
 
             if (calibrations == null) {
@@ -569,9 +570,10 @@ public class Calibration extends Model {
                     Home.toaststaticnext("Calibrated using data beyond last 4 days");
                 }
             }
-
+            ActiveAndroid.clearCache();
             if (calibrations.size() <= 1) {
-                Calibration calibration = Calibration.last();
+                final Calibration calibration = Calibration.last();
+                ActiveAndroid.clearCache();
                 calibration.slope = 1;
                 calibration.intercept = calibration.bg - (calibration.raw_value * calibration.slope);
                 calibration.save();
@@ -587,7 +589,8 @@ public class Calibration extends Model {
                     q += (w * calibration.estimate_raw_at_time_of_calibration * calibration.bg);
                 }
 
-                Calibration last_calibration = Calibration.last();
+                final Calibration last_calibration = Calibration.last();
+                ActiveAndroid.clearCache();
                 w = (last_calibration.calculateWeight() * (calibrations.size() * 0.14));
                 l += (w);
                 m += (w * last_calibration.estimate_raw_at_time_of_calibration);
@@ -596,11 +599,15 @@ public class Calibration extends Model {
                 q += (w * last_calibration.estimate_raw_at_time_of_calibration * last_calibration.bg);
 
                 double d = (l * n) - (m * m);
-                Calibration calibration = Calibration.last();
+                final Calibration calibration = Calibration.last();
+                ActiveAndroid.clearCache();
                 calibration.intercept = ((n * p) - (m * q)) / d;
                 calibration.slope = ((l * q) - (m * p)) / d;
+                Log.d(TAG, "Calibration slope debug: slope:" + calibration.slope + " q:" + q + " m:" + m + " p:" + p + " d:" + d);
                 if ((calibrations.size() == 2 && calibration.slope < sParams.getLowSlope1()) || (calibration.slope < sParams.getLowSlope2())) { // I have not seen a case where a value below 7.5 proved to be accurate but we should keep an eye on this
+                    Log.d(TAG, "calibration.slope 1 : " + calibration.slope);
                     calibration.slope = calibration.slopeOOBHandler(0);
+                    Log.d(TAG, "calibration.slope 2 : " + calibration.slope);
                     if (calibrations.size() > 2) {
                         calibration.possible_bad = true;
                     }
@@ -608,7 +615,9 @@ public class Calibration extends Model {
                     CalibrationRequest.createOffset(calibration.bg, 25);
                 }
                 if ((calibrations.size() == 2 && calibration.slope > sParams.getHighSlope1()) || (calibration.slope > sParams.getHighSlope2())) {
+                    Log.d(TAG, "calibration.slope 3 : " + calibration.slope);
                     calibration.slope = calibration.slopeOOBHandler(1);
+                    Log.d(TAG, "calibration.slope 4 : " + calibration.slope);
                     if (calibrations.size() > 2) {
                         calibration.possible_bad = true;
                     }
@@ -624,7 +633,6 @@ public class Calibration extends Model {
                     Home.toaststaticnext("Got invalid zero slope calibration!");
                     calibration.save(); // Save nulled record, lastValid should protect from bad calibrations
                     newFingerStickData();
-
                 } else {
                     calibration.save();
                     newFingerStickData();
@@ -650,16 +658,20 @@ public class Calibration extends Model {
         return new DexParameters();
     }
 
+    // here be dragons.. at time of writing estimate_bg_at_time_of_calibration is never written to and the possible_bad logic below looks backwards but
+    // will never fire because the bg_at_time_of_calibration is not set.
     private double slopeOOBHandler(int status) {
 
-        SlopeParameters sParams = getSlopeParameters();
+        final SlopeParameters sParams = getSlopeParameters();
 
         // If the last slope was reasonable and reasonably close, use that, otherwise use a slope that may be a little steep, but its best to play it safe when uncertain
-        List<Calibration> calibrations = Calibration.latest(3);
-        Calibration thisCalibration = calibrations.get(0);
+        final List<Calibration> calibrations = Calibration.latest(3);
+        final Calibration thisCalibration = calibrations.get(0);
         if (status == 0) {
             if (calibrations.size() == 3) {
-                if ((Math.abs(thisCalibration.bg - thisCalibration.estimate_bg_at_time_of_calibration) < 30) && (calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad == true)) {
+                if ((Math.abs(thisCalibration.bg - thisCalibration.estimate_bg_at_time_of_calibration) < 30)
+                        && (calibrations.get(1).slope != 0)
+                        && (calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad == true)) {
                     return calibrations.get(1).slope;
                 } else {
                     return Math.max(((-0.048) * (thisCalibration.sensor_age_at_time_of_estimation / (60000 * 60 * 24))) + 1.1, sParams.getDefaultLowSlopeLow());
@@ -670,7 +682,9 @@ public class Calibration extends Model {
             return sParams.getDefaultSlope();
         } else {
             if (calibrations.size() == 3) {
-                if ((Math.abs(thisCalibration.bg - thisCalibration.estimate_bg_at_time_of_calibration) < 30) && (calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad == true)) {
+                if ((Math.abs(thisCalibration.bg - thisCalibration.estimate_bg_at_time_of_calibration) < 30)
+                        && (calibrations.get(1).slope != 0)
+                        && (calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad == true)) {
                     return calibrations.get(1).slope;
                 } else {
                     return sParams.getDefaultHighSlopeHigh();
@@ -799,7 +813,12 @@ public class Calibration extends Model {
                 newFingerStickData();
             }
         }
+    }
 
+    public static long msSinceLastCalibration() {
+        final Calibration calibration = lastValid();
+        if (calibration == null) return 86400000000L;
+        return JoH.msSince(calibration.timestamp);
     }
 
     public static void clearLastCalibration() {
