@@ -717,7 +717,7 @@ public class DexCollectionService extends Service {
     public static DataMap getWatchStatus() {
         DataMap dataMap = new DataMap();
         dataMap.putString("lastState", lastState);
-        dataMap.putLong("timestamp", last_transmitter_Data.timestamp);
+        if (last_transmitter_Data != null) dataMap.putLong("timestamp", last_transmitter_Data.timestamp);
         dataMap.putInt("mStaticState", mStaticState);
         dataMap.putBoolean("static_use_transmiter_pl_bluetooth", static_use_transmiter_pl_bluetooth);
         dataMap.putBoolean("static_use_rfduino_bluetooth", static_use_rfduino_bluetooth);

@@ -104,121 +104,134 @@ public class Home extends BaseWatchFace {
         return new WatchFaceStyle.Builder(this).setAcceptsTapEvents(true).build();
     }
 
+    @Override
     protected void setColorDark() {
-        mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_statusView));
-        mTime.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
-        mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
-        if (sgvLevel == 1) {
-            mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor));
-            mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor));
-            mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor));
-        } else if (sgvLevel == 0) {
-            mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
-            mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
-            mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
-        } else if (sgvLevel == -1) {
-            mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_lowColor));
-            mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_lowColor));
-            mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_lowColor));
-        }
-
-        if (ageLevel == 1) {
-            mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTimestamp1_home));
-        } else {
-            mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_TimestampOld));
-        }
-
-        if (batteryLevel == 1) {
-            mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
-        } else {
-            mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBatteryEmpty));
-        }
-        if (mXBatteryLevel == 1) {
-            mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
-        } else {
-            mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBatteryEmpty));
-        }
-
-        mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mStatus_home));
-
-        if (chart != null) {
-            highColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor);
-            lowColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_lowColor);
-            midColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
-            pointSize = 2;
-            setupCharts();
-        }
-    }
-
-    protected void setColorLowRes() {
-        mTime.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
-        mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
-        mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
-        mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
-        mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
-        mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTimestamp1_home));
-        mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
-        mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
-        mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mStatus_home));
-        if (chart != null) {
-            highColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
-            lowColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
-            midColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
-            pointSize = 2;
-            setupCharts();
-        }
-
-    }
-
-
-    protected void setColorBright() {
-
-        if (getCurrentWatchMode() == WatchMode.INTERACTIVE) {
-            mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_stripe_background));
-            mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_background));
+        try {
+            mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_statusView));
+            mTime.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+            mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
             if (sgvLevel == 1) {
-                mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_highColor));
-                mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_highColor));
-                mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_highColor));
+                mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor));
+                mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor));
+                mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor));
             } else if (sgvLevel == 0) {
-                mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_midColor));
-                mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_midColor));
-                mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_midColor));
+                mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
+                mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
+                mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
             } else if (sgvLevel == -1) {
-                mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_lowColor));
-                mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_lowColor));
-                mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_lowColor));
+                mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_lowColor));
+                mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_lowColor));
+                mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_lowColor));
             }
 
             if (ageLevel == 1) {
-                mTimestamp.setTextColor(Color.WHITE);
+                mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTimestamp1_home));
             } else {
-                mTimestamp.setTextColor(Color.RED);
+                mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_TimestampOld));
             }
 
             if (batteryLevel == 1) {
-                mUploaderBattery.setTextColor(Color.WHITE);
+                mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
             } else {
-                mUploaderBattery.setTextColor(Color.RED);
+                mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBatteryEmpty));
             }
             if (mXBatteryLevel == 1) {
-                mUploaderXBattery.setTextColor(Color.WHITE);
+                mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
             } else {
-                mUploaderXBattery.setTextColor(Color.RED);
+                mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBatteryEmpty));
             }
 
-            mStatus.setTextColor(Color.WHITE);
+            mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mStatus_home));
 
-            mTime.setTextColor(Color.BLACK);
             if (chart != null) {
-                highColor = ContextCompat.getColor(getApplicationContext(), R.color.light_highColor);
-                lowColor = ContextCompat.getColor(getApplicationContext(), R.color.light_lowColor);
-                midColor = ContextCompat.getColor(getApplicationContext(), R.color.light_midColor);
+                highColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_highColor);
+                lowColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_lowColor);
+                midColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
                 pointSize = 2;
                 setupCharts();
             }
-        } else {
-            setColorDark();
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Null pointer exception in setColorDark in Home: " + e);
+        }
+    }
+
+    @Override
+    protected void setColorLowRes() {
+        try {
+            mTime.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
+            mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
+            mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
+            mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
+            mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor));
+            mTimestamp.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTimestamp1_home));
+            mUploaderBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
+            mUploaderXBattery.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_uploaderBattery));
+            mStatus.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mStatus_home));
+            if (chart != null) {
+                highColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
+                lowColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
+                midColor = ContextCompat.getColor(getApplicationContext(), R.color.dark_midColor);
+                pointSize = 2;
+                setupCharts();
+            }
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Null pointer exception in setColorLowRes: " + e);
+        }
+
+    }
+
+    @Override
+    protected void setColorBright() {
+        try {
+            if (getCurrentWatchMode() == WatchMode.INTERACTIVE) {
+                mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_stripe_background));
+                mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.light_background));
+                if (sgvLevel == 1) {
+                    mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_highColor));
+                    mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_highColor));
+                    mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_highColor));
+                } else if (sgvLevel == 0) {
+                    mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_midColor));
+                    mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_midColor));
+                    mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_midColor));
+                } else if (sgvLevel == -1) {
+                    mSgv.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_lowColor));
+                    mDelta.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_lowColor));
+                    mDirection.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.light_lowColor));
+                }
+
+                if (ageLevel == 1) {
+                    mTimestamp.setTextColor(Color.WHITE);
+                } else {
+                    mTimestamp.setTextColor(Color.RED);
+                }
+
+                if (batteryLevel == 1) {
+                    mUploaderBattery.setTextColor(Color.WHITE);
+                } else {
+                    mUploaderBattery.setTextColor(Color.RED);
+                }
+                if (mXBatteryLevel == 1) {
+                    mUploaderXBattery.setTextColor(Color.WHITE);
+                } else {
+                    mUploaderXBattery.setTextColor(Color.RED);
+                }
+
+                mStatus.setTextColor(Color.WHITE);
+
+                mTime.setTextColor(Color.BLACK);
+                if (chart != null) {
+                    highColor = ContextCompat.getColor(getApplicationContext(), R.color.light_highColor);
+                    lowColor = ContextCompat.getColor(getApplicationContext(), R.color.light_lowColor);
+                    midColor = ContextCompat.getColor(getApplicationContext(), R.color.light_midColor);
+                    pointSize = 2;
+                    setupCharts();
+                }
+            } else {
+                setColorDark();
+            }
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Null pointer exception in setColorBright in home " + e);
         }
     }
 
