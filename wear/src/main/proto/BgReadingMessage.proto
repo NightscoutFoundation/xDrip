@@ -1,0 +1,32 @@
+// created by jamorham
+
+syntax = "proto2";
+
+package xdrip.bgreadingmessage;
+
+option java_package = "com.eveningoutpost.dexdrip.messages";
+
+message BgReadingMessage {
+    optional sint64 timestamp = 1;
+    optional double time_since_sensor_started = 2;
+    optional double raw_data = 3;
+    optional double filtered_data = 4;
+    optional double age_adjusted_raw_value = 5;
+    optional bool calibration_flag = 6;
+    optional double calculated_value = 7;
+    optional double filtered_calculated_value = 8;
+    optional double calculated_value_slope = 9;
+    optional double a = 30;
+    optional double b = 31;
+    optional double c = 32;
+    optional double ra = 33;
+    optional double rb = 34;
+    optional double rc = 35;
+    optional string uuid = 10;
+    optional string calibration_uuid = 11;
+    optional string sensor_uuid = 12;
+    optional bool ignoreforstats = 13;
+    optional double raw_calculated = 14;
+    optional bool hide_slope = 15;
+    optional string noise = 16;
+}

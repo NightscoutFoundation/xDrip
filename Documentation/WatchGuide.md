@@ -1,5 +1,6 @@
 # xDrip+ Wear Setup and Troubleshooting Guide
 - [Enable xDrip+ Android Wear Integration](#enable-xdrip-android-wear-integration)
+    - [Initial Wear Enablement Requests Location Permission](#initial-wear-enablement-requests-location-permission)
     - [Syncing Phone and Wear Preferences](#syncing-phone-and-wear-preferences)
     - [Syncing BGs and Wear Database](#syncing-bgs-and-wear-database)
     - [XDrip Prefs Overview](#xdrip-prefs-overview)
@@ -33,20 +34,25 @@ The wear standalone feature is enabled via the following xDrip+ Settings located
 | Device running Collection Service | NA               | Read-only; Displays the wear device running the BT Collector.  This will be the watch display name + uuid when Force Wear is enabled. |
 | NA                                | BT Collector     | Read-only; Corresponds to xDrip+ Setting -> **Hardware Data Source**.  For example, if the **Hardware Data Source** is set to **G5 Transmitter (test)**, then the wear app BT Collector will display **DexcomG5**. |
 | Sync Wear Logs                    | NA               | Triggers Wear log entries to be synced to the phone. You can view the logs on your phone using xDrip+ app's upper, right menu item, **View Events Log**. You need to enable ExtraLogTags in xDrip+ Settings -> LCS -> Extra Logging Settings -> **Extra tags for logging** to enable log generation for services s.a. **G5CollectionService:v**.|
-| Wear Log Prefix                   | NA               | The wear event logs are prefixed with the **Wear Log Prefix**.  If you tap it, you'll see that it defaults to **Wear** but you can enter something else, or nothing. This prefix helps to distinguish where the log entry was generated since services are similarly named on both devices. For example, **wearG5CollectionService** indicates the log was generated on the wear device.|
+| Wear Log Prefix                   | NA               | The wear event logs are prefixed with the **Wear Log Prefix**.  If you tap it, you'll see that it defaults to **wear** but you can enter something else, or nothing. This prefix helps to distinguish where the log entry was generated since services are similarly named on both devices. For example, **wearG5CollectionService** indicates the log was generated on the wear device.|
 
-These settings are listed in order of dependency.  Note, the XDrip BT Settings will only be visible when Wear Integration is enabled on the phone.
+These settings are listed in order of dependency.  Note, the Watch's **XDrip BT Settings** will only be visible when Wear Integration is enabled on the phone.
 
 * **Enable Wear**
 
-  If you ONLY want to use the watch in standalone mode when the phone is out-of-range, then just select the Enable Wear checkbox. This simply enables the BT collection service on the watch to run only when the phone is out-of-range. Upon reconnecting to the phone, the watch will stop its BT collection service and send its BG readings. The phone will sync the received readings and startup its own BT collection service. There may be a delay, perhaps up to 14 minutes, on some smartphones (eg., if the smartphone has poor BT connectivity) to get an initial bg reading after it is switched back to the phone. The watch BT collector usually gets the very next reading with no delay.
+  If you ONLY want to use the watch in standalone mode when the phone is out-of-range, then just select the Enable Wear checkbox. This simply enables the BT collection service on the watch to run only when the phone is out-of-range. Upon reconnecting to the phone, the watch will stop its BT collection service and send its BG readings. The phone will sync the received readings and startup its own BT collection service. There may be a delay, perhaps up to 14 minutes, on some smartphones (eg., if the smartphone has poor BT connectivity) to get an initial bg reading after it is switched back to the phone.
 * **Force Wear**
 
   Enabling **Force Wear** will cause xDrip+ to use the watch BT collection service.  The watch BT collection service will sync each bg reading with the phone as readings are received from the collector, or upon reconnecting to the phone.  **Force Wear** for everyday use has the advantage of offloading some of the proccessing required on the smartphone to the watch, thus saving battery and CPU usage on the smartphone.
 
   However, this offloading means the watch battery may not last as long as when not using Force Wear.  As an example, some users find that the Sony Smartwatch 3 (SW3) can use 20%+ overnight (7-8 hrs) when unplugged and running G5 collector and always-on screen.
 
-  Force Wear may also provide better BT connectivity over that provided by the smartphone.  As an example, some users find that the SW3 provides better BT connectivity than their smartphone.
+  Force Wear may also provide better BT connectivity over that provided by the smartphone.  As an example, some users find that the SW3 provides better BT connectivity than their Samsung Galaxy Note 4 smartphone.
+
+###Initial Wear Enablement Requests Location Permission
+Upon initial enablement of standalone wear, by selecting the the Enable Wear preference on watch or phone, a Location Permission is Required dialog box will be displayed.  Android Wear requires Bluetooth Permission to be manually accepted by the user, therefore, the user must accept the Location Permission query in order for standalone mode to work.  Alternatively, the user can enable Location Permission in Watch -> Settings -> Permissions - XDrip Prefs, then enable Location.
+
+<img align="middle" src="./images/prefs-wear-permissions.png" title="xDrip+ Wear Integration Preferences">
 
 ###Syncing Phone and Wear Preferences
 Note, xDrip+ and Wear will sync their co-existing preferences.  Preference syncing takes the following precedence on connection:
@@ -56,11 +62,18 @@ Note, xDrip+ and Wear will sync their co-existing preferences.  Preference synci
 For example, if the user changes the Force Wear preference on the watch, it will immediately be synced with the phone, or synced upon connection.
 
 ###Syncing BGs and Wear Database
-* Sync DB - The watch data is saved in the watch database.  The watch will attempt to sync with the phone upon connection until all delta data have been synced. So, for example, if you have 8 hours of overnight data, the watch will attempt to send those upon initial connection with the phone.
-* Reset Wear DB - The watch data exists on the phone until you **Reset Wear DB** on the phone via the xDrip+ upper right menu or until the app is uninstalled.
-* UserError Table - Similar to the xDrip+ phone app, UserError log messages are saved in the watch UserError table.
-  - View Events Log - Users can view log messages on the phone via the xDrip+ upper right menu item **View Events Log**.
-  - Less Common Settings (LCS) - Extra Logging Settings - **Extra tags for logging**: As with the xDrip+ phone app, specific log entries can be enabled by entering the extra tag and severity level preference via the xDrip+ phone app.
+* Sync DB - The watch data is saved in the watch database.  The watch will attempt to sync with the phone upon connection until all delta data have been synced. So, for example, if you have 8 hours of overnight data, the watch will attempt to send those upon re-connection with the phone.
+* Reset Wear DB - The watch data exists on the phone until you:
+  1) **Reset Wear DB** on the phone via the xDrip+ upper right menu.  This removes data already synced with the phone.
+  2) **Reset Wear DB** is auto-executed on a daily basis at 4 am.
+  3) The app is uninstalled.
+* UserError Table - Similar to the xDrip+ phone app, UserError log messages are saved in the watch UserError table.  To access the watch log entries on the phone, enable the **Sync Wear Logs** preference shown in the above image.  The log entries will be prefixed with the **Wear Log Prefix**, which defaults to **wear**, but is user-configurable.  This allows users to identify which device generated the log entry.  The log entries can be viewed using the follwoing options:
+  - Users can view log messages on the phone via the xDrip+ upper right menu item, **View Events Log**.
+  - As with the xDrip+ phone app, specific log entries can be enabled by entering the extra log tag and severity level preference via the xDrip+ phone app settings, Less Common Settings (LCS) - Extra Logging Settings - **Extra tags for logging**.
+
+The following image shows an example of the phone View Events Log containing watch log entries.
+
+<img align="middle" src="./images/prefs-wear-vieweventslog.png" title="xDrip+ Wear Integration Preferences">
 
 ###XDrip Prefs Overview
 The watch XDrip Prefs app is used to set the xDrip+ wear app preferences.

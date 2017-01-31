@@ -176,6 +176,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         String node_wearG5 = dataMap.getString("node_wearG5", "");
         String dex_txid = dataMap.getString("dex_txid", "");
         int bridge_battery = dataMap.getInt("bridge_battery", -1);//Used in DexCollectionService
+        int nfc_sensor_age = dataMap.getInt("nfc_sensor_age", -1);//Used in DexCollectionService LimiTTer
 
         boolean change = false;
 
@@ -199,6 +200,12 @@ public class WatchUpdaterService extends WearableListenerService implements
             prefs.putInt("bridge_battery", bridge_battery);
             Log.d(TAG, "syncPrefData commit bridge_battery: " + bridge_battery);
             CheckBridgeBattery.checkBridgeBattery();
+        }
+
+        if (nfc_sensor_age != mPrefs.getInt("nfc_sensor_age", 0)) {//Used by DexCollectionService
+            change = true;
+            prefs.putInt("nfc_sensor_age", bridge_battery);
+            Log.d(TAG, "syncPrefData commit nfc_sensor_age: " + nfc_sensor_age);
         }
 
         if (/*enable_wearG5 &&*/ enable_wearG5 != mPrefs.getBoolean("enable_wearG5", false)) {
@@ -882,11 +889,11 @@ public class WatchUpdaterService extends WearableListenerService implements
                         dataMap = DataMap.fromByteArray(event.getData());
                         if (dataMap != null) {
                             Log.d(TAG, "onMessageReceived WEARABLE_REPLYMSG_PATH dataMap=" + dataMap);
-                            String msg = dataMap.getString("msg", "");
                             String action_path = dataMap.getString("action_path", "");
-                            if (msg != null && !msg.isEmpty() && action_path != null && !action_path.isEmpty()) {
+                            if (action_path != null && !action_path.isEmpty()) {
                                 switch (action_path) {
                                     case START_COLLECTOR_PATH:
+                                        String msg = dataMap.getString("msg", "");
                                         JoH.static_toast_short(msg);
                                         break;
                                     case STATUS_COLLECTOR_PATH:
@@ -1089,6 +1096,9 @@ public class WatchUpdaterService extends WearableListenerService implements
         dataMap.putDouble("low", lowMark);//inMgdl(lowMark, mPrefs));//KS Fix for mmol on graph Y-axis in wear standalone mode
         dataMap.putBoolean("g5_non_raw_method",  mPrefs.getBoolean("g5_non_raw_method", false));
         dataMap.putString("extra_tags_for_logging",  Home.getPreferencesStringDefaultBlank("extra_tags_for_logging"));
+        dataMap.putBoolean("engineering_mode",  Home.getPreferencesBooleanDefaultFalse("engineering_mode"));
+        dataMap.putBoolean("bridge_battery_alerts",  Home.getPreferencesBooleanDefaultFalse("bridge_battery_alerts"));
+        dataMap.putString("bridge_battery_alert_level",  Home.getPreferencesStringWithDefault("bridge_battery_alert_level", "30"));
         new SendToDataLayerThread(WEARABLE_PREF_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap);
     }
 

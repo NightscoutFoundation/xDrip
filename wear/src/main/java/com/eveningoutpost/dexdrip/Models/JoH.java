@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
@@ -512,6 +513,10 @@ public class JoH {
     public static String niceTimeSince(long t) {
         return niceTimeScalar(msSince(t));
     }
+
+    public static String niceTimeTill(long t) {
+        return niceTimeScalar(-msSince(t));
+    }
     // temporary
     public static String niceTimeScalar(long t) {
         String unit = "second";
@@ -552,6 +557,14 @@ public class JoH {
     public static PowerManager.WakeLock getWakeLock(Context context, final String name, int millis) {//KS
         final PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);//KS
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, name);
+        wl.acquire(millis);
+        if (debug_wakelocks) Log.d(TAG, "getWakeLock: " + name + " " + wl.toString());
+        return wl;
+    }
+
+    public static PowerManager.WakeLock getWakeLock(final int type, final String name, int millis) {//KS
+        final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);//KS
+        PowerManager.WakeLock wl = pm.newWakeLock(type, name);//PowerManager.SCREEN_BRIGHT_WAKE_LOCK
         wl.acquire(millis);
         if (debug_wakelocks) Log.d(TAG, "getWakeLock: " + name + " " + wl.toString());
         return wl;
@@ -866,16 +879,20 @@ public class JoH {
             alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
     }
 
-/*//KS    public static void scheduleNotification(Context context, String title, String body, int delaySeconds, int notification_id) {
+   public static void scheduleNotification(Context context, String title, String body, int delaySeconds, int notification_id) {
         final Intent notificationIntent = new Intent(context, Home.class).putExtra(Home.SHOW_NOTIFICATION, title).putExtra("notification_body", body).putExtra("notification_id", notification_id);
         final PendingIntent pendingIntent = PendingIntent.getActivity(context, notification_id, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         Log.d(TAG, "Scheduling notification: " + title + " / " + body);
         wakeUpIntent(context, delaySeconds * 1000, pendingIntent);
-    }*/
+    }
 
+    public static void cancelNotification(int notificationId) {
+        final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotifyMgr.cancel(notificationId);
+    }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, boolean onetime) {
-        final NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent);
+        final Notification.Builder mBuilder = notificationBuilder(title, content, intent);
         final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
         if (vibrate) mBuilder.setVibrate(vibratePattern);
         mBuilder.setLights(0xff00ff00, 300, 1000);
@@ -886,13 +903,13 @@ public class JoH {
         }
 
         final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        if (!onetime) mNotifyMgr.cancel(notificationId);
+        // if (!onetime) mNotifyMgr.cancel(notificationId);
 
         mNotifyMgr.notify(notificationId, mBuilder.build());
     }
 
-    private static NotificationCompat.Builder notificationBuilder(String title, String content, PendingIntent intent) {
-        return new NotificationCompat.Builder(xdrip.getAppContext())
+    private static Notification.Builder notificationBuilder(String title, String content, PendingIntent intent) {
+        return new Notification.Builder(xdrip.getAppContext())
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setContentTitle(title)
                 .setContentText(content)
@@ -981,6 +998,16 @@ public class JoH {
             } else {
                 UserError.Log.e(TAG, "Device was null in pairing receiver");
             }
+        }
+    }
+
+    public static String getLocalBluetoothName() {
+        try {
+            final String name = BluetoothAdapter.getDefaultAdapter().getName();
+            if (name == null) return "";
+            return name;
+        } catch (Exception e) {
+            return "";
         }
     }
 

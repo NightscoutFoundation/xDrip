@@ -5,6 +5,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.view.LayoutInflater;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.ustwo.clockwise.common.WatchMode;
 
 public class LargeHome extends BaseWatchFace {
@@ -25,16 +26,33 @@ public class LargeHome extends BaseWatchFace {
                 ((x >=mDirectionDelta.getLeft() &&
                         x <= mDirectionDelta.getRight()&&
                         y >= mDirectionDelta.getTop() &&
-                        y <= mDirectionDelta.getBottom()) ||
-                        (x >=mLinearLayout.getLeft() &&
-                                x <= mLinearLayout.getRight()&&
-                                y >= mLinearLayout.getTop() &&
-                                y <= mLinearLayout.getBottom()) )) {
+                        y <= mDirectionDelta.getBottom()) )) {//||
+                        //(x >=mLinearLayout.getLeft() &&
+                        //        x <= mLinearLayout.getRight()&&
+                        //        y >= mLinearLayout.getTop() &&
+                        //        y <= mLinearLayout.getBottom()) )) {
             if (eventTime - fontsizeTapTime < 800) {
                 setSmallFontsize(true);
             }
             fontsizeTapTime = eventTime;
         }
+        if (tapType == TAP_TYPE_TOUCH && statusArea(x, y)) {
+            JoH.static_toast_short(mStatusLine);
+        }
+    }
+
+    private boolean statusArea(int x, int y) {
+        if (((x >=mDirectionDelta.getLeft() &&
+                //x <= mDirectionDelta.getRight()&&
+                //y >= mDirectionDelta.getTop() &&
+                //y <= mDirectionDelta.getBottom()) ||
+                (x >=mLinearLayout.getLeft() &&
+                        x <= mLinearLayout.getRight()&&
+                        y >= mLinearLayout.getTop() &&
+                        y <= mLinearLayout.getBottom()) )) ) {
+            return true;
+        }
+        return false;
     }
 
     @Override

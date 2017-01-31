@@ -37,6 +37,8 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.Services.DexCollectionService;
+import com.eveningoutpost.dexdrip.Services.DexShareCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -49,8 +51,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
-import static com.eveningoutpost.dexdrip.Services.G5CollectionService.setWatchStatus;
 
 
 public class SystemStatusFragment extends Fragment {
@@ -77,13 +77,7 @@ public class SystemStatusFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
-        Context context = safeGetContext();
-        final PowerManager.WakeLock wl = JoH.getWakeLock("ACTION_STATUS_COLLECTOR",120000);
-        if (prefs.getBoolean("wear_sync", false) && prefs.getBoolean("enable_wearG5", false)) {
-            context.startService(new Intent(context, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_STATUS_COLLECTOR));
-        }
-        JoH.releaseWakeLock(wl);
+        requestWearCollectorStatus();
         serviceDataReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context ctx, Intent intent) {
@@ -92,15 +86,26 @@ public class SystemStatusFragment extends Fragment {
                 Bundle bundle = intent.getBundleExtra("data");
                 if (bundle != null) {
                     DataMap dataMap = DataMap.fromBundle(bundle);
-                    String msg = dataMap.getString("msg", "");
-                    long last_timestamp = dataMap.getLong("last_timestamp", 0);
-                    UserError.Log.d(TAG, "serviceDataReceiver onReceive:" + action + " :: " + msg + " last_timestamp :: " + last_timestamp);
+                    String lastState = dataMap.getString("lastState", "");
+                    long last_timestamp = dataMap.getLong("timestamp", 0);
+                    UserError.Log.d(TAG, "serviceDataReceiver onReceive:" + action + " :: " + lastState + " last_timestamp :: " + last_timestamp);
                     switch (action) {
                         case WatchUpdaterService.ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE:
-                            if (DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomG5)) {
-                                setWatchStatus(msg, last_timestamp);
-                            } else {
-                                setConnectionStatus(msg);//TODO getLastState() in non-G5 Services
+                            switch (DexCollectionType.getDexCollectionType()) {
+                                case DexcomG5:
+                                    G5CollectionService.setWatchStatus(dataMap);//msg, last_timestamp
+                                    break;
+                                case DexcomShare:
+                                    if (lastState != null && !lastState.isEmpty()) {
+                                        setConnectionStatus(lastState);//TODO getLastState() in non-G5 Services
+                                    }
+                                    break;
+                                default:
+                                    DexCollectionService.setWatchStatus(dataMap);//msg, last_timestamp
+                                    if (lastState != null && !lastState.isEmpty()) {
+                                        setConnectionStatus(lastState);
+                                    }
+                                    break;
                             }
                             break;
                     }
@@ -109,6 +114,17 @@ public class SystemStatusFragment extends Fragment {
         };
         return inflater.inflate(R.layout.activity_system_status, container, false);
     }
+
+    private void requestWearCollectorStatus() {
+        prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        Context context = safeGetContext();
+        final PowerManager.WakeLock wl = JoH.getWakeLock("ACTION_STATUS_COLLECTOR",120000);
+        if (prefs.getBoolean("wear_sync", false) && prefs.getBoolean("enable_wearG5", false)) {
+            context.startService(new Intent(context, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_STATUS_COLLECTOR));
+        }
+        JoH.releaseWakeLock(wl);
+    }
+
     @Override
     public void onPause() {
         if (serviceDataReceiver != null) {
@@ -520,6 +536,7 @@ public class SystemStatusFragment extends Fragment {
         refresh.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 set_current_values();
+                requestWearCollectorStatus();
             }
         });
     }

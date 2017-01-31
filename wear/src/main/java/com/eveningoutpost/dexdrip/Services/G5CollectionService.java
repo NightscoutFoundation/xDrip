@@ -67,6 +67,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 //KS import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.google.android.gms.wearable.DataMap;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
@@ -108,6 +109,7 @@ public class G5CollectionService extends Service {
     private static int successes = 0;
     private static int failures = 0;
     private boolean force_always_authenticate = false;
+    private boolean force_always_on_screen = false;//TODO enable for certain phones, eg., Moto360 2G
 
     //KS private ForegroundServiceStarter foregroundServiceStarter;
 
@@ -611,6 +613,21 @@ public class G5CollectionService extends Service {
 
     private synchronized void scanLogic() {
         if (!keep_running) return;
+
+        if (alwaysOnScreem()) {
+            Log.e(TAG, "scanLogic call forceScreenOn");
+            if (enforceMainThread()) {
+                Handler iHandler = new Handler(Looper.getMainLooper());
+                iHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        forceScreenOn();
+                    }
+                });
+            } else {
+                forceScreenOn();
+            }
+        }
         if (JoH.ratelimit("G5-scanlogic", 2)) {
             try {
                 mLEScanner.stopScan(mScanCallback);
@@ -667,12 +684,47 @@ public class G5CollectionService extends Service {
         }
     }
 
+    private synchronized void forceScreenOn() {
+        //Home.startHomeWithExtra(getApplicationContext(), Home.HOME_FULL_WAKEUP, "1");
+        final int timeout = 60000;
+        //if (!JoH.isScreenOn()) {
+            Log.e(TAG, "forceScreenOn set wakelock for SCREEN_BRIGHT_WAKE_LOCK");
+            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            final PowerManager.WakeLock wl = JoH.getWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "SCREEN_BRIGHT_WAKE_LOCK", timeout);
+
+            final Timer t = new Timer();
+            t.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    JoH.releaseWakeLock(wl);
+                    Log.e(TAG, "forceScreenOn releaseWakeLock " + wl.toString());
+                }
+            }, timeout);
+        //}
+        //else Log.e(TAG, "forceScreenOn Screen is already on so not turning on");
+    }
+
     public synchronized void startScan() {
         UserError.Log.e(TAG, "Initial scan?" + isIntialScan);
         if (isScanning) {
             Log.d(TAG, "alreadyScanning");
             scan_interval_timer.cancel();
             return;
+        }
+
+        if (alwaysOnScreem()) {
+            Log.e(TAG, "startScan call forceScreenOn");
+            if (enforceMainThread()) {
+                Handler iHandler = new Handler(Looper.getMainLooper());
+                iHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        forceScreenOn();
+                    }
+                });
+            } else {
+                forceScreenOn();
+            }
         }
 
         getTransmitterDetails();
@@ -1775,6 +1827,12 @@ public class G5CollectionService extends Service {
         return force_always_authenticate || sharedPreferences.getBoolean("always_get_new_keys", false);
     }
 
+    private boolean alwaysOnScreem() {
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        return force_always_on_screen || sharedPreferences.getBoolean("always-on-screen", false);
+    }
+
     private boolean enforceMainThread() {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -1813,9 +1871,21 @@ public class G5CollectionService extends Service {
                 + (tryPreBondWithDelay ? "tryPreBondWithDelay " : ""));
     }
 
-    public static void setWatchStatus(String msg, long last_timestamp) {
-        lastStateWatch = msg;
-        static_last_timestamp_watch = last_timestamp;
+    // Status for Watchface
+    public static boolean isRunning() {
+        return lastState.equals("Not Running") || lastState.equals("Stopped") ? false : true;
+    }
+
+    public static void setWatchStatus(DataMap dataMap) {
+        lastStateWatch = dataMap.getString("lastState", "");
+        static_last_timestamp_watch = dataMap.getLong("timestamp", 0);
+    }
+
+    public static DataMap getWatchStatus() {
+        DataMap dataMap = new DataMap();
+        dataMap.putString("lastState", lastState);
+        dataMap.putLong("timestamp", static_last_timestamp);
+        return dataMap;
     }
 
     // data for MegaStatus
@@ -1864,11 +1934,6 @@ public class G5CollectionService extends Service {
 
 
         return l;
-    }
-
-    // Status for Watchface
-    public static boolean isRunning() {
-        return lastState.equals("Not Running") || lastState.equals("Stopped") ? false : true;
     }
 
     // Status for Watchface

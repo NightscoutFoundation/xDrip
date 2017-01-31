@@ -10,9 +10,18 @@ package com.eveningoutpost.dexdrip;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -35,8 +44,10 @@ import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
+import com.google.android.gms.wearable.DataMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +73,7 @@ public class MegaStatus extends ActivityWithMenu {
 
 
     private static ArrayList<MegaStatusListAdapter> MegaStatusAdapters = new ArrayList<>();
+    private BroadcastReceiver serviceDataReceiver;
 
     private void addAsection(String section, String title) {
         sectionList.add(section);
@@ -93,7 +105,7 @@ public class MegaStatus extends ActivityWithMenu {
                 addAsection(IP_COLLECTOR, "Wifi Wixel / Parakeet Status");
             }
             if (Home.get_master_or_follower()) {
-                addAsection(XDRIP_PLUS_SYNC,"xDrip+ Sync Group");
+                addAsection(XDRIP_PLUS_SYNC, "xDrip+ Sync Group");
             }
             //addAsection("Misc", "Currently Empty");
 
@@ -152,17 +164,68 @@ public class MegaStatus extends ActivityWithMenu {
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-            UserError.Log.d(TAG,"Page selected: " + position);
-                currentPage=position;
+                UserError.Log.d(TAG, "Page selected: " + position);
+                currentPage = position;
                 startAutoFresh();
-        }});
-
+            }
+        });
+        requestWearCollectorStatus();
+        serviceDataReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context ctx, Intent intent) {
+                final String action = intent.getAction();
+                //final String msg = intent.getStringExtra("data");
+                Bundle bundle = intent.getBundleExtra("data");
+                if (bundle != null) {
+                    DataMap dataMap = DataMap.fromBundle(bundle);
+                    String lastState = dataMap.getString("lastState", "");
+                    long last_timestamp = dataMap.getLong("timestamp", 0);
+                    UserError.Log.d(TAG, "serviceDataReceiver onReceive:" + action + " :: " + lastState + " last_timestamp :: " + last_timestamp);
+                    switch (action) {
+                        case WatchUpdaterService.ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE:
+                            switch (DexCollectionType.getDexCollectionType()) {
+                                case DexcomG5:
+                                    G5CollectionService.setWatchStatus(dataMap);//msg, last_timestamp
+                                    break;
+                                case DexcomShare:
+                                    if (lastState != null && !lastState.isEmpty()) {
+                                        //setConnectionStatus(lastState);//TODO set System Status page connection_status.setText to lastState for non-G5 Services?
+                                    }
+                                    break;
+                                default:
+                                    DexCollectionService.setWatchStatus(dataMap);//msg, last_timestamp
+                                    if (lastState != null && !lastState.isEmpty()) {
+                                        //setConnectionStatus(lastState);//TODO set System Status page connection_status.setText to lastState for non-G5 Services?
+                                    }
+                                    break;
+                            }
+                            break;
+                    }
+                }
+            }
+        };
     }
 
+    private void requestWearCollectorStatus() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        Context context = xdrip.getAppContext();
+        final PowerManager.WakeLock wl = JoH.getWakeLock("ACTION_STATUS_COLLECTOR", 120000);
+        if (prefs.getBoolean("wear_sync", false) && prefs.getBoolean("enable_wearG5", false)) {
+            context.startService(new Intent(context, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_STATUS_COLLECTOR));
+        }
+        JoH.releaseWakeLock(wl);
+    }
 
     @Override
     public void onPause() {
         activityVisible = false;
+        if (serviceDataReceiver != null) {
+            try {
+                LocalBroadcastManager.getInstance(xdrip.getAppContext()).unregisterReceiver(serviceDataReceiver);
+            } catch (IllegalArgumentException e) {
+                UserError.Log.e(TAG, "broadcast receiver not registered", e);
+            }
+        }
         super.onPause();
     }
 
@@ -171,6 +234,9 @@ public class MegaStatus extends ActivityWithMenu {
     protected void onResume() {
         super.onResume();
         activityVisible = true;
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WatchUpdaterService.ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE);
+        LocalBroadcastManager.getInstance(xdrip.getAppContext()).registerReceiver(serviceDataReceiver, intentFilter);
         if (autoRunnable != null) startAutoFresh();
 
         if (sectionList.size() > 1)
@@ -201,36 +267,36 @@ public class MegaStatus extends ActivityWithMenu {
 
     private void startupInfo() {
 
-            final boolean oneshot = true;
-            final int option = Home.SHOWCASE_MEGASTATUS;
-            if ((oneshot) && (ShotStateStore.hasShot(option))) return;
+        final boolean oneshot = true;
+        final int option = Home.SHOWCASE_MEGASTATUS;
+        if ((oneshot) && (ShotStateStore.hasShot(option))) return;
 
-            // This could do with being in a utility static method also used in Home
-            final int size1 = 300;
-            final int size2 = 130;
-            final String title = "Swipe for Different Pages";
-            final String message = "Swipe left and right to see different status tabs.\n\n";
-            final ViewTarget target = new ViewTarget(R.id.pager_title_strip, this);
-            final Activity activity = this;
+        // This could do with being in a utility static method also used in Home
+        final int size1 = 300;
+        final int size2 = 130;
+        final String title = "Swipe for Different Pages";
+        final String message = "Swipe left and right to see different status tabs.\n\n";
+        final ViewTarget target = new ViewTarget(R.id.pager_title_strip, this);
+        final Activity activity = this;
 
-            JoH.runOnUiThreadDelayed(new Runnable() {
-                                         @Override
-                                         public void run() {
-                                             final ShowcaseView myShowcase = new ShowcaseView.Builder(activity)
+        JoH.runOnUiThreadDelayed(new Runnable() {
+                                     @Override
+                                     public void run() {
+                                         final ShowcaseView myShowcase = new ShowcaseView.Builder(activity)
 
-                                                     .setTarget(target)
-                                                     .setStyle(R.style.CustomShowcaseTheme2)
-                                                     .setContentTitle(title)
-                                                     .setContentText("\n" + message)
-                                                     .setShowcaseDrawer(new JamorhamShowcaseDrawer(getResources(), getTheme(), size1, size2, 255))
-                                                     .singleShot(oneshot ? option : -1)
-                                                     .build();
-                                             myShowcase.setBackgroundColor(Color.TRANSPARENT);
-                                             myShowcase.show();
-                                         }
+                                                 .setTarget(target)
+                                                 .setStyle(R.style.CustomShowcaseTheme2)
+                                                 .setContentTitle(title)
+                                                 .setContentText("\n" + message)
+                                                 .setShowcaseDrawer(new JamorhamShowcaseDrawer(getResources(), getTheme(), size1, size2, 255))
+                                                 .singleShot(oneshot ? option : -1)
+                                                 .build();
+                                         myShowcase.setBackgroundColor(Color.TRANSPARENT);
+                                         myShowcase.show();
                                      }
-                    , 1500);
-        }
+                                 }
+                , 1500);
+    }
 
     private synchronized void startAutoFresh() {
         if (autoFreshRunning) return;
@@ -241,6 +307,7 @@ public class MegaStatus extends ActivityWithMenu {
                 try {
                     if ((activityVisible) && (autoFreshRunning) && (currentPage != 0)) {
                         MegaStatus.populate(MegaStatusAdapters.get(currentPage), sectionList.get(currentPage));
+                        requestWearCollectorStatus();
                         JoH.runOnUiThreadDelayed(autoRunnable, autoFreshDelay);
                     } else {
                         UserError.Log.d(TAG, "AutoFresh shutting down");

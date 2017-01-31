@@ -11,6 +11,8 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -73,6 +75,10 @@ public class TransmitterData extends Model {
             } else {
                 transmitterData.timestamp = timestamp;
             }
+            int wearBatteryLevel = CheckBridgeBattery.getBatteryLevel(Home.getAppContext());
+            Log.i(TAG, "create wearBatteryLevel=" + wearBatteryLevel);
+            Home.setPreferencesInt("bridge_battery", wearBatteryLevel);//TODO confirm wear battery should be used as bridge
+            CheckBridgeBattery.checkBridgeBattery();
             Log.i(TAG, "Created transmitterData record with Raw value of " + transmitterData.raw_data + " and Filtered value of " + transmitterData.filtered_data + " at " + timestamp + " with timestamp " + transmitterData.timestamp);
         } else { //this is NOT a dexbridge packet.  Process accordingly.
             Log.i(TAG, "create Processing a BTWixel or IPWixel packet");
@@ -85,9 +91,23 @@ public class TransmitterData extends Model {
                 if (data.length > 2) {
                     try {
                         Home.setPreferencesInt("bridge_battery", Integer.parseInt(data[2]));
+                        CheckBridgeBattery.checkBridgeBattery();
                         //if (Home.get_master()) GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery",-1));
                     } catch (Exception e) {
                         Log.e(TAG, "Got exception processing classic wixel or limitter battery value: " + e.toString());
+                    }
+                    if (data.length > 3) {
+                        if ((DexCollectionType.getDexCollectionType() == DexCollectionType.LimiTTer)
+                                && (!Home.getPreferencesBooleanDefaultFalse("use_transmiter_pl_bluetooth"))) {
+                            try {
+                                // reported sensor age in minutes
+                                final Integer sensorAge = Integer.parseInt(data[3]);
+                                if ((sensorAge > 0) && (sensorAge < 200000))
+                                    Home.setPreferencesInt("nfc_sensor_age", sensorAge);
+                            } catch (Exception e) {
+                                Log.e(TAG, "Got exception processing field 4 in classic limitter protocol: " + e);
+                            }
+                        }
                     }
                 }
             }
@@ -128,6 +148,12 @@ public class TransmitterData extends Model {
         transmitterData.timestamp = timestamp;
         transmitterData.uuid = UUID.randomUUID().toString();
         transmitterData.save();
+
+        int wearBatteryLevel = CheckBridgeBattery.getBatteryLevel(Home.getAppContext());
+        Log.i(TAG, "create wearBatteryLevel=" + wearBatteryLevel);
+        Home.setPreferencesInt("bridge_battery", wearBatteryLevel);//TODO confirm wear battery should be used as bridge
+        CheckBridgeBattery.checkBridgeBattery();
+
         return transmitterData;
     }
 

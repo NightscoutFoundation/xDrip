@@ -37,6 +37,7 @@ public enum DexCollectionType {
     private static final HashSet<DexCollectionType> usesFiltered = new HashSet<>();
     private static final HashSet<DexCollectionType> usesLibre = new HashSet<>();
     private static final HashSet<DexCollectionType> usesBattery = new HashSet<>();
+    private static final HashSet<DexCollectionType> usesDexcomRaw = new HashSet<>();
 
     public static final String DEX_COLLECTION_METHOD = "dex_collection_method";
 
@@ -57,6 +58,7 @@ public enum DexCollectionType {
         Collections.addAll(usesFiltered, DexbridgeWixel, WifiDexBridgeWixel, DexcomG5, WifiWixel, Follower); // Bluetooth and Wifi+Bluetooth need dynamic mode
         Collections.addAll(usesLibre, LimiTTer, LibreAlarm);
         Collections.addAll(usesBattery, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel, Follower, LimiTTer, LibreAlarm); // parakeet separate
+        Collections.addAll(usesDexcomRaw, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, DexcomG5, WifiDexBridgeWixel);
     }
 
 
@@ -103,6 +105,14 @@ public enum DexCollectionType {
 
     public static boolean hasSensor() {
         return getDexCollectionType() != DexCollectionType.Manual;
+    }
+
+    public static boolean hasDexcomRaw() { return hasDexcomRaw(getDexCollectionType()); }
+
+    public static boolean usesDexCollectionService(DexCollectionType type) { return usesBtWixel.contains(type) || usesXbridge.contains(type) || type.equals(LimiTTer); }
+
+    public static boolean hasDexcomRaw(DexCollectionType type) {
+        return usesDexcomRaw.contains(type);
     }
 
     public static boolean isFlakey() { return getDexCollectionType() == DexCollectionType.DexcomG5; }

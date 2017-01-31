@@ -75,6 +75,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public PowerManager.WakeLock wakeLock;
     // related to manual layout
     public View layoutView;
+    public String mStatusLine;
     private final Point displaySize = new Point();
     private int specW, specH;
 
@@ -281,6 +282,18 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 String msg = dataMap.getString("msg", "");
                 JoH.static_toast_short(msg);
             }
+            bundle = intent.getBundleExtra(Home.HOME_FULL_WAKEUP);
+            if (layoutSet && bundle != null) {
+                String msg = bundle.getString(Home.HOME_FULL_WAKEUP);
+                if (msg != null && !msg.isEmpty()) {
+                    if (msg.equals("1")) {
+                        mRelativeLayout.setKeepScreenOn(true);
+                    }
+                    else {
+                        mRelativeLayout.setKeepScreenOn(false);
+                    }
+                }
+            }
             bundle = intent.getBundleExtra("data");
             if (layoutSet && bundle != null) {
                 dataMap = DataMap.fromBundle(bundle);
@@ -344,6 +357,10 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
 
     private void showAgoRawBattStatus() {
 
+        String uploaderXBatteryText = "";
+        String uploaderBatteryText = "";
+        String timestampText = "";
+
         boolean showAvgDelta = sharedPrefs.getBoolean("showAvgDelta", false);
         mDelta.setText(delta);
         if(showAvgDelta){
@@ -382,16 +399,18 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             //mUploaderXBattery.setText((showStatus ? "B: " : "Bridge: ") + xbatteryString + ((mXBattery < 200) ? "%" : "mV"));
             String xbatteryString = "" + xBattery;
             if (xBattery < 200) {
+                uploaderXBatteryText = getResources().getString(R.string.label_show_bridge_battery_percent, xbatteryString);
                 if (showStatus)
                     mUploaderXBattery.setText(getResources().getString(R.string.label_show_bridge_battery_percent_abbrv, xbatteryString));
                 else
-                    mUploaderXBattery.setText(getResources().getString(R.string.label_show_bridge_battery_percent, xbatteryString));
+                    mUploaderXBattery.setText(uploaderXBatteryText);
             }
             else {
+                uploaderXBatteryText = getResources().getString(R.string.label_show_bridge_battery_volt, xbatteryString);
                 if (showStatus)
                     mUploaderXBattery.setText(getResources().getString(R.string.label_show_bridge_battery_volt_abbrv, xbatteryString));
                 else
-                    mUploaderXBattery.setText(getResources().getString(R.string.label_show_bridge_battery_volt, xbatteryString));
+                    mUploaderXBattery.setText(uploaderXBatteryText);
             }
             mUploaderXBattery.setVisibility(View.VISIBLE);
         }
@@ -404,6 +423,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         } else {
             mTimestamp.setText(readingAge(false));
         }
+        timestampText = readingAge(false);
 
         boolean enable_wearG5 = sharedPrefs.getBoolean("enable_wearG5", false);
         boolean force_wearG5 = sharedPrefs.getBoolean("force_wearG5", false);
@@ -420,17 +440,19 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             int wearBattery = getWearBatteryLevel(getApplication());
             String wearBatteryString = "" + wearBattery;
             batteryLevel = (wearBattery >= 30) ? 1 : 0;
+            uploaderBatteryText = getResources().getString(R.string.label_show_uploader_wear, wearBatteryString);
             if (showStatus || mShowXBattery)
                 mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader_wear_abbrv, wearBatteryString));//"W: " + batteryString + "%"
             else
-                mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader_wear, wearBatteryString));//"Wear: " + batteryString + "%"
+                mUploaderBattery.setText(uploaderBatteryText);//"Wear: " + batteryString + "%"
         }
         else {//Phone Collector
             Log.d(TAG, "Collector running on phone");
+            uploaderBatteryText = getResources().getString(R.string.label_show_uploader, batteryString);
             if (showStatus || mShowXBattery)
                 mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader_abbrv, batteryString));//"U: " + batteryString + "%"
             else
-                mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader, batteryString));//"Uploader: " + batteryString + "%"
+                mUploaderBattery.setText(uploaderBatteryText);//"Uploader: " + batteryString + "%"
         }
 
         if (showStatus) {
@@ -439,6 +461,9 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         } else {
             mStatus.setVisibility(View.GONE);
         }
+        mStatusLine = timestampText + " " + uploaderBatteryText +
+                (mShowXBattery ? " " + uploaderXBatteryText : "") +
+                (showStatus ? " " + mStatus.getText().toString() : "");
     }
 
     // Custom method to determine whether a service is running
