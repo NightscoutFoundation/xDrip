@@ -115,13 +115,13 @@ public class NightscoutUploader {
                 long start = System.currentTimeMillis();
                 Log.i(TAG, String.format("Starting upload of %s record using a REST API", glucoseDataSets.size()));
                 apiStatus = doRESTUpload(prefs, glucoseDataSets, meterRecords, calRecords);
-                Log.i(TAG, String.format("Finished upload of %s record using a REST API in %s ms", glucoseDataSets.size(), System.currentTimeMillis() - start));
+                Log.i(TAG, String.format("Finished upload of %s record using a REST API in %s ms result: %b", glucoseDataSets.size(), System.currentTimeMillis() - start, apiStatus));
             }
 
             if (enableMongoUpload) {
                 double start = new Date().getTime();
                 mongoStatus = doMongoUpload(prefs, glucoseDataSets, meterRecords, calRecords);
-                Log.i(TAG, String.format("Finished upload of %s record using a Mongo in %s ms", glucoseDataSets.size() + meterRecords.size(), System.currentTimeMillis() - start));
+                Log.i(TAG, String.format("Finished upload of %s record using a Mongo in %s ms result: %b", glucoseDataSets.size() + meterRecords.size(), System.currentTimeMillis() - start, mongoStatus));
             }
 
             return apiStatus || mongoStatus;
