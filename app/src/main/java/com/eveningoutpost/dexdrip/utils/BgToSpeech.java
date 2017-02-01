@@ -29,14 +29,14 @@ public class BgToSpeech {
     private TextToSpeech tts = null;
     private static final String TAG = "BgToSpeech";
 
-    public synchronized static BgToSpeech setupTTS(Context context){
+    public synchronized static BgToSpeech setupTTS(Context context) {
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (! prefs.getBoolean("bg_to_speech", false)){
+        if (!prefs.getBoolean("bg_to_speech", false)) {
             return null;
         }
 
-        if(instance == null) {
+        if (instance == null) {
             instance = new BgToSpeech(context);
             return instance;
         } else {
@@ -46,16 +46,16 @@ public class BgToSpeech {
         }
     }
 
-    public synchronized static void tearDownTTS(){
-        if(instance!=null){
+    public synchronized static void tearDownTTS() {
+        if (instance != null) {
             instance.tearDown();
             instance = null;
         } else {
-           // Log.e(TAG, "tearDownTTS() called but instance is null!");
+            // Log.e(TAG, "tearDownTTS() called but instance is null!");
         }
     }
 
-    public static synchronized  void speak(final double value, long timestamp) {
+    public static synchronized void speak(final double value, long timestamp) {
         if (instance == null) {
             try {
                 setupTTS(xdrip.getAppContext());
@@ -75,7 +75,7 @@ public class BgToSpeech {
             try {
                 tts.shutdown();
             } catch (IllegalArgumentException e) {
-                Log.e(TAG,"Got exception shutting down service: " + e);
+                Log.e(TAG, "Got exception shutting down service: " + e);
             }
             tts = null;
         }
@@ -112,11 +112,26 @@ public class BgToSpeech {
                         // can end up here with Locales like "OS"
                         Log.e(TAG, "Got TTS set language error: " + e.toString());
                         result = TextToSpeech.LANG_MISSING_DATA;
+                    } catch (Exception e) {
+                        // can end up here with deep errors from tts system
+                        Log.e(TAG, "Got TTS set language deep error: " + e.toString());
+                        result = TextToSpeech.LANG_MISSING_DATA;
                     }
+
                     if (result == TextToSpeech.LANG_MISSING_DATA
                             || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                         Log.e(TAG, "Default system language is not supported");
-                        result = tts.setLanguage(Locale.ENGLISH);
+                        try {
+                            result = tts.setLanguage(Locale.ENGLISH);
+                        } catch (IllegalArgumentException e) {
+                            // can end up here with parcel Locales like "OS"
+                            Log.e(TAG, "Got TTS set default language error: " + e.toString());
+                            result = TextToSpeech.LANG_MISSING_DATA;
+                        } catch (Exception e) {
+                            // can end up here with deep errors from tts system
+                            Log.e(TAG, "Got TTS set default language deep error: " + e.toString());
+                            result = TextToSpeech.LANG_MISSING_DATA;
+                        }
                     }
                     //try any english
                     if (result == TextToSpeech.LANG_MISSING_DATA
@@ -212,7 +227,7 @@ public class BgToSpeech {
     }
 
 
-    public static void installTTSData(Context ctx) {
+    static void installTTSData(Context ctx) {
         try {
             Intent intent = new Intent();
             intent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
@@ -223,9 +238,9 @@ public class BgToSpeech {
         }
     }
 
-    private boolean isOngoingCall(){
-        AudioManager manager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-        return (manager.getMode()==AudioManager.MODE_IN_CALL);
+    private boolean isOngoingCall() {
+        AudioManager manager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        return (manager.getMode() == AudioManager.MODE_IN_CALL);
     }
 
 
