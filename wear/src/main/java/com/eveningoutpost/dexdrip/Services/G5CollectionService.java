@@ -1380,6 +1380,12 @@ public class G5CollectionService extends Service {
                 Log.i(TAG, "CharHex-or " + Extensions.bytesToHex(characteristic.getValue()));
 
                 final byte[] buffer = characteristic.getValue();
+
+                if (buffer.length == 0) {
+                    Log.e(TAG, "OnCharacteristic READ Got ZERO sized buffer: status: " + getStatusName(status));
+                    return;
+                }
+
                 byte code = buffer[0];
                 //Transmitter defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
                 Log.e(TAG,"processOncRead: code:"+code);
@@ -1565,6 +1571,8 @@ public class G5CollectionService extends Service {
                 successes++;
                 failures=0;
                 Log.e(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered);
+                Log.e(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered + " timestamp: " + sensorRx.timestamp);
+                Log.e(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered + " timestamp: " + sensorRx.timestamp + " " + JoH.qs((double)sensorRx.timestamp / 86400, 1) + " days");
                 if ((getVersionDetails) && (!haveFirmwareDetails())) {
                     doVersionRequestMessage(gatt, characteristic);
                 } else if ((getBatteryDetails) && (!haveCurrentBatteryStatus())) {

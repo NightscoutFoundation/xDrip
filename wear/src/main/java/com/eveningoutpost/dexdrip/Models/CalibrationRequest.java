@@ -61,4 +61,14 @@ public class CalibrationRequest extends Model {
                 .executeSingle();
         return (calibrationRequest != null && Math.abs(bgReading.calculated_value_slope * 60000) < 1);
     }
+
+    public static boolean isSlopeFlatEnough(BgReading bgReading) {
+        return isSlopeFlatEnough(bgReading, 1);
+    }
+
+    public static boolean isSlopeFlatEnough(BgReading bgReading, double limit) {
+        if (bgReading == null) return false;
+        // TODO use BestGlucose
+        return Math.abs(bgReading.calculated_value_slope * 60000) < limit;
+    }
 }

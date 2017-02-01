@@ -45,6 +45,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -543,6 +544,12 @@ public class EditAlertActivity extends ActivityWithMenu {
                 }  else {
                     AlertType.add_alert(null, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, vibrate, !disabled);
                 }
+
+                final boolean wear_integration = Home.getPreferencesBoolean("wear_sync", false);//KS
+                if (wear_integration) {
+                    android.util.Log.d(TAG, "addListenerOnButtons start WatchUpdaterService with ACTION_SYNC_ALERTTYPE");
+                    startService(new Intent(mContext, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_ALERTTYPE));
+                }
                 Intent returnIntent = new Intent();
                 setResult(RESULT_OK,returnIntent);
                 finish();
@@ -558,6 +565,11 @@ public class EditAlertActivity extends ActivityWithMenu {
                     Log.wtf(TAG, "Error remove pressed, while we were adding an alert");
                 }  else {
                     AlertType.remove_alert(uuid);
+                    final boolean wear_integration = Home.getPreferencesBoolean("wear_sync", false);//KS
+                    if (wear_integration) {
+                        android.util.Log.d(TAG, "addListenerOnButtons start WatchUpdaterService with ACTION_SYNC_ALERTTYPE");
+                        startService(new Intent(mContext, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_ALERTTYPE));
+                    }
                 }
                 Intent returnIntent = new Intent();
                 setResult(RESULT_OK,returnIntent);

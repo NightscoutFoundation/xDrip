@@ -104,6 +104,7 @@ public class Home extends BaseWatchFace {
         return new WatchFaceStyle.Builder(this).setAcceptsTapEvents(true).build();
     }
 
+    @Override
     protected void setColorDark() {
         mLinearLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_statusView));
         mTime.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
@@ -150,6 +151,7 @@ public class Home extends BaseWatchFace {
         }
     }
 
+    @Override
     protected void setColorLowRes() {
         mTime.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_mTime));
         mRelativeLayout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_background));
@@ -171,6 +173,7 @@ public class Home extends BaseWatchFace {
     }
 
 
+    @Override
     protected void setColorBright() {
 
         if (getCurrentWatchMode() == WatchMode.INTERACTIVE) {
@@ -294,6 +297,12 @@ public class Home extends BaseWatchFace {
     public static boolean get_engineering_mode() {
         return Home.getPreferencesBooleanDefaultFalse("engineering_mode");
     }
+
+    public static boolean get_forced_wear() {
+        return getPreferencesBooleanDefaultFalse("enable_wearG5") &&
+                getPreferencesBooleanDefaultFalse("force_wearG5");
+    }
+
 
     public static boolean getPreferencesBoolean(final String pref, boolean def) {
         if ((prefs == null) && (xdrip.getAppContext() != null)) {

@@ -14,7 +14,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
-import com.eveningoutpost.dexdrip.Services.MissedReadingService;
+//KS import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 
@@ -142,10 +142,15 @@ public class AlertType extends Model {
 
     public static AlertType get_alert(String uuid) {
 
-        return new Select()
-        .from(AlertType.class)
-        .where("uuid = ? ", uuid)
-        .executeSingle();
+        try {
+            return new Select()
+            .from(AlertType.class)
+            .where("uuid = ? ", uuid)
+            .executeSingle();
+        }
+        catch (Exception e) {
+            return null;
+        }
     }
 
     /*
@@ -365,15 +370,6 @@ public class AlertType extends Model {
         return name + " " + above + " " + threshold + " "+ all_day + " " +time +" " + minutes_between + " uuid" + uuid;
     }
 
-    public String toS() {
-        Gson gson = new GsonBuilder()
-                .excludeFieldsWithoutExposeAnnotation()
-                .registerTypeAdapter(Date.class, new DateTypeAdapter())
-                .serializeSpecialFloatingPointValues()
-                .create();
-        return gson.toJson(this);
-    }
-
     public static void print_all() {
         List<AlertType> Alerts  = new Select()
             .from(AlertType.class)
@@ -385,13 +381,13 @@ public class AlertType extends Model {
         }
     }
 
-    public static List<AlertType> getAllActive() {
-        List<AlertType> alerts  = new Select()
-                .from(AlertType.class)
-                .where("active = ?", true)
-                .execute();
-
-        return alerts;
+    public String toS() {
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                .serializeSpecialFloatingPointValues()
+                .create();
+        return gson.toJson(this);
     }
 
     public static List<AlertType> getAll(boolean above) {
@@ -406,6 +402,15 @@ public class AlertType extends Model {
             .where("above = ?", above)
             .orderBy(order)
             .execute();
+
+        return alerts;
+    }
+
+    public static List<AlertType> getAllActive() {
+        List<AlertType> alerts  = new Select()
+                .from(AlertType.class)
+                .where("active = ?", true)
+                .execute();
 
         return alerts;
     }

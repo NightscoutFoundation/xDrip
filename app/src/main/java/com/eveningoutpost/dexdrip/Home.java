@@ -1779,6 +1779,12 @@ public class Home extends ActivityWithMenu {
         return get_follower() || get_master();
     }
 
+    public static boolean get_forced_wear() {
+        return getPreferencesBooleanDefaultFalse("wear_sync") &&
+                getPreferencesBooleanDefaultFalse("enable_wearG5") &&
+                getPreferencesBooleanDefaultFalse("force_wearG5");
+    }
+
     public static boolean get_holo() {
         return Home.is_holo;
     }

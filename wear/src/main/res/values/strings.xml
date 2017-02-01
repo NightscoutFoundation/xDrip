@@ -63,6 +63,10 @@
     <string name="pref_summary_enable_wearG5">Connect to BT Collector when phone is out-of-range</string>
     <string name="pref_force_wearG5">Force Collector</string>
     <string name="pref_summary_force_wearG5">Force phone to use Wear Collection Service</string>
+    <string name="pref_bg_notifications">Enable Alerts</string>
+    <string name="pref_summary_bg_notifications">Enable BG alerts</string>
+    <string name="pref_persistent_high_alert_enabled">High Alerts</string>
+    <string name="pref_summary_persistent_high_alert_enabled">Enable Persistent High alerts</string>
     <string name="pref_run_ble_scan_constantly">Scan for G5</string>
     <string name="pref_summary_run_ble_scan_constantly">Some devices work better when scanning constantly, others do not. If reading is reliable when this setting is not selected, you should have improved battery life. Turn this setting on if you are missing readings at high rates and unexpected times.</string>
     <string name="pref_run_G5_ble_tasks_on_uithread">Force G5 to UI</string>
@@ -124,5 +128,23 @@
     <string name="persistent_high_for_greater_than">Persistent High for > </string>
     <string name="space_mins">" mins"</string>
     <string name="notify_collector_started">%1$s Collector Started on Watch</string>
+    <string name="notify_low_predicted_in_n_mins">Low predicted in %1$d mins.</string>
+    <string name="snooze">Snooze</string>
+    <string name="no_active_alert_exists">No active alert exists</string>
+    <string name="active_alert_exists_named">Active alert exists named</string>
+    <string name="bracket_not_snoozed">(not snoozed)</string>
+    <string name="all_alerts_disabled_until">"All alerts disabled until "</string>
+    <string name="low_alerts_disabled_until">"Low alerts disabled until "</string>
+    <string name="high_alerts_disabled_until">"High alerts disabled until "</string>
+    <string name="default_snooze">Default Snooze</string>
+    <string name="until_you_reenable">Until you re-enable</string>
+    <string name="disable_low_alerts">Disable Low alerts</string>
+    <string name="re_enable_low_alerts">Re-Enable Low Alerts</string>
+    <string name="disable_high_alerts">Disable High alerts</string>
+    <string name="re_enable_high_alerts">Re-Enable High Alerts</string>
+    <string name="disable_all_alerts">Disable All alerts</string>
+    <string name="re_enable_all_alerts">Re-Enable All Alerts</string>
+    <string name="cancel">Cancel</string>
+    <string name="set">Set</string>
 
 </resources>

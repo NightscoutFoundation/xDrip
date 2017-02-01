@@ -60,6 +60,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.google.android.support:wearable:1.4.0'
     compile 'com.google.android.gms:play-services-wearable:9.4.0'
+    compile 'com.google.android.gms:play-services-location:9.4.0'
     compile 'com.squareup.wire:wire-runtime:2.2.0'
     //compile 'com.ustwo.android:clockwise-wearable:1.0.2'
     //compile files('libs/hellocharts-library-1.5.5.jar')

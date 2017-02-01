@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -73,6 +74,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     public static final String ACTION_SYNC_CALIBRATION = WatchUpdaterService.class.getName().concat(".SyncCalibration");//KS
     public static final String ACTION_SEND_STATUS = WatchUpdaterService.class.getName().concat(".SendStatus");//KS
     public static final String ACTION_SYNC_ACTIVEBTDEVICE = WatchUpdaterService.class.getName().concat(".SyncActiveBtDevice");//KS
+    public static final String ACTION_SYNC_ALERTTYPE = WatchUpdaterService.class.getName().concat(".SyncAlertType");
     public final static String ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE
             = "com.eveningoutpost.dexdrip.BLUETOOTH_COLLECTION_SERVICE_UPDATE";
     private static final String SYNC_DB_PATH = "/syncweardb";//KS
@@ -89,6 +91,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String WEARABLE_SENSOR_DATA_PATH = "/nightscout_watch_sensor_data";//KS
     private static final String WEARABLE_PREF_DATA_PATH = "/nightscout_watch_pref_data";//KS
     private static final String WEARABLE_ACTIVEBTDEVICE_DATA_PATH = "/nightscout_watch_activebtdevice_data";//KS
+    private static final String WEARABLE_ALERTTYPE_DATA_PATH = "/nightscout_watch_alerttype_data";//KS
     private static final String DATA_ITEM_RECEIVED_PATH = "/data-item-received";//KS
     private static final String WEARABLE_DATA_PATH = "/nightscout_watch_data";
     private static final String WEARABLE_RESEND_PATH = "/nightscout_watch_data_resend";
@@ -177,6 +180,8 @@ public class WatchUpdaterService extends WearableListenerService implements
         String dex_txid = dataMap.getString("dex_txid", "");
         int bridge_battery = dataMap.getInt("bridge_battery", -1);//Used in DexCollectionService
         int nfc_sensor_age = dataMap.getInt("nfc_sensor_age", -1);//Used in DexCollectionService LimiTTer
+        boolean bg_notifications_watch = dataMap.getBoolean("bg_notifications_watch", false);
+        boolean persistent_high_alert_enabled_watch = dataMap.getBoolean("persistent_high_alert_enabled_watch", false);
 
         boolean change = false;
 
@@ -206,6 +211,18 @@ public class WatchUpdaterService extends WearableListenerService implements
             change = true;
             prefs.putInt("nfc_sensor_age", bridge_battery);
             Log.d(TAG, "syncPrefData commit nfc_sensor_age: " + nfc_sensor_age);
+        }
+
+        if (bg_notifications_watch != mPrefs.getBoolean("bg_notifications_watch", false)) {
+            change = true;
+            prefs.putBoolean("bg_notifications_watch", bg_notifications_watch);
+            Log.d(TAG, "syncPrefData commit bg_notifications_watch: " + bg_notifications_watch);
+        }
+
+        if (persistent_high_alert_enabled_watch != mPrefs.getBoolean("persistent_high_alert_enabled_watch", false)) {
+            change = true;
+            prefs.putBoolean("persistent_high_alert_enabled_watch", persistent_high_alert_enabled_watch);
+            Log.d(TAG, "syncPrefData commit persistent_high_alert_enabled_watch: " + persistent_high_alert_enabled_watch);
         }
 
         if (/*enable_wearG5 &&*/ enable_wearG5 != mPrefs.getBoolean("enable_wearG5", false)) {
@@ -267,10 +284,13 @@ public class WatchUpdaterService extends WearableListenerService implements
                     .serializeSpecialFloatingPointValues()
                     .create();
 
-            Log.d(TAG, "syncTransmitterData add BgReading Table entries count=" + entries.size());
+            int idx = 0;
+            int count = entries.size();
+            Log.d(TAG, "syncTransmitterData add BgReading Table entries count=" + count);
             for (DataMap entry : entries) {
                 if (entry != null) {
                     //Log.d(TAG, "syncTransmitterData add BgReading Table entry=" + entry);
+                    idx++;
                     String bgrecord = entry.getString("bgs");
                     if (bgrecord != null) {//for (TransmitterData bgData : bgs) {
                         //Log.d(TAG, "syncTransmitterData add TransmitterData Table bgrecord=" + bgrecord);
@@ -303,7 +323,15 @@ public class WatchUpdaterService extends WearableListenerService implements
                                 //TODO : LOG if unfiltered or filtered values are zero
                                 Sensor.updateBatteryLevel(sensor, bgData.sensor_battery_level);
                                 Log.i(TAG, "syncTransmitterData: BG timestamp create " + Long.toString(bgData.timestamp));//android.util.Log.i
-                                BgReading bgExists = BgReading.create(bgData.raw_data, bgData.filtered_data, this, bgData.timestamp);
+                                BgReading bgExists;
+
+                                //KS TODO wear implements limited alerts, therefore continue to process all alerts on phone for last entry
+                                if (count > 1 && idx < count) {
+                                    bgExists = BgReading.create(bgData.raw_data, bgData.filtered_data, this, bgData.timestamp, true);//Disable Notifications for bulk insert
+                                }
+                                else {
+                                    bgExists = BgReading.create(bgData.raw_data, bgData.filtered_data, this, bgData.timestamp);
+                                }
                                 if (bgExists != null)
                                     Log.d(TAG, "syncTransmitterData BG GSON saved BG: " + bgExists.toS());
                                 else
@@ -421,7 +449,8 @@ public class WatchUpdaterService extends WearableListenerService implements
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                 Log.d(TAG, "onSharedPreferenceChanged enter key=" + key);
                 pebble_integration = mPrefs.getBoolean("pebble_sync", false);
-                if(key.compareTo("bridge_battery") != 0){
+                if(key.compareTo("bridge_battery") != 0 && key.compareTo("nfc_sensor_age") != 0 &&
+                    key.compareTo("bg_notifications_watch") != 0 && key.compareTo("persistent_high_alert_enabled_watch") != 0){
                     sendPrefSettings();
                     processConnect();
                 }
@@ -599,6 +628,9 @@ public class WatchUpdaterService extends WearableListenerService implements
                     } else if (ACTION_SYNC_ACTIVEBTDEVICE.equals(action)) {//KS
                         Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_ACTIVEBTDEVICE + " Path=" + WEARABLE_ACTIVEBTDEVICE_DATA_PATH);
                         sendActiveBtDeviceData();
+                    } else if (ACTION_SYNC_ALERTTYPE.equals(action)) {//KS
+                        Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_ALERTTYPE + " Path=" + WEARABLE_ALERTTYPE_DATA_PATH);
+                        sendAlertTypeData();
                     } else if (ACTION_SYNC_CALIBRATION.equals(action)) {//KS
                         Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_CALIBRATION + " Path=" + WEARABLE_CALIBRATION_DATA_PATH);
 
@@ -1076,13 +1108,23 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMap.putString("share_key", mPrefs.getString("share_key", "SM00000000"));//Used by DexShareCollectionService
             //Advanced Bluetooth Settings used by G4+xBridge DexCollectionService - temporarily just use the Phone's settings
             dataMap.putBoolean("use_transmiter_pl_bluetooth", mPrefs.getBoolean("use_transmiter_pl_bluetooth", false));
+            dataMap.putBoolean("use_rfduino_bluetooth", mPrefs.getBoolean("use_rfduino_bluetooth", false));
             dataMap.putBoolean("automatically_turn_bluetooth_on", mPrefs.getBoolean("automatically_turn_bluetooth_on", true));
             dataMap.putBoolean("bluetooth_excessive_wakelocks", mPrefs.getBoolean("bluetooth_excessive_wakelocks", true));
             dataMap.putBoolean("close_gatt_on_ble_disconnect", mPrefs.getBoolean("close_gatt_on_ble_disconnect", true));
             dataMap.putBoolean("bluetooth_frequent_reset", mPrefs.getBoolean("bluetooth_frequent_reset", false));
             dataMap.putBoolean("bluetooth_watchdog", mPrefs.getBoolean("bluetooth_watchdog", false));
             dataMap.putInt("bridge_battery", mPrefs.getInt("bridge_battery", -1));
+            dataMap.putInt("nfc_sensor_age", mPrefs.getInt("nfc_sensor_age", -1));
+
             dataMap.putBoolean("sync_wear_logs", mPrefs.getBoolean("sync_wear_logs", false));
+            //Alerts:
+            dataMap.putString("persistent_high_repeat_mins", mPrefs.getString("persistent_high_repeat_mins", "20"));
+            dataMap.putString("persistent_high_threshold_mins", mPrefs.getString("persistent_high_threshold_mins", "60"));
+            dataMap.putBoolean("falling_alert", mPrefs.getBoolean("falling_alert", false));
+            dataMap.putString("falling_bg_val", mPrefs.getString("falling_bg_val", "2"));
+            dataMap.putBoolean("rising_alert", mPrefs.getBoolean("rising_alert", false));
+            dataMap.putString("rising_bg_val", mPrefs.getString("rising_bg_val", "2"));
         }
         is_using_bt = DexCollectionType.hasBluetooth();
 
@@ -1156,6 +1198,42 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
     }
 
+    private void sendAlertTypeData() {//KS
+        try {
+            if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
+                googleApiConnect();
+            }
+            List <AlertType> alerts = AlertType.getAllActive();
+            if (alerts != null) {
+                if (wear_integration) {
+                    Log.d(TAG, "sendAlertTypeData latest count = " + alerts.size());
+                    final DataMap entries = new DataMap();
+                    final ArrayList<DataMap> dataMaps = new ArrayList<>(alerts.size());
+                    for (AlertType alert : alerts) {
+                        if (alert != null) {
+                            dataMaps.add(dataMap(alert, "alert"));
+                        }
+                    }
+                    entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
+                    entries.putDataMapArrayList("entries", dataMaps);
+                    if (googleApiClient != null)
+                        new SendToDataLayerThread(WEARABLE_ALERTTYPE_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, entries);
+                } else
+                    Log.d(TAG, "sendAlertTypeData latest count = 0");
+            }
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Nullpointer exception in sendAlertTypeData: " + e);
+        }
+    }
+
+    private DataMap dataMap(AlertType alert, String type) {//KS
+        DataMap dataMap = new DataMap();
+        String json = alert.toS();
+        Log.d(TAG, "dataMap BG GSON: " + json);
+        dataMap.putString(type, json);
+        return dataMap;
+    }
+
     private void sendWearCalibrationData(Integer count) {//KS
         try {
             if (count == null) return;
@@ -1196,7 +1274,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             } else
                 Log.d(TAG, "sendWearCalibrationData latest count = 0");
         } catch (NullPointerException e) {
-            Log.e(TAG, "Nullpointer exception in sendWearBgData: " + e);
+            Log.e(TAG, "Nullpointer exception in sendWearCalibrationData: " + e);
         }
     }
 
@@ -1259,6 +1337,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             Log.d(TAG, "***initWearData***");
             sendSensorData();
             sendActiveBtDeviceData();
+            sendAlertTypeData();
             sendWearCalibrationData(sendCalibrationCount);
             sendWearBgData(sendBgCount);
             sendData();//ensure BgReading.Last is displayed on watch
