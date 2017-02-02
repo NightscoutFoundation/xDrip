@@ -74,7 +74,7 @@ public class DexCollectionService extends Service {
     private ForegroundServiceStarter foregroundServiceStarter;
     private int mConnectionState = BluetoothProfile.STATE_DISCONNECTING;
     private static int mStaticState = BluetoothProfile.STATE_DISCONNECTING;
-    private static int mStaticStateWatch = BluetoothProfile.STATE_DISCONNECTING;
+    private static int mStaticStateWatch = 0; // default unknown
     private BluetoothDevice device;
     private BluetoothGattCharacteristic mCharacteristic;
     // Experimental support for rfduino from Tomasz Stachowicz
@@ -146,20 +146,21 @@ public class DexCollectionService extends Service {
         failover_time = 0;
         static_use_rfduino_bluetooth = use_rfduino_bluetooth;
         static_use_transmiter_pl_bluetooth = use_transmiter_pl_bluetooth;
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2){
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
             stopSelf();
             JoH.releaseWakeLock(wl);
             return START_NOT_STICKY;
         }
         lastState = "Started " + JoH.hourMinuteString();
         final Context context = getApplicationContext();
-        if (CollectionServiceStarter.isBTWixel(context)
+        // TODO follower must be wrong here and should use DexCollectionType
+        if ((CollectionServiceStarter.isBTWixel(context)
                 || CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()
                 || CollectionServiceStarter.isWifiandBTWixel(context)
-                || CollectionServiceStarter.isFollower(context)) {
+                || CollectionServiceStarter.isFollower(context)) && !Home.get_forced_wear()) {
             setFailoverTimer();
         } else {
-            lastState = "Stopping "+JoH.hourMinuteString();
+            lastState = "Stopping " + JoH.hourMinuteString();
             stopSelf();
             JoH.releaseWakeLock(wl);
             return START_NOT_STICKY;
@@ -210,9 +211,9 @@ public class DexCollectionService extends Service {
 
     public void setRetryTimer() {
         mStaticState = mConnectionState;
-        if (CollectionServiceStarter.isBTWixel(getApplicationContext())
+        if ((CollectionServiceStarter.isBTWixel(getApplicationContext())
                 || CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()
-                || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())) {
+                || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())) && !Home.get_forced_wear()) {
             long retry_in;
             if(CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()) {
                 retry_in = (1000 * 25);
@@ -236,10 +237,10 @@ public class DexCollectionService extends Service {
     }
 
     public void setFailoverTimer() {
-        if (CollectionServiceStarter.isBTWixel(getApplicationContext())
+        if ((CollectionServiceStarter.isBTWixel(getApplicationContext())
                 || CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()
                 || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())
-                || CollectionServiceStarter.isFollower(getApplicationContext())) {
+                || CollectionServiceStarter.isFollower(getApplicationContext())) && !Home.get_forced_wear()) {
 
             long retry_in = (1000 * 60 * 6);
             Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
@@ -758,30 +759,28 @@ public class DexCollectionService extends Service {
         }
 
         //WATCH
-        if (Home.getPreferencesBooleanDefaultFalse("wear_sync") &&
-                Home.getPreferencesBooleanDefaultFalse("enable_wearG5") &&
-                Home.getPreferencesBooleanDefaultFalse("force_wearG5")) {
+        if (Home.get_forced_wear()) {
             l.add(new StatusItem("Watch Service State", lastStateWatch));
-            l.add(new StatusItem("Bluetooth Device", JoH.ucFirst(getStateStr(mStaticStateWatch))));
+            l.add(new StatusItem("Bridge Device", JoH.ucFirst(getStateStr(mStaticStateWatch))));
 
             // TODO add LimiTTer info
 
             if (last_transmitter_DataWatch != null) {
-                l.add(new StatusItem("Glucose data from", JoH.niceTimeSince(last_transmitter_DataWatch.timestamp) + " ago"));
+                l.add(new StatusItem("Watch Glucose data", JoH.niceTimeSince(last_transmitter_DataWatch.timestamp) + " ago"));
             }
             if (last_battery_level_watch > -1) {
-                l.add(new StatusItem("Battery level", last_battery_level_watch));
+                l.add(new StatusItem("Bridge Battery level", last_battery_level_watch));
             }
 
-            if (retry_time_watch > 0) l.add(new StatusItem("Next Retry", JoH.niceTimeTill(retry_time_watch)));
+            if (retry_time_watch > 0) l.add(new StatusItem("Watch Next Retry", JoH.niceTimeTill(retry_time_watch)));
             if (failover_time_watch > 0)
-                l.add(new StatusItem("Next Wake up", JoH.niceTimeTill(failover_time)));
+                l.add(new StatusItem("Watch Wake up", JoH.niceTimeTill(failover_time_watch)));
 
             if (Home.get_engineering_mode() && (static_last_hexdump_watch != null)) {
-                l.add(new StatusItem("Received Data", filterHexdump(static_last_hexdump_watch)));
+                l.add(new StatusItem("Watch Received Data", filterHexdump(static_last_hexdump_watch)));
             }
             if (Home.get_engineering_mode() && (static_last_sent_hexdump_watch != null)) {
-                l.add(new StatusItem("Sent Data", filterHexdump(static_last_sent_hexdump_watch)));
+                l.add(new StatusItem("Watch Sent Data", filterHexdump(static_last_sent_hexdump_watch)));
             }
         }
 

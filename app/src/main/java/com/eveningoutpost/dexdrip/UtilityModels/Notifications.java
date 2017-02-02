@@ -107,8 +107,8 @@ public class Notifications extends IntentService {
     public static final int persistentHighAlertNotificationId = 015;
     private static boolean low_notifying = false;
 
-    private static final int CALIBRATION_REQUEST_MAX_FREQUENCY = (60 * 60 * 8); // don't bug for extra calibrations more than every 8 hours
-    private static final int CALIBRATION_REQUEST_MIN_FREQUENCY = (60 * 60 * 12); // don't bug for general calibrations more than every 12 hours
+    private static final int CALIBRATION_REQUEST_MAX_FREQUENCY = (60 * 60 * 6); // don't bug for extra calibrations more than every 6 hours
+    private static final int CALIBRATION_REQUEST_MIN_FREQUENCY = (60 * 60 * 8); // don't bug for general calibrations more than every 8 hours
 
 
     SharedPreferences prefs;
@@ -350,6 +350,15 @@ public class Notifications extends IntentService {
         BgReading bgReading = bgReadings.get(0);
 
         if (calibration_notifications) {
+
+            int calibration_reminder_secs = 0;
+            try {
+                calibration_reminder_secs = Integer.parseInt(Home.getPreferencesStringWithDefault("calibration_reminder_hours","0")) * 60 * 60;
+                Log.d(TAG,"Calibration reminder seconds: "+calibration_reminder_secs);
+            } catch (Exception e) {
+                Log.wtf(TAG,"Could not parse calibration_reminder_hours");
+            }
+
             // TODO this should only clear double calibration once after calibrations are achieved
             if (bgReadings.size() >= 3) {
                 if (calibrations.size() == 0 && (new Date().getTime() - bgReadings.get(2).timestamp <= (60000 * 30)) && sensor != null) {
@@ -368,7 +377,7 @@ public class Notifications extends IntentService {
             // bgreadings criteria possibly needs a review
             if (CalibrationRequest.shouldRequestCalibration(bgReading) && (new Date().getTime() - bgReadings.get(2).timestamp <= (60000 * 24))) {
                 if ((!PowerStateReceiver.is_power_connected()) || (Home.getPreferencesBooleanDefaultFalse("calibration_alerts_while_charging"))) {
-                    if (JoH.pratelimit("calibration-request-notification", CALIBRATION_REQUEST_MAX_FREQUENCY)) {
+                    if (JoH.pratelimit("calibration-request-notification", Math.max(CALIBRATION_REQUEST_MAX_FREQUENCY, calibration_reminder_secs))) {
                         extraCalibrationRequest();
                     }
                 }
@@ -376,12 +385,12 @@ public class Notifications extends IntentService {
                 // TODO should be aware of state
                 clearExtraCalibrationRequest();
             }
-            if (calibrations.size() >= 1 && (Math.abs((new Date().getTime() - calibrations.get(0).timestamp)) / (1000 * 60 * 60) > 12)
+            // questionable use of abs for time since
+            if (calibrations.size() >= 1 && (Math.abs(JoH.msSince(calibrations.get(0).timestamp)) > (calibration_reminder_secs * 1000))
                     && (CalibrationRequest.isSlopeFlatEnough(BgReading.last(true)))) {
                 Log.d("NOTIFICATIONS", "Calibration difference in hours: " + ((new Date().getTime() - calibrations.get(0).timestamp)) / (1000 * 60 * 60));
                 if ((!PowerStateReceiver.is_power_connected()) || (Home.getPreferencesBooleanDefaultFalse("calibration_alerts_while_charging"))) {
-                    // TODO check slope
-                    if (JoH.pratelimit("calibration-request-notification", CALIBRATION_REQUEST_MIN_FREQUENCY) || Home.getPreferencesBooleanDefaultFalse("calibration_alerts_repeat")) {
+                    if (JoH.pratelimit("calibration-request-notification", Math.max(CALIBRATION_REQUEST_MIN_FREQUENCY, calibration_reminder_secs)) || Home.getPreferencesBooleanDefaultFalse("calibration_alerts_repeat")) {
                         calibrationRequest();
                     }
                 }
@@ -742,10 +751,13 @@ public class Notifications extends IntentService {
     private void calibrationRequest() {
         UserNotification userNotification = UserNotification.lastCalibrationAlert();
         if ((userNotification == null) || (userNotification.timestamp <= ((new Date().getTime()) - (60000 * calibration_snooze)))) {
-            if (userNotification != null) { userNotification.delete(); }
-            UserNotification.create("12 hours since last Calibration  (@" + JoH.hourMinuteString() + ")", "calibration_alert", new Date().getTime());
+            if (userNotification != null) {
+                userNotification.delete();
+            }
+            final long calibration_hours = Calibration.msSinceLastCalibration() / (1000 * 60 * 60);
+            UserNotification.create(calibration_hours + " hours since last Calibration  (@" + JoH.hourMinuteString() + ")", "calibration_alert", new Date().getTime());
             String title = "Calibration Needed";
-            String content = "12 hours since last calibration";
+            String content = calibration_hours + " hours since last calibration";
             Intent intent = new Intent(mContext, AddCalibration.class);
             calibrationNotificationCreate(title, content, intent, calibrationNotificationId);
         }

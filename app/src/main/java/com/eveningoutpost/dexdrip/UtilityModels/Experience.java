@@ -4,6 +4,9 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.google.common.collect.ImmutableSet;
+
+import java.util.Locale;
 
 /**
  * Created by jamorham on 22/01/2017.
@@ -44,6 +47,25 @@ public class Experience {
         } else {
             return false;
         }
+    }
+
+
+    private static final ImmutableSet<String> mmol_countries = ImmutableSet.of("AU", "CA", "CN", "HK", "MO", "TW", "HR", "CZ", "DE", "DK", "FI", "HK", "HU", "IS", "IE", "JM", "KZ", "YK", "LV", "LT", "MY", "MT", "NL", "AN", "NZ", "NO", "RU", "SK", "SI", "ZA", "SE", "CH", "GB");
+
+    private static String defaultUnits() {
+        try {
+            final String country = Locale.getDefault().getCountry();
+            final String units = mmol_countries.contains(country) ? "mmol/l" : "mg/dl";
+            UserError.Log.d(TAG, "Country: " + country + " default units: " + units);
+            return units;
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Exception trying to determine locale units: " + e);
+            return "mg/dl";
+        }
+    }
+
+    public static boolean defaultUnitsAreMmol() {
+        return defaultUnits().equals("mmol/l");
     }
 
 }

@@ -391,6 +391,9 @@
             <intent-filter>
                 <action android:name="info.nightscout.client.NEW_PROFILE" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="com.eveningoutpost.dexdrip.NewCalibration" />
+            </intent-filter>
         </receiver>
         <receiver android:name=".LibreAlarmReceiver">
             <intent-filter>
@@ -485,7 +488,9 @@
             android:exported="true" />
 
         <activity android:name=".HelpActivity" />
-        <activity android:name=".Agreement" />
+        <activity
+            android:name=".Agreement"
+            android:label="Nightscout xDrip+" />
         <activity
             android:name=".WearVoiceActivity"
             android:label="Simulation handheld">

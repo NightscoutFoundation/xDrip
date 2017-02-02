@@ -151,7 +151,7 @@ public class Sensor extends Model {
             Log.e("SENSOR", "xDrip_sensor_uuid is null");
             return null;
         }
-        Log.e("SENSOR", "xDrip_sensor_uuid is " + xDrip_sensor_uuid);
+        Log.d("SENSOR", "xDrip_sensor_uuid is " + xDrip_sensor_uuid);
 
         return new Select()
                 .from(Sensor.class)

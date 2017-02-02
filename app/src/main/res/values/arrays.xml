@@ -96,8 +96,8 @@
 
 
     <string-array name="bgUnitEntries">
-        <item>mgdl</item>
-        <item>mmol</item>
+        <item>mg/dL</item>
+        <item>mmol/L</item>
     </string-array>
 
     <string-array name="bgUnitValues">

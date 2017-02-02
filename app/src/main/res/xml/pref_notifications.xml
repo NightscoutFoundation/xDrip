@@ -81,6 +81,13 @@
                     android:key="calibration_notifications"
                     android:summary="Alert when a calibration is requested"
                     android:title="@string/calibration_alerts" />
+                <EditTextPreference
+                    android:defaultValue="24"
+                    android:dependency="calibration_notifications"
+                    android:key="calibration_reminder_hours"
+                    android:numeric="integer"
+                    android:summary="How many hours between calibration requests"
+                    android:title="Hours between calibrations" />
                 <RingtonePreference
                     android:defaultValue="content://settings/system/notification_sound"
                     android:key="calibration_notification_sound"

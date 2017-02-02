@@ -306,7 +306,7 @@ public class ProfileEditor extends AppCompatActivity {
             profileItemListTmp.addAll(profileItemList); // no need to clone
 
             for (ProfileItem item : profileItemListTmp) {
-                item.carb_ratio = Math.round(item.carb_ratio); // round to nearest g
+                item.carb_ratio = (double) (Math.round(item.carb_ratio * 10)) / 10; // round to nearest .1g
                 item.sensitivity = (double) (Math.round(item.sensitivity * 10)) / 10;
             }
         }
@@ -362,7 +362,7 @@ public class ProfileEditor extends AppCompatActivity {
         last_conversion = multiplier;
         final List<ProfileItem> mydata = ProfileEditor.loadData(false);
         for (ProfileItem item : mydata) {
-            item.carb_ratio = Math.round(item.carb_ratio); // round to nearest g
+            item.carb_ratio = (double) (Math.round(item.carb_ratio * 10)) / 10; // round to nearest .1g
             item.sensitivity = (double) (Math.round(item.sensitivity * 10 * multiplier)) / 10;
         }
         final Gson gson = new GsonBuilder()
@@ -407,6 +407,7 @@ public class ProfileEditor extends AppCompatActivity {
         }
         if (myprofileItemList.size() == 0) {
             try {
+                Log.d(TAG,"Creating default profile entries: sens default: "+Home.getPreferencesStringWithDefault("profile_insulin_sensitivity_default", "0.1"));
                 ProfileItem item = new ProfileItem(0, END_OF_DAY, Double.parseDouble(Home.getPreferencesStringWithDefault("profile_carb_ratio_default", "10")),
                         Double.parseDouble(Home.getPreferencesStringWithDefault("profile_insulin_sensitivity_default", "0.1")));
                 myprofileItemList.add(item);

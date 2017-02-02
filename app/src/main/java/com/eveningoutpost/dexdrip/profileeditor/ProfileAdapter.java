@@ -30,6 +30,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
     private static final String TAG = "jamorhamprofile";
     private List<ProfileItem> profileList;
     private int sensTopScale = 1;
+    private int carbsTopScale = 1;
     private int sensTopMax = 1;
     private int carbTopMax = 1;
     private Context context;
@@ -71,6 +72,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
         for (ProfileItem item : profileList) {
             int this_scale = sensibleScale((int) item.sensitivity);
             sensTopScale = Math.max(sensTopScale, this_scale);
+            carbsTopScale = Math.max(carbsTopScale, sensibleScale((int) item.carb_ratio));
             sensTopMax = Math.max(sensTopMax, sensibleMax((int) item.sensitivity));
             carbTopMax = Math.max(carbTopMax, sensibleMax((int) item.carb_ratio));
         }
@@ -85,6 +87,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
         int value;
         TextView result, carbsresult, sensresult;
         int sensitivity_scaling = 1;
+        int carbs_scaling = 1;
         int position = -1;
 
         MyViewHolder(View view) {
@@ -160,7 +163,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
         holder.carbsSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                holder.carbsresult.setText(Integer.toString(progress));
+                holder.carbsresult.setText(JoH.qs(((double) progress) / holder.carbs_scaling, 1));
             }
 
             @Override
@@ -175,8 +178,9 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
                     seekBar.setMax(seekBar.getMax() * 2);
                     // showcase tip
                 }
-                int value = seekBar.getProgress();
+                double value = seekBar.getProgress();
                 if (value < 1) value = 1;
+                value = value / holder.carbs_scaling;
 
                 profileList.get(holder.position).carb_ratio = value;
 
@@ -227,10 +231,14 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
         if (first_run > 0) {
 
             calcTopScale();
-            holder.carbsSeekBar.setMax(carbTopMax);
+            //holder.carbsSeekBar.setMax(carbTopMax);
+
+            holder.carbs_scaling = carbsTopScale;
+            holder.carbsSeekBar.setMax(carbTopMax * holder.carbs_scaling);
 
             holder.sensitivity_scaling = sensTopScale;
             holder.sensSeekBar.setMax(sensTopMax * holder.sensitivity_scaling);
+
 
             Log.d(TAG, "first run: " + first_run + " carbTopMax:"+carbTopMax+" Sensitivity: pos:" + position + "  scaling:" + sensTopScale + "/" + holder.sensitivity_scaling + " sensiblemax:" + sensTopMax + "/" + sensibleMax((int) profileItem.sensitivity));
 
@@ -240,8 +248,8 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
 
         holder.title.setText(profileItem.getTimePeriod());
 
-        holder.carbsSeekBar.setProgress((int) profileItem.carb_ratio);
-        holder.carbsresult.setText(JoH.qs(profileItem.carb_ratio, 0));
+        holder.carbsSeekBar.setProgress((int) (profileItem.carb_ratio) * holder.carbs_scaling);
+        holder.carbsresult.setText(JoH.qs(profileItem.carb_ratio, 1));
         holder.sensSeekBar.setProgress((int) (profileItem.sensitivity) * holder.sensitivity_scaling);
         holder.sensresult.setText(JoH.qs(profileItem.sensitivity, 1));
 

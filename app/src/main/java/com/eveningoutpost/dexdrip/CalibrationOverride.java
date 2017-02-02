@@ -54,12 +54,16 @@ public class CalibrationOverride extends ActivityWithMenu {
                         try {
                             final double calValue = JoH.tolerantParseDouble(string_value);
 
-                            Calibration last_calibration = Calibration.lastValid();
-                            last_calibration.sensor_confidence = 0;
-                            last_calibration.slope_confidence = 0;
-                            last_calibration.save();
-                            CalibrationSendQueue.addToQueue(last_calibration, getApplicationContext());
-                            // TODO we need to push the nixing of this last calibration
+                            final Calibration last_calibration = Calibration.lastValid();
+                            if (last_calibration == null) {
+                                Log.wtf(TAG, "Last valid calibration is null when trying to cancel it in override!");
+                            } else {
+                                last_calibration.sensor_confidence = 0;
+                                last_calibration.slope_confidence = 0;
+                                last_calibration.save();
+                                CalibrationSendQueue.addToQueue(last_calibration, getApplicationContext());
+                                // TODO we need to push the nixing of this last calibration
+                            }
 
                             final Calibration calibration = Calibration.create(calValue, getApplicationContext());
                             if (calibration != null) {

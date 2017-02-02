@@ -11,6 +11,8 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
+import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
 
 import org.json.JSONArray;
@@ -99,10 +101,72 @@ public class NSClientReceiver extends BroadcastReceiver {
                 }
                 break;
 
+
+            case Intents.ACTION_REMOTE_CALIBRATION:
+                if (bundle == null) break;
+
+                // calibration value is in local units, whether you're using mmol or mgdl then it should be as the user would type it
+                //
+                // calibration timestamp is ms since epoch standard
+
+                // if you specify the units field as either mgdl or mmol then conversion will be done if local units don't match
+
+                if (Home.getPreferencesBooleanDefaultFalse("accept_broadcast_calibrations")) {
+
+                    final long calibration_timestamp = bundle.getLong("timestamp", -1);
+                    double glucose_number = bundle.getDouble("glucose_number", -1);
+                    final String units = bundle.getString("units","");
+
+                    final long timeoffset = JoH.tsl() - calibration_timestamp;
+
+                    if (glucose_number > 0) {
+
+                        if (timeoffset < 0) {
+                            Home.toaststaticnext("Got calibration in the future - cannot process!");
+                            break;
+                        }
+
+                        final String local_units = Home.getPreferencesStringWithDefault("units", "mgdl");
+                        if (units.equals("mgdl") && (!local_units.equals("mgdl"))) {
+                            glucose_number = glucose_number * Constants.MGDL_TO_MMOLL;
+                            Log.d(TAG, "Converting from mgdl to mmol: " + JoH.qs(glucose_number, 2));
+                        } else if (units.equals("mmol") && (!local_units.equals("mmol"))) {
+                            glucose_number = glucose_number * Constants.MMOLL_TO_MGDL;
+                            Log.d(TAG, "Converting from mmol to mgdl: " + JoH.qs(glucose_number, 2));
+                        }
+
+                        UserError.Log.ueh(TAG, "Processing broadcasted calibration: " + JoH.qs(glucose_number, 2) + " offset ms: " + JoH.qs(timeoffset, 0));
+                        final Intent calintent = new Intent(xdrip.getAppContext(), AddCalibration.class);
+                        calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        calintent.putExtra("bg_string", JoH.qs(glucose_number));
+                        calintent.putExtra("bg_age", Long.toString(timeoffset / 1000));
+                        calintent.putExtra("allow_undo", "true");
+                        calintent.putExtra("note_only", "false");
+                        Home.startIntentThreadWithDelayedRefresh(calintent);
+                    } else {
+                        Log.e(TAG,"Received broadcast calibration without glucose number");
+                    }
+
+                } else {
+                    Log.e(TAG, "Received broadcast calibration, but inter-app preference is set to ignore");
+                }
+                break;
+
             default:
                 Log.e(TAG, "Unknown action! " + action);
                 break;
         }
+    }
+
+    public static void testCalibration() {
+        Bundle bundle = new Bundle();
+        bundle.putDouble("glucose_number", 5.5); // format is local format, in this example 5.5 mmol/l or specify the units as shown below
+        bundle.putString("units", "mmol"); // mgdl or mmol
+        bundle.putLong("timestamp", JoH.tsl()-10000);
+        Intent intent = new Intent(Intents.ACTION_REMOTE_CALIBRATION);
+        intent.putExtras(bundle);
+        intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+        xdrip.getAppContext().sendBroadcast(intent);
     }
 
     private void process_TREATMENT_json(String treatment_json) {
