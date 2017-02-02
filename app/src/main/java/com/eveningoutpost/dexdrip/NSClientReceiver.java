@@ -160,7 +160,7 @@ public class NSClientReceiver extends BroadcastReceiver {
 
     public static void testCalibration() {
         Bundle bundle = new Bundle();
-        bundle.putDouble("glucose_number", 5.5); // format is local format, in this example 5.5 mmol/l or specify the units as shown below
+        bundle.putDouble("glucose_number", 5.5d+ (JoH.ts() % 100)/100d); // format is local format, in this example 5.5 mmol/l or specify the units as shown below
         bundle.putString("units", "mmol"); // mgdl or mmol
         bundle.putLong("timestamp", JoH.tsl()-10000);
         Intent intent = new Intent(Intents.ACTION_REMOTE_CALIBRATION);
@@ -179,8 +179,16 @@ public class NSClientReceiver extends BroadcastReceiver {
     }
 
     private void process_SGV_json(String sgv_json) {
+        if (sgv_json == null) {
+            Log.e(TAG, "SGV json is null!");
+            return;
+        }
         final HashMap<String, Object> sgv_map = JoH.JsonStringtoMap(sgv_json);
         //  if (prefs.getString("dex_collection_method", "").equals("Follower")) {
+        if (sgv_map == null) {
+            Log.e(TAG, "SGV map results in null!");
+            return;
+        }
         BgReading.bgReadingInsertFromJson(toBgReadingJSON(sgv_map));
         //  } else {
         //      Log.i(TAG, "Received nightscout SGV intent but we are not a follower");
@@ -216,8 +224,8 @@ public class NSClientReceiver extends BroadcastReceiver {
             jsonObject.put("noise", sgv_map.get("noise"));
             //if (d) Log.d(TAG, "deebug: " + jsonObject.toString());
             return jsonObject.toString();
-        } catch (JSONException e) {
-            Log.e(TAG, "JSON Exception in toBgReadingJSON: " + e);
+        } catch (JSONException | NullPointerException e) {
+            Log.e(TAG, "JSON or Null Exception in toBgReadingJSON: " + e);
             return "";
         }
     }
