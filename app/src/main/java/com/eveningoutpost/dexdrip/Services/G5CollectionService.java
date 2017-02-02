@@ -162,6 +162,7 @@ public class G5CollectionService extends Service {
     private static String lastStateWatch = "Not running";
     private static long static_last_timestamp = 0;
     private static long static_last_timestamp_watch = 0;
+    private static long last_transmitter_timestamp = 0;
 
 
     // test params
@@ -1505,7 +1506,8 @@ public class G5CollectionService extends Service {
                 lastState = "Got data OK: " + JoH.hourMinuteString();
                 successes++;
                 failures=0;
-                Log.e(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered);
+                Log.e(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered + " timestamp: " + sensorRx.timestamp + " " + JoH.qs((double)sensorRx.timestamp / 86400, 1) + " days");
+                last_transmitter_timestamp = sensorRx.timestamp;
                 if ((getVersionDetails) && (!haveFirmwareDetails())) {
                     doVersionRequestMessage(gatt, characteristic);
                 } else if ((getBatteryDetails) && (!haveCurrentBatteryStatus())) {
@@ -1860,7 +1862,7 @@ public class G5CollectionService extends Service {
         if ((bt != null) && (last_battery_query > 0)) {
             l.add(new StatusItem("Battery Last queried", JoH.niceTimeSince(last_battery_query)+" "+"ago"));
             l.add(new StatusItem("Transmitter Status", TransmitterStatus.getBatteryLevel(vr.status).toString()));
-            l.add(new StatusItem("Transmitter Days", bt.runtime));
+            l.add(new StatusItem("Transmitter Days", bt.runtime + ((last_transmitter_timestamp > 0) ? " / " + JoH.qs((double) last_transmitter_timestamp / 86400, 1) : "")));
             l.add(new StatusItem("Voltage A", bt.voltagea));
             l.add(new StatusItem("Voltage B", bt.voltageb));
             l.add(new StatusItem("Resistance", bt.resist));

@@ -28,7 +28,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
     private static final String TAG = "AddCalibration";
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private static double lastExternalCalibrationValue = 0;
-    public final long estimatedInterstitialLagSeconds = 600; // how far behind venous glucose do we estimate
+    public static final long estimatedInterstitialLagSeconds = 600; // how far behind venous glucose do we estimate
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

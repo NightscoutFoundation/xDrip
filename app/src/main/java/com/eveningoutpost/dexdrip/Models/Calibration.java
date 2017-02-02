@@ -1119,6 +1119,13 @@ public class Calibration extends Model {
             return false;
         }
     }
+
+    public void invalidate() {
+        this.slope_confidence = 0;
+        this.sensor_confidence = 0;
+        save();
+    }
+
 }
 
 abstract class SlopeParameters {
