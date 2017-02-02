@@ -111,7 +111,8 @@ public class StartNewSensor extends ActivityWithMenu {
                 } else {
                     final DatePickerFragment datePickerFragment = new DatePickerFragment();
                     datePickerFragment.setAllowFuture(false);
-                    datePickerFragment.setEarliestDate(JoH.tsl() - (14 * 24 * 60 * 60 * 1000));
+                    if (!Home.get_engineering_mode()) 
+                        datePickerFragment.setEarliestDate(JoH.tsl() - 2592000000L); // 30 days
                     datePickerFragment.setTitle("Which day was it inserted?");
                     datePickerFragment.setDateCallback(new ProfileAdapter.DatePickerCallbacks() {
                         @Override
