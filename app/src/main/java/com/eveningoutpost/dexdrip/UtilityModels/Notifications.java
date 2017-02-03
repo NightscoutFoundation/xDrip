@@ -60,7 +60,7 @@ public class Notifications extends IntentService {
     public static final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
     public static boolean bg_notifications;
     public static boolean bg_notifications_watch;
-    public static boolean persistent_high_alert_enabled_watch;
+    public static boolean bg_persistent_high_alert_enabled_watch;
     public static boolean bg_ongoing;
     public static boolean bg_vibrate;
     public static boolean bg_lights;
@@ -157,8 +157,8 @@ public class Notifications extends IntentService {
         mContext = context;
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         bg_notifications = prefs.getBoolean("bg_notifications", true);
-        bg_notifications_watch = prefs.getBoolean("bg_notifications_watch", false);
-        persistent_high_alert_enabled_watch = prefs.getBoolean("persistent_high_alert_enabled_watch", false);
+        bg_notifications_watch = PersistentStore.getBoolean("bg_notifications_watch");
+        bg_persistent_high_alert_enabled_watch = PersistentStore.getBoolean("persistent_high_alert_enabled_watch");
         bg_vibrate = prefs.getBoolean("bg_vibrate", true);
         bg_lights = prefs.getBoolean("bg_lights", true);
         bg_sound = prefs.getBoolean("bg_play_sound", true);
@@ -322,7 +322,7 @@ public class Notifications extends IntentService {
         boolean unclearReading = BgReading.getAndRaiseUnclearReading(context);
 
         boolean forced_wear = Home.get_forced_wear();
-        Log.d(TAG, "forced_wear=" + forced_wear + " bg_notifications_watch=" + bg_notifications_watch + " persistent_high_alert_enabled_watch=" + persistent_high_alert_enabled_watch);
+        Log.d(TAG, "forced_wear=" + forced_wear + " bg_notifications_watch=" + bg_notifications_watch + " persistent_high_alert_enabled_watch=" + bg_persistent_high_alert_enabled_watch);
 
         if (unclearReading) {
             AlertPlayer.getPlayer().stopAlert(context, false, true);
@@ -874,7 +874,7 @@ public class Notifications extends IntentService {
 
             boolean localOnly =false;
             if (notificatioId == persistentHighAlertNotificationId) {
-                localOnly = (Home.get_forced_wear() && bg_notifications_watch && persistent_high_alert_enabled_watch);
+                localOnly = (Home.get_forced_wear() && bg_notifications_watch && bg_persistent_high_alert_enabled_watch);
             }
             Log.d(TAG,"OtherAlert forced_wear localOnly=" + localOnly);
             Intent intent = new Intent(context, Home.class);

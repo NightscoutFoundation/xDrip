@@ -218,12 +218,8 @@ public class WatchUpdaterService extends WearableListenerService implements
             prefs.putBoolean("bg_notifications_watch", bg_notifications_watch);
             Log.d(TAG, "syncPrefData commit bg_notifications_watch: " + bg_notifications_watch);
         }
-
-        if (persistent_high_alert_enabled_watch != mPrefs.getBoolean("persistent_high_alert_enabled_watch", false)) {
-            change = true;
-            prefs.putBoolean("persistent_high_alert_enabled_watch", persistent_high_alert_enabled_watch);
-            Log.d(TAG, "syncPrefData commit persistent_high_alert_enabled_watch: " + persistent_high_alert_enabled_watch);
-        }
+        PersistentStore.setBoolean("bg_notifications_watch", bg_notifications_watch);
+        PersistentStore.setBoolean("persistent_high_alert_enabled_watch", persistent_high_alert_enabled_watch);
 
         if (/*enable_wearG5 &&*/ enable_wearG5 != mPrefs.getBoolean("enable_wearG5", false)) {
             change = true;

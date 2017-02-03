@@ -416,7 +416,7 @@ public class AlertPlayer {
         String content = "BG LEVEL ALERT: " + bgValue + "  (@" + JoH.hourMinuteString() + ")";
         Intent intent = new Intent(ctx, SnoozeActivity.class);
 
-        boolean localOnly = (Home.get_forced_wear() && Home.getPreferencesBooleanDefaultFalse("bg_notifications_watch"));//KS
+        boolean localOnly = (Home.get_forced_wear() && Home.getPreferencesBooleanDefaultFalse("bg_notifications"));//KS
         Log.d(TAG, "NotificationCompat.Builder localOnly=" + localOnly);
         NotificationCompat.Builder  builder = new NotificationCompat.Builder(ctx)//KS Notification
             .setSmallIcon(R.drawable.ic_launcher)//KS ic_action_communication_invert_colors_on

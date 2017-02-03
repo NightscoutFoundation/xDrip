@@ -60,6 +60,7 @@ import java.util.List;
 public class Notifications extends IntentService {
     public static final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
     public static boolean bg_notifications;
+    public static boolean bg_persistent_high_alert_enabled;
     public static boolean bg_ongoing;
     public static boolean bg_vibrate;
     public static boolean bg_lights;
@@ -159,7 +160,8 @@ public class Notifications extends IntentService {
     public void ReadPerfs(Context context) {
         mContext = context;
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        bg_notifications = prefs.getBoolean("bg_notifications", true);
+        bg_notifications = prefs.getBoolean("bg_notifications", false);
+        bg_persistent_high_alert_enabled = prefs.getBoolean("persistent_high_alert_enabled", false);
         bg_vibrate = prefs.getBoolean("bg_vibrate", true);
         bg_lights = prefs.getBoolean("bg_lights", false);//KS true
         bg_sound = prefs.getBoolean("bg_play_sound", false);//KS true
@@ -862,7 +864,7 @@ public class Notifications extends IntentService {
 
             boolean localOnly =false;//KS
             if (notificatioId == persistentHighAlertNotificationId) {
-                localOnly = (Home.get_forced_wear() && Home.getPreferencesBooleanDefaultFalse("bg_notifications_watch") && Home.getPreferencesBooleanDefaultFalse("persistent_high_alert_enabled_watch"));
+                localOnly = (Home.get_forced_wear() && bg_notifications && bg_persistent_high_alert_enabled);
             }
             Log.d(TAG,"OtherAlert forced_wear localOnly=" + localOnly);
             Intent intent = new Intent(context, Home.class);

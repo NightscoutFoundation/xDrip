@@ -177,6 +177,10 @@ public class G5CollectionService extends Service {
     private static final boolean getBatteryDetails = true; // try to load battery info details
 
     private static final long BATTERY_READ_PERIOD_MS = 1000 * 60 * 60 * 12; // how often to poll battery data (12 hours)
+    private PowerManager.WakeLock fullWake;
+    private static long nextWakeUpTime = -1;
+    private static long wake_time_difference = 0;
+    private static int wakeUpErrors = 0;
 
     StringBuilder log = new StringBuilder();
 
@@ -684,24 +688,55 @@ public class G5CollectionService extends Service {
         }
     }
 
+    private synchronized void checkWakeupTimeLatency() {
+        if (nextWakeUpTime > 0) {
+            wake_time_difference = Calendar.getInstance().getTimeInMillis() - nextWakeUpTime;
+            if (wake_time_difference > 10000) {
+                UserError.Log.e(TAG, "Slow Wake up! time difference in ms: " + wake_time_difference);
+                wakeUpErrors = wakeUpErrors + 3;
+            } else {
+                if (wakeUpErrors > 0) wakeUpErrors--;
+            }
+        }
+    }
+    private void setWakupFailOverTimer() {
+        final long retry_in = (30 * 1000);
+        UserError.Log.e(TAG, "setWakupFailOverTimer: Restarting in: " + (retry_in / (1000)) + " seconds");
+        nextWakeUpTime = JoH.tsl() + retry_in;
+
+        final PendingIntent wakeIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+        JoH.wakeUpIntent(this, retry_in, wakeIntent);
+    }
+
+    private void logWakeTimeLatency() {
+        if (wakeUpErrors > 0) {
+            Log.e(TAG, "Slow Wake up: " + JoH.niceTimeScalar(wake_time_difference));
+            Log.e(TAG, "Wake Up Errors: " + wakeUpErrors);
+        }
+
+        if (nextWakeUpTime != -1) {
+            Log.e(TAG, "Next Wake up: " + JoH.dateTimeText(nextWakeUpTime));
+
+        }
+    }
+
     private synchronized void forceScreenOn() {
         //Home.startHomeWithExtra(getApplicationContext(), Home.HOME_FULL_WAKEUP, "1");
-        final int timeout = 60000;
-        //if (!JoH.isScreenOn()) {
-            Log.e(TAG, "forceScreenOn set wakelock for FULL_WAKE_LOCK");
-            //PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-            final PowerManager.WakeLock wl = JoH.getWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "SCREEN_BRIGHT_WAKE_LOCK", timeout);
+        final int timeout = (3 * 60 * 1000);
+        Log.e(TAG, "forceScreenOn set wakelock for FULL_WAKE_LOCK");
+        if (fullWake == null || !fullWake.isHeld()) {
+            checkWakeupTimeLatency();
+            nextWakeUpTime = JoH.tsl();
+            UserError.Log.e(TAG, "Current time: " + JoH.dateTimeText(nextWakeUpTime));
+            fullWake = JoH.getWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "FORCE_FULL_WAKE_LOCK", timeout);
+            setWakupFailOverTimer();
+        }
+        else {
+            Log.e(TAG, "forceScreenOn fullWake is already held!");
+            logWakeTimeLatency();
+            nextWakeUpTime = -1;
+        }
 
-            final Timer t = new Timer();
-            t.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    JoH.releaseWakeLock(wl);
-                    Log.e(TAG, "forceScreenOn releaseWakeLock " + wl.toString());
-                }
-            }, timeout);
-        //}
-        //else Log.e(TAG, "forceScreenOn Screen is already on so not turning on");
     }
 
     public synchronized void startScan() {
@@ -889,6 +924,7 @@ public class G5CollectionService extends Service {
                         isIntialScan = false;
                         //device = btDevice;
                         device = mBluetoothAdapter.getRemoteDevice(btDevice.getAddress());
+                        if (fullWake != null) JoH.releaseWakeLock(fullWake);
                         stopScan();
                         connectToDevice(btDevice);
                     } else {
@@ -900,6 +936,7 @@ public class G5CollectionService extends Service {
             @Override
             public void onScanFailed(int errorCode) {
                 Log.e(TAG, "Scan Failed Error Code: " + errorCode);
+                if (fullWake != null) JoH.releaseWakeLock(fullWake);
                 if (errorCode == 1) {
                     UserError.Log.e(TAG, "Already Scanning: " + isScanning);
                     //isScanning = true;
