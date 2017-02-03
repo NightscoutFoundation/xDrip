@@ -610,6 +610,7 @@ public class Notifications extends IntentService {
             b.setStyle(bigPictureStyle);
         }
         b.setContentIntent(resultPendingIntent);
+        b.setLocalOnly(true);
         return b.build();
     }
 
