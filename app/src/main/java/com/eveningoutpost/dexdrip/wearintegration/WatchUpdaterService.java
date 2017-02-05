@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
+import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -77,6 +78,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     public static final String ACTION_SYNC_ALERTTYPE = WatchUpdaterService.class.getName().concat(".SyncAlertType");
     public final static String ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE
             = "com.eveningoutpost.dexdrip.BLUETOOTH_COLLECTION_SERVICE_UPDATE";
+    public static final String ACTION_SNOOZE_ALERT = WatchUpdaterService.class.getName().concat(".SnoozeAlert");//KS
     private static final String SYNC_DB_PATH = "/syncweardb";//KS
     private static final String SYNC_BGS_PATH = "/syncwearbgs";//KS
     private static final String SYNC_LOGS_PATH = "/syncwearlogs";
@@ -96,6 +98,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String WEARABLE_DATA_PATH = "/nightscout_watch_data";
     private static final String WEARABLE_RESEND_PATH = "/nightscout_watch_data_resend";
     private static final String WEARABLE_FIELD_SENDPATH = "field_xdrip_plus_sendpath";
+    private static final String WEARABLE_SNOOZE_ALERT = "/xdrip_plus_snooze_payload";
     private static final String WEARABLE_FIELD_PAYLOAD = "field_xdrip_plus_payload";
     public static final String WEARABLE_VOICE_PAYLOAD = "/xdrip_plus_voice_payload";
     public static final String WEARABLE_APPROVE_TREATMENT = "/xdrip_plus_approve_treatment";
@@ -601,7 +604,10 @@ public class WatchUpdaterService extends WearableListenerService implements
                     } else if (ACTION_SEND_STATUS.equals(action)) {//KS added for HAPP
                         //https://github.com/StephenBlackWasAlreadyTaken/xDrip-Experimental
                         Log.d(TAG, "onStartCommand Action=" + ACTION_SEND_STATUS + " externalStatusString=" + intent.getStringExtra("externalStatusString"));
-                        sendStatus(intent.getStringExtra("externalStatusString"));
+                        sendRequestExtra(NEW_STATUS_PATH, "externalStatusString", intent.getStringExtra("externalStatusString"));
+                    } else if (ACTION_SNOOZE_ALERT.equals(action)) {
+                        Log.d(TAG, "onStartCommand Action=" + ACTION_SNOOZE_ALERT + " repeatTime=" + intent.getStringExtra("repeatTime"));
+                        sendRequestExtra(WEARABLE_SNOOZE_ALERT, "repeatTime", intent.getStringExtra("repeatTime"));
                     } else if (ACTION_SYNC_DB.equals(action)) {//KS
                         Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_DB + " Path=" + SYNC_DB_PATH);
                         sendNotification(SYNC_DB_PATH, "syncDB");
@@ -853,6 +859,21 @@ public class WatchUpdaterService extends WearableListenerService implements
                     case WEARABLE_CANCEL_TREATMENT:
                         cancelTreatment(getApplicationContext(), "");
                         break;
+                    case WEARABLE_SNOOZE_ALERT:
+                        try {
+                            eventData = new String(event.getData(), "UTF-8");
+                        } catch (UnsupportedEncodingException e) {
+                            eventData = "30";
+                        }
+                        int snooze;
+                        try {
+                            snooze = Integer.parseInt(eventData);
+                        } catch (NumberFormatException e) {
+                            snooze = 30;
+                        }
+                        Log.d(TAG, "Received wearable: snooze payload: " + snooze);
+                        AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), snooze, true);
+                        break;
                     case SYNC_BGS_PATH + "_BM"://TEST ignore only for benchmark
                     case SYNC_LOGS_PATH + "_BM":
                     case SYNC_BGS_PATH + "_BM_DUP":
@@ -1044,16 +1065,16 @@ public class WatchUpdaterService extends WearableListenerService implements
         }
     }
 
-    private void sendStatus(String status) {
+    private void sendRequestExtra(String path, String key, String value) {
         if (googleApiClient.isConnected()) {
-            PutDataMapRequest dataMapRequest = PutDataMapRequest.create(NEW_STATUS_PATH);
+            PutDataMapRequest dataMapRequest = PutDataMapRequest.create(path);//NEW_STATUS_PATH
             //unique content
             dataMapRequest.getDataMap().putDouble("timestamp", System.currentTimeMillis());
-            dataMapRequest.getDataMap().putString("externalStatusString", status);
+            dataMapRequest.getDataMap().putString(key, value);//"externalStatusString"
             PutDataRequest putDataRequest = dataMapRequest.asPutDataRequest();
             Wearable.DataApi.putDataItem(googleApiClient, putDataRequest);
         } else {
-            Log.e("SendStatus", "No connection to wearable available!");
+            Log.e("sendRequestExtra", "No connection to wearable available!");
         }
     }
 

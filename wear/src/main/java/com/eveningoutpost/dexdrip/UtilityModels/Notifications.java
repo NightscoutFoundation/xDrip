@@ -39,7 +39,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
+//KS import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 //KS import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -130,11 +130,11 @@ public class Notifications extends IntentService {
 
             bg_notifications = Home.getPreferencesBoolean("bg_notifications", false);
             if (bg_notifications) {
-                ActivityRecognizedService.reStartActivityRecogniser(context);
+                //KS TODO ActivityRecognizedService.reStartActivityRecogniser(context);
 
-                if (Home.getPreferencesBoolean("motion_tracking_enabled", false)) {
+                /* //KS TODO if (Home.getPreferencesBoolean("motion_tracking_enabled", false)) {
                     ActivityRecognizedService.reStartActivityRecogniser(context);
-                }
+                }*/
 
                 ReadPerfs(context);
                 unclearReading = notificationSetter(context);

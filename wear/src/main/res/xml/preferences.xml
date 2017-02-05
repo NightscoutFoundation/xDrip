@@ -61,7 +61,7 @@
         </PreferenceScreen>
         <CheckBoxPreference
             android:defaultValue="false"
-            android:dependency="enable_wearG5"
+            android:dependency="force_wearG5"
             android:key="bg_notifications"
             android:summary="@string/pref_summary_bg_notifications"
             android:title="@string/pref_bg_notifications"/>

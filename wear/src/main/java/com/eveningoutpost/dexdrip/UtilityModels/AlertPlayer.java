@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.NotificationCompat;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -26,11 +27,13 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 //KS import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
+import static com.eveningoutpost.dexdrip.ListenerService.SendData;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
-// A helper class to create the mediaplayer on the UI thread. 
+// A helper class to create the mediaplayer on the UI thread.
 // This is needed in order for the callbackst to work.
 class MediaPlayerCreaterHelper {
     
@@ -102,6 +105,7 @@ public class AlertPlayer {
 
     final static int  MAX_VIBRATING = 2;
     final static int  MAX_ASCENDING = 5;
+    private static final String WEARABLE_SNOOZE_ALERT = "/xdrip_plus_snooze_payload";
 
 
     public static AlertPlayer getPlayer() {
@@ -160,6 +164,9 @@ public class AlertPlayer {
     //  default signature for user initiated interactive snoozes only
     public synchronized void Snooze(Context ctx, int repeatTime) {
         Snooze(ctx, repeatTime, true);
+        if (Home.get_forced_wear() && Home.getPreferencesBooleanDefaultFalse("bg_notifications") ) {
+            SendData(ctx, WEARABLE_SNOOZE_ALERT, ("" + repeatTime).getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     public synchronized void Snooze(Context ctx, int repeatTime, boolean from_interactive) {

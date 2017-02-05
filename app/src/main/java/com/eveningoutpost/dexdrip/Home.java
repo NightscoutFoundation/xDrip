@@ -1823,6 +1823,28 @@ public class Home extends ActivityWithMenu {
                 getPreferencesBooleanDefaultFalse("force_wearG5");
     }
 
+    public static boolean get_enable_wear() {
+        return getPreferencesBooleanDefaultFalse("wear_sync") &&
+                getPreferencesBooleanDefaultFalse("enable_wearG5");
+    }
+
+    public static void startWatchUpdaterService(Context context, String action, String logTag) {
+        final boolean wear_integration = getPreferencesBoolean("wear_sync", false);
+        if (wear_integration) {
+            Log.d(logTag, "start WatchUpdaterService with " + action);
+            context.startService(new Intent(context, WatchUpdaterService.class).setAction(action));
+        }
+    }
+
+    public static void startWatchUpdaterService(Context context, String action, String logTag, String key, String value) {
+        final boolean wear_integration = getPreferencesBoolean("wear_sync", false);
+        if (wear_integration) {
+            Log.d(logTag, "start WatchUpdaterService with " + action);
+            context.startService(new Intent(context, WatchUpdaterService.class).setAction(action).putExtra(key, value));
+        }
+    }
+
+
     public static boolean get_holo() {
         return Home.is_holo;
     }
@@ -2782,8 +2804,7 @@ public class Home extends ActivityWithMenu {
                 break;
             case R.id.action_open_watch_settings:
                 startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_OPEN_SETTINGS));
-            case R.id.action_sync_watch_db://KS
-                Log.d(TAG, "start WatchUpdaterService with ACTION_SYNC_DB");
+            case R.id.action_sync_watch_db:
                 startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_DB));
                 break;
         }

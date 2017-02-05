@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+
 public class ImportDatabaseActivity extends ListActivityWithMenu {
     private final static String TAG = ImportDatabaseActivity.class.getSimpleName();
     public static String menu_name = "Import Database";
@@ -224,10 +226,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
 
     protected void postImportDB(String result) {
 
-        if (mPrefs.getBoolean("wear_sync", false)) {//KS
-            Log.d(TAG, "start WatchUpdaterService with ACTION_SYNC_DB");
-            startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_DB));
-        }
+        startWatchUpdaterService(this, WatchUpdaterService.ACTION_SYNC_DB, TAG);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {

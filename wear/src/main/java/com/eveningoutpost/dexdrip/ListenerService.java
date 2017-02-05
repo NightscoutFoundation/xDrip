@@ -93,6 +93,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String WEARABLE_PREF_DATA_PATH = "/nightscout_watch_pref_data";//KS
     private static final String WEARABLE_ACTIVEBTDEVICE_DATA_PATH = "/nightscout_watch_activebtdevice_data";//KS
     private static final String WEARABLE_ALERTTYPE_DATA_PATH = "/nightscout_watch_alerttype_data";//KS
+    private static final String WEARABLE_SNOOZE_ALERT = "/xdrip_plus_snooze_payload";
     private static final String DATA_ITEM_RECEIVED_PATH = "/data-item-received";//KS
     private static final String ACTION_RESEND = "com.dexdrip.stephenblack.nightwatch.RESEND_DATA";
     private static final String ACTION_SENDDATA = "com.dexdrip.stephenblack.nightwatch.SEND_DATA";
@@ -218,6 +219,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                     case WEARABLE_INITDB_PATH:
                                     case WEARABLE_REPLYMSG_PATH:
                                     case WEARABLE_FIELD_SENDPATH:
+                                    case WEARABLE_SNOOZE_ALERT:
                                         sendMessagePayload(node, path, path, payload);
                                         break;
                                     default:
@@ -730,6 +732,20 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     intent.putExtra(path, dataMap.toBundle());
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     getApplicationContext().startActivity(intent);
+                } else if (path.equals(WEARABLE_SNOOZE_ALERT)) {
+                    Log.d(TAG, "onDataChanged WEARABLE_SNOOZE_ALERT=" + path);
+                    dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
+                    if (dataMap != null) {
+                        msg = dataMap.getString("repeatTime", "");
+                        int snooze;
+                        try {
+                            snooze = Integer.parseInt(msg);
+                        } catch (NumberFormatException e) {
+                            snooze = 30;
+                        }
+                        Log.d(TAG, "Received wearable: snooze payload: " + snooze);
+                        AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), snooze, true);
+                    }
                 } else if (path.equals(SYNC_DB_PATH)) {//KS
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH=" + path);
                     final PowerManager.WakeLock wl = JoH.getWakeLock(getApplicationContext(), "watchlistener-SYNC_DB_PATH",120000);

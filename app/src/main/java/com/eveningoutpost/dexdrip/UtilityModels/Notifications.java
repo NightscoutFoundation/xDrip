@@ -324,6 +324,7 @@ public class Notifications extends IntentService {
         boolean forced_wear = Home.get_forced_wear();
         Log.d(TAG, "forced_wear=" + forced_wear + " bg_notifications_watch=" + bg_notifications_watch + " persistent_high_alert_enabled_watch=" + bg_persistent_high_alert_enabled_watch);
 
+        //boolean watchAlert = (Home.get_forced_wear() && bg_notifications_watch);
         if (unclearReading) {
             AlertPlayer.getPlayer().stopAlert(context, false, true);
         } else {
@@ -332,6 +333,7 @@ public class Notifications extends IntentService {
             BgReading.checkForRisingAllert(context);
         }
         // TODO: Add this alerts as well to depend on unclear sensor reading.
+        //if (watchAlert && bg_persistent_high_alert_enabled_watch) {
         BgReading.checkForPersistentHigh();
         evaluateLowPredictionAlarm();
         reportNoiseChanges();

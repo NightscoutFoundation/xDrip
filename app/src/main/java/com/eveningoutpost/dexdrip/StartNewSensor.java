@@ -30,6 +30,7 @@ import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import java.util.Calendar;
 import java.util.Date;
 
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.Models.BgReading.AGE_ADJUSTMENT_TIME;
 
 
@@ -173,11 +174,7 @@ public class StartNewSensor extends ActivityWithMenu {
         // TODO add link pickers feature
         //prefs.edit().putBoolean("start_sensor_link_pickers", linkPickers.isChecked()).apply();
 
-        final boolean wear_integration = Home.getPreferencesBoolean("wear_sync", false);//KS
-        if (wear_integration) {
-            android.util.Log.d("StartNewSensor", "start WatchUpdaterService with ACTION_SYNC_SENSOR");
-            startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_SENSOR));
-        }
+        startWatchUpdaterService(this, WatchUpdaterService.ACTION_SYNC_SENSOR, TAG);
 
         LibreAlarmReceiver.clearSensorStats();
         JoH.scheduleNotification(this, "Sensor should be ready", getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);

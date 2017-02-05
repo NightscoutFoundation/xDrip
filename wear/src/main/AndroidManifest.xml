@@ -128,6 +128,9 @@
         <service
             android:name=".UtilityModels.Notifications"
             android:exported="false" />
+        <service
+            android:name=".Services.SnoozeOnNotificationDismissService"
+            android:exported="false" />
         <activity
             android:name=".NWPreferences"
             android:icon="@drawable/ic_icon"

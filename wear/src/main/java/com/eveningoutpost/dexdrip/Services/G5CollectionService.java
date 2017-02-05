@@ -308,6 +308,9 @@ public class G5CollectionService extends Service {
             if ((!service_running) && (keep_running)) {
                 service_running = true;
 
+                checkWakeupTimeLatency();
+                logWakeTimeLatency();
+
                 Log.d(TAG, "onG5StartCommand wakeup: "+JoH.dateTimeText(JoH.tsl()));
                 Log.e(TAG, "settingsToString: " + settingsToString());
 
@@ -452,6 +455,8 @@ public class G5CollectionService extends Service {
             } else {
                 wakeTime = Calendar.getInstance().getTimeInMillis() + wake_in_ms;
             }
+            nextWakeUpTime = wakeTime;//Benchmark test
+
             //Log.e(TAG, "Delay Time: " + minuteDelay);
             Log.e(TAG, "Scheduling Wake Time: in " +  JoH.qs((wakeTime-JoH.tsl())/1000,0)+ " secs "+ JoH.dateTimeText(wakeTime));
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -699,14 +704,6 @@ public class G5CollectionService extends Service {
             }
         }
     }
-    private void setWakupFailOverTimer() {
-        final long retry_in = (30 * 1000);
-        UserError.Log.e(TAG, "setWakupFailOverTimer: Restarting in: " + (retry_in / (1000)) + " seconds");
-        nextWakeUpTime = JoH.tsl() + retry_in;
-
-        final PendingIntent wakeIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
-        JoH.wakeUpIntent(this, retry_in, wakeIntent);
-    }
 
     private void logWakeTimeLatency() {
         if (wakeUpErrors > 0) {
@@ -725,18 +722,12 @@ public class G5CollectionService extends Service {
         final int timeout = (3 * 60 * 1000);
         Log.e(TAG, "forceScreenOn set wakelock for FULL_WAKE_LOCK");
         if (fullWake == null || !fullWake.isHeld()) {
-            checkWakeupTimeLatency();
-            nextWakeUpTime = JoH.tsl();
-            UserError.Log.e(TAG, "Current time: " + JoH.dateTimeText(nextWakeUpTime));
+            UserError.Log.e(TAG, "Current time: " + JoH.dateTimeText(JoH.tsl()));
             fullWake = JoH.getWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "FORCE_FULL_WAKE_LOCK", timeout);
-            setWakupFailOverTimer();
         }
         else {
             Log.e(TAG, "forceScreenOn fullWake is already held!");
-            logWakeTimeLatency();
-            nextWakeUpTime = -1;
         }
-
     }
 
     public synchronized void startScan() {
