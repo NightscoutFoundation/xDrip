@@ -315,6 +315,7 @@
     <string name="re_enable_high_alerts">Re-Enable High Alerts</string>
     <string name="disable_all_alerts">Disable All alerts</string>
     <string name="re_enable_all_alerts">Re-Enable All Alerts</string>
+    <string name="alert_snoozed_by_watch">Alert snoozed by watch</string>
     <string name="update_channel_colon_space">"Update Channel: "</string>
     <string name="a_new_version_is_available">A new version is available</string>
     <string name="version_details">Version details</string>

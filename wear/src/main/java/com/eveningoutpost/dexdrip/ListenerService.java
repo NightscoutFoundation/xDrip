@@ -745,6 +745,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         }
                         Log.d(TAG, "Received wearable: snooze payload: " + snooze);
                         AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), snooze, true);
+                        sendLocalToast(getResources().getString(R.string.alert_snoozed_by_phone));
                     }
                 } else if (path.equals(SYNC_DB_PATH)) {//KS
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH=" + path);
@@ -892,6 +893,15 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
         //sendReplyMsg (msg, last_timestamp, path, false);
         sendData(WEARABLE_REPLYMSG_PATH, dataMap.toByteArray());
+    }
+
+    private void sendLocalToast(String msg) {
+        DataMap dataMap = new DataMap();
+        dataMap.putString("msg", msg);
+        Intent messageIntent = new Intent();
+        messageIntent.setAction(Intent.ACTION_SEND);
+        messageIntent.putExtra("msg", dataMap.toBundle());
+        LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
     }
 
     private synchronized void sendReplyMsg (String msg, long last_timestamp, String path, boolean showToast) {

@@ -146,5 +146,6 @@
     <string name="re_enable_all_alerts">Re-Enable All Alerts</string>
     <string name="cancel">Cancel</string>
     <string name="set">Set</string>
+    <string name="alert_snoozed_by_phone">Alert snoozed by phone</string>
 
 </resources>

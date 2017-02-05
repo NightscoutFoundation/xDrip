@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
@@ -873,6 +874,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                         }
                         Log.d(TAG, "Received wearable: snooze payload: " + snooze);
                         AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), snooze, true);
+                        JoH.static_toast_long(getResources().getString(R.string.alert_snoozed_by_watch));
                         break;
                     case SYNC_BGS_PATH + "_BM"://TEST ignore only for benchmark
                     case SYNC_LOGS_PATH + "_BM":
