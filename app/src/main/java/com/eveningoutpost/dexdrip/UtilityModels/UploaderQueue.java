@@ -1,7 +1,11 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.database.Cursor;
 import android.provider.BaseColumns;
+import android.util.Log;
+import android.util.LongSparseArray;
 
+import com.activeandroid.Cache;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
@@ -47,6 +51,9 @@ public class UploaderQueue extends Model {
 
     // table creation
     private static boolean patched = false;
+    private static long last_cleanup = 0;
+    private static long last_new_entry = 0;
+    private static long last_query = 0;
 
     // Bitfields
     public static final long MONGO_DIRECT = 1;
@@ -55,6 +62,16 @@ public class UploaderQueue extends Model {
 
 
     public static final long DEFAULT_UPLOAD_CIRCUITS = 0;
+
+    private static final LongSparseArray circuits_for_stats = new LongSparseArray<String>() {
+        {
+            append(MONGO_DIRECT, "Mongo Direct");
+            append(NIGHTSCOUT_RESTAPI, "Nightscout REST");
+            append(TEST_OUTPUT_PLUGIN, "Test Plugin");
+        }
+    };
+
+
     //...
 
 
@@ -131,6 +148,7 @@ public class UploaderQueue extends Model {
         result.type = obj.getClass().getSimpleName();
         result.saveit();
         if (d) UserError.Log.d(TAG, result.toS());
+        last_new_entry = JoH.tsl();
         return result;
     }
 
@@ -140,6 +158,7 @@ public class UploaderQueue extends Model {
 
     public static List<UploaderQueue> getPendingbyType(String className, long bitfield, int limit) {
         if (d) UserError.Log.d(TAG, "get Pending by type: " + className);
+        last_query = JoH.tsl();
         try {
             final String bitfields = Long.toString(bitfield);
             return new Select()
@@ -157,6 +176,73 @@ public class UploaderQueue extends Model {
         }
     }
 
+
+    private static int getLegacyCount(Class which, Boolean rest, Boolean mongo, Boolean and) {
+        try {
+            String where = "";
+            if (rest != null) where += " success = " + (rest ? "1 " : "0 ");
+            if (and != null) where += (and ? " and " : " or ");
+            if (mongo != null) where += " mongo_success = " + (mongo ? "1 " : "0 ");
+            final String query = new Select("COUNT(*) as total").from(which).toSql();
+            final Cursor resultCursor = Cache.openDatabase().rawQuery(query + ((where.length() > 0) ? " where " + where : ""), null);
+            if (resultCursor.moveToNext()) {
+                final int total = resultCursor.getInt(0);
+                resultCursor.close();
+                return total;
+            } else {
+                return 0;
+            }
+
+        } catch (Exception e) {
+            Log.d(TAG, "Got exception getting count: " + e);
+            return -1;
+        }
+    }
+
+
+    private static int getCount(String where) {
+        try {
+            final String query = new Select("COUNT(*) as total").from(UploaderQueue.class).toSql();
+            final Cursor resultCursor = Cache.openDatabase().rawQuery(query + where, null);
+            if (resultCursor.moveToNext()) {
+                final int total = resultCursor.getInt(0);
+                resultCursor.close();
+                return total;
+            } else {
+                return 0;
+            }
+
+        } catch (Exception e) {
+            Log.d(TAG, "Got exception getting count: " + e);
+            return 0;
+        }
+    }
+
+    private static List<String> getClasses() {
+        final ArrayList<String> results = new ArrayList<>();
+        final String query = new Select("distinct otype as otypes").from(UploaderQueue.class).toSql();
+        final Cursor resultCursor = Cache.openDatabase().rawQuery(query, null);
+        while (resultCursor.moveToNext()) {
+            results.add(resultCursor.getString(0));
+        }
+        resultCursor.close();
+        return results;
+    }
+
+
+    public static int getQueueSizeByType(String className, long bitfield, boolean completed) {
+        if (d) UserError.Log.d(TAG, "get Pending count by type: " + className);
+        try {
+            final String bitfields = Long.toString(bitfield);
+            return getCount(" where otype = '" + className + "'" + " and (bitfield_wanted & " + bitfields + ") == " + bitfields + " and (bitfield_complete & " + bitfields + ") " + (completed ? "== " : "!= ") + bitfields);
+        } catch (android.database.sqlite.SQLiteException e) {
+            if (d) UserError.Log.d(TAG, "Exception: " + e.toString());
+            fixUpTable();
+            return 0;
+        }
+    }
+
+
     public static void cleanQueue() {
         // delete all completed records > 24 hours old
         try {
@@ -172,8 +258,9 @@ public class UploaderQueue extends Model {
                     .where("timestamp < ?", JoH.tsl() - 86400000L * 7L)
                     .execute();
         } catch (Exception e) {
-            UserError.Log.d(TAG,"Exception cleaning uploader queue: "+e);
+            UserError.Log.d(TAG, "Exception cleaning uploader queue: " + e);
         }
+        last_cleanup = JoH.tsl();
     }
 
 
@@ -191,4 +278,47 @@ public class UploaderQueue extends Model {
         patched = true;
     }
 
+
+    public static List<StatusItem> megaStatus() {
+        final List<StatusItem> l = new ArrayList<>();
+        // per circuit
+        for (int i = 0, size = circuits_for_stats.size(); i < size; i++) {
+            final long bitfield = circuits_for_stats.keyAt(i);
+
+            // per class of data
+            for (String type : getClasses()) {
+                Log.d(TAG, "Getting stats for class: " + type + " in " + circuits_for_stats.valueAt(i));
+                int count_pending = getQueueSizeByType(type, bitfield, false);
+                int count_completed = getQueueSizeByType(type, bitfield, true);
+                int count_total = count_pending + count_completed;
+
+                if (count_total > 0) {
+                    l.add(new StatusItem(circuits_for_stats.valueAt(i).toString(), count_pending + " " + type));
+                }
+            }
+                // handle legacy tables
+                if (bitfield == MONGO_DIRECT) {
+                    // legacy
+                    l.add(new StatusItem(circuits_for_stats.valueAt(i).toString(), getLegacyCount(BgSendQueue.class, null, false, null) + " Glucose Values"));
+                    l.add(new StatusItem(circuits_for_stats.valueAt(i).toString(), getLegacyCount(CalibrationSendQueue.class, null, false, null) + " Calibrations"));
+                }
+                // handle legacy tables
+                if (bitfield == NIGHTSCOUT_RESTAPI) {
+                    // legacy
+                    l.add(new StatusItem(circuits_for_stats.valueAt(i).toString(), getLegacyCount(BgSendQueue.class, false, null, null) + " Glucose Values"));
+                    l.add(new StatusItem(circuits_for_stats.valueAt(i).toString(), getLegacyCount(CalibrationSendQueue.class, false, null, null) + " Calibrations"));
+                }
+
+
+        }
+
+
+        if (last_query > 0)
+            l.add(new StatusItem("Last poll", JoH.niceTimeSince(last_query)+" ago"));
+
+        if (last_cleanup > 0)
+            l.add(new StatusItem("Last clean up", JoH.niceTimeSince(last_cleanup)+ "ago"));
+
+        return l;
+    }
 }
