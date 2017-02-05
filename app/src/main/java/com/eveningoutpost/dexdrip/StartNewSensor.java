@@ -111,15 +111,16 @@ public class StartNewSensor extends ActivityWithMenu {
                 } else {
                     final DatePickerFragment datePickerFragment = new DatePickerFragment();
                     datePickerFragment.setAllowFuture(false);
-                    if (!Home.get_engineering_mode()) 
-                        datePickerFragment.setEarliestDate(JoH.tsl() - 2592000000L); // 30 days
+                    if (!Home.get_engineering_mode()) {
+                        datePickerFragment.setEarliestDate(JoH.tsl() - (30L * 24 * 60 * 60 * 1000)); // 30 days
+                    }
                     datePickerFragment.setTitle("Which day was it inserted?");
                     datePickerFragment.setDateCallback(new ProfileAdapter.DatePickerCallbacks() {
                         @Override
                         public void onDateSet(int year, int month, int day) {
                             ucalendar.set(year, month, day);
                             // Long enough in the past for age adjustment to be meaningless? Skip asking time
-                            if (JoH.tsl() - ucalendar.getTimeInMillis() > (AGE_ADJUSTMENT_TIME + (1000 * 60 * 60 * 24))) {
+                            if ((!Home.get_engineering_mode()) && (JoH.tsl() - ucalendar.getTimeInMillis() > (AGE_ADJUSTMENT_TIME + (1000 * 60 * 60 * 24)))) {
                                 realStartSensor();
                             } else {
                                 askSesorInsertionTime();
