@@ -50,7 +50,7 @@ These settings are listed in order of dependency.  Note, the Watch's **XDrip BT 
   Force Wear may also provide better BT connectivity over that provided by the smartphone.  As an example, some users find that the SW3 provides better BT connectivity than their Samsung Galaxy Note 4 smartphone.
 
 ###Initial Wear Enablement Requests Location Permission
-Upon initial enablement of standalone wear, by selecting the the Enable Wear preference on watch or phone, a Location Permission is Required dialog box will be displayed.  Android Wear requires Bluetooth Permission to be manually accepted by the user, therefore, the user must accept the Location Permission query in order for standalone mode to work.  Alternatively, the user can enable Location Permission in Watch -> Settings -> Permissions - XDrip Prefs, then enable Location.
+Upon initial enablement of standalone wear, by selecting the the Enable Wear preference on watch or phone, a **Location Permission is Required** dialog box will be displayed.  Android Wear requires **Location Access** to be manually accepted by the user, therefore, the user must accept the Location Permission query in order for standalone mode to work.  Alternatively, the user can enable Location Permission in Watch -> Settings -> Permissions - XDrip Prefs, then enable Location.
 
 <img align="middle" src="./images/prefs-wear-permissions.png" title="xDrip+ Wear Integration Preferences">
 
@@ -60,10 +60,10 @@ Note, xDrip+ and Wear will sync their co-existing preferences.  Preference synci
   1. xDrip+ app startup.  xDrip+ will send its preferences to the watch and the watch will update its values to the phone.
   2. On re-connect, the wear app will send its preferences to the phone and phone will update its values to the watch.
 
-For example, if the user changes the Force Wear preference on the watch, it will immediately be synced with the phone, or synced upon connection.
+For example, if the user changes the Force Wear preference on the watch, it will immediately be sent to the phone upon re-connection, and the phone will update its settings.
 
 ###Syncing BGs and Wear Database
-* Sync DB - The watch data is saved in the watch database.  The watch will attempt to sync with the phone upon connection until all delta data have been synced. So, for example, if you have 8 hours of overnight data, the watch will attempt to send those upon re-connection with the phone.
+* Sync DB - The watch data (BGs, Logs)is saved in the watch database.  The watch will attempt to sync its data with the phone upon connection until all delta data have been synced. So, for example, if you have 8 hours of overnight data generated while disconnected from the phone, the watch will attempt to send all data upon re-connection with the phone.
 * Reset Wear DB - The watch data exists on the phone until you:
 
   1. **Reset Wear DB** on the phone via the xDrip+ upper right menu.  This removes data already synced with the phone.
@@ -73,22 +73,51 @@ For example, if the user changes the Force Wear preference on the watch, it will
   - Users can view log messages on the phone via the xDrip+ upper right menu item, **View Events Log**.
   - As with the xDrip+ phone app, specific log entries can be enabled by entering the extra log tag and severity level preference via the xDrip+ phone app settings, Less Common Settings (LCS) - Extra Logging Settings - **Extra tags for logging**.
 
-The following image shows an example of the phone View Events Log containing watch log entries.
+The following image shows an example of the phone **View Events Log** containing phone and watch log entries.
 
 <img align="middle" src="./images/prefs-wear-vieweventslog.png" title="xDrip+ Wear Integration Preferences">
 
 ###XDrip Prefs Overview
-The watch XDrip Prefs app is used to set the xDrip+ wear app preferences.
+The watch XDrip Prefs app is used to set the xDrip+ wear app preferences.  In addition to the Wear Integration preferences mentioned above under [Enable xDrip+ Android Wear Integration](#enable-xdrip-android-wear-integration), XDrip Prefs provide the following new preferences used in the standalone version.
 
-The following lists the new preferences used in the standalone version.
 ####XDrip BT Settings
 
-  Provides the Wear Integration preferences listed above and the following:
+  Provides the Wear Integration preferences listed and the following:
   - XDrip G5 Settings
 
-    Wear provides G5 BT settings similar to those provided by the xDrip+ app, such as **Scan for G5 Contantly**, under **G5 Debug Settings**.  As with the xDrip+ app, they should only be enabled if the watch has connectivity issues.  For example, many users find that the **Sony Smartwatch 3 (SW3)** does not require any of these settings enabled.
+    Wear provides G5 BT settings similar to those provided by the xDrip+ app, such as **Scan for G5 Contantly**, under **G5 Debug Settings**.  As with the xDrip+ app, they should only be enabled if the watch has connectivity issues.
+
+    For example, many users find that the **Sony Smartwatch 3 (SW3)** does not require any of these settings enabled.
+    But some SW3 users find enabling **Scan for G5** helpful.
+
     Whereas, users of the **Moto 360 2nd Gen** watch report the **Unbond G5/Read** pref is required.
-    - The one exception is the **Auth G5/Read**.  This should be enabled if using the latest, Dexcom G5 transmitter firmware (released in November 2016, **firmware 1.0.4.10**, or newer than **firmware 1.0.0.17**).
+
+    There are the following two exceptions:
+    - **Force Screen On** - Some watches, such as the **Moto 360 2nd Gen**, fall into deep sleep preventing the BT Collector from retrieving the transmitter data.  Enabling this preference will trigger the watch to wakeup to read the transmitter data, then fall back to sleep.
+
+        Rather than use this preferences, it is recommended that watches should enable **Screen Always-on** on their watch or Android Wear app, when supported.  The **Moto 360 2nd Gen** is currently the only known watch that does not support Screen Always-on.
+    - **Auth G5/Read** - This should be enabled if using the latest, Dexcom G5 transmitter firmware (released in November 2016, **firmware 1.0.4.10**, or newer than **firmware 1.0.0.17**).
+
+  - Alerts
+
+    Alerts can be enabled on the watch when in standalone mode (i.e., when Force Wear is enabled) by enabling Enable Alerts and High Alerts on the watch.  This will allow alerts to be triggered when disconnected from the watch.  Currently the following xDrip+ app alerts under **Alarms and Alerts** are supported on the watch:
+
+    1. **Alert List** - All alerts.
+    2. **Other Alerts** - **Bg falling fast** and **Bg risng fast**.
+    3. **Extra Alerts (xDrip+)** - **Persistent High Alert**.
+
+    Watch alerts have the following restrictions:
+
+     1. Currently only support vibrate-only profiles.  Audio is not currently supported.
+     2. Glucose Alerts Settings are currently not configurable.  They use app defaults.
+
+The following image shows xDrip+ app alerts under **Alarms and Alerts** which are supported on the watch.
+
+<img align="middle" src="./images/prefs-alerts-phone.png" title="xDrip+ Wear Integration Preferences">
+
+The following image show example alerts on the watch.  Users will continue to receive those phone alerts which are not supported on the watch.  Phone and watch alerts can be distinguished by their **Open** dialog.  The phone alert will display **Open on phone**.  Whereas the watch alert will display **Open**.  Upon tapping Open, the Snooze dialog will be displayed.  The watch Snooze performs the same functionality that the phone Snooze performs.  Tapping the Snooze and number from the NumberPicker will snooze the alert on both the phone and the watch.  Whereas, the Snooze buttons will only snooze the alarms on the active device while watch notifications are enabled.
+
+<img align="middle" src="./images/prefs-alerts-phone.png" title="xDrip+ Wear Integration Preferences">
 
 ####XDrip Watchface Settings
   - Show Status - Show Loop Status on the XDrip and XDrip(Large) watchfaces.  This will display the HAPP status message containing Basal%, IOB, COB.
