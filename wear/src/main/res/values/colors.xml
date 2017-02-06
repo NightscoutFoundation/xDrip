@@ -67,4 +67,7 @@
     <!-- White -->
     <color name="white">#FFFFFF</color>
     <!-- White -->
+
+    <color name="colorPrimaryDark">#303f9f</color>
+
 </resources>

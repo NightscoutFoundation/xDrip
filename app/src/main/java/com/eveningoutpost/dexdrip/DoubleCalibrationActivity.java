@@ -17,11 +17,13 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
 
 public class DoubleCalibrationActivity extends ActivityWithMenu {
     Button button;
     public static String menu_name = "Add Double Calibration";
+    private static final String TAG = "DoubleCalib";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,11 +67,7 @@ public class DoubleCalibrationActivity extends ActivityWithMenu {
                             } else {
                                 Calibration.initialCalibration(calValue_1, calValue_2, getApplicationContext());
 
-                                final boolean wear_integration = Home.getPreferencesBoolean("wear_sync", false);//KS
-                                if (wear_integration) {
-                                    android.util.Log.d("DoubleCalibration", "start WatchUpdaterService with ACTION_SYNC_CALIBRATION");
-                                    startService(new Intent(v.getContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_CALIBRATION));
-                                }
+                                startWatchUpdaterService(v.getContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
 
                                 Intent tableIntent = new Intent(v.getContext(), Home.class);
                                 startActivity(tableIntent);

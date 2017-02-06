@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.preference.PreferenceManager;
 
+import com.activeandroid.ActiveAndroid;
+
 import java.util.Locale;
 
 //import io.fabric.sdk.android.Fabric;
@@ -23,7 +25,7 @@ public class xdrip extends Application {
         xdrip.context = getApplicationContext();
         super.onCreate();
         PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
-
+        ActiveAndroid.initialize(this);
      }
 
     public static Context getAppContext() {

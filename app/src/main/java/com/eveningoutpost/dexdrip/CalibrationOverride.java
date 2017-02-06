@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
 
 public class CalibrationOverride extends ActivityWithMenu {
@@ -70,11 +71,7 @@ public class CalibrationOverride extends ActivityWithMenu {
                                 UndoRedo.addUndoCalibration(calibration.uuid);
                                 GcmActivity.pushCalibration(string_value, "0");
 
-                                final boolean wear_integration = Home.getPreferencesBoolean("wear_sync", false);//KS
-                                if (wear_integration) {
-                                    android.util.Log.d("CalibrationOverride", "start WatchUpdaterService with ACTION_SYNC_CALIBRATION");
-                                    startService(new Intent(v.getContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_CALIBRATION));
-                                }
+                                startWatchUpdaterService(v.getContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
 
                             } else {
                                 Log.e(TAG, "Calibration creation resulted in null");

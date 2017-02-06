@@ -308,6 +308,12 @@ public class Home extends BaseWatchFace {
         return Home.getPreferencesBooleanDefaultFalse("engineering_mode");
     }
 
+    public static boolean get_forced_wear() {
+        return getPreferencesBooleanDefaultFalse("enable_wearG5") &&
+                getPreferencesBooleanDefaultFalse("force_wearG5");
+    }
+
+
     public static boolean getPreferencesBoolean(final String pref, boolean def) {
         if ((prefs == null) && (xdrip.getAppContext() != null)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());

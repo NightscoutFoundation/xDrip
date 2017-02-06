@@ -23,6 +23,8 @@ import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+
 /**
  * Created by Emma Black on 8/3/15.
  */
@@ -51,7 +53,7 @@ public class ErrorsActivity extends ActivityWithMenu {
         super.onCreate(savedInstanceState);
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         if (mPrefs.getBoolean("wear_sync", false) && mPrefs.getBoolean("sync_wear_logs", false)) {
-            startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_LOGS));
+            startWatchUpdaterService(this, WatchUpdaterService.ACTION_SYNC_LOGS, TAG);
         }
         setContentView(R.layout.activity_errors);
 

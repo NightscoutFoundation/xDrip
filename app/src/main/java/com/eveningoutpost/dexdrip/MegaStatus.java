@@ -54,6 +54,8 @@ import com.google.android.gms.wearable.DataMap;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+
 public class MegaStatus extends ActivityWithMenu {
 
 
@@ -230,11 +232,9 @@ public class MegaStatus extends ActivityWithMenu {
     }
 
     private void requestWearCollectorStatus() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
-        Context context = xdrip.getAppContext();
         final PowerManager.WakeLock wl = JoH.getWakeLock("ACTION_STATUS_COLLECTOR", 120000);
-        if (prefs.getBoolean("wear_sync", false) && prefs.getBoolean("enable_wearG5", false)) {
-            context.startService(new Intent(context, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_STATUS_COLLECTOR));
+        if (Home.get_enable_wear()) {
+            startWatchUpdaterService(xdrip.getAppContext(), WatchUpdaterService.ACTION_STATUS_COLLECTOR, TAG);
         }
         JoH.releaseWakeLock(wl);
     }

@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 
 import java.text.DecimalFormat;
@@ -35,6 +36,7 @@ import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.xdrip;
 
 /**
  * Created by Emma Black on 11/15/14.
@@ -58,6 +60,14 @@ class PointValueExtended extends PointValue {
 public class BgGraphBuilder {
 	private static final String TAG = BgGraphBuilder.class.getSimpleName();
     public static final int FUZZER = (1000 * 30 * 5);
+    public final static double NOISE_TRIGGER = 10;
+    public final static double NOISE_TOO_HIGH_FOR_PREDICT = 60;
+    public final static double NOISE_HIGH = 200;
+    public final static double NOISE_FORGIVE = 100;
+    public static double low_occurs_at = -1;
+    public static double previous_low_occurs_at = -1;
+    private static double low_occurs_at_processed_till_timestamp = -1;
+    private static long noise_processed_till_timestamp = -1;
     public static final int MAX_SLOPE_MINUTES = 21;
     public long  end_time;
     public long  start_time;
@@ -86,6 +96,7 @@ public class BgGraphBuilder {
     static final boolean FILL_UNDER_LINE = false;
     public Viewport viewport;
     public final static long DEXCOM_PERIOD = 300000;//KS from app / BgGraphBuilder.java
+    public static double last_noise = -99999;
 
 
     public BgGraphBuilder(Context context){
@@ -98,6 +109,10 @@ public class BgGraphBuilder {
 
     public BgGraphBuilder(Context context, long start, long end){
         this(context, start, end, NUM_VALUES);
+    }
+
+    public BgGraphBuilder(Context context, long start, long end, int numValues, boolean show_prediction) {//KS TODO implement show_prediction
+        this(context, start, end, numValues);
     }
 
     public BgGraphBuilder(Context context, long start, long end, int numValues){
@@ -137,6 +152,10 @@ public class BgGraphBuilder {
         previewLineData.getLines().get(array_offset+1).setPointRadius(2);
         previewLineData.getLines().get(array_offset+2).setPointRadius(2);
         return previewLineData;
+    }
+
+    public synchronized List<Line> defaultLines(boolean simple) {//KS TODO support simple
+        return defaultLines();
     }
 
     public List<Line> defaultLines() {
@@ -247,6 +266,10 @@ public class BgGraphBuilder {
     }
 
 
+    private void addBgReadingValues(final boolean simple) {//KS TODO Add Noise, Momentum Trend implmentation
+        addBgReadingValues();
+    }
+
     private void addBgReadingValues() {
         final boolean show_filtered = prefs.getBoolean("show_filtered_curve", false);
 
@@ -272,6 +295,22 @@ public class BgGraphBuilder {
         for (Calibration calibration : calibrations) {
             calibrationValues.add(new PointValueExtended((float) (calibration.timestamp / FUZZER), (float) unitized(calibration.bg)));
         }
+    }
+
+    public static synchronized double getCurrentLowOccursAt() {//KS TODO implement low predictions
+        try {
+            final long last_bg_reading_timestamp = BgReading.last().timestamp;
+            if (low_occurs_at_processed_till_timestamp < last_bg_reading_timestamp) {
+                Log.d(TAG, "Recalculating lowOccursAt: " + JoH.dateTimeText((long) low_occurs_at_processed_till_timestamp) + " vs " + JoH.dateTimeText(last_bg_reading_timestamp));
+                // new only the last hour worth of data for this
+                (new BgGraphBuilder(xdrip.getAppContext(), System.currentTimeMillis() - 60 * 60 * 1000, System.currentTimeMillis() + 5 * 60 * 1000, 24, true)).addBgReadingValues(false);
+            } else {
+                Log.d(TAG, "Cached current low timestamp ok: " +  JoH.dateTimeText((long) low_occurs_at_processed_till_timestamp) + " vs " + JoH.dateTimeText(last_bg_reading_timestamp));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception in getCurrentLowOccursAt() " + e);
+        }
+        return low_occurs_at;
     }
 
     public Line highLine(){ return highLine(LINE_VISIBLE);}
@@ -369,6 +408,13 @@ public class BgGraphBuilder {
     }
     static public boolean isLargeTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
+    public static String noiseString(double thisnoise) {
+        if (thisnoise > NOISE_HIGH) return "Extreme";
+        if (thisnoise > NOISE_TOO_HIGH_FOR_PREDICT) return "Very High";
+        if (thisnoise > NOISE_TRIGGER) return "High";
+        return "Low";
     }
 
     public Axis previewXAxis(){

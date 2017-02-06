@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.NotificationCompat;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -15,8 +16,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 
-import com.eveningoutpost.dexdrip.EditAlertActivity;
-import com.eveningoutpost.dexdrip.GcmActivity;
+//KS import com.eveningoutpost.dexdrip.EditAlertActivity;
+//KS import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.AlertType;
@@ -25,11 +26,11 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
-import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
-import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
-import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+//KS import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
+import static com.eveningoutpost.dexdrip.ListenerService.SendData;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 // A helper class to create the mediaplayer on the UI thread.
@@ -104,6 +105,7 @@ public class AlertPlayer {
 
     final static int  MAX_VIBRATING = 2;
     final static int  MAX_ASCENDING = 5;
+    private static final String WEARABLE_SNOOZE_ALERT = "/xdrip_plus_snooze_payload";
 
 
     public static AlertPlayer getPlayer() {
@@ -162,8 +164,8 @@ public class AlertPlayer {
     //  default signature for user initiated interactive snoozes only
     public synchronized void Snooze(Context ctx, int repeatTime) {
         Snooze(ctx, repeatTime, true);
-        if (Home.getPreferencesBooleanDefaultFalse("bg_notifications_watch") ) {
-            startWatchUpdaterService(ctx, WatchUpdaterService.ACTION_SNOOZE_ALERT, TAG, "repeatTime", "" + repeatTime);
+        if (Home.get_forced_wear() && Home.getPreferencesBooleanDefaultFalse("bg_notifications") ) {
+            SendData(ctx, WEARABLE_SNOOZE_ALERT, ("" + repeatTime).getBytes(StandardCharsets.UTF_8));
         }
     }
 
@@ -173,7 +175,7 @@ public class AlertPlayer {
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
         if (activeBgAlert == null) {
             Log.e(TAG, "Error, snooze was called but no alert is active.");
-            if (from_interactive) GcmActivity.sendSnoozeToRemote();
+            //KS TODO if (from_interactive) GcmActivity.sendSnoozeToRemote();
             return;
         }
         if (repeatTime == -1) {
@@ -188,7 +190,7 @@ public class AlertPlayer {
             }
         }
         activeBgAlert.snooze(repeatTime);
-        if (from_interactive) GcmActivity.sendSnoozeToRemote();
+        //KS if (from_interactive) GcmActivity.sendSnoozeToRemote();
     }
 
     public synchronized  void PreSnooze(Context ctx, String uuid, int repeatTime) {
@@ -294,7 +296,7 @@ public class AlertPlayer {
             setDataSourceSucceeded = setDataSource(ctx, mediaPlayer, Uri.parse(FileName));
         }
         if (setDataSourceSucceeded == false) {
-            setDataSourceSucceeded = setDataSource(ctx, mediaPlayer, R.raw.default_alert);
+            //KS TODO setDataSourceSucceeded = setDataSource(ctx, mediaPlayer, R.raw.default_alert);
         }
         if(setDataSourceSucceeded == false) {
             Log.e(TAG, "setDataSource failed");
@@ -364,7 +366,7 @@ public class AlertPlayer {
 
     static private int getAlertProfile(Context ctx){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-        String profile = prefs.getString("bg_alert_profile", "ascending");
+        String profile = prefs.getString("bg_alert_profile", "vibrate only");//KS ascending
         if(profile.equals("High")) {
             Log.i(TAG, "getAlertProfile returning ALERT_PROFILE_HIGH");
             return ALERT_PROFILE_HIGH;
@@ -401,6 +403,28 @@ public class AlertPlayer {
     }
 
     private void Vibrate(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, int timeFromStartPlaying) {
+        //KS Watch currently only supports Vibration, no audio; Use VibrateAudio to support audio
+        String title = bgValue + " " + alert.name;
+        String content = "BG LEVEL ALERT: " + bgValue + "  (@" + JoH.hourMinuteString() + ")";
+        Intent intent = new Intent(ctx, SnoozeActivity.class);
+
+        boolean localOnly = (Home.get_forced_wear() && Home.getPreferencesBooleanDefaultFalse("bg_notifications"));//KS
+        Log.d(TAG, "NotificationCompat.Builder localOnly=" + localOnly);
+        NotificationCompat.Builder  builder = new NotificationCompat.Builder(ctx)//KS Notification
+                .setSmallIcon(R.drawable.ic_launcher)//KS ic_action_communication_invert_colors_on
+                .setContentTitle(title)
+                .setContentText(content)
+                .setContentIntent(notificationIntent(ctx, intent))
+                .setLocalOnly(localOnly)//KS
+                .setDeleteIntent(snoozeIntent(ctx));
+        builder.setVibrate(Notifications.vibratePattern);
+        Log.ueh("Alerting",content);
+        NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+        //mNotifyMgr.cancel(Notifications.exportAlertNotificationId); // this appears to confuse android wear version 2.0.0.141773014.gms even though it shouldn't - can we survive without this?
+        mNotifyMgr.notify(Notifications.exportAlertNotificationId, builder.build());
+    }
+
+    private void VibrateAudio(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, int timeFromStartPlaying) {
         Log.d(TAG, "Vibrate called timeFromStartPlaying = " + timeFromStartPlaying);
         Log.d("ALARM", "setting vibrate alarm");
         int profile = getAlertProfile(ctx);
@@ -421,14 +445,14 @@ public class AlertPlayer {
         String content = "BG LEVEL ALERT: " + bgValue + "  (@" + JoH.hourMinuteString() + ")";
         Intent intent = new Intent(ctx, SnoozeActivity.class);
 
-        boolean localOnly = (Home.get_forced_wear() && PersistentStore.getBoolean("bg_notifications_watch"));
+        boolean localOnly = (Home.get_forced_wear() && Home.getPreferencesBooleanDefaultFalse("bg_notifications"));//KS
         Log.d(TAG, "NotificationCompat.Builder localOnly=" + localOnly);
         NotificationCompat.Builder  builder = new NotificationCompat.Builder(ctx)//KS Notification
-            .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
+            .setSmallIcon(R.drawable.ic_launcher)//KS ic_action_communication_invert_colors_on
             .setContentTitle(title)
             .setContentText(content)
             .setContentIntent(notificationIntent(ctx, intent))
-            .setLocalOnly(localOnly)
+            .setLocalOnly(localOnly)//KS
             .setDeleteIntent(snoozeIntent(ctx));
 
         if (profile != ALERT_PROFILE_VIBRATE_ONLY && profile != ALERT_PROFILE_SILENT) {
@@ -440,7 +464,7 @@ public class AlertPlayer {
                     volumeFrac = (float)0.7;
                 }
                 Log.d(TAG, "Vibrate volumeFrac = " + volumeFrac);
-                boolean isRingTone = EditAlertActivity.isPathRingtone(ctx, alert.mp3_file);
+                boolean isRingTone = true;//KS TODO EditAlertActivity.isPathRingtone(ctx, alert.mp3_file);
 
                 if (notSilencedDueToCall()) {
                     if (isRingTone && !overrideSilent) {
@@ -464,18 +488,41 @@ public class AlertPlayer {
         } else {
             // In order to still show on all android wear watches, either a sound or a vibrate pattern
             // seems to be needed. This pattern basically does not vibrate:
-            builder.setVibrate(new long[]{1, 0});
+            //KS ADD:
+            // This code snippet will cause the phone to vibrate "SOS" in Morse Code
+            // In Morse Code, "s" = "dot-dot-dot", "o" = "dash-dash-dash"
+            // There are pauses to separate dots/dashes, letters, and words
+            // The following numbers represent millisecond lengths
+            int dot = 200;      // Length of a Morse Code "dot" in milliseconds
+            int dash = 500;     // Length of a Morse Code "dash" in milliseconds
+            int short_gap = 200;    // Length of Gap Between dots/dashes
+            int medium_gap = 500;   // Length of Gap Between Letters
+            int long_gap = 1000;    // Length of Gap Between Words
+            long[] pattern = {
+                    0,  // Start immediately
+                    dot, short_gap, dot, short_gap, dot,    // s
+                    medium_gap,
+                    dash, short_gap, dash, short_gap, dash, // o
+                    medium_gap,
+                    dot, short_gap, dot, short_gap, dot,    // s
+                    long_gap
+            };
+            // Only perform this pattern one time (-1 means "do not repeat")
+            //mVibrator.vibrate(pattern, -1);
+            builder.setVibrate(pattern);
+            //builder.setVibrate(new long[]{1, 0});
         }
         Log.ueh("Alerting",content);
         NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         //mNotifyMgr.cancel(Notifications.exportAlertNotificationId); // this appears to confuse android wear version 2.0.0.141773014.gms even though it shouldn't - can we survive without this?
         mNotifyMgr.notify(Notifications.exportAlertNotificationId, builder.build());
 
+        /* //KS not used on watch
         if (Home.getPreferencesBooleanDefaultFalse("broadcast_to_pebble") && (Home.getPreferencesBooleanDefaultFalse("pebble_vibe_alerts"))) {
             if (JoH.ratelimit("pebble_vibe_start", 59)) {
                 ctx.startService(new Intent(ctx, PebbleWatchSync.class));
             }
-        }
+        }*/
     }
 
     private void notificationDismiss(Context ctx) {

@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip;
 
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
+import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;//KS
 import com.eveningoutpost.dexdrip.Models.Calibration;//KS
 import com.eveningoutpost.dexdrip.Models.JoH;
@@ -54,7 +55,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -89,6 +92,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String WEARABLE_SENSOR_DATA_PATH = "/nightscout_watch_sensor_data";//KS
     private static final String WEARABLE_PREF_DATA_PATH = "/nightscout_watch_pref_data";//KS
     private static final String WEARABLE_ACTIVEBTDEVICE_DATA_PATH = "/nightscout_watch_activebtdevice_data";//KS
+    private static final String WEARABLE_ALERTTYPE_DATA_PATH = "/nightscout_watch_alerttype_data";//KS
+    private static final String WEARABLE_SNOOZE_ALERT = "/xdrip_plus_snooze_payload";
     private static final String DATA_ITEM_RECEIVED_PATH = "/data-item-received";//KS
     private static final String ACTION_RESEND = "com.dexdrip.stephenblack.nightwatch.RESEND_DATA";
     private static final String ACTION_SENDDATA = "com.dexdrip.stephenblack.nightwatch.SEND_DATA";
@@ -124,6 +129,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static boolean bBenchmarkRandom = false;
     private static boolean bBenchmarkDup = false;
     private static boolean bInitPrefs = true;
+    //Restart collector for change in the following received from phone in syncPrefData():
+    private static final Set<String> restartCollectorPrefs = new HashSet<String>(Arrays.asList(
+            new String[] {
+            "dex_collection_method", "share_key", "dex_txid", "use_transmiter_pl_bluetooth",
+            "use_rfduino_bluetooth", "automatically_turn_bluetooth_on", "bluetooth_excessive_wakelocks", "close_gatt_on_ble_disconnect", "bluetooth_frequent_reset", "bluetooth_watchdog"}
+    ));
 
     public class DataRequester extends AsyncTask<Void, Void, Void> {
         final String path;
@@ -201,12 +212,14 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                 if (bInitPrefs) {
                                     Log.d(TAG, "doInBackground Request Phone's Preferences: WEARABLE_INITPREFS_PATH");
                                     sendMessagePayload(node, "WEARABLE_INITPREFS_PATH", WEARABLE_INITPREFS_PATH, null);
+                                    sendMessagePayload(node, "WEARABLE_INITDB_PATH", WEARABLE_INITDB_PATH, null);
                                     bInitPrefs = false;
                                 }
                                 switch (path) {
                                     case WEARABLE_INITDB_PATH:
                                     case WEARABLE_REPLYMSG_PATH:
                                     case WEARABLE_FIELD_SENDPATH:
+                                    case WEARABLE_SNOOZE_ALERT:
                                         sendMessagePayload(node, path, path, payload);
                                         break;
                                     default:
@@ -522,6 +535,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         dataMap.putString("dex_txid", dex_txid);
         dataMap.putInt("bridge_battery", mPrefs.getInt("bridge_battery", -1));//Used in DexCollectionService
         dataMap.putInt("nfc_sensor_age", mPrefs.getInt("nfc_sensor_age", -1));//Used in DexCollectionService for LimiTTer
+        dataMap.putBoolean("bg_notifications_watch", mPrefs.getBoolean("bg_notifications", false));
+        dataMap.putBoolean("persistent_high_alert_enabled_watch", mPrefs.getBoolean("persistent_high_alert_enabled", false));
         sendData(WEARABLE_PREF_DATA_PATH, dataMap.toByteArray());
 
         SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(this).edit();
@@ -638,18 +653,29 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
     final private SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {//KS
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-            Log.d(TAG, "OnSharedPreferenceChangeListener entered");
+            Log.d(TAG, "OnSharedPreferenceChangeListener entered key=" + ((key != null && !key.isEmpty()) ? key : ""));
             if(key.compareTo("enable_wearG5") == 0 || key.compareTo("force_wearG5") == 0 || key.compareTo("node_wearG5") == 0) {
-                Log.i(TAG, "OnSharedPreferenceChangeListener enable_wearG5 || force_wearG5 changed!");
+                Log.i(TAG, "OnSharedPreferenceChangeListener sendPrefSettings and processConnect for key=" + key);
                 sendPrefSettings();
                 processConnect();
             }
-            else if(key.compareTo("bridge_battery") == 0 || key.compareTo("nfc_sensor_age") == 0){
+            else if(key.compareTo("bridge_battery") == 0 || key.compareTo("nfc_sensor_age") == 0 ||
+                    key.compareTo("bg_notifications") == 0 || key.compareTo("persistent_high_alert_enabled") == 0){
+                Log.d(TAG, "OnSharedPreferenceChangeListener sendPrefSettings for key=" + key);
                 sendPrefSettings();
             }
-            else //if(key.compareTo("dex_txid") == 0 || key.compareTo(DexCollectionType.DEX_COLLECTION_METHOD) == 0){
-                processConnect();//Restart for change in Collection Method, Share Key or Transmitter ID received from phone in syncPrefData()
-            //}
+            else {//if(key.compareTo("dex_txid") == 0 || key.compareTo(DexCollectionType.DEX_COLLECTION_METHOD) == 0){
+                //Restart collector for change in the following received from phone in syncPrefData():
+                //DexCollectionType.DEX_COLLECTION_METHOD - dex_collection_method, share_key or dex_txid
+                //Advanced BT Settings:
+                //use_transmiter_pl_bluetooth
+                //use_rfduino_bluetooth, ...
+                if (restartCollectorPrefs.contains(key)) {
+                    Log.d(TAG, "OnSharedPreferenceChangeListener restartCollectorPrefs requires collector restart key=" + key);
+                    stopBtService();
+                }
+                processConnect();
+            }
         }
     };
 
@@ -706,6 +732,21 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     intent.putExtra(path, dataMap.toBundle());
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     getApplicationContext().startActivity(intent);
+                } else if (path.equals(WEARABLE_SNOOZE_ALERT)) {
+                    Log.d(TAG, "onDataChanged WEARABLE_SNOOZE_ALERT=" + path);
+                    dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
+                    if (dataMap != null) {
+                        msg = dataMap.getString("repeatTime", "");
+                        int snooze;
+                        try {
+                            snooze = Integer.parseInt(msg);
+                        } catch (NumberFormatException e) {
+                            snooze = 30;
+                        }
+                        Log.d(TAG, "Received wearable: snooze payload: " + snooze);
+                        AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), snooze, true);
+                        sendLocalToast(getResources().getString(R.string.alert_snoozed_by_phone));
+                    }
                 } else if (path.equals(SYNC_DB_PATH)) {//KS
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH=" + path);
                     final PowerManager.WakeLock wl = JoH.getWakeLock(getApplicationContext(), "watchlistener-SYNC_DB_PATH",120000);
@@ -759,6 +800,10 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
                     syncActiveBtDeviceData(dataMap, getApplicationContext());
+                } else if (path.equals(WEARABLE_ALERTTYPE_DATA_PATH)) {//KS
+                    dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
+                    Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
+                    syncAlertTypeData(dataMap, getApplicationContext());
                 } else if (path.equals(WEARABLE_CALIBRATION_DATA_PATH)) {//KS
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
@@ -848,6 +893,15 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
         //sendReplyMsg (msg, last_timestamp, path, false);
         sendData(WEARABLE_REPLYMSG_PATH, dataMap.toByteArray());
+    }
+
+    private void sendLocalToast(String msg) {
+        DataMap dataMap = new DataMap();
+        dataMap.putString("msg", msg);
+        Intent messageIntent = new Intent();
+        messageIntent.setAction(Intent.ACTION_SEND);
+        messageIntent.putExtra("msg", dataMap.toBundle());
+        LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
     }
 
     private synchronized void sendReplyMsg (String msg, long last_timestamp, String path, boolean showToast) {
@@ -955,7 +1009,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             if (!dexCollector.equals(mPrefs.getString(DexCollectionType.DEX_COLLECTION_METHOD, "xxxxxxxx"))) {
                 Log.d(TAG, "syncPrefData dexCollector:" + dexCollector + " collectionType.name=" + collectionType.name());
                 DexCollectionType.setDexCollectionType(collectionType);
-                stopBtService();
+                stopBtService();//Change requires collector restart
             }
 
             is_using_bt = DexCollectionType.hasBluetooth();//(collectionType == DexCollectionType.DexcomG5);
@@ -997,15 +1051,15 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             if (!dex_txid.equals(mPrefs.getString("dex_txid", "ABCDEF"))) {
                 Log.d(TAG, "syncPrefData dex_txid:" + dex_txid);
                 prefs.putString("dex_txid", dex_txid);
-                stopBtService();
+                stopBtService();//Change requires collector restart
             }
 
             String share_key = dataMap.getString("share_key", "SM00000000");
             Log.d(TAG, "syncPrefData dataMap share_key=" + share_key);
-            if (!share_key.equals(mPrefs.getString("share_key", "SM00000000"))) {
+            if (!share_key.equals(mPrefs.getString("share_key", "SM00000000"))) {//change requires collector restart
                 Log.d(TAG, "syncPrefData share_key:" + share_key);
                 prefs.putString("share_key", share_key);
-                stopBtService();
+                stopBtService();//Change requires collector restart
             }
 
             final boolean adjustPast = dataMap.getBoolean("rewrite_history", true);
@@ -1028,15 +1082,23 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             prefs.putString("extra_tags_for_logging", extra_tags_for_logging);
 
             //Advanced Bluetooth Settings used by G4+xBridge DexCollectionService - temporarily just use the Phone's settings
+            //Therefore, change requires collector restart
             prefs.putBoolean("use_transmiter_pl_bluetooth", dataMap.getBoolean("use_transmiter_pl_bluetooth", false));
+            prefs.putBoolean("use_rfduino_bluetooth", dataMap.getBoolean("use_rfduino_bluetooth", false));
             prefs.putBoolean("automatically_turn_bluetooth_on", dataMap.getBoolean("automatically_turn_bluetooth_on", true));
             prefs.putBoolean("bluetooth_excessive_wakelocks", dataMap.getBoolean("bluetooth_excessive_wakelocks", true));
             prefs.putBoolean("close_gatt_on_ble_disconnect", dataMap.getBoolean("close_gatt_on_ble_disconnect", true));
             prefs.putBoolean("bluetooth_frequent_reset", dataMap.getBoolean("bluetooth_frequent_reset", false));
             prefs.putBoolean("bluetooth_watchdog", dataMap.getBoolean("bluetooth_watchdog", false));
+
             prefs.putBoolean("sync_wear_logs", dataMap.getBoolean("sync_wear_logs", false));
 
             prefs.putBoolean("engineering_mode", dataMap.getBoolean("engineering_mode", false));
+
+            prefs.putInt("nfc_sensor_age", dataMap.getInt("nfc_sensor_age", -1));
+            prefs.putInt("bridge_battery", dataMap.getInt("bridge_battery", -1));
+            prefs.putBoolean("bridge_battery_alerts", dataMap.getBoolean("bridge_battery_alerts", false));
+            prefs.putString("bridge_battery_alert_level", dataMap.getString("bridge_battery_alert_level", "30"));
 
             if ((DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomG5) ||
                     DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomShare)) && enable_wearG5) {///TODO confirm wear battery should be used as bridge
@@ -1045,9 +1107,13 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 prefs.putInt("bridge_battery", wearBatteryLevel);//TODO confirm wear battery should be used as bridge
             }
 
-            prefs.putInt("bridge_battery", dataMap.getInt("bridge_battery", -1));
-            prefs.putBoolean("bridge_battery_alerts", dataMap.getBoolean("bridge_battery_alerts", false));
-            prefs.putString("bridge_battery_alert_level", dataMap.getString("bridge_battery_alert_level", "30"));
+            //Alerts:
+            prefs.putString("persistent_high_repeat_mins", dataMap.getString("persistent_high_repeat_mins", "20"));
+            prefs.putString("persistent_high_threshold_mins", dataMap.getString("persistent_high_threshold_mins", "60"));
+            prefs.putBoolean("falling_alert", dataMap.getBoolean("falling_alert", false));
+            prefs.putString("falling_bg_val", dataMap.getString("falling_bg_val", "2"));
+            prefs.putBoolean("rising_alert", dataMap.getBoolean("rising_alert", false));
+            prefs.putString("rising_bg_val", dataMap.getString("rising_bg_val", "2"));
 
             prefs.commit();
 
@@ -1148,6 +1214,63 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         btDevice.address = address;
                         btDevice.connected = connected;
                         btDevice.save();
+                    }
+                }
+            }
+        }
+    }
+
+    private void syncAlertTypeData(DataMap dataMap, Context context) {//KS
+        Log.d(TAG, "syncAlertTypeData");
+
+        ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
+        if (entries != null) {
+
+            Gson gson = new GsonBuilder()
+                    .excludeFieldsWithoutExposeAnnotation()
+                    .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                    .serializeSpecialFloatingPointValues()
+                    .create();
+
+            Log.d(TAG, "syncAlertTypeData add AlertType Table entries count=" + entries.size());
+            Sensor.InitDb(context);//ensure database has already been initialized
+            AlertType.remove_all();
+            for (DataMap entry : entries) {
+                if (entry != null) {
+                    String alertrecord = entry.getString("alert");
+                    if (alertrecord != null) {
+                        AlertType data = gson.fromJson(alertrecord, AlertType.class);
+                        AlertType exists = AlertType.get_alert(data.uuid);
+                        if (exists != null) {
+                            Log.d(TAG, "syncAlertTypeData AlertType exists for uuid=" + data.uuid + " name=" + data.name);
+                            exists.name = data.name;
+                            exists.active = data.active;
+                            exists.volume = data.volume;
+                            exists.vibrate = data.vibrate;
+                            exists.light = data.light;
+                            exists.override_silent_mode = data.override_silent_mode;
+                            exists.predictive = data.predictive;
+                            exists.time_until_threshold_crossed = data.time_until_threshold_crossed;
+                            exists.above= data.above;
+                            exists.threshold = data.threshold;
+                            exists.all_day = data.all_day;
+                            exists.start_time_minutes = data.start_time_minutes;
+                            exists.end_time_minutes = data.end_time_minutes;
+                            exists.minutes_between = data.minutes_between;
+                            exists.default_snooze = data.default_snooze;
+                            exists.text = data.text;
+                            exists.mp3_file = data.mp3_file;
+                            exists.save();
+                        }
+                        else {
+                            data.save();
+                            Log.d(TAG, "syncAlertTypeData AlertType does not exist for uuid=" + data.uuid);
+                        }
+                        exists = AlertType.get_alert(data.uuid);
+                        if (exists != null)
+                            Log.d(TAG, "syncAlertTypeData AlertType GSON saved BG: " + exists.toS());
+                        else
+                            Log.d(TAG, "syncAlertTypeData AlertType GSON NOT saved");
                     }
                 }
             }

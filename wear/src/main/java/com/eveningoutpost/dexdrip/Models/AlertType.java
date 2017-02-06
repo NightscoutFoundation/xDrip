@@ -13,8 +13,8 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
-import com.eveningoutpost.dexdrip.Services.MissedReadingService;
+//KS import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
+//KS import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 
@@ -142,10 +142,15 @@ public class AlertType extends Model {
 
     public static AlertType get_alert(String uuid) {
 
-        return new Select()
-        .from(AlertType.class)
-        .where("uuid = ? ", uuid)
-        .executeSingle();
+        try {
+            return new Select()
+            .from(AlertType.class)
+            .where("uuid = ? ", uuid)
+            .executeSingle();
+        }
+        catch (Exception e) {
+            return null;
+        }
     }
 
     /*
@@ -191,7 +196,7 @@ public class AlertType extends Model {
     private static AlertType get_highest_active_alert_helper(double bg, SharedPreferences prefs) {
         // Chcek the low alerts
 
-        final double offset = ActivityRecognizedService.raise_limit_due_to_vehicle_mode() ? ActivityRecognizedService.getVehicle_mode_adjust_mgdl() : 0;
+        final double offset = 0;//KS TODO ActivityRecognizedService.raise_limit_due_to_vehicle_mode() ? ActivityRecognizedService.getVehicle_mode_adjust_mgdl() : 0;
 
         if(prefs.getLong("low_alerts_disabled_until", 0) > new Date().getTime()){
             Log.i("NOTIFICATIONS", "get_highest_active_alert_helper: Low alerts are currently disabled!! Skipping low alerts");
@@ -365,15 +370,6 @@ public class AlertType extends Model {
         return name + " " + above + " " + threshold + " "+ all_day + " " +time +" " + minutes_between + " uuid" + uuid;
     }
 
-    public String toS() {
-        Gson gson = new GsonBuilder()
-                .excludeFieldsWithoutExposeAnnotation()
-                .registerTypeAdapter(Date.class, new DateTypeAdapter())
-                .serializeSpecialFloatingPointValues()
-                .create();
-        return gson.toJson(this);
-    }
-
     public static void print_all() {
         List<AlertType> Alerts  = new Select()
             .from(AlertType.class)
@@ -385,13 +381,13 @@ public class AlertType extends Model {
         }
     }
 
-    public static List<AlertType> getAllActive() {
-        List<AlertType> alerts  = new Select()
-                .from(AlertType.class)
-                .where("active = ?", true)
-                .execute();
-
-        return alerts;
+    public String toS() {
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                .serializeSpecialFloatingPointValues()
+                .create();
+        return gson.toJson(this);
     }
 
     public static List<AlertType> getAll(boolean above) {
@@ -406,6 +402,15 @@ public class AlertType extends Model {
             .where("above = ?", above)
             .orderBy(order)
             .execute();
+
+        return alerts;
+    }
+
+    public static List<AlertType> getAllActive() {
+        List<AlertType> alerts  = new Select()
+                .from(AlertType.class)
+                .where("active = ?", true)
+                .execute();
 
         return alerts;
     }

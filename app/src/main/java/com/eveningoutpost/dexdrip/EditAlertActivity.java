@@ -45,6 +45,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -52,6 +53,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
 public class EditAlertActivity extends ActivityWithMenu {
     //public static String menu_name = "Edit Alert";
@@ -543,6 +546,8 @@ public class EditAlertActivity extends ActivityWithMenu {
                 }  else {
                     AlertType.add_alert(null, alertText.getText().toString(), above, threshold, allDay, alertReraise, mp3_file, timeStart, timeEnd, overrideSilentMode, defaultSnooze, vibrate, !disabled);
                 }
+
+                startWatchUpdaterService(mContext, WatchUpdaterService.ACTION_SYNC_ALERTTYPE, TAG);
                 Intent returnIntent = new Intent();
                 setResult(RESULT_OK,returnIntent);
                 finish();
@@ -558,6 +563,7 @@ public class EditAlertActivity extends ActivityWithMenu {
                     Log.wtf(TAG, "Error remove pressed, while we were adding an alert");
                 }  else {
                     AlertType.remove_alert(uuid);
+                    startWatchUpdaterService(mContext, WatchUpdaterService.ACTION_SYNC_ALERTTYPE, TAG);
                 }
                 Intent returnIntent = new Intent();
                 setResult(RESULT_OK,returnIntent);

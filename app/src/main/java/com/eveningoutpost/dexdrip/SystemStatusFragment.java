@@ -52,6 +52,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+
 
 public class SystemStatusFragment extends Fragment {
     private static final int SMALL_SCREEN_WIDTH = 300;
@@ -116,11 +118,9 @@ public class SystemStatusFragment extends Fragment {
     }
 
     private void requestWearCollectorStatus() {
-        prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
-        Context context = safeGetContext();
         final PowerManager.WakeLock wl = JoH.getWakeLock("ACTION_STATUS_COLLECTOR",120000);
-        if (prefs.getBoolean("wear_sync", false) && prefs.getBoolean("enable_wearG5", false)) {
-            context.startService(new Intent(context, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_STATUS_COLLECTOR));
+        if (Home.get_enable_wear()) {
+            startWatchUpdaterService(safeGetContext(), WatchUpdaterService.ACTION_STATUS_COLLECTOR, TAG);
         }
         JoH.releaseWakeLock(wl);
     }
@@ -445,10 +445,7 @@ public class SystemStatusFragment extends Fragment {
                 v.setEnabled(false);
                 JoH.static_toast_short("Restarting Collector!");
                 v.setAlpha(0.2f);
-                prefs = PreferenceManager.getDefaultSharedPreferences(safeGetContext());
-                if (prefs.getBoolean("wear_sync", false)) {
-                    safeGetContext().startService(new Intent(safeGetContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_START_COLLECTOR));
-                }
+                startWatchUpdaterService(safeGetContext(), WatchUpdaterService.ACTION_START_COLLECTOR, TAG);
                 CollectionServiceStarter.restartCollectionService(safeGetContext());
                 set_current_values();
                 JoH.runOnUiThreadDelayed(new Runnable() {

@@ -39,6 +39,7 @@ import com.eveningoutpost.dexdrip.utils.AndroidBarcode;
 import com.eveningoutpost.dexdrip.utils.ListActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.LocationHelper;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -316,11 +317,7 @@ public class BluetoothScan extends ListActivityWithMenu {
                 btDevice.save();
             }
 
-            final boolean wear_integration = Home.getPreferencesBoolean("wear_sync", false);//KS
-            if (wear_integration) {
-                android.util.Log.d("onListItemClick", "start WatchUpdaterService with ACTION_SYNC_ACTIVEBTDEVICE");
-                startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_ACTIVEBTDEVICE));
-            }
+            startWatchUpdaterService(this, WatchUpdaterService.ACTION_SYNC_ACTIVEBTDEVICE, TAG);
         }
 
         // automatically set or unset the option for "Transmiter" device

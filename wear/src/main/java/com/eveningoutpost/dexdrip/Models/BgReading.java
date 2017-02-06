@@ -21,7 +21,7 @@ import com.eveningoutpost.dexdrip.ShareModels.ShareUploadableBg;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
-//KS import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 //KS import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.messages.BgReadingMessage;
 import com.eveningoutpost.dexdrip.messages.BgReadingMultiMessage;
@@ -297,7 +297,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             bgReading.save();
             bgReading.find_new_curve();
             bgReading.find_new_raw_curve();
-            //KS context.startService(new Intent(context, Notifications.class));
+            context.startService(new Intent(context, Notifications.class));
             BgSendQueue.handleNewBgReading(bgReading, "create", context);
         }
     }
@@ -485,7 +485,8 @@ public class BgReading extends Model implements ShareUploadableBg {
             // used when we are not fast inserting data
             if (!quick) {
                 bgReading.perform_calculations();
-                //KS context.startService(new Intent(context, Notifications.class));
+                Log.d(TAG, "Start Notifications Service for BG: " + bgReading.calculated_value);
+                context.startService(new Intent(context, Notifications.class));
             }
             BgSendQueue.handleNewBgReading(bgReading, "create", context, Home.get_follower(), quick);
         }
@@ -903,7 +904,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     FixCalibration(bgr);
                     bgr.save();
                     if (do_notification) {
-                        //KS xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
+                        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
                         BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), true); // pebble and widget
                     }
                 } else {
@@ -944,7 +945,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     bgr.save();
                     bgr.find_slope();
                     if (do_notification) {
-                        //KS xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
+                        xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
                         BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), true); // pebble and widget
                     }
                 } else {
@@ -1335,7 +1336,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                                     return false;
                                 }
                                 Log.i(TAG, "Persistent high for: " + high_for_mins + " mins -> alerting");
-                                //KS Notifications.persistentHighAlert(xdrip.getAppContext(), true, xdrip.getAppContext().getString(R.string.persistent_high_for_greater_than) + (int) high_for_mins + xdrip.getAppContext().getString(R.string.space_mins));
+                                Notifications.persistentHighAlert(xdrip.getAppContext(), true, xdrip.getAppContext().getString(R.string.persistent_high_for_greater_than) + (int) high_for_mins + xdrip.getAppContext().getString(R.string.space_mins));
 
                             } else {
                                 Log.d(TAG, "Persistent high below time threshold at: " + high_for_mins);
@@ -1348,7 +1349,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     {
                         Log.i(TAG,"Cancelling previous persistent high as we are no longer high");
                      Home.setPreferencesLong(PERSISTENT_HIGH_SINCE, 0); // clear it
-                        //KS Notifications.persistentHighAlert(xdrip.getAppContext(), false, ""); // cancel it
+                        Notifications.persistentHighAlert(xdrip.getAppContext(), false, ""); // cancel it
                     }
                 }
             }
@@ -1381,7 +1382,7 @@ public class BgReading extends Model implements ShareUploadableBg {
         Log.d(TAG_ALERT, "checkForRisingAllert will check for rate of " + friseRate);
 
         boolean riseAlert = checkForDropRiseAllert(friseRate, false);
-        //KS Notifications.RisingAlert(context, riseAlert);
+        Notifications.RisingAlert(context, riseAlert);
     }
 
 
@@ -1410,7 +1411,7 @@ public class BgReading extends Model implements ShareUploadableBg {
         Log.i(TAG_ALERT, "checkForDropAllert will check for rate of " + fdropRate);
 
         boolean dropAlert = checkForDropRiseAllert(fdropRate, true);
-        //KS Notifications.DropAlert(context, dropAlert);
+        Notifications.DropAlert(context, dropAlert);
     }
 
     // true say, alert is on.
@@ -1457,14 +1458,14 @@ public class BgReading extends Model implements ShareUploadableBg {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if(prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()){
             Log.d("NOTIFICATIONS", "getAndRaiseUnclearReading Notifications are currently disabled!!");
-            //KS UserNotification.DeleteNotificationByType("bg_unclear_readings_alert");
+            UserNotification.DeleteNotificationByType("bg_unclear_readings_alert");
             return false;
         }
 
         Boolean bg_unclear_readings_alerts = prefs.getBoolean("bg_unclear_readings_alerts", false);
         if (!bg_unclear_readings_alerts || (!DexCollectionType.hasFiltered())) {
             Log.d(TAG_ALERT, "getUnclearReading returned false since feature is disabled");
-            //KS UserNotification.DeleteNotificationByType("bg_unclear_readings_alert");
+            UserNotification.DeleteNotificationByType("bg_unclear_readings_alert");
             return false;
         }
         Long UnclearTimeSetting = Long.parseLong(prefs.getString("bg_unclear_readings_minutes", "90")) * 60000;
@@ -1473,11 +1474,11 @@ public class BgReading extends Model implements ShareUploadableBg {
 
         if (UnclearTime >= UnclearTimeSetting ) {
             Log.d("NOTIFICATIONS", "Readings have been unclear for too long!!");
-            //KS Notifications.bgUnclearAlert(context);
+            Notifications.bgUnclearAlert(context);
             return true;
         }
 
-        //KS UserNotification.DeleteNotificationByType("bg_unclear_readings_alert");
+        UserNotification.DeleteNotificationByType("bg_unclear_readings_alert");
 
         if (UnclearTime > 0 ) {
             Log.d(TAG_ALERT, "We are in an clear state, but not for too long. Alerts are disabled");

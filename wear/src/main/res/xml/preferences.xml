@@ -59,6 +59,18 @@
             android:summary="Force screen always on prior to BT scanning"
             android:title="Force Screen Always-on"/>
         </PreferenceScreen>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="force_wearG5"
+            android:key="bg_notifications"
+            android:summary="@string/pref_summary_bg_notifications"
+            android:title="@string/pref_bg_notifications"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="bg_notifications"
+            android:key="persistent_high_alert_enabled"
+            android:summary="@string/pref_summary_persistent_high_alert_enabled"
+            android:title="@string/pref_persistent_high_alert_enabled"/>
     </PreferenceCategory>
 
     <PreferenceCategory

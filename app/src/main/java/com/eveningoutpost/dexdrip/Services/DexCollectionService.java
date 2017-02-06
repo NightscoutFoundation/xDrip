@@ -106,8 +106,6 @@ public class DexCollectionService extends Service {
     private static int last_battery_level_watch = -1;
     private static long retry_time_watch = 0;
     private static long failover_time_watch = 0;
-    private static boolean static_use_transmiter_pl_bluetooth_watch = false;
-    private static boolean static_use_rfduino_bluetooth_watch = false;
     private static String static_last_hexdump_watch;
     private static String static_last_sent_hexdump_watch;
 
@@ -704,8 +702,6 @@ public class DexCollectionService extends Service {
         last_transmitter_DataWatch = new TransmitterData();
         last_transmitter_DataWatch.timestamp = dataMap.getLong("timestamp", 0);
         mStaticStateWatch = dataMap.getInt("mStaticState", 0);
-        static_use_transmiter_pl_bluetooth_watch = dataMap.getBoolean("static_use_transmiter_pl_bluetooth", false);
-        static_use_rfduino_bluetooth_watch = dataMap.getBoolean("static_use_rfduino_bluetooth", false);
         last_battery_level_watch = dataMap.getInt("last_battery_level", -1);
         retry_time_watch = dataMap.getLong("retry_time", 0);
         failover_time_watch = dataMap.getLong("failover_time", 0);
@@ -716,10 +712,8 @@ public class DexCollectionService extends Service {
     public static DataMap getWatchStatus() {
         DataMap dataMap = new DataMap();
         dataMap.putString("lastState", lastState);
-        dataMap.putLong("timestamp", last_transmitter_Data.timestamp);
+        if (last_transmitter_Data != null) dataMap.putLong("timestamp", last_transmitter_Data.timestamp);
         dataMap.putInt("mStaticState", mStaticState);
-        dataMap.putBoolean("static_use_transmiter_pl_bluetooth", static_use_transmiter_pl_bluetooth);
-        dataMap.putBoolean("static_use_rfduino_bluetooth", static_use_rfduino_bluetooth);
         dataMap.putInt("last_battery_level", last_battery_level);
         dataMap.putLong("retry_time", retry_time);
         dataMap.putLong("failover_time", failover_time);
@@ -768,15 +762,6 @@ public class DexCollectionService extends Service {
         if (Home.get_forced_wear()) {
             l.add(new StatusItem("Watch Service State", lastStateWatch));
             l.add(new StatusItem("Bridge Device", JoH.ucFirst(getStateStr(mStaticStateWatch))));
-
-
-          /*  if (static_use_transmiter_pl_bluetooth_watch != static_use_transmiter_pl_bluetooth) {
-                l.add(new StatusItem("Transmiter PL", (static_use_transmiter_pl_bluetooth_watch ? "Set on Watch" : "Not set on Watch") + " but " + (static_use_transmiter_pl_bluetooth ? "Set on Phone" : "Not set on Phone") + "!"));
-            }
-
-            if (static_use_rfduino_bluetooth_watch) {
-                l.add(new StatusItem("Rfduino",(static_use_rfduino_bluetooth_watch ? "Set on Watch" : "Not set on Watch") + " but " + (static_use_rfduino_bluetooth ? "Set on Phone" : "Not set on Phone") + "!"));
-            }*/
 
             // TODO add LimiTTer info
 
