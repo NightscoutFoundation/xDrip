@@ -56,6 +56,7 @@ Upon initial enablement of standalone wear, by selecting the the Enable Wear pre
 
 ###Syncing Phone and Wear Preferences
 Note, xDrip+ and Wear will sync their co-existing preferences.  Preference syncing takes the following precedence on connection:
+
   1. xDrip+ app startup.  xDrip+ will send its preferences to the watch and the watch will update its values to the phone.
   2. On re-connect, the wear app will send its preferences to the phone and phone will update its values to the watch.
 
@@ -64,6 +65,7 @@ For example, if the user changes the Force Wear preference on the watch, it will
 ###Syncing BGs and Wear Database
 * Sync DB - The watch data is saved in the watch database.  The watch will attempt to sync with the phone upon connection until all delta data have been synced. So, for example, if you have 8 hours of overnight data, the watch will attempt to send those upon re-connection with the phone.
 * Reset Wear DB - The watch data exists on the phone until you:
+
   1. **Reset Wear DB** on the phone via the xDrip+ upper right menu.  This removes data already synced with the phone.
   2. **Reset Wear DB** is auto-executed on a daily basis at 4 am.
   3. The app is uninstalled.
