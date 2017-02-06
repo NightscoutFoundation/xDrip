@@ -56,17 +56,17 @@ Upon initial enablement of standalone wear, by selecting the the Enable Wear pre
 
 ###Syncing Phone and Wear Preferences
 Note, xDrip+ and Wear will sync their co-existing preferences.  Preference syncing takes the following precedence on connection:
-1. xDrip+ app startup.  xDrip+ will send its preferences to the watch and the watch will update its values to the phone.
-2. On re-connect, the wear app will send its preferences to the phone and phone will update its values to the watch.
+  1. xDrip+ app startup.  xDrip+ will send its preferences to the watch and the watch will update its values to the phone.
+  2. On re-connect, the wear app will send its preferences to the phone and phone will update its values to the watch.
 
 For example, if the user changes the Force Wear preference on the watch, it will immediately be synced with the phone, or synced upon connection.
 
 ###Syncing BGs and Wear Database
 * Sync DB - The watch data is saved in the watch database.  The watch will attempt to sync with the phone upon connection until all delta data have been synced. So, for example, if you have 8 hours of overnight data, the watch will attempt to send those upon re-connection with the phone.
 * Reset Wear DB - The watch data exists on the phone until you:
-  1) **Reset Wear DB** on the phone via the xDrip+ upper right menu.  This removes data already synced with the phone.
-  2) **Reset Wear DB** is auto-executed on a daily basis at 4 am.
-  3) The app is uninstalled.
+  1. **Reset Wear DB** on the phone via the xDrip+ upper right menu.  This removes data already synced with the phone.
+  2. **Reset Wear DB** is auto-executed on a daily basis at 4 am.
+  3. The app is uninstalled.
 * UserError Table - Similar to the xDrip+ phone app, UserError log messages are saved in the watch UserError table.  To access the watch log entries on the phone, enable the **Sync Wear Logs** preference shown in the above image.  The log entries will be prefixed with the **Wear Log Prefix**, which defaults to **wear**, but is user-configurable.  This allows users to identify which device generated the log entry.  The log entries can be viewed using the follwoing options:
   - Users can view log messages on the phone via the xDrip+ upper right menu item, **View Events Log**.
   - As with the xDrip+ phone app, specific log entries can be enabled by entering the extra log tag and severity level preference via the xDrip+ phone app settings, Less Common Settings (LCS) - Extra Logging Settings - **Extra tags for logging**.
