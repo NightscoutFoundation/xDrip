@@ -113,11 +113,11 @@ The watch XDrip Prefs app is used to set the xDrip+ wear app preferences.  In ad
 
 The following image shows xDrip+ app alerts under **Alarms and Alerts** which are supported on the watch.
 
-<img align="middle" src="./images/prefs-alerts-phone.png" title="xDrip+ Wear Integration Preferences">
+<img align="middle" src="./images/prefs-alerts-phone.png" title="xDrip+ Wear Alert Preferences on Phone">
 
 The following image show example alerts on the watch.  Users will continue to receive those phone alerts which are not supported on the watch.  Phone and watch alerts can be distinguished by their **Open** dialog.  The phone alert will display **Open on phone**.  Whereas the watch alert will display **Open**.  Upon tapping Open, the Snooze dialog will be displayed.  The watch Snooze performs the same functionality that the phone Snooze performs.  Tapping the Snooze and number from the NumberPicker will snooze the alert on both the phone and the watch.  Whereas, the Snooze buttons will only snooze the alarms on the active device while watch notifications are enabled.
 
-<img align="middle" src="./images/alerts.png" title="xDrip+ Wear Integration Preferences">
+<img align="middle" src="./images/alerts.png" title="xDrip+ Wear Alerts">
 
 ####XDrip Watchface Settings
   - Show Status - Show Loop Status on the XDrip and XDrip(Large) watchfaces.  This will display the HAPP status message containing Basal%, IOB, COB.
