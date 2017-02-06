@@ -1,35 +1,30 @@
 package com.eveningoutpost.dexdrip.Models;
 
-import android.app.AlarmManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 
-import com.activeandroid.util.SQLiteUtils;
-import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
-//KS import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
-//KS import com.eveningoutpost.dexdrip.Services.MissedReadingService;
+import com.activeandroid.util.SQLiteUtils;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
+import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.Expose;
-import com.google.gson.internal.bind.DateTypeAdapter;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+//KS import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
+//KS import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 
 /**
  * Created by Emma Black on 1/14/15.
@@ -120,12 +115,27 @@ public class AlertType extends Model {
     private static void fixUpTable() {
         if (patched) return;
         String[] patchup = {
+                "CREATE TABLE AlertType (_id INTEGER PRIMARY KEY AUTOINCREMENT);",
+                "ALTER TABLE AlertType ADD COLUMN above INTEGER;",
+                "ALTER TABLE AlertType ADD COLUMN active INTEGER;",
+                "ALTER TABLE AlertType ADD COLUMN all_day INTEGER;",
+                "ALTER TABLE AlertType ADD COLUMN default_snooze INTEGER;",
+                "ALTER TABLE AlertType ADD COLUMN end_time_minutes INTEGER;",
+                "ALTER TABLE AlertType ADD COLUMN minutes_between INTEGER;",
+                "ALTER TABLE AlertType ADD COLUMN override_silent_mode INTEGER;",
+                "ALTER TABLE AlertType ADD COLUMN start_time_minutes INTEGER;",
+                "ALTER TABLE AlertType ADD COLUMN vibrate INTEGER;",
+                "ALTER TABLE AlertType ADD COLUMN mp3_file TEXT;",
+                "ALTER TABLE AlertType ADD COLUMN threshold REAL;",
+                "ALTER TABLE AlertType ADD COLUMN uuid TEXT;",
+                "CREATE INDEX index_AlertType_uuid on AlertType(uuid);",
                 "ALTER TABLE AlertType ADD COLUMN volume INTEGER;",
                 "ALTER TABLE AlertType ADD COLUMN light INTEGER;",
                 "ALTER TABLE AlertType ADD COLUMN predictive INTEGER;",
                 "ALTER TABLE AlertType ADD COLUMN text TEXT;",
                 "ALTER TABLE AlertType ADD COLUMN time_until_threshold_crossed REAL;"
-              };
+        };
+
 
         for (String patch : patchup) {
             try {
@@ -276,6 +286,7 @@ public class AlertType extends Model {
     }
 
     public static void remove_all() {
+        fixUpTable();
         List<AlertType> Alerts  = new Select()
         .from(AlertType.class)
         .execute();
