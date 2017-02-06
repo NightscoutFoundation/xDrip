@@ -296,7 +296,7 @@ public class AlertPlayer {
             setDataSourceSucceeded = setDataSource(ctx, mediaPlayer, Uri.parse(FileName));
         }
         if (setDataSourceSucceeded == false) {
-            setDataSourceSucceeded = setDataSource(ctx, mediaPlayer, R.raw.default_alert);
+            //KS TODO setDataSourceSucceeded = setDataSource(ctx, mediaPlayer, R.raw.default_alert);
         }
         if(setDataSourceSucceeded == false) {
             Log.e(TAG, "setDataSource failed");
@@ -403,6 +403,28 @@ public class AlertPlayer {
     }
 
     private void Vibrate(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, int timeFromStartPlaying) {
+        //KS Watch currently only supports Vibration, no audio; Use VibrateAudio to support audio
+        String title = bgValue + " " + alert.name;
+        String content = "BG LEVEL ALERT: " + bgValue + "  (@" + JoH.hourMinuteString() + ")";
+        Intent intent = new Intent(ctx, SnoozeActivity.class);
+
+        boolean localOnly = (Home.get_forced_wear() && Home.getPreferencesBooleanDefaultFalse("bg_notifications"));//KS
+        Log.d(TAG, "NotificationCompat.Builder localOnly=" + localOnly);
+        NotificationCompat.Builder  builder = new NotificationCompat.Builder(ctx)//KS Notification
+                .setSmallIcon(R.drawable.ic_launcher)//KS ic_action_communication_invert_colors_on
+                .setContentTitle(title)
+                .setContentText(content)
+                .setContentIntent(notificationIntent(ctx, intent))
+                .setLocalOnly(localOnly)//KS
+                .setDeleteIntent(snoozeIntent(ctx));
+        builder.setVibrate(Notifications.vibratePattern);
+        Log.ueh("Alerting",content);
+        NotificationManager mNotifyMgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+        //mNotifyMgr.cancel(Notifications.exportAlertNotificationId); // this appears to confuse android wear version 2.0.0.141773014.gms even though it shouldn't - can we survive without this?
+        mNotifyMgr.notify(Notifications.exportAlertNotificationId, builder.build());
+    }
+
+    private void VibrateAudio(Context ctx, AlertType alert, String bgValue, Boolean overrideSilent, int timeFromStartPlaying) {
         Log.d(TAG, "Vibrate called timeFromStartPlaying = " + timeFromStartPlaying);
         Log.d("ALARM", "setting vibrate alarm");
         int profile = getAlertProfile(ctx);
