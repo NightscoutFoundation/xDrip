@@ -1,5 +1,7 @@
 # xDrip+ Wear Setup and Troubleshooting Guide
 - [Enable xDrip+ Android Wear Integration](#enable-xdrip-android-wear-integration)
+    - [BT Collector](#bt_collector)
+        - [xDrip+ System Status](#xdrip-system-status)
     - [Initial Wear Enablement Requests Location Permission](#initial-wear-enablement-requests-location-permission)
     - [Syncing Phone and Wear Preferences](#syncing-phone-and-wear-preferences)
     - [Syncing BGs and Wear Database](#syncing-bgs-and-wear-database)
@@ -9,14 +11,14 @@
         - [Watchface Tap Feature](#watchface-tap-feature)
         - [Battery Usage](#battery-usage)
 - [Troubleshooting xDrip+ Wear](#troubleshooting-xdrip-wear)
+    - [Confirm Collector runs on the Phone with Wear Integration](#confirm-collector-runs-on-the-phone-with-wear-integration)
+    - [Confirm Collector runs on the Watch with Wear Integration](#confirm-collector-runs-on-the-watch-with-wear-integration)
     - [Confirm the following in Android Wear app on phone](#confirm-the-following-in-android-wear-app-on-phone)
     - [Confirm Wear Integration preferences are consistent on both phone and watch](#confirm-wear-integration-preferences-are-consistent-on-both-phone-and-watch)
     - [Confirm Collection Method is consistent on both phone and watch](#confirm-collection-method-is-consistent-on-both-phone-and-watch)
     - [Confirm Collector device exists under Watch Settings->Bluetooth -> Devices](#confirm-collector-device-exists-under-watch-settings-bt-devices)
     - [Confirm Calibration Preferences are consistent on both phone and watch](#confirm-calibration-preferences-are-consistent-on-both-phone-and-watch)
     - [Confirm Noise Preferences are consistent on both phone and watch](#confirm-noise-preferences-are-consistent-on-both-phone-and-watch)
-    - [Confirm Collector runs on the Phone with Wear Integration](#confirm-collector-runs-on-the-phone-with-wear-integration)
-    - [Confirm Collector runs on the Watch with Wear Integration](#confirm-collector-runs-on-the-watch-with-wear-integration)
     - [Debugging Android Wear](#debugging-android-wear)
 
 ##Enable xDrip+ Android Wear Integration
@@ -49,8 +51,28 @@ These settings are listed in order of dependency.  Note, the Watch's **XDrip BT 
 
   Force Wear may also provide better BT connectivity over that provided by the smartphone.  As an example, some users find that the SW3 provides better BT connectivity than their Samsung Galaxy Note 4 smartphone.
 
+###BT Collector
+
+  **BT Collector** is a read-only preference on the watch XDrip Prefs.  It corresponds to xDrip+ Setting -> **Hardware Data Source**.
+
+  The following images show the setting of **Hardware Data Source** to **LimiTTer** and its corresponding setting on the watch.
+
+<img align="middle" src="./images/prefs-hardware-data-source-phone.png" title="xDrip+ Hardware Data Source">
+
+This preference indicates which BT Collector the watch will run to communicate with the BG transmitter when watch is in standalone mode.
+
+####Phone xDrip+ System Status
+The xDrip+ System Status screen supports individual status pages for the BT Collector.  This enables users to easily identify which device is running the BT Collector.
+
+The following images show the System Status pages including one for the G5 Collector.
+
+<img align="middle" src="./images/prefs-wear-g5systemstatus.png" title="xDrip+ System Status">
+
+
 ###Initial Wear Enablement Requests Location Permission
-Upon initial enablement of standalone wear, by selecting the the Enable Wear preference on watch or phone, a **Location Permission is Required** dialog box will be displayed.  Android Wear requires **Location Access** to be manually accepted by the user, therefore, the user must accept the Location Permission query in order for standalone mode to work.  Alternatively, the user can enable Location Permission in Watch -> Settings -> Permissions - XDrip Prefs, then enable Location.
+Initial enablement of standalone wear is triggered by selecting the the Enable Wear preference on watch or phone.
+
+This will trigger the **Location Permission is Required** dialog box to be displayed.  Android Wear requires **Location Access** to be manually accepted by the user, therefore, the user must accept the Location Permission query in order for standalone mode to work.  Alternatively, the user can enable Location Permission in Watch -> Settings -> Permissions - XDrip Prefs, then enable Location.
 
 <img align="middle" src="./images/prefs-wear-permissions.png" title="xDrip+ Wear Integration Preferences">
 
@@ -82,105 +104,105 @@ The watch XDrip Prefs app is used to set the xDrip+ wear app preferences.  In ad
 
 ####XDrip BT Settings
 
-  Provides the Wear Integration preferences listed and the following:
   - XDrip G5 Settings
 
     Wear provides G5 BT settings similar to those provided by the xDrip+ app, such as **Scan for G5 Contantly**, under **G5 Debug Settings**.  As with the xDrip+ app, they should only be enabled if the watch has connectivity issues.
 
     For example, many users find that the **Sony Smartwatch 3 (SW3)** does not require any of these settings enabled.
-    But some SW3 users find enabling **Scan for G5** helpful.
+    While other SW3 users find enabling **Scan for G5** helpful.
 
-    Whereas, users of the **Moto 360 2nd Gen** watch report the **Unbond G5/Read** pref is required.
+    Some users of the **Moto 360 2nd Gen** watch report the **Unbond G5/Read** pref is required.
 
-    There are the following two exceptions:
-    - **Force Screen On** - Some watches, such as the **Moto 360 2nd Gen**, fall into deep sleep preventing the BT Collector from retrieving the transmitter data.  Enabling this preference will trigger the watch to wakeup to read the transmitter data, then fall back to sleep.
+    There are the following two, known exceptions:
+    - **Force Screen On** - Some watches, such as the **Moto 360 2nd Gen**, fall into deep sleep preventing the BT Collector from retrieving the transmitter data.
+    Enabling this preference will trigger the watch to wakeup to read the transmitter data, then fall back to sleep.
+    This preference is **experimental** but may be helpful for watches that do not support the **Always-on screen** feature.
 
-        Rather than use this preferences, it is recommended that watches should enable **Screen Always-on** on their watch or Android Wear app, when supported.  The **Moto 360 2nd Gen** is currently the only known watch that does not support Screen Always-on.
+      Rather than use this preferences, it is recommended that users enable **Always-on screen** on their watch or Android Wear app, when supported.  The **Moto 360 2nd Gen** is currently the only known watch that does not support **Always-on screen**.
+
+      The following image shows an example of the **Always-on Screen** setting in Android Wear and on the watch settings.
+
+      <img align="middle" src="./images/androidwear-always-on-screen.png" title="Android Wear Always-on Screen">
+
     - **Auth G5/Read** - This should be enabled if using the latest, Dexcom G5 transmitter firmware (released in November 2016, **firmware 1.0.4.10**, or newer than **firmware 1.0.0.17**).
 
   - Alerts
 
-    Alerts can be enabled on the watch when in standalone mode (i.e., when Force Wear is enabled) by enabling Enable Alerts and High Alerts on the watch.  This will allow alerts to be triggered when disconnected from the watch.  Currently the following xDrip+ app alerts under **Alarms and Alerts** are supported on the watch:
+    Alerts can be enabled on the watch when in standalone mode (i.e., when Force Wear is enabled) by enabling **Enable Alerts** and **High Alerts** on the watch.  This will allow alerts to be triggered when disconnected from the phone.  Currently the following xDrip+ app alerts under **Alarms and Alerts** are supported on the watch:
 
     1. **Alert List** - All alerts.
     2. **Other Alerts** - **Bg falling fast** and **Bg risng fast**.
-    3. **Extra Alerts (xDrip+)** - **Persistent High Alert**.
+    3. **Extra Alerts (xDrip+)**
+       1. **Persistent High Alert** - configured on watch by enabling **High Alerts**.
+       2. **Collector Battery Alerts** - this alert applies to the BT Collector running on phone or watch.
+       If the collector is running on the watch, battery refers to the watch battery for G4 and G5, for other non-G5 BT Collectors, battery refers to those devices communicating with the transmitter.
 
-    Watch alerts have the following restrictions:
+    **Glucose Alerts Settings** are currently not configurable for the watch.  Watch alerts use following defaults:
 
-     1. Currently only support vibrate-only profiles.  Audio is not currently supported.
-     2. Glucose Alerts Settings are currently not configurable.  They use app defaults.
+        1. Vibrate-only Profile
+        2. Smart Snoozing.
+        3. Smart Alerting.
 
 The following image shows xDrip+ app alerts under **Alarms and Alerts** which are supported on the watch.
 
 <img align="middle" src="./images/prefs-alerts-phone.png" title="xDrip+ Wear Alert Preferences on Phone">
 
-The following image show example alerts on the watch.  Users will continue to receive those phone alerts which are not supported on the watch.  Phone and watch alerts can be distinguished by their **Open** dialog.  The phone alert will display **Open on phone**.  Whereas the watch alert will display **Open**.  Upon tapping Open, the Snooze dialog will be displayed.  The watch Snooze performs the same functionality that the phone Snooze performs.  Tapping the Snooze and number from the NumberPicker will snooze the alert on both the phone and the watch.  Whereas, the Snooze buttons will only snooze the alarms on the active device while watch notifications are enabled.
+The following images show watch alert preferences and example alerts.
 
 <img align="middle" src="./images/alerts.png" title="xDrip+ Wear Alerts">
 
+Users will continue to receive those phone alerts which are not supported on the watch.
+
+Phone and watch alerts can be distinguished by their **Open** dialog.  The phone alert will display **Open on phone**.  Whereas the watch alert will display **Open** dialog.  Upon tapping Open, the Snooze dialog will be displayed on the watch.
+
+The watch Snooze performs the same functionality that the phone Snooze performs.  Tapping the Snooze button and number from the NumberPicker, on either device, will snooze the alert on both the phone and the watch.  The snoozed active alert will trigger a toast message on the paired device to alert the user of the snooze.
+
+Note, tapping the other Snooze buttons, such as **Disable All alerts** will only snooze the alarms on the active device.
+
+The following image shows xDrip+ app Battery Alert under **Extra Alerts (xDrip+)** and example alerts on both devices.
+
+<img align="middle" src="./images/prefs-alerts-battery.png" title="xDrip+ Battery Alert">
+
 ####XDrip Watchface Settings
+The following new preferences are supported:
   - Show Status - Show Loop Status on the XDrip and XDrip(Large) watchfaces.  This will display the HAPP status message containing Basal%, IOB, COB.
   - Opaque Card - Show notifications cards with opaque background.  This will allow cards to be read more easily in ambient mode.
   - Small Font - Fontsize of small text in status and delta time fields on the XDrip and XDrip(Large) watchfaces.
   - Show Bridge Battery - Show bridge battery usage on the XDrip and XDrip(Large) watchfaces.  This setting will only be displayed when the BT Collector uses a battery, for example, LimiTTer or Wixel/xBridge.
 
+The following images show watchface preferences.
+
+<img align="middle" src="./images/prefs-watchface-settings.png" title="XDrip Watchface Settings">
+
+The following images show an example of an alert displayed with Opaque Card enabled and disabled in Ambient Mode and Interactive Mode.
+
+<img align="middle" src="./images/prefs-watch-opaque.png" title="XDrip Watchface Opaque Card">
+
 ####Watchface Tap Feature
 Watchface tap feature is now implemented for the following preferences:
 * Chart Timeframe - double tap on the chart in any of the watchfaces will toggle the chart timeframe allowing one to zoom in/out of a frame.
-* Small Font - double tap on the status line or the delta time in the XDrip or XDrip(Large) watchface will toggle the fontsize allowing one to toggle size of the text for ease of viewing.
+* Small Font - double tap on the delta time in the XDrip or XDrip(Large) watchface will toggle the fontsize of the delta and status line text for ease of viewing.
+* Status Line - single tap on the status line in the XDrip or XDrip(Large) watchface will popup a toast message containing the full text for ease of viewing.
+
+The following images show an example of the HAPP message and its integration with xDrip+ watchface.
+
+<img align="middle" src="./images/prefs-wear-happ-status-line.png" title="XDrip Watchface HAPP Status Line">
 
 ####Battery Usage
 The wear app supports the display of two battery usage options:
 * Bridge - displays the wixel or LimiTTer battery usage.  The Show Bridge Battery must be enabled to display the bridge battery usage.
 * Uploader or Wear - will display the battery usage of the device running the collection service.  So, if Enable Wear and Force Wear prefs are enabled, it will display the **watch** battery usage.  If only Enable Wear is enabled, then it will display the battery usage of whichever device is actually running the collection service.  If neither prefs are enabled, it displays the phone's battery usage.  The label, **Uploader** or **Wear** corresponds to the device running the collector.  **Uploader** for phone which is the default, and **Wear** for the watch.  This will allow users to identify which device is running the collection service.
 
+The following images show an example of BT Collector running under each device, with and without Show Status enabled, and Chart Timeframe toggled.
+
+<img align="middle" src="./images/prefs-wear-battery-usage.png" title="XDrip Watchface Battery Usage">
+
+For G4 and G5 BT Collectors, when BT Collector is running on the Phone, the battery usage displays the phone's battery usage as indicated by its label, "Uploader".
+When BT Collector is running on the watch, battery usage shows the watches' battery usage as indicated by its label, "Wear".
+When the BT Collector is connected to a bridge device, the battery usage displays that device's battery usage as indicated by its label, "Bridge".
+
 ##Troubleshooting xDrip Wear
 The BT Collector connects to the transmitter every 5 mins by design. This is how the Collector's BLE works. The following provides some troubleshooting suggestions if readings are not being receiving every 5 minutes.
-
-###Confirm the following in Android Wear app on phone
-- Watch is connected.
-- Watch Settings always-on screen is enabled.  This will prevent watch doze mode from shutting down the BT Collector.
-
-  To verify devices are connected, check the phone Android Wear app.  Android wear (on the watch) displays the **cloud** icon if the devices are not in-range, or if the user manually disconnects the devices in Android Wear.
-
-	Similarly, some users have found it necessary to enable the **Stay awake while charging** setting under their watch Settings **Developer Options**.  In testing thus far, only the Moto 360 2nd Gen watch has required this option.
-###Confirm Wear Integration preferences are consistent on both phone and watch
-
-  **Enable Wear** and  **Force Wear** should have same settings on phone and watch.  If not, reset them accordingly.  The xDrip+ should sync these values whenever the user modifies them or at application startup, but both phone and watch must be connected and in-range for syncing to be performed.  See **Confirm phone and watch are connected** above.
-
-###Confirm Collection Method is consistent on both phone and watch
-
-  Confirm the phone's Harware Data Source preference matches the watch's BT Collector preference.  The watch's BT Collector preference is a read-only preference.  It gets set based on the phone's Hardware Data Source preference. The following values correspond to the collectors:
-   - BluetoothWixel("BluetoothWixel"),
-   - DexcomShare("DexcomShare"),
-   - DexbridgeWixel("DexbridgeWixel"),
-   - LimiTTer("LimiTTer"),
-   - WifiWixel("WifiWixel"),
-   - DexcomG5("DexcomG5"),
-   - WifiDexBridgeWixel("WifiDexbridgeWixel"),
-   - LibreAlarm("LibreAlarm")
-
-###Confirm Collector device exists under Watch Settings BT Devices
-
-  Once the BT Collection Service executes it will perform a BT scan, and upon detecting the BT Collector device, will populated the Watch Settings under Bluetooth Devices.  Typically it will show as disconnected as it only connects briefly to receive the BG reading.
-
-###Confirm Calibration Preferences are consistent on both phone and watch
-
-  The watch app does not yet support Calibration Plugins.  Therefore, to confirm BG readings are consistently calculated on both phone and watch, it is best to turn off Calibration Plugins on the phone.
-  - LCS - **Advanced Calibration** - all should be off, including **Adrian calibration mode**.
-
-###Confirm Noise Preferences are consistent on both phone and watch
-
-  The watch app does not yet support Noise smoothing.  Therefore, to confirm BG readings are consistently calculated on both phone and watch, it is best to turn off Noise Smoothing on the phone.
-
-  - xDrip+ Display Settings - **Show Noise workings**
-
-    When Show Noise Workings is enabled, **BG Original** and **BG Estimate** will display on the home screen.
-    - BG Original should correspond to your watch value, and
-    - BG Estimate should correspond to your phone value.
-
-  - xDrip+ Display Settings - **Smooth Sensor Noise**
 
 ###Confirm Collector runs on the Phone with Wear Integration
 
@@ -214,6 +236,53 @@ This will force the watch to use its BT collector, and force the phone to stop i
   - Confirm phone and watch are connected via Android Wear.
   - Change Watchface to big chart and then back to standard xDrip.
 
+###Confirm the following in Android Wear app on phone
+- Watch is connected to the phone.
+- Watch Settings **always-on screen** is enabled.  This will prevent watch doze mode from shutting down the BT Collector.
+Refer to [XDrip BT Settings](#xdrip-bt-settings) above for additional details.
+
+  To verify devices are connected, check the phone Android Wear app.  Android wear (on the watch) displays the **cloud** icon if the devices are not in-range, or if the user manually disconnects the devices in Android Wear.
+
+  Similarly, some users have found it necessary to enable the **Stay awake while charging** setting under their watch Settings **Developer Options**.  In testing thus far, only the **Moto 360 2nd Gen** watch has required this option.
+
+###Confirm Wear Integration preferences are consistent on both phone and watch
+
+  **Enable Wear** and  **Force Wear** should have same settings on phone and watch.  If not, reset them accordingly.  The xDrip+ should sync these values whenever the user modifies them or at application startup, but both phone and watch must be connected and in-range for syncing to be performed.
+
+###Confirm Collection Method is consistent on both phone and watch
+
+  Confirm the phone's Harware Data Source preference matches the watch's BT Collector preference.  The watch's BT Collector preference is a read-only preference.  It gets set based on the phone's Hardware Data Source preference. The following values correspond to the collectors:
+   - BluetoothWixel("BluetoothWixel"),
+   - DexcomShare("DexcomShare"),
+   - DexbridgeWixel("DexbridgeWixel"),
+   - LimiTTer("LimiTTer"),
+   - WifiWixel("WifiWixel"),
+   - DexcomG5("DexcomG5"),
+   - WifiDexBridgeWixel("WifiDexbridgeWixel"),
+   - LibreAlarm("LibreAlarm")
+
+Refer to [BT Collector](#bt_collector) above for additional details.
+
+###Confirm Collector device exists under Watch Settings BT Devices
+
+  Once the BT Collection Service executes it will perform a BT scan, and upon detecting the BT Collector device, will display under the Watch Settings -> Bluetooth Devices.  Typically it will show as disconnected as it only connects briefly to receive the BG reading.
+
+###Confirm Calibration Preferences are consistent on both phone and watch
+
+  The watch app does not yet support Calibration Plugins.  Therefore, to confirm BG readings are consistently calculated on both phone and watch, it is best to turn off Calibration Plugins on the phone.
+  - LCS - **Advanced Calibration** - all should be off, including **Adrian calibration mode**.
+
+###Confirm Noise Preferences are consistent on both phone and watch
+
+  The watch app does not yet support Noise smoothing.  Therefore, to confirm BG readings are consistently calculated on both phone and watch, it is best to turn off Noise Smoothing on the phone.
+
+  - xDrip+ Display Settings - **Show Noise workings** should be disabled.
+
+    When Show Noise Workings is enabled, **BG Original** and **BG Estimate** will display on the home screen.
+    - BG Original should correspond to your watch value, and
+    - BG Estimate should correspond to your phone value.
+
+  - xDrip+ Display Settings - **Smooth Sensor Noise** should be disabled.
 
 #ADB DEBUG
 ###Debugging Android Wear
