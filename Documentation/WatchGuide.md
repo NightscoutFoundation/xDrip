@@ -51,6 +51,7 @@ These settings are listed in order of dependency.  Note, the Watch's **XDrip BT 
 
   Force Wear may also provide better BT connectivity over that provided by the smartphone.  As an example, some users find that the SW3 provides better BT connectivity than their Samsung Galaxy Note 4 smartphone.
 
+
 ###BT Collector
 
   The **BT Collector** is a read-only preference on the watch XDrip Prefs.  It corresponds to xDrip+ Setting -> **Hardware Data Source**.
