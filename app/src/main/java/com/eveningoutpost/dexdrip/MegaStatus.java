@@ -2,9 +2,8 @@ package com.eveningoutpost.dexdrip;
 
 /**
  * Created by jamorham on 14/01/2017.
- *
+ * <p>
  * Multi-page plugin style status entry lists
- *
  */
 
 import android.app.Activity;
@@ -29,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -115,7 +115,7 @@ public class MegaStatus extends ActivityWithMenu {
             if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_mongodb_enable")
                     || Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable")
                     || Home.getPreferencesBooleanDefaultFalse("share_upload")) {
-                addAsection(UPLOADERS,"Cloud Uploader Queues");
+                addAsection(UPLOADERS, "Cloud Uploader Queues");
             }
 
             //addAsection("Misc", "Currently Empty");
@@ -418,6 +418,8 @@ public class MegaStatus extends ActivityWithMenu {
     static class ViewHolder {
         TextView name;
         TextView value;
+        TextView spacer;
+        LinearLayout layout;
     }
 
     private class MegaStatusListAdapter extends BaseAdapter {
@@ -479,6 +481,8 @@ public class MegaStatus extends ActivityWithMenu {
 
                 viewHolder.value = (TextView) view.findViewById(R.id.value);
                 viewHolder.name = (TextView) view.findViewById(R.id.name);
+                viewHolder.spacer = (TextView) view.findViewById(R.id.spacer);
+                viewHolder.layout = (LinearLayout) view.findViewById(R.id.device_list_id);
                 view.setTag(viewHolder);
 
             } else {
@@ -487,8 +491,37 @@ public class MegaStatus extends ActivityWithMenu {
 
             final StatusItem row = statusRows.get(i);
 
-            viewHolder.name.setText(row.name);
-            viewHolder.value.setText(row.value);
+            if (row.name.equals("line-break")) {
+                viewHolder.spacer.setVisibility(View.GONE);
+                viewHolder.name.setVisibility(View.GONE);
+                viewHolder.value.setVisibility(View.GONE);
+                viewHolder.layout.setPadding(10, 10, 10, 10);
+
+            } else {
+                viewHolder.name.setText(row.name);
+                viewHolder.value.setText(row.value);
+
+                int new_colour = -1;
+                switch (row.highlight) {
+                    case BAD:
+                        new_colour = Color.parseColor("#480000");
+                        break;
+                    case NOTICE:
+                        new_colour = Color.parseColor("#403000");
+                        break;
+                    case GOOD:
+                        new_colour = Color.parseColor("#003000");
+                        break;
+                    case CRITICAL:
+                        new_colour = Color.parseColor("#770000");
+                        break;
+                }
+                if (new_colour != -1) {
+                    viewHolder.value.setBackgroundColor(new_colour);
+                    viewHolder.spacer.setBackgroundColor(new_colour);
+                    viewHolder.name.setBackgroundColor(new_colour);
+                }
+            }
 
             return view;
         }

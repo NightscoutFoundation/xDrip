@@ -727,7 +727,9 @@ public class DexCollectionService extends Service {
     public static List<StatusItem> megaStatus() {
         final List<StatusItem> l = new ArrayList<>();
 
-        l.add(new StatusItem("Phone Service State", lastState));
+        final boolean forced_wear = Home.get_forced_wear();
+
+        l.add(new StatusItem("Phone Service State", lastState + (forced_wear ? " (Watch Forced)" : "")));
         l.add(new StatusItem("Bluetooth Device", JoH.ucFirst(getStateStr(mStaticState))));
 
 
@@ -760,7 +762,8 @@ public class DexCollectionService extends Service {
         }
 
         //WATCH
-        if (Home.get_forced_wear()) {
+        if (forced_wear) {
+            l.add(new StatusItem("line-break",""));
             l.add(new StatusItem("Watch Service State", lastStateWatch));
             l.add(new StatusItem("Bridge Device", JoH.ucFirst(getStateStr(mStaticStateWatch))));
 
@@ -777,10 +780,10 @@ public class DexCollectionService extends Service {
             if (failover_time_watch > 0)
                 l.add(new StatusItem("Watch Wake up", JoH.niceTimeTill(failover_time_watch)));
 
-            if (Home.get_engineering_mode() && (static_last_hexdump_watch != null)) {
+            if (Home.get_engineering_mode() && (static_last_hexdump_watch != null) && (static_last_hexdump_watch.length()>0)) {
                 l.add(new StatusItem("Watch Received Data", filterHexdump(static_last_hexdump_watch)));
             }
-            if (Home.get_engineering_mode() && (static_last_sent_hexdump_watch != null)) {
+            if (Home.get_engineering_mode() && (static_last_sent_hexdump_watch != null) && (static_last_sent_hexdump_watch.length()>0)) {
                 l.add(new StatusItem("Watch Sent Data", filterHexdump(static_last_sent_hexdump_watch)));
             }
         }
