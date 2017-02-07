@@ -9,47 +9,47 @@
             android:key="watch_integration"
             android:title="@string/wear_integration">
             <SwitchPreference
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
                 android:defaultValue="false"
                 android:key="wear_sync"
                 android:summary="@string/send_data_to_android_wear_watch"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/android_wear_integration" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="wear_sync"
                 android:key="enable_wearG5"
                 android:summary="@string/pref_summary_enable_wearG5"
-                android:title="@string/pref_enable_wearG5"/>
+                android:title="@string/pref_enable_wearG5" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="enable_wearG5"
                 android:key="force_wearG5"
                 android:summary="@string/pref_summary_force_wearG5"
-                android:title="@string/pref_force_wearG5"/>
+                android:title="@string/pref_force_wearG5" />
             <EditTextPreference
                 android:defaultValue=""
                 android:dependency="force_wearG5"
+                android:editable="false"
+                android:inputType="none"
                 android:key="node_wearG5"
                 android:summary="@string/pref_summary_node_wearG5"
-                android:title="@string/pref_node_wearG5"
-                android:inputType="none"
                 android:textIsSelectable="true"
-                android:editable="false"/>
+                android:title="@string/pref_node_wearG5" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="enable_wearG5"
                 android:key="sync_wear_logs"
                 android:summary="@string/pref_summary_sync_wear_logs"
-                android:title="@string/pref_sync_wear_logs"/>
+                android:title="@string/pref_sync_wear_logs" />
             <EditTextPreference
                 android:defaultValue="wear"
                 android:dependency="sync_wear_logs"
+                android:editable="true"
                 android:key="wear_logs_prefix"
                 android:summary="@string/pref_summary_wear_logs_prefix"
-                android:title="@string/pref_wear_logs_prefix"
-                android:editable="true"/>
-                android:textIsSelectable="true"/>
+                android:title="@string/pref_wear_logs_prefix" />
+            android:textIsSelectable="true"/>
         </PreferenceCategory>
         <PreferenceCategory
             android:key="pebble_integration"
@@ -178,9 +178,9 @@
         android:key="other_category"
         android:title="@string/other_settings">
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+            android:icon="@drawable/ic_open_in_app_grey600_48dp"
             android:key="xdrip_intrer_app_settings"
             android:summary="For interacting with other compatible apps"
-            android:icon="@drawable/ic_open_in_app_grey600_48dp"
             android:title="Inter-app settings">
             <SwitchPreference
                 android:defaultValue="false"
@@ -267,52 +267,52 @@
                 android:key="excessive_wakelocks"
                 android:summary="@string/older_gratuitous_wakelocks"
                 android:title="@string/use_excessive_wakelocks" />
-        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-            android:icon="@drawable/ic_bluetooth_settings_grey600_48dp"
-            android:key="xdrip_bluetooth_adv_settings"
-            android:summary="Advanced Bluetooth Settings"
-            android:title="Bluetooth Settings">
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="automatically_turn_bluetooth_on"
-                android:summary="Automatically enable bluetooth if it is switched off when we try to connect to a bluetooth device"
-                android:title="Turn Bluetooth on" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="bluetooth_watchdog"
-                android:summary="Reset Bluetooth by turning it off and on if we don't get anything in 20 minutes"
-                android:title="Bluetooth Watchdog" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="g5_bluetooth_watchdog"
-                android:summary="Reset Bluetooth by turning it off and on as a way to keep the G5 data source working. Without this the G5 collector may fail."
-                android:title="G5 Bluetooth Watchdog" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="close_gatt_on_ble_disconnect"
-                android:summary="If the bluetooth watchdog activates often then you can try unchecking this option to see if it helps"
-                android:title="@string/close_gatt_on_ble_disconnect" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="bluetooth_excessive_wakelocks"
-                android:summary="Older bluetooth wakelocks which can drain extra battery but might be needed for bluetooth reception"
-                android:title="@string/bluetooth_wakelocks" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="bluetooth_frequent_reset"
-                android:summary="Reset Bluetooth by turning it off and on every few minutes! Only select if you are testing. It may disrupt anything else using bluetooth."
-                android:title="Constantly reset bluetooth" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="use_transmiter_pl_bluetooth"
-                android:summary="Experimental support for 'Transmiter' device from @FPV-UAV - test only"
-                android:title="Transmiter (PL) support" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="use_rfduino_bluetooth"
-                android:summary="Experimental support for rfduino from Tomasz Stachowicz"
-                android:title="RFDUINO support" />
-        </PreferenceScreen>
+            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                android:icon="@drawable/ic_bluetooth_settings_grey600_48dp"
+                android:key="xdrip_bluetooth_adv_settings"
+                android:summary="Advanced Bluetooth Settings"
+                android:title="Bluetooth Settings">
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="automatically_turn_bluetooth_on"
+                    android:summary="Automatically enable bluetooth if it is switched off when we try to connect to a bluetooth device"
+                    android:title="Turn Bluetooth on" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="bluetooth_watchdog"
+                    android:summary="Reset Bluetooth by turning it off and on if we don't get anything in 20 minutes"
+                    android:title="Bluetooth Watchdog" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="g5_bluetooth_watchdog"
+                    android:summary="Reset Bluetooth by turning it off and on as a way to keep the G5 data source working. Without this the G5 collector may fail."
+                    android:title="G5 Bluetooth Watchdog" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="close_gatt_on_ble_disconnect"
+                    android:summary="If the bluetooth watchdog activates often then you can try unchecking this option to see if it helps"
+                    android:title="@string/close_gatt_on_ble_disconnect" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="bluetooth_excessive_wakelocks"
+                    android:summary="Older bluetooth wakelocks which can drain extra battery but might be needed for bluetooth reception"
+                    android:title="@string/bluetooth_wakelocks" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="bluetooth_frequent_reset"
+                    android:summary="Reset Bluetooth by turning it off and on every few minutes! Only select if you are testing. It may disrupt anything else using bluetooth."
+                    android:title="Constantly reset bluetooth" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="use_transmiter_pl_bluetooth"
+                    android:summary="Experimental support for 'Transmiter' device from @FPV-UAV - test only"
+                    android:title="Transmiter (PL) support" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="use_rfduino_bluetooth"
+                    android:summary="Experimental support for rfduino from Tomasz Stachowicz"
+                    android:title="RFDUINO support" />
+            </PreferenceScreen>
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="aggressive_service_restart"
@@ -334,31 +334,31 @@
                 android:key="infrequent_calibration"
                 android:summary="If needed, use calibrations from longer ago, eg if calibrations are supplied infrequently."
                 android:title="Infrequent Calibration" />
-        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-            android:key="xdrip_logging_adv_settings"
-            android:title="Extra Logging Settings">
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="enable_bugfender"
-                android:summary="Send Event and Error List Logs automatically to the developer"
-                android:title="Enable Remote Logging" />
-            <EditTextPreference
-                android:defaultValue=""
-                android:key="bugfender_appid"
-                android:title="Set Logging AppID"/>
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:dependency="engineering_mode"
-                android:key="store_logs"
-                android:summary="Only enable if you are having trouble with the app."
-                android:title="Store logs for troubleshooting" />
-            <EditTextPreference
-                android:defaultValue=""
-                android:dialogMessage="@string/extra_tags_dialog_message"
-                android:dialogTitle="@string/extra_tags_dialog_title"
-                android:inputType="textUri"
-                android:key="extra_tags_for_logging"
-                android:title="@string/extra_tags_for_logging"/>
+            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                android:key="xdrip_logging_adv_settings"
+                android:title="Extra Logging Settings">
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="enable_bugfender"
+                    android:summary="Send Event and Error List Logs automatically to the developer"
+                    android:title="Enable Remote Logging" />
+                <EditTextPreference
+                    android:defaultValue=""
+                    android:key="bugfender_appid"
+                    android:title="Set Logging AppID" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="engineering_mode"
+                    android:key="store_logs"
+                    android:summary="Only enable if you are having trouble with the app."
+                    android:title="Store logs for troubleshooting" />
+                <EditTextPreference
+                    android:defaultValue=""
+                    android:dialogMessage="@string/extra_tags_dialog_message"
+                    android:dialogTitle="@string/extra_tags_dialog_title"
+                    android:inputType="textUri"
+                    android:key="extra_tags_for_logging"
+                    android:title="@string/extra_tags_for_logging" />
             </PreferenceScreen>
             <CheckBoxPreference
                 android:defaultValue="false"
@@ -445,6 +445,12 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
+                    android:key="status_line_carbs"
+                    android:summary="Show treatment carbohydrate total"
+                    android:title="Total Carbohydrate" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="extra_status_line"
                     android:key="status_line_time"
                     android:summary="@string/the_current_time"
                     android:title="@string/time" />
@@ -488,38 +494,34 @@
                     android:summary="Choose whether to calibrate with the BG value in a Treatment entry"
                     android:title="Use Treatment BG values" />
                 <ListPreference
-                    android:key="current_calibration_plugin"
                     android:defaultValue="None"
-                    android:title="Calibration Plugin"
-                    android:summary="Experimental secondary calibration plugin"
+                    android:key="current_calibration_plugin"
                     android:shouldDisableView="true"
-                    />
+                    android:summary="Experimental secondary calibration plugin"
+                    android:title="Calibration Plugin" />
                 <SwitchPreference
-                    android:key="plugin_plot_on_graph"
                     android:defaultValue="false"
-                    android:title="Plugin plot on graph"
+                    android:key="plugin_plot_on_graph"
                     android:summary="Show glucose results from the plugin on the main graph"
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
-                    />
+                    android:title="Plugin plot on graph" />
                 <SwitchPreference
-                    android:key="display_glucose_from_plugin"
                     android:defaultValue="false"
-                    android:title="Use Plugin Glucose"
+                    android:key="display_glucose_from_plugin"
                     android:summary="Main glucose display number comes from plugin!"
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
-                    />
+                    android:title="Use Plugin Glucose" />
                 <SwitchPreference
-                    android:key="use_pluggable_alg_as_primary"
                     android:defaultValue="false"
-                    android:title="Plugin Override ALL"
-                    android:enabled="false"
-                    android:summary="ALL new glucose data will be calculated and saved from the selected plugin and not from the standard xDrip algorithm. This is untested and may be inaccurate and buggy. Use with extreme caution."
                     android:dependency="engineering_mode"
+                    android:enabled="false"
+                    android:key="use_pluggable_alg_as_primary"
+                    android:summary="ALL new glucose data will be calculated and saved from the selected plugin and not from the standard xDrip algorithm. This is untested and may be inaccurate and buggy. Use with extreme caution."
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
-                    />
+                    android:title="Plugin Override ALL" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="engineering_mode"
