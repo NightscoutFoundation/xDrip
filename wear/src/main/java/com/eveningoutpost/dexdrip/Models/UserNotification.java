@@ -6,6 +6,7 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.Home;
 
 import java.util.Arrays;
@@ -20,6 +21,24 @@ import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 
 @Table(name = "Notifications", id = BaseColumns._ID)
 public class UserNotification extends Model {
+    private static boolean patched = false;
+    private static final boolean d = false;
+    private static final String[] schema = {
+
+            "CREATE TABLE Notifications (_id INTEGER PRIMARY KEY AUTOINCREMENT);",
+            "ALTER TABLE Notifications ADD COLUMN bg_alert INTEGER;",
+            "ALTER TABLE Notifications ADD COLUMN bg_fall_alert INTEGER;",
+            "ALTER TABLE Notifications ADD COLUMN bg_missed_alerts INTEGER;",
+            "ALTER TABLE Notifications ADD COLUMN bg_rise_alert INTEGER;",
+            "ALTER TABLE Notifications ADD COLUMN bg_unclear_readings_alert INTEGER;",
+            "ALTER TABLE Notifications ADD COLUMN calibration_alert INTEGER;",
+            "ALTER TABLE Notifications ADD COLUMN double_calibration_alert INTEGER;",
+            "ALTER TABLE Notifications ADD COLUMN extra_calibration_alert INTEGER;",
+            "ALTER TABLE Notifications ADD COLUMN message TEXT;",
+            "ALTER TABLE Notifications ADD COLUMN timestamp REAL;",
+            "ALTER TABLE Notifications ADD COLUMN alert_type TEXT;",
+            "CREATE INDEX index_Notifications_timestamp on Notifications(timestamp);"
+    };
 
     // For 'other alerts' this will be the time that the alert should be raised again.
     // For calibration alerts this is the time that the alert was played.
@@ -60,6 +79,21 @@ public class UserNotification extends Model {
     private final static String TAG = AlertPlayer.class.getSimpleName();
 
 
+    public static void fixUpTable() {
+        if (patched) return;
+
+        for (String patch : schema) {
+            try {
+                SQLiteUtils.execSql(patch);
+            } catch (Exception e) {
+                if (d)
+                    UserError.Log.d(TAG, "Patch: " + patch + " generated exception as it should: " + e.toString());
+            }
+        }
+        patched = true;
+    }
+
+
     public static UserNotification lastBgAlert() {
         return new Select()
                 .from(UserNotification.class)
@@ -97,6 +131,7 @@ public class UserNotification extends Model {
 
     public static UserNotification GetNotificationByType(String type) {
         if (legacy_types.contains(type)) {
+            fixUpTable();
             type = type + " = ?";
             return new Select()
                     .from(UserNotification.class)
@@ -117,6 +152,7 @@ public class UserNotification extends Model {
     }
 
     public static void DeleteNotificationByType(String type) {
+        fixUpTable();
         if (legacy_types.contains(type)) {
             UserNotification userNotification = UserNotification.GetNotificationByType(type);
             if (userNotification != null) {
