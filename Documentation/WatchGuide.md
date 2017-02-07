@@ -53,7 +53,7 @@ These settings are listed in order of dependency.  Note, the Watch's **XDrip BT 
 
 ###BT Collector
 
-  **BT Collector** is a read-only preference on the watch XDrip Prefs.  It corresponds to xDrip+ Setting -> **Hardware Data Source**.
+  The **BT Collector** is a read-only preference on the watch XDrip Prefs.  It corresponds to xDrip+ Setting -> **Hardware Data Source**.
 
   The following images show the setting of **Hardware Data Source** to **LimiTTer** and its corresponding setting on the watch.
 
@@ -61,7 +61,7 @@ These settings are listed in order of dependency.  Note, the Watch's **XDrip BT 
 
 This preference indicates which BT Collector the watch will run to communicate with the BG transmitter when watch is in standalone mode.
 
-####Phone xDrip+ System Status
+####xDrip+ System Status
 The xDrip+ System Status screen supports individual status pages for the BT Collector.  This enables users to easily identify which device is running the BT Collector.
 
 The following images show the System Status pages including one for the G5 Collector.
