@@ -1,9 +1,8 @@
 # xDrip+ Wear Setup and Troubleshooting Guide
 - [Enable xDrip+ Android Wear Integration](#enable-xdrip-android-wear-integration)
-    - [Initial Wear Enablement Requests Location Permission](#initial-wear-enablement-requests-location-permission)
-    - [Enable Standalone Mode](#enable_standalone_mode)
     - [Collector](#collector)
         - [xDrip+ System Status](#xdrip-system-status)
+    - [Initial Wear Enablement Requests Location Permission](#initial-wear-enablement-requests-location-permission)
     - [Syncing Phone and Wear Preferences](#syncing-phone-and-wear-preferences)
     - [Syncing BGs and Wear Database](#syncing-bgs-and-wear-database)
     - [XDrip Prefs Overview](#xdrip-prefs-overview)
@@ -26,14 +25,6 @@
 xDrip+ supports wear integration through its wear app.  The xDrip+ wear app is installed with the standard xDrip+ apk.  The latest release supports a standalone mode which allows the wear app to communicate directly with the Bluetooth Collector, whether it is a Dexcom G5, a Dexcom G4 + xBridge, or a Libre LimiTTer.
 
 
-###Initial Wear Enablement Requests Location Permission
-Initial enablement of standalone wear is triggered by selecting the the Enable Wear preference on watch or phone.
-
-This will trigger the **Location Permission is Required** dialog box to be displayed.  Android Wear requires **Location Access** to be manually accepted by the user, therefore, the user **must** accept the Location Permission query in order for standalone mode to work.  Alternatively, the user can enable Location Permission in Watch -> Settings -> Permissions - XDrip Prefs, then enable Location.
-
-<img align="middle" src="./images/prefs-wear-permissions.png" title="xDrip+ Wear Integration Preferences">
-
-###Enable Standalone Mode
 The wear standalone feature is enabled via the following xDrip+ Settings located under **Smart Watch Features**, and corresponding watch **XDrip Prefs** settings.
 
 <img align="middle" src="./images/prefs-wear-sync.png" title="xDrip+ Wear Integration Preferences">
@@ -79,6 +70,13 @@ The following images show the System Status pages including one for the G5 Colle
 
 <img align="middle" src="./images/prefs-wear-g5systemstatus.png" title="xDrip+ System Status">
 
+
+###Initial Wear Enablement Requests Location Permission
+Initial enablement of standalone wear is triggered by selecting the the Enable Wear preference on watch or phone.
+
+This will trigger the **Location Permission is Required** dialog box to be displayed.  Android Wear requires **Location Access** to be manually accepted by the user, therefore, the user **must** accept the Location Permission query in order for standalone mode to work.  Alternatively, the user can enable Location Permission in Watch -> Settings -> Permissions - XDrip Prefs, then enable Location.
+
+<img align="middle" src="./images/prefs-wear-permissions.png" title="xDrip+ Wear Integration Preferences">
 
 ###Syncing Phone and Wear Preferences
 Note, xDrip+ and Wear will sync their co-existing preferences.  Preference syncing takes the following precedence on connection:
@@ -265,7 +263,7 @@ Refer to [XDrip BT Settings](#xdrip-bt-settings) above for additional details.
    - WifiDexBridgeWixel("WifiDexbridgeWixel"),
    - LibreAlarm("LibreAlarm")
 
-Refer to [BT Collector](#bt_collector) above for additional details.
+Refer to [Collector](#collector) above for additional details.
 
 ###Confirm Collector device exists under Watch Settings BT Devices
 
