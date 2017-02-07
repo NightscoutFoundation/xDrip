@@ -40,8 +40,10 @@ import com.eveningoutpost.dexdrip.Services.DoNothingService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.Services.WifiCollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
+import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
@@ -87,6 +89,7 @@ public class MegaStatus extends ActivityWithMenu {
     private static final String G5_STATUS = "G5 Status";
     private static final String IP_COLLECTOR = "IP Collector";
     private static final String XDRIP_PLUS_SYNC = "Followers";
+    private static final String UPLOADERS = "Uploaders";
 
     private void populateSectionList() {
 
@@ -109,6 +112,12 @@ public class MegaStatus extends ActivityWithMenu {
             if (Home.get_master_or_follower()) {
                 addAsection(XDRIP_PLUS_SYNC, "xDrip+ Sync Group");
             }
+            if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_mongodb_enable")
+                    || Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable")
+                    || Home.getPreferencesBooleanDefaultFalse("share_upload")) {
+                addAsection(UPLOADERS,"Cloud Uploader Queues");
+            }
+
             //addAsection("Misc", "Currently Empty");
 
         } else {
@@ -139,6 +148,9 @@ public class MegaStatus extends ActivityWithMenu {
                 la.addRows(GcmListenerSvc.megaStatus());
                 la.addRows(RollCall.megaStatus());
                 break;
+            case UPLOADERS:
+                la.addRows(UploaderQueue.megaStatus());
+                break;
         }
         la.changed();
     }
@@ -163,14 +175,25 @@ public class MegaStatus extends ActivityWithMenu {
 
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        // switch to last used position if it exists
+        final int saved_position = (int) PersistentStore.getLong("mega-status-last-page");
+        if ((saved_position > 0) && (saved_position < sectionList.size())) {
+            mViewPager.setCurrentItem(saved_position);
+            startAutoFresh();
+        }
+
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 UserError.Log.d(TAG, "Page selected: " + position);
                 currentPage = position;
                 startAutoFresh();
+                PersistentStore.setLong("mega-status-last-page", currentPage);
             }
         });
+
+        // streamed data from android wear
         requestWearCollectorStatus();
         serviceDataReceiver = new BroadcastReceiver() {
             @Override

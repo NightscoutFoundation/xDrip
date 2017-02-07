@@ -96,18 +96,23 @@ public class ActiveBgAlert extends Model {
     // so we have the following static functions: getOnly, saveData, ClearData
 
     public static ActiveBgAlert getOnly() {
-        ActiveBgAlert aba = new Select()
-                .from(ActiveBgAlert.class)
-                .orderBy("_ID asc")
-                .executeSingle();
+        try {
+            ActiveBgAlert aba = new Select()
+                    .from(ActiveBgAlert.class)
+                    .orderBy("_ID asc")
+                    .executeSingle();
 
-        if (aba != null) {
-            Log.v(TAG, "ActiveBgAlert getOnly aba = " + aba.toString());
-        } else {
-            Log.v(TAG, "ActiveBgAlert getOnly returning null");
+            if (aba != null) {
+                Log.v(TAG, "ActiveBgAlert getOnly aba = " + aba.toString());
+            } else {
+                Log.v(TAG, "ActiveBgAlert getOnly returning null");
+            }
+            return aba;
+        } catch (android.database.sqlite.SQLiteException e) {
+            Log.d(TAG,"ActiveBgAlert rebuilding table strcuture");
+            fixUpTable();
+            return null;
         }
-
-        return aba;
     }
 
     public static AlertType alertTypegetOnly() {
@@ -186,6 +191,12 @@ public class ActiveBgAlert extends Model {
     private static void fixUpTable() {
         if (patched) return;
         String[] patchup = {
+                "CREATE TABLE ActiveBgAlert (_id INTEGER PRIMARY KEY AUTOINCREMENT;",
+                "ALTER TABLE ActiveBgAlert ADD COLUMN alert_started_at INTEGER;",
+                "ALTER TABLE ActiveBgAlert ADD COLUMN alert_uuid TEXT;",
+                "ALTER TABLE ActiveBgAlert ADD COLUMN is_snoozed INTEGER;",
+                "ALTER TABLE ActiveBgAlert ADD COLUMN last_alerted_at INTEGER;",
+                "ALTER TABLE ActiveBgAlert ADD COLUMN next_alert_at INTEGER;",
                 "ALTER TABLE ActiveBgAlert ADD COLUMN alert_started_at INTEGER;"
         };
 

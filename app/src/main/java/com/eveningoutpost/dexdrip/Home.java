@@ -1594,8 +1594,6 @@ public class Home extends ActivityWithMenu {
         };
 
 
-
-
         registerReceiver(_broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         registerReceiver(newDataReceiver, new IntentFilter(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA));
 
@@ -2255,8 +2253,8 @@ public class Home extends ActivityWithMenu {
         }
         if (prefs==null) return "";
 
-        StringBuilder extraline = new StringBuilder();
-        Calibration lastCalibration = Calibration.lastValid();
+        final StringBuilder extraline = new StringBuilder();
+        final Calibration lastCalibration = Calibration.lastValid();
         if (prefs.getBoolean("status_line_calibration_long", false) && lastCalibration != null) {
             if (extraline.length() != 0) extraline.append(' ');
             extraline.append("slope = ");
@@ -2277,13 +2275,14 @@ public class Home extends ActivityWithMenu {
 
         if (prefs.getBoolean("status_line_avg", false)
                 || prefs.getBoolean("status_line_a1c_dcct", false)
-                || prefs.getBoolean("status_line_a1c_ifcc", false
-                || prefs.getBoolean("status_line_in", false))
+                || prefs.getBoolean("status_line_a1c_ifcc", false)
+                || prefs.getBoolean("status_line_in", false)
                 || prefs.getBoolean("status_line_high", false)
                 || prefs.getBoolean("status_line_low", false)
+                || prefs.getBoolean("status_line_carbs", false)
                 || prefs.getBoolean("status_line_capture_percentage", false)) {
 
-            StatsResult statsResult = new StatsResult(prefs, getPreferencesBooleanDefaultFalse("extra_status_stats_24h"));
+            final StatsResult statsResult = new StatsResult(prefs, getPreferencesBooleanDefaultFalse("extra_status_stats_24h"));
 
             if (prefs.getBoolean("status_line_avg", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
@@ -2308,6 +2307,10 @@ public class Home extends ActivityWithMenu {
             if (prefs.getBoolean("status_line_low", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
                 extraline.append(statsResult.getLowPercentage());
+            }
+            if (prefs.getBoolean("status_line_carbs", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                extraline.append("Carbs: " + statsResult.getTotal_carbs());
             }
             if (prefs.getBoolean("status_line_capture_percentage", false)) {
                 if (extraline.length() != 0) extraline.append(' ');

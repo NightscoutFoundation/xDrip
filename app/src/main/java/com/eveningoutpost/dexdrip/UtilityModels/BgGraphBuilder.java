@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -95,6 +96,7 @@ class PointValueExtended extends PointValue {
     String note;
     int type = 0;
     String uuid;
+    long real_timestamp = 0;
 }
 
 public class BgGraphBuilder {
@@ -928,13 +930,14 @@ public class BgGraphBuilder {
             // enumerate blood tests
             try {
                 for (BloodTest bloodtest : bloodtests) {
-                    final PointValueExtended this_point = new PointValueExtended((float) (bloodtest.timestamp / FUZZER), (float) unitized(bloodtest.mgdl));
+                    final PointValueExtended this_point = new PointValueExtended((float) ((bloodtest.timestamp + (AddCalibration.estimatedInterstitialLagSeconds * 1000)) / FUZZER), (float) unitized(bloodtest.mgdl));
                     this_point.type = PointValueExtended.BloodTest;
                     this_point.uuid = bloodtest.uuid;
+                    this_point.real_timestamp = bloodtest.timestamp;
                     // exclude any which have been used for calibration
                     boolean matches = false;
                     for (PointValue calibration_point : calibrationValues) {
-                        if ((calibration_point.getX() == this_point.getX()) && (calibration_point.getY() == calibration_point.getY())) {
+                        if ((Math.abs(calibration_point.getX() - this_point.getX())) <= ((AddCalibration.estimatedInterstitialLagSeconds * 1000) / FUZZER) && (calibration_point.getY() == calibration_point.getY())) {
                             matches = true;
                             break;
                         }
@@ -1873,6 +1876,7 @@ public class BgGraphBuilder {
             String alternate = "";
             String uuid = "";
             int type = 0;
+            long real_timestamp = 0;
             try {
                 PointValueExtended pve = (PointValueExtended) pointValue;
                 type = pve.type;
@@ -1885,16 +1889,19 @@ public class BgGraphBuilder {
                 if (pve.uuid != null) {
                     uuid = pve.uuid;
                 }
+                real_timestamp = pve.real_timestamp;
+
             } catch (ClassCastException e) {
                 // Log.e(TAG, "Error casting a point from pointValue to PointValueExtended", e);
             }
 
             final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(context);
             //Won't give the exact time of the reading but the time on the grid: close enough.
-            final Long time = ((long) pointValue.getX()) * FUZZER;
+            final Long time = (real_timestamp > 0) ? real_timestamp : ((long) pointValue.getX()) * FUZZER;
             final double ypos = pointValue.getY();
 
             final String message;
+
             if (alternate.length() > 0) {
                 message = timeFormat.format(time) + "    " + alternate;
             } else {

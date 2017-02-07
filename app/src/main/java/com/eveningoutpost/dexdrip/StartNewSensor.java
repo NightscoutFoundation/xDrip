@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Experience;
@@ -112,14 +113,16 @@ public class StartNewSensor extends ActivityWithMenu {
                 } else {
                     final DatePickerFragment datePickerFragment = new DatePickerFragment();
                     datePickerFragment.setAllowFuture(false);
-                    datePickerFragment.setEarliestDate(JoH.tsl() - (14 * 24 * 60 * 60 * 1000));
+                    if (!Home.get_engineering_mode()) {
+                        datePickerFragment.setEarliestDate(JoH.tsl() - (30L * 24 * 60 * 60 * 1000)); // 30 days
+                    }
                     datePickerFragment.setTitle("Which day was it inserted?");
                     datePickerFragment.setDateCallback(new ProfileAdapter.DatePickerCallbacks() {
                         @Override
                         public void onDateSet(int year, int month, int day) {
                             ucalendar.set(year, month, day);
                             // Long enough in the past for age adjustment to be meaningless? Skip asking time
-                            if (JoH.tsl() - ucalendar.getTimeInMillis() > (AGE_ADJUSTMENT_TIME + (1000 * 60 * 60 * 24))) {
+                            if ((!Home.get_engineering_mode()) && (JoH.tsl() - ucalendar.getTimeInMillis() > (AGE_ADJUSTMENT_TIME + (1000 * 60 * 60 * 24)))) {
                                 realStartSensor();
                             } else {
                                 askSesorInsertionTime();
@@ -178,6 +181,9 @@ public class StartNewSensor extends ActivityWithMenu {
 
         LibreAlarmReceiver.clearSensorStats();
         JoH.scheduleNotification(this, "Sensor should be ready", getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
+
+        // reverse libre hacky workaround
+        Treatments.SensorStart((DexCollectionType.hasLibre() ? startTime + (3600000) : startTime));
 
         CollectionServiceStarter.newStart(getApplicationContext());
         Intent intent;

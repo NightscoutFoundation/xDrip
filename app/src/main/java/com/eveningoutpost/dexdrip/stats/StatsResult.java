@@ -19,6 +19,7 @@ public class StatsResult {
     private final int in;
     private final int below;
     private final int above;
+    private int total_carbs = -1;
     private final double avg;
     private final boolean mgdl;
     private final long from;
@@ -97,6 +98,16 @@ public class StatsResult {
         return in;
     }
 
+    public int getTotal_carbs() {
+        if (total_carbs < 0) {
+            Cursor cursor = Cache.openDatabase().rawQuery("select sum(carbs) from treatments  where timestamp >= " + from + " AND timestamp <= " + to, null);
+            cursor.moveToFirst();
+            total_carbs = cursor.getInt(0);
+            cursor.close();
+        }
+        return total_carbs;
+    }
+
     public int getTotalReadings(){
         return in + above + below;
     }
@@ -135,11 +146,15 @@ public class StatsResult {
         return "Avg:" + (new DecimalFormat("#.0")).format(avg*Constants.MGDL_TO_MMOLL);
     }
 
-    public String getCapturePercentage(boolean extended){
-        String result =  "Cap:" + ((possibleCaptures>0)?Math.round(getTotalReadings()*100d/possibleCaptures) + "%":"-%");
+    public int getCapturePercentage() {
+        return (int) Math.round(getTotalReadings() * 100d / possibleCaptures);
+    }
+
+    public String getCapturePercentage(boolean extended) {
+        String result = "Cap:" + ((possibleCaptures > 0) ? Math.round(getTotalReadings() * 100d / possibleCaptures) + "%" : "-%");
 
         if (extended) {
-            result += " (" + getTotalReadings() +  "/" +  getPossibleCaptures() + ")";
+            result += " (" + getTotalReadings() + "/" + getPossibleCaptures() + ")";
         }
 
         return result;

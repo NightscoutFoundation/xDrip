@@ -64,12 +64,17 @@ public class Datricsae extends CalibrationAbstract {
                 final List<Double> bgs = new ArrayList<>();
                 final boolean adjust_raw = !DexCollectionType.hasLibre();
 
+                for (int i = 1; i < 3; i++) {
+                    final List<Calibration> cweight = Calibration.latestValid(i);
+                    if (cweight != null)
+                        calibrations.addAll(cweight); // additional weight to most recent
+                }
                 final int ccount = calibrations.size();
                 for (Calibration calibration : calibrations) {
                     // sanity check?
                     // weighting!
                     final double raw = adjust_raw ? calibration.adjusted_raw_value : calibration.raw_value;
-                    Log.d(TAG, "Calibration: " + JoH.qs(raw,4) + " -> " + JoH.qs(calibration.bg,4)+"  @ "+JoH.dateTimeText(calibration.raw_timestamp));
+                    Log.d(TAG, "Calibration: " + JoH.qs(raw, 4) + " -> " + JoH.qs(calibration.bg, 4) + "  @ " + JoH.dateTimeText(calibration.raw_timestamp));
                     raws.add(raw);
                     bgs.add(calibration.bg);
                 }
@@ -94,10 +99,8 @@ public class Datricsae extends CalibrationAbstract {
                 double lowest_variance = all_varience;
 
                 // TODO single pass at the mo must be carefully handled
-                if (ccount>= OPTIMIZE_OUTLIERS_CALIBRATION_MINIMUM)
-                {
-                    for (int i=0;i<ccount;i++)
-                    {
+                if (ccount >= OPTIMIZE_OUTLIERS_CALIBRATION_MINIMUM) {
+                    for (int i = 0; i < ccount; i++) {
                         // reset
                         bgs.clear();
                         bgs.addAll(all_bgs_set);
@@ -108,15 +111,14 @@ public class Datricsae extends CalibrationAbstract {
                         raws.remove(i);
                         bg_to_raw.setValues(PolyTrendLine.toPrimitiveFromList(bgs), PolyTrendLine.toPrimitiveFromList(raws));
                         final double this_variance = bg_to_raw.errorVarience();
-                        Log.d(TAG, "Error Variance drop: "+i+" = "+JoH.qs(this_variance,3));
-                        if (this_variance<lowest_variance)
-                        {
+                        Log.d(TAG, "Error Variance drop: " + i + " = " + JoH.qs(this_variance, 3));
+                        if (this_variance < lowest_variance) {
 
                             final double intercept = bg_to_raw.predict(0);
                             final double one = bg_to_raw.predict(1);
                             final double slope = one - intercept;
 
-                            Log.d(TAG,"Removing outlier: "+i+" Reduces varience to: "+JoH.qs(this_variance,3)+" Slope: "+JoH.qs(slope,3)+" "+slope_in_range(slope));
+                            Log.d(TAG, "Removing outlier: " + i + " Reduces varience to: " + JoH.qs(this_variance, 3) + " Slope: " + JoH.qs(slope, 3) + " " + slope_in_range(slope));
 
                             if (slope_in_range(slope)) {
                                 lowest_variance = this_variance;
@@ -147,7 +149,7 @@ public class Datricsae extends CalibrationAbstract {
                 }
             }
         } else {
-            Log.d(TAG,"Returning cached calibration data object");
+            Log.d(TAG, "Returning cached calibration data object");
         }
         //saveDataToCache(TAG, cd); // Save cached data when not in development
         return cd; // null if invalid
