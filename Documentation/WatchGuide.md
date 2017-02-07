@@ -1,7 +1,7 @@
 # xDrip+ Wear Setup and Troubleshooting Guide
 - [Enable xDrip+ Android Wear Integration](#enable-xdrip-android-wear-integration)
     - [Initial Wear Enablement Requests Location Permission](#initial-wear-enablement-requests-location-permission)
-    - [BT Collector](#bt_collector)
+    - [Collector](#collector)
         - [xDrip+ System Status](#xdrip-system-status)
     - [Syncing Phone and Wear Preferences](#syncing-phone-and-wear-preferences)
     - [Syncing BGs and Wear Database](#syncing-bgs-and-wear-database)
@@ -52,7 +52,7 @@ These settings are listed in order of dependency.  Note, the Watch's **XDrip BT 
   Force Wear may also provide better BT connectivity over that provided by the smartphone.  As an example, some users find that the SW3 provides better BT connectivity than their Samsung Galaxy Note 4 smartphone.
 
 
-###BT Collector
+###Collector
 
 The **BT Collector** is a read-only preference on the watch XDrip Prefs.  It corresponds to xDrip+ Setting -> **Hardware Data Source**.
 
