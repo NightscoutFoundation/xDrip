@@ -1,8 +1,8 @@
 # xDrip+ Wear Setup and Troubleshooting Guide
 - [Enable xDrip+ Android Wear Integration](#enable-xdrip-android-wear-integration)
+    - [Initial Wear Enablement Requests Location Permission](#initial-wear-enablement-requests-location-permission)
     - [BT Collector](#bt_collector)
         - [xDrip+ System Status](#xdrip-system-status)
-    - [Initial Wear Enablement Requests Location Permission](#initial-wear-enablement-requests-location-permission)
     - [Syncing Phone and Wear Preferences](#syncing-phone-and-wear-preferences)
     - [Syncing BGs and Wear Database](#syncing-bgs-and-wear-database)
     - [XDrip Prefs Overview](#xdrip-prefs-overview)
