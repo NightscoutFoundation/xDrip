@@ -179,10 +179,26 @@ public class Treatments extends Model {
         return Treatment;
     }
 
-    public static void pushTreatmentSync(Treatments treatment) {
-        GcmActivity.pushTreatmentAsync(treatment);
+    public static synchronized Treatments SensorStart(long timestamp) {
+        if (timestamp == 0) {
+            timestamp = new Date().getTime();
+        }
+
+        final Treatments Treatment = new Treatments();
+        Treatment.enteredBy = "xdrip";
+        Treatment.eventType = "Sensor Start";
+        Treatment.created_at = DateUtil.toISOString(timestamp);
+        Treatment.uuid = UUID.randomUUID().toString();
+        Treatment.save();
+        pushTreatmentSync(Treatment);
+        return Treatment;
+    }
+
+
+    private static void pushTreatmentSync(Treatments treatment) {
+        if (Home.get_master_or_follower()) GcmActivity.pushTreatmentAsync(treatment);
         NSClientChat.pushTreatmentAsync(treatment);
-        if (UploaderQueue.newEntry("insert",treatment) != null) {
+        if (UploaderQueue.newEntry("insert", treatment) != null) {
             SyncService.startSyncService(3000); // sync in 3 seconds
         }
     }

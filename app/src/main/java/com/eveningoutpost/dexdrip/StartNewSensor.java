@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Experience;
@@ -180,6 +181,9 @@ public class StartNewSensor extends ActivityWithMenu {
 
         LibreAlarmReceiver.clearSensorStats();
         JoH.scheduleNotification(this, "Sensor should be ready", getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
+
+        // reverse libre hacky workaround
+        Treatments.SensorStart((DexCollectionType.hasLibre() ? startTime + (3600000) : startTime));
 
         CollectionServiceStarter.newStart(getApplicationContext());
         Intent intent;
