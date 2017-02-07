@@ -54,9 +54,9 @@ These settings are listed in order of dependency.  Note, the Watch's **XDrip BT 
 
 ###BT Collector
 
-  The **BT Collector** is a read-only preference on the watch XDrip Prefs.  It corresponds to xDrip+ Setting -> **Hardware Data Source**.
+The **BT Collector** is a read-only preference on the watch XDrip Prefs.  It corresponds to xDrip+ Setting -> **Hardware Data Source**.
 
-  The following images show the setting of **Hardware Data Source** to **LimiTTer** and its corresponding setting on the watch.
+The following images show the setting of **Hardware Data Source** to **LimiTTer** and its corresponding setting on the watch.
 
 <img align="middle" src="./images/prefs-hardware-data-source-phone.png" title="xDrip+ Hardware Data Source">
 
