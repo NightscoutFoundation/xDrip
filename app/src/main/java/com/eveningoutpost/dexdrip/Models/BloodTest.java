@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.Models;
 
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
@@ -8,10 +9,17 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
+import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.GlucoseMeter.GlucoseReadingRx;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
+import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.messages.BloodTestMessage;
 import com.eveningoutpost.dexdrip.messages.BloodTestMultiMessage;
+import com.eveningoutpost.dexdrip.xdrip;
+import com.google.common.math.DoubleMath;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -277,11 +285,114 @@ public class BloodTest extends Model {
         }
     }
 
+    synchronized static void opportunisticCalibration() {
+        if (Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto")) {
+            final BloodTest bt = last();
+            if (bt == null) {
+                Log.d(TAG, "opportunistic: No blood tests");
+                return;
+            }
+            if (JoH.msSince(bt.timestamp) > Constants.DAY_IN_MS) {
+                Log.d(TAG, "opportunistic: Blood test older than 1 days ago");
+                return;
+            }
+
+            final Calibration calibration = Calibration.lastValid();
+            if (calibration == null) {
+                Log.d(TAG, "opportunistic: No calibrations");
+                return;
+            }
+
+            if (JoH.msSince(calibration.timestamp) < Constants.HOUR_IN_MS) {
+                Log.d(TAG, "opportunistic: Last calibration less than 1 hour ago");
+                return;
+            }
+
+            if (bt.timestamp <= calibration.timestamp) {
+                Log.d(TAG, "opportunistic: Blood test isn't more recent than last calibration");
+                return;
+            }
+
+            // get closest bgreading - must be within dexcom period and locked to sensor
+            final BgReading bgReading = BgReading.getForPreciseTimestamp(bt.timestamp + (AddCalibration.estimatedInterstitialLagSeconds * 1000), BgGraphBuilder.DEXCOM_PERIOD);
+            if (bgReading == null) {
+                Log.d(TAG, "opportunistic: No matching bg reading");
+                return;
+            }
+
+            if (!CalibrationRequest.isSlopeFlatEnough(bgReading)) {
+                Log.d(TAG, "opportunistic: Slope is not flat enough at: " + JoH.dateTimeText(bgReading.timestamp));
+                return;
+            }
+
+            // TODO store evaluation failure for this record in cache for future optimization
+
+            // TODO Check we have prior reading as well perhaps
+
+            UserError.Log.ueh(TAG, "Opportunistic calibration for Blood Test at " + JoH.dateTimeText(bt.timestamp) + " of " + BgGraphBuilder.unitized_string_with_units_static(bt.mgdl) + " matching sensor slope at: " + JoH.dateTimeText(bgReading.timestamp));
+            final long time_since = JoH.msSince(bt.timestamp);
+
+
+            Log.d(TAG, "opportunistic: attempting auto calibration");
+            Home.startHomeWithExtra(xdrip.getAppContext(),
+                    Home.BLUETOOTH_METER_CALIBRATION,
+                    BgGraphBuilder.unitized_string_static(bt.mgdl),
+                    Long.toString(time_since),
+                    "auto");
+        }
+    }
+
+    public static String evaluateAccuracy(long period) {
+
+        // CACHE??
+        // TODO Plugins by time
+
+        final List<BloodTest> bloodTests = latestForGraph(1000, JoH.tsl() - period, JoH.tsl() - AddCalibration.estimatedInterstitialLagSeconds);
+        final List<Double> difference = new ArrayList<>();
+        final List<Double> plugin_difference = new ArrayList<>();
+        if ((bloodTests == null) || (bloodTests.size() == 0)) return null;
+
+        final boolean show_plugin = true;
+        final CalibrationAbstract plugin = (show_plugin) ? PluggableCalibration.getCalibrationPluginFromPreferences() : null;
+        final CalibrationAbstract.CalibrationData cd = (plugin != null) ? plugin.getCalibrationData() : null;
+
+        for (BloodTest bt : bloodTests) {
+            final BgReading bgReading = BgReading.getForPreciseTimestamp(bt.timestamp + (AddCalibration.estimatedInterstitialLagSeconds * 1000), BgGraphBuilder.DEXCOM_PERIOD);
+
+            if (bgReading != null) {
+                final double diff = Math.abs(bgReading.calculated_value - bt.mgdl);
+                difference.add(diff);
+                if (d) Log.d(TAG, "Evaluate Accuracy: difference: " + JoH.qs(diff));
+
+                if ((plugin != null) && (cd != null)) {
+                    final double plugin_diff = Math.abs(bt.mgdl - plugin.getGlucoseFromBgReading(bgReading, cd));
+                    plugin_difference.add(plugin_diff);
+                    if (d)
+                        Log.d(TAG, "Evaluate Plugin Accuracy: difference: " + JoH.qs(plugin_diff));
+                }
+            }
+        }
+        double avg = DoubleMath.mean(difference);
+        Log.d(TAG, "Average accuracy: " + accuracyAsString(avg) + "  (" + JoH.qs(avg, 5) + ")");
+
+        if (plugin_difference.size() > 0) {
+            double plugin_avg = DoubleMath.mean(plugin_difference);
+            Log.d(TAG, "Plugin Average accuracy: " + accuracyAsString(plugin_avg) + "  (" + JoH.qs(plugin_avg, 5) + ")");
+            return accuracyAsString(plugin_avg) + " / " + accuracyAsString(avg);
+        }
+        return accuracyAsString(avg);
+    }
+
+    public static String accuracyAsString(double avg) {
+        final boolean domgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
+        // +- symbol
+        return "\u00B1" + (!domgdl ? JoH.qs(avg * Constants.MGDL_TO_MMOLL, 2) + " mmol" : JoH.qs(avg, 1) + " mgdl");
+    }
 
     public static List<BloodTest> cleanup(int retention_days) {
         return new Delete()
                 .from(BloodTest.class)
-                .where("timestamp < ?", JoH.tsl() - (retention_days * 86400000L))
+                .where("timestamp < ?", JoH.tsl() - (retention_days * Constants.DAY_IN_MS))
                 .execute();
     }
 
