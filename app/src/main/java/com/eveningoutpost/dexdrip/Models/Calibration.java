@@ -23,6 +23,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -1124,6 +1125,19 @@ public class Calibration extends Model {
         this.slope_confidence = 0;
         this.sensor_confidence = 0;
         save();
+        PluggableCalibration.invalidateAllCaches();
+    }
+
+    public static synchronized void invalidateAllForSensor() {
+        final List<Calibration> cals = allForSensorLimited(9999999);
+        if (cals != null) {
+            for (Calibration cal : cals) {
+                cal.invalidate();
+            }
+        }
+        String msg = "Deleted all calibrations for sensor";
+        Log.ueh(TAG, msg);
+        JoH.static_toast_long(msg);
     }
 
 }
