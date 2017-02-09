@@ -85,6 +85,7 @@ import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.languageeditor.LanguageEditor;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
+import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.DisplayQRCode;
@@ -120,6 +121,7 @@ import lecho.lib.hellocharts.view.PreviewLineChartView;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.WEEK_IN_MS;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPlugin;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
 
@@ -1658,6 +1660,7 @@ public class Home extends ActivityWithMenu {
         if (get_follower() || get_master()) {
           GcmActivity.checkSync(this);
         }
+
     }
 
     private void setupCharts() {
@@ -2065,7 +2068,7 @@ public class Home extends ActivityWithMenu {
         }
 
         if (BgReading.latest(2).size() > 1) {
-            List<Calibration> calibrations = Calibration.latest(2);
+            List<Calibration> calibrations = Calibration.latestValid(2);
             if (calibrations.size() > 1) {
                 if (calibrations.get(0).possible_bad != null && calibrations.get(0).possible_bad == true && calibrations.get(1).possible_bad != null && calibrations.get(1).possible_bad != true) {
                     notificationText.setText(R.string.possible_bad_calibration);
@@ -2314,7 +2317,8 @@ public class Home extends ActivityWithMenu {
             }
             if (prefs.getBoolean("status_line_capture_percentage", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
-                extraline.append(statsResult.getCapturePercentage(false));
+                final String accuracy = BloodTest.evaluateAccuracy(WEEK_IN_MS);
+               // extraline.append(statsResult.getCapturePercentage(false) + ((accuracy != null) ? " " + accuracy : ""));
             }
         }
         if (prefs.getBoolean("extra_status_calibration_plugin", false)) {
@@ -2901,6 +2905,9 @@ public class Home extends ActivityWithMenu {
         if (item.getItemId() == R.id.action_toggle_speakreadings) {
             prefs.edit().putBoolean("bg_to_speech", !prefs.getBoolean("bg_to_speech", false)).commit();
             invalidateOptionsMenu();
+            if (prefs.getBoolean("bg_to_speech", false)) {
+                BgToSpeech.testSpeech();
+            }
             return true;
         }
 

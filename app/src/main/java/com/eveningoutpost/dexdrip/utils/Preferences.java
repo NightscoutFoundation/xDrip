@@ -1735,16 +1735,7 @@ public class Preferences extends PreferenceActivity {
                         AlertDialog alert = alertDialog.create();
                         alert.show();
                         try {
-                            BgToSpeech.setupTTS(preference.getContext()); // try to initialize now
-                            BgReading bgReading = BgReading.last();
-                            if (bgReading != null) {
-                                final BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
-                                if (dg != null) {
-                                    BgToSpeech.speak(dg.mgdl, dg.timestamp + 1200000);
-                                } else {
-                                    BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp + 1200000);
-                                }
-                            }
+                            BgToSpeech.testSpeech();
                         } catch (Exception e) {
                             Log.e(TAG, "Got exception with TTS: " + e);
                         }

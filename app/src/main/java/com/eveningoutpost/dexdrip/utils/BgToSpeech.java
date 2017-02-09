@@ -8,7 +8,9 @@ import android.media.AudioManager;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 
+import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
@@ -243,5 +245,17 @@ public class BgToSpeech {
         return (manager.getMode() == AudioManager.MODE_IN_CALL);
     }
 
+    public static void testSpeech() {
+        BgToSpeech.setupTTS(xdrip.getAppContext()); // try to initialize now
+        final BgReading bgReading = BgReading.last();
+        if (bgReading != null) {
+            final BestGlucose.DisplayGlucose dg = BestGlucose.getDisplayGlucose();
+            if (dg != null) {
+                BgToSpeech.speak(dg.mgdl, dg.timestamp + 1200000);
+            } else {
+                BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp + 1200000);
+            }
+        }
+    }
 
 }
