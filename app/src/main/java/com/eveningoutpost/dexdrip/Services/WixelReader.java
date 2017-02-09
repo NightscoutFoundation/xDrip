@@ -15,6 +15,7 @@ import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.google.gson.Gson;
@@ -610,7 +611,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         final List<StatusItem> l = new ArrayList<>();
         for (Map.Entry<String, String> entry : hostStatus.entrySet()) {
             final long status_time = hostStatusTime.get(entry.getKey());
-            if (entry.getValue().length()>0) l.add(new StatusItem(entry.getKey(), entry.getValue() + ((status_time != 0) ? (" " + JoH.niceTimeSince(status_time) + " " + "ago") : "")));
+            if (entry.getValue().length()>0) l.add(new StatusItem(entry.getKey(), entry.getValue() + ((status_time != 0) ? (" " + JoH.niceTimeSince(status_time) + " " + "ago") : ""),JoH.msSince(status_time) <= BgGraphBuilder.DEXCOM_PERIOD ? StatusItem.Highlight.GOOD : JoH.msSince(status_time) <= BgGraphBuilder.DEXCOM_PERIOD*2 ? StatusItem.Highlight.NOTICE : StatusItem.Highlight.NORMAL));
         }
         return l;
     }

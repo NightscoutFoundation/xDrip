@@ -515,6 +515,9 @@ public class MegaStatus extends ActivityWithMenu {
                     case CRITICAL:
                         new_colour = Color.parseColor("#770000");
                         break;
+                    default:
+                        new_colour = Color.TRANSPARENT;
+                        break;
                 }
                 if (new_colour != -1) {
                     viewHolder.value.setBackgroundColor(new_colour);
