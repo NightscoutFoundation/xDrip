@@ -522,10 +522,10 @@ public class JoH {
     public static String niceTimeScalar(long t) {
         String unit = "second";
         t = t / 1000;
-        if (t > 60) {
+        if (t > 59) {
             unit = "minute";
             t = t / 60;
-            if (t > 60) {
+            if (t > 59) {
                 unit = "hour";
                 t = t / 60;
                 if (t > 24) {

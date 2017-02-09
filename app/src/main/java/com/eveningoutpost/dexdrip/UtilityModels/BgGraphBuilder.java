@@ -917,7 +917,9 @@ public class BgGraphBuilder {
             try {
                 for (Calibration calibration : calibrations) {
                     if (calibration.slope_confidence != 0) {
-                        calibrationValues.add(new PointValue((float) (calibration.timestamp / FUZZER), (float) unitized(calibration.bg)));
+                        final PointValueExtended this_point = new PointValueExtended((float) ((calibration.timestamp + (AddCalibration.estimatedInterstitialLagSeconds * 1000)) / FUZZER), (float) unitized(calibration.bg));
+                        this_point.real_timestamp = calibration.timestamp;
+                        calibrationValues.add(this_point);
                         if (calibration.timestamp > last_calibration) {
                             last_calibration = calibration.timestamp;
                         }
