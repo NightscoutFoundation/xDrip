@@ -2318,7 +2318,7 @@ public class Home extends ActivityWithMenu {
             if (prefs.getBoolean("status_line_capture_percentage", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
                 final String accuracy = BloodTest.evaluateAccuracy(WEEK_IN_MS);
-               // extraline.append(statsResult.getCapturePercentage(false) + ((accuracy != null) ? " " + accuracy : ""));
+                extraline.append(statsResult.getCapturePercentage(false) + ((accuracy != null) ? " " + accuracy : ""));
             }
         }
         if (prefs.getBoolean("extra_status_calibration_plugin", false)) {
