@@ -618,6 +618,12 @@
             android:key="enable_crashlytics"
             android:summary="@string/send_crash_errors_to_developer"
             android:title="@string/automatic_crash_reporting" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enable_telemetry"
+            android:dependency="enable_crashlytics"
+            android:summary="Send data to developers about success rates of different devices"
+            android:title="Enable Telemetry" />
         <Preference
             android:key="send_feedback"
             android:summary="@string/web_feedback_form_for_sending_messages"

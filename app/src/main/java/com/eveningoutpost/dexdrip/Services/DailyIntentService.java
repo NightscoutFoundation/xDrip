@@ -15,6 +15,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
+import com.eveningoutpost.dexdrip.utils.Telemetry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
@@ -22,7 +23,7 @@ import static com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity.checkForAn
 
 public class DailyIntentService extends IntentService {
     private final static String TAG = DailyIntentService.class.getSimpleName();
-    private SharedPreferences mPrefs;
+    //private SharedPreferences mPrefs;
     // DAILY TASKS CAN GO IN HERE!
 
     public DailyIntentService() {
@@ -37,7 +38,7 @@ public class DailyIntentService extends IntentService {
                 Log.i(TAG, "DailyIntentService onHandleIntent Starting");
                 Long start = JoH.tsl();
                 // prune old database records
-                mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                //mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 try {
                     startWatchUpdaterService(this, WatchUpdaterService.ACTION_SYNC_DB, TAG);
                 } catch (Exception e) {
@@ -77,7 +78,12 @@ public class DailyIntentService extends IntentService {
                 try {
                     if (Home.get_master_or_follower()) RollCall.pruneOld(0);
                 } catch (Exception e) {
-                    Log.e(TAG, "exception on RollCall prune "+ e);
+                    Log.e(TAG, "exception on RollCall prune " + e);
+                }
+                try {
+                    Telemetry.sendCaptureReport();
+                } catch (Exception e) {
+                    Log.e(TAG, "Exception in Telemetry: " + e);
                 }
                 Log.i(TAG, "DailyIntentService onHandleIntent exiting after " + ((JoH.tsl() - start) / 1000) + " seconds");
                 //} else {
