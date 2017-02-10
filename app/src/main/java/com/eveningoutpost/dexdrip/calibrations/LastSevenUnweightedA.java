@@ -44,13 +44,15 @@ public class LastSevenUnweightedA extends CalibrationAbstract {
     }
 
     @Override
-    public CalibrationData getCalibrationData() {
+    public CalibrationData getCalibrationData(long until) {
 
-        CalibrationData cd = loadDataFromCache(TAG);
+        // TODO cache must understand until
+        //CalibrationData cd = loadDataFromCache(TAG);
+        CalibrationData cd = null;
         if (cd == null) {
 
             // first is most recent
-            final List<Calibration> calibrations = Calibration.latestValid(7);
+            final List<Calibration> calibrations = Calibration.latestValid(7, until);
             if (calibrations == null) return null;
             // have we got enough data to have a go
             if (calibrations.size() < 4) {

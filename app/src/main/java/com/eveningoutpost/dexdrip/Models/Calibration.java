@@ -431,6 +431,7 @@ public class Calibration extends Model {
         return create(bg, timeoffset, context, false, 0);
     }
 
+    // regular calibration
     public static Calibration create(double bg, long timeoffset, Context context, boolean note_only, long estimatedInterstitialLagSeconds) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final String unit = prefs.getString("units", "mgdl");
@@ -447,7 +448,7 @@ public class Calibration extends Model {
         }
 
         if (!note_only) CalibrationRequest.clearAll();
-        Calibration calibration = new Calibration();
+        final Calibration calibration = new Calibration();
         Sensor sensor = Sensor.currentSensor();
 
         boolean is_follower = prefs.getString("dex_collection_method", "").equals("Follower");
@@ -566,6 +567,7 @@ public class Calibration extends Model {
             // less than 5 calibrations in last 4 days? cast the net wider if in extended mode
             final int ccount = calibrations.size();
             if ((ccount < 5) && extended) {
+                ActiveAndroid.clearCache();
                 calibrations = allForSensorLimited(5);
                 if (calibrations.size() > ccount) {
                     Home.toaststaticnext("Calibrated using data beyond last 4 days");
@@ -591,13 +593,15 @@ public class Calibration extends Model {
                 }
 
                 final Calibration last_calibration = Calibration.last();
-                ActiveAndroid.clearCache();
-                w = (last_calibration.calculateWeight() * (calibrations.size() * 0.14));
-                l += (w);
-                m += (w * last_calibration.estimate_raw_at_time_of_calibration);
-                n += (w * last_calibration.estimate_raw_at_time_of_calibration * last_calibration.estimate_raw_at_time_of_calibration);
-                p += (w * last_calibration.bg);
-                q += (w * last_calibration.estimate_raw_at_time_of_calibration * last_calibration.bg);
+                if (last_calibration != null) {
+                    ActiveAndroid.clearCache();
+                    w = (last_calibration.calculateWeight() * (calibrations.size() * 0.14));
+                    l += (w);
+                    m += (w * last_calibration.estimate_raw_at_time_of_calibration);
+                    n += (w * last_calibration.estimate_raw_at_time_of_calibration * last_calibration.estimate_raw_at_time_of_calibration);
+                    p += (w * last_calibration.bg);
+                    q += (w * last_calibration.estimate_raw_at_time_of_calibration * last_calibration.bg);
+                }
 
                 double d = (l * n) - (m * m);
                 final Calibration calibration = Calibration.last();
@@ -827,9 +831,7 @@ public class Calibration extends Model {
         Log.d(TAG, "Trying to clear last calibration");
         Calibration calibration = Calibration.last();
         if (calibration != null) {
-            calibration.slope_confidence = 0;
-            calibration.sensor_confidence = 0;
-            calibration.save();
+            calibration.invalidate();
             CalibrationSendQueue.addToQueue(calibration, xdrip.getAppContext());
             newFingerStickData();
         }
@@ -858,9 +860,7 @@ public class Calibration extends Model {
         if (uuid == null) return;
         Calibration calibration = byuuid(uuid);
         if (calibration != null) {
-            calibration.slope_confidence = 0;
-            calibration.sensor_confidence = 0;
-            calibration.save();
+            calibration.invalidate();
             CalibrationSendQueue.addToQueue(calibration, xdrip.getAppContext());
             newFingerStickData();
             if (from_interactive) {
@@ -1010,6 +1010,10 @@ public class Calibration extends Model {
     }
 
     public static List<Calibration> latestValid(int number) {
+        return latestValid(number, JoH.tsl() + Constants.HOUR_IN_MS);
+    }
+
+    public static List<Calibration> latestValid(int number, long until) {
         Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
             return null;
@@ -1020,6 +1024,7 @@ public class Calibration extends Model {
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
                 .where("slope != 0")
+                .where("timestamp < ?", until)
                 .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
@@ -1030,6 +1035,7 @@ public class Calibration extends Model {
                 .from(Calibration.class)
                 .where("timestamp >= " + Math.max(startTime, 0))
                 .where("timestamp <= " + endTime)
+                .where("slope != 0")
                 .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
@@ -1124,6 +1130,8 @@ public class Calibration extends Model {
     public void invalidate() {
         this.slope_confidence = 0;
         this.sensor_confidence = 0;
+        this.slope = 0;
+        this.intercept = 0;
         save();
         PluggableCalibration.invalidateAllCaches();
     }

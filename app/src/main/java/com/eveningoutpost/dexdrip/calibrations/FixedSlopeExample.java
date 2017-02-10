@@ -23,7 +23,7 @@ public class FixedSlopeExample extends CalibrationAbstract {
     }
 
     @Override
-    public CalibrationData getCalibrationData() {
+    public CalibrationData getCalibrationData(long until) {
         return new CalibrationData(1.08d, -5.0d);
     }
 }

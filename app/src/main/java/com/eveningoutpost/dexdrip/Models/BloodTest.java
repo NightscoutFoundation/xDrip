@@ -46,7 +46,7 @@ public class BloodTest extends Model {
 
     private static boolean patched = false;
     private final static String TAG = "BloodTest";
-    private final static boolean d = true;
+    private final static boolean d = false;
 
     @Expose
     @Column(name = "timestamp", unique = true, onUniqueConflicts = Column.ConflictAction.IGNORE)
@@ -345,7 +345,6 @@ public class BloodTest extends Model {
     public static String evaluateAccuracy(long period) {
 
         // CACHE??
-        // TODO Plugins by time
 
         final List<BloodTest> bloodTests = latestForGraph(1000, JoH.tsl() - period, JoH.tsl() - AddCalibration.estimatedInterstitialLagSeconds);
         final List<Double> difference = new ArrayList<>();
@@ -354,21 +353,28 @@ public class BloodTest extends Model {
 
         final boolean show_plugin = true;
         final CalibrationAbstract plugin = (show_plugin) ? PluggableCalibration.getCalibrationPluginFromPreferences() : null;
-        final CalibrationAbstract.CalibrationData cd = (plugin != null) ? plugin.getCalibrationData() : null;
+
 
         for (BloodTest bt : bloodTests) {
             final BgReading bgReading = BgReading.getForPreciseTimestamp(bt.timestamp + (AddCalibration.estimatedInterstitialLagSeconds * 1000), BgGraphBuilder.DEXCOM_PERIOD);
 
             if (bgReading != null) {
+                final Calibration calibration = bgReading.calibration;
+                if (calibration == null) {
+                    Log.d(TAG,"Calibration for bgReading is null! @ "+JoH.dateTimeText(bgReading.timestamp));
+                    continue;
+                }
                 final double diff = Math.abs(bgReading.calculated_value - bt.mgdl);
                 difference.add(diff);
-                if (d) Log.d(TAG, "Evaluate Accuracy: difference: " + JoH.qs(diff));
-
+                if (d) {
+                    Log.d(TAG, "Evaluate Accuracy: difference: " + JoH.qs(diff));
+                }
+                final CalibrationAbstract.CalibrationData cd = (plugin != null) ? plugin.getCalibrationData(bgReading.timestamp) : null;
                 if ((plugin != null) && (cd != null)) {
                     final double plugin_diff = Math.abs(bt.mgdl - plugin.getGlucoseFromBgReading(bgReading, cd));
                     plugin_difference.add(plugin_diff);
                     if (d)
-                        Log.d(TAG, "Evaluate Plugin Accuracy: difference: " + JoH.qs(plugin_diff));
+                        Log.d(TAG, "Evaluate Plugin Accuracy: " + BgGraphBuilder.unitized_string_with_units_static(bt.mgdl) + " @ " + JoH.dateTimeText(bt.timestamp) + "  difference: " + JoH.qs(plugin_diff) + "/" + JoH.qs(plugin_diff * Constants.MGDL_TO_MMOLL, 2) + " calibration: " + JoH.qs(cd.slope, 2) + " " + JoH.qs(cd.intercept, 2));
                 }
             }
         }
@@ -399,7 +405,7 @@ public class BloodTest extends Model {
     // create the table ourselves without worrying about model versioning and downgrading
     private static void fixUpTable() {
         if (patched) return;
-        String[] patchup = {
+        final String[] patchup = {
                 "CREATE TABLE BloodTest (_id INTEGER PRIMARY KEY AUTOINCREMENT);",
                 "ALTER TABLE BloodTest ADD COLUMN timestamp INTEGER;",
                 "ALTER TABLE BloodTest ADD COLUMN created_timestamp INTEGER;",

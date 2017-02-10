@@ -334,11 +334,11 @@ public class BgReading extends Model implements ShareUploadableBg {
                     .orderBy("abs(timestamp - " + timestamp + ") asc")
                     .executeSingle();
             if (bgReading != null && Math.abs(bgReading.timestamp - timestamp) < precision) { //cool, so was it actually within precision of that bg reading?
-                Log.i(TAG, "getForPreciseTimestamp: Found a BG timestamp match");
+                //Log.d(TAG, "getForPreciseTimestamp: Found a BG timestamp match");
                 return bgReading;
             }
         }
-        Log.w(TAG, "getForPreciseTimestamp: No luck finding a BG timestamp match: " + JoH.dateTimeText((long) timestamp) + " precision:" + precision + " Sensor: " + ((sensor == null) ? "null" : sensor.getId()));
+        Log.d(TAG, "getForPreciseTimestamp: No luck finding a BG timestamp match: " + JoH.dateTimeText((long) timestamp) + " precision:" + precision + " Sensor: " + ((sensor == null) ? "null" : sensor.getId()));
         return null;
     }
 

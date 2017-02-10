@@ -119,10 +119,10 @@ public class CalibrationDataTable extends ListActivity implements NavigationDraw
                             switch (which){
                                 case DialogInterface.BUTTON_POSITIVE:
                                     calibration.invalidate();
+                                    notifyDataSetChanged();
                                     break;
 
                                 case DialogInterface.BUTTON_NEGATIVE:
-                                    calibration.invalidate();
                                     break;
                             }
                         }
