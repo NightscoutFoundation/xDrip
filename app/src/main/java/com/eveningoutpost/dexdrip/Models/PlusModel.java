@@ -11,13 +11,14 @@ public class PlusModel extends Model {
 
     private static boolean patched = false;
 
-    private synchronized static void fixUpTable(String[] schema) {
+    protected synchronized static void fixUpTable(String[] schema) {
         if (patched) return;
 
         for (String patch : schema) {
             try {
                 SQLiteUtils.execSql(patch);
             } catch (Exception e) {
+                //
             }
         }
         patched = true;

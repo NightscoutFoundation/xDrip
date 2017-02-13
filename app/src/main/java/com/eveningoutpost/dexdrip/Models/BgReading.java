@@ -953,6 +953,12 @@ public class BgReading extends Model implements ShareUploadableBg {
                 .executeSingle();
     }
 
+    public static BgReading byid(long id) {
+        return new Select()
+                .from(BgReading.class)
+                .where("_ID = ?", id)
+                .executeSingle();
+    }
 
     public static BgReading fromJSON(String json) {
         if (json.length()==0)
