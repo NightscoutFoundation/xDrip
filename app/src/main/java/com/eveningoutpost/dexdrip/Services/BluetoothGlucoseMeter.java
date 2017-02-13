@@ -37,6 +37,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -581,6 +582,7 @@ public class BluetoothGlucoseMeter extends Service {
         if (lastBloodTest != null) {
             GcmActivity.syncBloodTests();
 
+            final boolean delay_calibration = true;
             final GlucoseReadingRx lastGlucoseRecord = lastBloodTest.glucoseReadingRx;
             if ((lastGlucoseRecord != null) && (lastGlucoseRecord.device != null) && (ct != null)) {
                 final String sequence_id = "last-btm-sequence-" + lastGlucoseRecord.device;
@@ -597,7 +599,7 @@ public class BluetoothGlucoseMeter extends Service {
                                 || Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto")) {
                             final long time_since = JoH.msSince(lastBloodTest.timestamp);
                             if (time_since >= 0) {
-                                if (time_since < (12 * 60 * 60 * 1000)) {
+                                if (time_since < (12 * Constants.HOUR_IN_MS)) {
                                     final Calibration calibration = Calibration.lastValid();
                                     // check must also be younger than most recent calibration
                                     if ((calibration == null) || (lastBloodTest.timestamp > calibration.timestamp)) {
@@ -612,11 +614,16 @@ public class BluetoothGlucoseMeter extends Service {
 
                                                 if ((Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto") && isSlopeFlatEnough())) {
                                                     Log.d(TAG, "Slope flat enough for auto calibration");
-                                                    Home.startHomeWithExtra(xdrip.getAppContext(),
-                                                            Home.BLUETOOTH_METER_CALIBRATION,
-                                                            BgGraphBuilder.unitized_string_static(lastBloodTest.mgdl),
-                                                            Long.toString(time_since),
-                                                            "auto");
+                                                    if (!delay_calibration) {
+                                                        Home.startHomeWithExtra(xdrip.getAppContext(),
+                                                                Home.BLUETOOTH_METER_CALIBRATION,
+                                                                BgGraphBuilder.unitized_string_static(lastBloodTest.mgdl),
+                                                                Long.toString(time_since),
+                                                                "auto");
+                                                    } else {
+                                                        Log.d(TAG, "Delaying calibration for later");
+                                                        JoH.static_toast_long("Waiting for 15 minutes more sensor data for calibration");
+                                                    }
                                                 } else {
                                                     if (Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations")) {
                                                         // manual calibration
