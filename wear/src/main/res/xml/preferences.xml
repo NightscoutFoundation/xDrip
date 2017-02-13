@@ -96,6 +96,13 @@
          -->
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="showSteps"
+            android:title="@string/pref_show_steps"
+            android:summary="@string/pref_summary_show_steps"
+            app:wear_iconOff="@drawable/settings_off"
+            app:wear_iconOn="@drawable/settings_on" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="showExternalStatus"
             android:title="@string/pref_show_external_status"
             android:summary="@string/pref_summary_show_external_status"

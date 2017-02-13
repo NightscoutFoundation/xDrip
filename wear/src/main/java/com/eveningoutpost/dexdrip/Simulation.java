@@ -137,6 +137,12 @@ public class Simulation extends Activity {
         }
     }
 
+    @Override
+    protected void onPause(){
+        super.onPause();
+        finish();
+    }
+
     private void processIncomingIntentWhenReady(final Intent intent) {
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {

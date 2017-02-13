@@ -17,6 +17,7 @@ import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
@@ -60,6 +61,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.ts;
+import static com.eveningoutpost.dexdrip.Models.PebbleMovement.last;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
 
 public class WatchUpdaterService extends WearableListenerService implements
@@ -83,6 +85,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String SYNC_DB_PATH = "/syncweardb";//KS
     private static final String SYNC_BGS_PATH = "/syncwearbgs";//KS
     private static final String SYNC_LOGS_PATH = "/syncwearlogs";
+    private static final String SYNC_STEP_SENSOR_PATH = "/syncwearstepsensor";
     private static final String CLEAR_LOGS_PATH = "/clearwearlogs";
     private static final String STATUS_COLLECTOR_PATH = "/statuscollector";
     private static final String START_COLLECTOR_PATH = "/startcollector";
@@ -376,7 +379,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                                 }
                             }
                             //Log.d(TAG, "syncLogData add Entry Wear=" + data.toString());
-                            //Log.d(TAG, "syncLogData WATCH data.shortError=" + data.shortError + " severity=" + data.severity + " timestamp=" + JoH.dateTimeText((long) data.timestamp));
+                            Log.d(TAG, "syncLogData WATCH data.shortError=" + data.shortError + " severity=" + data.severity + " timestamp=" + JoH.dateTimeText((long) data.timestamp));
                             if (!bBenchmark)
                                 data.save();
                         }
@@ -384,6 +387,43 @@ public class WatchUpdaterService extends WearableListenerService implements
                 }
             }
             sendDataReceived(DATA_ITEM_RECEIVED_PATH,"DATA_RECEIVED_LOGS count=" + entries.size(), timeOfLastEntry, bBenchmark?"BM":"LOG");
+        }
+    }
+
+    private synchronized void syncStepSensorData(DataMap dataMap, boolean bBenchmark) {
+        Log.d(TAG, "syncStepSensorData");
+
+        ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
+        long timeOfLastEntry = 0;
+        Log.d(TAG, "syncStepSensorData add to Table" );
+        if (entries != null) {
+
+            Gson gson = new GsonBuilder()
+                    .excludeFieldsWithoutExposeAnnotation()
+                    .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                    .serializeSpecialFloatingPointValues()
+                    .create();
+
+            PebbleMovement pm = last();
+            Log.d(TAG, "syncStepSensorData add Table entries count=" + entries.size());
+            for (DataMap entry : entries) {
+                if (entry != null) {
+                    Log.d(TAG, "syncStepSensorData add Table entry=" + entry);
+                    String record = entry.getString("entry");
+                    if (record != null) {
+                        Log.d(TAG, "syncStepSensorData add Table record=" + record);
+                        PebbleMovement data = gson.fromJson(record, PebbleMovement.class);
+                        if (data != null) {
+                            timeOfLastEntry = (long) data.timestamp + 1;
+                            Log.d(TAG, "syncStepSensorData add Entry Wear=" + data.toString());
+                            Log.d(TAG, "syncStepSensorData WATCH data.metric=" + data.metric + " timestamp=" + JoH.dateTimeText((long) data.timestamp));
+                            if (!bBenchmark)
+                                data.saveit();
+                        }
+                    }
+                }
+            }
+            sendDataReceived(DATA_ITEM_RECEIVED_PATH,"DATA_RECEIVED_LOGS count=" + entries.size(), timeOfLastEntry, bBenchmark?"BM":"STEP");
         }
     }
 
@@ -931,6 +971,16 @@ public class WatchUpdaterService extends WearableListenerService implements
                             }
                         }
                         break;
+                    case SYNC_STEP_SENSOR_PATH:
+                        Log.d(TAG, "onMessageReceived SYNC_STEP_SENSOR_PATH");
+                        if (event.getData() != null) {
+                            dataMap = DataMap.fromByteArray(event.getData());
+                            if (dataMap != null) {
+                                Log.d(TAG, "onMessageReceived SYNC_STEP_SENSOR_PATH dataMap=" + dataMap);
+                                syncStepSensorData(dataMap, false);
+                            }
+                        }
+                        break;
                     case WEARABLE_INITDB_PATH:
                         Log.d(TAG, "onMessageReceived WEARABLE_INITDB_PATH");
                         initWearData();
@@ -1145,6 +1195,8 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMap.putBoolean("rising_alert", mPrefs.getBoolean("rising_alert", false));
             dataMap.putString("rising_bg_val", mPrefs.getString("rising_bg_val", "2"));
         }
+        //Step Counter
+        dataMap.putBoolean("use_wear_health", mPrefs.getBoolean("use_pebble_health", true));
         is_using_bt = DexCollectionType.hasBluetooth();
 
         Double highMark = Double.parseDouble(mPrefs.getString("highValue", "170"));
