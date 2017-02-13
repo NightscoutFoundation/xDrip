@@ -167,6 +167,7 @@ The following image shows xDrip+ app Battery Alert under **Extra Alerts (xDrip+)
 
 ####XDrip Watchface Settings
 The following new preferences are supported:
+  - Show Steps - Show Step Counter on all XDrip watchfaces.  Steps reset to 0 at midnight. To enable, you must switch **Use Pebble Health Data** on under xDrip+ **Smart Watch Features**. When enabled, wear steps will be synced to xDrip+.
   - Show Status - Show Loop Status on the XDrip and XDrip(Large) watchfaces.  This will display the HAPP status message containing Basal%, IOB, COB.
   - Opaque Card - Show notifications cards with opaque background.  This will allow cards to be read more easily in ambient mode.
   - Small Font - Fontsize of small text in status and delta time fields on the XDrip and XDrip(Large) watchfaces.
@@ -179,6 +180,10 @@ The following images show watchface preferences.
 The following images show an example of an alert displayed with Opaque Card enabled and disabled in Ambient Mode and Interactive Mode.
 
 <img align="middle" src="./images/prefs-watch-opaque.png" title="XDrip Watchface Opaque Card">
+
+The following images show required xDrip+ preferences and examples of Watch Steps synced with xDrip+.
+
+<img align="middle" src="./images/prefs-phone-sync-steps.png" title="XDrip Phone and Watchface Step Counter">
 
 ####Watchface Tap Feature
 Watchface tap feature is now implemented for the following preferences:

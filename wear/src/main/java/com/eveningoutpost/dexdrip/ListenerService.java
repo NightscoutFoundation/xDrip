@@ -704,7 +704,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     }
 
     private void setupStepSensor() {
-        if (mPrefs.getBoolean("use_wear_health", true)) {
+        if (mPrefs.getBoolean("use_wear_health", false) || mPrefs.getBoolean("showSteps", false)) {
             Log.d(TAG, "Start Step Counter Sensor");
             startService(new Intent(this, SensorService.class));
         }
@@ -746,7 +746,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 Log.d(TAG, "OnSharedPreferenceChangeListener sendPrefSettings for key=" + key);
                 sendPrefSettings();
             }
-            else if (key.compareTo("use_wear_health") == 0) {
+            else if (key.compareTo("use_wear_health") == 0 || key.compareTo("showSteps") == 0) {
                 setupStepSensor();
             }
             else {//if(key.compareTo("dex_txid") == 0 || key.compareTo(DexCollectionType.DEX_COLLECTION_METHOD) == 0){
@@ -1737,7 +1737,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         if (googleApiClient != null) {
             Wearable.MessageApi.removeListener(googleApiClient, this);
         }
-        if (mPrefs.getBoolean("use_wear_health", true)) {
+        if (mPrefs.getBoolean("use_wear_health", true) || mPrefs.getBoolean("showSteps", true)) {
             Log.d(TAG, "Start Step Counter Sensor");
             stopService(new Intent(this, SensorService.class));
         }
