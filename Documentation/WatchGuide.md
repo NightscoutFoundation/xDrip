@@ -175,7 +175,7 @@ The following new preferences are supported:
   - Small Font - Fontsize of small text in status and delta time fields on the XDrip and XDrip(Large) watchfaces.
   - Show Bridge Battery - Show bridge battery usage on the XDrip and XDrip(Large) watchfaces.  This setting will only be displayed when the BT Collector uses a battery, for example, LimiTTer or Wixel/xBridge.
 
-The following images show watchface preferences.
+The following images show watchface preferences under XDrip Watchface Settings.
 
 <img align="middle" src="./images/prefs-watchface-settings.png" title="XDrip Watchface Settings">
 
