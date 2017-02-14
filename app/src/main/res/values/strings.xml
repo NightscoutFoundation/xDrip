@@ -233,6 +233,8 @@
     <string name="pref_summary_enable_wearG5">Connect Wear to BT Collector when phone is out-of-range</string>
     <string name="pref_force_wearG5">Force Wear Collection Service</string>
     <string name="pref_summary_force_wearG5">Force phone to use Wear Collection Service</string>
+    <string name="pref_disable_wearG5_on_lowbattery">Disable Force on Low Battery</string>
+    <string name="pref_summary_disable_wearG5_on_lowbattery">Disable Force Wear Collection Service on Wear Low Battery Alert</string>
     <string name="pref_node_wearG5">Device running Collection Service</string>
     <string name="pref_summary_node_wearG5">Force phone to use this Wear Collection Service</string>
 
@@ -524,5 +526,6 @@
     <string name="split">Split</string>
     <string name="delete">Delete</string>
     <string name="title_activity_btglucose_meter">Meter Scan</string>
+    <string name="notify_when_wear_low_battery">Disabling Force Wear Collection Service due to Wear Low Battery!</string>
 
 </resources>

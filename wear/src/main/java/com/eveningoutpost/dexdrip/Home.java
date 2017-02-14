@@ -100,6 +100,7 @@ public class Home extends BaseWatchFace {
     protected WatchFaceStyle getWatchFaceStyle(){
         return new WatchFaceStyle.Builder(this)
                 .setAcceptsTapEvents(true)
+                .setHotwordIndicatorGravity(Gravity.TOP | Gravity.CENTER)
                 .setStatusBarGravity(Gravity.END | -20)
                 .build();
     }

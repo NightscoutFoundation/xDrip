@@ -10,6 +10,7 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
@@ -109,6 +110,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     public static final String WEARABLE_CANCEL_TREATMENT = "/xdrip_plus_cancel_treatment";
     private static final String WEARABLE_TREATMENT_PAYLOAD = "/xdrip_plus_treatment_payload";
     private static final String WEARABLE_TOAST_NOTIFICATON = "/xdrip_plus_toast";
+    private static final String WEARABLE_TOAST_LOCAL_NOTIFICATON = "/xdrip_plus_local_toast";
     private static final String OPEN_SETTINGS_PATH = "/openwearsettings";
     private static final String NEW_STATUS_PATH = "/sendstatustowear";//KS
     private static final String CAPABILITY_WEAR_APP = "wear_app_sync_bgs";
@@ -201,17 +203,24 @@ public class WatchUpdaterService extends WearableListenerService implements
             Log.d(TAG, "syncPrefData node_wearG5:" + node_wearG5);
         }
 
-        if (/*force_wearG5 &&*/ force_wearG5 != mPrefs.getBoolean("force_wearG5", false)) {
-            change = true;
-            prefs.putBoolean("force_wearG5", force_wearG5);
-            Log.d(TAG, "syncPrefData commit force_wearG5:" + force_wearG5);
-        }
-
         if (bridge_battery != mPrefs.getInt("bridge_battery", -1)) {//Used by DexCollectionService
             change = true;
             prefs.putInt("bridge_battery", bridge_battery);
             Log.d(TAG, "syncPrefData commit bridge_battery: " + bridge_battery);
-            CheckBridgeBattery.checkBridgeBattery();
+            boolean lowbattery = CheckBridgeBattery.checkBridgeBattery();
+            if (lowbattery && force_wearG5 && mPrefs.getBoolean("disable_wearG5_on_lowbattery", false)) {
+                force_wearG5 = false;
+                Log.d(TAG, "syncPrefData disable_wearG5_on_lowbattery=true; switch force_wearG5:" + force_wearG5);
+                String msg = getResources().getString(R.string.notify_when_wear_low_battery);
+                JoH.static_toast_long(msg);
+                sendWearLocalToast(msg, Toast.LENGTH_LONG);
+            }
+        }
+
+        if (/*force_wearG5 &&*/ force_wearG5 != mPrefs.getBoolean("force_wearG5", false)) {
+            change = true;
+            prefs.putBoolean("force_wearG5", force_wearG5);
+            Log.d(TAG, "syncPrefData commit force_wearG5:" + force_wearG5);
         }
 
         if (nfc_sensor_age != mPrefs.getInt("nfc_sensor_age", 0)) {//Used by DexCollectionService
@@ -431,6 +440,21 @@ public class WatchUpdaterService extends WearableListenerService implements
     {
         if ((googleApiClient != null) && (googleApiClient.isConnected())) {
             PutDataMapRequest dataMapRequest = PutDataMapRequest.create(WEARABLE_TOAST_NOTIFICATON);
+            dataMapRequest.setUrgent();
+            dataMapRequest.getDataMap().putDouble("timestamp", System.currentTimeMillis());
+            dataMapRequest.getDataMap().putInt("length", length);
+            dataMapRequest.getDataMap().putString("msg", msg);
+            PutDataRequest putDataRequest = dataMapRequest.asPutDataRequest();
+            Wearable.DataApi.putDataItem(googleApiClient, putDataRequest);
+        } else {
+            Log.e(TAG, "No connection to wearable available for toast! "+msg);
+        }
+    }
+
+    public static void sendWearLocalToast(String msg, int length)
+    {
+        if ((googleApiClient != null) && (googleApiClient.isConnected())) {
+            PutDataMapRequest dataMapRequest = PutDataMapRequest.create(WEARABLE_TOAST_LOCAL_NOTIFICATON);
             dataMapRequest.setUrgent();
             dataMapRequest.getDataMap().putDouble("timestamp", System.currentTimeMillis());
             dataMapRequest.getDataMap().putInt("length", length);

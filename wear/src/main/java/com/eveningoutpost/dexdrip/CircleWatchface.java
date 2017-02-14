@@ -159,6 +159,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         //return new WatchFaceStyle.Builder(this).setAcceptsTapEvents(true).build();
         return new WatchFaceStyle.Builder(this)
                 .setAcceptsTapEvents(true)
+                .setHotwordIndicatorGravity(Gravity.TOP | Gravity.CENTER)
                 .setStatusBarGravity(Gravity.END | -20)
                 .build();
     }
@@ -607,13 +608,16 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
                 if (bundle != null) {
                     dataMap = DataMap.fromBundle(bundle);
                     String msg = dataMap.getString("msg", "");
-                    JoH.static_toast_short(msg);
+                    int length = dataMap.getInt("length", 0);
+                    JoH.static_toast(xdrip.getAppContext(), msg, length);
                 }
                 bundle = intent.getBundleExtra("steps");
                 if (bundle != null) {
                     dataMap = DataMap.fromBundle(bundle);
-                    mStepsCount = dataMap.getInt("steps", 0);
-                    mTimeStepsRcvd = dataMap.getLong("steps_timestamp", 0);
+                    if (mTimeStepsRcvd <= dataMap.getLong("steps_timestamp", 0)) {
+                        mStepsCount = dataMap.getInt("steps", 0);
+                        mTimeStepsRcvd = dataMap.getLong("steps_timestamp", 0);
+                    }
                 }
                 bundle = intent.getBundleExtra("data");
                 if (bundle != null) {

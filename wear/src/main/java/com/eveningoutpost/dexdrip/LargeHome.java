@@ -58,6 +58,7 @@ public class LargeHome extends BaseWatchFace {
         //return new WatchFaceStyle.Builder(this).setAcceptsTapEvents(true).build();
         return new WatchFaceStyle.Builder(this)
                 .setAcceptsTapEvents(true)
+                .setHotwordIndicatorGravity(Gravity.TOP | Gravity.END)
                 .setStatusBarGravity(Gravity.END | -20)
                 .build();
     }

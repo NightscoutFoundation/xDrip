@@ -34,6 +34,7 @@ The wear standalone feature is enabled via the following xDrip+ Settings located
 | Android Wear Integration          | NA               | Enables Wear integration|
 | Enable Wear Collection Service    | Enable Collector | Enables the BT Collector to run on the wear device when the smartphone is out-of-range.|
 | Force Wear Collection Service     | Force Collector  | Forces the BT Collector to run on the wear device even when the smartphone is in-range.|
+| Disable Force on Low Batterty     | NA               | Disables Force Wear Collection Service on a Wear Low Battery Alert.  Low Battery is determined by Alarms and Alerts -> Extra Alerts (xDrip+) -> **Collector Battery Alerts**.  See section Alerts under [XDrip BT Settings](#xdrip-bt-settings) below. |
 | Device running Collection Service | NA               | Read-only; Displays the wear device running the BT Collector.  This will be the watch display name + uuid when Force Wear is enabled. |
 | NA                                | BT Collector     | Read-only; Corresponds to xDrip+ Setting -> **Hardware Data Source**.  For example, if the **Hardware Data Source** is set to **G5 Transmitter (test)**, then the wear app BT Collector will display **DexcomG5**. |
 | Sync Wear Logs                    | NA               | Triggers Wear log entries to be synced to the phone. You can view the logs on your phone using xDrip+ app's upper, right menu item, **View Events Log**. You need to enable ExtraLogTags in xDrip+ Settings -> LCS -> Extra Logging Settings -> **Extra tags for logging** to enable log generation for services s.a. **G5CollectionService:v**.|
@@ -137,7 +138,7 @@ The watch XDrip Prefs app is used to set the xDrip+ wear app preferences.  In ad
     3. **Extra Alerts (xDrip+)**
        1. **Persistent High Alert** - configured on watch by enabling **High Alerts**.
        2. **Collector Battery Alerts** - this alert applies to the BT Collector running on phone or watch.
-       If the collector is running on the watch, battery refers to the watch battery for G4 and G5, for other non-G5 BT Collectors, battery refers to those devices communicating with the transmitter.
+       If the collector is running on the watch, battery refers to the watch battery for G4 and G5, for other non-G5 BT Collectors, battery refers to those devices communicating with the transmitter.  Battery level is checked upon each transmitter BG reading.
 
     **Glucose Alerts Settings** are currently not configurable for the watch.  Watch alerts use following defaults:
 
@@ -167,7 +168,8 @@ The following image shows xDrip+ app Battery Alert under **Extra Alerts (xDrip+)
 
 ####XDrip Watchface Settings
 The following new preferences are supported:
-  - Show Steps - Show Step Counter on all XDrip watchfaces.  Steps reset to 0 at midnight. To enable, you must switch **Use Pebble Health Data** on under xDrip+ **Smart Watch Features**. When enabled, wear steps will be synced to xDrip+.
+  - Show Steps - Show Step Counter on all XDrip watchfaces.  Steps reset to 0 at midnight. To enable xDrip+ synchronization, you must switch **Use Pebble Health Data** on under xDrip+ **Smart Watch Features**. When enabled, wear steps will be synced to xDrip+.
+  - Step Delay - Select time delay from the list preferences.  Defaults to 10 seconds.  To conserve wear battery, select 5 minutes.
   - Show Status - Show Loop Status on the XDrip and XDrip(Large) watchfaces.  This will display the HAPP status message containing Basal%, IOB, COB.
   - Opaque Card - Show notifications cards with opaque background.  This will allow cards to be read more easily in ambient mode.
   - Small Font - Fontsize of small text in status and delta time fields on the XDrip and XDrip(Large) watchfaces.

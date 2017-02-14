@@ -126,10 +126,6 @@
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".Services.SensorService"
-            android:enabled="true"
-            android:exported="true" />
-        <service
             android:name=".UtilityModels.Notifications"
             android:exported="false" />
         <service

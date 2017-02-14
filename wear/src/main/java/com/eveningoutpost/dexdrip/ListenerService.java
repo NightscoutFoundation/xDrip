@@ -13,7 +13,6 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;//KS
-import com.eveningoutpost.dexdrip.Services.SensorService;//KS
 import com.eveningoutpost.dexdrip.UtilityModels.*;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -27,6 +26,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,6 +36,7 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -57,9 +60,11 @@ import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -103,6 +108,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     public static final String WEARABLE_FIELD_PAYLOAD = "field_xdrip_plus_payload";
     private static final String WEARABLE_TREATMENT_PAYLOAD = "/xdrip_plus_treatment_payload";
     private static final String WEARABLE_TOAST_NOTIFICATON = "/xdrip_plus_toast";
+    private static final String WEARABLE_TOAST_LOCAL_NOTIFICATON = "/xdrip_plus_local_toast";
     public final static String ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE
             = "com.eveningoutpost.dexdrip.BLUETOOTH_COLLECTION_SERVICE_UPDATE";
 
@@ -139,6 +145,24 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     "dex_collection_method", "share_key", "dex_txid", "use_transmiter_pl_bluetooth",
                     "use_rfduino_bluetooth", "automatically_turn_bluetooth_on", "bluetooth_excessive_wakelocks", "close_gatt_on_ble_disconnect", "bluetooth_frequent_reset", "bluetooth_watchdog"}
     ));
+
+    //Sensor Step Counter variables
+    private final static int SENS_STEP_COUNTER = android.hardware.Sensor.TYPE_STEP_COUNTER;
+    //max batch latency is specified in microseconds
+    private static final int BATCH_LATENCY_1s = 1000000;
+    private static final int BATCH_LATENCY_400s = 400000000;
+    //Steps counted in current session
+    private int mSteps = 0;
+    //Value of the step counter sensor when the listener was registered.
+    //(Total steps are calculated from this value.)
+    private int mCounterSteps = 0;
+    //Steps counted by the step counter previously. Used to keep counter consistent across rotation
+    //changes
+    private int mPreviousCounterSteps = 0;
+    SensorManager mSensorManager;
+    private static long last_movement_timestamp = 0;
+    String pref_last_movement_timestamp = "last_movement_timestamp";
+    String pref_msteps = "msteps";
 
     public class DataRequester extends AsyncTask<Void, Void, Void> {
         final String path;
@@ -703,17 +727,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         super.onCreate();
     }
 
-    private void setupStepSensor() {
-        if (mPrefs.getBoolean("use_wear_health", false) || mPrefs.getBoolean("showSteps", false)) {
-            Log.d(TAG, "Start Step Counter Sensor");
-            startService(new Intent(this, SensorService.class));
-        }
-        else {
-            Log.d(TAG, "Stop Step Counter Sensor");
-            stopService(new Intent(this, SensorService.class));
-        }
-    }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand entered");
@@ -747,6 +760,10 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 sendPrefSettings();
             }
             else if (key.compareTo("use_wear_health") == 0 || key.compareTo("showSteps") == 0) {
+                setupStepSensor();
+            }
+            else if (key.compareTo("step_delay_time") == 0) {
+                stopMeasurement();
                 setupStepSensor();
             }
             else {//if(key.compareTo("dex_txid") == 0 || key.compareTo(DexCollectionType.DEX_COLLECTION_METHOD) == 0){
@@ -790,11 +807,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
                 } else if (path.equals(NEW_STATUS_PATH)) {
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
-                    Intent messageIntent = new Intent();
-                    messageIntent.setAction(Intent.ACTION_SEND);
-                    messageIntent.putExtra("status", dataMap.toBundle());
+                    sendLocalMessage("status", dataMap);
                     Log.d(TAG, "onDataChanged NEW_STATUS_PATH=" + path);
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
+                } else if (path.equals(WEARABLE_TOAST_LOCAL_NOTIFICATON)) {
+                    dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
+                    sendLocalMessage("msg", dataMap);
+                    Log.d(TAG, "onDataChanged WEARABLE_TOAST_LOCAL_NOTIFICATON=" + path);
                 } else if (path.equals(WEARABLE_DATA_PATH)) {
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Log.d(TAG, "onDataChanged WEARABLE_DATA_PATH=" + path);
@@ -834,7 +852,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         }
                         Log.d(TAG, "Received wearable: snooze payload: " + snooze);
                         AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), snooze, true);
-                        sendLocalToast(getResources().getString(R.string.alert_snoozed_by_phone));
+                        sendLocalToast(getResources().getString(R.string.alert_snoozed_by_phone), Toast.LENGTH_SHORT);
                     }
                 } else if (path.equals(SYNC_DB_PATH)) {//KS
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH=" + path);
@@ -877,7 +895,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     stopBtService();
                     if (processConnect()) {
                         msg = getResources().getString(R.string.notify_collector_started, DexCollectionType.getDexCollectionType());
-                        sendReplyMsg (msg, 0, path, true);
+                        sendReplyMsg (msg, 0, path, true, Toast.LENGTH_SHORT);
                     }
                 } else if (path.equals(STATUS_COLLECTOR_PATH)) {
                     Log.d(TAG, "onDataChanged path=" + path);
@@ -993,16 +1011,21 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         sendData(WEARABLE_REPLYMSG_PATH, dataMap.toByteArray());
     }
 
-    private void sendLocalToast(String msg) {
-        DataMap dataMap = new DataMap();
-        dataMap.putString("msg", msg);
+    private void sendLocalMessage(String tag, DataMap dataMap) {
         Intent messageIntent = new Intent();
         messageIntent.setAction(Intent.ACTION_SEND);
-        messageIntent.putExtra("msg", dataMap.toBundle());
+        messageIntent.putExtra(tag, dataMap.toBundle());
         LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
     }
 
-    private synchronized void sendReplyMsg (String msg, long last_timestamp, String path, boolean showToast) {
+    private void sendLocalToast(String msg, int length) {
+        DataMap dataMap = new DataMap();
+        dataMap.putString("msg", msg);
+        dataMap.putInt("length", length);
+        sendLocalMessage("msg", dataMap);
+    }
+
+    private synchronized void sendReplyMsg (String msg, long last_timestamp, String path, boolean showToast, int length) {
         Log.d(TAG, "sendReplyMsg msg=" + msg);
         DataMap dataMap = new DataMap();
         dataMap.putString("msg", msg);
@@ -1011,9 +1034,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         Log.d(TAG, "sendReplyMsg dataMap=" + dataMap);
         Intent messageIntent = new Intent();
         if (showToast) {
-            messageIntent.setAction(Intent.ACTION_SEND);
-            messageIntent.putExtra("msg", dataMap.toBundle());
-            LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
+            sendLocalToast(msg, length);
         }
         sendData(WEARABLE_REPLYMSG_PATH, dataMap.toByteArray());
     }
@@ -1707,6 +1728,183 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         return bestNode;
     }
 
+    private void setupStepSensor() {
+        if (mPrefs.getBoolean("use_wear_health", false) || mPrefs.getBoolean("showSteps", false)) {
+            Log.d(TAG, "Start Step Counter Sensor");
+            //startService(new Intent(this, SensorService.class));
+            resetCounters();
+            startMeasurement();
+        }
+        else {
+            Log.d(TAG, "Stop Step Counter Sensor");
+            //stopService(new Intent(this, SensorService.class));
+            stopMeasurement();
+        }
+    }
+    private final SensorEventListener mListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            long t = System.currentTimeMillis();
+            long timeAgo = t - last_movement_timestamp;
+
+            int type = event.sensor.getType();
+            Log.e(TAG, "onSensorChanged Sensor " + type + " name = " + event.sensor.getStringType());
+            Log.e(TAG, "onSensorChanged accuracy = " + event.accuracy);
+            Log.e(TAG, "onSensorChanged MaxDelay = " + event.sensor.getMaxDelay());
+            Log.e(TAG, "onSensorChanged t = " + t + " text = " + JoH.dateTimeText(t));
+            Log.e(TAG, "onSensorChanged last_movement_timestamp = " + last_movement_timestamp + " text = " + JoH.dateTimeText(last_movement_timestamp));
+            Log.e(TAG, "onSensorChanged timeAgo = " + timeAgo);
+
+            // Calculate the delay from when event was recorded until it was received here in ms
+            // Event timestamp is recorded in us accuracy, but ms accuracy is sufficient here
+            long delay = System.currentTimeMillis() - (event.timestamp / 1000000L);//Timestamp when sensor was registered
+            Log.e(TAG, "onSensorChanged delay = " + delay + " JoH.DateTimeText(delay) = " + JoH.dateTimeText(delay) + " (delay + (event.timestamp / 1000000L)) = " + delay + (event.timestamp / 1000000L) + " text= " + JoH.dateTimeText(delay + (event.timestamp / 1000000L)));
+
+            PebbleMovement last = PebbleMovement.last();
+            boolean sameDay = last != null ? isSameDay(t, last.timestamp) : true;
+            if (!sameDay) {
+                initCounters();
+                Log.e(TAG, "onSensorChanged initCounters initCounters mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
+            }
+            if (mCounterSteps < 1) {
+                // initial value
+                mCounterSteps = (int) event.values[0];
+            }
+            // Calculate steps taken based on first counter value received.
+            mSteps = (int) event.values[0] - mCounterSteps;
+            // Add the number of steps previously taken, otherwise the counter would start at 0.
+            // This is needed to keep the counter consistent across rotation changes.
+            mSteps = mSteps + mPreviousCounterSteps;
+            PersistentStore.setLong(pref_msteps, (long)mSteps);
+            Log.e(TAG, "onSensorChanged Total step count: " + mSteps + " mCounterSteps: " + mCounterSteps + " mPreviousCounterSteps: " + mPreviousCounterSteps + " event.values[0]: " + event.values[0]);// + " Delay: " + delayString);
+
+            if (last_movement_timestamp < t) {//KS BUG SW3 seems to set event.timestamp to time when sensor listener is registered
+                Log.e(TAG, "onSensorChanged Movement for mSteps: " + mSteps + " event.values[0]: " + event.values[0] +
+                        " recorded: " + JoH.dateTimeText(System.currentTimeMillis() - (event.timestamp / 1000000L)) +
+                        " received: " + JoH.dateTimeText(t) + " last_movement_timestamp: " + JoH.dateTimeText(last_movement_timestamp)
+                );
+                if (timeAgo < 10000) {//skip if less than 1 minute interval since last step
+                    Log.e(TAG, "onSensorChanged Interval < 1 minute! Skip new movement record creation");
+                }
+                else {
+                    if (last_movement_timestamp == 0 || (sameDay && last != null && last.metric == mSteps)) {//skip initial movement or duplicate steps
+                        Log.e(TAG, "onSensorChanged Initial sensor movement! Skip initial movement record, or duplicate record. last.metric=" + last.metric);
+                    }
+                    else {
+                        final PebbleMovement pm = PebbleMovement.createEfficientRecord(t, mSteps);//event.timestamp * 1000, (int) event.values[0]
+                        Log.e(TAG, "Saving Movement: " + pm.toS());
+                    }
+                    last_movement_timestamp = t;
+                    PersistentStore.setLong(pref_last_movement_timestamp, last_movement_timestamp);
+                }
+                Log.e(TAG, "onSensorChanged sendLocalMessage mSteps: " + mSteps + " t: " + JoH.dateTimeText(t) + " last_movement_timestamp: " + JoH.dateTimeText(last_movement_timestamp));
+                sendSensorLocalMessage(mSteps, t);
+            }
+            else {
+                Log.e(TAG, "onSensorChanged last_movement_timestamp > t! Reset last_movement_timestamp to current time.");
+                last_movement_timestamp = t;
+                PersistentStore.setLong(pref_last_movement_timestamp, last_movement_timestamp);
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(android.hardware.Sensor sensor, int accuracy) {
+        }
+    };
+
+    private boolean isSameDay(long t, long last) {
+        Calendar curCal = Calendar.getInstance();
+        curCal.setTimeInMillis(t);
+        Calendar lastCal = Calendar.getInstance();
+        lastCal.setTimeInMillis(last);
+        Log.e(TAG, "isSameDay Sensor curCal.DAY_OF_MONTH=" + curCal.get(Calendar.DAY_OF_MONTH) + " lastCal.DAY_OF_MONTH=" + lastCal.get(Calendar.DAY_OF_MONTH) + " t=" + JoH.dateTimeText(t) + " last.timestamp=" + JoH.dateTimeText(last) + " " + last);
+        if (curCal.get(Calendar.DAY_OF_MONTH) == lastCal.get(Calendar.DAY_OF_MONTH) &&
+                curCal.get(Calendar.YEAR) == lastCal.get(Calendar.YEAR) &&
+                curCal.get(Calendar.MONTH) == lastCal.get(Calendar.MONTH) ) {
+            return true;
+        }
+        return false;
+
+    }
+
+    protected void startMeasurement() {
+        mSensorManager = ((SensorManager) getSystemService(SENSOR_SERVICE));
+
+        //if (BuildConfig.DEBUG) {
+        logAvailableSensors();
+        //}
+        mCounterSteps = 0;
+        Log.i(TAG, "startMeasurement SensorService Event listener for step counter sensor register");
+
+        android.hardware.Sensor stepCounterSensor = mSensorManager.getDefaultSensor(SENS_STEP_COUNTER);
+
+        // Register the listener
+        if (mSensorManager != null) {
+            if (stepCounterSensor != null) {
+                if (mPrefs.getBoolean("showSteps", false)) {
+                    int delay = Integer.parseInt(mPrefs.getString("step_delay_time", "10"));
+                    Log.e(TAG, "startMeasurement delay " + delay + " seconds.");
+                    Log.e(TAG, "startMeasurement Event listener for step counter sensor registered with a max delay of " + delay + " seconds.");
+                    mSensorManager.registerListener(mListener, stepCounterSensor, SensorManager.SENSOR_DELAY_NORMAL, delay * BATCH_LATENCY_1s);
+                }
+                else {
+                    Log.e(TAG, "startMeasurement Event listener for step counter sensor registered with a max delay of " + BATCH_LATENCY_400s);
+                    mSensorManager.registerListener(mListener, stepCounterSensor, SensorManager.SENSOR_DELAY_NORMAL, BATCH_LATENCY_400s);
+                }
+            } else {
+                Log.d(TAG, "startMeasurement No Step Counter Sensor found");
+            }
+        }
+    }
+
+    private void stopMeasurement() {
+        Log.i(TAG, "stopMeasurement");
+        if (mSensorManager != null) {
+            Log.i(TAG, "stopMeasurement STOP Event listener for step counter sensor register");
+            mSensorManager.unregisterListener(mListener);
+        }
+    }
+
+    private void resetCounters() {
+        initCounters();
+        mSteps = (int) PersistentStore.getLong(pref_msteps);
+        last_movement_timestamp = (int) PersistentStore.getLong(pref_last_movement_timestamp);
+        Log.e(TAG, "resetCounters Sensor Enter PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
+
+        PebbleMovement last = PebbleMovement.last();
+        if (!isSameDay(System.currentTimeMillis(), last.timestamp)) {
+            initCounters();
+            Log.e(TAG, "resetCounters Sensor isSameDay initCounters mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
+        } else {
+            mPreviousCounterSteps = mSteps;
+            Log.e(TAG, "resetCounters Sensor NOT isSameDay PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
+        }
+    }
+
+    private void initCounters() {
+        mSteps = 0;
+        mCounterSteps = 0;
+        mPreviousCounterSteps = 0;
+    }
+
+    private void sendSensorLocalMessage(int steps, long timestamp) {
+        DataMap dataMap = new DataMap();
+        dataMap.putInt("steps", steps);
+        dataMap.putLong("steps_timestamp", timestamp);
+        sendLocalMessage("steps", dataMap);
+    }
+
+    //Log all available sensors to logcat
+    private void logAvailableSensors() {
+        final List<android.hardware.Sensor> sensors = mSensorManager.getSensorList(android.hardware.Sensor.TYPE_ALL);
+        Log.d(TAG, "=== LIST AVAILABLE SENSORS ===");
+        Log.d(TAG, String.format(Locale.getDefault(), "|%-35s|%-38s|%-6s|", "SensorName", "StringType", "Type"));
+        for (android.hardware.Sensor sensor : sensors) {
+            Log.v(TAG, String.format(Locale.getDefault(), "|%-35s|%-38s|%-6s|", sensor.getName(), sensor.getStringType(), sensor.getType()));
+        }
+        Log.d(TAG, "=== LIST AVAILABLE SENSORS ===");
+    }
+
     @Override
     public void onCapabilityChanged(CapabilityInfo capabilityInfo) {
         Node phoneNode = updatePhoneSyncBgsCapability(capabilityInfo);
@@ -1739,7 +1937,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
         if (mPrefs.getBoolean("use_wear_health", true) || mPrefs.getBoolean("showSteps", true)) {
             Log.d(TAG, "Start Step Counter Sensor");
-            stopService(new Intent(this, SensorService.class));
+            //stopService(new Intent(this, SensorService.class));
+            stopMeasurement();
         }
         if (mPrefs.getBoolean("enable_wearG5", true)) {
             Log.d(TAG, "Start BT Collection Service");

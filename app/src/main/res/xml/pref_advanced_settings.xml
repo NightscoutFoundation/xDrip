@@ -27,6 +27,12 @@
                 android:key="force_wearG5"
                 android:summary="@string/pref_summary_force_wearG5"
                 android:title="@string/pref_force_wearG5" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="force_wearG5"
+                android:key="disable_wearG5_on_lowbattery"
+                android:summary="@string/pref_summary_disable_wearG5_on_lowbattery"
+                android:title="@string/pref_disable_wearG5_on_lowbattery" />
             <EditTextPreference
                 android:defaultValue=""
                 android:dependency="force_wearG5"
