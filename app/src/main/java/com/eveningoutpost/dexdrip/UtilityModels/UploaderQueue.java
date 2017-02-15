@@ -222,6 +222,7 @@ public class UploaderQueue extends Model {
     }
 
     private static List<String> getClasses() {
+        fixUpTable();
         final ArrayList<String> results = new ArrayList<>();
         final String query = new Select("distinct otype as otypes").from(UploaderQueue.class).toSql();
         final Cursor resultCursor = Cache.openDatabase().rawQuery(query, null);
@@ -234,6 +235,7 @@ public class UploaderQueue extends Model {
 
 
     public static int getQueueSizeByType(String className, long bitfield, boolean completed) {
+        fixUpTable();
         if (d) UserError.Log.d(TAG, "get Pending count by type: " + className);
         try {
             final String bitfields = Long.toString(bitfield);
@@ -248,6 +250,7 @@ public class UploaderQueue extends Model {
 
     public static void cleanQueue() {
         // delete all completed records > 24 hours old
+        fixUpTable();
         try {
             new Delete()
                     .from(UploaderQueue.class)
