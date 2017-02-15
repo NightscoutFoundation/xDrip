@@ -209,7 +209,9 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     protected WatchFaceStyle getWatchFaceStyle(){
         return new WatchFaceStyle.Builder(this)
                 .setAcceptsTapEvents(true)
-                .setHotwordIndicatorGravity(Gravity.CENTER | Gravity.TOP)
+                //.setHotwordIndicatorGravity(Gravity.CENTER_HORIZONTAL | -20)//positions it at end
+                //.setHotwordIndicatorGravity(Gravity.CENTER | -20)//positions it at end
+                .setHotwordIndicatorGravity(Gravity.START | -20)//positions it left, covers step icon
                 .setStatusBarGravity(Gravity.END | -20)
                 .build();
     }
