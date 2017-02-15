@@ -329,8 +329,8 @@
     <string name="xdrip_plus_security_key_settings_only">xDrip Plus Security Key Settings only</string>
     <string name="show_general_and_collection_settings">Show General and Collection Settings</string>
     <string name="copy_all_settings">Copy all Settings</string>
-    <string name="sensor_is_ready_please_enter_double_calibration">Sensor is ready, please enter a double calibration</string>
-    <string name="in_order_to_get_started_please_perform_two_finger">In order to get started, please perform two finger prick tests and enter the values here!</string>
+    <string name="sensor_is_ready_please_enter_double_calibration">Sensor is ready, please enter an initial calibration</string>
+    <string name="in_order_to_get_started_please_perform_two_finger">In order to get started, please perform one or two finger prick tests and enter the values here!</string>
     <string name="enter_first_bg_value">Enter First BG Value</string>
     <string name="enter_second_bg_value">Enter Second BG Value</string>
     <string name="language_editor">Language Editor</string>
@@ -525,4 +525,18 @@
     <string name="delete">Delete</string>
     <string name="title_activity_btglucose_meter">Meter Scan</string>
 
+    <string name="pref_summary_influxdb_enabled">If using a private InfluxDB database, this should be enabled</string>
+    <string name="pref_title_influxdb">InfluxDB</string>
+    <string name="pref_default_influxdb_uri">https://{host}:{port}</string>
+    <string name="pref_message_influxdb_uri">Replace example values in {}\'s with your correct values</string>
+        <string name="pref_dialog_influxdb_uri">Enter InfluxDB URI</string>
+        <string name="pref_default_influxdb_database">xdrip</string>
+        <string name="pref_message_influxdb_database">The database where to store measurements. Remember to create this on the server.</string>
+        <string name="pref_dialog_influxdb_database">Database</string>
+        <string name="pref_default_influxdb_username">root</string>
+        <string name="pref_message_influxdb_username">Username for authentication. It is recommended to not allow usage without authentication.</string>
+        <string name="pref_dialog_influxdb_username">User</string>
+        <string name="pref_default_influxdb_password">root</string>
+        <string name="pref_message_influxdb_password">Password for authentication. It is recommended to not allow usage without authentication.</string>
+        <string name="pref_dialog_influxdb_password">Password</string>
 </resources>

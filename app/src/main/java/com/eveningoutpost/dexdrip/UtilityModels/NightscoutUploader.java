@@ -107,25 +107,33 @@ public class NightscoutUploader {
             enableMongoUpload = prefs.getBoolean("cloud_storage_mongodb_enable", false);
         }
 
-        public boolean upload(List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) {
-            boolean mongoStatus = false;
-            boolean apiStatus = false;
+    public boolean uploadRest(List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) {
 
-            if (enableRESTUpload) {
-                long start = System.currentTimeMillis();
-                Log.i(TAG, String.format("Starting upload of %s record using a REST API", glucoseDataSets.size()));
-                apiStatus = doRESTUpload(prefs, glucoseDataSets, meterRecords, calRecords);
-                Log.i(TAG, String.format("Finished upload of %s record using a REST API in %s ms result: %b", glucoseDataSets.size(), System.currentTimeMillis() - start, apiStatus));
-            }
+        boolean apiStatus = false;
 
-            if (enableMongoUpload) {
-                double start = new Date().getTime();
-                mongoStatus = doMongoUpload(prefs, glucoseDataSets, meterRecords, calRecords);
-                Log.i(TAG, String.format("Finished upload of %s record using a Mongo in %s ms result: %b", glucoseDataSets.size() + meterRecords.size(), System.currentTimeMillis() - start, mongoStatus));
-            }
-
-            return apiStatus || mongoStatus;
+        if (enableRESTUpload) {
+            long start = System.currentTimeMillis();
+            Log.i(TAG, String.format("Starting upload of %s record using a REST API", glucoseDataSets.size()));
+            apiStatus = doRESTUpload(prefs, glucoseDataSets, meterRecords, calRecords);
+            Log.i(TAG, String.format("Finished upload of %s record using a REST API in %s ms result: %b", glucoseDataSets.size(), System.currentTimeMillis() - start, apiStatus));
         }
+
+        return apiStatus;
+    }
+
+    public boolean uploadMongo(List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) {
+        boolean mongoStatus = false;
+
+
+        if (enableMongoUpload) {
+            double start = new Date().getTime();
+            mongoStatus = doMongoUpload(prefs, glucoseDataSets, meterRecords, calRecords);
+            Log.i(TAG, String.format("Finished upload of %s record using a Mongo in %s ms result: %b", glucoseDataSets.size() + meterRecords.size(), System.currentTimeMillis() - start, mongoStatus));
+        }
+
+        return mongoStatus;
+    }
+
 
         private boolean doRESTUpload(SharedPreferences prefs, List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) {
             String baseURLSettings = prefs.getString("cloud_storage_api_base", "");
@@ -348,11 +356,13 @@ public class NightscoutUploader {
     private static final String LAST_NIGHTSCOUT_BATTERY_LEVEL = "last-nightscout-battery-level";
 
     private void postDeviceStatus(NightscoutService nightscoutService, String apiSecret) throws Exception {
-        JSONObject json = new JSONObject();
+        final JSONObject json = new JSONObject();
+        final boolean always_send_battery = true; // nightscout doesn't currently display device device status if it thinks its stale
         final int battery_level = getBatteryLevel();
         final long last_battery_level = PersistentStore.getLong(LAST_NIGHTSCOUT_BATTERY_LEVEL);
-        if (battery_level != last_battery_level) {
+        if (battery_level != last_battery_level || always_send_battery) {
             PersistentStore.setLong(LAST_NIGHTSCOUT_BATTERY_LEVEL, battery_level);
+            // UserError.Log.d(TAG, "Uploading battery detail: " + battery_level);
             json.put("uploaderBattery", battery_level);
 
             RequestBody body = RequestBody.create(MediaType.parse("application/json"), json.toString());
@@ -362,6 +372,8 @@ public class NightscoutUploader {
             } else
                 r = nightscoutService.uploadDeviceStatus(body).execute();
             if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
+            // } else {
+            //     UserError.Log.d(TAG, "Battery level is same as previous - not uploading: " + battery_level);
         }
     }
 
