@@ -41,6 +41,7 @@ public class NFCReaderX {
     private static final String TAG = "NFCReaderX";
     private static final boolean d = false; // global debug flag
     public static final int REQ_CODE_NFC_TAG_FOUND = 19312;
+    public static boolean used_nfc_successfully = false;
     private static final int MINUTE = 60000;
     private static NfcAdapter mNfcAdapter;
     private static ReadingData mResult = new ReadingData(PredictionData.Result.ERROR_NO_NFC);
@@ -396,6 +397,7 @@ public class NFCReaderX {
                         Log.d(TAG, "GOT TAG DATA!");
                         last_read_succeeded = true;
                         succeeded = true;
+                        used_nfc_successfully = true;
                         vibrate(context, 1);
                         JoH.static_toast_short("Scanned OK!");
                         PersistentStore.setLongZeroIfSet("nfc-address-failures");
