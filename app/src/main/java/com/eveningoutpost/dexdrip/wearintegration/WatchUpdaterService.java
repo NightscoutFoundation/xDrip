@@ -388,7 +388,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                                 }
                             }
                             //Log.d(TAG, "syncLogData add Entry Wear=" + data.toString());
-                            Log.d(TAG, "syncLogData WATCH data.shortError=" + data.shortError + " severity=" + data.severity + " timestamp=" + JoH.dateTimeText((long) data.timestamp));
+                            //Log.d(TAG, "syncLogData WATCH data.shortError=" + data.shortError + " severity=" + data.severity + " timestamp=" + JoH.dateTimeText((long) data.timestamp));
                             if (!bBenchmark)
                                 data.save();
                         }
@@ -988,7 +988,8 @@ public class WatchUpdaterService extends WearableListenerService implements
                     case SYNC_LOGS_PATH:
                         Log.d(TAG, "onMessageReceived SYNC_LOGS_PATH");
                         if (event.getData() != null) {
-                            dataMap = DataMap.fromByteArray(event.getData());
+                            decomprBytes = decompressBytes(event.getPath(), event.getData(), false);
+                            dataMap = DataMap.fromByteArray(decomprBytes);//event.getData()
                             if (dataMap != null) {
                                 Log.d(TAG, "onMessageReceived SYNC_LOGS_PATH dataMap=" + dataMap);
                                 syncLogData(dataMap, false);

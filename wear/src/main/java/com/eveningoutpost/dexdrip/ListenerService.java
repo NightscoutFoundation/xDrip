@@ -261,7 +261,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                             if (sync_wear_logs) {
                                                 datamap = getWearLogData(1000, last_send_previous_log);//100K max / sendMessage; UserError gen @10K messages just for G5CollectionService; UserError 2300 recs = @150K over @4 hrs when "scan cycle start" was logging / 5 secs.
                                                 if (datamap != null) {
-                                                    sendMessagePayload(node, "SYNC_LOGS_PATH", SYNC_LOGS_PATH, datamap.toByteArray());
+                                                    byte[] compressPayload = JoH.compressBytesToBytesGzip((datamap.toByteArray()));
+                                                    sendMessagePayload(node, "SYNC_LOGS_PATH", SYNC_LOGS_PATH, compressPayload);
                                                 }
                                             }
                                         }

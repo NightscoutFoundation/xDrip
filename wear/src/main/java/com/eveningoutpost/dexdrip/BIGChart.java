@@ -209,7 +209,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     protected WatchFaceStyle getWatchFaceStyle(){
         return new WatchFaceStyle.Builder(this)
                 .setAcceptsTapEvents(true)
-                .setHotwordIndicatorGravity(Gravity.TOP | Gravity.CENTER)
+                .setHotwordIndicatorGravity(Gravity.CENTER | Gravity.TOP)
                 .setStatusBarGravity(Gravity.END | -20)
                 .build();
     }

@@ -100,7 +100,8 @@ public class Home extends BaseWatchFace {
     protected WatchFaceStyle getWatchFaceStyle(){
         return new WatchFaceStyle.Builder(this)
                 .setAcceptsTapEvents(true)
-                .setHotwordIndicatorGravity(Gravity.TOP | Gravity.CENTER)
+                //.setHotwordIndicatorGravity(Gravity.CENTER | -20)
+                .setHotwordIndicatorGravity(Gravity.CENTER | Gravity.TOP)
                 .setStatusBarGravity(Gravity.END | -20)
                 .build();
     }
@@ -428,6 +429,7 @@ public class Home extends BaseWatchFace {
     public static long stale_data_millis()
     {
         if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) return (60000 * 13);
+        if (Home.getPreferencesBooleanDefaultFalse("engineering_mode")) return (60000 * 6);
         return (60000 * 11);
     }
 }

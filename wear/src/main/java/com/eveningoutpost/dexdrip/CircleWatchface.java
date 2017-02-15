@@ -159,7 +159,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         //return new WatchFaceStyle.Builder(this).setAcceptsTapEvents(true).build();
         return new WatchFaceStyle.Builder(this)
                 .setAcceptsTapEvents(true)
-                .setHotwordIndicatorGravity(Gravity.TOP | Gravity.CENTER)
+                .setHotwordIndicatorGravity(Gravity.CENTER | Gravity.TOP)
                 .setStatusBarGravity(Gravity.END | -20)
                 .build();
     }
