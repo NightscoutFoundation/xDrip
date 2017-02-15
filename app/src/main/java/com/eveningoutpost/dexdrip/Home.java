@@ -1958,14 +1958,17 @@ public class Home extends ActivityWithMenu {
 
                 // TODO pull from BestGlucose? Check Slope + arrow etc TODO Original slope needs fixing when using plugin
                // notificationText.append("\nBG Original: " + bgGraphBuilder.unitized_string(BgReading.lastNoSenssor().calculated_value)
-                notificationText.append("\nBG Original: " + bgGraphBuilder.unitized_string(BgGraphBuilder.original_value)
-                        + " \u0394 " + bgGraphBuilder.unitizedDeltaString(false, true, true)
-                        + " " + BgReading.lastNoSenssor().slopeArrow());
+                try {
+                    notificationText.append("\nBG Original: " + bgGraphBuilder.unitized_string(BgGraphBuilder.original_value)
+                            + " \u0394 " + bgGraphBuilder.unitizedDeltaString(false, true, true)
+                            + " " + BgReading.lastNoSenssor().slopeArrow());
 
-                notificationText.append("\nBG Estimate: " + bgGraphBuilder.unitized_string(BgGraphBuilder.best_bg_estimate)
-                        + " \u0394 " + bgGraphBuilder.unitizedDeltaStringRaw(false, true, estimated_delta)
-                        + " " + BgReading.slopeToArrowSymbol(estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000)));
-
+                    notificationText.append("\nBG Estimate: " + bgGraphBuilder.unitized_string(BgGraphBuilder.best_bg_estimate)
+                            + " \u0394 " + bgGraphBuilder.unitizedDeltaStringRaw(false, true, estimated_delta)
+                            + " " + BgReading.slopeToArrowSymbol(estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000)));
+                } catch (NullPointerException e) {
+                    //
+                }
             }
         }
 
