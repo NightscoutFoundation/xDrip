@@ -1854,7 +1854,7 @@ public class G5CollectionService extends Service {
             l.add(new StatusItem("Bluetooth Version", vr.bluetooth_firmware_version_string));
             l.add(new StatusItem("Other Version", vr.other_firmware_version));
             l.add(new StatusItem("Hardware Version", vr.hardwarev));
-           if (vr.asic != 61440) l.add(new StatusItem("ASIC", vr.asic)); // TODO color code
+           if (vr.asic != 61440) l.add(new StatusItem("ASIC", vr.asic, StatusItem.Highlight.NOTICE)); // TODO color code
         }
 
         BatteryInfoRxMessage bt = getBatteryDetails(tx_id);
@@ -1863,9 +1863,9 @@ public class G5CollectionService extends Service {
             l.add(new StatusItem("Battery Last queried", JoH.niceTimeSince(last_battery_query)+" "+"ago"));
             l.add(new StatusItem("Transmitter Status", TransmitterStatus.getBatteryLevel(vr.status).toString()));
             l.add(new StatusItem("Transmitter Days", bt.runtime + ((last_transmitter_timestamp > 0) ? " / " + JoH.qs((double) last_transmitter_timestamp / 86400, 1) : "")));
-            l.add(new StatusItem("Voltage A", bt.voltagea));
+            l.add(new StatusItem("Voltage A", bt.voltagea, bt.voltagea < 300 ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
             l.add(new StatusItem("Voltage B", bt.voltageb));
-            l.add(new StatusItem("Resistance", bt.resist));
+            l.add(new StatusItem("Resistance", bt.resist, bt.resist > 1400 ? StatusItem.Highlight.BAD : (bt.resist > 1000 ? StatusItem.Highlight.NOTICE : ( bt.resist > 750 ? StatusItem.Highlight.NORMAL : StatusItem.Highlight.GOOD))));
             l.add(new StatusItem("Temperature", bt.temperature + " \u2103"));
         }
 

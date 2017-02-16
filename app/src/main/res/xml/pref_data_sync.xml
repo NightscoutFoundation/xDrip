@@ -84,6 +84,54 @@
             </PreferenceScreen>
 
             <PreferenceScreen
+                           android:key="cloud_storage_influxdb"
+                            android:summary="@string/pref_summary_influxdb_enabled"
+                            android:title="@string/pref_title_influxdb">
+
+                            <SwitchPreference
+                                android:defaultValue="false"
+                                android:key="cloud_storage_influxdb_enable"
+                                android:title="Enable InfluxDB sync" />
+                            <EditTextPreference
+                                android:defaultValue="@string/pref_default_influxdb_uri"
+                                android:dependency="cloud_storage_influxdb_enable"
+                                android:dialogMessage="@string/pref_message_influxdb_uri"
+                                android:dialogTitle="@string/pref_dialog_influxdb_uri"
+                                android:inputType="textUri"
+                                android:key="cloud_storage_influxdb_uri"
+                                android:title="InfluxDB Uri" />
+                            <EditTextPreference
+                                android:defaultValue="@string/pref_default_influxdb_database"
+                                android:dependency="cloud_storage_influxdb_enable"
+                                android:dialogMessage="@string/pref_message_influxdb_database"
+                                android:dialogTitle="@string/pref_dialog_influxdb_database"
+                                android:inputType="text"
+                                android:key="cloud_storage_influxdb_database"
+                                android:title="InfluxDB Database Name" />
+                            <EditTextPreference
+                                android:defaultValue="@string/pref_default_influxdb_username"
+                                android:dependency="cloud_storage_influxdb_enable"
+                                android:dialogMessage="@string/pref_message_influxdb_username"
+                                android:dialogTitle="@string/pref_dialog_influxdb_username"
+                                android:inputType="text"
+                                android:key="cloud_storage_influxdb_username"
+                                android:title="User" />
+                            <EditTextPreference
+                                android:defaultValue="@string/pref_default_influxdb_password"
+                                android:dependency="cloud_storage_influxdb_enable"
+                                android:dialogMessage="@string/pref_message_influxdb_password"
+                                android:dialogTitle="@string/pref_dialog_influxdb_password"
+                                android:inputType="text"
+                                android:key="cloud_storage_influxdb_password"
+                                android:title="Password" />
+                            <CheckBoxPreference
+                                android:defaultValue="true"
+                                android:key="skip_lan_uploads_when_no_lan"
+                                android:summary="For local servers with 192.168.x.x addresses, skip uploads when there is no local network connectivity."
+                                android:title="Skip LAN uploads" />
+                        </PreferenceScreen>
+
+            <PreferenceScreen
                 android:key="dexcom_server_upload_screen"
                 android:summary="@string/upload_data_to_dex_servers"
                 android:title="@string/dexcom_share_server_upload">

@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -202,7 +203,9 @@ public class SystemStatusFragment extends Fragment {
     private void set_current_values() {
         notes.setText("");
         activeBluetoothDevice = ActiveBluetoothDevice.first();
-        mBluetoothManager = (BluetoothManager) safeGetContext().getSystemService(Context.BLUETOOTH_SERVICE);
+        if (Build.VERSION.SDK_INT >= 18) {
+            mBluetoothManager = (BluetoothManager) safeGetContext().getSystemService(Context.BLUETOOTH_SERVICE);
+        }
         setVersionName();
         setCollectionMethod();
         setCurrentDevice();
@@ -301,7 +304,9 @@ public class SystemStatusFragment extends Fragment {
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
         if (collection_method.compareTo("DexcomG5") == 0) {
             Transmitter defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
-            mBluetoothAdapter = mBluetoothManager.getAdapter();
+            if (Build.VERSION.SDK_INT >= 18) {
+                mBluetoothAdapter = mBluetoothManager.getAdapter();
+            }
             if (mBluetoothAdapter != null) {
                 Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
                 if ((pairedDevices != null) && (pairedDevices.size() > 0)) {
@@ -348,7 +353,7 @@ public class SystemStatusFragment extends Fragment {
 
     private void setConnectionStatus() {
         boolean connected = false;
-        if (mBluetoothManager != null && activeBluetoothDevice != null) {
+        if (mBluetoothManager != null && activeBluetoothDevice != null && (Build.VERSION.SDK_INT >= 18)) {
             for (BluetoothDevice bluetoothDevice : mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT)) {
                 if (bluetoothDevice.getAddress().compareTo(activeBluetoothDevice.address) == 0) {
                     connected = true;
@@ -364,7 +369,7 @@ public class SystemStatusFragment extends Fragment {
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
         if (collection_method.compareTo("DexcomG5") == 0) {
             Transmitter defaultTransmitter = new Transmitter(prefs.getString("dex_txid", "ABCDEF"));
-            mBluetoothAdapter = mBluetoothManager.getAdapter();
+            if (Build.VERSION.SDK_INT >= 18) mBluetoothAdapter = mBluetoothManager.getAdapter();
             if (mBluetoothAdapter != null) {
                 Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
                 if (pairedDevices.size() > 0) {

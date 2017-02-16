@@ -17,6 +17,7 @@
 #}
 
 -dontwarn retrofit.**
+-dontwarn retrofit2.**
 -keep class retrofit.** { *; }
 -keepattributes Signature
 -keepattributes Exceptions
@@ -41,6 +42,8 @@
 -dontwarn obj.objenesis.instantiator.sun.UnsafeFactoryInstantiator
 -dontwarn sun.misc.Unsafe
 -dontwarn ar.com.hjg.pngj.**
+-dontwarn okhttp3.**
+-dontwarn org.influxdb.**
 
 -keep class com.nightscout.** { *; }
 -keep class com.squareup.** { *; }

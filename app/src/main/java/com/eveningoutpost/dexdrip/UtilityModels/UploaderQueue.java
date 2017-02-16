@@ -59,6 +59,7 @@ public class UploaderQueue extends Model {
     public static final long MONGO_DIRECT = 1;
     public static final long NIGHTSCOUT_RESTAPI = 1 << 1;
     public static final long TEST_OUTPUT_PLUGIN = 1 << 2;
+    public static final long INFLUXDB_RESTAPI = 1 << 3;
 
 
     public static final long DEFAULT_UPLOAD_CIRCUITS = 0;
@@ -68,6 +69,7 @@ public class UploaderQueue extends Model {
             append(MONGO_DIRECT, "Mongo Direct");
             append(NIGHTSCOUT_RESTAPI, "Nightscout REST");
             append(TEST_OUTPUT_PLUGIN, "Test Plugin");
+            append(INFLUXDB_RESTAPI, "InfluxDB REST");
         }
     };
 
@@ -131,7 +133,8 @@ public class UploaderQueue extends Model {
         final UploaderQueue result = new UploaderQueue();
         result.bitfield_wanted = DEFAULT_UPLOAD_CIRCUITS
                 | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_mongodb_enable") ? MONGO_DIRECT : 0)
-                | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable") ? NIGHTSCOUT_RESTAPI : 0);
+                | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable") ? NIGHTSCOUT_RESTAPI : 0)
+                | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_influxdb_enable") ? INFLUXDB_RESTAPI : 0);
         if (result.bitfield_wanted == 0) return null; // no queue required
         result.timestamp = JoH.tsl();
         result.reference_id = obj.getId();
@@ -219,6 +222,7 @@ public class UploaderQueue extends Model {
     }
 
     private static List<String> getClasses() {
+        fixUpTable();
         final ArrayList<String> results = new ArrayList<>();
         final String query = new Select("distinct otype as otypes").from(UploaderQueue.class).toSql();
         final Cursor resultCursor = Cache.openDatabase().rawQuery(query, null);
@@ -231,6 +235,7 @@ public class UploaderQueue extends Model {
 
 
     public static int getQueueSizeByType(String className, long bitfield, boolean completed) {
+        fixUpTable();
         if (d) UserError.Log.d(TAG, "get Pending count by type: " + className);
         try {
             final String bitfields = Long.toString(bitfield);
@@ -245,6 +250,7 @@ public class UploaderQueue extends Model {
 
     public static void cleanQueue() {
         // delete all completed records > 24 hours old
+        fixUpTable();
         try {
             new Delete()
                     .from(UploaderQueue.class)
@@ -278,6 +284,13 @@ public class UploaderQueue extends Model {
         patched = true;
     }
 
+    public static String getCircuitName(long i) {
+        try {
+            return circuits_for_stats.get(i).toString();
+        } catch (Exception e) {
+            return "Unknown Circuit";
+        }
+    }
 
     public static List<StatusItem> megaStatus() {
         final List<StatusItem> l = new ArrayList<>();
@@ -296,19 +309,24 @@ public class UploaderQueue extends Model {
                     l.add(new StatusItem(circuits_for_stats.valueAt(i).toString(), count_pending + " " + type));
                 }
             }
+
+               /*
                 // handle legacy tables
                 if (bitfield == MONGO_DIRECT) {
                     // legacy
-                    l.add(new StatusItem(circuits_for_stats.valueAt(i).toString(), getLegacyCount(BgSendQueue.class, null, false, null) + " Glucose Values"));
-                    l.add(new StatusItem(circuits_for_stats.valueAt(i).toString(), getLegacyCount(CalibrationSendQueue.class, null, false, null) + " Calibrations"));
+                    l.add(new StatusItem(circuits_for_stats.valueAt(i).toString(), getLegacyCount(BgSendQueue.class, null, false, null) + " Legacy Glucose Values"));
+                    l.add(new StatusItem(circuits_for_stats.valueAt(i).toString(), getLegacyCount(CalibrationSendQueue.class, null, false, null) + " Legacy Calibrations"));
                 }
                 // handle legacy tables
                 if (bitfield == NIGHTSCOUT_RESTAPI) {
                     // legacy
-                    l.add(new StatusItem(circuits_for_stats.valueAt(i).toString(), getLegacyCount(BgSendQueue.class, false, null, null) + " Glucose Values"));
-                    l.add(new StatusItem(circuits_for_stats.valueAt(i).toString(), getLegacyCount(CalibrationSendQueue.class, false, null, null) + " Calibrations"));
-                }
+                    l.add(new StatusItem(circuits_for_stats.valueAt(i).toString(), getLegacyCount(BgSendQueue.class, false, null, null) + " Legacy Glucose Values"));
+                    l.add(new StatusItem(circuits_for_stats.valueAt(i).toString(), getLegacyCount(CalibrationSendQueue.class, false, null, null) + " Legacy Calibrations"));
+                }*/
+        }
 
+        if (MongoSendTask.exception != null) {
+            l.add(new StatusItem("Exception", MongoSendTask.exception.toString(), StatusItem.Highlight.BAD));
 
         }
 
@@ -317,7 +335,7 @@ public class UploaderQueue extends Model {
             l.add(new StatusItem("Last poll", JoH.niceTimeSince(last_query)+" ago"));
 
         if (last_cleanup > 0)
-            l.add(new StatusItem("Last clean up", JoH.niceTimeSince(last_cleanup)+ "ago"));
+            l.add(new StatusItem("Last clean up", JoH.niceTimeSince(last_cleanup)+ " ago"));
 
         return l;
     }

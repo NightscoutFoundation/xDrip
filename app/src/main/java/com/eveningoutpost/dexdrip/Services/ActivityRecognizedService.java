@@ -445,7 +445,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         }
     }
 
-    private void release_wl_start() {
+    private synchronized void release_wl_start() {
         if (wl_start != null) {
             if (d) Log.d(TAG, "release wl_start");
             JoH.releaseWakeLock(wl_start);

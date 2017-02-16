@@ -50,12 +50,15 @@ public class DoubleCalibrationActivity extends ActivityWithMenu {
             public void onClick(View v) {
 
                 if (Sensor.isActive()) {
-                    EditText value_1 = (EditText) findViewById(R.id.bg_value_1);
-                    EditText value_2 = (EditText) findViewById(R.id.bg_value_2);
+                    final EditText value_1 = (EditText) findViewById(R.id.bg_value_1);
+                    final EditText value_2 = (EditText) findViewById(R.id.bg_value_2);
                     String string_value_1 = value_1.getText().toString();
                     String string_value_2 = value_2.getText().toString();
 
                     if (!TextUtils.isEmpty(string_value_1)) {
+                        if (TextUtils.isEmpty(string_value_2)) {
+                            string_value_2 = string_value_1; // just use single calibration if all that is entered
+                        }
                         if (!TextUtils.isEmpty(string_value_2)) {
                             final double calValue_1 = Double.parseDouble(string_value_1);
                             final double calValue_2 = Double.parseDouble(string_value_2);

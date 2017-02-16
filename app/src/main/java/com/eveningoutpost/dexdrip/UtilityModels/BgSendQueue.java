@@ -109,8 +109,8 @@ public class BgSendQueue extends Model {
         wakeLock.acquire(120000);
         try {
             if (!is_follower) {
-                addToQueue(bgReading, operation_type);
-                //UploaderQueue.newEntry("insert",bgReading);
+              //  addToQueue(bgReading, operation_type);
+                UploaderQueue.newEntry(operation_type, bgReading);
             }
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);

@@ -228,7 +228,8 @@ public class BgGraphBuilder {
             }
         }
         bloodtests = BloodTest.latestForGraph(numValues, start, end);
-        calibrations = Calibration.latestForGraph(numValues, start, end);
+        // get extra calibrations so we can use them for historical readings
+        calibrations = Calibration.latestForGraph(numValues, start - (3 * Constants.DAY_IN_MS), end);
         treatments = Treatments.latestForGraph(numValues, start, end + (120 * 60 * 1000));
         this.context = context;
         this.highMark = tolerantParseDouble(prefs.getString("highValue", "170"));
@@ -916,8 +917,11 @@ public class BgGraphBuilder {
             // enumerate calibrations
             try {
                 for (Calibration calibration : calibrations) {
+                    if (calibration.timestamp < (start_time * FUZZER)) break;
                     if (calibration.slope_confidence != 0) {
-                        calibrationValues.add(new PointValue((float) (calibration.timestamp / FUZZER), (float) unitized(calibration.bg)));
+                        final PointValueExtended this_point = new PointValueExtended((float) ((calibration.timestamp + (AddCalibration.estimatedInterstitialLagSeconds * 1000)) / FUZZER), (float) unitized(calibration.bg));
+                        this_point.real_timestamp = calibration.timestamp;
+                        calibrationValues.add(this_point);
                         if (calibration.timestamp > last_calibration) {
                             last_calibration = calibration.timestamp;
                         }
@@ -965,7 +969,8 @@ public class BgGraphBuilder {
             }
 
             final CalibrationAbstract plugin = (show_plugin) ? PluggableCalibration.getCalibrationPluginFromPreferences() : null;
-            final CalibrationAbstract.CalibrationData cd = (plugin != null) ? plugin.getCalibrationData() : null;
+            CalibrationAbstract.CalibrationData cd = (plugin != null) ? plugin.getCalibrationData() : null;
+            int cdposition = 0;
 
             if ((glucose_from_plugin) && (cd != null)) {
                 plugin_adjusted = true; // plugin will be adjusting data
@@ -973,6 +978,29 @@ public class BgGraphBuilder {
 
             for (final BgReading bgReading : bgReadings) {
                 // jamorham special
+
+                if ((cd != null) && (calibrations.size() > 0)) {
+                    while (bgReading.timestamp < calibrations.get(cdposition).timestamp) {
+
+                        Log.d(TAG, "BG reading earlier than calibration at index: " + cdposition + "  " + JoH.dateTimeText(bgReading.timestamp) + " cal: " + JoH.dateTimeText(calibrations.get(cdposition).timestamp));
+
+                        if (cdposition < calibrations.size() - 1) {
+                            cdposition++;
+                            //  cd = (plugin != null) ? plugin.getCalibrationData(calibrations.get(cdposition).timestamp) : null;
+                            final CalibrationAbstract.CalibrationData oldcd = cd;
+                            cd = plugin.getCalibrationData(calibrations.get(cdposition).timestamp);
+                            if (cd == null) {
+                                Log.d(TAG, "cd went to null during adjustment - likely graph spans multiple sensors");
+                                cd = oldcd;
+                            }
+                            Log.d(TAG, "Now using calibration from: " + JoH.dateTimeText(calibrations.get(cdposition).timestamp));
+                        } else {
+                            Log.d(TAG, "No more calibrations to choose from");
+                            break;
+                        }
+                    }
+
+                }
 
                 // swap main and plugin plot if display glucose is from plugin
                 if ((glucose_from_plugin) && (cd != null)) {

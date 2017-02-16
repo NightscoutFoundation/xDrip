@@ -44,14 +44,16 @@ public class Datricsae extends CalibrationAbstract {
     }
 
     @Override
-    public synchronized CalibrationData getCalibrationData() {
-
-        CalibrationData cd = loadDataFromCache(TAG);
+    public synchronized CalibrationData getCalibrationData(long until) {
+            // TODO cache must understand until and match appropriately
+        //CalibrationData cd = loadDataFromCache(TAG);
+        CalibrationData cd = null;
         if (cd == null) {
 
             // first is most recent
-            final List<Calibration> calibrations = Calibration.latestValid(CALIBRATIONS_TO_USE);
+            final List<Calibration> calibrations = Calibration.latestValid(CALIBRATIONS_TO_USE, until);
             if ((calibrations == null) || (calibrations.size() == 0)) return null;
+            //Log.d(TAG,"graph: DATRICSAE: got: "+calibrations.size()+" until: "+JoH.dateTimeText(until)+" last: "+JoH.dateTimeText(calibrations.get(0).timestamp));
             // have we got enough data to have a go
             if (calibrations.size() < FALLBACK_TO_ORIGINAL_CALIBRATIONS_MINIMUM) {
                 // just use whatever xDrip original would have come up with at this point
@@ -65,7 +67,7 @@ public class Datricsae extends CalibrationAbstract {
                 final boolean adjust_raw = !DexCollectionType.hasLibre();
 
                 for (int i = 1; i < 3; i++) {
-                    final List<Calibration> cweight = Calibration.latestValid(i);
+                    final List<Calibration> cweight = Calibration.latestValid(i, until);
                     if (cweight != null)
                         calibrations.addAll(cweight); // additional weight to most recent
                 }
@@ -145,7 +147,7 @@ public class Datricsae extends CalibrationAbstract {
                     cd = new CalibrationData(slope, intercept);
                 } else {
                     cd = new CalibrationData(calibrations.get(0).slope, calibrations.get(0).intercept);
-                    Log.wtf(TAG, "ERROR: Slope outside range: " + slope + " REVERTING TO FALLBACK!");
+                    Log.wtf(TAG, "ERROR: Slope outside range: " + slope + " REVERTING TO FALLBACK! " + calibrations.get(0).slope);
                 }
             }
         } else {

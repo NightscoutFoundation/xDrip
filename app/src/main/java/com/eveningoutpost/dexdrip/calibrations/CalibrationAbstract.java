@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.calibrations;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,6 +33,10 @@ public abstract class CalibrationAbstract {
     // get the calibration data (caching is handled internally)
 
     public synchronized CalibrationData getCalibrationData() {
+        return getCalibrationData(JoH.tsl() + Constants.HOUR_IN_MS);
+    }
+
+    public synchronized CalibrationData getCalibrationData(long until) {
         // default no implementation
         return null;
     }

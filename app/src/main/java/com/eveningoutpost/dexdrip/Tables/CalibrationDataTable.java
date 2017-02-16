@@ -96,7 +96,7 @@ public class CalibrationDataTable extends ListActivity implements NavigationDraw
             tag.raw_data_id.setText(JoH.qs(calibration.bg, 4) + "    "+ BgGraphBuilder.unitized_string_static(calibration.bg));
             tag.raw_data_value.setText("raw: " + JoH.qs(calibration.estimate_raw_at_time_of_calibration, 4));
             tag.raw_data_slope.setText("slope: " + JoH.qs(calibration.slope, 4) + " intercept: " + JoH.qs(calibration.intercept, 4));
-            tag.raw_data_timestamp.setText(JoH.dateTimeText(calibration.timestamp));
+            tag.raw_data_timestamp.setText(JoH.dateTimeText(calibration.timestamp) + "  (" + JoH.dateTimeText(calibration.raw_timestamp) + ")");
 
             if (calibration.isNote()) {
                 // green note
@@ -119,10 +119,10 @@ public class CalibrationDataTable extends ListActivity implements NavigationDraw
                             switch (which){
                                 case DialogInterface.BUTTON_POSITIVE:
                                     calibration.invalidate();
+                                    notifyDataSetChanged();
                                     break;
 
                                 case DialogInterface.BUTTON_NEGATIVE:
-                                    calibration.invalidate();
                                     break;
                             }
                         }
