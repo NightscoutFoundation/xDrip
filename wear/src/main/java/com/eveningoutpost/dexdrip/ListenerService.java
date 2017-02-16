@@ -125,6 +125,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     final private static String pref_last_send_previous_log = "last_send_previous_log";
     private static long last_send_previous_step_sensor = 0;
     final private static String pref_last_send_previous_step_sensor = "last_send_step_sensor";
+    final private static int send_bg_count = 300;//288 equals full day of transmitter readings
+    final private static int send_log_count = 600;//1000 records equals @160K non-compressed, 23K compressed, max transfer 2.7 seconds
+    final private static int send_step_count = 600;
     //private static boolean doDeleteDB = false;//TODO remove once confirm not needed
     private boolean is_using_bt = false;
     private static int aggressive_backoff_timer = 120;
@@ -249,25 +252,28 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                     case WEARABLE_REPLYMSG_PATH:
                                     case WEARABLE_FIELD_SENDPATH:
                                     case WEARABLE_SNOOZE_ALERT:
+                                    case SYNC_BGS_PATH:
+                                    case SYNC_LOGS_PATH:
+                                    case SYNC_STEP_SENSOR_PATH:
                                         sendMessagePayload(node, path, path, payload);
                                         break;
                                     default:
                                         DataMap datamap;
                                         if (enable_wearG5) {//KS
-                                            datamap = getWearTransmitterData(288, last_send_previous);//KS 36 data for last 3 hours; 288 for 1 day
+                                            datamap = getWearTransmitterData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
                                             if (datamap != null) {
                                                 sendMessagePayload(node, "SYNC_BGS_PATH", SYNC_BGS_PATH, datamap.toByteArray());
                                             }
-                                            if (sync_wear_logs) {
-                                                datamap = getWearLogData(1000, last_send_previous_log);//100K max / sendMessage; UserError gen @10K messages just for G5CollectionService; UserError 2300 recs = @150K over @4 hrs when "scan cycle start" was logging / 5 secs.
-                                                if (datamap != null) {
-                                                    byte[] compressPayload = JoH.compressBytesToBytesGzip((datamap.toByteArray()));
-                                                    sendMessagePayload(node, "SYNC_LOGS_PATH", SYNC_LOGS_PATH, compressPayload);
-                                                }
+                                        }
+                                        if (sync_wear_logs) {
+                                            datamap = getWearLogData(send_log_count, last_send_previous_log, 0);//UserError gen @10K messages just for G5CollectionService; UserError 2300 recs = @150K over @4 hrs when "scan cycle start" was logging / 5 secs.
+                                            if (datamap != null) {
+                                                byte[] compressPayload = JoH.compressBytesToBytesGzip((datamap.toByteArray()));
+                                                sendMessagePayload(node, "SYNC_LOGS_PATH", SYNC_LOGS_PATH, compressPayload);
                                             }
                                         }
                                         if (sync_step_counter) {
-                                            datamap = getWearStepSensorData(1000, last_send_previous_step_sensor);
+                                            datamap = getWearStepSensorData(send_step_count, last_send_previous_step_sensor, 0);
                                             if (datamap != null) {
                                                 sendMessagePayload(node, "SYNC_STEP_SENSOR_PATH", SYNC_STEP_SENSOR_PATH, datamap.toByteArray());
                                             }
@@ -339,13 +345,13 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             DataMap datamap;
             if (bBenchmarkBgs && path.equals(SYNC_BGS_PATH)) {
                 //bBenchmarkBgs = runBenchmarkTest(node, pathdesc+"_BM", path+"_BM", payload, bBenchmarkDup);
-                datamap = getWearTransmitterData(1000, 0);//generate 1000 records of test data
+                datamap = getWearTransmitterData(1000, 0, 0);//generate 1000 records of test data
                 if (datamap != null) {
                     bBenchmarkBgs = runBenchmarkTest(node, pathdesc + "_BM", path + "_BM", datamap.toByteArray(), false);
                 }
             } else if (bBenchmarkLogs && path.equals(SYNC_LOGS_PATH)) {
                 //bBenchmarkLogs = runBenchmarkTest(node, pathdesc+"_BM", path+"_BM", payload, bBenchmarkDup);
-                datamap = getWearLogData(1000, 0);//generate 1000 records of test data
+                datamap = getWearLogData(1000, 0, 0);//generate 1000 records of test data
                 if (datamap != null) {
                     bBenchmarkLogs = runBenchmarkTest(node, pathdesc + "_BM", path + "_BM", datamap.toByteArray(), false);
                 }
@@ -477,7 +483,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
     }
 
-    private DataMap getWearTransmitterData(int count, long last_send_time) {//KS
+    private synchronized DataMap getWearTransmitterData(int count, long last_send_time, int min_count) {//KS
         if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
             googleApiConnect();
         }
@@ -490,34 +496,34 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
 
         if (last_bg != null && last_send_time <= last_bg.timestamp) {//startTime
+            long last_send_success = last_send_time;
             Log.d(TAG, "getWearTransmitterData last_send_time < last_bg.timestamp:" + JoH.dateTimeText(last_bg.timestamp));
             List<TransmitterData> graph_bgs = TransmitterData.latestForGraphAsc(count, last_send_time);
-            if (!graph_bgs.isEmpty()) {
-                Log.d(TAG, "getWearTransmitterData count = " + graph_bgs.size());
+            if (!graph_bgs.isEmpty() && graph_bgs.size() > min_count) {
+                //Log.d(TAG, "getWearTransmitterData count = " + graph_bgs.size());
                 DataMap entries = dataMap(last_bg);
                 final ArrayList<DataMap> dataMaps = new ArrayList<>(graph_bgs.size());
                 for (TransmitterData bg : graph_bgs) {
                     dataMaps.add(dataMap(bg));
-                    Log.d(TAG, "getWearTransmitterData bg.timestamp:" + JoH.dateTimeText(bg.timestamp));
-                    long last_send_sucess = bg.timestamp + 1;
-                    Log.d(TAG, "getWearTransmitterData set last_send_sucess:" + JoH.dateTimeText(last_send_sucess));
-                    Log.d(TAG, "getWearTransmitterData bg getId:" + bg.getId() + " raw_data:" + bg.raw_data + " filtered_data:" + bg.filtered_data + " timestamp:" + bg.timestamp + " uuid:" + bg.uuid);
+                    last_send_success = bg.timestamp;
+                    //Log.d(TAG, "getWearTransmitterData bg getId:" + bg.getId() + " raw_data:" + bg.raw_data + " filtered_data:" + bg.filtered_data + " timestamp:" + bg.timestamp + " uuid:" + bg.uuid);
                 }
                 entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
                 entries.putDataMapArrayList("entries", dataMaps);
+                Log.i(TAG, "getWearTransmitterData SYNCED BGs up to " + JoH.dateTimeText(last_send_success) + " count = " + graph_bgs.size());
                 return entries;
             } else
-                Log.d(TAG, "getWearTransmitterData count = 0");
+                Log.i(TAG, "getWearTransmitterData SYNCED BGs up to " + JoH.dateTimeText(last_send_success) + " count = 0");
         }
         return null;
     }
 
-    private DataMap getWearLogData(int count, long last_send_time) {
+    private synchronized DataMap getWearLogData(int count, long last_send_time, int min_count) {
         if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
             googleApiConnect();
         }
 
-        Log.d(TAG, "getWearLogData last_send_time:" + JoH.dateTimeText(last_send_time));
+        Log.d(TAG, "getWearLogData last_send_time:" + JoH.dateTimeText(last_send_time) + " max count=" + count + " min_count=" + min_count);
 
         UserError last_log = UserError.last();
         if (last_log != null) {
@@ -525,43 +531,35 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
 
         if (last_log != null && last_send_time <= last_log.timestamp) {//startTime
+            long last_send_success = last_send_time;
             Log.d(TAG, "getWearLogData last_send_time < last_bg.timestamp:" + JoH.dateTimeText((long) last_log.timestamp));
             List<UserError> logs = UserError.latestAsc(count, last_send_time);
-            if (!logs.isEmpty()) {
-                Log.d(TAG, "getWearLogData count = " + logs.size());
+            if (!logs.isEmpty() && logs.size() > min_count) {
+                //Log.d(TAG, "getWearLogData count = " + logs.size());
                 DataMap entries = dataMap(last_log);
                 final ArrayList<DataMap> dataMaps = new ArrayList<>(logs.size());
                 for (UserError log : logs) {
                     dataMaps.add(dataMap(log));
-                    //Log.d(TAG, "getWearLogData timestamp:" + JoH.dateTimeText(((long)log.timestamp)));
-                    //long last_send_sucess = (long)log.timestamp + 1;
+                    last_send_success = (long)log.timestamp;
                     //Log.d(TAG, "getWearLogData set last_send_sucess:" + JoH.dateTimeText(last_send_sucess) + " Log:" + log.toString());
                 }
                 entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
                 entries.putDataMapArrayList("entries", dataMaps);
+                Log.i(TAG, "getWearLogData SYNCED logs up to " + JoH.dateTimeText(last_send_success) + " count = " + logs.size());
                 return entries;
             } else
-                Log.d(TAG, "getWearLogData log count = 0");
+                Log.i(TAG, "getWearLogData SYNCED logs up to " + JoH.dateTimeText(last_send_success) + " count = 0");
         }
         return null;
     }
 
 
-    public DataMap getWearStepSensorData(int count, long last_send_time) {//final int sensorType, final int accuracy, final long timestamp, final float[] values) {
+    public synchronized DataMap getWearStepSensorData(int count, long last_send_time, int min_count) {//final int sensorType, final int accuracy, final long timestamp, final float[] values) {
         if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
             googleApiConnect();
         }
 
         Log.d(TAG, "getWearStepSensorData last_send_time:" + JoH.dateTimeText(last_send_time));
-        long t = System.currentTimeMillis();
-
-        long timeAgo = t - last_send_time;
-
-        /*if (last_send_time != 0) {
-            if (timeAgo < 3000) {
-                return null;
-            }
-        }*/
 
         PebbleMovement last_log = PebbleMovement.last();
         if (last_log != null) {
@@ -572,24 +570,25 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
 
         if (last_log != null && last_send_time <= last_log.timestamp) {//startTime
+            long last_send_success = last_send_time;
             Log.d(TAG, "getWearStepSensorData last_send_time < last_bg.timestamp:" + JoH.dateTimeText((long) last_log.timestamp));
             List<PebbleMovement> logs = PebbleMovement.latestForGraph(count, last_send_time);
-            if (!logs.isEmpty()) {
-                Log.d(TAG, "getWearStepSensorData count = " + logs.size());
+            if (!logs.isEmpty() && logs.size() > min_count) {
+                //Log.d(TAG, "getWearStepSensorData count = " + logs.size());
                 DataMap entries = dataMap(last_log);
                 final ArrayList<DataMap> dataMaps = new ArrayList<>(logs.size());
                 for (PebbleMovement log : logs) {
                     dataMaps.add(dataMap(log));
-                    //Log.d(TAG, "getWearStepSensorData timestamp:" + JoH.dateTimeText(((long)log.timestamp)));
-                    long last_send_sucess = (long)log.timestamp + 1;
-                    Log.d(TAG, "getWearStepSensorData set last_send_sucess:" + JoH.dateTimeText(last_send_sucess) + " pw.metric: " + log.metric + " pw.timestamp: " + JoH.dateTimeText(log.timestamp));
+                    last_send_success = (long)log.timestamp;
+                    //Log.d(TAG, "getWearStepSensorData set last_send_sucess:" + JoH.dateTimeText(last_send_success) + " pw.metric: " + log.metric + " pw.timestamp: " + JoH.dateTimeText(log.timestamp));
                 }
                 entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
                 entries.putDataMapArrayList("entries", dataMaps);
-                Log.d(TAG, "getWearStepSensorData  entries:" + entries);
+                //Log.d(TAG, "getWearStepSensorData  entries:" + entries);
+                Log.i(TAG, "getWearStepSensorData SYNCED steps up to " + JoH.dateTimeText(last_send_success) + " count = " + logs.size());
                 return entries;
             } else
-                Log.d(TAG, "getWearStepSensorData log count = 0");
+                Log.i(TAG, "getWearStepSensorData SYNCED steps up to " + JoH.dateTimeText(last_send_success) + " count = 0");
         }
         return null;
     }
@@ -937,23 +936,49 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                             case "BG":
                                 Log.d(TAG, "onDataChanged received from sendDataReceived current last_send_previous=" + JoH.dateTimeText(last_send_previous));
                                 Log.d(TAG, "onDataChanged received from sendDataReceived timeOfLastEntry=" + JoH.dateTimeText(timeOfLastEntry) + " Path=" + path);
+                                Log.i(TAG, "onDataChanged Phone received BGs up to " + JoH.dateTimeText(timeOfLastEntry));
                                 last_send_previous = timeOfLastEntry;
                                 PersistentStore.setLong(pref_last_send_previous, last_send_previous);
                                 Log.d(TAG, "onDataChanged received from sendDataReceived update last_send_previous=" + JoH.dateTimeText(last_send_previous));
+                                if (mPrefs.getBoolean("enable_wearG5", false)) {
+                                    //if (doSyncBGs(send_bg_count / 2, last_send_previous, "enable_wearG5")) {
+                                    //    requestData();
+                                    dataMap = getWearTransmitterData(send_bg_count, last_send_previous, (send_bg_count / 3));
+                                    if (dataMap != null) {
+                                        Log.i(TAG, "Request BGs Sync since " + JoH.dateTimeText(last_send_previous));
+                                        sendData(SYNC_BGS_PATH, dataMap.toByteArray());
+                                    }
+                                }
                                 break;
                             case "LOG":
                                 Log.d(TAG, "onDataChanged received from sendDataReceived current last_send_previous_log=" + JoH.dateTimeText(last_send_previous_log));
                                 Log.d(TAG, "onDataChanged received from sendDataReceived timeOfLastEntry=" + JoH.dateTimeText(timeOfLastEntry) + " Path=" + path);
+                                Log.i(TAG, "onDataChanged Phone received LOGS up to " + JoH.dateTimeText(timeOfLastEntry));
                                 last_send_previous_log = timeOfLastEntry;
                                 PersistentStore.setLong(pref_last_send_previous_log, last_send_previous_log);
                                 Log.d(TAG, "onDataChanged received from sendDataReceived update last_send_previous_log=" + JoH.dateTimeText(last_send_previous_log));
+                                if (mPrefs.getBoolean("sync_wear_logs", false)) {
+                                    dataMap = getWearLogData(send_log_count, last_send_previous_log, (send_log_count / 3));
+                                    if (dataMap != null) {
+                                        Log.i(TAG, "Request Logs Sync since " + JoH.dateTimeText(last_send_previous_log));
+                                        sendData(SYNC_LOGS_PATH, dataMap.toByteArray());
+                                    }
+                                }
                                 break;
                             case "STEP":
                                 Log.d(TAG, "onDataChanged received from sendDataReceived current last_send_previous_step_sensor=" + JoH.dateTimeText(last_send_previous_step_sensor));
                                 Log.d(TAG, "onDataChanged received from sendDataReceived timeOfLastEntry=" + JoH.dateTimeText(timeOfLastEntry) + " Path=" + path);
+                                Log.i(TAG, "onDataChanged Phone received STEPS up to " + JoH.dateTimeText(timeOfLastEntry));
                                 last_send_previous_step_sensor = timeOfLastEntry;
                                 PersistentStore.setLong(pref_last_send_previous_step_sensor, last_send_previous_step_sensor);
                                 Log.d(TAG, "onDataChanged received from sendDataReceived update last_send_previous_step_sensor=" + JoH.dateTimeText(last_send_previous_step_sensor));
+                                if (mPrefs.getBoolean("use_wear_health", false)) {
+                                    dataMap = getWearStepSensorData(send_step_count, last_send_previous_step_sensor, (send_step_count / 3));
+                                    if (dataMap != null) {
+                                        Log.i(TAG, "Request Steps Sync since " + JoH.dateTimeText(last_send_previous_step_sensor));
+                                        sendData(SYNC_STEP_SENSOR_PATH, dataMap.toByteArray());
+                                    }
+                                }
                                 break;
                             case "BM":
                                 Log.d(TAG, "Benchmark: onDataChanged received from sendDataReceived timeOfLastEntry=" + JoH.dateTimeText(timeOfLastEntry) + " Path=" + path);
@@ -1065,7 +1090,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             UserError last_log = UserError.last();
             if (last_log != null && last_send_previous_log <= last_log.timestamp) {
                 Log.d(TAG, "onDataChanged SYNC_DB_PATH requestData for last_send_previous_log < last_log.timestamp:" + JoH.dateTimeText(last_send_previous_log) + "<=" + JoH.dateTimeText((long) last_log.timestamp));
-                requestData();
                 return false;
             }
         }
