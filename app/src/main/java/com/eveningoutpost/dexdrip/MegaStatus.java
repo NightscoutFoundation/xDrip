@@ -13,12 +13,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.PowerManager;
-import android.preference.PreferenceManager;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
@@ -69,6 +65,7 @@ public class MegaStatus extends ActivityWithMenu {
     private static boolean autoFreshRunning = false;
     private static Runnable autoRunnable;
     private static int currentPage = 0;
+    private boolean autoStart = false;
 
     private static final ArrayList<String> sectionList = new ArrayList<>();
     private static final ArrayList<String> sectionTitles = new ArrayList<>();
@@ -179,8 +176,9 @@ public class MegaStatus extends ActivityWithMenu {
         // switch to last used position if it exists
         final int saved_position = (int) PersistentStore.getLong("mega-status-last-page");
         if ((saved_position > 0) && (saved_position < sectionList.size())) {
+            currentPage = saved_position;
             mViewPager.setCurrentItem(saved_position);
-            startAutoFresh();
+            autoStart = true; // run once activity becomes visible
         }
 
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
@@ -232,11 +230,9 @@ public class MegaStatus extends ActivityWithMenu {
     }
 
     private void requestWearCollectorStatus() {
-        final PowerManager.WakeLock wl = JoH.getWakeLock("ACTION_STATUS_COLLECTOR", 120000);
         if (Home.get_enable_wear()) {
             startWatchUpdaterService(xdrip.getAppContext(), WatchUpdaterService.ACTION_STATUS_COLLECTOR, TAG);
         }
-        JoH.releaseWakeLock(wl);
     }
 
     @Override
@@ -260,7 +256,7 @@ public class MegaStatus extends ActivityWithMenu {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WatchUpdaterService.ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE);
         LocalBroadcastManager.getInstance(xdrip.getAppContext()).registerReceiver(serviceDataReceiver, intentFilter);
-        if (autoRunnable != null) startAutoFresh();
+        if ((autoRunnable != null) || (autoStart)) startAutoFresh();
 
         if (sectionList.size() > 1)
             startupInfo(); // show swipe message if there is a page to swipe to
@@ -323,6 +319,7 @@ public class MegaStatus extends ActivityWithMenu {
 
     private synchronized void startAutoFresh() {
         if (autoFreshRunning) return;
+        autoStart = false;
         if (autoRunnable == null) autoRunnable = new Runnable() {
 
             @Override
@@ -342,9 +339,8 @@ public class MegaStatus extends ActivityWithMenu {
                 }
             }
         };
-
-        JoH.runOnUiThreadDelayed(autoRunnable, 200);
         autoFreshRunning = true;
+        JoH.runOnUiThreadDelayed(autoRunnable, 200);
     }
 
     /**
