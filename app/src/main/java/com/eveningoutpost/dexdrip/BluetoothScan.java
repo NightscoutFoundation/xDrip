@@ -328,7 +328,9 @@ public class BluetoothScan extends ListActivityWithMenu {
 
         try {
             if (device.getName().toLowerCase().contains("limitter")
-                    && (adverts.containsKey(device.getAddress()) && (new String(adverts.get(device.getAddress()), "UTF-8").contains("eLeR")))) {
+                    && (adverts.containsKey(device.getAddress())
+                    && ((new String(adverts.get(device.getAddress()), "UTF-8").contains("eLeR"))
+                    || (new String(adverts.get(device.getAddress()), "UTF-8").contains("data"))))) {
                 String msg = "Auto-detected transmiter_pl device!";
                 Log.e(TAG, msg);
                 JoH.static_toast_long(msg);
