@@ -428,7 +428,8 @@ public class Home extends BaseWatchFace {
     public static long stale_data_millis()
     {
         if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) return (60000 * 13);
-        if (Home.getPreferencesBooleanDefaultFalse("engineering_mode")) return (60000 * 6);
+        if (DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5 &&
+            Home.getPreferencesBooleanDefaultFalse("engineering_mode")) return (60000 * 6);
         return (60000 * 11);
     }
 }

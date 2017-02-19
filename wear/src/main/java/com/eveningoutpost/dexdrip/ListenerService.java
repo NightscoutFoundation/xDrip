@@ -87,6 +87,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String SYNC_DB_PATH = "/syncweardb";//KS
     private static final String SYNC_BGS_PATH = "/syncwearbgs";//KS
     private static final String SYNC_LOGS_PATH = "/syncwearlogs";
+    private static final String SYNC_LOGS_REQUESTED_PATH = "/syncwearlogsrequested";
     private static final String SYNC_STEP_SENSOR_PATH = "/syncwearstepsensor";
     private static final String CLEAR_LOGS_PATH = "/clearwearlogs";
     private static final String STATUS_COLLECTOR_PATH = "/statuscollector";
@@ -254,6 +255,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                     case WEARABLE_SNOOZE_ALERT:
                                     case SYNC_BGS_PATH:
                                     case SYNC_LOGS_PATH:
+                                    case SYNC_LOGS_REQUESTED_PATH:
                                     case SYNC_STEP_SENSOR_PATH:
                                         sendMessagePayload(node, path, path, payload);
                                         break;
@@ -266,7 +268,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                             }
                                         }
                                         if (sync_wear_logs) {
-                                            datamap = getWearLogData(send_log_count, last_send_previous_log, 0);//UserError gen @10K messages just for G5CollectionService; UserError 2300 recs = @150K over @4 hrs when "scan cycle start" was logging / 5 secs.
+                                            datamap = getWearLogData(send_log_count, last_send_previous_log, 0, -1);//UserError gen @10K messages just for G5CollectionService; UserError 2300 recs = @150K over @4 hrs when "scan cycle start" was logging / 5 secs.
                                             if (datamap != null) {
                                                 byte[] compressPayload = JoH.compressBytesToBytesGzip((datamap.toByteArray()));
                                                 sendMessagePayload(node, "SYNC_LOGS_PATH", SYNC_LOGS_PATH, compressPayload);
@@ -351,7 +353,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 }
             } else if (bBenchmarkLogs && path.equals(SYNC_LOGS_PATH)) {
                 //bBenchmarkLogs = runBenchmarkTest(node, pathdesc+"_BM", path+"_BM", payload, bBenchmarkDup);
-                datamap = getWearLogData(1000, 0, 0);//generate 1000 records of test data
+                datamap = getWearLogData(1000, 0, 0, -1);//generate 1000 records of test data
                 if (datamap != null) {
                     bBenchmarkLogs = runBenchmarkTest(node, pathdesc + "_BM", path + "_BM", datamap.toByteArray(), false);
                 }
@@ -518,12 +520,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         return null;
     }
 
-    private synchronized DataMap getWearLogData(int count, long last_send_time, int min_count) {
+    private synchronized DataMap getWearLogData(int count, long last_send_time, int min_count, long syncLogsRequested) {
         if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
             googleApiConnect();
         }
 
-        Log.d(TAG, "getWearLogData last_send_time:" + JoH.dateTimeText(last_send_time) + " max count=" + count + " min_count=" + min_count);
+        Log.d(TAG, "getWearLogData last_send_time:" + JoH.dateTimeText(last_send_time) + " max count=" + count + " min_count=" + min_count + " syncLogsRequested=" + syncLogsRequested);
 
         UserError last_log = UserError.last();
         if (last_log != null) {
@@ -544,11 +546,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     //Log.d(TAG, "getWearLogData set last_send_sucess:" + JoH.dateTimeText(last_send_sucess) + " Log:" + log.toString());
                 }
                 entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
+                entries.putLong("syncLogsRequested", syncLogsRequested);
                 entries.putDataMapArrayList("entries", dataMaps);
-                Log.i(TAG, "getWearLogData SYNCED logs up to " + JoH.dateTimeText(last_send_success) + " count = " + logs.size());
+                Log.i(TAG, "getWearLogData SYNCED logs up to " + JoH.dateTimeText(last_send_success) + " count = " + logs.size() + " syncLogsRequested=" + syncLogsRequested);
                 return entries;
             } else
-                Log.i(TAG, "getWearLogData SYNCED logs up to " + JoH.dateTimeText(last_send_success) + " count = 0");
+                Log.i(TAG, "getWearLogData SYNCED logs up to " + JoH.dateTimeText(last_send_success) + " count = 0" + " syncLogsRequested=" + syncLogsRequested);
         }
         return null;
     }
@@ -858,16 +861,18 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH=" + path);
                     final PowerManager.WakeLock wl = JoH.getWakeLock(getApplicationContext(), "watchlistener-SYNC_DB_PATH",120000);
                     //Sensor.DeleteAndInitDb(getApplicationContext());
-                    BgReading.deleteALL();
                     Calibration.deleteALL();
+                    BgReading.deleteALL();
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH delete UserError < last_send_previous_log=" + JoH.dateTimeText(last_send_previous_log));
                     UserError.cleanup(last_send_previous_log);
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH delete TransmitterData < last_send_previous=" + JoH.dateTimeText(last_send_previous));
                     TransmitterData.cleanup(last_send_previous);
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH delete PebbleMovement < last_send_previous=" + JoH.dateTimeText(last_send_previous_step_sensor));
                     PebbleMovement.cleanup(2);//retain 1 day
-                    // PersistentStore.setLong(pref_last_send_previous, 0);
+
+                    //PersistentStore.setLong(pref_last_send_previous, 0);
                     //PersistentStore.setLong(pref_last_send_previous_log, 0);
+                    //PersistentStore.setLong(pref_last_send_previous_step_sensor, 0);
                     /* TODO remove once confirm not needed
                     if (isSafeToDeleteDB()) {
                         doDeleteDB = false;
@@ -882,7 +887,29 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     JoH.releaseWakeLock(wl);
                 } else if (path.equals(SYNC_LOGS_PATH)) {
                     Log.d(TAG, "onDataChanged SYNC_LOGS_PATH=" + path);
-                    requestData();
+                    //requestData();
+                    dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
+                    if (dataMap != null) {
+                        msg = dataMap.getString("syncLogsRequested", "");
+                        int syncLogsRequested;
+                        try {
+                            syncLogsRequested = Integer.parseInt(msg);
+                        } catch (NumberFormatException e) {
+                            syncLogsRequested = 0;
+                        }
+                        Log.d(TAG, "onDataChanged Received SYNC_LOGS_PATH request syncLogsRequested=" + syncLogsRequested);
+                        dataMap = getWearLogData(send_log_count, last_send_previous_log, (send_log_count / 3), syncLogsRequested);
+                        if (dataMap != null) {
+                            Log.i(TAG, "onDataChanged SYNC_LOGS_PATH Request from last log processed " + JoH.dateTimeText(last_send_previous_log));
+                            sendData(SYNC_LOGS_PATH, dataMap.toByteArray());
+                        }
+                        else {
+                            Log.d(TAG, "SYNC_LOGS_PATH received! No outstanding logs! ACTION_SYNC_LOGS request completed!! Ongoing requests syncLogsRequested=" + syncLogsRequested);
+                            if (syncLogsRequested > 0) {
+                                sendSyncRequested(SYNC_LOGS_REQUESTED_PATH, syncLogsRequested);
+                            }
+                        }
+                    }
                 } else if (path.equals(CLEAR_LOGS_PATH)) {
                     Log.d(TAG, "onDataChanged CLEAR_LOGS_PATH=" + path);
                     try {
@@ -930,52 +957,65 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     Log.d(TAG, "onDataChanged path=" + path + " DataMap=" + dataMap);
                     String type = dataMap.getString("type", "");
                     long timeOfLastEntry = dataMap.getLong("timeOfLastEntry", 0);
+                    long syncLogsRequested = dataMap.getLong("syncLogsRequested", -1);
                     msg = dataMap.getString("msg", "");
                     if (type != null && !type.isEmpty() && timeOfLastEntry > 0) {
                         switch (type) {
                             case "BG":
-                                Log.d(TAG, "onDataChanged received from sendDataReceived current last_send_previous=" + JoH.dateTimeText(last_send_previous));
-                                Log.d(TAG, "onDataChanged received from sendDataReceived timeOfLastEntry=" + JoH.dateTimeText(timeOfLastEntry) + " Path=" + path);
-                                Log.i(TAG, "onDataChanged Phone received BGs up to " + JoH.dateTimeText(timeOfLastEntry));
-                                last_send_previous = timeOfLastEntry;
-                                PersistentStore.setLong(pref_last_send_previous, last_send_previous);
-                                Log.d(TAG, "onDataChanged received from sendDataReceived update last_send_previous=" + JoH.dateTimeText(last_send_previous));
+                                Log.d(TAG, "DATA_ITEM_RECEIVED_PATH received! Current last_send_previous=" + JoH.dateTimeText(last_send_previous));
+                                Log.i(TAG, "DATA_ITEM_RECEIVED_PATH received! Received BGs confirmed up to " + JoH.dateTimeText(timeOfLastEntry));
+                                if (timeOfLastEntry >= last_send_previous_log) {
+                                    last_send_previous = timeOfLastEntry;
+                                    PersistentStore.setLong(pref_last_send_previous, last_send_previous);
+                                    Log.d(TAG, "DATA_ITEM_RECEIVED_PATH received!  Updated last_send_previous=" + JoH.dateTimeText(last_send_previous));
+                                }
+                                else {
+                                    Log.d(TAG, "DATA_ITEM_RECEIVED_PATH received! Duplicate confirmation! Ignore timeOfLastEntry=" + JoH.dateTimeText(timeOfLastEntry));
+                                }
                                 if (mPrefs.getBoolean("enable_wearG5", false)) {
-                                    //if (doSyncBGs(send_bg_count / 2, last_send_previous, "enable_wearG5")) {
-                                    //    requestData();
                                     dataMap = getWearTransmitterData(send_bg_count, last_send_previous, (send_bg_count / 3));
                                     if (dataMap != null) {
-                                        Log.i(TAG, "Request BGs Sync since " + JoH.dateTimeText(last_send_previous));
+                                        Log.i(TAG, "DATA_ITEM_RECEIVED_PATH received! New Request to sync BGs from " + JoH.dateTimeText(last_send_previous));
                                         sendData(SYNC_BGS_PATH, dataMap.toByteArray());
                                     }
                                 }
                                 break;
                             case "LOG":
-                                Log.d(TAG, "onDataChanged received from sendDataReceived current last_send_previous_log=" + JoH.dateTimeText(last_send_previous_log));
-                                Log.d(TAG, "onDataChanged received from sendDataReceived timeOfLastEntry=" + JoH.dateTimeText(timeOfLastEntry) + " Path=" + path);
-                                Log.i(TAG, "onDataChanged Phone received LOGS up to " + JoH.dateTimeText(timeOfLastEntry));
-                                last_send_previous_log = timeOfLastEntry;
-                                PersistentStore.setLong(pref_last_send_previous_log, last_send_previous_log);
-                                Log.d(TAG, "onDataChanged received from sendDataReceived update last_send_previous_log=" + JoH.dateTimeText(last_send_previous_log));
+                                Log.d(TAG, "DATA_ITEM_RECEIVED_PATH received! Current last_send_previous_log=" + JoH.dateTimeText(last_send_previous_log));
+                                Log.i(TAG, "DATA_ITEM_RECEIVED_PATH received! Received LOGS confirmed up to " + JoH.dateTimeText(timeOfLastEntry));
+                                if (timeOfLastEntry >= last_send_previous_log) {
+                                    last_send_previous_log = timeOfLastEntry;
+                                    PersistentStore.setLong(pref_last_send_previous_log, last_send_previous_log);
+                                    Log.d(TAG, "DATA_ITEM_RECEIVED_PATH received!  Updated last_send_previous_log=" + JoH.dateTimeText(last_send_previous_log));
+                                }
+                                else {
+                                    Log.d(TAG, "DATA_ITEM_RECEIVED_PATH received! Duplicate confirmation! Ignore timeOfLastEntry=" + JoH.dateTimeText(timeOfLastEntry));
+                                }
                                 if (mPrefs.getBoolean("sync_wear_logs", false)) {
-                                    dataMap = getWearLogData(send_log_count, last_send_previous_log, (send_log_count / 3));
+                                    dataMap = getWearLogData(send_log_count, last_send_previous_log, (send_log_count / 3), syncLogsRequested);
                                     if (dataMap != null) {
-                                        Log.i(TAG, "Request Logs Sync since " + JoH.dateTimeText(last_send_previous_log));
+                                        Log.i(TAG, "DATA_ITEM_RECEIVED_PATH received! New Request to sync LOGS from " + JoH.dateTimeText(last_send_previous_log));
                                         sendData(SYNC_LOGS_PATH, dataMap.toByteArray());
                                     }
+                                    //Indicates this request was triggered by phone ACTION_SYNC_LOGS request; -1 indicates request was triggered by watch in doBackground()
+                                    else if (syncLogsRequested > -1) {
+                                        Log.d(TAG, "DATA_ITEM_RECEIVED_PATH received! No outstanding logs! ACTION_SYNC_LOGS request completed!! Ongoing requests syncLogsRequested=" + syncLogsRequested);
+                                        sendSyncRequested(SYNC_LOGS_REQUESTED_PATH, syncLogsRequested);
+                                    }
+                                    else
+                                        Log.d(TAG, "DATA_ITEM_RECEIVED_PATH received! No outstanding logs! SYNC_LOGS_PATH request triggered by watch doBackground.  syncLogsRequested=" + syncLogsRequested);
                                 }
                                 break;
                             case "STEP":
-                                Log.d(TAG, "onDataChanged received from sendDataReceived current last_send_previous_step_sensor=" + JoH.dateTimeText(last_send_previous_step_sensor));
-                                Log.d(TAG, "onDataChanged received from sendDataReceived timeOfLastEntry=" + JoH.dateTimeText(timeOfLastEntry) + " Path=" + path);
-                                Log.i(TAG, "onDataChanged Phone received STEPS up to " + JoH.dateTimeText(timeOfLastEntry));
+                                Log.d(TAG, "DATA_ITEM_RECEIVED_PATH received! Current last_send_previous_step_sensor=" + JoH.dateTimeText(last_send_previous_step_sensor));
+                                Log.i(TAG, "DATA_ITEM_RECEIVED_PATH received! Received Steps confirmed up to " + JoH.dateTimeText(timeOfLastEntry));
                                 last_send_previous_step_sensor = timeOfLastEntry;
                                 PersistentStore.setLong(pref_last_send_previous_step_sensor, last_send_previous_step_sensor);
-                                Log.d(TAG, "onDataChanged received from sendDataReceived update last_send_previous_step_sensor=" + JoH.dateTimeText(last_send_previous_step_sensor));
+                                Log.d(TAG, "DATA_ITEM_RECEIVED_PATH received!  Updated last_send_previous_step_sensor=" + JoH.dateTimeText(last_send_previous_step_sensor));
                                 if (mPrefs.getBoolean("use_wear_health", false)) {
                                     dataMap = getWearStepSensorData(send_step_count, last_send_previous_step_sensor, (send_step_count / 3));
                                     if (dataMap != null) {
-                                        Log.i(TAG, "Request Steps Sync since " + JoH.dateTimeText(last_send_previous_step_sensor));
+                                        Log.i(TAG, "DATA_ITEM_RECEIVED_PATH received! New Request to sync Steps from " + JoH.dateTimeText(last_send_previous_step_sensor));
                                         sendData(SYNC_STEP_SENSOR_PATH, dataMap.toByteArray());
                                     }
                                 }
@@ -1063,6 +1103,15 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             sendLocalToast(msg, length);
         }
         sendData(WEARABLE_REPLYMSG_PATH, dataMap.toByteArray());
+    }
+
+    private synchronized void sendSyncRequested (String path, long syncLogsRequested) {
+        if (syncLogsRequested > 0) syncLogsRequested--;
+        Log.d(TAG, "sendSyncRequested syncLogsRequested=" + syncLogsRequested);
+        DataMap dataMap = new DataMap();
+        dataMap.putLong("timestamp", System.currentTimeMillis());
+        dataMap.putLong("syncLogsRequested", syncLogsRequested);
+        sendData(path, dataMap.toByteArray());
     }
 
     private synchronized void sendPersistentStore() {
@@ -1324,9 +1373,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     Sensor.createUpdate(started_at, 0, latest_battery_level, sensor_location, uuid);
                     Sensor newsensor = Sensor.currentSensor();
                     if (newsensor != null) {
-                        Log.i(TAG, "syncSensorData createUpdate Sensor with uuid=" + uuid + " started at=" + started_at);
+                        Log.d(TAG, "syncSensorData createUpdate Sensor with uuid=" + uuid + " started at=" + started_at);
                     } else
-                        Log.e(TAG, "syncSensorData Failed to createUpdate new Sensor for uuid=" + uuid);
+                        Log.d(TAG, "syncSensorData Failed to createUpdate new Sensor for uuid=" + uuid);
                 } else
                     Log.d(TAG, "syncSensorData Sensor already exists with uuid=" + uuid);
             }
@@ -1773,23 +1822,23 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             long timeAgo = t - last_movement_timestamp;
 
             int type = event.sensor.getType();
-            Log.e(TAG, "onSensorChanged Sensor " + type + " name = " + event.sensor.getStringType());
-            Log.e(TAG, "onSensorChanged accuracy = " + event.accuracy);
-            Log.e(TAG, "onSensorChanged MaxDelay = " + event.sensor.getMaxDelay());
-            Log.e(TAG, "onSensorChanged t = " + t + " text = " + JoH.dateTimeText(t));
-            Log.e(TAG, "onSensorChanged last_movement_timestamp = " + last_movement_timestamp + " text = " + JoH.dateTimeText(last_movement_timestamp));
-            Log.e(TAG, "onSensorChanged timeAgo = " + timeAgo);
+            Log.d(TAG, "onSensorChanged Sensor " + type + " name = " + event.sensor.getStringType());
+            Log.d(TAG, "onSensorChanged accuracy = " + event.accuracy);
+            Log.d(TAG, "onSensorChanged MaxDelay = " + event.sensor.getMaxDelay());
+            Log.d(TAG, "onSensorChanged t = " + t + " text = " + JoH.dateTimeText(t));
+            Log.d(TAG, "onSensorChanged last_movement_timestamp = " + last_movement_timestamp + " text = " + JoH.dateTimeText(last_movement_timestamp));
+            Log.d(TAG, "onSensorChanged timeAgo = " + timeAgo);
 
             // Calculate the delay from when event was recorded until it was received here in ms
             // Event timestamp is recorded in us accuracy, but ms accuracy is sufficient here
             long delay = System.currentTimeMillis() - (event.timestamp / 1000000L);//Timestamp when sensor was registered
-            Log.e(TAG, "onSensorChanged delay = " + delay + " JoH.DateTimeText(delay) = " + JoH.dateTimeText(delay) + " (delay + (event.timestamp / 1000000L)) = " + delay + (event.timestamp / 1000000L) + " text= " + JoH.dateTimeText(delay + (event.timestamp / 1000000L)));
+            Log.d(TAG, "onSensorChanged delay = " + delay + " JoH.DateTimeText(delay) = " + JoH.dateTimeText(delay) + " (delay + (event.timestamp / 1000000L)) = " + delay + (event.timestamp / 1000000L) + " text= " + JoH.dateTimeText(delay + (event.timestamp / 1000000L)));
 
             PebbleMovement last = PebbleMovement.last();
             boolean sameDay = last != null ? isSameDay(t, last.timestamp) : true;
             if (!sameDay) {
                 initCounters();
-                Log.e(TAG, "onSensorChanged initCounters initCounters mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
+                Log.d(TAG, "onSensorChanged initCounters initCounters mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
             }
             if (mCounterSteps < 1) {
                 // initial value
@@ -1801,32 +1850,32 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             // This is needed to keep the counter consistent across rotation changes.
             mSteps = mSteps + mPreviousCounterSteps;
             PersistentStore.setLong(pref_msteps, (long)mSteps);
-            Log.e(TAG, "onSensorChanged Total step count: " + mSteps + " mCounterSteps: " + mCounterSteps + " mPreviousCounterSteps: " + mPreviousCounterSteps + " event.values[0]: " + event.values[0]);// + " Delay: " + delayString);
+            Log.d(TAG, "onSensorChanged Total step count: " + mSteps + " mCounterSteps: " + mCounterSteps + " mPreviousCounterSteps: " + mPreviousCounterSteps + " event.values[0]: " + event.values[0]);// + " Delay: " + delayString);
 
             if (last_movement_timestamp < t) {//KS BUG SW3 seems to set event.timestamp to time when sensor listener is registered
-                Log.e(TAG, "onSensorChanged Movement for mSteps: " + mSteps + " event.values[0]: " + event.values[0] +
+                Log.d(TAG, "onSensorChanged Movement for mSteps: " + mSteps + " event.values[0]: " + event.values[0] +
                         " recorded: " + JoH.dateTimeText(System.currentTimeMillis() - (event.timestamp / 1000000L)) +
                         " received: " + JoH.dateTimeText(t) + " last_movement_timestamp: " + JoH.dateTimeText(last_movement_timestamp)
                 );
                 if (timeAgo < 10000) {//skip if less than 1 minute interval since last step
-                    Log.e(TAG, "onSensorChanged Interval < 1 minute! Skip new movement record creation");
+                    Log.d(TAG, "onSensorChanged Interval < 1 minute! Skip new movement record creation");
                 }
                 else {
                     if (last_movement_timestamp == 0 || (sameDay && last != null && last.metric == mSteps)) {//skip initial movement or duplicate steps
-                        Log.e(TAG, "onSensorChanged Initial sensor movement! Skip initial movement record, or duplicate record. last.metric=" + last.metric);
+                        Log.d(TAG, "onSensorChanged Initial sensor movement! Skip initial movement record, or duplicate record. last.metric=" + (last != null ? last.metric : "null"));
                     }
                     else {
                         final PebbleMovement pm = PebbleMovement.createEfficientRecord(t, mSteps);//event.timestamp * 1000, (int) event.values[0]
-                        Log.e(TAG, "Saving Movement: " + pm.toS());
+                        Log.d(TAG, "Saving Movement: " + pm.toS());
                     }
                     last_movement_timestamp = t;
                     PersistentStore.setLong(pref_last_movement_timestamp, last_movement_timestamp);
                 }
-                Log.e(TAG, "onSensorChanged sendLocalMessage mSteps: " + mSteps + " t: " + JoH.dateTimeText(t) + " last_movement_timestamp: " + JoH.dateTimeText(last_movement_timestamp));
+                Log.d(TAG, "onSensorChanged sendLocalMessage mSteps: " + mSteps + " t: " + JoH.dateTimeText(t) + " last_movement_timestamp: " + JoH.dateTimeText(last_movement_timestamp));
                 sendSensorLocalMessage(mSteps, t);
             }
             else {
-                Log.e(TAG, "onSensorChanged last_movement_timestamp > t! Reset last_movement_timestamp to current time.");
+                Log.d(TAG, "onSensorChanged last_movement_timestamp > t! Reset last_movement_timestamp to current time.");
                 last_movement_timestamp = t;
                 PersistentStore.setLong(pref_last_movement_timestamp, last_movement_timestamp);
             }
@@ -1837,12 +1886,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
     };
 
-    private boolean isSameDay(long t, long last) {
+    public static boolean isSameDay(long t, long last) {
         Calendar curCal = Calendar.getInstance();
         curCal.setTimeInMillis(t);
         Calendar lastCal = Calendar.getInstance();
         lastCal.setTimeInMillis(last);
-        Log.e(TAG, "isSameDay Sensor curCal.DAY_OF_MONTH=" + curCal.get(Calendar.DAY_OF_MONTH) + " lastCal.DAY_OF_MONTH=" + lastCal.get(Calendar.DAY_OF_MONTH) + " t=" + JoH.dateTimeText(t) + " last.timestamp=" + JoH.dateTimeText(last) + " " + last);
+        Log.d(TAG, "isSameDay Sensor curCal.DAY_OF_MONTH=" + curCal.get(Calendar.DAY_OF_MONTH) + " lastCal.DAY_OF_MONTH=" + lastCal.get(Calendar.DAY_OF_MONTH) + " t=" + JoH.dateTimeText(t) + " last.timestamp=" + JoH.dateTimeText(last) + " " + last);
         if (curCal.get(Calendar.DAY_OF_MONTH) == lastCal.get(Calendar.DAY_OF_MONTH) &&
                 curCal.get(Calendar.YEAR) == lastCal.get(Calendar.YEAR) &&
                 curCal.get(Calendar.MONTH) == lastCal.get(Calendar.MONTH) ) {
@@ -1868,12 +1917,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             if (stepCounterSensor != null) {
                 if (mPrefs.getBoolean("showSteps", false)) {
                     int delay = Integer.parseInt(mPrefs.getString("step_delay_time", "10"));
-                    Log.e(TAG, "startMeasurement delay " + delay + " seconds.");
-                    Log.e(TAG, "startMeasurement Event listener for step counter sensor registered with a max delay of " + delay + " seconds.");
+                    Log.d(TAG, "startMeasurement delay " + delay + " seconds.");
+                    Log.d(TAG, "startMeasurement Event listener for step counter sensor registered with a max delay of " + delay + " seconds.");
                     mSensorManager.registerListener(mListener, stepCounterSensor, SensorManager.SENSOR_DELAY_NORMAL, delay * BATCH_LATENCY_1s);
                 }
                 else {
-                    Log.e(TAG, "startMeasurement Event listener for step counter sensor registered with a max delay of " + BATCH_LATENCY_400s);
+                    Log.d(TAG, "startMeasurement Event listener for step counter sensor registered with a max delay of " + BATCH_LATENCY_400s);
                     mSensorManager.registerListener(mListener, stepCounterSensor, SensorManager.SENSOR_DELAY_NORMAL, BATCH_LATENCY_400s);
                 }
             } else {
@@ -1894,15 +1943,16 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         initCounters();
         mSteps = (int) PersistentStore.getLong(pref_msteps);
         last_movement_timestamp = (int) PersistentStore.getLong(pref_last_movement_timestamp);
-        Log.e(TAG, "resetCounters Sensor Enter PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
+        Log.d(TAG, "resetCounters Sensor Enter PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
 
         PebbleMovement last = PebbleMovement.last();
-        if (!isSameDay(System.currentTimeMillis(), last.timestamp)) {
+        boolean sameDay = last != null ? ListenerService.isSameDay(System.currentTimeMillis(), last.timestamp) : true;
+        if (!sameDay) {
             initCounters();
-            Log.e(TAG, "resetCounters Sensor isSameDay initCounters mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
+            Log.d(TAG, "resetCounters Sensor isSameDay initCounters mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
         } else {
             mPreviousCounterSteps = mSteps;
-            Log.e(TAG, "resetCounters Sensor NOT isSameDay PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
+            Log.d(TAG, "resetCounters Sensor NOT isSameDay PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
         }
     }
 

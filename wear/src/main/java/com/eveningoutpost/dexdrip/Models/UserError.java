@@ -177,9 +177,9 @@ public class UserError extends Model {
         try {
             return new Select()
                     .from(UserError.class)
-                    //.where("timestamp <= ?", (error.timestamp + (60 * 1000))) // 1 minute padding (should never be that far off, but why not)
-                    .where("timestamp == ?", error.timestamp + " message == ?", (error.message ) + " shortError == ?", (error.shortError ))
-                    .orderBy("timestamp desc")
+                    .where("timestamp = ?", error.timestamp)
+                    .where("shortError = ?", error.shortError)
+                    .where("message = ?", error.message)
                     .executeSingle();
         } catch (Exception e) {
             Log.e(TAG,"getForTimestamp() Got exception on Select : "+e.toString());
@@ -193,6 +193,7 @@ public class UserError extends Model {
             try {
                 for(UserError userError : errors[0]) {
                     userError.delete();
+                    //userError.save();
                 }
                 return true;
             } catch(Exception e) {

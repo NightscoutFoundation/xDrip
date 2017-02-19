@@ -291,12 +291,20 @@ public class BgSendQueue extends Model {
 
     public static DataMap getSensorSteps(SharedPreferences prefs) {
         DataMap dataMap = new DataMap();
+        final long t = System.currentTimeMillis();
         final PebbleMovement pm = PebbleMovement.last();
         final boolean show_steps = prefs.getBoolean("showSteps", true);
         final boolean use_wear_health = prefs.getBoolean("use_wear_health", true);
         if ((use_wear_health) && (show_steps) && (pm != null) && pm.metric > 0) {
-            dataMap.putInt("steps", pm.metric);
-            dataMap.putLong("steps_timestamp", pm.timestamp);
+            boolean sameDay = pm != null ? ListenerService.isSameDay(t, pm.timestamp) : true;
+            if (!sameDay) {
+                dataMap.putInt("steps", 0);
+                dataMap.putLong("steps_timestamp", t);
+            }
+            else {
+                dataMap.putInt("steps", pm.metric);
+                dataMap.putLong("steps_timestamp", pm.timestamp);
+            }
         }
         return dataMap;
     }

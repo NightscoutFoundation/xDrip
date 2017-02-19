@@ -408,18 +408,26 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         */
         mRaw.setVisibility(View.GONE);
 
-        if (sharedPrefs.getBoolean("showSteps", false) && mStepsCount > 0) {
+        if (sharedPrefs.getBoolean("showSteps", false)) {
             stepsButton.setText(String.format("%d", mStepsCount));
             stepsButton.setVisibility(View.VISIBLE);
 
-            DecimalFormat df = new DecimalFormat("#.##");
-            Double km = (((double)mStepsCount) / 2000.0d) * 1.6d;
-            Double mi = (((double)mStepsCount)/ 2000.0d) * 1.0d;
-            Log.d(TAG, "showAgoRawBattStatus Sensor mStepsCount=" + mStepsCount+ " km=" + km + " mi=" + mi + " rcvd=" + JoH.dateTimeText(mTimeStepsRcvd));
-            mStepsToast = getResources().getString(R.string.label_show_steps, mStepsCount) +
-                    (km > 0.0 ? "\n" + getResources().getString(R.string.label_show_steps_km, df.format(km)) : "") +
-                    (mi > 0.0 ? "\n" + getResources().getString(R.string.label_show_steps_mi, df.format(mi)) : "") +
-                    "\n" + getResources().getString(R.string.label_show_steps_rcvdtime, JoH.dateTimeText(mTimeStepsRcvd));
+            if (mStepsCount > 0) {
+                DecimalFormat df = new DecimalFormat("#.##");
+                Double km = (((double) mStepsCount) / 2000.0d) * 1.6d;
+                Double mi = (((double) mStepsCount) / 2000.0d) * 1.0d;
+                Log.d(TAG, "showAgoRawBattStatus Sensor mStepsCount=" + mStepsCount + " km=" + km + " mi=" + mi + " rcvd=" + JoH.dateTimeText(mTimeStepsRcvd));
+                mStepsToast = getResources().getString(R.string.label_show_steps, mStepsCount) +
+                        (km > 0.0 ? "\n" + getResources().getString(R.string.label_show_steps_km, df.format(km)) : "0") +
+                        (mi > 0.0 ? "\n" + getResources().getString(R.string.label_show_steps_mi, df.format(mi)) : "0") +
+                        "\n" + getResources().getString(R.string.label_show_steps_rcvdtime, JoH.dateTimeText(mTimeStepsRcvd));
+            }
+            else {
+                mStepsToast = getResources().getString(R.string.label_show_steps, mStepsCount) +
+                        ("\n" + getResources().getString(R.string.label_show_steps_km, "0")) +
+                        ("\n" + getResources().getString(R.string.label_show_steps_mi, "0")) +
+                        "\n" + getResources().getString(R.string.label_show_steps_rcvdtime, JoH.dateTimeText(mTimeStepsRcvd));
+            }
         }
         else {
             stepsButton.setVisibility(View.GONE);
