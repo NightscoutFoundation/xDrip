@@ -156,7 +156,7 @@ public class UploaderQueue extends Model {
     }
 
     public static List<UploaderQueue> getPendingbyType(String className, long bitfield) {
-        return getPendingbyType(className, bitfield, 500);
+        return getPendingbyType(className, bitfield, 300);
     }
 
     public static List<UploaderQueue> getPendingbyType(String className, long bitfield, int limit) {
@@ -333,6 +333,10 @@ public class UploaderQueue extends Model {
 
         if (last_query > 0)
             l.add(new StatusItem("Last poll", JoH.niceTimeSince(last_query)+" ago"));
+
+        if (NightscoutUploader.last_exception_time > 0) {
+            l.add(new StatusItem("REST-API problem\n" + JoH.dateTimeText(NightscoutUploader.last_exception_time), NightscoutUploader.last_exception, JoH.msSince(NightscoutUploader.last_exception_time) < (Constants.MINUTE_IN_MS * 6) ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
+        }
 
         if (last_cleanup > 0)
             l.add(new StatusItem("Last clean up", JoH.niceTimeSince(last_cleanup)+ " ago"));
