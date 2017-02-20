@@ -397,7 +397,7 @@ public class NightscoutUploader {
                     battery_name = DexCollectionType.getDexCollectionType().name();
                     break;
                 case "Parakeet":
-                    battery_level = Home.getPreferencesInt("Parakeet", -1);
+                    battery_level = Home.getPreferencesInt("parakeet_battery", -1);
                     battery_name = "Parakeet";
                     break;
                 default:
