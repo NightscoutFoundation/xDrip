@@ -763,7 +763,7 @@ public class DexCollectionService extends Service {
 
         //WATCH
         if (forced_wear) {
-            l.add(new StatusItem("line-break",""));
+            l.add(new StatusItem());
             l.add(new StatusItem("Watch Service State", lastStateWatch));
             l.add(new StatusItem("Bridge Device", JoH.ucFirst(getStateStr(mStaticStateWatch))));
 

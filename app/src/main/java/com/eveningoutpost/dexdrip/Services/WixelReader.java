@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
+import com.eveningoutpost.dexdrip.utils.Mdns;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.OkHttpClient;
@@ -368,7 +369,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         long newest_timestamp = 0;
         try
         {
-            Log.i(TAG, "Read called");
+            Log.i(TAG, "Read called: "+hostName+" port: "+port);
             Gson gson = new GsonBuilder().create();
 
             // An example of using gson.
@@ -380,14 +381,14 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
             System.out.println("Results code" + flat + ch2.version);
 
             // Real client code
-            InetSocketAddress ServerAdress = new InetSocketAddress(hostName, port);
+            InetSocketAddress ServerAdress = new InetSocketAddress(Mdns.genericResolver(hostName), port);
             Socket MySocket = new Socket();
             MySocket.connect(ServerAdress, 10000);
 
-            System.out.println("After the new socket \n");
+            //System.out.println("After the new socket \n");
             MySocket.setSoTimeout(2000);
 
-            System.out.println("client connected... " );
+            //System.out.println("client connected... " );
 
             PrintWriter out = new PrintWriter(MySocket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(MySocket.getInputStream()));
@@ -433,6 +434,9 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         catch(IOException e) {
             Log.e(TAG, "cought IOException! "+ e.toString());
             statusLog(hostName, JoH.hourMinuteString() + " " + e.toString());
+        }
+        catch (IllegalArgumentException e) {
+            Log.e(TAG,"Argument error on: "+hostName+" "+e.toString());
         }
         return trd_list;
     }

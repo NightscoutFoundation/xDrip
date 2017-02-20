@@ -125,11 +125,6 @@ import static com.eveningoutpost.dexdrip.UtilityModels.Constants.WEEK_IN_MS;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPlugin;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
 
-//import com.nispok.snackbar.Snackbar;
-//import com.nispok.snackbar.SnackbarManager;
-//import com.nispok.snackbar.enums.SnackbarType;
-//import com.nispok.snackbar.listeners.ActionClickListener;
-
 
 public class Home extends ActivityWithMenu {
     private final static String TAG = "jamorham: " + Home.class.getSimpleName();
@@ -191,6 +186,7 @@ public class Home extends ActivityWithMenu {
     private static final int SHOWCASE_G5FIRMWARE = 9;
     static final int SHOWCASE_MEGASTATUS = 10;
     public static final int SHOWCASE_MOTION_DETECTION = 11;
+    public static final int SHOWCASE_MDNS = 12;
     private static double last_speech_time = 0;
     private PreviewLineChartView previewChart;
     private Button stepsButton;
@@ -676,6 +672,7 @@ public class Home extends ActivityWithMenu {
                         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                            // TODO make this a blood test entry xx
                                 calintent.putExtra("note_only", "true");
                                 startIntentThreadWithDelayedRefresh(calintent);
                                 dialog.dismiss();
@@ -687,6 +684,7 @@ public class Home extends ActivityWithMenu {
 
                     } else {
                         // if use for calibration == "no" then this is a "note_only" type, otherwise it isn't
+                        // TODO make this a blood test entry xx
                         calintent.putExtra("note_only", calibration_type.equals("never") ? "true" : "false");
                         startIntentThreadWithDelayedRefresh(calintent);
                     }
@@ -1565,7 +1563,7 @@ public class Home extends ActivityWithMenu {
         statusIOB="";
         statusBWP="";
         refreshStatusLine();
-
+        
         if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             this.currentBgValueText.setTextSize(100);
             this.notificationText.setTextSize(40);

@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -55,6 +56,7 @@ import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 public class MegaStatus extends ActivityWithMenu {
 
 
+    private static Activity mActivity;
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
     private static final String menu_name = "Mega Status";
@@ -70,8 +72,13 @@ public class MegaStatus extends ActivityWithMenu {
     private static final ArrayList<String> sectionList = new ArrayList<>();
     private static final ArrayList<String> sectionTitles = new ArrayList<>();
 
+    public static View runnableView;
+
+
     private ViewPager mViewPager;
 
+    private Integer color_store1;
+    private int padding_store_left_1, padding_store_bottom_1, padding_store_top_1, padding_store_right_1, gravity_store_1;
 
     private static ArrayList<MegaStatusListAdapter> MegaStatusAdapters = new ArrayList<>();
     private BroadcastReceiver serviceDataReceiver;
@@ -138,7 +145,7 @@ public class MegaStatus extends ActivityWithMenu {
                 la.addRows(G5CollectionService.megaStatus());
                 break;
             case IP_COLLECTOR:
-                la.addRows(WifiCollectionService.megaStatus());
+                la.addRows(WifiCollectionService.megaStatus(mActivity));
                 break;
             case XDRIP_PLUS_SYNC:
                 la.addRows(DoNothingService.megaStatus());
@@ -161,6 +168,7 @@ public class MegaStatus extends ActivityWithMenu {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mActivity = this;
         setContentView(R.layout.activity_mega_status);
         JoH.fixActionBar(this);
 
@@ -180,11 +188,11 @@ public class MegaStatus extends ActivityWithMenu {
             mViewPager.setCurrentItem(saved_position);
             autoStart = true; // run once activity becomes visible
         }
-
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 UserError.Log.d(TAG, "Page selected: " + position);
+                runnableView = null;
                 currentPage = position;
                 startAutoFresh();
                 PersistentStore.setLong("mega-status-last-page", currentPage);
@@ -245,17 +253,22 @@ public class MegaStatus extends ActivityWithMenu {
                 UserError.Log.e(TAG, "broadcast receiver not registered", e);
             }
         }
+        runnableView = null; // gc
+        mActivity = null;
         super.onPause();
     }
 
 
     @Override
     protected void onResume() {
+        mActivity = this;
         super.onResume();
+
         activityVisible = true;
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WatchUpdaterService.ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE);
         LocalBroadcastManager.getInstance(xdrip.getAppContext()).registerReceiver(serviceDataReceiver, intentFilter);
+
         if ((autoRunnable != null) || (autoStart)) startAutoFresh();
 
         if (sectionList.size() > 1)
@@ -471,29 +484,51 @@ public class MegaStatus extends ActivityWithMenu {
             ViewHolder viewHolder;
 
             if (view == null) {
-
-                view = mInflator.inflate(R.layout.listitem_megastatus, null);
                 viewHolder = new ViewHolder();
-
+                view = mInflator.inflate(R.layout.listitem_megastatus, null);
                 viewHolder.value = (TextView) view.findViewById(R.id.value);
                 viewHolder.name = (TextView) view.findViewById(R.id.name);
                 viewHolder.spacer = (TextView) view.findViewById(R.id.spacer);
                 viewHolder.layout = (LinearLayout) view.findViewById(R.id.device_list_id);
                 view.setTag(viewHolder);
+                if (color_store1 == null) {
+                    color_store1 = viewHolder.name.getCurrentTextColor();
+                    padding_store_bottom_1 = viewHolder.layout.getPaddingBottom();
+                    padding_store_top_1 = viewHolder.layout.getPaddingTop();
+                    padding_store_left_1 = viewHolder.layout.getPaddingLeft();
+                    padding_store_right_1 = viewHolder.layout.getPaddingRight();
+                    gravity_store_1 = viewHolder.name.getGravity();
+                }
 
             } else {
                 viewHolder = (ViewHolder) view.getTag();
+                //  reset all changed properties
+                viewHolder.spacer.setVisibility(View.VISIBLE);
+                viewHolder.name.setVisibility(View.VISIBLE);
+                viewHolder.value.setVisibility(View.VISIBLE);
+                viewHolder.name.setTextColor(color_store1);
+                viewHolder.layout.setPadding(padding_store_left_1, padding_store_top_1, padding_store_right_1, padding_store_bottom_1);
+                viewHolder.name.setGravity(gravity_store_1);
             }
 
+
             final StatusItem row = statusRows.get(i);
+
+            // TODO  add buttons
 
             if (row.name.equals("line-break")) {
                 viewHolder.spacer.setVisibility(View.GONE);
                 viewHolder.name.setVisibility(View.GONE);
                 viewHolder.value.setVisibility(View.GONE);
                 viewHolder.layout.setPadding(10, 10, 10, 10);
-
+            } else if (row.name.equals("heading-break")) {
+                viewHolder.value.setVisibility(View.GONE);
+                viewHolder.spacer.setVisibility(View.GONE);
+                viewHolder.name.setText(row.value);
+                viewHolder.name.setGravity(Gravity.CENTER_HORIZONTAL);
+                viewHolder.name.setTextColor(Color.parseColor("#fff9c4"));
             } else {
+
                 viewHolder.name.setText(row.name);
                 viewHolder.value.setText(row.value);
 
@@ -519,6 +554,35 @@ public class MegaStatus extends ActivityWithMenu {
                     viewHolder.value.setBackgroundColor(new_colour);
                     viewHolder.spacer.setBackgroundColor(new_colour);
                     viewHolder.name.setBackgroundColor(new_colour);
+                }
+                view.setOnClickListener(null); // reset
+                if ((row.runnable != null) && (row.button_name != null) && (row.button_name.equals("long-press"))) {
+                    runnableView = view; // last one
+                  /*  view.setLongClickable(true);
+                    view.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            try {
+                                runOnUiThread(row.runnable);
+                            } catch (Exception e) {
+                                //
+                            }
+                            return true;
+                        }
+                    });*/
+                    view.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            try {
+                                runOnUiThread(row.runnable);
+                            } catch (Exception e) {
+                                //
+                            }
+
+                        }
+                    });
+                } else {
+                    view.setLongClickable(false);
                 }
             }
 
