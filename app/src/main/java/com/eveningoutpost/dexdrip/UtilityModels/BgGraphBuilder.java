@@ -980,7 +980,8 @@ public class BgGraphBuilder {
                 // jamorham special
 
                 if ((cd != null) && (calibrations.size() > 0)) {
-                    while (bgReading.timestamp < calibrations.get(cdposition).timestamp) {
+
+                    while ((bgReading.timestamp < calibrations.get(cdposition).timestamp) || (calibrations.get(cdposition).slope == 0)) {
 
                         Log.d(TAG, "BG reading earlier than calibration at index: " + cdposition + "  " + JoH.dateTimeText(bgReading.timestamp) + " cal: " + JoH.dateTimeText(calibrations.get(cdposition).timestamp));
 
@@ -993,13 +994,12 @@ public class BgGraphBuilder {
                                 Log.d(TAG, "cd went to null during adjustment - likely graph spans multiple sensors");
                                 cd = oldcd;
                             }
-                            Log.d(TAG, "Now using calibration from: " + JoH.dateTimeText(calibrations.get(cdposition).timestamp));
+                            Log.d(TAG, "Now using calibration from: " + JoH.dateTimeText(calibrations.get(cdposition).timestamp) + " slope: " + cd.slope + " intercept: " + cd.intercept);
                         } else {
                             Log.d(TAG, "No more calibrations to choose from");
                             break;
                         }
                     }
-
                 }
 
                 // swap main and plugin plot if display glucose is from plugin

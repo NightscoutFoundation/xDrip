@@ -1031,7 +1031,7 @@ public class Calibration extends Model {
                 .where("slope_confidence != 0")
                 .where("sensor_confidence != 0")
                 .where("slope != 0")
-                .where("timestamp < ?", until)
+                .where("timestamp <= ?", until)
                 .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
@@ -1042,7 +1042,7 @@ public class Calibration extends Model {
                 .from(Calibration.class)
                 .where("timestamp >= " + Math.max(startTime, 0))
                 .where("timestamp <= " + endTime)
-                .where("slope != 0")
+                .where("(slope != 0 or slope_confidence = ?)", note_only_marker)
                 .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
