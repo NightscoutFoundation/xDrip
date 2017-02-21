@@ -75,6 +75,7 @@ public class Accuracy extends PlusModel {
 
     public static Accuracy create(BloodTest bloodTest, BgReading bgReading, String plugin) {
         if ((bloodTest == null) || (bgReading == null)) return null;
+        fixUpTable(schema);
         if (getForPreciseTimestamp(bgReading.timestamp, Constants.MINUTE_IN_MS, plugin) != null) {
             UserError.Log.d(TAG, "Duplicate accuracy timestamp for: " + JoH.dateTimeText(bgReading.timestamp));
             return null;
@@ -88,12 +89,12 @@ public class Accuracy extends PlusModel {
         ac.calculated = bgReading.calculated_value;
         //ac.lag = bgReading.timestamp-bloodTest.timestamp;
         ac.difference = bgReading.calculated_value - bloodTest.mgdl;
-        fixUpTable(schema);
         ac.save();
         return ac;
     }
 
     static Accuracy getForPreciseTimestamp(double timestamp, double precision, String plugin) {
+        fixUpTable(schema);
         final Accuracy accuracy = new Select()
                 .from(Accuracy.class)
                 .where("timestamp <= ?", (timestamp + precision))
