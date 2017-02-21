@@ -389,6 +389,8 @@ public class BloodTest extends Model {
                 }
             }
         }
+
+        if (difference.size() == 0) return null;
         double avg = DoubleMath.mean(difference);
         Log.d(TAG, "Average accuracy: " + accuracyAsString(avg) + "  (" + JoH.qs(avg, 5) + ")");
 
