@@ -67,6 +67,7 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
                                     } else if (type.equals(Calibration.class.getSimpleName())) {
                                         calibrations.add(Calibration.byid(up.reference_id));
                                     }
+                                    break;
                                 case "delete":
                                     // items.add(up);
                                     if (up.reference_uuid != null) {

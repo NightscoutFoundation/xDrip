@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
+import com.eveningoutpost.dexdrip.utils.Mdns;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
@@ -158,11 +159,12 @@ public class WifiCollectionService extends Service {
     }
 
     // data for MegaStatus
-    public static List<StatusItem> megaStatus() {
+    public static List<StatusItem> megaStatus(Context context) {
         final List<StatusItem> l = new ArrayList<>();
         l.add(new StatusItem("IP Collector Service", lastState));
         l.add(new StatusItem("Next poll", JoH.niceTimeTill(PersistentStore.getLong(WIFI_COLLECTION_WAKEUP))));
         l.addAll(WixelReader.megaStatus());
+        l.addAll(Mdns.megaStatus(context));
         return l;
     }
 }

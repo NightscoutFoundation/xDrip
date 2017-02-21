@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Home;
@@ -14,6 +15,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.mongodb.BasicDBObject;
@@ -61,6 +63,9 @@ public class NightscoutUploader {
         private static final String TAG = NightscoutUploader.class.getSimpleName();
         private static final int SOCKET_TIMEOUT = 60000;
         private static final int CONNECTION_TIMEOUT = 30000;
+
+        public static long last_exception_time = -1;
+        public static String last_exception;
 
         private static int failurecount = 0;
         private Context mContext;
@@ -149,7 +154,7 @@ public class NightscoutUploader {
                 Log.e(TAG, "Unable to process API Base URL");
                 return false;
             }
-
+            boolean any_successes = false;
             for (String baseURI : baseURIs) {
                 try {
                     int apiVersion = 0;
@@ -181,13 +186,15 @@ public class NightscoutUploader {
                     } else {
                         doLegacyRESTUploadTo(nightscoutService, glucoseDataSets);
                     }
+                    any_successes = true;
                 } catch (Exception e) {
-                    Log.e(TAG, "Unable to do REST API Upload: " + e.getMessage() + " url: " + baseURI);
-                    //e.printStackTrace();
-                    return false;
+                    String msg = "Unable to do REST API Upload: " + e.getMessage() + " url: " + baseURI + " marking record: " + (any_successes ? "succeeded" : "failed");
+                    last_exception = msg;
+                    last_exception_time = JoH.tsl();
+                    Log.e(TAG, msg);
                 }
             }
-            return true;
+            return any_successes;
         }
 
         private void doLegacyRESTUploadTo(NightscoutService nightscoutService, List<BgReading> glucoseDataSets) throws Exception {
@@ -196,7 +203,11 @@ public class NightscoutUploader {
                 if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
 
             }
-            postDeviceStatus(nightscoutService, null);
+            try {
+                postDeviceStatus(nightscoutService, null);
+            } catch (Exception e) {
+                Log.e(TAG, "Ignoring legacy devicestatus post exception: " + e);
+            }
         }
 
         private void doRESTUploadTo(NightscoutService nightscoutService, String secret, List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) throws Exception {
@@ -217,7 +228,11 @@ public class NightscoutUploader {
                 Response<ResponseBody> r = nightscoutService.upload(secret, body).execute();
                 if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
 
-                postDeviceStatus(nightscoutService, secret);
+                try {
+                    postDeviceStatus(nightscoutService, secret);
+                } catch (Exception e) {
+                    Log.e(TAG, "Ignoring devicestatus post exception: " + e);
+                }
             }
 
             try {
@@ -225,7 +240,11 @@ public class NightscoutUploader {
             } catch (Exception e) {
                 Log.e(TAG, "Exception uploading REST API treatments: " + e.getMessage());
                 if (e.getMessage().equals("Not Found")) {
-                    Log.wtf(TAG, "Please ensure careportal plugin is enabled on nightscout for treatment upload");
+                    final String msg = "Please ensure careportal plugin is enabled on nightscout for treatment upload!";
+                    Log.wtf(TAG, msg);
+                    Home.toaststaticnext(msg);
+                    last_exception = msg;
+                    last_exception_time = JoH.tsl();
                 }
             }
         }
@@ -356,24 +375,73 @@ public class NightscoutUploader {
     private static final String LAST_NIGHTSCOUT_BATTERY_LEVEL = "last-nightscout-battery-level";
 
     private void postDeviceStatus(NightscoutService nightscoutService, String apiSecret) throws Exception {
-        final JSONObject json = new JSONObject();
-        final boolean always_send_battery = true; // nightscout doesn't currently display device device status if it thinks its stale
-        final int battery_level = getBatteryLevel();
-        final long last_battery_level = PersistentStore.getLong(LAST_NIGHTSCOUT_BATTERY_LEVEL);
-        if (battery_level != last_battery_level || always_send_battery) {
-            PersistentStore.setLong(LAST_NIGHTSCOUT_BATTERY_LEVEL, battery_level);
-            // UserError.Log.d(TAG, "Uploading battery detail: " + battery_level);
-            json.put("uploaderBattery", battery_level);
 
-            RequestBody body = RequestBody.create(MediaType.parse("application/json"), json.toString());
-            Response<ResponseBody> r;
-            if (apiSecret != null) {
-                r = nightscoutService.uploadDeviceStatus(apiSecret, body).execute();
-            } else
-                r = nightscoutService.uploadDeviceStatus(body).execute();
-            if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
-            // } else {
-            //     UserError.Log.d(TAG, "Battery level is same as previous - not uploading: " + battery_level);
+        // TODO optimize based on changes avoiding stale marker issues
+        final boolean always_send_battery = true; // nightscout doesn't currently display device device status if it thinks its stale
+        final List<String> batteries = new ArrayList<>();
+        batteries.add("Phone");
+        if (DexCollectionType.hasBattery()) batteries.add("Bridge");
+        if (DexCollectionType.hasWifi()) batteries.add("Parakeet");
+
+        for (String battery : batteries) {
+
+            int battery_level;
+            String battery_name = "";
+            switch (battery) {
+                case "Phone":
+                    battery_level = getBatteryLevel();
+                    battery_name = Build.MANUFACTURER + " " + Build.MODEL;
+                    break;
+                case "Bridge":
+                    battery_level = Home.getPreferencesInt("bridge_battery", -1);
+                    battery_name = DexCollectionType.getDexCollectionType().name();
+                    break;
+                case "Parakeet":
+                    battery_level = Home.getPreferencesInt("parakeet_battery", -1);
+                    battery_name = "Parakeet";
+                    break;
+                default:
+                    battery_level = -1;
+                    break;
+            }
+            final long last_battery_level = PersistentStore.getLong(LAST_NIGHTSCOUT_BATTERY_LEVEL);
+
+            final JSONArray array = new JSONArray();
+            final JSONObject json = new JSONObject();
+            final JSONObject uploader = new JSONObject();
+
+            if ((battery_level > 0) && (battery_level != last_battery_level || always_send_battery)) {
+                PersistentStore.setLong(LAST_NIGHTSCOUT_BATTERY_LEVEL, battery_level);
+                // UserError.Log.d(TAG, "Uploading battery detail: " + battery_level);
+                // json.put("uploaderBattery", battery_level); // old style
+
+                uploader.put("battery", battery_level);
+                json.put("device", battery_name);
+                json.put("uploader", uploader);
+
+                array.put(json);
+
+                // example
+                //{
+                //    "device": "openaps://ediscout2.local",
+                //        "uploader": {
+                //    "battery": 60,
+                //            "batteryVoltage": 3783,
+                //            "temperature": "+51.0°C"
+                //}
+                //}
+
+
+                final RequestBody body = RequestBody.create(MediaType.parse("application/json"), json.toString());
+                Response<ResponseBody> r;
+                if (apiSecret != null) {
+                    r = nightscoutService.uploadDeviceStatus(apiSecret, body).execute();
+                } else
+                    r = nightscoutService.uploadDeviceStatus(body).execute();
+                if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
+                // } else {
+                //     UserError.Log.d(TAG, "Battery level is same as previous - not uploading: " + battery_level);
+            }
         }
     }
 

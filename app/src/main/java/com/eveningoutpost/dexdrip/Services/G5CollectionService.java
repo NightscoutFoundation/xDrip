@@ -1533,7 +1533,7 @@ public class G5CollectionService extends Service {
                 doDisconnectMessage(gatt, characteristic);
                 processNewTransmitterData(glucoseRx.unfiltered, glucoseRx.filtered, 216, new Date().getTime());
             } else if (firstByte == VersionRequestRxMessage.opcode) {
-                if (!setStoredFirmwareBytes(defaultTransmitter.transmitterId, characteristic.getValue())) {
+                if (!setStoredFirmwareBytes(defaultTransmitter.transmitterId, characteristic.getValue(), true)) {
                     Log.wtf(TAG, "Could not save out firmware version!");
                 }
                 doDisconnectMessage(gatt, characteristic);
@@ -1566,11 +1566,18 @@ public class G5CollectionService extends Service {
         return PersistentStore.getBytes("g5-firmware-" + transmitterId);
     }
 
+    // from wear sync
     public static boolean setStoredFirmwareBytes(String transmitterId, byte[] data) {
-        UserError.Log.e(TAG, "Store: VersionRX dbg: " + JoH.bytesToHex(data));
+        return setStoredFirmwareBytes(transmitterId, data, false);
+    }
+
+    public static boolean setStoredFirmwareBytes(String transmitterId, byte[] data, boolean from_bluetooth) {
+        if (from_bluetooth) UserError.Log.e(TAG, "Store: VersionRX dbg: " + JoH.bytesToHex(data));
         if (transmitterId.length() != 6) return false;
         if (data.length < 10) return false;
-        PersistentStore.setBytes("g5-firmware-" + transmitterId, data);
+        if (JoH.ratelimit("store-firmware-bytes", 60)) {
+            PersistentStore.setBytes("g5-firmware-" + transmitterId, data);
+        }
         return true;
     }
 

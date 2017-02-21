@@ -445,6 +445,7 @@ public class BluetoothGlucoseMeter extends Service {
         } catch (Exception e) {
             Log.e(TAG, "Error unregistering pairing receiver: " + e);
         }
+        started_at = -1;
     }
 
     public void startup() {
