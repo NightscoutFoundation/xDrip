@@ -43,7 +43,7 @@ public class BloodTest extends Model {
     public static final long STATE_UNDONE = 1 << 3;
     public static final long STATE_OVERWRITTEN = 1 << 4;
 
-
+    private static long highest_timestamp = 0;
     private static boolean patched = false;
     private final static String TAG = "BloodTest";
     private final static boolean d = false;
@@ -318,6 +318,17 @@ public class BloodTest extends Model {
             if (bgReading == null) {
                 Log.d(TAG, "opportunistic: No matching bg reading");
                 return;
+            }
+
+            if (bt.timestamp > highest_timestamp) {
+                Accuracy.create(bt, bgReading, "xDrip Original");
+                final CalibrationAbstract plugin = PluggableCalibration.getCalibrationPluginFromPreferences();
+                final CalibrationAbstract.CalibrationData cd = (plugin != null) ? plugin.getCalibrationData(bgReading.timestamp) : null;
+                if (plugin != null) {
+                    BgReading pluginBgReading = plugin.getBgReadingFromBgReading(bgReading, cd);
+                    Accuracy.create(bt, pluginBgReading, plugin.getAlgorithmName());
+                }
+                highest_timestamp = bt.timestamp;
             }
 
             if (!CalibrationRequest.isSlopeFlatEnough(bgReading)) {

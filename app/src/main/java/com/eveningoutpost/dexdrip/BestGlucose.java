@@ -129,6 +129,7 @@ public class BestGlucose {
     // TODO see getSlopeArrowSymbolBeforeCalibration for calculation method for arbitary slope
     // TODO option to process noise or not
     // TODO check what happens if there is only a single entry, especially regarding delta
+    // TODO select by time
 
 
     public static DisplayGlucose getDisplayGlucose() {

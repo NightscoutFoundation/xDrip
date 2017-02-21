@@ -126,6 +126,18 @@ public abstract class CalibrationAbstract {
         return bgReading.age_adjusted_raw_value * data.slope + data.intercept;
     }
 
+    public BgReading getBgReadingFromBgReading(BgReading bgReading, CalibrationData data) {
+        if (data == null) return null;
+        if (bgReading == null) return null;
+        // do we need deep clone?
+        final BgReading new_bg = (BgReading) JoH.cloneObject(bgReading);
+        if (new_bg == null) return null;
+        // algorithm can override to decide whether or not to be using age_adjusted_raw
+        new_bg.calculated_value = getGlucoseFromBgReading(bgReading, data);
+        new_bg.filtered_calculated_value = getGlucoseFromFilteredBgReading(bgReading, data);
+        return new_bg;
+    }
+
     public double getGlucoseFromFilteredBgReading(BgReading bgReading, CalibrationData data) {
         if (data == null) return -1;
         if (bgReading == null) return -1;
