@@ -85,6 +85,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String OPEN_SETTINGS = "/openwearsettings";
     private static final String NEW_STATUS_PATH = "/sendstatustowear";
     private static final String SYNC_DB_PATH = "/syncweardb";//KS
+    private static final String RESET_DB_PATH = "/resetweardb";//KS
     private static final String SYNC_BGS_PATH = "/syncwearbgs";//KS
     private static final String SYNC_LOGS_PATH = "/syncwearlogs";
     private static final String SYNC_LOGS_REQUESTED_PATH = "/syncwearlogsrequested";
@@ -860,19 +861,22 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 } else if (path.equals(SYNC_DB_PATH)) {//KS
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH=" + path);
                     final PowerManager.WakeLock wl = JoH.getWakeLock(getApplicationContext(), "watchlistener-SYNC_DB_PATH",120000);
-                    //Sensor.DeleteAndInitDb(getApplicationContext());
-                    Calibration.deleteALL();
                     BgReading.deleteALL();
+                    Calibration.deleteALL();
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH delete UserError < last_send_previous_log=" + JoH.dateTimeText(last_send_previous_log));
                     UserError.cleanup(last_send_previous_log);
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH delete TransmitterData < last_send_previous=" + JoH.dateTimeText(last_send_previous));
                     TransmitterData.cleanup(last_send_previous);
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH delete PebbleMovement < last_send_previous=" + JoH.dateTimeText(last_send_previous_step_sensor));
                     PebbleMovement.cleanup(2);//retain 1 day
-
-                    //PersistentStore.setLong(pref_last_send_previous, 0);
-                    //PersistentStore.setLong(pref_last_send_previous_log, 0);
-                    //PersistentStore.setLong(pref_last_send_previous_step_sensor, 0);
+                    JoH.releaseWakeLock(wl);
+                } else if (path.equals(RESET_DB_PATH)) {//KS
+                    Log.d(TAG, "onDataChanged RESET_DB_PATH=" + path);
+                    final PowerManager.WakeLock wl = JoH.getWakeLock(getApplicationContext(), "watchlistener-RESET_DB_PATH",120000);
+                    Sensor.DeleteAndInitDb(getApplicationContext());
+                    PersistentStore.setLong(pref_last_send_previous, 0);
+                    PersistentStore.setLong(pref_last_send_previous_log, 0);
+                    PersistentStore.setLong(pref_last_send_previous_step_sensor, 0);
                     /* TODO remove once confirm not needed
                     if (isSafeToDeleteDB()) {
                         doDeleteDB = false;
@@ -882,7 +886,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     }
                     else {
                         doDeleteDB = true;
-                        Log.d(TAG, "onDataChanged SYNC_DB_PATH=" + path + " Unable to delete wear DB; wear data needs syncing.");
+                        Log.d(TAG, "onDataChanged RESET_DB_PATH=" + path + " Unable to delete wear DB; wear data needs syncing.");
                     }*/
                     JoH.releaseWakeLock(wl);
                 } else if (path.equals(SYNC_LOGS_PATH)) {
@@ -1952,7 +1956,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             Log.d(TAG, "resetCounters Sensor isSameDay initCounters mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
         } else {
             mPreviousCounterSteps = mSteps;
-            Log.d(TAG, "resetCounters Sensor NOT isSameDay PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
+            Log.d(TAG, "resetCounters Sensor isSameDay PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
         }
     }
 

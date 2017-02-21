@@ -71,6 +71,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     public static final String ACTION_RESEND = WatchUpdaterService.class.getName().concat(".Resend");
     public static final String ACTION_OPEN_SETTINGS = WatchUpdaterService.class.getName().concat(".OpenSettings");
     public static final String ACTION_SYNC_DB = WatchUpdaterService.class.getName().concat(".SyncDB");//KS
+    public static final String ACTION_RESET_DB = WatchUpdaterService.class.getName().concat(".ResetDB");//KS
     public static final String ACTION_SYNC_LOGS = WatchUpdaterService.class.getName().concat(".SyncLogs");//KS
     public static final String ACTION_CLEAR_LOGS = WatchUpdaterService.class.getName().concat(".ClearLogs");//KS
     public static final String ACTION_STATUS_COLLECTOR = WatchUpdaterService.class.getName().concat(".StatusCollector");//KS
@@ -84,6 +85,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             = "com.eveningoutpost.dexdrip.BLUETOOTH_COLLECTION_SERVICE_UPDATE";
     public static final String ACTION_SNOOZE_ALERT = WatchUpdaterService.class.getName().concat(".SnoozeAlert");//KS
     private static final String SYNC_DB_PATH = "/syncweardb";//KS
+    private static final String RESET_DB_PATH = "/resetweardb";
     private static final String SYNC_BGS_PATH = "/syncwearbgs";//KS
     private static final String SYNC_LOGS_PATH = "/syncwearlogs";
     private static final String SYNC_LOGS_REQUESTED_PATH = "/syncwearlogsrequested";
@@ -686,9 +688,13 @@ public class WatchUpdaterService extends WearableListenerService implements
                     } else if (ACTION_SYNC_DB.equals(action)) {//KS
                         Log.d(TAG, "onStartCommand Action=" + ACTION_SYNC_DB + " Path=" + SYNC_DB_PATH);
                         sendNotification(SYNC_DB_PATH, "syncDB");
+                        initWearData();
+                    } else if (ACTION_RESET_DB.equals(action)) {//KS
+                        Log.d(TAG, "onStartCommand Action=" + ACTION_RESET_DB + " Path=" + RESET_DB_PATH);
+                        sendNotification(RESET_DB_PATH, "resetDB");
                         //TODO Rm!
                         //UserError.cleanup(JoH.tsl());//TODO Rm!
-                        //Log.d(TAG, "onStartCommand SYNC_DB_PATH cleanup timestamp=" + JoH.dateTimeText(JoH.tsl()));
+                        //Log.d(TAG, "onStartCommand RESET_DB_PATH cleanup timestamp=" + JoH.dateTimeText(JoH.tsl()));
                         //TODO Rm!
                         initWearData();
                     } else if (ACTION_START_COLLECTOR.equals(action)) {//KS

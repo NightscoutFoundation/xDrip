@@ -88,11 +88,12 @@ Note, xDrip+ and Wear will sync their co-existing preferences.  Preference synci
 For example, if the user changes the Force Wear preference on the watch, it will immediately be sent to the phone upon re-connection, and the phone will update its settings.
 
 ###Syncing BGs and Wear Database
-* Sync DB - The watch data (BGs, Logs)is saved in the watch database.  The watch will attempt to sync its data with the phone upon connection until all delta data have been synced. So, for example, if you have 8 hours of overnight data generated while disconnected from the phone, the watch will attempt to send all data upon re-connection with the phone.
-* Reset Wear DB - The watch data exists on the phone until you:
+* Sync DB - The watch data (BGs, Logs)are saved in the watch database.  The watch will attempt to sync its data with the phone upon connection until all delta data have been synced. So, for example, if you have 8 hours of overnight data generated while disconnected from the phone, the watch will attempt to send all data upon re-connection with the phone.
+* Resetting the Wear DB - The watch data exists on the phone until you:
 
-  1. **Reset Wear DB** on the phone via the xDrip+ upper right menu.  This removes data already synced with the phone.
-  2. **Reset Wear DB** is auto-executed on a daily basis at 4 am.
+  1. **Reset Wear DB** on the phone via the xDrip+ upper right menu.  This task deletes the wear database, then initializes it with the most recent calibrations & BGs from the phone.
+  This task may be useful if the wear app is not responding appropriately.  Refer to [Confirm Collector runs on the Watch with Wear Integration](#confirm-collector-runs-on-the-watch-with-wear-integration) below.
+  2. **Sync Wear DB** is auto-executed on a daily basis at 4 am.  This task will removes all data from the database which have already been synced with the phone.
   3. The app is uninstalled.
 * UserError Table - Similar to the xDrip+ phone app, UserError log messages are saved in the watch UserError table.  To access the watch log entries on the phone, enable the **Sync Wear Logs** preference shown in the above image.  The log entries will be prefixed with the **Wear Log Prefix**, which defaults to **wear**, but is user-configurable.  This allows users to identify which device generated the log entry.  The log entries can be viewed using the follwoing options:
   - Users can view log messages on the phone via the xDrip+ upper right menu item, **View Events Log**.
@@ -244,6 +245,7 @@ This will force the watch to use its BT collector, and force the phone to stop i
   - Reset Wear DB, restart Watch, restart phone.
   - Confirm phone and watch are connected via Android Wear.
   - Change Watchface to big chart and then back to standard xDrip.
+  - Optionally, perform **Reset Wear DB** from xDrip+ upper, right menu.  Refer to [Syncing BGs and Wear Database](#syncing-bgs-and-wear-database) above.
 
 ###Confirm the following in Android Wear app on phone
 - Watch is connected to the phone.
