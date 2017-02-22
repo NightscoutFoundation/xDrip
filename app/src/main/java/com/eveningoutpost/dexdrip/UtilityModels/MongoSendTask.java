@@ -63,9 +63,19 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
                                 case "create":
                                     items.add(up);
                                     if (type.equals(BgReading.class.getSimpleName())) {
-                                        bgReadings.add(BgReading.byid(up.reference_id));
+                                        final BgReading this_bg = BgReading.byid(up.reference_id);
+                                        if (this_bg != null) {
+                                            bgReadings.add(this_bg);
+                                        } else {
+                                            Log.wtf(TAG, "BgReading with ID: " + up.reference_id + " appears to have been deleted");
+                                        }
                                     } else if (type.equals(Calibration.class.getSimpleName())) {
-                                        calibrations.add(Calibration.byid(up.reference_id));
+                                        final Calibration this_cal = Calibration.byid(up.reference_id);
+                                        if (this_cal != null) {
+                                            calibrations.add(this_cal);
+                                        } else {
+                                            Log.wtf(TAG, "Calibration with ID: " + up.reference_id + " appears to have been deleted");
+                                        }
                                     }
                                     break;
                                 case "delete":

@@ -284,6 +284,10 @@ public class NightscoutUploader {
         }
 
         private void populateV1APIMeterReadingEntry(JSONArray array, Calibration record) throws Exception {
+            if (record == null) {
+                Log.e(TAG, "Received null calibration record in populateV1ApiMeterReadingEntry !");
+                return;
+            }
             JSONObject json = new JSONObject();
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
             format.setTimeZone(TimeZone.getDefault());
@@ -296,7 +300,10 @@ public class NightscoutUploader {
         }
 
         private void populateV1APICalibrationEntry(JSONArray array, Calibration record) throws Exception {
-
+            if (record == null) {
+                Log.e(TAG, "Received null calibration record in populateV1ApiCalibrationEntry !");
+                return;
+            }
             //do not upload undefined slopes
             if(record.slope == 0d) return;
 
