@@ -96,6 +96,21 @@
          -->
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="showSteps"
+            android:title="@string/pref_show_steps"
+            android:summary="@string/pref_summary_show_steps"
+            app:wear_iconOff="@drawable/settings_off"
+            app:wear_iconOn="@drawable/settings_on" />
+        <ListPreference
+            android:key="step_delay_time"
+            android:dependency="showSteps"
+            android:title="@string/pref_step_delay_time"
+            android:summary="@string/pref_summary_step_delay_time"
+            android:entries="@array/step_delay_time"
+            android:entryValues="@array/step_delay_time_values"
+            android:defaultValue="10" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="showExternalStatus"
             android:title="@string/pref_show_external_status"
             android:summary="@string/pref_summary_show_external_status"

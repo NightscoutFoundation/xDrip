@@ -24,6 +24,12 @@ public class NWPreferences extends PreferenceActivity {
     private static final String TAG = NWPreferences.class.getSimpleName();
 
     @Override
+    protected void onPause(){
+        super.onPause();
+        finish();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);

@@ -141,6 +141,9 @@ public class ErrorsActivity extends ActivityWithMenu {
 
             if (autoRefresh) {
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                if (mPrefs.getBoolean("wear_sync", false) && mPrefs.getBoolean("sync_wear_logs", false)) {
+                    startWatchUpdaterService(getApplicationContext(), WatchUpdaterService.ACTION_SYNC_LOGS, TAG);
+                }
             } else {
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }

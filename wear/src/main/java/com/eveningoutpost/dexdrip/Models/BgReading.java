@@ -62,7 +62,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     @Column(name = "sensor", index = true)
     public Sensor sensor;
 
-    @Column(name = "calibration", index = true)
+    @Column(name = "calibration", index = true, onDelete = Column.ForeignKeyAction.CASCADE)
     public Calibration calibration;
 
     @Expose

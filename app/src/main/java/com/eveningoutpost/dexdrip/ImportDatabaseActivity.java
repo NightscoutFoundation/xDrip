@@ -226,7 +226,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
 
     protected void postImportDB(String result) {
 
-        startWatchUpdaterService(this, WatchUpdaterService.ACTION_SYNC_DB, TAG);
+        startWatchUpdaterService(this, WatchUpdaterService.ACTION_RESET_DB, TAG);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {

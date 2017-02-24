@@ -25,9 +25,11 @@ public class CheckBridgeBattery {
     private static int threshold = 20;
     private static final int repeat_seconds = 1200;
 
-    public static void checkBridgeBattery() {
+    public static boolean checkBridgeBattery() {
 
-        if (!Home.getPreferencesBooleanDefaultFalse("bridge_battery_alerts")) return;
+        boolean lowbattery = false;
+
+        if (!Home.getPreferencesBooleanDefaultFalse("bridge_battery_alerts")) return false;
 
         try {
             threshold = Integer.parseInt(Home.getPreferencesStringWithDefault("bridge_battery_alert_level", "30"));
@@ -40,6 +42,7 @@ public class CheckBridgeBattery {
             if ((this_level < threshold) && (this_level < last_level)) {
                 if (JoH.pratelimit("bridge-battery-warning", repeat_seconds)) {
                     notification_showing = true;
+                    lowbattery = true;
                     final PendingIntent pendingIntent = android.app.PendingIntent.getActivity(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), Home.class), android.app.PendingIntent.FLAG_UPDATE_CURRENT);
                     showNotification("Low bridge battery", "Bridge battery dropped to: " + this_level + "%", pendingIntent, NOTIFICATION_ITEM, true, true, false);
                 }
@@ -51,6 +54,7 @@ public class CheckBridgeBattery {
             }
             last_level = this_level;
         }
+        return lowbattery;
     }
 
 

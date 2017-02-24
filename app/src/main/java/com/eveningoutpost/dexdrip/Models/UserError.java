@@ -102,6 +102,16 @@ public class UserError extends Model {
        new Cleanup().execute(deletable());
     }
 
+    public static void cleanup(long timestamp) {
+        List<UserError> userErrors = new Select()
+                .from(UserError.class)
+                .where("timestamp < ?", timestamp)
+                .orderBy("timestamp desc")
+                .execute();
+        if (userErrors != null) Log.d(TAG, "cleanup UserError size=" + userErrors.size());
+        new Cleanup().execute(userErrors);
+    }
+
     public static List<UserError> all() {
         return new Select()
                 .from(UserError.class)
@@ -146,12 +156,27 @@ public class UserError extends Model {
                 .execute();
     }
 
+    public static UserError getForTimestamp(UserError error) {
+        try {
+            return new Select()
+                    .from(UserError.class)
+                    .where("timestamp = ?", error.timestamp)
+                    .where("shortError = ?", error.shortError)
+                    .where("message = ?", error.message)
+                    .executeSingle();
+        } catch (Exception e) {
+            Log.e(TAG,"getForTimestamp() Got exception on Select : "+e.toString());
+            return null;
+        }
+    }
+
     private static class Cleanup extends AsyncTask<List<UserError>, Integer, Boolean> {
         @Override
         protected Boolean doInBackground(List<UserError>... errors) {
             try {
                 for(UserError userError : errors[0]) {
                     userError.delete();
+                    //userError.save();
                 }
                 return true;
             } catch(Exception e) {

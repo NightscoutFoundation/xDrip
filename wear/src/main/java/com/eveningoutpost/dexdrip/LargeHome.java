@@ -3,12 +3,15 @@ package com.eveningoutpost.dexdrip;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.wearable.watchface.WatchFaceStyle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.widget.LinearLayout;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.ustwo.clockwise.common.WatchMode;
 
 public class LargeHome extends BaseWatchFace {
+    private static final String TAG = "jamorham: " + Home.class.getSimpleName();
     private long fontsizeTapTime = 0l;
 
     @Override
@@ -27,29 +30,24 @@ public class LargeHome extends BaseWatchFace {
                         x <= mDirectionDelta.getRight()&&
                         y >= mDirectionDelta.getTop() &&
                         y <= mDirectionDelta.getBottom()) )) {//||
-                        //(x >=mLinearLayout.getLeft() &&
-                        //        x <= mLinearLayout.getRight()&&
-                        //        y >= mLinearLayout.getTop() &&
-                        //        y <= mLinearLayout.getBottom()) )) {
             if (eventTime - fontsizeTapTime < 800) {
                 setSmallFontsize(true);
             }
             fontsizeTapTime = eventTime;
         }
-        if (tapType == TAP_TYPE_TOUCH && statusArea(x, y)) {
+        if (tapType == TAP_TYPE_TOUCH && x >=mDirectionDelta.getLeft() && linearLayout(mLinearLayout, x, y)) {
             JoH.static_toast_short(mStatusLine);
+        }
+        if (tapType == TAP_TYPE_TOUCH && linearLayout(mStepsLinearLayout, x, y)) {
+            if (sharedPrefs.getBoolean("showSteps", false) && mStepsCount > 0) {
+                JoH.static_toast_long(mStepsToast);
+            }
         }
     }
 
-    private boolean statusArea(int x, int y) {
-        if (((x >=mDirectionDelta.getLeft() &&
-                //x <= mDirectionDelta.getRight()&&
-                //y >= mDirectionDelta.getTop() &&
-                //y <= mDirectionDelta.getBottom()) ||
-                (x >=mLinearLayout.getLeft() &&
-                        x <= mLinearLayout.getRight()&&
-                        y >= mLinearLayout.getTop() &&
-                        y <= mLinearLayout.getBottom()) )) ) {
+    private boolean linearLayout(LinearLayout layout, int x, int y) {
+        if (x >=layout.getLeft() && x <= layout.getRight()&&
+                y >= layout.getTop() && y <= layout.getBottom()) {
             return true;
         }
         return false;
@@ -57,7 +55,12 @@ public class LargeHome extends BaseWatchFace {
 
     @Override
     protected WatchFaceStyle getWatchFaceStyle(){
-        return new WatchFaceStyle.Builder(this).setAcceptsTapEvents(true).build();
+        //return new WatchFaceStyle.Builder(this).setAcceptsTapEvents(true).build();
+        return new WatchFaceStyle.Builder(this)
+                .setAcceptsTapEvents(true)
+                .setHotwordIndicatorGravity(Gravity.CENTER | Gravity.TOP)
+                .setStatusBarGravity(Gravity.END | -20)
+                .build();
     }
 
     @Override

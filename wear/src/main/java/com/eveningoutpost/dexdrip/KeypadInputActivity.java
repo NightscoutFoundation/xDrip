@@ -376,6 +376,7 @@ public class KeypadInputActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        finish();
         /*Wearable.MessageApi.removeListener(mApiClient, new MessageApi.MessageListener() {
             @Override
             public void onMessageReceived(MessageEvent messageEvent) {

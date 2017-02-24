@@ -23,6 +23,7 @@ import com.eveningoutpost.dexdrip.ListenerService;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 //KS import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 
@@ -279,9 +280,33 @@ public class BgSendQueue extends Model {
             Intent messageIntent = new Intent();
             messageIntent.setAction(Intent.ACTION_SEND);
             messageIntent.putExtra("message", "ACTION_G5BG");
+            DataMap stepsDataMap = getSensorSteps(sharedPrefs);
+            if (stepsDataMap != null) {
+                messageIntent.putExtra("steps", stepsDataMap.toBundle());
+            }
             messageIntent.putExtra("data", entries.toBundle());
             LocalBroadcastManager.getInstance(context).sendBroadcast(messageIntent);
         }
+    }
+
+    public static DataMap getSensorSteps(SharedPreferences prefs) {
+        DataMap dataMap = new DataMap();
+        final long t = System.currentTimeMillis();
+        final PebbleMovement pm = PebbleMovement.last();
+        final boolean show_steps = prefs.getBoolean("showSteps", true);
+        final boolean use_wear_health = prefs.getBoolean("use_wear_health", true);
+        if ((use_wear_health) && (show_steps) && (pm != null) && pm.metric > 0) {
+            boolean sameDay = pm != null ? ListenerService.isSameDay(t, pm.timestamp) : true;
+            if (!sameDay) {
+                dataMap.putInt("steps", 0);
+                dataMap.putLong("steps_timestamp", t);
+            }
+            else {
+                dataMap.putInt("steps", pm.metric);
+                dataMap.putLong("steps_timestamp", pm.timestamp);
+            }
+        }
+        return dataMap;
     }
 
     private static DataMap dataMap(BgReading bg, SharedPreferences sPrefs, BgGraphBuilder bgGraphBuilder, Context context) {//KS
