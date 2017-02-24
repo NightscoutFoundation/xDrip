@@ -17,6 +17,7 @@ import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
+import com.eveningoutpost.dexdrip.ListenerService;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
@@ -809,6 +810,9 @@ public class Calibration extends Model {
             SQLiteUtils.execSql("delete from CalibrationRequest");
             SQLiteUtils.execSql("delete from Calibration");
             Log.d(TAG, "Deleting all Calibration");
+        } catch (android.database.sqlite.SQLiteConstraintException e) {
+            Log.wtf(TAG, "Resetting database due to foreign key constraint: " + e.toString());
+            ListenerService.resetDatabase();
         } catch (Exception e) {
             Log.e(TAG, "Got exception running deleteALL " + e.toString());
         }

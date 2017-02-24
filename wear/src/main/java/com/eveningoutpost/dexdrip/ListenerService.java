@@ -790,6 +790,13 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         // TODO do we need an unregister!?
     }
 
+    public static void resetDatabase() {
+        Sensor.DeleteAndInitDb(xdrip.getAppContext());
+        PersistentStore.setLong(pref_last_send_previous, 0);
+        PersistentStore.setLong(pref_last_send_previous_log, 0);
+        PersistentStore.setLong(pref_last_send_previous_step_sensor, 0);
+    }
+
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
 
@@ -873,10 +880,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 } else if (path.equals(RESET_DB_PATH)) {//KS
                     Log.d(TAG, "onDataChanged RESET_DB_PATH=" + path);
                     final PowerManager.WakeLock wl = JoH.getWakeLock(getApplicationContext(), "watchlistener-RESET_DB_PATH",120000);
-                    Sensor.DeleteAndInitDb(getApplicationContext());
+                   /* Sensor.DeleteAndInitDb(getApplicationContext());
                     PersistentStore.setLong(pref_last_send_previous, 0);
                     PersistentStore.setLong(pref_last_send_previous_log, 0);
-                    PersistentStore.setLong(pref_last_send_previous_step_sensor, 0);
+                    PersistentStore.setLong(pref_last_send_previous_step_sensor, 0);*/
+                    resetDatabase(); // remotely callabale method to do the above
                     /* TODO remove once confirm not needed
                     if (isSafeToDeleteDB()) {
                         doDeleteDB = false;
