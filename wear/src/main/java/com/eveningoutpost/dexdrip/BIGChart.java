@@ -25,10 +25,13 @@ import android.support.wearable.watchface.WatchFaceStyle;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -39,6 +42,7 @@ import com.ustwo.clockwise.common.WatchFaceTime;
 import com.ustwo.clockwise.common.WatchMode;
 import com.ustwo.clockwise.common.WatchShape;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -55,6 +59,11 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     public TextView mTime, mSgv, mTimestamp, mDelta;
     public RelativeLayout mRelativeLayout;
     //public LinearLayout mLinearLayout;
+    public Button stepsButton;
+    public LinearLayout mStepsLinearLayout;
+    public String mStepsToast = "";
+    public int mStepsCount = 0;
+    public long mTimeStepsRcvd = 0;
     public long sgvLevel = 0;
     public int batteryLevel = 1;
     public int ageLevel = 1;
@@ -133,6 +142,8 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
                 mRelativeLayout = (RelativeLayout) stub.findViewById(R.id.main_layout);
                 chart = (LineChartView) stub.findViewById(R.id.chart);
                 statusView = (TextView) stub.findViewById(R.id.aps_status);
+                stepsButton=(Button)stub.findViewById(R.id.walkButton);
+                mStepsLinearLayout = (LinearLayout) stub.findViewById(R.id.steps_layout);
                 layoutSet = true;
                 showAgeAndStatus();
                 mRelativeLayout.measure(specW, specH);
@@ -157,6 +168,19 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
             }
             chartTapTime = eventTime;
         }
+        if (tapType == TAP_TYPE_TOUCH && linearLayout(mStepsLinearLayout, x, y)) {
+            if (sharedPrefs.getBoolean("showSteps", false) && mStepsCount > 0) {
+                JoH.static_toast_long(mStepsToast);
+            }
+        }
+    }
+
+    private boolean linearLayout(LinearLayout layout,int x, int y) {
+        if (x >=layout.getLeft() && x <= layout.getRight()&&
+                y >= layout.getTop() && y <= layout.getBottom()) {
+            return true;
+        }
+        return false;
     }
 
     private void changeChartTimeframe() {
@@ -183,8 +207,15 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
 
     @Override
     protected WatchFaceStyle getWatchFaceStyle(){
-        return new WatchFaceStyle.Builder(this).setAcceptsTapEvents(true).build();
+        return new WatchFaceStyle.Builder(this)
+                .setAcceptsTapEvents(true)
+                //.setHotwordIndicatorGravity(Gravity.CENTER_HORIZONTAL | -20)//positions it at end
+                //.setHotwordIndicatorGravity(Gravity.CENTER | -20)//positions it at end
+                .setHotwordIndicatorGravity(Gravity.START | -20)//positions it left, covers step icon
+                .setStatusBarGravity(Gravity.END | -20)
+                .build();
     }
+
     public int ageLevel() {
         if(timeSince() <= (1000 * 60 * 12)) {
             return 1;
@@ -275,7 +306,16 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
             if (layoutSet && bundle != null) {
                 dataMap = DataMap.fromBundle(bundle);
                 String msg = dataMap.getString("msg", "");
-                JoH.static_toast_short(msg);
+                int length = dataMap.getInt("length", 0);
+                JoH.static_toast(xdrip.getAppContext(), msg, length);
+            }
+            bundle = intent.getBundleExtra("steps");
+            if (layoutSet && bundle != null) {
+                dataMap = DataMap.fromBundle(bundle);
+                if (mTimeStepsRcvd <= dataMap.getLong("steps_timestamp", 0)) {
+                    mStepsCount = dataMap.getInt("steps", 0);
+                    mTimeStepsRcvd = dataMap.getLong("steps_timestamp", 0);
+                }
             }
             bundle = intent.getBundleExtra("data");
             if (layoutSet && bundle != null) {
@@ -359,6 +399,33 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
             statusView.setVisibility(View.VISIBLE);
         } else {
             statusView.setVisibility(View.GONE);
+        }
+
+        if (sharedPrefs.getBoolean("showSteps", false)) {
+            stepsButton.setText(String.format("%d", mStepsCount));
+            stepsButton.setVisibility(View.VISIBLE);
+
+            if (mStepsCount > 0) {
+                DecimalFormat df = new DecimalFormat("#.##");
+                Double km = (((double)mStepsCount) / 2000.0d) * 1.6d;
+                Double mi = (((double)mStepsCount)/ 2000.0d) * 1.0d;
+                Log.d(TAG, "showAgoRawBattStatus Sensor mStepsCount=" + mStepsCount+ " km=" + km + " mi=" + mi);
+                mStepsToast = getResources().getString(R.string.label_show_steps, mStepsCount) +
+                        (km > 0.0 ? "\n" + getResources().getString(R.string.label_show_steps_km, df.format(km)) : "0") +
+                        (mi > 0.0 ? "\n" + getResources().getString(R.string.label_show_steps_mi, df.format(mi)) : "0") +
+                        "\n" + getResources().getString(R.string.label_show_steps_rcvdtime, JoH.dateTimeText(mTimeStepsRcvd));
+            }
+            else {
+                mStepsToast = getResources().getString(R.string.label_show_steps, mStepsCount) +
+                        ("\n" + getResources().getString(R.string.label_show_steps_km, "0")) +
+                        ("\n" + getResources().getString(R.string.label_show_steps_mi, "0")) +
+                        "\n" + getResources().getString(R.string.label_show_steps_rcvdtime, JoH.dateTimeText(mTimeStepsRcvd));
+            }
+        }
+        else {
+            stepsButton.setVisibility(View.GONE);
+            mStepsToast = "";
+            Log.d(TAG, "Sensor showSteps GONE mStepsCount = " + getResources().getString(R.string.label_show_steps, mStepsCount));
         }
     }
 

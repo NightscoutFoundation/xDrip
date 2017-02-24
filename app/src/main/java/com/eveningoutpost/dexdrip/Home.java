@@ -2813,7 +2813,7 @@ public class Home extends ActivityWithMenu {
             case R.id.action_open_watch_settings:
                 startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_OPEN_SETTINGS));
             case R.id.action_sync_watch_db:
-                startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_SYNC_DB));
+                startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_RESET_DB));
                 break;
         }
 

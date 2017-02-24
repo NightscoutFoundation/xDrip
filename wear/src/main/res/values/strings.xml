@@ -27,6 +27,29 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+
+    <string-array name="step_delay_time">
+        <item>10 seconds</item>
+        <item>30 seconds</item>
+        <item>1 minute</item>
+        <item>3 minutes</item>
+        <item>5 minutes</item>
+
+    </string-array>
+    <string-array name="step_delay_time_values">
+        <item>10</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>300</item>
+    </string-array>
+    <string-array name="step_delay_time_index">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
     <string name="title_activity_simulation">Spoken Treatment</string>
     <string name="hello_round">Hello Round World!</string>
     <string name="hello_square">Hello Square World!</string>
@@ -75,11 +98,17 @@
     <string name="pref_summary_always_get_new_keys">This will attempt a full authentication each read attempt. Redundant if Unbond before each read is also selected.</string>
     <string name="pref_always_unbond_G5">Unbond G5/read</string>
     <string name="pref_summary_always_unbond_G5">This will remove the G5 from your device\'s paired device list, and attempt a full authentication and bonding with each read attempt.</string>
+    <string name="pref_show_steps">Show Steps</string>
+    <string name="pref_summary_show_steps">Show Step Counter</string>
     <string name="pref_show_external_status">Show Status</string>
     <string name="pref_summary_show_external_status">Show Loop Status</string>
     <string name="pref_show_bridge_battery">Show Bridge</string>
     <string name="pref_summary_show_bridge_battery">Show Bridge Battery</string>
     <string name="init_external_status">no status</string>
+    <string name="label_show_steps">Steps: %1$d</string>
+    <string name="label_show_steps_km">Km: %1$s</string>
+    <string name="label_show_steps_mi">Mi: %1$s</string>
+    <string name="label_show_steps_rcvdtime">Rcvd: %1$s</string>
     <string name="label_show_external_status">Status: </string>
     <string name="label_show_external_status_abbrv">S: </string>
     <string name="label_show_uploader_wear">Wear: %1$s%%</string>
@@ -103,6 +132,8 @@
     <string name="pref_xdrip_watch_settings">XDrip Watchface Settings</string>
     <string name="pref_chart_time">Chart Timeframe</string>
     <string name="pref_summary_chart_time">Chart Timeframe</string>
+    <string name="pref_step_delay_time">Step Delay</string>
+    <string name="pref_summary_step_delay_time">Step Counter Time Delay</string>
     <string name="pref_circlewf_settings">Circle WF Settings</string>
     <string name="pref_show_ago">Show Ago</string>
     <string name="pref_summary_show_ago">Minutes since last reading. (Circle WF)</string>

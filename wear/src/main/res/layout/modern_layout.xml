@@ -2,6 +2,35 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/steps_layout"
+        android:layout_width="36dp"
+        android:orientation="vertical"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:baselineAligned="false"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:gravity="center_horizontal|center_vertical">
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:drawableTop="@drawable/ic_walk_grey600_24dp"
+            android:id="@+id/walkButton"
+            android:paddingBottom="0dp"
+            android:paddingEnd="0dp"
+            android:paddingTop="0dp"
+            android:paddingStart="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
+            android:background="@android:color/transparent"
+            android:text="99999"
+            android:textSize="10sp"
+            android:textAlignment="gravity"
+            android:gravity="center_horizontal|center_vertical"/>
+    </LinearLayout>
+
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="match_parent"

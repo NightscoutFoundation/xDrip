@@ -26,6 +26,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ import com.ustwo.clockwise.wearable.WatchFace;
 import com.ustwo.clockwise.common.WatchFaceTime;
 import com.ustwo.clockwise.common.WatchShape;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -51,9 +53,14 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public final static IntentFilter INTENT_FILTER;
     public static final long[] vibratePattern = {0,400,300,400,300,400};
     public TextView mTime, mSgv, mDirection, mTimestamp, mUploaderBattery, mUploaderXBattery, mDelta, mRaw, mStatus;
+    public Button stepsButton;
     public RelativeLayout mRelativeLayout;
     public LinearLayout mLinearLayout;
     public LinearLayout mDirectionDelta;
+    public LinearLayout mStepsLinearLayout;
+    public String mStepsToast = "";
+    public int mStepsCount = 0;
+    public long mTimeStepsRcvd = 0;
     public long sgvLevel = 0;
     public int batteryLevel = 1;
     public int mXBatteryLevel = 1;
@@ -136,6 +143,8 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 mUploaderBattery = (TextView) stub.findViewById(R.id.uploader_battery);
                 mUploaderXBattery = (TextView) stub.findViewById(R.id.uploader_xbattery);
                 mDelta = (TextView) stub.findViewById(R.id.delta);
+                stepsButton=(Button)stub.findViewById(R.id.walkButton);
+                mStepsLinearLayout = (LinearLayout) stub.findViewById(R.id.steps_layout);
                 mRelativeLayout = (RelativeLayout) stub.findViewById(R.id.main_layout);
                 mLinearLayout = (LinearLayout) stub.findViewById(R.id.secondary_layout);
                 mDirectionDelta = (LinearLayout) stub.findViewById(R.id.directiondelta_layout);
@@ -158,6 +167,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         int fontsize =  Integer.parseInt(smallFontsizeArray[fontvalue-1]);
         Log.d(TAG, "setSmallFontsize fontsize=" + fontsize + " fontvalue=" + fontvalue);
         mDelta.setTextSize(fontsize);
+        //stepsButton.setTextSize(fontsize);
         setStatusTextSize(fontsize);
         if (fontvalue == 1) {
             mStatus.setMaxLines(1);
@@ -280,7 +290,16 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             if (layoutSet && bundle != null) {
                 dataMap = DataMap.fromBundle(bundle);
                 String msg = dataMap.getString("msg", "");
-                JoH.static_toast_short(msg);
+                int length = dataMap.getInt("length", 0);
+                JoH.static_toast(xdrip.getAppContext(), msg, length);
+            }
+            bundle = intent.getBundleExtra("steps");
+            if (layoutSet && bundle != null) {
+                dataMap = DataMap.fromBundle(bundle);
+                if (mTimeStepsRcvd <= dataMap.getLong("steps_timestamp", 0)) {
+                    mStepsCount = dataMap.getInt("steps", 0);
+                    mTimeStepsRcvd = dataMap.getLong("steps_timestamp", 0);
+                }
             }
             bundle = intent.getBundleExtra(Home.HOME_FULL_WAKEUP);
             if (layoutSet && bundle != null) {
@@ -389,6 +408,33 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         */
         mRaw.setVisibility(View.GONE);
 
+        if (sharedPrefs.getBoolean("showSteps", false)) {
+            stepsButton.setText(String.format("%d", mStepsCount));
+            stepsButton.setVisibility(View.VISIBLE);
+
+            if (mStepsCount > 0) {
+                DecimalFormat df = new DecimalFormat("#.##");
+                Double km = (((double) mStepsCount) / 2000.0d) * 1.6d;
+                Double mi = (((double) mStepsCount) / 2000.0d) * 1.0d;
+                Log.d(TAG, "showAgoRawBattStatus Sensor mStepsCount=" + mStepsCount + " km=" + km + " mi=" + mi + " rcvd=" + JoH.dateTimeText(mTimeStepsRcvd));
+                mStepsToast = getResources().getString(R.string.label_show_steps, mStepsCount) +
+                        (km > 0.0 ? "\n" + getResources().getString(R.string.label_show_steps_km, df.format(km)) : "0") +
+                        (mi > 0.0 ? "\n" + getResources().getString(R.string.label_show_steps_mi, df.format(mi)) : "0") +
+                        "\n" + getResources().getString(R.string.label_show_steps_rcvdtime, JoH.dateTimeText(mTimeStepsRcvd));
+            }
+            else {
+                mStepsToast = getResources().getString(R.string.label_show_steps, mStepsCount) +
+                        ("\n" + getResources().getString(R.string.label_show_steps_km, "0")) +
+                        ("\n" + getResources().getString(R.string.label_show_steps_mi, "0")) +
+                        "\n" + getResources().getString(R.string.label_show_steps_rcvdtime, JoH.dateTimeText(mTimeStepsRcvd));
+            }
+        }
+        else {
+            stepsButton.setVisibility(View.GONE);
+            mStepsToast = "";
+            Log.d(TAG, "Sensor showSteps GONE mStepsCount = " + getResources().getString(R.string.label_show_steps, mStepsCount));
+        }
+
         //xBridge Battery:
         mShowXBattery = false;
         if (sharedPrefs.getBoolean("showBridgeBattery", false) && xBattery > 0 && DexCollectionType.hasBattery()) {
@@ -461,9 +507,9 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         } else {
             mStatus.setVisibility(View.GONE);
         }
-        mStatusLine = timestampText + " " + uploaderBatteryText +
-                (mShowXBattery ? " " + uploaderXBatteryText : "") +
-                (showStatus ? " " + mStatus.getText().toString() : "");
+        mStatusLine = delta + "\n" + timestampText + "\n" + uploaderBatteryText +
+                (mShowXBattery ? "\n" + uploaderXBatteryText : "") +
+                (showStatus ? "\n" + mStatus.getText().toString() : "");
     }
 
     // Custom method to determine whether a service is running
