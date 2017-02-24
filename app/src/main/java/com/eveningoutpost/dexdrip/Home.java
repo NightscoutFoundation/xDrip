@@ -247,6 +247,12 @@ public class Home extends ActivityWithMenu {
                 finish();
             }
         }
+
+        if (Build.VERSION.SDK_INT < 17) {
+            JoH.static_toast_long("xDrip+ will not work below Android version 4.2");
+            finish();
+        }
+
         xdrip.checkForcedEnglish(Home.this);
         menu_name=getString(R.string.home_screen);
 
@@ -1563,7 +1569,7 @@ public class Home extends ActivityWithMenu {
         statusIOB="";
         statusBWP="";
         refreshStatusLine();
-        
+
         if(BgGraphBuilder.isXLargeTablet(getApplicationContext())) {
             this.currentBgValueText.setTextSize(100);
             this.notificationText.setTextSize(40);
