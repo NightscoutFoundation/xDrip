@@ -87,8 +87,10 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
     private int specH;
     private View myLayout;
 
+    public LinearLayout mDirectionDelta;
     public Button stepsButton;
     public LinearLayout mStepsLinearLayout;
+    public String mExtraStatusLine = "";
     public String mStepsToast = "";
     public int mStepsCount = 0;
     public long mTimeStepsRcvd = 0;
@@ -171,6 +173,11 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
                 JoH.static_toast_long(mStepsToast);
             }
         }
+        if (tapType == TAP_TYPE_TOUCH && linearLayout(mDirectionDelta, x, y)) {
+            if (sharedPrefs.getBoolean("extra_status_line", false) && mExtraStatusLine != null && !mExtraStatusLine.isEmpty()) {
+                JoH.static_toast_long(mExtraStatusLine);
+            }
+        }
     }
 
     private boolean linearLayout(LinearLayout layout,int x, int y) {
@@ -189,6 +196,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
 
         TextView textView = null;
 
+        mDirectionDelta = (LinearLayout) myLayout.findViewById(R.id.directiondelta_layout);
         stepsButton=(Button)myLayout.findViewById(R.id.walkButton);
         mStepsLinearLayout = (LinearLayout) myLayout.findViewById(R.id.steps_layout);
         if (sharedPrefs.getBoolean("showSteps", false)) {
@@ -637,6 +645,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
                     setRawString(dataMap.getString("rawString"));
                     setDelta(dataMap.getString("delta"));
                     setDatetime(dataMap.getDouble("timestamp"));
+                    mExtraStatusLine = dataMap.getString("extra_status_line");
                     addToWatchSet(dataMap);
 
 

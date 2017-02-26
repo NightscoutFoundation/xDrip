@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.Models;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
@@ -815,6 +816,35 @@ public class Calibration extends Model {
             ListenerService.resetDatabase();
         } catch (Exception e) {
             Log.e(TAG, "Got exception running deleteALL " + e.toString());
+        }
+    }
+
+    public static void cleanup(long timestamp) {
+        try {
+            SQLiteUtils.execSql("delete from CalibrationRequest");
+            List<Calibration> data = new Select()
+                    .from(BgReading.class)
+                    .where("timestamp < ?", timestamp)
+                    .orderBy("timestamp desc")
+                    .execute();
+            if (data != null) Log.d(TAG, "cleanup Calibration size=" + data.size());
+            new Calibration.Cleanup().execute(data);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception running cleanup " + e.toString());
+        }
+    }
+
+    private static class Cleanup extends AsyncTask<List<Calibration>, Integer, Boolean> {
+        @Override
+        protected Boolean doInBackground(List<Calibration>... errors) {
+            try {
+                for(Calibration data : errors[0]) {
+                    data.delete();
+                }
+                return true;
+            } catch(Exception e) {
+                return false;
+            }
         }
     }
 

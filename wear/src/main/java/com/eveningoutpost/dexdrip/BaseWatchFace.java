@@ -58,6 +58,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public LinearLayout mLinearLayout;
     public LinearLayout mDirectionDelta;
     public LinearLayout mStepsLinearLayout;
+    public String mExtraStatusLine = "";
     public String mStepsToast = "";
     public int mStepsCount = 0;
     public long mTimeStepsRcvd = 0;
@@ -340,6 +341,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 avgDelta = dataMap.getString("avgDelta", "");
                 delta = dataMap.getString("delta");
 
+                mExtraStatusLine = dataMap.getString("extra_status_line");
 
                 showAgoRawBattStatus();
 

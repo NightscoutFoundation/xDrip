@@ -60,7 +60,9 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     public RelativeLayout mRelativeLayout;
     //public LinearLayout mLinearLayout;
     public Button stepsButton;
+    public LinearLayout mDirectionDelta;
     public LinearLayout mStepsLinearLayout;
+    public String mExtraStatusLine = "";
     public String mStepsToast = "";
     public int mStepsCount = 0;
     public long mTimeStepsRcvd = 0;
@@ -144,6 +146,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
                 statusView = (TextView) stub.findViewById(R.id.aps_status);
                 stepsButton=(Button)stub.findViewById(R.id.walkButton);
                 mStepsLinearLayout = (LinearLayout) stub.findViewById(R.id.steps_layout);
+                mDirectionDelta = (LinearLayout) stub.findViewById(R.id.directiondelta_layout);
                 layoutSet = true;
                 showAgeAndStatus();
                 mRelativeLayout.measure(specW, specH);
@@ -171,6 +174,11 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         if (tapType == TAP_TYPE_TOUCH && linearLayout(mStepsLinearLayout, x, y)) {
             if (sharedPrefs.getBoolean("showSteps", false) && mStepsCount > 0) {
                 JoH.static_toast_long(mStepsToast);
+            }
+        }
+        if (tapType == TAP_TYPE_TOUCH && linearLayout(mDirectionDelta, x, y)) {
+            if (sharedPrefs.getBoolean("extra_status_line", false) && mExtraStatusLine != null && !mExtraStatusLine.isEmpty()) {
+                JoH.static_toast_long(mExtraStatusLine);
             }
         }
     }
@@ -346,6 +354,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
                 } else if (delta.endsWith(" mmol/l")) {
                     mDelta.setText(delta.substring(0, delta.length() - 7));
                 }
+                mExtraStatusLine = dataMap.getString("extra_status_line");
 
                 if (chart != null) {
                     addToWatchSet(dataMap);

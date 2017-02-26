@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.Models;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 
@@ -1099,6 +1100,34 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    public static void cleanup(long timestamp) {
+        try {
+        SQLiteUtils.execSql("delete from BgSendQueue");
+        List<BgReading> data = new Select()
+                .from(BgReading.class)
+                .where("timestamp < ?", timestamp)
+                .orderBy("timestamp desc")
+                .execute();
+        if (data != null) Log.d(TAG, "cleanup BgReading size=" + data.size());
+        new Cleanup().execute(data);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception running cleanup " + e.toString());
+        }
+    }
+
+    private static class Cleanup extends AsyncTask<List<BgReading>, Integer, Boolean> {
+        @Override
+        protected Boolean doInBackground(List<BgReading>... errors) {
+            try {
+                for(BgReading data : errors[0]) {
+                    data.delete();
+                }
+                return true;
+            } catch(Exception e) {
+                return false;
+            }
+        }
+    }
 
     //*******INSTANCE METHODS***********//
     public void perform_calculations() {
