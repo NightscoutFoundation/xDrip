@@ -1891,10 +1891,10 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         " recorded: " + JoH.dateTimeText(System.currentTimeMillis() - (event.timestamp / 1000000L)) +
                         " received: " + JoH.dateTimeText(t) + " last_movement_timestamp: " + JoH.dateTimeText(last_movement_timestamp)
                 );
-                if (timeAgo < 10000) {//skip if less than 1 minute interval since last step
-                    Log.d(TAG, "onSensorChanged Interval < 1 minute! Skip new movement record creation");
-                }
-                else {
+                //if (timeAgo < 10000) {//skip if less than 1 minute interval since last step
+                //    Log.d(TAG, "onSensorChanged Interval < 1 minute! Skip new movement record creation");
+                //}
+                //else {
                     if (last_movement_timestamp == 0 || (sameDay && last != null && last.metric == mSteps)) {//skip initial movement or duplicate steps
                         Log.d(TAG, "onSensorChanged Initial sensor movement! Skip initial movement record, or duplicate record. last.metric=" + (last != null ? last.metric : "null"));
                     }
@@ -1904,7 +1904,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     }
                     last_movement_timestamp = t;
                     PersistentStore.setLong(pref_last_movement_timestamp, last_movement_timestamp);
-                }
+                //}
                 Log.d(TAG, "onSensorChanged sendLocalMessage mSteps: " + mSteps + " t: " + JoH.dateTimeText(t) + " last_movement_timestamp: " + JoH.dateTimeText(last_movement_timestamp));
                 sendSensorLocalMessage(mSteps, t);
             }
