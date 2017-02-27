@@ -300,8 +300,8 @@ public class BgSendQueue extends Model {
         final PebbleMovement pm = PebbleMovement.last();
         final boolean show_steps = prefs.getBoolean("showSteps", true);
         final boolean use_wear_health = prefs.getBoolean("use_wear_health", true);
-        if ((use_wear_health) && (show_steps) && (pm != null) && pm.metric > 0) {
-            boolean sameDay = pm != null ? ListenerService.isSameDay(t, pm.timestamp) : true;
+        if (use_wear_health || show_steps) {
+            boolean sameDay = pm != null ? ListenerService.isSameDay(t, pm.timestamp) : false;
             if (!sameDay) {
                 dataMap.putInt("steps", 0);
                 dataMap.putLong("steps_timestamp", t);

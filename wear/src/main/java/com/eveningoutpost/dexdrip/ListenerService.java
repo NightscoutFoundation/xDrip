@@ -1325,7 +1325,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             prefs.putBoolean("rising_alert", dataMap.getBoolean("rising_alert", false));
             prefs.putString("rising_bg_val", dataMap.getString("rising_bg_val", "2"));
             //Step Counter
-            prefs.putBoolean("use_wear_health", dataMap.getBoolean("use_pebble_health", true));
+            prefs.putBoolean("use_wear_health", dataMap.getBoolean("use_wear_health", true));
             //Extra Status Line
             prefs.putBoolean("extra_status_stats_24h", dataMap.getBoolean("extra_status_stats_24h", false));
             prefs.putBoolean("extra_status_line", dataMap.getBoolean("extra_status_line", false));
@@ -1869,7 +1869,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             Log.d(TAG, "onSensorChanged delay = " + delay + " JoH.DateTimeText(delay) = " + JoH.dateTimeText(delay) + " (delay + (event.timestamp / 1000000L)) = " + delay + (event.timestamp / 1000000L) + " text= " + JoH.dateTimeText(delay + (event.timestamp / 1000000L)));
 
             PebbleMovement last = PebbleMovement.last();
-            boolean sameDay = last != null ? isSameDay(t, last.timestamp) : true;
+            boolean sameDay = last != null ? isSameDay(t, last.timestamp) : false;
             if (!sameDay) {
                 initCounters();
                 Log.d(TAG, "onSensorChanged initCounters initCounters mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
@@ -1891,20 +1891,15 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         " recorded: " + JoH.dateTimeText(System.currentTimeMillis() - (event.timestamp / 1000000L)) +
                         " received: " + JoH.dateTimeText(t) + " last_movement_timestamp: " + JoH.dateTimeText(last_movement_timestamp)
                 );
-                //if (timeAgo < 10000) {//skip if less than 1 minute interval since last step
-                //    Log.d(TAG, "onSensorChanged Interval < 1 minute! Skip new movement record creation");
-                //}
-                //else {
-                    if (last_movement_timestamp == 0 || (sameDay && last != null && last.metric == mSteps)) {//skip initial movement or duplicate steps
-                        Log.d(TAG, "onSensorChanged Initial sensor movement! Skip initial movement record, or duplicate record. last.metric=" + (last != null ? last.metric : "null"));
-                    }
-                    else {
-                        final PebbleMovement pm = PebbleMovement.createEfficientRecord(t, mSteps);//event.timestamp * 1000, (int) event.values[0]
-                        Log.d(TAG, "Saving Movement: " + pm.toS());
-                    }
-                    last_movement_timestamp = t;
-                    PersistentStore.setLong(pref_last_movement_timestamp, last_movement_timestamp);
-                //}
+                if (last_movement_timestamp == 0 || (sameDay && last != null && last.metric == mSteps)) {//skip initial movement or duplicate steps
+                    Log.d(TAG, "onSensorChanged Initial sensor movement! Skip initial movement record, or duplicate record. last.metric=" + (last != null ? last.metric : "null"));
+                }
+                else {
+                    final PebbleMovement pm = PebbleMovement.createEfficientRecord(t, mSteps);//event.timestamp * 1000, (int) event.values[0]
+                    Log.d(TAG, "Saving Movement: " + pm.toS());
+                }
+                last_movement_timestamp = t;
+                PersistentStore.setLong(pref_last_movement_timestamp, last_movement_timestamp);
                 Log.d(TAG, "onSensorChanged sendLocalMessage mSteps: " + mSteps + " t: " + JoH.dateTimeText(t) + " last_movement_timestamp: " + JoH.dateTimeText(last_movement_timestamp));
                 sendSensorLocalMessage(mSteps, t);
             }
@@ -1980,7 +1975,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         Log.d(TAG, "resetCounters Sensor Enter PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
 
         PebbleMovement last = PebbleMovement.last();
-        boolean sameDay = last != null ? ListenerService.isSameDay(System.currentTimeMillis(), last.timestamp) : true;
+        boolean sameDay = last != null ? ListenerService.isSameDay(System.currentTimeMillis(), last.timestamp) : false;
         if (!sameDay) {
             initCounters();
             Log.d(TAG, "resetCounters Sensor isSameDay initCounters mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
