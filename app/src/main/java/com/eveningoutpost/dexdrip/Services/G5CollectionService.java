@@ -164,6 +164,7 @@ public class G5CollectionService extends Service {
     private static long static_last_timestamp_watch = 0;
     private static long last_transmitter_timestamp = 0;
 
+    private static boolean getBatteryStatusNow = false;
 
     // test params
     private static final boolean ignoreLocalBondingState = false; // don't try to bond gives: GATT_ERR_UNLIKELY but no more 133s
@@ -1507,10 +1508,13 @@ public class G5CollectionService extends Service {
                 successes++;
                 failures=0;
                 Log.e(TAG, "SUCCESS!! unfiltered: " + sensorRx.unfiltered + " timestamp: " + sensorRx.timestamp + " " + JoH.qs((double)sensorRx.timestamp / 86400, 1) + " days");
+                if (sensorRx.unfiltered == 0) {
+                    lastState = "Transmitter sent raw sensor value of 0 !! This isn't good. " + JoH.hourMinuteString();
+                }
                 last_transmitter_timestamp = sensorRx.timestamp;
                 if ((getVersionDetails) && (!haveFirmwareDetails())) {
                     doVersionRequestMessage(gatt, characteristic);
-                } else if ((getBatteryDetails) && (!haveCurrentBatteryStatus())) {
+                } else if ((getBatteryDetails) && (getBatteryStatusNow || !haveCurrentBatteryStatus())) {
                     doBatteryInfoRequestMessage(gatt, characteristic);
                 } else {
                     doDisconnectMessage(gatt, characteristic);
@@ -1541,6 +1545,7 @@ public class G5CollectionService extends Service {
                 if (!setStoredBatteryBytes(defaultTransmitter.transmitterId, characteristic.getValue())) {
                     Log.wtf(TAG, "Could not save out battery data!");
                 }
+                getBatteryStatusNow = false;
                 doDisconnectMessage(gatt, characteristic);
             } else {
                 Log.e(TAG, "onCharacteristic CHANGED unexpected opcode: " + firstByte + " (have not disconnected!)");
@@ -1850,7 +1855,7 @@ public class G5CollectionService extends Service {
             }
         }
 
-        String tx_id = Home.getPreferencesStringDefaultBlank("dex_txid");
+        final String tx_id = Home.getPreferencesStringDefaultBlank("dex_txid");
 
         l.add(new StatusItem("Transmitter ID", tx_id));
         // get firmware details
@@ -1866,13 +1871,28 @@ public class G5CollectionService extends Service {
 
         BatteryInfoRxMessage bt = getBatteryDetails(tx_id);
         long last_battery_query = PersistentStore.getLong(G5_BATTERY_FROM_MARKER + tx_id);
+        if (getBatteryStatusNow) {
+            l.add(new StatusItem("Battery Status Request Queued", "Will attempt to read battery status on next sensor reading", StatusItem.Highlight.NOTICE, "long-press",
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            getBatteryStatusNow = false;
+                        }
+                    }));
+        }
         if ((bt != null) && (last_battery_query > 0)) {
-            l.add(new StatusItem("Battery Last queried", JoH.niceTimeSince(last_battery_query)+" "+"ago"));
+            l.add(new StatusItem("Battery Last queried", JoH.niceTimeSince(last_battery_query) + " " + "ago", StatusItem.Highlight.NORMAL, "long-press",
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            getBatteryStatusNow = true;
+                        }
+                    }));
             l.add(new StatusItem("Transmitter Status", TransmitterStatus.getBatteryLevel(vr.status).toString()));
             l.add(new StatusItem("Transmitter Days", bt.runtime + ((last_transmitter_timestamp > 0) ? " / " + JoH.qs((double) last_transmitter_timestamp / 86400, 1) : "")));
             l.add(new StatusItem("Voltage A", bt.voltagea, bt.voltagea < 300 ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
-            l.add(new StatusItem("Voltage B", bt.voltageb));
-            l.add(new StatusItem("Resistance", bt.resist, bt.resist > 1400 ? StatusItem.Highlight.BAD : (bt.resist > 1000 ? StatusItem.Highlight.NOTICE : ( bt.resist > 750 ? StatusItem.Highlight.NORMAL : StatusItem.Highlight.GOOD))));
+            l.add(new StatusItem("Voltage B", bt.voltageb, bt.voltageb < 290 ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
+            l.add(new StatusItem("Resistance", bt.resist, bt.resist > 1400 ? StatusItem.Highlight.BAD : (bt.resist > 1000 ? StatusItem.Highlight.NOTICE : (bt.resist > 750 ? StatusItem.Highlight.NORMAL : StatusItem.Highlight.GOOD))));
             l.add(new StatusItem("Temperature", bt.temperature + " \u2103"));
         }
 
