@@ -128,16 +128,18 @@ public class MissedReadingService extends IntentService {
             alarmIn = 5 * 60 * 1000;
         }
     	Log.d(TAG, "Setting timer to  " + alarmIn / 60000 + " minutes from now" );
-        Calendar calendar = Calendar.getInstance();
-        AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-        long wakeTime = calendar.getTimeInMillis() + alarmIn;
+        //Calendar calendar = Calendar.getInstance();
+        //AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+        //long wakeTime = calendar.getTimeInMillis() + alarmIn;
         PendingIntent serviceIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        JoH.wakeUpIntent(this, alarmIn, serviceIntent);
+
+       /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
         } else
-            alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+            alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);*/
     }
     
     static public int readPerfsInt(SharedPreferences prefs, String name, int defaultValue) {
