@@ -14,6 +14,7 @@ import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
@@ -145,6 +146,8 @@ public class UploaderQueue extends Model {
             result.reference_uuid = obj instanceof Treatments ? ((Treatments) obj).uuid : null;
         if (result.reference_uuid == null)
             result.reference_uuid = obj instanceof Calibration ? ((Calibration) obj).uuid : null;
+        if (result.reference_uuid == null)
+            result.reference_uuid = obj instanceof BloodTest ? ((BloodTest) obj).uuid : null;
         result.action = action;
 
         result.bitfield_complete = 0;

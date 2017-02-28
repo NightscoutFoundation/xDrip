@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.InfluxDB.InfluxDBUploader;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -35,6 +36,7 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
 
             types.add(BgReading.class.getSimpleName());
             types.add(Calibration.class.getSimpleName());
+            types.add(BloodTest.class.getSimpleName());
 
             if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_mongodb_enable")) {
                 circuits.add(UploaderQueue.MONGO_DIRECT);
@@ -51,6 +53,7 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
 
                 final List<BgReading> bgReadings = new ArrayList<>();
                 final List<Calibration> calibrations = new ArrayList<>();
+                final List<BloodTest> bloodtests = new ArrayList<>();
                 final List<UploaderQueue> items = new ArrayList<>();
 
                 for (String type : types) {
@@ -76,6 +79,14 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
                                         } else {
                                             Log.wtf(TAG, "Calibration with ID: " + up.reference_id + " appears to have been deleted");
                                         }
+
+                                    } else if (type.equals(BloodTest.class.getSimpleName())) {
+                                        final BloodTest this_bt = BloodTest.byid(up.reference_id);
+                                        if (this_bt != null) {
+                                            bloodtests.add(this_bt);
+                                        } else {
+                                            Log.wtf(TAG, "Bloodtest with ID: " + up.reference_id + " appears to have been deleted");
+                                        }
                                     }
                                     break;
                                 case "delete":
@@ -93,7 +104,7 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
                     }
                 }
 
-                if ((bgReadings.size() > 0) || (calibrations.size() > 0)
+                if ((bgReadings.size() > 0) || (calibrations.size() > 0) || (bloodtests.size() > 0)
                         || (UploaderQueue.getPendingbyType(Treatments.class.getSimpleName(), THIS_QUEUE, 1).size() > 0)) {
 
                     Log.d(TAG, UploaderQueue.getCircuitName(THIS_QUEUE) + " Processing: " + bgReadings.size() + " BgReadings and " + calibrations.size() + " Calibrations");
@@ -104,7 +115,7 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
                         uploadStatus = uploader.uploadMongo(bgReadings, calibrations, calibrations);
                     } else if (THIS_QUEUE == UploaderQueue.NIGHTSCOUT_RESTAPI) {
                         final NightscoutUploader uploader = new NightscoutUploader(xdrip.getAppContext());
-                        uploadStatus = uploader.uploadRest(bgReadings, calibrations, calibrations);
+                        uploadStatus = uploader.uploadRest(bgReadings, bloodtests, calibrations);
                     } else if (THIS_QUEUE == UploaderQueue.INFLUXDB_RESTAPI) {
                         final InfluxDBUploader influxDBUploader = new InfluxDBUploader(xdrip.getAppContext());;
                         uploadStatus = influxDBUploader.upload(bgReadings, calibrations, calibrations);
