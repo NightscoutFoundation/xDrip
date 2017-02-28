@@ -45,7 +45,7 @@ public class Datricsae extends CalibrationAbstract {
 
     @Override
     public synchronized CalibrationData getCalibrationData(long until) {
-            // TODO cache must understand until and match appropriately
+        // TODO cache must understand until and match appropriately
         //CalibrationData cd = loadDataFromCache(TAG);
         CalibrationData cd = null;
         if (cd == null) {
@@ -81,73 +81,80 @@ public class Datricsae extends CalibrationAbstract {
                     bgs.add(calibration.bg);
                 }
 
-                bg_to_raw.setValues(PolyTrendLine.toPrimitiveFromList(bgs), PolyTrendLine.toPrimitiveFromList(raws));
-                final double all_varience = bg_to_raw.errorVarience();
-                Log.d(TAG, "Error Variance All: " + all_varience);
+                try {
 
-                // TODO CHECK SLOPE IN RANGE HERE
+                    bg_to_raw.setValues(PolyTrendLine.toPrimitiveFromList(bgs), PolyTrendLine.toPrimitiveFromList(raws));
+                    final double all_varience = bg_to_raw.errorVarience();
+                    Log.d(TAG, "Error Variance All: " + all_varience);
 
-                final List<Double> all_bgs_set = new ArrayList<>();
-                final List<Double> all_raw_set = new ArrayList<>();
-                all_bgs_set.addAll(bgs);
-                all_raw_set.addAll(raws);
+                    // TODO CHECK SLOPE IN RANGE HERE
+
+                    final List<Double> all_bgs_set = new ArrayList<>();
+                    final List<Double> all_raw_set = new ArrayList<>();
+                    all_bgs_set.addAll(bgs);
+                    all_raw_set.addAll(raws);
 
 
-                List<Double> lowest_bgs_set = new ArrayList<>();
-                List<Double> lowest_raws_set = new ArrayList<>();
-                lowest_bgs_set.addAll(all_bgs_set);
-                lowest_raws_set.addAll(all_raw_set);
+                    List<Double> lowest_bgs_set = new ArrayList<>();
+                    List<Double> lowest_raws_set = new ArrayList<>();
+                    lowest_bgs_set.addAll(all_bgs_set);
+                    lowest_raws_set.addAll(all_raw_set);
 
-                double lowest_variance = all_varience;
+                    double lowest_variance = all_varience;
 
-                // TODO single pass at the mo must be carefully handled
-                if (ccount >= OPTIMIZE_OUTLIERS_CALIBRATION_MINIMUM) {
-                    for (int i = 0; i < ccount; i++) {
-                        // reset
-                        bgs.clear();
-                        bgs.addAll(all_bgs_set);
-                        raws.clear();
-                        raws.addAll(all_raw_set);
 
-                        bgs.remove(i);
-                        raws.remove(i);
-                        bg_to_raw.setValues(PolyTrendLine.toPrimitiveFromList(bgs), PolyTrendLine.toPrimitiveFromList(raws));
-                        final double this_variance = bg_to_raw.errorVarience();
-                        Log.d(TAG, "Error Variance drop: " + i + " = " + JoH.qs(this_variance, 3));
-                        if (this_variance < lowest_variance) {
+                    // TODO single pass at the mo must be carefully handled
+                    if (ccount >= OPTIMIZE_OUTLIERS_CALIBRATION_MINIMUM) {
+                        for (int i = 0; i < ccount; i++) {
+                            // reset
+                            bgs.clear();
+                            bgs.addAll(all_bgs_set);
+                            raws.clear();
+                            raws.addAll(all_raw_set);
 
-                            final double intercept = bg_to_raw.predict(0);
-                            final double one = bg_to_raw.predict(1);
-                            final double slope = one - intercept;
+                            bgs.remove(i);
+                            raws.remove(i);
+                            bg_to_raw.setValues(PolyTrendLine.toPrimitiveFromList(bgs), PolyTrendLine.toPrimitiveFromList(raws));
+                            final double this_variance = bg_to_raw.errorVarience();
+                            Log.d(TAG, "Error Variance drop: " + i + " = " + JoH.qs(this_variance, 3));
+                            if (this_variance < lowest_variance) {
 
-                            Log.d(TAG, "Removing outlier: " + i + " Reduces varience to: " + JoH.qs(this_variance, 3) + " Slope: " + JoH.qs(slope, 3) + " " + slope_in_range(slope));
+                                final double intercept = bg_to_raw.predict(0);
+                                final double one = bg_to_raw.predict(1);
+                                final double slope = one - intercept;
 
-                            if (slope_in_range(slope)) {
-                                lowest_variance = this_variance;
-                                lowest_bgs_set.clear();
-                                lowest_bgs_set.addAll(bgs);
-                                lowest_raws_set.clear();
-                                lowest_raws_set.addAll(raws);
+                                Log.d(TAG, "Removing outlier: " + i + " Reduces varience to: " + JoH.qs(this_variance, 3) + " Slope: " + JoH.qs(slope, 3) + " " + slope_in_range(slope));
+
+                                if (slope_in_range(slope)) {
+                                    lowest_variance = this_variance;
+                                    lowest_bgs_set.clear();
+                                    lowest_bgs_set.addAll(bgs);
+                                    lowest_raws_set.clear();
+                                    lowest_raws_set.addAll(raws);
+                                }
                             }
                         }
                     }
-                }
 
-                bg_to_raw.setValues(PolyTrendLine.toPrimitiveFromList(lowest_bgs_set), PolyTrendLine.toPrimitiveFromList(lowest_raws_set));
+                    bg_to_raw.setValues(PolyTrendLine.toPrimitiveFromList(lowest_bgs_set), PolyTrendLine.toPrimitiveFromList(lowest_raws_set));
 
-                final double intercept = bg_to_raw.predict(0);
-                Log.d(TAG, "Intercept: " + intercept);
-                final double one = bg_to_raw.predict(1);
-                Log.d(TAG, "One: " + one);
-                final double slope = one - intercept;
-                Log.d(TAG, "Slope: " + slope);
+                    final double intercept = bg_to_raw.predict(0);
+                    Log.d(TAG, "Intercept: " + intercept);
+                    final double one = bg_to_raw.predict(1);
+                    Log.d(TAG, "One: " + one);
+                    final double slope = one - intercept;
+                    Log.d(TAG, "Slope: " + slope);
 
-                // last sanity check
-                if (slope_in_range(slope)) {
-                    cd = new CalibrationData(slope, intercept);
-                } else {
+                    // last sanity check
+                    if (slope_in_range(slope)) {
+                        cd = new CalibrationData(slope, intercept);
+                    } else {
+                        cd = new CalibrationData(calibrations.get(0).slope, calibrations.get(0).intercept);
+                        Log.wtf(TAG, "ERROR: Slope outside range: " + slope + " REVERTING TO FALLBACK! " + calibrations.get(0).slope);
+                    }
+                } catch (org.apache.commons.math3.linear.SingularMatrixException e) {
                     cd = new CalibrationData(calibrations.get(0).slope, calibrations.get(0).intercept);
-                    Log.wtf(TAG, "ERROR: Slope outside range: " + slope + " REVERTING TO FALLBACK! " + calibrations.get(0).slope);
+                    Log.wtf(TAG, "ERROR: Math Error REVERTING TO FALLBACK! " + e + "  / slope: " + calibrations.get(0).slope);
                 }
             }
         } else {

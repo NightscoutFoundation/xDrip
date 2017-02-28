@@ -12,8 +12,10 @@ import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.GlucoseMeter.GlucoseReadingRx;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.messages.BloodTestMessage;
@@ -145,6 +147,9 @@ public class BloodTest extends Model {
             bt.state = STATE_VALID;
             bt.source = source;
             bt.saveit();
+            if (UploaderQueue.newEntry("insert", bt) != null) {
+                SyncService.startSyncService(3000); // sync in 3 seconds
+            }
             return bt;
         } else {
             UserError.Log.d(TAG, "Not creating new reading as timestamp is too close");
@@ -187,6 +192,18 @@ public class BloodTest extends Model {
         }
     }
 
+    public static BloodTest byid(long id) {
+        try {
+            return new Select()
+                    .from(BloodTest.class)
+                    .where("_ID = ?", id)
+                    .executeSingle();
+        } catch (android.database.sqlite.SQLiteException e) {
+            fixUpTable();
+            return null;
+        }
+    }
+
     public static byte[] toMultiMessage(List<BloodTest> btl) {
         if (btl == null) return null;
         final List<BloodTestMessage> BloodTestMessageList = new ArrayList<>();
@@ -198,6 +215,7 @@ public class BloodTest extends Model {
 
     private static void processFromMessage(BloodTestMessage btm) {
         if ((btm != null) && (btm.uuid != null) && (btm.uuid.length() == 36)) {
+            boolean is_new = false;
             BloodTest bt = byUUID(btm.uuid);
             if (bt == null) {
                 bt = getForPreciseTimestamp(Wire.get(btm.timestamp, BloodTestMessage.DEFAULT_TIMESTAMP), CLOSEST_READING_MS);
@@ -206,6 +224,7 @@ public class BloodTest extends Model {
                     return;
                 }
                 bt = new BloodTest();
+                is_new = true;
             }
             bt.timestamp = Wire.get(btm.timestamp, BloodTestMessage.DEFAULT_TIMESTAMP);
             bt.mgdl = Wire.get(btm.mgdl, BloodTestMessage.DEFAULT_MGDL);
@@ -214,6 +233,9 @@ public class BloodTest extends Model {
             bt.source = Wire.get(btm.source, BloodTestMessage.DEFAULT_SOURCE);
             bt.uuid = btm.uuid;
             bt.saveit(); // de-dupe by uuid
+            if (UploaderQueue.newEntry(is_new ? "insert" : "update", bt) != null) {
+                SyncService.startSyncService(3000); // sync in 3 seconds
+            }
         } else {
             UserError.Log.wtf(TAG, "processFromMessage uuid is null or invalid");
         }

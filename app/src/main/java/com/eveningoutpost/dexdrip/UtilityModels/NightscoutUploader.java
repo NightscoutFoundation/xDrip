@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
@@ -112,7 +113,7 @@ public class NightscoutUploader {
             enableMongoUpload = prefs.getBoolean("cloud_storage_mongodb_enable", false);
         }
 
-    public boolean uploadRest(List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) {
+    public boolean uploadRest(List<BgReading> glucoseDataSets, List<BloodTest> meterRecords, List<Calibration> calRecords) {
 
         boolean apiStatus = false;
 
@@ -140,7 +141,7 @@ public class NightscoutUploader {
     }
 
 
-        private boolean doRESTUpload(SharedPreferences prefs, List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) {
+        private boolean doRESTUpload(SharedPreferences prefs, List<BgReading> glucoseDataSets, List<BloodTest> meterRecords, List<Calibration> calRecords) {
             String baseURLSettings = prefs.getString("cloud_storage_api_base", "");
             ArrayList<String> baseURIs = new ArrayList<String>();
 
@@ -210,16 +211,17 @@ public class NightscoutUploader {
             }
         }
 
-        private void doRESTUploadTo(NightscoutService nightscoutService, String secret, List<BgReading> glucoseDataSets, List<Calibration> meterRecords, List<Calibration> calRecords) throws Exception {
-            JSONArray array = new JSONArray();
+        private void doRESTUploadTo(NightscoutService nightscoutService, String secret, List<BgReading> glucoseDataSets, List<BloodTest> meterRecords, List<Calibration> calRecords) throws Exception {
+            final JSONArray array = new JSONArray();
 
             for (BgReading record : glucoseDataSets) {
                 populateV1APIBGEntry(array, record);
             }
-            for (Calibration record : meterRecords) {
+            for (BloodTest record : meterRecords) {
                 populateV1APIMeterReadingEntry(array, record);
             }
             for (Calibration record : calRecords) {
+                populateV1APIMeterReadingEntry(array, record); // also add calibrations as meter records
                 populateV1APICalibrationEntry(array, record);
             }
 
@@ -298,6 +300,23 @@ public class NightscoutUploader {
             json.put("mbg", record.bg);
             array.put(json);
         }
+
+        private void populateV1APIMeterReadingEntry(JSONArray array, BloodTest record) throws Exception {
+            if (record == null) {
+                Log.e(TAG, "Received null bloodtest record in populateV1ApiMeterReadingEntry !");
+                return;
+            }
+            JSONObject json = new JSONObject();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
+            format.setTimeZone(TimeZone.getDefault());
+            json.put("device", record.source);
+            json.put("type", "mbg");
+            json.put("date", record.timestamp);
+            json.put("dateString", format.format(record.timestamp));
+            json.put("mbg", record.mgdl);
+            array.put(json);
+        }
+
 
         private void populateV1APICalibrationEntry(JSONArray array, Calibration record) throws Exception {
             if (record == null) {

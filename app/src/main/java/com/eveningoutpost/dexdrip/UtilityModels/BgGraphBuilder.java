@@ -914,12 +914,17 @@ public class BgGraphBuilder {
                 Profile.scale_factor = 1;
             }
 
+            final long close_to_side_time = (long) (end_time * FUZZER) - (Constants.MINUTE_IN_MS * 10);
             // enumerate calibrations
             try {
                 for (Calibration calibration : calibrations) {
                     if (calibration.timestamp < (start_time * FUZZER)) break;
                     if (calibration.slope_confidence != 0) {
-                        final PointValueExtended this_point = new PointValueExtended((float) ((calibration.timestamp + (AddCalibration.estimatedInterstitialLagSeconds * 1000)) / FUZZER), (float) unitized(calibration.bg));
+                        final long adjusted_timestamp = (calibration.timestamp + (AddCalibration.estimatedInterstitialLagSeconds * 1000));
+                        final PointValueExtended this_point = new PointValueExtended((float) (adjusted_timestamp / FUZZER), (float) unitized(calibration.bg));
+                        if (adjusted_timestamp >= close_to_side_time) {
+                            predictivehours = Math.max(predictivehours, 1);
+                        }
                         this_point.real_timestamp = calibration.timestamp;
                         calibrationValues.add(this_point);
                         if (calibration.timestamp > last_calibration) {
@@ -934,7 +939,8 @@ public class BgGraphBuilder {
             // enumerate blood tests
             try {
                 for (BloodTest bloodtest : bloodtests) {
-                    final PointValueExtended this_point = new PointValueExtended((float) ((bloodtest.timestamp + (AddCalibration.estimatedInterstitialLagSeconds * 1000)) / FUZZER), (float) unitized(bloodtest.mgdl));
+                    final long adjusted_timestamp = (bloodtest.timestamp + (AddCalibration.estimatedInterstitialLagSeconds * 1000));
+                    final PointValueExtended this_point = new PointValueExtended((float) (adjusted_timestamp / FUZZER), (float) unitized(bloodtest.mgdl));
                     this_point.type = PointValueExtended.BloodTest;
                     this_point.uuid = bloodtest.uuid;
                     this_point.real_timestamp = bloodtest.timestamp;
@@ -949,6 +955,9 @@ public class BgGraphBuilder {
                     if (!matches) bloodTestValues.add(this_point);
                     if (bloodtest.timestamp > last_bloodtest) {
                         last_bloodtest = bloodtest.timestamp;
+                    }
+                    if (adjusted_timestamp >= close_to_side_time) {
+                        predictivehours = Math.max(predictivehours, 1);
                     }
                 }
             } catch (Exception e) {

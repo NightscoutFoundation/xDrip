@@ -532,14 +532,14 @@
     <string name="pref_title_influxdb">InfluxDB</string>
     <string name="pref_default_influxdb_uri">https://{host}:{port}</string>
     <string name="pref_message_influxdb_uri">Replace example values in {}\'s with your correct values</string>
-        <string name="pref_dialog_influxdb_uri">Enter InfluxDB URI</string>
-        <string name="pref_default_influxdb_database">xdrip</string>
-        <string name="pref_message_influxdb_database">The database where to store measurements. Remember to create this on the server.</string>
-        <string name="pref_dialog_influxdb_database">Database</string>
-        <string name="pref_default_influxdb_username">root</string>
-        <string name="pref_message_influxdb_username">Username for authentication. It is recommended to not allow usage without authentication.</string>
-        <string name="pref_dialog_influxdb_username">User</string>
-        <string name="pref_default_influxdb_password">root</string>
-        <string name="pref_message_influxdb_password">Password for authentication. It is recommended to not allow usage without authentication.</string>
-        <string name="pref_dialog_influxdb_password">Password</string>
+    <string name="pref_dialog_influxdb_uri">Enter InfluxDB URI</string>
+    <string name="pref_default_influxdb_database">xdrip</string>
+    <string name="pref_message_influxdb_database">The database where to store measurements. Remember to create this on the server.</string>
+    <string name="pref_dialog_influxdb_database">Database</string>
+    <string name="pref_default_influxdb_username">root</string>
+    <string name="pref_message_influxdb_username">Username for authentication. It is recommended to not allow usage without authentication.</string>
+    <string name="pref_dialog_influxdb_username">User</string>
+    <string name="pref_default_influxdb_password">root</string>
+    <string name="pref_message_influxdb_password">Password for authentication. It is recommended to not allow usage without authentication.</string>
+    <string name="pref_dialog_influxdb_password">Password</string>
 </resources>

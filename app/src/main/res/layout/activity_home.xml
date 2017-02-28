@@ -35,7 +35,6 @@
             android:paddingTop="0dp">
 
 
-
             <lecho.lib.hellocharts.view.LineChartView
                 android:id="@+id/chart"
                 android:layout_width="match_parent"
@@ -391,6 +390,7 @@
                 android:paddingTop="0dp"
                 android:paddingStart="0dp"
                 android:layout_marginRight="0dp"
+                android:layout_marginLeft="-10dp"
                 android:layout_marginTop="0dp"
                 android:background="@android:color/transparent"
                 android:text="99999"

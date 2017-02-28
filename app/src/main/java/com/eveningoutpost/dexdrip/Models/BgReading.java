@@ -231,6 +231,7 @@ public class BgReading extends Model implements ShareUploadableBg {
 
 
     //*******CLASS METHODS***********//
+    // Dexcom Bluetooth Share
     public static void create(EGVRecord[] egvRecords, long addativeOffset, Context context) {
         for (EGVRecord egvRecord : egvRecords) {
             BgReading.create(egvRecord, addativeOffset, context);
@@ -268,6 +269,7 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    // Dexcom Bluetooth Share
     public static void create(EGVRecord egvRecord, long addativeOffset, Context context) {
         BgReading bgReading = BgReading.getForTimestamp(egvRecord.getSystemTime().getTime() + addativeOffset);
         Log.i(TAG, "create: Looking for BG reading to tag this thing to: " + egvRecord.getBGValue());
