@@ -80,6 +80,11 @@ public class Home extends BaseWatchFace {
                 JoH.static_toast_long(mStepsToast);
             }
         }
+        if (tapType == TAP_TYPE_TOUCH && linearLayout(mDirectionDelta, x, y)) {
+            if (sharedPrefs.getBoolean("extra_status_line", false) && mExtraStatusLine != null && !mExtraStatusLine.isEmpty()) {
+                JoH.static_toast_long(mExtraStatusLine);
+            }
+        }
     }
 
     private boolean linearLayout(LinearLayout layout,int x, int y) {

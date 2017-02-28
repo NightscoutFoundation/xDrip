@@ -1207,6 +1207,9 @@ public class WatchUpdaterService extends WearableListenerService implements
         dataMap.putDouble("high", inMgdl(highMark, sPrefs));
         dataMap.putDouble("low", inMgdl(lowMark, sPrefs));
         dataMap.putInt("bridge_battery", mPrefs.getInt("bridge_battery", -1));//Used in DexCollectionService
+        if (sPrefs.getBoolean("extra_status_line", false)) {
+            dataMap.putString("extra_status_line", Home.extraStatusLine());
+        }
 
         //TODO: Add raw again
         //dataMap.putString("rawString", threeRaw((prefs.getString("units", "mgdl").equals("mgdl"))));
@@ -1252,6 +1255,26 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMap.putString("falling_bg_val", mPrefs.getString("falling_bg_val", "2"));
             dataMap.putBoolean("rising_alert", mPrefs.getBoolean("rising_alert", false));
             dataMap.putString("rising_bg_val", mPrefs.getString("rising_bg_val", "2"));
+
+            //Extra Status Line
+            dataMap.putBoolean("extra_status_line", mPrefs.getBoolean("extra_status_line", false));
+            dataMap.putBoolean("extra_status_stats_24h", Home.getPreferencesBooleanDefaultFalse("extra_status_stats_24h"));
+            dataMap.putBoolean("status_line_calibration_long", mPrefs.getBoolean("status_line_calibration_long", false));
+            dataMap.putBoolean("status_line_calibration_short", mPrefs.getBoolean("status_line_calibration_short", false));
+            dataMap.putBoolean("status_line_avg", mPrefs.getBoolean("status_line_avg", false));
+            dataMap.putBoolean("status_line_a1c_dcct", mPrefs.getBoolean("status_line_a1c_dcct", false));
+            dataMap.putBoolean("status_line_a1c_ifcc", mPrefs.getBoolean("status_line_a1c_ifcc", false));
+            dataMap.putBoolean("status_line_in", mPrefs.getBoolean("status_line_in", false));
+            dataMap.putBoolean("status_line_high", mPrefs.getBoolean("status_line_high", false));
+            dataMap.putBoolean("status_line_low", mPrefs.getBoolean("status_line_low", false));
+            dataMap.putBoolean("status_line_carbs", mPrefs.getBoolean("status_line_carbs", false));
+            dataMap.putBoolean("status_line_capture_percentage", mPrefs.getBoolean("status_line_capture_percentage", false));
+
+            //Calibration plugin
+            dataMap.putBoolean("extra_status_calibration_plugin", mPrefs.getBoolean("extra_status_calibration_plugin", false));
+            dataMap.putBoolean("display_glucose_from_plugin", Home.getPreferencesBooleanDefaultFalse("display_glucose_from_plugin"));
+            dataMap.putBoolean("use_pluggable_alg_as_primary", Home.getPreferencesBooleanDefaultFalse("use_pluggable_alg_as_primary"));
+
         }
         //Step Counter
         dataMap.putBoolean("use_wear_health", mPrefs.getBoolean("use_pebble_health", true));

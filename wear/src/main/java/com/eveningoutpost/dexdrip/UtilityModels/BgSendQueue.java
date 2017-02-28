@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.activeandroid.Model;
@@ -19,9 +20,11 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 //KS import com.eveningoutpost.dexdrip.GcmActivity;
 //KS import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ListenerService;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 //KS import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
@@ -39,6 +42,8 @@ import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xDripWidget;
 */
+import com.eveningoutpost.dexdrip.stats.StatsResult;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.wearable.DataMap;
 
 import java.text.SimpleDateFormat;
@@ -295,8 +300,8 @@ public class BgSendQueue extends Model {
         final PebbleMovement pm = PebbleMovement.last();
         final boolean show_steps = prefs.getBoolean("showSteps", true);
         final boolean use_wear_health = prefs.getBoolean("use_wear_health", true);
-        if ((use_wear_health) && (show_steps) && (pm != null) && pm.metric > 0) {
-            boolean sameDay = pm != null ? ListenerService.isSameDay(t, pm.timestamp) : true;
+        if (use_wear_health || show_steps) {
+            boolean sameDay = pm != null ? ListenerService.isSameDay(t, pm.timestamp) : false;
             if (!sameDay) {
                 dataMap.putInt("steps", 0);
                 dataMap.putLong("steps_timestamp", t);
@@ -329,6 +334,9 @@ public class BgSendQueue extends Model {
         dataMap.putInt("bridge_battery", sPrefs.getInt("bridge_battery", -1));//Used in DexCollectionService
         //TODO: Add raw again
         //dataMap.putString("rawString", threeRaw((prefs.getString("units", "mgdl").equals("mgdl"))));
+        if (sPrefs.getBoolean("extra_status_line", false)) {
+            dataMap.putString("extra_status_line", extraStatusLine(sPrefs));
+        }
         return dataMap;
     }
 
@@ -381,5 +389,123 @@ public class BgSendQueue extends Model {
             return 50;
         }
         return (int) (((float) level / (float) scale) * 100.0f);
+    }
+
+    @NonNull
+    public static String extraStatusLine(SharedPreferences prefs) {
+
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs==null) return "";
+
+        final StringBuilder extraline = new StringBuilder();
+        final Calibration lastCalibration = Calibration.lastValid();
+        if (prefs.getBoolean("status_line_calibration_long", false) && lastCalibration != null) {
+            if (extraline.length() != 0) extraline.append(' ');
+            extraline.append("slope = ");
+            extraline.append(String.format("%.2f", lastCalibration.slope));
+            extraline.append(' ');
+            extraline.append("inter = ");
+            extraline.append(String.format("%.2f", lastCalibration.intercept));
+        }
+
+        if (prefs.getBoolean("status_line_calibration_short", false) && lastCalibration != null) {
+            if (extraline.length() != 0) extraline.append(' ');
+            extraline.append("s:");
+            extraline.append(String.format("%.2f", lastCalibration.slope));
+            extraline.append(' ');
+            extraline.append("i:");
+            extraline.append(String.format("%.2f", lastCalibration.intercept));
+        }
+
+        if (prefs.getBoolean("status_line_avg", false)
+                || prefs.getBoolean("status_line_a1c_dcct", false)
+                || prefs.getBoolean("status_line_a1c_ifcc", false)
+                || prefs.getBoolean("status_line_in", false)
+                || prefs.getBoolean("status_line_high", false)
+                || prefs.getBoolean("status_line_low", false)
+                || prefs.getBoolean("status_line_carbs", false)
+                || prefs.getBoolean("status_line_capture_percentage", false)) {
+
+            final StatsResult statsResult = new StatsResult(prefs, Home.getPreferencesBooleanDefaultFalse("extra_status_stats_24h"));
+
+            if (prefs.getBoolean("status_line_avg", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                extraline.append(statsResult.getAverageUnitised());
+            }
+            if (prefs.getBoolean("status_line_a1c_dcct", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                extraline.append(statsResult.getA1cDCCT());
+            }
+            if (prefs.getBoolean("status_line_a1c_ifcc", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                extraline.append(statsResult.getA1cIFCC());
+            }
+            if (prefs.getBoolean("status_line_in", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                extraline.append(statsResult.getInPercentage());
+            }
+            if (prefs.getBoolean("status_line_high", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                extraline.append(statsResult.getHighPercentage());
+            }
+            if (prefs.getBoolean("status_line_low", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                extraline.append(statsResult.getLowPercentage());
+            }
+            if (prefs.getBoolean("status_line_carbs", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                //extraline.append("Carbs: " + statsResult.getTotal_carbs());
+                int carbs = statsResult.getTotal_carbs();
+                extraline.append(carbs == -1 ? "" : "Carbs: " + carbs);
+            }
+            if (prefs.getBoolean("status_line_capture_percentage", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                final String accuracy = null;//KS TODO = BloodTest.evaluateAccuracy(WEEK_IN_MS);
+                extraline.append(statsResult.getCapturePercentage(false) + ((accuracy != null) ? " " + accuracy : ""));
+            }
+        }
+        /* //KS TODO
+        if (prefs.getBoolean("extra_status_calibration_plugin", false)) {
+            final CalibrationAbstract plugin = getCalibrationPluginFromPreferences(); // make sure do this only once
+            if (plugin != null) {
+                final CalibrationAbstract.CalibrationData pcalibration = plugin.getCalibrationData();
+                if (extraline.length() > 0) extraline.append("\n"); // not tested on the widget yet
+                if (pcalibration != null) extraline.append("(" + plugin.getAlgorithmName() + ") s:" + JoH.qs(pcalibration.slope, 2) + " i:" + JoH.qs(pcalibration.intercept, 2));
+                BgReading bgReading = BgReading.last();
+                if (bgReading != null) {
+                    final boolean doMgdl = prefs.getString("units", "mgdl").equals("mgdl");
+                    extraline.append(" \u21D2 " + BgGraphBuilder.unitized_string(plugin.getGlucoseFromSensorValue(bgReading.age_adjusted_raw_value), doMgdl) + " " + BgGraphBuilder.unit(doMgdl));
+                }
+            }
+
+            // If we are using the plugin as the primary then show xdrip original as well
+            if (Home.getPreferencesBooleanDefaultFalse("display_glucose_from_plugin") || Home.getPreferencesBooleanDefaultFalse("use_pluggable_alg_as_primary")) {
+                final CalibrationAbstract plugin_xdrip = getCalibrationPlugin(PluggableCalibration.Type.xDripOriginal); // make sure do this only once
+                if (plugin_xdrip != null) {
+                    final CalibrationAbstract.CalibrationData pcalibration = plugin_xdrip.getCalibrationData();
+                    if (extraline.length() > 0)
+                        extraline.append("\n"); // not tested on the widget yet
+                    if (pcalibration != null)
+                        extraline.append("(" + plugin_xdrip.getAlgorithmName() + ") s:" + JoH.qs(pcalibration.slope, 2) + " i:" + JoH.qs(pcalibration.intercept, 2));
+                    BgReading bgReading = BgReading.last();
+                    if (bgReading != null) {
+                        final boolean doMgdl = prefs.getString("units", "mgdl").equals("mgdl");
+                        extraline.append(" \u21D2 " + BgGraphBuilder.unitized_string(plugin_xdrip.getGlucoseFromSensorValue(bgReading.age_adjusted_raw_value), doMgdl) + " " + BgGraphBuilder.unit(doMgdl));
+                    }
+                }
+            }
+
+        }
+
+        if (prefs.getBoolean("status_line_time", false)) {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            if (extraline.length() != 0) extraline.append(' ');
+            extraline.append(sdf.format(new Date()));
+        }
+        */
+        return extraline.toString();
+
     }
 }
