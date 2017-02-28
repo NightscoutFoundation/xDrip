@@ -295,6 +295,7 @@ public class BgSendQueue extends Model {
     }
 
     public static DataMap getSensorSteps(SharedPreferences prefs) {
+        Log.d("BgSendQueue", "getSensorSteps");
         DataMap dataMap = new DataMap();
         final long t = System.currentTimeMillis();
         final PebbleMovement pm = PebbleMovement.last();
@@ -305,10 +306,12 @@ public class BgSendQueue extends Model {
             if (!sameDay) {
                 dataMap.putInt("steps", 0);
                 dataMap.putLong("steps_timestamp", t);
+                Log.d("BgSendQueue", "getSensorSteps isSameDay false t=" + JoH.dateTimeText(t));
             }
             else {
                 dataMap.putInt("steps", pm.metric);
                 dataMap.putLong("steps_timestamp", pm.timestamp);
+                Log.d("BgSendQueue", "getSensorSteps isSameDay true pm.timestamp=" + JoH.dateTimeText(pm.timestamp) + " metric=" + pm.metric);
             }
         }
         return dataMap;

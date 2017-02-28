@@ -201,6 +201,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 String node_wearG5 = sharedPrefs.getString("node_wearG5", ""); //KS
                 boolean sync_wear_logs = sharedPrefs.getBoolean("sync_wear_logs", false); //KS
                 boolean sync_step_counter = sharedPrefs.getBoolean("use_wear_health", false); //KS
+                boolean showSteps = sharedPrefs.getBoolean("showSteps", false);
                 Log.d(TAG, "doInBackground enter enable_wearG5=" + enable_wearG5 + " force_wearG5=" + force_wearG5 + " node_wearG5=" + node_wearG5);//KS
 
                 if (isCancelled()) {
@@ -281,6 +282,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                             if (datamap != null) {
                                                 sendMessagePayload(node, "SYNC_STEP_SENSOR_PATH", SYNC_STEP_SENSOR_PATH, datamap.toByteArray());
                                             }
+                                        }
+                                        if (showSteps || sync_step_counter) {
+                                            resetCounters(true);//restart measurements on new day
                                         }
                                         sendMessagePayload(node, "WEARABLE_RESEND_PATH", path, payload);
                                         break;
@@ -764,11 +768,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 Log.d(TAG, "OnSharedPreferenceChangeListener sendPrefSettings for key=" + key);
                 sendPrefSettings();
             }
-            else if (key.compareTo("use_wear_health") == 0 || key.compareTo("showSteps") == 0) {
-                setupStepSensor();
-            }
-            else if (key.compareTo("step_delay_time") == 0) {
-                stopMeasurement();
+            else if (key.compareTo("use_wear_health") == 0 || key.compareTo("showSteps") == 0 || key.compareTo("step_delay_time") == 0) {
                 setupStepSensor();
             }
             else {//if(key.compareTo("dex_txid") == 0 || key.compareTo(DexCollectionType.DEX_COLLECTION_METHOD) == 0){
@@ -1840,7 +1840,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         if (mPrefs.getBoolean("use_wear_health", false) || mPrefs.getBoolean("showSteps", false)) {
             Log.d(TAG, "Start Step Counter Sensor");
             //startService(new Intent(this, SensorService.class));
-            resetCounters();
+            resetCounters(false);
+            stopMeasurement();
             startMeasurement();
         }
         else {
@@ -1968,20 +1969,24 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
     }
 
-    private void resetCounters() {
-        initCounters();
+    private void resetCounters(boolean startMeasurement) {
+        //initCounters();
         mSteps = (int) PersistentStore.getLong(pref_msteps);
         last_movement_timestamp = (int) PersistentStore.getLong(pref_last_movement_timestamp);
-        Log.d(TAG, "resetCounters Sensor Enter PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
+        Log.d(TAG, "resetCounters Sensor Enter PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + JoH.dateTimeText(last_movement_timestamp));
 
         PebbleMovement last = PebbleMovement.last();
         boolean sameDay = last != null ? ListenerService.isSameDay(System.currentTimeMillis(), last.timestamp) : false;
         if (!sameDay) {
             initCounters();
-            Log.d(TAG, "resetCounters Sensor isSameDay initCounters mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
+            Log.d(TAG, "resetCounters Sensor isSameDay=false initCounters mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + JoH.dateTimeText(last_movement_timestamp));
+            if (startMeasurement) {
+                stopMeasurement();
+                startMeasurement();
+            }
         } else {
             mPreviousCounterSteps = mSteps;
-            Log.d(TAG, "resetCounters Sensor isSameDay PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
+            Log.d(TAG, "resetCounters Sensor isSameDay=true PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + JoH.dateTimeText(last_movement_timestamp));
         }
     }
 
