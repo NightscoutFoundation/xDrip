@@ -221,7 +221,12 @@ public class NightscoutUploader {
                 populateV1APIMeterReadingEntry(array, record);
             }
             for (Calibration record : calRecords) {
-                populateV1APIMeterReadingEntry(array, record); // also add calibrations as meter records
+                final BloodTest dupe = BloodTest.getForPreciseTimestamp(record.timestamp, 60000);
+                if (dupe == null) {
+                    populateV1APIMeterReadingEntry(array, record); // also add calibrations as meter records
+                } else {
+                    Log.e(TAG, "Found duplicate blood test entry for this calibration record: " + record.bg + " vs " + dupe.mgdl + " mg/dl");
+                }
                 populateV1APICalibrationEntry(array, record);
             }
 
