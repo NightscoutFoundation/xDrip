@@ -218,12 +218,20 @@ public class Mdns {
 
             @Override
             public void onStartDiscoveryFailed(String serviceType, int errorCode) {
-                mNsdManager.stopServiceDiscovery(this);
+                myStopServiceDiscovery();
             }
 
             @Override
             public void onStopDiscoveryFailed(String serviceType, int errorCode) {
-                mNsdManager.stopServiceDiscovery(this);
+                myStopServiceDiscovery();
+            }
+
+            private void myStopServiceDiscovery() {
+                try {
+                    mNsdManager.stopServiceDiscovery(this);
+                } catch (IllegalArgumentException | IllegalStateException e) {
+                    UserError.Log.e(TAG, "Could not stop service discovery: " + e);
+                }
             }
         };
     }
@@ -244,8 +252,12 @@ public class Mdns {
                 final InetAddress host = serviceInfo.getHost();
                 final String address = host.getHostAddress();
                 UserError.Log.d(TAG, serviceInfo.getServiceName() + " Resolved address = " + address);
-
-                iplookup.put(shortenName(serviceInfo.getServiceName()), new LookUpInfo(address, JoH.tsl(), serviceInfo));
+                final String short_name = shortenName(serviceInfo.getServiceName());
+                if (!address.contains(":") || (iplookup.get(short_name) == null) || (JoH.msSince(iplookup.get(short_name).received) > 60000)) {
+                    iplookup.put(short_name, new LookUpInfo(address, JoH.tsl(), serviceInfo));
+                } else {
+                    UserError.Log.d(TAG, "Skipping overwrite of " + short_name + " with " + address + " due to ipv4 priority");
+                }
                 outstanding.decrementAndGet();
                 locked_until = 0;
             }
