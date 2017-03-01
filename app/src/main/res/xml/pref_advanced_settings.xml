@@ -433,12 +433,6 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
-                    android:key="status_line_capture_percentage"
-                    android:summary="Percentage of sensor readings received"
-                    android:title="Packet capture percentage" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="extra_status_line"
                     android:key="status_line_high"
                     android:summary="Percentage of values above range."
                     android:title="@string/high_percentage" />
@@ -454,6 +448,24 @@
                     android:key="status_line_carbs"
                     android:summary="Show treatment carbohydrate total"
                     android:title="Total Carbohydrate" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="extra_status_line"
+                    android:key="status_line_insulin"
+                    android:summary="Show treatment insulin total"
+                    android:title="Total Insulin" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="extra_status_line"
+                    android:key="status_line_capture_percentage"
+                    android:summary="Percentage of sensor readings received"
+                    android:title="Packet capture percentage" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="extra_status_line"
+                    android:key="status_line_accuracy"
+                    android:summary="Show calibration accuracy evaluation from last 3 days"
+                    android:title="Accuracy Evaluation" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"

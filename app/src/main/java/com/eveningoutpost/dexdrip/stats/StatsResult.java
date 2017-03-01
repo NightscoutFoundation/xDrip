@@ -20,6 +20,7 @@ public class StatsResult {
     private final int below;
     private final int above;
     private int total_carbs = -1;
+    private double total_insulin = -1;
     private final double avg;
     private final boolean mgdl;
     private final long from;
@@ -107,6 +108,17 @@ public class StatsResult {
         }
         return total_carbs;
     }
+
+    public double getTotal_insulin() {
+        if (total_insulin < 0) {
+            Cursor cursor = Cache.openDatabase().rawQuery("select sum(insulin) from treatments  where timestamp >= " + from + " AND timestamp <= " + to, null);
+            cursor.moveToFirst();
+            total_insulin = cursor.getDouble(0);
+            cursor.close();
+        }
+        return total_insulin;
+    }
+
 
     public int getTotalReadings(){
         return in + above + below;

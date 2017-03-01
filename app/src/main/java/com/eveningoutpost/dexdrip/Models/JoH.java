@@ -410,6 +410,17 @@ public class JoH {
     }
 
     // return true if below rate limit
+    public static synchronized boolean quietratelimit(String name, int seconds) {
+        // check if over limit
+        if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (seconds * 1000))) {
+            return false;
+        }
+        // not over limit
+        rateLimits.put(name, JoH.tsl());
+        return true;
+    }
+
+    // return true if below rate limit
     public static synchronized boolean ratelimitmilli(String name, int milliseconds) {
         // check if over limit
         if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (milliseconds))) {

@@ -56,6 +56,7 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
+import com.eveningoutpost.dexdrip.Models.Accuracy;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
@@ -121,6 +122,7 @@ import lecho.lib.hellocharts.view.PreviewLineChartView;
 
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.WEEK_IN_MS;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPlugin;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
@@ -2290,6 +2292,8 @@ public class Home extends ActivityWithMenu {
                 || prefs.getBoolean("status_line_high", false)
                 || prefs.getBoolean("status_line_low", false)
                 || prefs.getBoolean("status_line_carbs", false)
+                || prefs.getBoolean("status_line_insulin", false)
+                || prefs.getBoolean("status_line_accuracy", false)
                 || prefs.getBoolean("status_line_capture_percentage", false)) {
 
             final StatsResult statsResult = new StatsResult(prefs, getPreferencesBooleanDefaultFalse("extra_status_stats_24h"));
@@ -2322,10 +2326,24 @@ public class Home extends ActivityWithMenu {
                 if (extraline.length() != 0) extraline.append(' ');
                 extraline.append("Carbs: " + statsResult.getTotal_carbs());
             }
+            if (prefs.getBoolean("status_line_insulin", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                extraline.append("U: " + JoH.qs(statsResult.getTotal_insulin(), 2));
+            }
             if (prefs.getBoolean("status_line_capture_percentage", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
-                final String accuracy = BloodTest.evaluateAccuracy(WEEK_IN_MS);
-                extraline.append(statsResult.getCapturePercentage(false) + ((accuracy != null) ? " " + accuracy : ""));
+                extraline.append(statsResult.getCapturePercentage(false));
+            }
+            if (prefs.getBoolean("status_line_accuracy", false)) {
+                final long accuracy_period = DAY_IN_MS * 3;
+                if (extraline.length() != 0) extraline.append(' ');
+                final String accuracy_report = Accuracy.evaluateAccuracy(accuracy_period);
+                if ((accuracy_report != null) && (accuracy_report.length() > 0)) {
+                    extraline.append(accuracy_report);
+                } else {
+                    final String accuracy = BloodTest.evaluateAccuracy(accuracy_period);
+                    extraline.append(((accuracy != null) ? " " + accuracy : ""));
+                }
             }
         }
         if (prefs.getBoolean("extra_status_calibration_plugin", false)) {

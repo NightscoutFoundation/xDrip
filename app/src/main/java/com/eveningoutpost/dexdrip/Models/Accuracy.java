@@ -11,8 +11,14 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.BestGlucose;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.google.gson.annotations.Expose;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Table(name = "Accuracy", id = BaseColumns._ID)
 public class Accuracy extends PlusModel {
@@ -63,6 +69,7 @@ public class Accuracy extends PlusModel {
     @Column(name = "difference")
     public double difference;
 
+    private static final boolean d = false;
 
     public static Accuracy create(BloodTest bloodTest, BestGlucose.DisplayGlucose dg) {
         if (dg == null) return null;
@@ -108,5 +115,78 @@ public class Accuracy extends PlusModel {
         return null;
     }
 
+    public static List<Accuracy> latestForGraph(int number, long startTime, long endTime) {
+        try {
+            return new Select()
+                    .from(Accuracy.class)
+                    .where("timestamp >= " + Math.max(startTime, 0))
+                    .where("timestamp <= " + endTime)
+                    .orderBy("timestamp desc, _id asc")
+                    .limit(number)
+                    .execute();
+        } catch (android.database.sqlite.SQLiteException e) {
+            fixUpTable(schema);
+            return new ArrayList<>();
+        }
+    }
+
+    public static String evaluateAccuracy(long period) {
+        // TODO CACHE ?
+        final boolean domgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
+        final Map<String, Double> totals = new HashMap<>();
+        final Map<String, Double> signed_totals = new HashMap<>();
+        final Map<String, Integer> count = new HashMap<>();
+        final List<Accuracy> alist = latestForGraph(500, JoH.tsl() - period, JoH.tsl());
+
+        // total up differences
+        for (Accuracy entry : alist) {
+            if (totals.containsKey(entry.plugin)) {
+                totals.put(entry.plugin, totals.get(entry.plugin) + Math.abs(entry.difference));
+                signed_totals.put(entry.plugin, signed_totals.get(entry.plugin) + entry.difference);
+                count.put(entry.plugin, count.get(entry.plugin) + 1);
+            } else {
+                totals.put(entry.plugin, Math.abs(entry.difference));
+                signed_totals.put(entry.plugin, entry.difference);
+                count.put(entry.plugin, 1);
+            }
+        }
+        String result = "";
+        int plugin_count = 0;
+        for (Map.Entry<String, Double> total : totals.entrySet()) {
+            plugin_count++;
+            final String plugin = total.getKey();
+            final int this_count = count.get(plugin);
+            final double this_total = total.getValue();
+            // calculate the abs mean, 0 = perfect
+            final double this_mean = this_total / this_count;
+            final double signed_total = signed_totals.get(plugin);
+            final double signed_mean = signed_total / this_count;
+            // calculate the bias ratio. 0% means totally unbiased, 100% means all data skewed towards signed mean
+            final double signed_ratio = (Math.abs(signed_mean) / this_mean) * 100;
+
+            if (d) UserError.Log.d(TAG, plugin + ": total: " + JoH.qs(this_total) + " count: " + this_count + " avg: " + JoH.qs(this_mean) + " mmol: " + JoH.qs((this_mean) * Constants.MGDL_TO_MMOLL) + " bias: " + JoH.qs(signed_mean) + " " + JoH.qs(signed_ratio, 0) + "%");
+            String plugin_result = plugin.substring(0, 1).toLowerCase() + ": " + asString(this_mean, signed_mean, signed_ratio, domgdl);
+            UserError.Log.d(TAG, plugin_result);
+            if (result.length() > 0) result += " ";
+            result += plugin_result;
+        }
+
+        return plugin_count == 1 ? result : result.replaceFirst(" mmol", "").replaceFirst(" mgdl", " ");
+    }
+
+    private static String asString(double mean, double signed_mean, double signed_ratio, boolean domgdl) {
+
+        String symbol = "err";
+        if (signed_ratio < 90) {
+            symbol = "\u00B1";   // +- symbol
+        } else {
+            if (signed_mean < 0) {
+                symbol = "\u207B"; // superscript minus
+            } else {
+                symbol = "\u207A"; // superscript plus
+            }
+        }
+        return symbol + (!domgdl ? JoH.qs(mean * Constants.MGDL_TO_MMOLL, 2) + " mmol" : JoH.qs(mean, 1) + " mgdl");
+    }
 
 }
