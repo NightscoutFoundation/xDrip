@@ -193,6 +193,8 @@ public class BGHistory extends ActivityWithMenu {
                 sb.append('\n');
                 double insulin = statsResult.getTotal_insulin();
                 sb.append(getResources().getString(R.string.label_show_insulin, df.format(insulin)));
+            }
+            if (Home.getPreferencesBoolean("status_line_insulin", true)) {
                 sb.append(' ');
                 double carbs = statsResult.getTotal_carbs();
                 sb.append(getResources().getString(R.string.label_show_carbs, df.format(carbs)));

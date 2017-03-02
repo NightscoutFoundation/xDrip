@@ -457,11 +457,20 @@ public class BgSendQueue extends Model {
                 if (extraline.length() != 0) extraline.append(' ');
                 extraline.append(statsResult.getLowPercentage());
             }
+            if (prefs.getBoolean("status_line_stdev", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                extraline.append(statsResult.getStdevUnitised());
+            }
             if (prefs.getBoolean("status_line_carbs", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
                 //extraline.append("Carbs: " + statsResult.getTotal_carbs());
-                int carbs = statsResult.getTotal_carbs();
+                double carbs = statsResult.getTotal_carbs();
                 extraline.append(carbs == -1 ? "" : "Carbs: " + carbs);
+            }
+            if (prefs.getBoolean("status_line_insulin", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                double insulin = statsResult.getTotal_insulin();
+                extraline.append(insulin == -1 ? "" : "U: " + JoH.qs(insulin, 2));
             }
             if (prefs.getBoolean("status_line_capture_percentage", false)) {
                 if (extraline.length() != 0) extraline.append(' ');

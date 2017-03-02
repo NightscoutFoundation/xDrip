@@ -2322,9 +2322,14 @@ public class Home extends ActivityWithMenu {
                 if (extraline.length() != 0) extraline.append(' ');
                 extraline.append(statsResult.getLowPercentage());
             }
+            if (prefs.getBoolean("status_line_stdev", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                extraline.append(statsResult.getStdevUnitised());
+            }
             if (prefs.getBoolean("status_line_carbs", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
-                extraline.append("Carbs: " + statsResult.getTotal_carbs());
+                //extraline.append("Carbs: " + statsResult.getTotal_carbs());
+                extraline.append("Carbs: " + Math.round(statsResult.getTotal_carbs()));
             }
             if (prefs.getBoolean("status_line_insulin", false)) {
                 if (extraline.length() != 0) extraline.append(' ');

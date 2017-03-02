@@ -530,7 +530,7 @@
     <string name="title_activity_btglucose_meter">Meter Scan</string>
     <string name="notify_when_wear_low_battery">Disabling Force Wear Collection Service due to Wear Low Battery!</string>
     <string name="format_decimal_treatments">#.##</string>
-    <string name="label_show_insulin">Insulin:%1$su</string>
+    <string name="label_show_insulin">U:%1$su</string>
     <string name="label_show_carbs">Carbs:%1$sg</string>
     <string name="label_show_steps">Steps:%1$d</string>
     <string name="label_show_steps_km">km:%1$s</string>

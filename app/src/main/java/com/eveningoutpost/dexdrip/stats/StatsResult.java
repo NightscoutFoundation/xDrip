@@ -10,7 +10,6 @@ import com.activeandroid.Cache;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 
 import java.text.DecimalFormat;
-import java.util.List;
 
 /**
  * Created by adrian on 23/01/16.
@@ -20,7 +19,7 @@ public class StatsResult {
     private final int in;
     private final int below;
     private final int above;
-    private int total_carbs = -1;
+    private double total_carbs = -1;
     private double total_insulin = -1;
     private double stdev;
     private int total_steps = -1;

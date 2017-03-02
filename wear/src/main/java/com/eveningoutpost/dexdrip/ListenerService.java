@@ -1340,6 +1340,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             prefs.putBoolean("status_line_high", dataMap.getBoolean("status_line_high", false));
             prefs.putBoolean("status_line_low", dataMap.getBoolean("status_line_low", false));
             prefs.putBoolean("status_line_carbs", dataMap.getBoolean("status_line_carbs", false));
+            prefs.putBoolean("status_line_insulin", dataMap.getBoolean("status_line_insulin", false));
+            prefs.putBoolean("status_line_stdev", dataMap.getBoolean("status_line_stdev", false));
             prefs.putBoolean("status_line_capture_percentage", dataMap.getBoolean("status_line_capture_percentage", false));
             //Calibration plugin
             prefs.putBoolean("extra_status_calibration_plugin", dataMap.getBoolean("extra_status_calibration_plugin", false));
