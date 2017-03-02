@@ -33,6 +33,20 @@
                 android:key="disable_wearG5_on_lowbattery"
                 android:summary="@string/pref_summary_disable_wearG5_on_lowbattery"
                 android:title="@string/pref_disable_wearG5_on_lowbattery" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:dependency="force_wearG5"
+                android:key="disable_wearG5_on_missedreadings"
+                android:summary="@string/pref_summary_disable_wearG5_on_missedreadings"
+                android:title="@string/pref_disable_wearG5_on_missedreadings" />
+            <EditTextPreference
+                android:defaultValue="30"
+                android:dependency="disable_wearG5_on_missedreadings"
+                android:digits="0123456789"
+                android:inputType="number"
+                android:key="disable_wearG5_on_missedreadings_level"
+                android:summary=""
+                android:title="@string/pref_disable_wearG5_on_missedreadings_level" />
             <EditTextPreference
                 android:defaultValue=""
                 android:dependency="force_wearG5"

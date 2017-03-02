@@ -29,16 +29,18 @@ The wear standalone feature is enabled via the following xDrip+ Settings located
 
 <img align="middle" src="./images/prefs-wear-sync.png" title="xDrip+ Wear Integration Preferences">
 
-|Phone Settings                     | Watch Settings   | Description             |
-| --------------------------------- | ---------------- | ------------------------|
-| Android Wear Integration          | NA               | Enables Wear integration|
-| Enable Wear Collection Service    | Enable Collector | Enables the BT Collector to run on the wear device when the smartphone is out-of-range.|
-| Force Wear Collection Service     | Force Collector  | Forces the BT Collector to run on the wear device even when the smartphone is in-range.|
-| Disable Force on Low Batterty     | NA               | Disables Force Wear Collection Service on a Wear Low Battery Alert.  Low Battery is determined by Alarms and Alerts -> Extra Alerts (xDrip+) -> **Collector Battery Alerts**.  See section Alerts under [XDrip BT Settings](#xdrip-bt-settings) below. |
-| Device running Collection Service | NA               | Read-only; Displays the wear device running the BT Collector.  This will be the watch display name + uuid when Force Wear is enabled. |
-| NA                                | BT Collector     | Read-only; Corresponds to xDrip+ Setting -> **Hardware Data Source**.  For example, if the **Hardware Data Source** is set to **G5 Transmitter (test)**, then the wear app BT Collector will display **DexcomG5**. |
-| Sync Wear Logs                    | NA               | Triggers Wear log entries to be synced to the phone. You can view the logs on your phone using xDrip+ app's upper, right menu item, **View Events Log**. You need to enable ExtraLogTags in xDrip+ Settings -> LCS -> Extra Logging Settings -> **Extra tags for logging** to enable log generation for services s.a. **G5CollectionService:v**.|
-| Wear Log Prefix                   | NA               | The wear event logs are prefixed with the **Wear Log Prefix**.  If you tap it, you'll see that it defaults to **wear** but you can enter something else, or nothing. This prefix helps to distinguish where the log entry was generated since services are similarly named on both devices. For example, **wearG5CollectionService** indicates the log was generated on the wear device.|
+|Phone Settings                        | Watch Settings   | Description             |
+| ------------------------------------ | ---------------- | ------------------------|
+| Android Wear Integration             | NA               | Enables Wear integration|
+| Enable Wear Collection Service       | Enable Collector | Enables the BT Collector to run on the wear device when the smartphone is out-of-range.|
+| Force Wear Collection Service        | Force Collector  | Forces the BT Collector to run on the wear device even when the smartphone is in-range.|
+| Disable Force on Low Batterty        | NA               | Disables Force Wear Collection Service on a Wear Low Battery Alert.  Low Battery is determined by Alarms and Alerts -> Extra Alerts (xDrip+) -> **Collector Battery Alerts**.  See section Alerts under [XDrip BT Settings](#xdrip-bt-settings) below. |
+| Disable Force on Missed Readings     | NA               | Disables Force Wear Collection Service on a Wear Missed Readings.  When ON, the **Force Wear Collection Service** will be disabled after **Minutes since last Reading from Wear**, returning control the the smartphone BT Collector. |
+| Minutes since last Readings from Wear| NA               | Number of minutes since last BG reading that triggers **Disable Force Wear Collection Service** |
+| Device running Collection Service    | NA               | Read-only; Displays the wear device running the BT Collector.  This will be the watch display name + uuid when Force Wear is enabled. |
+| NA                                   | BT Collector     | Read-only; Corresponds to xDrip+ Setting -> **Hardware Data Source**.  For example, if the **Hardware Data Source** is set to **G5 Transmitter (test)**, then the wear app BT Collector will display **DexcomG5**. |
+| Sync Wear Logs                       | NA               | Triggers Wear log entries to be synced to the phone. You can view the logs on your phone using xDrip+ app's upper, right menu item, **View Events Log**. You need to enable ExtraLogTags in xDrip+ Settings -> LCS -> Extra Logging Settings -> **Extra tags for logging** to enable log generation for services s.a. **G5CollectionService:v**.|
+| Wear Log Prefix                      | NA               | The wear event logs are prefixed with the **Wear Log Prefix**.  If you tap it, you'll see that it defaults to **wear** but you can enter something else, or nothing. This prefix helps to distinguish where the log entry was generated since services are similarly named on both devices. For example, **wearG5CollectionService** indicates the log was generated on the wear device.|
 
 These settings are listed in order of dependency.  Note, the Watch's **XDrip BT Settings** will only be visible when Wear Integration is enabled on the phone.
 

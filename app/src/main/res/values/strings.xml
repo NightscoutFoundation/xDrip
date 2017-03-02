@@ -235,6 +235,9 @@
     <string name="pref_summary_force_wearG5">Force phone to use Wear Collection Service</string>
     <string name="pref_disable_wearG5_on_lowbattery">Disable Force on Low Battery</string>
     <string name="pref_summary_disable_wearG5_on_lowbattery">Disable Force Wear Collection Service on Wear Low Battery Alert</string>
+    <string name="pref_disable_wearG5_on_missedreadings">Disable Force on Missed Readings</string>
+    <string name="pref_summary_disable_wearG5_on_missedreadings">Disable Force Wear Collection Service on Minutes since last Reading from Wear</string>
+    <string name="pref_disable_wearG5_on_missedreadings_level">Minutes since last Reading from Wear</string>
     <string name="pref_node_wearG5">Device running Collection Service</string>
     <string name="pref_summary_node_wearG5">Force phone to use this Wear Collection Service</string>
 
@@ -529,6 +532,7 @@
     <string name="delete">Delete</string>
     <string name="title_activity_btglucose_meter">Meter Scan</string>
     <string name="notify_when_wear_low_battery">Disabling Force Wear Collection Service due to Wear Low Battery!</string>
+    <string name="notify_disable_wearG5_on_missedreadings">Disabling Force Wear Collection Service due to missed readings on phone!</string>
     <string name="format_decimal_treatments">#.##</string>
     <string name="label_show_insulin">U:%1$su</string>
     <string name="label_show_carbs">Carbs:%1$sg</string>

@@ -78,6 +78,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     public static final String ACTION_START_COLLECTOR = WatchUpdaterService.class.getName().concat(".StartCollector");//KS
     public static final String ACTION_SYNC_SENSOR = WatchUpdaterService.class.getName().concat(".SyncSensor");//KS
     public static final String ACTION_SYNC_CALIBRATION = WatchUpdaterService.class.getName().concat(".SyncCalibration");//KS
+    public static final String ACTION_SEND_TOAST = WatchUpdaterService.class.getName().concat(".SendWearLocalToast");//KS
     public static final String ACTION_SEND_STATUS = WatchUpdaterService.class.getName().concat(".SendStatus");//KS
     public static final String ACTION_SYNC_ACTIVEBTDEVICE = WatchUpdaterService.class.getName().concat(".SyncActiveBtDevice");//KS
     public static final String ACTION_SYNC_ALERTTYPE = WatchUpdaterService.class.getName().concat(".SyncAlertType");
@@ -678,6 +679,9 @@ public class WatchUpdaterService extends WearableListenerService implements
                         resendData();
                     } else if (ACTION_OPEN_SETTINGS.equals(action)) {
                         sendNotification(OPEN_SETTINGS_PATH, "openSettings");//KS add args
+                    } else if (ACTION_SEND_TOAST.equals(action)) {
+                        Log.d(TAG, "onStartCommand Action=ACTION_SEND_TOAST msg=" + intent.getStringExtra("msg"));
+                        sendWearLocalToast(intent.getStringExtra("msg"), Toast.LENGTH_LONG);
                     } else if (ACTION_SEND_STATUS.equals(action)) {//KS added for HAPP
                         //https://github.com/StephenBlackWasAlreadyTaken/xDrip-Experimental
                         Log.d(TAG, "onStartCommand Action=" + ACTION_SEND_STATUS + " externalStatusString=" + intent.getStringExtra("externalStatusString"));

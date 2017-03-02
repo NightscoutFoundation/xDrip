@@ -15,14 +15,19 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleUtil;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.util.Calendar;
 import java.util.Date;
+
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
 
 public class MissedReadingService extends IntentService {
     int otherAlertSnooze;
@@ -51,6 +56,9 @@ public class MissedReadingService extends IntentService {
         if (prefs.getBoolean("broadcast_to_pebble", false) && (PebbleUtil.getCurrentPebbleSyncType(prefs) != 1) && !BgReading.last_within_millis(stale_millis)) {
             if (JoH.ratelimit("peb-miss",120)) context.startService(new Intent(context, PebbleWatchSync.class));
             // update pebble even when we don't have data to ensure missed readings show
+        }
+        if (Home.get_forced_wear() && prefs.getBoolean("disable_wearG5_on_missedreadings", false)) {
+            processDisableForceWearOnMissedReading(prefs);
         }
 
         if (prefs.getBoolean("aggressive_service_restart", false) || DexCollectionType.isFlakey()) {
@@ -90,7 +98,18 @@ public class MissedReadingService extends IntentService {
             checkBackAfterMissedTime(alarmIn);
         }
     }
-    
+
+    private void processDisableForceWearOnMissedReading(SharedPreferences prefs) {
+        final int bg_wear_missed_minutes = readPerfsInt(prefs, "disable_wearG5_on_missedreadings_level", 30);
+        if (BgReading.getTimeSinceLastReading() >= (bg_wear_missed_minutes * 1000 * 60)) {
+            Home.setPreferencesBoolean("force_wearG5", false);
+            String msg = getResources().getString(R.string.notify_disable_wearG5_on_missedreadings);
+            JoH.static_toast_long(msg);
+            Log.d(TAG, "onHandleIntent disable_wearG5_on_missedreadings=true; disable force_wearG5:" + Home.getPreferencesBooleanDefaultFalse("force_wearG5") + " msg=" + msg);
+            startWatchUpdaterService(this, WatchUpdaterService.ACTION_SEND_TOAST, TAG, "msg", msg);
+        }
+    }
+
     private boolean inTimeFrame(SharedPreferences prefs) {
         
         int startMinutes = prefs.getInt("missed_readings_start", 0);
