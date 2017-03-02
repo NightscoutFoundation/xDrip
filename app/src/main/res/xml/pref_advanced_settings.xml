@@ -54,8 +54,15 @@
                 android:editable="true"
                 android:key="wear_logs_prefix"
                 android:summary="@string/pref_summary_wear_logs_prefix"
-                android:title="@string/pref_wear_logs_prefix" />
-            android:textIsSelectable="true"/>
+                android:title="@string/pref_wear_logs_prefix"
+                android:textIsSelectable="true"/>
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="use_pebble_health"
+                android:summary="@string/pref_summary_use_wear_health"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="@string/pref_use_wear_health" />
         </PreferenceCategory>
         <PreferenceCategory
             android:key="pebble_integration"
