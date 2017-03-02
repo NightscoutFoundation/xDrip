@@ -20,13 +20,9 @@ public class StatsResult {
     private final int in;
     private final int below;
     private final int above;
-    private int a1c_ifcc;
-    private double a1c_dcct;
-    private double median;
-    private double mean;
-    private double stdev;
-    private double total_carbs = -1;
+    private int total_carbs = -1;
     private double total_insulin = -1;
+    private double stdev;
     private int total_steps = -1;
     private final double avg;
     private final boolean mgdl;
