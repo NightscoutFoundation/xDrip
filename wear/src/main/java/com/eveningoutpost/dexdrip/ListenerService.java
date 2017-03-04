@@ -1202,9 +1202,14 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     }
 
     private boolean fuzzyNodeCompare(String left, String right) {
-        final String regex = "\\|\\S+$";
-        return left.replaceFirst(regex, "").equals(right.replaceFirst(regex, ""));
-    }
+        try {
+            final String regex = "\\|\\S+$";
+            return left.replaceFirst(regex, "").equals(right.replaceFirst(regex, ""));
+        } catch (NullPointerException e) {
+            Log.e(TAG, "fuzzyNodeCompare NullPointerException ", e);
+            return false;
+        }
+}
 
     private synchronized void syncPrefData(DataMap dataMap) {//KS
         SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(this).edit();

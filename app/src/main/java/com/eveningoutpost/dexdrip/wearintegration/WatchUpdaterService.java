@@ -396,7 +396,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                                 saved++;
                             }
                             else {
-                                Log.d(TAG, "syncLogData Log entry already exists with shortError=" + data.shortError + " timestamp=" + JoH.dateTimeText((long)data.timestamp));
+                                //Log.d(TAG, "syncLogData Log entry already exists with shortError=" + data.shortError + " timestamp=" + JoH.dateTimeText((long)data.timestamp));
                             }
                         }
                     }

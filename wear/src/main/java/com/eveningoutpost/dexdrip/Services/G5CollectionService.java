@@ -318,10 +318,7 @@ public class G5CollectionService extends Service {
 
                 //Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
                 //stopScan();
-                boolean wear_sync = prefs.getBoolean("wear_sync", false);
-                boolean enable_wearG5 = prefs.getBoolean("enable_wearG5", false);
-                boolean force_wearG5 = prefs.getBoolean("force_wearG5", false);
-                if (!CollectionServiceStarter.isBTG5(xdrip.getAppContext()) || (wear_sync && enable_wearG5 && force_wearG5)) {
+                if (!CollectionServiceStarter.isBTG5(xdrip.getAppContext())) {
                     Log.e(TAG,"Shutting down as no longer using G5 data source");
                     service_running = false;
                     keep_running = false;
@@ -1037,7 +1034,7 @@ public class G5CollectionService extends Service {
             waitFor(600);
             Log.e(TAG, "connectGatt() delay completed");
         }
-        mGatt = mDevice.connectGatt(getApplicationContext(), true, gattCallback);//TEST false -> true
+        mGatt = mDevice.connectGatt(getApplicationContext(), false, gattCallback);//TEST false -> true
     }
 
 
@@ -1904,12 +1901,13 @@ public class G5CollectionService extends Service {
                 + (delayOn133Errors ? "delayOn133Errors " : "")
                 + (tryOnDemandBondWithDelay ? "tryOnDemandBondWithDelay " : "")
                 + (engineeringMode() ? "engineeringMode " : "")
+                + (alwaysOnScreem() ? "alwaysOnScreem " : "")
                 + (tryPreBondWithDelay ? "tryPreBondWithDelay " : ""));
     }
 
     // Status for Watchface
     public static boolean isRunning() {
-        return lastState.equals("Not Running") || lastState.equals("Stopped") ? false : true;
+        return lastState.equals("Not running") || lastState.equals("Stopped") ? false : true;
     }
 
     public static void setWatchStatus(DataMap dataMap) {

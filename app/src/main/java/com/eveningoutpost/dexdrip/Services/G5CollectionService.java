@@ -1823,7 +1823,7 @@ public class G5CollectionService extends Service {
 
     // Status for Watchface
     public static boolean isRunning() {
-        return lastState.equals("Not Running") || lastState.equals("Stopped") ? false : true;
+        return lastState.equals("Not running") || lastState.equals("Stopped") ? false : true;
     }
 
     public static void setWatchStatus(DataMap dataMap) {
