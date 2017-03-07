@@ -46,6 +46,12 @@
                     android:title="@string/dont_alarm_during_phone_calls" />
 
                 <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="buttons_silence_alert"
+                    android:summary="Pressing the volume up or down button will snooze an active alarm when in the app"
+                    android:title="Buttons silence alarms" />
+
+                <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="start_snoozed"
                     android:summary="@string/alerts_start_out_snoozed_and_must_persist_for_a_while"

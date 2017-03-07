@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Reminder;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -64,7 +65,7 @@ public class MissedReadingService extends IntentService {
                 }
             }
         }
-
+        Reminder.processAnyDueReminders();
         BluetoothGlucoseMeter.immortality();
 
         bg_missed_alerts =  prefs.getBoolean("bg_missed_alerts", false);
@@ -117,7 +118,7 @@ public class MissedReadingService extends IntentService {
         }
     }
 
-    public void checkBackAfterMissedTime(long alarmIn) {
+    private void checkBackAfterMissedTime(long alarmIn) {
         setAlarm(alarmIn, false);
     }
     

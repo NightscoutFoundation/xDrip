@@ -21,6 +21,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -39,6 +40,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,6 +59,7 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.Constants;
 import com.eveningoutpost.dexdrip.Models.Accuracy;
+import com.eveningoutpost.dexdrip.Models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
@@ -70,6 +73,7 @@ import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
+import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Experience;
@@ -123,13 +127,13 @@ import lecho.lib.hellocharts.view.PreviewLineChartView;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
-import static com.eveningoutpost.dexdrip.UtilityModels.Constants.WEEK_IN_MS;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPlugin;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
 
 
 public class Home extends ActivityWithMenu {
     private final static String TAG = "jamorham: " + Home.class.getSimpleName();
+    private final static boolean d = true;
     public final static String START_SPEECH_RECOGNITION = "START_APP_SPEECH_RECOGNITION";
     public final static String START_TEXT_RECOGNITION = "START_APP_TEXT_RECOGNITION";
     public final static String CREATE_TREATMENT_NOTE = "CREATE_TREATMENT_NOTE";
@@ -262,6 +266,7 @@ public class Home extends ActivityWithMenu {
         setTheme(R.style.AppThemeToolBarLite); // for toolbar mode
 
         set_is_follower();
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         final boolean checkedeula = checkEula();
@@ -2576,6 +2581,10 @@ public class Home extends ActivityWithMenu {
         boolean got_data = Experience.gotData();
         menu.findItem(R.id.crowdtranslate).setVisible(got_data);
 
+        if (get_engineering_mode()) {
+         //   menu.findItem(R.id.showreminders).setVisible(true);
+        }
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -2704,6 +2713,10 @@ public class Home extends ActivityWithMenu {
         startActivity(new Intent(getApplicationContext(), HelpActivity.class));
     }
 
+    public void showRemindersFromMenu(MenuItem myitem) {
+        startActivity(new Intent(getApplicationContext(), Reminders.class));
+    }
+
 
     public void parakeetSetupMode(MenuItem myitem) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -2826,6 +2839,32 @@ public class Home extends ActivityWithMenu {
         startActivity(new Intent(getApplicationContext(), SendFeedBack.class));
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (event.getKeyCode()) {
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+            case KeyEvent.KEYCODE_VOLUME_UP:
+            case KeyEvent.KEYCODE_VOLUME_MUTE:
+                if (JoH.quietratelimit("button-press", 5)) {
+                    if (Home.getPreferencesBooleanDefaultFalse("buttons_silence_alert")) {
+                        final ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
+                        if (activeBgAlert != null) {
+                            AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
+                            final String msg = "Snoozing alert due to volume button press";
+                            JoH.static_toast_long(msg);
+                            UserError.Log.ueh(TAG, msg);
+                        } else {
+                            if (d) UserError.Log.d(TAG, "no active alert to snooze");
+                        }
+                    } else {
+                        if (d) UserError.Log.d(TAG, "No action as preference is disabled");
+                    }
+                }
+                break;
+        }
+        if (d) Log.d(TAG, "Keydown event: " + keyCode + " event: " + event.toString());
+        return super.onKeyDown(keyCode,event);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

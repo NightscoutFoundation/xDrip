@@ -8,6 +8,14 @@
         android:onClick="showHelpFromMenu"
         android:showAsAction="never"/>
 
+    <item android:id="@+id/showreminders"
+        android:title="Reminders"
+        android:checkable="false"
+        android:orderInCategory="1"
+        android:visible="false"
+        android:onClick="showRemindersFromMenu"
+        android:showAsAction="never"/>
+
     <item android:id="@+id/export_submenu"
         android:title="@string/export_submenu"
         android:orderInCategory="1">

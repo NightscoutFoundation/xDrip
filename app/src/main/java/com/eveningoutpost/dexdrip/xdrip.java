@@ -11,6 +11,7 @@ import com.crashlytics.android.core.CrashlyticsCore;
 import com.bugfender.sdk.Bugfender;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Reminder;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.Services.BluetoothGlucoseMeter;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
@@ -71,6 +72,7 @@ public class xdrip extends Application {
             ActivityRecognizedService.startActivityRecogniser(getApplicationContext());
         }
         BluetoothGlucoseMeter.startIfEnabled();
+        Reminder.firstInit(xdrip.getAppContext());
         PluggableCalibration.invalidateCache();
 
     }

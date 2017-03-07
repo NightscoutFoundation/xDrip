@@ -307,7 +307,7 @@ public class Calibration extends Model {
         context.startService(new Intent(context, Notifications.class));
     }
 
-    //Create Calibration Checkin
+    //Create Calibration Checkin Dexcom Bluetooth Share
     public static void create(CalRecord[] calRecords, long addativeOffset, Context context) {
         create(calRecords, context, false, addativeOffset);
     }
@@ -316,6 +316,7 @@ public class Calibration extends Model {
         create(calRecords, context, false, 0);
     }
 
+    // Bluetooth Share
     public static void create(CalRecord[] calRecords, Context context, boolean override, long addativeOffset) {
         //TODO: Change calibration.last and other queries to order calibrations by timestamp rather than ID
         Log.i("CALIBRATION-CHECK-IN: ", "Creating Calibration Record");
