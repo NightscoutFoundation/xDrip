@@ -1,8 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.support.v4.app.NotificationCompat;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +12,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 
 import com.eveningoutpost.dexdrip.EditAlertActivity;
 import com.eveningoutpost.dexdrip.GcmActivity;
@@ -27,10 +26,11 @@ import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
 import com.eveningoutpost.dexdrip.UtilityModels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
-import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
 import java.io.IOException;
 import java.util.Date;
+
+import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
 // A helper class to create the mediaplayer on the UI thread.
 // This is needed in order for the callbackst to work.
@@ -234,19 +234,13 @@ public class AlertPlayer {
 
     }
 
-    
+
     private boolean setDataSource(Context context, MediaPlayer mp, Uri uri) {
         try {
             mp.setDataSource(context, uri);
             return true;
-        } catch (IOException ex) {
-            Log.e(TAG, "create failed:", ex);
-            // fall through
-        } catch (IllegalArgumentException ex) {
-            Log.e(TAG, "create failed:", ex);
-            // fall through
-        } catch (SecurityException ex) {
-            Log.e(TAG, "create failed:", ex);
+        } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
+            Log.e(TAG, "setDataSource create failed:", ex);
             // fall through
         }
         return false;
