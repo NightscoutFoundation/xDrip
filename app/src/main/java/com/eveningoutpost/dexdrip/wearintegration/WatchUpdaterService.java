@@ -84,6 +84,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     public static final String ACTION_SYNC_ALERTTYPE = WatchUpdaterService.class.getName().concat(".SyncAlertType");
     public final static String ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE
             = "com.eveningoutpost.dexdrip.BLUETOOTH_COLLECTION_SERVICE_UPDATE";
+    public static final String ACTION_DISABLE_FORCE_WEAR = WatchUpdaterService.class.getName().concat(".DisableForceWear");//KS
     public static final String ACTION_SNOOZE_ALERT = WatchUpdaterService.class.getName().concat(".SnoozeAlert");//KS
     private static final String SYNC_DB_PATH = "/syncweardb";//KS
     private static final String RESET_DB_PATH = "/resetweardb";
@@ -701,6 +702,14 @@ public class WatchUpdaterService extends WearableListenerService implements
                         //Log.d(TAG, "onStartCommand RESET_DB_PATH cleanup timestamp=" + JoH.dateTimeText(JoH.tsl()));
                         //TODO Rm!
                         initWearData();
+                    } else if (ACTION_DISABLE_FORCE_WEAR.equals(action)) {//KS
+                        int bg_wear_missed_minutes = readPrefsInt(mPrefs, "disable_wearG5_on_missedreadings_level", 30);
+                        Log.d(TAG, "onStartCommand Action=ACTION_DISABLE_FORCE_WEAR");
+                        Home.setPreferencesBoolean("force_wearG5", false);
+                        final String msgDisableWear = getResources().getString(R.string.notify_disable_wearG5_on_missedreadings, bg_wear_missed_minutes);
+                        JoH.static_toast_long(msgDisableWear);
+                        Log.e(TAG, "wearIsConnected disable force_wearG5:" + Home.getPreferencesBooleanDefaultFalse("force_wearG5") + " msg=" + msgDisableWear);
+                        sendWearLocalToast(msgDisableWear, Toast.LENGTH_LONG);
                     } else if (ACTION_START_COLLECTOR.equals(action)) {//KS
                         Log.d(TAG, "onStartCommand Action=" + ACTION_START_COLLECTOR + " Path=" + START_COLLECTOR_PATH);
                         sendNotification(START_COLLECTOR_PATH, "startCOLLECTOR");
@@ -1523,6 +1532,15 @@ public class WatchUpdaterService extends WearableListenerService implements
             return value;
         }
 
+    }
+
+    static public int readPrefsInt(SharedPreferences prefs, String name, int defaultValue) {
+        try {
+            return Integer.parseInt(prefs.getString(name, "" + defaultValue));
+
+        } catch (Exception e) {
+            return defaultValue;
+        }
     }
 
     @Override

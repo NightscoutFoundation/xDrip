@@ -23,7 +23,7 @@ public class StatsResult {
     private final int above;
     private double total_carbs = -1;
     private double total_insulin = -1;
-    private double stdev;
+    private double stdev = -1;
     private int total_steps = -1;
     private final double avg;
     private final boolean mgdl;
@@ -90,16 +90,6 @@ public class StatsResult {
             avg = 0;
         }
 
-        if(getTotalReadings() > 0){
-            cursor= db.rawQuery("select ((count(*)*(sum(calculated_value * calculated_value)) - (sum(calculated_value)*sum(calculated_value)) )/((count(*)-1)*(count(*))) ) from bgreadings  where timestamp >= " + from + " AND timestamp <= " + to + " AND calculated_value > " + CUTOFF + " AND snyced == 0", null);
-            cursor.moveToFirst();
-            stdev = cursor.getDouble(0);
-            stdev = Math.sqrt(stdev);
-            cursor.close();
-        } else {
-            stdev = 0;
-        }
-
         possibleCaptures = (to - from) / (5*60*1000);
         //while already in the next 5 minutes, a package could already have arrived.
         if ((to - from) % (5*60*1000) != 0) possibleCaptures += 1;
@@ -132,6 +122,20 @@ public class StatsResult {
             cursor.close();
         }*/
         return total_carbs;
+    }
+
+    public void calc_StdDev() {
+        if (stdev < 0) {
+            if(getTotalReadings() > 0){
+                Cursor cursor= Cache.openDatabase().rawQuery("select ((count(*)*(sum(calculated_value * calculated_value)) - (sum(calculated_value)*sum(calculated_value)) )/((count(*)-1)*(count(*))) ) from bgreadings  where timestamp >= " + from + " AND timestamp <= " + to + " AND calculated_value > " + CUTOFF + " AND snyced == 0", null);
+                cursor.moveToFirst();
+                stdev = cursor.getDouble(0);
+                stdev = Math.sqrt(stdev);
+                cursor.close();
+            } else {
+                stdev = 0;
+            }
+        }
     }
 
     public double getTotal_insulin() {
@@ -199,6 +203,7 @@ public class StatsResult {
     }
 
     public String getStdevUnitised(){
+        calc_StdDev();
         if(getTotalReadings()==0) return "sd:?";
         if(mgdl) return "sd:" + (Math.round(stdev * 10) / 10d);
         return "sd:" + (new DecimalFormat("#.0")).format((Math.round(stdev * Constants.MGDL_TO_MMOLL * 100) / 100d));

@@ -1731,21 +1731,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         }
     }
 
-    private void startBtG5Service() {//TODO remove once confirm not needed
-        Log.d(TAG, "startBtG5Service");
-        if (is_using_bt) {
-            Context myContext = getApplicationContext();
-            if (checkLocationPermissions()) {
-                Log.d(TAG, "startBtG5Service start G5CollectionService");
-                if (restartWatchDog())
-                    stopBtG5Service();
-                G5CollectionService.keep_running = true;
-                myContext.startService(new Intent(myContext, G5CollectionService.class));
-                Log.d(TAG, "startBtG5Service AFTER startService G5CollectionService mLocationPermissionApproved " + mLocationPermissionApproved);
-            }
-        }
-    }
-
     private boolean checkLocationPermissions() {//KS
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true;
         Context myContext = getApplicationContext();
@@ -1790,13 +1775,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         Log.d(TAG, "stopService call stopService");
         CollectionServiceStarter.stopBtService(getApplicationContext());
         Log.d(TAG, "stopBtService should have called onDestroy");
-    }
-    
-    private void stopBtG5Service() {//KS
-        Context myContext = getApplicationContext();
-        Log.d(TAG, "stopBtG5Service call stopService");
-        myContext.stopService(new Intent(myContext, G5CollectionService.class));
-        Log.d(TAG, "stopBtG5Service should have called onDestroy");
     }
 
     public static void requestData(Context context) {
