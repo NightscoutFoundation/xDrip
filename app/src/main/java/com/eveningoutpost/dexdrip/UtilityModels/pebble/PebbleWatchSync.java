@@ -1,15 +1,20 @@
 package com.eveningoutpost.dexdrip.UtilityModels.pebble;
 
 import android.app.Service;
+import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.HeartRate;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
@@ -105,6 +110,23 @@ public class PebbleWatchSync extends Service {
         return PebbleUtil.getPebbleDisplayType(pebbleType);
     }
 
+    private void check_and_enable_bluetooth() {
+        if (Build.VERSION.SDK_INT > 17) {
+            try {
+                final BluetoothManager bluetooth_manager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+                if (!bluetooth_manager.getAdapter().isEnabled()) {
+                    if (Home.getPreferencesBoolean("automatically_turn_bluetooth_on", true)) {
+                        JoH.setBluetoothEnabled(getApplicationContext(), true);
+                        //Toast.makeText(this, "Trying to turn Bluetooth on", Toast.LENGTH_LONG).show();
+                        //} else {
+                        //Toast.makeText(this, "Please turn Bluetooth on!", Toast.LENGTH_LONG).show();
+                    }
+                }
+            } catch (Exception e) {
+                UserError.Log.e(TAG, "Error checking/enabling bluetooth: " + e);
+            }
+        }
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -114,9 +136,14 @@ public class PebbleWatchSync extends Service {
             return START_NOT_STICKY;
         }
 
-        Log.i(TAG, "STARTING SERVICE PebbleWatchSync");
-        getActivePebbleDisplay().startDeviceCommand();
-
+        final PowerManager.WakeLock wl = JoH.getWakeLock("pebble_service_start", 60000);
+        try {
+            Log.i(TAG, "STARTING SERVICE PebbleWatchSync");
+            check_and_enable_bluetooth();
+            getActivePebbleDisplay().startDeviceCommand();
+        } finally {
+            JoH.releaseWakeLock(wl);
+        }
         return START_STICKY;
     }
 
