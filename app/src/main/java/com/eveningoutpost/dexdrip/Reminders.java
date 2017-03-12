@@ -43,9 +43,14 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Reminder;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
 import com.eveningoutpost.dexdrip.profileeditor.TimePickerFragment;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.rits.cloning.Cloner;
 
 import java.util.ArrayList;
@@ -56,9 +61,14 @@ import java.util.TimerTask;
 
 import static lecho.lib.hellocharts.animation.ChartDataAnimator.DEFAULT_ANIMATION_DURATION;
 
+// TODO Odd/Even reminders
+// TODO swipe right reschedule options
+// TODO wake up option
+
 public class Reminders extends ActivityWithRecycler implements SensorEventListener {
 
     private static final String TAG = "Reminders";
+    private static final int NOTIFICATION_ID = 765;
     private static final String REMINDER_WAKEUP = "REMINDER_WAKEUP";
 
     public final List<Reminder> reminders = new ArrayList<>();
@@ -107,8 +117,10 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         final Bundle bundle = getIntent().getExtras();
         processIncomingBundle(bundle);
 
+
         if (reminders.size() == 0) {
-            JoH.static_toast_long("No reminders yet, add one!"); // replace with showcase?
+            //JoH.static_toast_long("No reminders yet, add one!"); // replace with showcase?
+            showcase(this, Home.SHOWCASE_REMINDER1);
         }
     }
 
@@ -124,7 +136,10 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     protected void onResume() {
         PowerManager.WakeLock wl = JoH.getWakeLock("reminders-onresume", 15000);
         super.onResume();
-        proximity = true; // default to near
+        if (JoH.ratelimit("proximity-reset", 5)) {
+            Log.d(TAG, "Initializing proximity as true");
+            proximity = true; // default to near
+        }
         mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
         reloadList();
         // intentionally do not release wakelock
@@ -133,7 +148,20 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     @Override
     protected void onPause() {
         super.onPause();
-        mSensorManager.unregisterListener(this);
+        Log.d(TAG, "onPause");
+        final SensorEventListener activity = this;
+
+        JoH.runOnUiThreadDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "Unregistering proximity sensor listener");
+                try {
+                    mSensorManager.unregisterListener(activity);
+                } catch (Exception e) {
+                    Log.d(TAG, "Error unregistering proximity listener: " + e);
+                }
+            }
+        }, 10000);
     }
 
     @Override
@@ -310,7 +338,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                 //     remind.next_due = JoH.tsl() + default_snooze;
                 //      setFloaterText(remind.title + " postponed for " + JoH.niceTimeScalar(default_snooze));
                 //  }
-
+                last_swiped = remind;
                 last_undo_pos = position;
                 reminders.remove(position);
                 notifyItemRemoved(position);
@@ -439,6 +467,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     }
 
     private synchronized void reinject(Reminder reminder) {
+        if (reminder == null) return;
         int i = reinjectionPosition(reminder);
         // TODO lock?
         reminders.add(i, reminder);
@@ -446,6 +475,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     }
 
     private synchronized int reinjectionPosition(Reminder reminder) {
+        if (reminder == null) return 0;
         synchronized (reminders) {
             for (int i = 0; i < reminders.size(); i++) {
                 // TODO consider snooze?
@@ -458,7 +488,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     }
 
     private void showNewReminderDialog(View myitem, final long timestamp, final double position) {
-        // Log.d(TAG,"showNewReminderDialog: ts:"+timestamp+" pos:"+position);
+        final Activity activity = this;
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
         dialogView = inflater.inflate(R.layout.reminder_new_dialog, null);
@@ -470,6 +500,16 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         final RadioButton rbday = (RadioButton) dialogView.findViewById(R.id.reminderDayButton);
         final RadioButton rbhour = (RadioButton) dialogView.findViewById(R.id.reminderHourButton);
         final RadioButton rbweek = (RadioButton) dialogView.findViewById(R.id.reminderWeekButton);
+
+
+        rbday.setChecked(PersistentStore.getBoolean("reminders-rbday"));
+        rbhour.setChecked(PersistentStore.getBoolean("reminders-rbhour"));
+        rbweek.setChecked(PersistentStore.getBoolean("reminders-rbweek"));
+
+        // first run if nothing set default to day
+        if (!rbday.isChecked() && !rbhour.isChecked() && !rbweek.isChecked()) {
+            rbday.setChecked(true);
+        }
 
         edt.addTextChangedListener(new TextWatcher() {
 
@@ -500,7 +540,15 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
 
 
         reminderDaysEdt = (EditText) dialogView.findViewById(R.id.reminderRepeatDays);
-        final CheckBox cbx = (CheckBox) dialogView.findViewById(R.id.reminderRepeatcheckBox);
+        final CheckBox repeatingCheckbox = (CheckBox) dialogView.findViewById(R.id.reminderRepeatcheckBox);
+        repeatingCheckbox.setChecked(PersistentStore.getLong("reminders-last-repeating") != 2);
+
+
+        try {
+            reminderDaysEdt.setText(!PersistentStore.getString("reminders-last-number").equals("") ? Integer.toString(Integer.parseInt(PersistentStore.getString("reminders-last-number"))) : "1");
+        } catch (Exception e) {
+            //
+        }
 
 
         dialogBuilder.setTitle("Add Reminder");
@@ -519,12 +567,23 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                     period = period * Constants.WEEK_IN_MS;
                 }
 
+                PersistentStore.setBoolean("reminders-rbday", rbday.isChecked());
+                PersistentStore.setBoolean("reminders-rbhour", rbhour.isChecked());
+                PersistentStore.setBoolean("reminders-rbweek", rbweek.isChecked());
+
                 // TODO handle non-repeating init
                 Reminder new_reminder = Reminder.create(reminder_title, period);
                 if (new_reminder != null) {
                     reminders.add(0, new_reminder);
                     mAdapter.notifyItemInserted(0);
+
+                    new_reminder.repeating = repeatingCheckbox.isChecked();
+                    new_reminder.save();
+
                     // TODO scroll to position?
+                    PersistentStore.setString("reminders-last-number", reminderDaysEdt.getText().toString());
+                    PersistentStore.setLong("reminders-last-repeating", repeatingCheckbox.isChecked() ? 1 : 2);
+                    showcase(activity, Home.SHOWCASE_REMINDER2);
                 } else {
                     JoH.static_toast_long("Something went wrong creating the reminder");
                 }
@@ -569,8 +628,11 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                 Log.d(TAG, "delayed alert firing");
                 startReminderWithExtra(REMINDER_WAKEUP, REMINDER_WAKEUP);
                 final Intent notificationIntent = new Intent(xdrip.getAppContext(), Reminders.class).putExtra("reminder_id", reminder.getId().toString());
-                final PendingIntent pendingIntent = PendingIntent.getActivity(xdrip.getAppContext(), 765, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                JoH.showNotification(reminder.title, "Reminder due " + JoH.hourMinuteString(reminder.next_due), pendingIntent, 765, true, true, false);
+                final Intent notificationDeleteIntent = new Intent(xdrip.getAppContext(), Reminders.class).putExtra("snooze_id", reminder.getId()).putExtra("snooze", "true");
+                final PendingIntent pendingIntent = PendingIntent.getActivity(xdrip.getAppContext(), NOTIFICATION_ID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                final PendingIntent deleteIntent = PendingIntent.getActivity(xdrip.getAppContext(), NOTIFICATION_ID, notificationDeleteIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                // TODO add sound uri
+                JoH.showNotification(reminder.title, "Reminder due " + JoH.hourMinuteString(reminder.next_due), pendingIntent, NOTIFICATION_ID, true, true, deleteIntent, null);
                 UserError.Log.ueh("Reminder Alert", reminder.title + " due: " + JoH.dateTimeText(reminder.next_due) + ((reminder.snoozed_till > reminder.next_due) ? " snoozed till: " + JoH.dateTimeText(reminder.snoozed_till) : ""));
 
             }
@@ -669,19 +731,40 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     private void processIncomingBundle(Bundle bundle) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("reminder-bundler", 10000);
         if (bundle != null) {
-            Log.d(TAG, "Processing non null bundle");
-            reloadList();
-            hideSnoozeFloater();
-            hideKeyboard(recyclerView);
-            if (bundle.getString(REMINDER_WAKEUP) != null) {
-                JoH.runOnUiThreadDelayed(new Runnable() {
+            if (bundle.getString("snooze") != null) {
+                long id = bundle.getLong("snooze_id");
+                Log.d(TAG, "Reminder id for snooze: " + id);
+                Reminder reminder = Reminder.byid(id);
+                if (reminder != null) {
+                    final long snooze_time = reminder.last_snoozed_for > 0 ? reminder.last_snoozed_for : default_snooze;
+                    snoozeReminder(reminder, snooze_time);
+                    JoH.static_toast_long("Snoozed reminder for " + JoH.niceTimeScalar(snooze_time));
+                    reloadList();
+                    hideSnoozeFloater();
+                    hideKeyboard(recyclerView);
+                }
+            } else {
+                Log.d(TAG, "Processing non null default bundle");
+                reloadList();
+                hideSnoozeFloater();
+                hideKeyboard(recyclerView);
+                JoH.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (!proximity) {
-                            wakeUpScreen();
-                        }
+                        wakeUpScreen(false);
                     }
-                }, 1000);
+                });
+                if (bundle.getString(REMINDER_WAKEUP) != null) {
+                    JoH.runOnUiThreadDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d(TAG, "Checking for sensor: " + proximity);
+                            if (!proximity) {
+                                wakeUpScreen(true);
+                            }
+                        }
+                    }, 2000);
+                }
             }
         }
         // intentionally don't release wakelock for proximity detection etc
@@ -694,28 +777,40 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
-    private void wakeUpScreen() {
-        if (!JoH.isScreenOn()) {
+    private void wakeUpScreen(boolean unlock) {
+        if (!JoH.isScreenOn() || (unlock)) {
             final int timeout = 60000;
-            final int wakeUpFlags = WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
-                    WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
-                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
-                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
-                    WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON;
+            final int wakeUpFlags;
+
+            Log.d(TAG, "Wake up screen called with unlock = " + unlock);
+
+            if (unlock) {
+                wakeUpFlags = WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                        //WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+                        WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON;
+            } else {
+                final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);
+                PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "reminder-lockscreen");
+                wl.acquire(10000);
+                wakeUpFlags =
+                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+                                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
+            }
             final PowerManager.WakeLock wl = JoH.getWakeLock("reminder-full-wakeup", timeout + 1000);
             final Window win = getWindow();
-
             win.addFlags(wakeUpFlags);
             final Timer t = new Timer();
             t.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    JoH.runOnUiThreadDelayed(new Runnable() {
+                    JoH.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             win.clearFlags(wakeUpFlags);
                         }
-                    }, 100);
+                    });
 
                     JoH.releaseWakeLock(wl);
 
@@ -724,5 +819,81 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         } else {
             Log.d(TAG, "Screen is already on so not turning on");
         }
+    }
+
+    private static void showcase(final Activity activity, int which) {
+
+        final ViewTarget target;
+        final String title;
+        final String message;
+        int size1 = 200;
+        int size2 = 70;
+        long delay = 1000;
+
+        final boolean oneshot = true;
+        final int option = which;
+        if ((oneshot) && (ShotStateStore.hasShot(option))) return;
+
+
+        switch (which) {
+            case Home.SHOWCASE_REMINDER1:
+                target = new ViewTarget(R.id.fab, activity);
+                title = "You have no reminders yet";
+                message = "Reminders can be used for things like a pump site change or anything else.\n\nThey can repeat, be set for various time periods. Be snoozed, postponed, rescheduled etc.\n\nClick the + button to add a reminder.";
+                break;
+
+            case Home.SHOWCASE_REMINDER2:
+                target = null;
+                title = "Swipe left or right";
+                message = "\u2190 Swipe LEFT to delay or snooze a reminder\n\n\u2192 Swipe RIGHT schedule the next future reminder\n\nTapping on the title or time allows editing.";
+                delay = 1000;
+                break;
+
+            default:
+                return;
+        }
+
+        final int f_size1 = size1;
+        final int f_size2 = size2;
+
+        JoH.runOnUiThreadDelayed(new Runnable() {
+            @Override
+            public void run() {
+                final ShowcaseView myShowcase;
+                if (target != null) {
+
+                    myShowcase = new ShowcaseView.Builder(activity)
+                            .setStyle(R.style.CustomShowcaseTheme2)
+                            .setContentTitle(title)
+                            .setTarget(target)
+                            .blockAllTouches()
+                            .setContentText("\n" + message)
+                            .setShowcaseDrawer(new JamorhamShowcaseDrawer(activity.getResources(), activity.getTheme(), f_size1, f_size2, 255))
+                            .singleShot(oneshot ? option : -1)
+                            .build();
+
+                } else {
+                    myShowcase = new ShowcaseView.Builder(activity)
+                            .setStyle(R.style.CustomShowcaseTheme2)
+                            .setContentTitle(title)
+                            .blockAllTouches()
+                            .setContentText("\n" + message)
+                            .setShowcaseDrawer(new JamorhamShowcaseDrawer(activity.getResources(), activity.getTheme(), f_size1, f_size2, 255))
+                            .singleShot(oneshot ? option : -1)
+                            .build();
+                }
+
+                myShowcase.setBackgroundColor(Color.TRANSPARENT);
+                myShowcase.setShouldCentreText(false);
+
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                int margin = (int) activity.getResources().getDimension(R.dimen.button_margin);
+                params.setMargins(margin, margin, margin, margin);
+                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                myShowcase.setButtonPosition(params);
+                myShowcase.show();
+            }
+        }, delay);
     }
 }

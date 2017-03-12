@@ -215,6 +215,12 @@ public class Reminder extends Model {
         }
     }
 
+    public static Reminder byid(long id) {
+        return new Select()
+                .from(Reminder.class)
+                .where("_ID = ?", id)
+                .executeSingle();
+    }
 
 
     /*static Reminder getForPreciseTimestamp(double timestamp, double precision, String plugin) {
