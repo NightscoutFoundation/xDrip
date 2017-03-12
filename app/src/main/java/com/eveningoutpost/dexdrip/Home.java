@@ -193,6 +193,9 @@ public class Home extends ActivityWithMenu {
     static final int SHOWCASE_MEGASTATUS = 10;
     public static final int SHOWCASE_MOTION_DETECTION = 11;
     public static final int SHOWCASE_MDNS = 12;
+    public static final int SHOWCASE_REMINDER1 = 14;
+    public static final int SHOWCASE_REMINDER2 = 15;
+    public static final int SHOWCASE_REMINDER3 = 16;
     private static double last_speech_time = 0;
     private PreviewLineChartView previewChart;
     private Button stepsButton;
