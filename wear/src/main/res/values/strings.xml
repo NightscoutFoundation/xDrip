@@ -106,9 +106,9 @@
     <string name="pref_summary_show_bridge_battery">Show Bridge Battery</string>
     <string name="init_external_status">no status</string>
     <string name="label_show_steps">Steps: %1$d</string>
-    <string name="label_show_steps_km">Km: %1$s</string>
-    <string name="label_show_steps_mi">Mi: %1$s</string>
-    <string name="label_show_steps_rcvdtime">Rcvd: %1$s</string>
+    <string name="label_show_steps_km">km: %1$s</string>
+    <string name="label_show_steps_mi">mi: %1$s</string>
+    <string name="label_show_steps_rcvdtime">rcvd: %1$s</string>
     <string name="label_show_external_status">Status: </string>
     <string name="label_show_external_status_abbrv">S: </string>
     <string name="label_show_uploader_wear">Wear: %1$s%%</string>

@@ -268,8 +268,11 @@ public class CollectionServiceStarter {
 
     public static void startBtService(Context context) {
         Log.d(TAG, "startBtService: " + DexCollectionType.getDexCollectionType());
-        stopBtService(context);
+        //stopBtService(context);
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
+        collectionServiceStarter.stopBtWixelService();
+        collectionServiceStarter.stopBtShareService();
+        collectionServiceStarter.stopG5ShareService();
         switch (DexCollectionType.getDexCollectionType()) {
             case DexcomShare:
                 collectionServiceStarter.startBtShareService();

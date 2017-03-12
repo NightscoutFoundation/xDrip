@@ -78,11 +78,13 @@ public class WatchUpdaterService extends WearableListenerService implements
     public static final String ACTION_START_COLLECTOR = WatchUpdaterService.class.getName().concat(".StartCollector");//KS
     public static final String ACTION_SYNC_SENSOR = WatchUpdaterService.class.getName().concat(".SyncSensor");//KS
     public static final String ACTION_SYNC_CALIBRATION = WatchUpdaterService.class.getName().concat(".SyncCalibration");//KS
+    public static final String ACTION_SEND_TOAST = WatchUpdaterService.class.getName().concat(".SendWearLocalToast");//KS
     public static final String ACTION_SEND_STATUS = WatchUpdaterService.class.getName().concat(".SendStatus");//KS
     public static final String ACTION_SYNC_ACTIVEBTDEVICE = WatchUpdaterService.class.getName().concat(".SyncActiveBtDevice");//KS
     public static final String ACTION_SYNC_ALERTTYPE = WatchUpdaterService.class.getName().concat(".SyncAlertType");
     public final static String ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE
             = "com.eveningoutpost.dexdrip.BLUETOOTH_COLLECTION_SERVICE_UPDATE";
+    public static final String ACTION_DISABLE_FORCE_WEAR = WatchUpdaterService.class.getName().concat(".DisableForceWear");//KS
     public static final String ACTION_SNOOZE_ALERT = WatchUpdaterService.class.getName().concat(".SnoozeAlert");//KS
     private static final String SYNC_DB_PATH = "/syncweardb";//KS
     private static final String RESET_DB_PATH = "/resetweardb";
@@ -395,7 +397,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                                 saved++;
                             }
                             else {
-                                Log.d(TAG, "syncLogData Log entry already exists with shortError=" + data.shortError + " timestamp=" + JoH.dateTimeText((long)data.timestamp));
+                                //Log.d(TAG, "syncLogData Log entry already exists with shortError=" + data.shortError + " timestamp=" + JoH.dateTimeText((long)data.timestamp));
                             }
                         }
                     }
@@ -678,6 +680,9 @@ public class WatchUpdaterService extends WearableListenerService implements
                         resendData();
                     } else if (ACTION_OPEN_SETTINGS.equals(action)) {
                         sendNotification(OPEN_SETTINGS_PATH, "openSettings");//KS add args
+                    } else if (ACTION_SEND_TOAST.equals(action)) {
+                        Log.d(TAG, "onStartCommand Action=ACTION_SEND_TOAST msg=" + intent.getStringExtra("msg"));
+                        sendWearLocalToast(intent.getStringExtra("msg"), Toast.LENGTH_LONG);
                     } else if (ACTION_SEND_STATUS.equals(action)) {//KS added for HAPP
                         //https://github.com/StephenBlackWasAlreadyTaken/xDrip-Experimental
                         Log.d(TAG, "onStartCommand Action=" + ACTION_SEND_STATUS + " externalStatusString=" + intent.getStringExtra("externalStatusString"));
@@ -697,6 +702,14 @@ public class WatchUpdaterService extends WearableListenerService implements
                         //Log.d(TAG, "onStartCommand RESET_DB_PATH cleanup timestamp=" + JoH.dateTimeText(JoH.tsl()));
                         //TODO Rm!
                         initWearData();
+                    } else if (ACTION_DISABLE_FORCE_WEAR.equals(action)) {//KS
+                        int bg_wear_missed_minutes = readPrefsInt(mPrefs, "disable_wearG5_on_missedreadings_level", 30);
+                        Log.d(TAG, "onStartCommand Action=ACTION_DISABLE_FORCE_WEAR");
+                        Home.setPreferencesBoolean("force_wearG5", false);
+                        final String msgDisableWear = getResources().getString(R.string.notify_disable_wearG5_on_missedreadings, bg_wear_missed_minutes);
+                        JoH.static_toast_long(msgDisableWear);
+                        Log.e(TAG, "wearIsConnected disable force_wearG5:" + Home.getPreferencesBooleanDefaultFalse("force_wearG5") + " msg=" + msgDisableWear);
+                        sendWearLocalToast(msgDisableWear, Toast.LENGTH_LONG);
                     } else if (ACTION_START_COLLECTOR.equals(action)) {//KS
                         Log.d(TAG, "onStartCommand Action=" + ACTION_START_COLLECTOR + " Path=" + START_COLLECTOR_PATH);
                         sendNotification(START_COLLECTOR_PATH, "startCOLLECTOR");
@@ -1268,6 +1281,8 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMap.putBoolean("status_line_high", mPrefs.getBoolean("status_line_high", false));
             dataMap.putBoolean("status_line_low", mPrefs.getBoolean("status_line_low", false));
             dataMap.putBoolean("status_line_carbs", mPrefs.getBoolean("status_line_carbs", false));
+            dataMap.putBoolean("status_line_insulin", mPrefs.getBoolean("status_line_insulin", false));
+            dataMap.putBoolean("status_line_stdev", mPrefs.getBoolean("status_line_stdev", false));
             dataMap.putBoolean("status_line_capture_percentage", mPrefs.getBoolean("status_line_capture_percentage", false));
 
             //Calibration plugin
@@ -1517,6 +1532,15 @@ public class WatchUpdaterService extends WearableListenerService implements
             return value;
         }
 
+    }
+
+    static public int readPrefsInt(SharedPreferences prefs, String name, int defaultValue) {
+        try {
+            return Integer.parseInt(prefs.getString(name, "" + defaultValue));
+
+        } catch (Exception e) {
+            return defaultValue;
+        }
     }
 
     @Override

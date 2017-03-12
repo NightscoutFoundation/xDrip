@@ -739,6 +739,7 @@ public class Preferences extends PreferenceActivity {
 
             bindPreferenceSummaryToValue(findPreference("node_wearG5"));//KS
             bindPreferenceSummaryToValue(findPreference("wear_logs_prefix"));
+            bindPreferenceSummaryToValue(findPreference("disable_wearG5_on_missedreadings_level"));
 
             final Preference useCustomSyncKey = findPreference("use_custom_sync_key");
             final Preference CustomSyncKey = findPreference("custom_sync_key");

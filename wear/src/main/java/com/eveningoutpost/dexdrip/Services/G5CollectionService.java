@@ -318,10 +318,7 @@ public class G5CollectionService extends Service {
 
                 //Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
                 //stopScan();
-                boolean wear_sync = prefs.getBoolean("wear_sync", false);
-                boolean enable_wearG5 = prefs.getBoolean("enable_wearG5", false);
-                boolean force_wearG5 = prefs.getBoolean("force_wearG5", false);
-                if (!CollectionServiceStarter.isBTG5(xdrip.getAppContext()) || (wear_sync && enable_wearG5 && force_wearG5)) {
+                if (!CollectionServiceStarter.isBTG5(xdrip.getAppContext())) {
                     Log.e(TAG,"Shutting down as no longer using G5 data source");
                     service_running = false;
                     keep_running = false;
@@ -403,7 +400,9 @@ public class G5CollectionService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        isScanning = true;//enable to ensure scanning is stopped to prevent service from starting back up onScanResult()
         stopScan();
+        isScanning = false;
 
         Log.d(TAG, "onDestroy");
         //SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -447,6 +446,7 @@ public class G5CollectionService extends Service {
     }
 
     public synchronized void keepAlive(int wake_in_ms) {
+        Log.e(TAG,"keepAlive keep_running=" + keep_running);
         if (!keep_running) return;
         if (JoH.ratelimit("G5-keepalive", 5)) {
             long wakeTime;
@@ -517,6 +517,7 @@ public class G5CollectionService extends Service {
             if (alwaysUnbond()) {
                 forgetDevice();
             }
+            JoH.ratelimit("G5-timeout",0);//re-init to ensure onStartCommand always executes cycleScan
             cycleScan(0);
         }
     }
@@ -570,7 +571,12 @@ public class G5CollectionService extends Service {
 
     public synchronized void cycleScan(int delay) {
 
-        if (!keep_running) return;
+        Log.e(TAG,"cycleScan keep_running=" + keep_running);
+        if (!keep_running) {
+            Log.e(TAG," OnDestroy failed to stop service. Shutting down now to prevent service from being initiated onScanResult().");
+            stopSelf();
+            return;
+        }
         if (JoH.ratelimit("G5-timeout",60) || !scan_scheduled) {
             if (JoH.ratelimit("g5-scan-log",60)) {
                 Log.d(TAG, "cycleScan running");
@@ -621,6 +627,7 @@ public class G5CollectionService extends Service {
     }
 
     private synchronized void scanLogic() {
+        Log.e(TAG,"scanLogic keep_running=" + keep_running);
         if (!keep_running) return;
 
         if (alwaysOnScreem()) {
@@ -735,8 +742,13 @@ public class G5CollectionService extends Service {
         if (isScanning) {
             Log.d(TAG, "alreadyScanning");
             scan_interval_timer.cancel();
+            Log.e(TAG,"startScan keep_running=" + keep_running);
+            if (!keep_running) return;
             return;
         }
+
+        Log.e(TAG,"startScan keep_running=" + keep_running);
+        if (!keep_running) return;
 
         if (alwaysOnScreem()) {
             Log.e(TAG, "startScan call forceScreenOn");
@@ -1037,7 +1049,7 @@ public class G5CollectionService extends Service {
             waitFor(600);
             Log.e(TAG, "connectGatt() delay completed");
         }
-        mGatt = mDevice.connectGatt(getApplicationContext(), true, gattCallback);//TEST false -> true
+        mGatt = mDevice.connectGatt(getApplicationContext(), false, gattCallback);//TEST false -> true
     }
 
 
@@ -1820,6 +1832,8 @@ public class G5CollectionService extends Service {
         long timeToExpected  = (300*1000 - (millisecondsSinceTx%(300*1000)));
         long expectedTxTime = new Date().getTime() + timeToExpected - 3*1000;
         Log.e(TAG, "millisecondsSinceTxAd: " + millisecondsSinceTx );
+        Log.e(TAG, "advertiseTimeMS.get(0): " + advertiseTimeMS.get(0) + " " + JoH.dateTimeText(advertiseTimeMS.get(0)));
+        Log.e(TAG, "timeInMillisecondsOfLastSuccessfulSensorRead: " + " " + timeInMillisecondsOfLastSuccessfulSensorRead + JoH.dateTimeText(timeInMillisecondsOfLastSuccessfulSensorRead) );
         //Log.e(TAG, "timeToExpected: " + timeToExpected );
         //Log.e(TAG, "expectedTxTime: " + expectedTxTime );
 
@@ -1904,12 +1918,13 @@ public class G5CollectionService extends Service {
                 + (delayOn133Errors ? "delayOn133Errors " : "")
                 + (tryOnDemandBondWithDelay ? "tryOnDemandBondWithDelay " : "")
                 + (engineeringMode() ? "engineeringMode " : "")
+                + (alwaysOnScreem() ? "alwaysOnScreem " : "")
                 + (tryPreBondWithDelay ? "tryPreBondWithDelay " : ""));
     }
 
     // Status for Watchface
     public static boolean isRunning() {
-        return lastState.equals("Not Running") || lastState.equals("Stopped") ? false : true;
+        return lastState.equals("Not running") || lastState.equals("Stopped") ? false : true;
     }
 
     public static void setWatchStatus(DataMap dataMap) {
