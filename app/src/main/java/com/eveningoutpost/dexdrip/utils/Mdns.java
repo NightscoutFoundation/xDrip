@@ -68,7 +68,7 @@ public class Mdns {
 
     private static final String SERVICE_TYPE = "_workstation._tcp.";
     private static final String TAG = "Mdns-discovery";
-    private static final boolean d = false;
+    private static final boolean d = true;
 
     // resolve a normal or .local hostname
     public static String genericResolver(String name) throws UnknownHostException {
@@ -101,7 +101,7 @@ public class Mdns {
     public static String superFastResolve(String name) {
         final LookUpInfo li = iplookup.get(name);
         if ((li == null) || (JoH.msSince(li.received) > CACHE_REFRESH_MS)) {
-            if (JoH.ratelimit("mdns-hunting", 60)) {
+            if (JoH.quietratelimit("mdns-hunting", 60)) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -150,7 +150,7 @@ public class Mdns {
                 PowerManager.WakeLock wlx = JoH.getWakeLock("mdns-resolve", 200);
                 spinner++;
                 if ((spinner % 10) == 0)
-                    UserError.Log.d(TAG, "Waiting on Lock: " + JoH.niceTimeSince(locked_until));
+                    UserError.Log.d(TAG, "Waiting on Lock: " + JoH.niceTimeTill(locked_until));
                 Thread.sleep(100);
                 JoH.releaseWakeLock(wlx);
             }
@@ -187,7 +187,7 @@ public class Mdns {
             }
 
             @Override
-            public void onServiceFound(final NsdServiceInfo service) {
+            public synchronized void onServiceFound(final NsdServiceInfo service) {
 
                 final String type = service.getServiceType();
 

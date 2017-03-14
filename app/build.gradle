@@ -103,6 +103,7 @@ android {
         versionCode 1603091400
         versionName generateVersionName()
         buildConfigField "int", "buildVersion", generateVersionNumberString()
+        vectorDrawables.useSupportLibrary = true
     }
 
     lintOptions {
