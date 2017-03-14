@@ -945,6 +945,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     }
                 } else if (path.equals(STATUS_COLLECTOR_PATH)) {
                     Log.d(TAG, "onDataChanged path=" + path);
+                    dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
+                    G5CollectionService.getBatteryStatusNow = dataMap.getBoolean("getBatteryStatusNow", false);
                     sendCollectorStatus(getApplicationContext(), path);
                     sendPersistentStore();
                 } else if (path.equals(WEARABLE_SENSOR_DATA_PATH)) {//KS

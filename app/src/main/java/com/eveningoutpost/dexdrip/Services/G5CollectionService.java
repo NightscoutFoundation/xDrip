@@ -164,7 +164,7 @@ public class G5CollectionService extends Service {
     private static long static_last_timestamp_watch = 0;
     private static long last_transmitter_timestamp = 0;
 
-    private static boolean getBatteryStatusNow = false;
+    public static boolean getBatteryStatusNow = false;
 
     // test params
     private static final boolean ignoreLocalBondingState = false; // don't try to bond gives: GATT_ERR_UNLIKELY but no more 133s

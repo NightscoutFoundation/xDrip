@@ -1859,6 +1859,14 @@ public class Home extends ActivityWithMenu {
         }
     }
 
+    public static void startWatchUpdaterService(Context context, String action, String logTag, String key, boolean value) {
+        final boolean wear_integration = getPreferencesBoolean("wear_sync", false);
+        if (wear_integration) {
+            Log.d(logTag, "start WatchUpdaterService with " + action);
+            context.startService(new Intent(context, WatchUpdaterService.class).setAction(action).putExtra(key, value));
+        }
+    }
+
 
     public static boolean get_holo() {
         return Home.is_holo;
