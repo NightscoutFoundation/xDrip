@@ -233,8 +233,12 @@ public class BloodTest extends Model {
             bt.source = Wire.get(btm.source, BloodTestMessage.DEFAULT_SOURCE);
             bt.uuid = btm.uuid;
             bt.saveit(); // de-dupe by uuid
-            if (UploaderQueue.newEntry(is_new ? "insert" : "update", bt) != null) {
-                SyncService.startSyncService(3000); // sync in 3 seconds
+            if (is_new) { // cannot handle updates yet
+                if (UploaderQueue.newEntry(is_new ? "insert" : "update", bt) != null) {
+                    if (JoH.quietratelimit("start-sync-service", 5)) {
+                        SyncService.startSyncService(3000); // sync in 3 seconds
+                    }
+                }
             }
         } else {
             UserError.Log.wtf(TAG, "processFromMessage uuid is null or invalid");

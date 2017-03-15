@@ -108,7 +108,8 @@ public class SnoozeActivity extends ActivityWithMenu {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Home.get_holo()) { setTheme(R.style.OldAppTheme); }
+        if (Home.get_holo()) { setTheme(R.style.OldAppThemeNoTitleBar); }
+        JoH.fixActionBar(this);
         setContentView(R.layout.activity_snooze);
         alertStatus = (TextView) findViewById(R.id.alert_status);
         snoozeValue = (NumberPicker) findViewById(R.id.snooze);

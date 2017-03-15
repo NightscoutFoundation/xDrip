@@ -586,7 +586,7 @@ public class DexCollectionService extends Service {
         long timestamp = new Date().getTime();
         last_time_seen = JoH.ts();
         watchdog_count=0;
-        if (CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()) {
+        if (((buffer.length > 0) && (buffer[0] == 0x07 || buffer[0] == 0x11 || buffer[0] == 0x15)) || CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()) {
             Log.i(TAG, "setSerialDataToTransmitterRawData: Dealing with Dexbridge packet!");
             int DexSrc;
             int TransmitterID;

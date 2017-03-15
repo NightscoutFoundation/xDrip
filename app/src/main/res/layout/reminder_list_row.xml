@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:id="@+id/language_list_block"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="9dp"
+        card_view:cardElevation="4dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        app:cardBackgroundColor="@color/cardview_dark_background"
+        app:cardCornerRadius="5dp"
+        android:animateLayoutChanges="true">
+
+        <RelativeLayout
+            android:id="@+id/reminder_whole_row_block"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Reminder Title"
+                android:inputType="text|textNoSuggestions"
+                android:imeOptions="actionDone"
+                android:id="@+id/reminder_title_text"
+                android:layout_below="@+id/reminder_small_top_text"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:textColor="#e6ee9c"
+                android:layout_marginLeft="5dp"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/reminders_next_due_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/reminder_title_text"
+                android:layout_marginBottom="6dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="0dp"
+                android:text="Reminder Period"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#a5d6a7"
+                android:textIsSelectable="false" />
+
+            <TextView
+                android:id="@+id/reminder_small_top_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginBottom="-5dp"
+                android:layout_marginEnd="11dp"
+                android:text="Id reference"
+                android:textAlignment="textEnd"
+                android:textColor="#b3ffffff"
+                android:textIsSelectable="false"
+                android:textSize="9sp" />
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>

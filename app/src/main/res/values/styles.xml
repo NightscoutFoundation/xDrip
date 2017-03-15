@@ -36,11 +36,8 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
-    <style name="OldAppThemeNoTitleBar" parent="android:Theme.Holo">
-        <item name="android:actionBarStyle">@style/MyActionBar</item>
-        <item name="android:textColor">@android:color/white</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="OldAppThemeNoTitleBar" parent="android:Theme.Holo.NoActionBar">
+
     </style>
 
     <style name="PopUpKeypad" parent="Theme.AppCompat.Light.NoActionBar">

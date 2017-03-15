@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -185,6 +186,30 @@ public class BGHistory extends ActivityWithMenu {
             sb.append(statsResult.getHighPercentage());
             sb.append(' ');
             sb.append(statsResult.getLowPercentage());
+            sb.append(' ');
+            sb.append(statsResult.getStdevUnitised());
+            DecimalFormat df = new DecimalFormat(getResources().getString(R.string.format_decimal_treatments));
+            if (Home.getPreferencesBoolean("status_line_carbs", true)) {
+                sb.append('\n');
+                double insulin = statsResult.getTotal_insulin();
+                sb.append(getResources().getString(R.string.label_show_insulin, df.format(insulin)));
+            }
+            if (Home.getPreferencesBoolean("status_line_insulin", true)) {
+                sb.append(' ');
+                double carbs = statsResult.getTotal_carbs();
+                sb.append(getResources().getString(R.string.label_show_carbs, df.format(carbs)));
+            }
+            if (Home.getPreferencesBoolean("use_pebble_health", true)) {
+                sb.append('\n');
+                int steps = statsResult.getTotal_steps();
+                sb.append(getResources().getString(R.string.label_show_steps, steps));
+                if (steps > 0) {
+                    Double km = (((double) steps) / 2000.0d) * 1.6d;
+                    Double mi = (((double) steps) / 2000.0d) * 1.0d;
+                    sb.append((km > 0.0 ? " " + getResources().getString(R.string.label_show_steps_km, df.format(km)) : "") +
+                            (mi > 0.0 ? " " + getResources().getString(R.string.label_show_steps_mi, df.format(mi)) : ""));
+                }
+            }
             sb.append('\n');
             sb.append(statsResult.getCapturePercentage(true));
             sb.append(' ');

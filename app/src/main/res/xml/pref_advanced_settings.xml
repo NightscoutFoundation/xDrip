@@ -33,6 +33,20 @@
                 android:key="disable_wearG5_on_lowbattery"
                 android:summary="@string/pref_summary_disable_wearG5_on_lowbattery"
                 android:title="@string/pref_disable_wearG5_on_lowbattery" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:dependency="force_wearG5"
+                android:key="disable_wearG5_on_missedreadings"
+                android:summary="@string/pref_summary_disable_wearG5_on_missedreadings"
+                android:title="@string/pref_disable_wearG5_on_missedreadings" />
+            <EditTextPreference
+                android:defaultValue="30"
+                android:dependency="disable_wearG5_on_missedreadings"
+                android:digits="0123456789"
+                android:inputType="number"
+                android:key="disable_wearG5_on_missedreadings_level"
+                android:summary=""
+                android:title="@string/pref_disable_wearG5_on_missedreadings_level" />
             <EditTextPreference
                 android:defaultValue=""
                 android:dependency="force_wearG5"
@@ -54,8 +68,15 @@
                 android:editable="true"
                 android:key="wear_logs_prefix"
                 android:summary="@string/pref_summary_wear_logs_prefix"
-                android:title="@string/pref_wear_logs_prefix" />
-            android:textIsSelectable="true"/>
+                android:title="@string/pref_wear_logs_prefix"
+                android:textIsSelectable="true"/>
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="use_pebble_health"
+                android:summary="@string/pref_summary_use_wear_health"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="@string/pref_use_wear_health" />
         </PreferenceCategory>
         <PreferenceCategory
             android:key="pebble_integration"
@@ -263,6 +284,11 @@
                     android:title="Speak Readings Shortcut" />
             </PreferenceScreen>
             <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="run_service_in_foreground"
+                android:summary="@string/shows_a_persistent_notification"
+                android:title="@string/run_collector_in_foreground" />
+            <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="requested_ignore_battery_optimizations_new"
                 android:summaryOff="On Android 6+ ensure battery optimization is switched off. Recommended"
@@ -442,6 +468,12 @@
                     android:key="status_line_low"
                     android:summary="Percentage of values below range."
                     android:title="@string/low_percentage" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="extra_status_line"
+                    android:key="status_line_stdev"
+                    android:summary="Show standard deviation of values."
+                    android:title="Standard Deviation" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"

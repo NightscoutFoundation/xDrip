@@ -739,6 +739,7 @@ public class Preferences extends PreferenceActivity {
 
             bindPreferenceSummaryToValue(findPreference("node_wearG5"));//KS
             bindPreferenceSummaryToValue(findPreference("wear_logs_prefix"));
+            bindPreferenceSummaryToValue(findPreference("disable_wearG5_on_missedreadings_level"));
 
             final Preference useCustomSyncKey = findPreference("use_custom_sync_key");
             final Preference CustomSyncKey = findPreference("custom_sync_key");
@@ -1049,12 +1050,12 @@ public class Preferences extends PreferenceActivity {
                     }
                 }
 
-                if (!Experience.gotData()) {
-                    try {
-                    collectionCategory.removePreference(runInForeground);
-                    } catch (Exception e) { //
-                    }
-                }
+               // if (!Experience.gotData()) {
+               //     try {
+               //     collectionCategory.removePreference(runInForeground);
+               //     } catch (Exception e) { //
+               //     }
+               // }
 
 
                 final PreferenceScreen g5_settings_screen = (PreferenceScreen) findPreference("xdrip_plus_g5_extra_settings");
@@ -1388,7 +1389,7 @@ public class Preferences extends PreferenceActivity {
                     }
 
 
-                    if ((collectionType != DexCollectionType.BluetoothWixel
+                /*    if ((collectionType != DexCollectionType.BluetoothWixel
                             && collectionType != DexCollectionType.DexcomShare
                             && collectionType != DexCollectionType.WifiWixel
                             && collectionType != DexCollectionType.DexbridgeWixel
@@ -1401,7 +1402,7 @@ public class Preferences extends PreferenceActivity {
                         collectionCategory.removePreference(runInForeground);
                     } else {
                         collectionCategory.addPreference(runInForeground);
-                    }
+                    }*/
 
                     // jamorham always show wifi receivers option if populated as we may switch modes dynamically
                     if (collectionType != DexCollectionType.WifiWixel

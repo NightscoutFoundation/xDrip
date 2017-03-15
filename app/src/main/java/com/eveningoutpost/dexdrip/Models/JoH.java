@@ -19,7 +19,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -52,6 +51,7 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.utils.BestGZIPOutputStream;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
@@ -76,6 +76,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
@@ -136,6 +137,9 @@ public class JoH {
 
     public static long msSince(long when) {
         return (tsl() - when);
+    }
+    public static long msTill(long when) {
+        return (when - tsl());
     }
 
     public static long absMsSince(long when) {
@@ -553,6 +557,21 @@ public class JoH {
         return qs((double) t, 0) + " " + unit;
     }
 
+    public static String niceTimeScalarNatural(long t) {
+        if (t > 3000000) t = t + 10000; // round up by 10 seconds if nearly an hour
+        if ((t > Constants.DAY_IN_MS) && (t < Constants.WEEK_IN_MS * 2)) {
+            final SimpleDateFormat df = new SimpleDateFormat("EEEE", Locale.getDefault());
+            final String day = df.format(new Date(JoH.tsl() + t));
+            return ((t > Constants.WEEK_IN_MS) ? "next " : "") + day;
+        } else {
+            return niceTimeScalar(t);
+        }
+    }
+
+    public static String niceTimeScalarRedux(long t) {
+        return niceTimeScalar(t).replaceFirst("^1 ", "");
+    }
+
     public static double tolerantParseDouble(String str) throws NumberFormatException {
         return Double.parseDouble(str.replace(",", "."));
 
@@ -621,7 +640,7 @@ public class JoH {
 
     public static String getWifiSSID() {
         try {
-            final WifiManager wifi_manager = (WifiManager) xdrip.getAppContext().getSystemService(Context.WIFI_SERVICE);
+            final WifiManager wifi_manager = (WifiManager) xdrip.getAppContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             if (wifi_manager.isWifiEnabled()) {
                 final WifiInfo wifiInfo = wifi_manager.getConnectionInfo();
                 if (wifiInfo != null) {
@@ -737,13 +756,18 @@ public class JoH {
     }
 
     public static synchronized void playResourceAudio(int id) {
-        playSoundUri(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + xdrip.getAppContext().getPackageName() + "/" + id);
+        playSoundUri(getResourceURI(id));
+    }
+
+    public static String getResourceURI(int id) {
+        return ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + xdrip.getAppContext().getPackageName() + "/" + id;
     }
 
     public static synchronized void playSoundUri(String soundUri) {
         try {
             JoH.getWakeLock("joh-playsound", 10000);
             final MediaPlayer player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(soundUri));
+            player.setLooping(false);
             player.start();
         } catch (Exception e) {
             Log.wtf(TAG, "Failed to play audio: " + soundUri + " exception:" + e);
@@ -915,18 +939,22 @@ public class JoH {
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, boolean onetime) {
+        showNotification(title, content, intent, notificationId, sound, vibrate, null, null);
+    }
+
+    public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri) {
         final Notification.Builder mBuilder = notificationBuilder(title, content, intent);
         final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
         if (vibrate) mBuilder.setVibrate(vibratePattern);
+        if (deleteIntent != null) mBuilder.setDeleteIntent(deleteIntent);
         mBuilder.setLights(0xff00ff00, 300, 1000);
-        if (sound)
-        {
-            Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        if (sound) {
+            Uri soundUri = (sound_uri != null) ? sound_uri : RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             mBuilder.setSound(soundUri);
         }
 
         final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
-       // if (!onetime) mNotifyMgr.cancel(notificationId);
+        // if (!onetime) mNotifyMgr.cancel(notificationId);
 
         mNotifyMgr.notify(notificationId, mBuilder.build());
     }

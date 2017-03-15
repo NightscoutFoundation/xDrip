@@ -51,7 +51,7 @@ public class Telemetry {
                             final int capture_percentage = statsResult.getCapturePercentage();
                             final int capture_set = (capture_percentage / 10) * 10;
 
-                            if (capture_set != 0) {
+                            if (capture_set > 60) {
                                 final boolean use_transmiter_pl_bluetooth = Home.getPreferencesBooleanDefaultFalse("use_transmiter_pl_bluetooth");
                                 final boolean use_rfduino_bluetooth = Home.getPreferencesBooleanDefaultFalse("use_rfduino_bluetooth");
                                 final String subtype = (use_transmiter_pl_bluetooth ? "TR" : "") + (use_rfduino_bluetooth ? "RF" : "") + (Home.get_forced_wear() ? "W" : "") + (NFCReaderX.used_nfc_successfully ? "N" : "");

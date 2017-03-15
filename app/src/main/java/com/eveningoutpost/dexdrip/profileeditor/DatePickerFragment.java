@@ -17,6 +17,7 @@ public class DatePickerFragment extends DialogFragment
 
     private String title;
     private long earliest = -1;
+    private long initial = -1;
     private boolean allow_future = true;
     ProfileAdapter.DatePickerCallbacks callback;
 
@@ -32,6 +33,10 @@ public class DatePickerFragment extends DialogFragment
         this.earliest = time;
     }
 
+    public void setInitiallySelectedDate(long time) {
+        this.initial = time;
+    }
+
     public void setDateCallback(ProfileAdapter.DatePickerCallbacks callback) {
         this.callback = callback;
     }
@@ -40,6 +45,9 @@ public class DatePickerFragment extends DialogFragment
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the current date as the default date in the picker
         final Calendar c = Calendar.getInstance();
+        if (initial != -1) {
+            c.setTimeInMillis(initial);
+        }
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);

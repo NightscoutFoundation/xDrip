@@ -307,7 +307,7 @@ public class BgGraphBuilder {
             final float yscale = doMgdl ? (float) Constants.MMOLL_TO_MGDL : 1f;
             final float ypos = 6 * yscale; // TODO Configurable
             //final long last_timestamp = pmlist.get(pmlist.size() - 1).timestamp;
-            final float MAX_SIZE = 40;
+            final float MAX_SIZE = 50;
             int flipper = 0;
             int accumulator = 0;
 
@@ -328,7 +328,7 @@ public class BgGraphBuilder {
                         flipper ^= 1;
                         this_line.setColor((flipper == 0) ? getCol(X.color_step_counter1) : getCol(X.color_step_counter2));
 
-                        float stroke_size = Math.min(MAX_SIZE, (float) Math.log1p(((double) (pm.metric + accumulator)) / time_delta) * 5);
+                        float stroke_size = Math.min(MAX_SIZE, (float) Math.log1p(((double) (pm.metric + accumulator)) / time_delta) * 4);
                         if (d) Log.d(TAG, "Delta stroke: " + stroke_size);
                         this_line.setStrokeWidth((int) stroke_size);
 

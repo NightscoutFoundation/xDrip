@@ -295,6 +295,7 @@ public class BgSendQueue extends Model {
     }
 
     public static DataMap getSensorSteps(SharedPreferences prefs) {
+        Log.d("BgSendQueue", "getSensorSteps");
         DataMap dataMap = new DataMap();
         final long t = System.currentTimeMillis();
         final PebbleMovement pm = PebbleMovement.last();
@@ -305,10 +306,12 @@ public class BgSendQueue extends Model {
             if (!sameDay) {
                 dataMap.putInt("steps", 0);
                 dataMap.putLong("steps_timestamp", t);
+                Log.d("BgSendQueue", "getSensorSteps isSameDay false t=" + JoH.dateTimeText(t));
             }
             else {
                 dataMap.putInt("steps", pm.metric);
                 dataMap.putLong("steps_timestamp", pm.timestamp);
+                Log.d("BgSendQueue", "getSensorSteps isSameDay true pm.timestamp=" + JoH.dateTimeText(pm.timestamp) + " metric=" + pm.metric);
             }
         }
         return dataMap;
@@ -454,11 +457,20 @@ public class BgSendQueue extends Model {
                 if (extraline.length() != 0) extraline.append(' ');
                 extraline.append(statsResult.getLowPercentage());
             }
+            if (prefs.getBoolean("status_line_stdev", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                extraline.append(statsResult.getStdevUnitised());
+            }
             if (prefs.getBoolean("status_line_carbs", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
                 //extraline.append("Carbs: " + statsResult.getTotal_carbs());
-                int carbs = statsResult.getTotal_carbs();
+                double carbs = statsResult.getTotal_carbs();
                 extraline.append(carbs == -1 ? "" : "Carbs: " + carbs);
+            }
+            if (prefs.getBoolean("status_line_insulin", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                double insulin = statsResult.getTotal_insulin();
+                extraline.append(insulin == -1 ? "" : "U: " + JoH.qs(insulin, 2));
             }
             if (prefs.getBoolean("status_line_capture_percentage", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
