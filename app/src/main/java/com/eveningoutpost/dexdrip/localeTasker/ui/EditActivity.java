@@ -17,6 +17,8 @@ package com.eveningoutpost.dexdrip.localeTasker.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.eveningoutpost.dexdrip.R;
@@ -66,6 +68,10 @@ public final class EditActivity extends AbstractPluginActivity
                 ((EditText) findViewById(R.id.editTextTasker)).setText(message);
             }
         }
+    }
+
+    public void taskerButtonClick(View v) {
+        ((EditText) findViewById(R.id.editTextTasker)).setText(((Button)v).getText());
     }
 
     @Override

@@ -407,7 +407,7 @@
         <receiver
             android:name=".localeTasker.receiver.FireReceiver"
             android:exported="true"
-            android:process=":background">
+            >
             <intent-filter>
                 <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
             </intent-filter>
