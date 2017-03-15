@@ -38,11 +38,15 @@ public class Reminder extends Model {
             "ALTER TABLE Reminder ADD COLUMN last_fired INTEGER",
             "ALTER TABLE Reminder ADD COLUMN fired_times INTEGER",
             "ALTER TABLE Reminder ADD COLUMN title TEXT",
+            "ALTER TABLE Reminder ADD COLUMN alt_title TEXT",
             "ALTER TABLE Reminder ADD COLUMN sound_uri TEXT",
             "ALTER TABLE Reminder ADD COLUMN ideal_time TEXT",
             "ALTER TABLE Reminder ADD COLUMN priority INTEGER",
             "ALTER TABLE Reminder ADD COLUMN enabled INTEGER",
             "ALTER TABLE Reminder ADD COLUMN repeating INTEGER",
+            "ALTER TABLE Reminder ADD COLUMN alternating INTEGER",
+            "ALTER TABLE Reminder ADD COLUMN alternate INTEGER",
+            "ALTER TABLE Reminder ADD COLUMN chime INTEGER",
             "CREATE INDEX index_Reminder_timestamp on Reminder(timestamp)",
             "CREATE INDEX index_Reminder_snoozed_till on Reminder(snoozed_till)"
     };
@@ -50,6 +54,10 @@ public class Reminder extends Model {
     @Expose
     @Column(name = "title")
     public String title;
+
+    @Expose
+    @Column(name = "alt_title")
+    public String alternate_title;
 
     @Expose
     @Column(name = "next_due", index = true)
@@ -70,6 +78,18 @@ public class Reminder extends Model {
     @Expose
     @Column(name = "repeating")
     public boolean repeating;
+
+    @Expose
+    @Column(name = "chime")
+    public boolean chime_only;
+
+    @Expose
+    @Column(name = "alternating")
+    public boolean alternating;
+
+    @Expose
+    @Column(name = "alternate")
+    public boolean alternate;
 
     @Expose
     @Column(name = "snoozed_till", index = true)
@@ -96,6 +116,46 @@ public class Reminder extends Model {
     public String ideal_time;
 
 
+    public boolean isAlternate() {
+        if (alternating && (alternate_title != null)) {
+            return alternate;
+        } else {
+            return false;
+        }
+    }
+
+    public String getTitle() {
+        return isAlternate() ? alternate_title : title;
+    }
+
+    public void updateTitle(String new_title) {
+        if (isAlternate()) {
+            alternate_title = new_title;
+        } else {
+            title = new_title;
+        }
+        save();
+    }
+
+    public boolean isHoursPeriod() {
+        return (period >= Constants.HOUR_IN_MS) && (period < Constants.DAY_IN_MS);
+    }
+
+    public boolean isDaysPeriod() {
+        return (period >= Constants.DAY_IN_MS) && (period < (Constants.WEEK_IN_MS * 2));
+    }
+
+    public boolean isWeeksPeriod() {
+        return (period >= (2 * Constants.WEEK_IN_MS));
+    }
+
+    public long periodInUnits() {
+        if (isDaysPeriod()) return period / Constants.DAY_IN_MS;
+        if (isHoursPeriod()) return period / Constants.HOUR_IN_MS;
+        if (isWeeksPeriod()) return period / Constants.WEEK_IN_MS;
+        return -1; // ERROR
+    }
+
     public boolean isDue() {
         if (next_due <= JoH.tsl()) {
             return true;
@@ -117,14 +177,31 @@ public class Reminder extends Model {
     }
 
     public synchronized void notified() {
-        last_fired = JoH.tsl();
         if (last_fired < next_due) fired_times++;
+        last_fired = JoH.tsl();
+        if (chime_only) {
+            if (repeating) {
+                UserError.Log.d(TAG, "Rescheduling next");
+                schedule_next();
+            } else {
+                enabled = false;
+            }
+        }
         save();
     }
 
     public synchronized void reminder_alert() {
         Reminders.doAlert(this);
-        notified();
+    }
+
+    public synchronized void schedule_next() {
+        this.next_due = this.next_due + this.period;
+        // check it is actually in the future
+        while (this.next_due < JoH.tsl()) {
+            this.next_due = this.next_due + this.period;
+        }
+        if (alternating) alternate = !alternate;
+        save();
     }
 
     protected synchronized static void fixUpTable(String[] schema) {
@@ -143,6 +220,7 @@ public class Reminder extends Model {
         fixUpTable(schema);
         Reminder reminder = new Reminder();
         reminder.title = title;
+        reminder.alternate_title = title + " alternate";
         reminder.period = period;
         reminder.next_due = JoH.tsl() + period;
         reminder.enabled = true;
@@ -151,6 +229,9 @@ public class Reminder extends Model {
         reminder.last_fired = 0;
         reminder.fired_times = 0;
         reminder.repeating = true;
+        reminder.alternating = false;
+        reminder.alternate = false;
+        reminder.chime_only = false;
         reminder.ideal_time = JoH.hourMinuteString();
         reminder.priority = 5; // default
         reminder.save();
@@ -170,7 +251,7 @@ public class Reminder extends Model {
         return reminders;
     }
 
-    public static void processAnyDueReminders() {
+    public static synchronized void processAnyDueReminders() {
         if (JoH.quietratelimit("reminder_due_check", 10)) {
             Reminder due_reminder = getNextActiveReminder();
             if (due_reminder != null) {
