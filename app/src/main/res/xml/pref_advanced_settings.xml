@@ -346,7 +346,7 @@
                     android:title="RFDUINO support" />
             </PreferenceScreen>
             <CheckBoxPreference
-                android:defaultValue="false"
+                android:defaultValue="true"
                 android:key="aggressive_service_restart"
                 android:summary="Repeatedly restart the collection service at any hint of missing data. Enable only if you are getting data loss."
                 android:title="Aggressive service restarts" />

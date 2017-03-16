@@ -63,14 +63,14 @@ public class PlusAsyncExecutor implements Executor {
                     try {
                         wl.acquire(3600000); // failsafe value = 60 mins
                         final int locksnow = wlocks.incrementAndGet();
-                        Log.d(TAG, "Acquire Wakelocks total: " + locksnow);
+                        if (locksnow > 1) Log.d(TAG, "Acquire Wakelocks total: " + locksnow);
                         r.run();
                     } finally {
                         // each task will try to call the next when done
                         next(queueId);
                         if (wl.isHeld()) wl.release(); // will stack wakelocks
                         final int locksnow = wlocks.decrementAndGet();
-                        Log.d(TAG, "Release Wakelocks total: " + locksnow);
+                        if (locksnow != 0) Log.d(TAG, "Release Wakelocks total: " + locksnow);
                     }
                 }
             });

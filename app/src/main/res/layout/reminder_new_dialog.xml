@@ -16,96 +16,123 @@
             android:id="@+id/reminder_edit_new"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text|textCapWords"
             android:hint="Reminder name"
-            android:linksClickable="false"
+            android:inputType="text|textCapWords"
             android:lines="4"
-            android:minLines="2"
-            android:maxLines="5" />
+            android:linksClickable="false"
+            android:maxLines="5"
+            android:minLines="2" />
 
         <RadioGroup
             android:id="@+id/radioGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="11dp"
+            android:layout_alignParentEnd="true"
             android:layout_below="@+id/reminder_edit_new"
-            android:layout_alignParentEnd="true">
+            android:layout_marginEnd="11dp">
 
             <RadioButton
-                android:text="Hours"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-
                 android:id="@+id/reminderHourButton"
-                android:layout_weight="1" />
-
-            <RadioButton
-                android:text="Days"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
 
-                android:id="@+id/reminderDayButton"
                 android:layout_weight="1"
-                android:checked="true" />
+                android:text="Hours" />
 
             <RadioButton
-                android:text="Weeks"
+                android:id="@+id/reminderDayButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
 
+                android:layout_weight="1"
+                android:checked="false"
+                android:text="Days" />
+
+            <RadioButton
                 android:id="@+id/reminderWeekButton"
-                android:layout_weight="1" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+
+                android:layout_weight="1"
+                android:text="Weeks" />
 
         </RadioGroup>
 
         <EditText
+            android:id="@+id/reminderRepeatDays"
             android:layout_width="20dp"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:ems="10"
-            android:id="@+id/reminderRepeatDays"
-            android:text="5"
-
+            android:layout_alignEnd="@+id/reminderUpButton"
             android:layout_below="@+id/reminder_edit_new"
             android:layout_marginTop="26dp"
-            android:layout_alignEnd="@+id/reminderUpButton"
+
             android:layout_toEndOf="@+id/reminderRepeatcheckBox"
-            android:textAlignment="center"
+            android:ems="10"
+            android:gravity="center_vertical|center_horizontal"
+            android:inputType="number"
             android:maxLength="3"
             android:maxLines="1"
-            android:gravity="center_vertical|center_horizontal" />
+            android:text="5"
+            android:textAlignment="center" />
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@android:drawable/arrow_up_float"
             android:id="@+id/reminderUpButton"
-            android:onClick="reminderUpButton"
-            android:layout_marginEnd="7dp"
-            android:layout_below="@+id/reminder_edit_new"
-            android:layout_toStartOf="@+id/radioGroup" />
-
-        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@android:drawable/arrow_down_float"
+            android:layout_below="@+id/reminder_edit_new"
+            android:layout_marginEnd="7dp"
+            android:layout_toStartOf="@+id/radioGroup"
+            android:onClick="reminderUpButton"
+            app:srcCompat="@android:drawable/arrow_up_float" />
+
+        <ImageButton
             android:id="@+id/reminderDownButton"
-            android:onClick="reminderDownButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/radioGroup"
-            android:layout_alignStart="@+id/reminderUpButton" />
+            android:layout_alignStart="@+id/reminderUpButton"
+            android:onClick="reminderDownButton"
+            app:srcCompat="@android:drawable/arrow_down_float" />
 
         <CheckBox
-            android:text="Repeat"
+            android:id="@+id/reminderRepeatcheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="13dp"
-            android:id="@+id/reminderRepeatcheckBox"
             android:layout_alignBottom="@+id/reminderDownButton"
+            android:layout_marginEnd="13dp"
             android:layout_toStartOf="@+id/reminderDownButton"
-            android:checked="true" />
+            android:checked="true"
+            android:text="Repeat" />
+
+        <CheckBox
+            android:id="@+id/chimeonlycheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chime only"
+            android:layout_marginStart="8dp"
+            android:layout_below="@+id/reminderUpButton"
+            android:layout_alignParentStart="true" />
+
+        <CheckBox
+            android:id="@+id/alternatingcheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alternating"
+            android:layout_below="@+id/reminder_edit_new"
+            android:layout_alignStart="@+id/chimeonlycheckbox" />
+
+        <ImageButton
+            android:id="@+id/reminderSoundButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@+id/reminder_edit_new"
+            android:layout_marginRight="5dp"
+            android:layout_toStartOf="@+id/reminderRepeatDays"
+            android:onClick="chooseReminderSound"
+            app:srcCompat="@drawable/ic_music_note_white_24dp" />
 
     </RelativeLayout>
 

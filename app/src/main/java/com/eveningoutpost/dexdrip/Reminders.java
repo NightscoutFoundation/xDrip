@@ -7,13 +7,20 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -58,6 +65,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static lecho.lib.hellocharts.animation.ChartDataAnimator.DEFAULT_ANIMATION_DURATION;
 
@@ -70,6 +78,10 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     private static final String TAG = "Reminders";
     private static final int NOTIFICATION_ID = 765;
     private static final String REMINDER_WAKEUP = "REMINDER_WAKEUP";
+    private static final int MY_PERMISSIONS_REQUEST_STORAGE = 139;
+    private static final int REQUEST_CODE_CHOOSE_FILE = 2;
+    private static final int REQUEST_CODE_CHOOSE_RINGTONE = 55;
+    private static final boolean d = true;
 
     public final List<Reminder> reminders = new ArrayList<>();
 
@@ -79,6 +91,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     private CardView floatingsnooze;
     private TextView floaterText;
     private boolean floaterHidden = true;
+    private String selectedSound;
 
     private Reminder last_undo, last_swiped;
     private int last_undo_pos;
@@ -87,6 +100,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     private SensorManager mSensorManager;
     private Sensor mProximity;
     private boolean proximity = true; // default to near
+    private int proximity_events = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +123,11 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 
         mAdapter = new RecyclerAdapter(this, reminders);
+
+        if (selectedSound == null) {
+            if (PersistentStore.getString("reminders-last-sound").length() > 5)
+                selectedSound = PersistentStore.getString("reminders-last-sound");
+        }
 
         reloadList();
 
@@ -140,6 +159,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
             Log.d(TAG, "Initializing proximity as true");
             proximity = true; // default to near
         }
+        proximity_events = 0;
         mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
         reloadList();
         // intentionally do not release wakelock
@@ -167,13 +187,15 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
-            Log.d(TAG, "Sensor: " + event.values[0] + " " + mProximity.getMaximumRange());
+            proximity_events++;
+            if (proximity_events < 20)
+                Log.d(TAG, "Sensor: " + event.values[0] + " " + mProximity.getMaximumRange());
             if (event.values[0] <= (Math.min(mProximity.getMaximumRange() / 2, 10))) {
                 proximity = true; // near
             } else {
                 proximity = false; // far
             }
-            Log.d(TAG, "Proxmity set to: " + proximity);
+            if (proximity_events < 20) Log.d(TAG, "Proxmity set to: " + proximity);
         }
     }
 
@@ -230,6 +252,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                     boolean handled = false;
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
                         final int pos = holder.getAdapterPosition();
+                        reminders.get(pos).updateTitle(holder.title_text.getText().toString());
                         notifyItemChanged(pos);
                     }
                     return handled;
@@ -248,20 +271,20 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
 
         @Override
         public void onBindViewHolder(final ActivityWithRecycler.MyViewHolder base_holder, int position) {
-            MyViewHolder holder = (MyViewHolder) base_holder; // cast it
+            final MyViewHolder holder = (MyViewHolder) base_holder; // cast it
             final Reminder reminder_item = reminders.get(position);
             holder.position = position; // should we use getadapterposition instead?
-            holder.title_text.setText(reminder_item.title);
+            holder.title_text.setText(reminder_item.getTitle());
 
 
             String lastDetails = "";
             if (reminder_item.fired_times > 0) {
                 if (JoH.msSince(reminder_item.last_fired) < Constants.DAY_IN_MS) {
-                    lastDetails += JoH.hourMinuteString(reminder_item.last_fired);
+                    lastDetails += "last " + JoH.hourMinuteString(reminder_item.last_fired);
                 } else {
-                    lastDetails += JoH.dateTimeText(reminder_item.last_fired);
+                    lastDetails += "last " + JoH.dateTimeText(reminder_item.last_fired);
                 }
-                lastDetails += " (" + reminder_item.fired_times + ")";
+                lastDetails += " (x" + reminder_item.fired_times + ") next";
             }
             String nextDetails = "";
             if (reminder_item.enabled) {
@@ -295,6 +318,15 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
 
         }
 
+
+        @Override
+        public boolean onItemMove(int source, int destination) {
+            if (JoH.ratelimit("on item move", 5)) {
+                showReminderDialog(null, reminders.get(source), 0);
+            }
+            return true;
+        }
+
         @Override
         public void onItemDismiss(int position) {
             // snooze + save in undo + save details for pushbuttons
@@ -318,26 +350,14 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                 // swipe right
 
                 if (remind.repeating || !remind.isDue()) {
-
-                    remind.next_due = remind.next_due + remind.period;
-                    // check it is actually in the future
-                    while (remind.next_due < JoH.tsl()) {
-                        remind.next_due = remind.next_due + remind.period;
-                    }
-                    setFloaterText(remind.title + " next in " + JoH.niceTimeTill(remind.next_due));
-                    remind.save();
+                    remind.schedule_next();
+                    setFloaterText(remind.getTitle() + " next in " + JoH.niceTimeTill(remind.next_due));
                 } else if (!remind.repeating) {
-                    setFloaterText(remind.title + " completed");
+                    setFloaterText(remind.getTitle() + " completed");
                     remind.enabled = false;
                     remind.save();
                 }
-                //if (remind.isDue()) {
-                //    remind.snoozed_till = JoH.tsl() + default_snooze;
-                //    setFloaterText(remind.title + " snoozed for " + JoH.niceTimeScalar(default_snooze));
-                // } else {
-                //     remind.next_due = JoH.tsl() + default_snooze;
-                //      setFloaterText(remind.title + " postponed for " + JoH.niceTimeScalar(default_snooze));
-                //  }
+
                 last_swiped = remind;
                 last_undo_pos = position;
                 reminders.remove(position);
@@ -359,18 +379,107 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         remind.last_snoozed_for = snooze_time;
         if (remind.isDue()) {
             remind.snoozed_till = JoH.tsl() + snooze_time;
-            setFloaterText(remind.title + " snoozed for " + JoH.niceTimeScalar(snooze_time));
+            setFloaterText(remind.getTitle() + " snoozed for " + JoH.niceTimeScalar(snooze_time));
         } else {
             remind.snoozed_till = remind.next_due + snooze_time;
-            setFloaterText(remind.title + " postponed for " + JoH.niceTimeScalar(snooze_time));
+            setFloaterText(remind.getTitle() + " postponed for " + JoH.niceTimeScalar(snooze_time));
         }
         remind.save();
     }
 
     //////////// Button pushes
     public void newReminder(View v) {
-        showNewReminderDialog(v, 0, 0);
+        showReminderDialog(v, null, 0);
     }
+
+    public void chooseReminderSound(View v) {
+        JoH.playSoundUri((selectedSound != null) ? selectedSound : JoH.getResourceURI(R.raw.bt_meter_connect));
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select new sound source")
+                .setItems(R.array.reminderAlertType, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == 0) {
+                            final Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+                            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select tone for Alert:");
+                            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
+                            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+                            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL);
+                            startActivityForResult(intent, REQUEST_CODE_CHOOSE_RINGTONE);
+                        } else if (which == 1) {
+                            if (checkPermissions()) {
+                                chooseFile();
+                            }
+                        } else {
+                            JoH.static_toast_long("Using default sound");
+                            selectedSound = null;
+                        }
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void chooseFile() {
+        final Intent fileIntent = new Intent();
+        fileIntent.setType("audio/mpeg3");
+        fileIntent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(fileIntent, "Select File for Reminder sound"), REQUEST_CODE_CHOOSE_FILE);
+    }
+
+    private boolean checkPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                final Activity activity = this;
+                JoH.show_ok_dialog(activity, "Please Allow Permission", "Need storage permission to access all ringtones", new Runnable() {
+                    @Override
+                    public void run() {
+                        ActivityCompat.requestPermissions(activity,
+                                new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_STORAGE);
+                    }
+                });
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MY_PERMISSIONS_REQUEST_STORAGE) {
+            if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                chooseFile(); // must be the only functionality which calls for permission
+            } else {
+                JoH.static_toast_long(this, "Cannot choose file without storage permission");
+            }
+        }
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_CODE_CHOOSE_RINGTONE) {
+                final Uri uri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+                if (uri != null) {
+                    //JoH.static_toast_long(uri.toString());
+                    selectedSound = uri.toString();
+                    PersistentStore.setString("reminders-last-sound", selectedSound);
+                }
+            } else {
+                if (requestCode == REQUEST_CODE_CHOOSE_FILE) {
+                    final Uri selectedFileUri = data.getData();
+                    //JoH.static_toast_long(selectedFileUri.toString());
+                    selectedSound = selectedFileUri.toString();
+                    PersistentStore.setString("reminders-last-sound", selectedSound);
+                    // play it?
+                }
+            }
+        }
+    }
+
 
     public void snoozeAdjust(View v) {
         final String button_text = ((Button) v).getText().toString();
@@ -430,8 +539,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     public synchronized void undoFromFloater(View v) {
         if (last_undo != null) {
             dismissDoppelgangerItem(last_undo);
-            reminders.add(last_undo_pos, last_undo);
-            mAdapter.notifyItemInserted(last_undo_pos);
+            reinject(last_undo);
             last_undo = null;
             hideSnoozeFloater();
         } else {
@@ -466,28 +574,88 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         }
     }
 
+    private synchronized void freshen(Reminder reminder) {
+        dismissItem(reminder);
+        reinject(reminder);
+    }
+
     private synchronized void reinject(Reminder reminder) {
         if (reminder == null) return;
-        int i = reinjectionPosition(reminder);
+        final int i = reinjectionPosition(reminder);
         // TODO lock?
+        Log.d(TAG, "child Reinjection position: " + i);
         reminders.add(i, reminder);
         mAdapter.notifyItemInserted(i);
+        final AtomicBoolean corrected = new AtomicBoolean();
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            public void onScrollStateChanged(RecyclerView rv, int state) {
+                if (state == RecyclerView.SCROLL_STATE_IDLE) {
+                    rv.removeOnScrollListener(this);
+                    correctiveScrolling(i, corrected);
+                }
+            }
+        });
+        recyclerView.smoothScrollToPosition(i);
+        JoH.runOnUiThreadDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // failsafe
+                correctiveScrolling(i, corrected);
+            }
+        }, 1000);
+    }
+
+    private void correctiveScrolling(int i, AtomicBoolean marker) {
+        final float floaterY = floatingsnooze.getTop();
+        if (marker.getAndSet(true)) return; // already processed
+        int val = 0;
+        int ii = 0;
+        while (val > -1) {
+            View v = recyclerView.getChildAt(ii);
+            if (v != null) {
+                val = recyclerView.getChildAdapterPosition(v);
+                if (val == i) {
+                    final float lowest_point = v.getY() + (v.getHeight() * 2);
+                    //Log.d(TAG, "Requested Child at position : " + i + " / " + ii + " " + val + " v:" + lowest_point + " vs " + floaterY);
+                    if (lowest_point > floaterY) {
+                        // is obscured
+                        final float difference = lowest_point - floaterY;
+                        //  int scrollto = i+((int)difference)+1;
+                        Log.d(TAG, "Corrective Scrolling by: " + (int) difference);
+                        // TODO wrap with speed adjustment
+                        recyclerView.smoothScrollBy(0, (int) difference);
+                    }
+                    val = -1;
+                }
+            } else {
+                val = -1;
+            }
+            ii++;
+        }
     }
 
     private synchronized int reinjectionPosition(Reminder reminder) {
         if (reminder == null) return 0;
+
         synchronized (reminders) {
-            for (int i = 0; i < reminders.size(); i++) {
+            int more_than_pos = -1;
+            final int max_count = reminders.size() - 1;
+            for (int i = max_count; i > 0; i--) {
+                //Log.d(TAG, "Checking position: " + i + " " + (reminders.get(i).next_due - reminder.next_due));
                 // TODO consider snooze?
                 if (reminder.next_due < reminders.get(i).next_due) {
-                    return i;
+                    more_than_pos = i;
+                } else if (((more_than_pos != -1) || (i == max_count)) && (reminder.next_due >= reminders.get(i).next_due)) {
+                    return (i == max_count) ? max_count + 1 : more_than_pos;
                 }
             }
         }
-        return reminders.size(); // is this right?
+        return 0; // is this right?
     }
 
-    private void showNewReminderDialog(View myitem, final long timestamp, final double position) {
+    // TODO edit mode
+    private void showReminderDialog(View myitem, final Reminder reminder, int position) {
         final Activity activity = this;
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
@@ -495,23 +663,29 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         dialogBuilder.setView(dialogView);
 
         // New Reminder title
-        final EditText edt = (EditText) dialogView.findViewById(R.id.reminder_edit_new);
+        final EditText titleEditText = (EditText) dialogView.findViewById(R.id.reminder_edit_new);
 
         final RadioButton rbday = (RadioButton) dialogView.findViewById(R.id.reminderDayButton);
         final RadioButton rbhour = (RadioButton) dialogView.findViewById(R.id.reminderHourButton);
         final RadioButton rbweek = (RadioButton) dialogView.findViewById(R.id.reminderWeekButton);
 
 
-        rbday.setChecked(PersistentStore.getBoolean("reminders-rbday"));
-        rbhour.setChecked(PersistentStore.getBoolean("reminders-rbhour"));
-        rbweek.setChecked(PersistentStore.getBoolean("reminders-rbweek"));
+        if (reminder == null) {
+            rbday.setChecked(PersistentStore.getBoolean("reminders-rbday"));
+            rbhour.setChecked(PersistentStore.getBoolean("reminders-rbhour"));
+            rbweek.setChecked(PersistentStore.getBoolean("reminders-rbweek"));
+        } else {
+            rbday.setChecked(reminder.isDaysPeriod());
+            rbhour.setChecked(reminder.isHoursPeriod());
+            rbweek.setChecked(reminder.isWeeksPeriod());
+        }
 
         // first run if nothing set default to day
         if (!rbday.isChecked() && !rbhour.isChecked() && !rbweek.isChecked()) {
             rbday.setChecked(true);
         }
 
-        edt.addTextChangedListener(new TextWatcher() {
+        titleEditText.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -541,13 +715,25 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
 
         reminderDaysEdt = (EditText) dialogView.findViewById(R.id.reminderRepeatDays);
         final CheckBox repeatingCheckbox = (CheckBox) dialogView.findViewById(R.id.reminderRepeatcheckBox);
-        repeatingCheckbox.setChecked(PersistentStore.getLong("reminders-last-repeating") != 2);
+        final CheckBox chimeOnlyCheckbox = (CheckBox) dialogView.findViewById(R.id.chimeonlycheckbox);
+        final CheckBox alternatingCheckbox = (CheckBox) dialogView.findViewById(R.id.alternatingcheckbox);
 
-
-        try {
-            reminderDaysEdt.setText(!PersistentStore.getString("reminders-last-number").equals("") ? Integer.toString(Integer.parseInt(PersistentStore.getString("reminders-last-number"))) : "1");
-        } catch (Exception e) {
-            //
+        if (reminder == null) {
+            repeatingCheckbox.setChecked(PersistentStore.getLong("reminders-last-repeating") != 2);
+            chimeOnlyCheckbox.setChecked(PersistentStore.getLong("reminders-last-chimeonly") != 2);
+            alternatingCheckbox.setChecked(PersistentStore.getLong("reminders-last-alternating") != 2);
+            try {
+                reminderDaysEdt.setText(!PersistentStore.getString("reminders-last-number").equals("") ? Integer.toString(Integer.parseInt(PersistentStore.getString("reminders-last-number"))) : "1");
+            } catch (Exception e) {
+                //
+            }
+        } else {
+            selectedSound = reminder.sound_uri;
+            titleEditText.setText(reminder.getTitle());
+            repeatingCheckbox.setChecked(reminder.repeating);
+            chimeOnlyCheckbox.setChecked(reminder.chime_only);
+            alternatingCheckbox.setChecked(reminder.alternating);
+            reminderDaysEdt.setText(Long.toString(reminder.periodInUnits()));
         }
 
 
@@ -555,7 +741,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         //dialogBuilder.setMessage("Enter text below");
         dialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                String reminder_title = edt.getText().toString().trim();
+                String reminder_title = titleEditText.getText().toString().trim();
                 Log.d(TAG, "Got reminder title: " + reminder_title);
                 // get and scale period
                 long period = Integer.parseInt(reminderDaysEdt.getText().toString());
@@ -571,18 +757,33 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                 PersistentStore.setBoolean("reminders-rbhour", rbhour.isChecked());
                 PersistentStore.setBoolean("reminders-rbweek", rbweek.isChecked());
 
-                // TODO handle non-repeating init
-                Reminder new_reminder = Reminder.create(reminder_title, period);
-                if (new_reminder != null) {
-                    reminders.add(0, new_reminder);
-                    mAdapter.notifyItemInserted(0);
+                Reminder new_reminder = reminder;
+                if (new_reminder == null) {
+                    new_reminder = Reminder.create(reminder_title, period);
+                }
 
+                if (new_reminder != null) {
+
+
+                    if (reminder != null) {
+                        // TODO alternate awareness
+                        new_reminder.title = reminder_title;
+                        new_reminder.period = period;
+                    }
+
+                    new_reminder.sound_uri = selectedSound;
                     new_reminder.repeating = repeatingCheckbox.isChecked();
+                    new_reminder.chime_only = chimeOnlyCheckbox.isChecked();
+                    new_reminder.alternating = alternatingCheckbox.isChecked();
                     new_reminder.save();
 
-                    // TODO scroll to position?
+                    freshen(new_reminder);
+
                     PersistentStore.setString("reminders-last-number", reminderDaysEdt.getText().toString());
                     PersistentStore.setLong("reminders-last-repeating", repeatingCheckbox.isChecked() ? 1 : 2);
+                    PersistentStore.setLong("reminders-last-chimeonly", chimeOnlyCheckbox.isChecked() ? 1 : 2);
+                    PersistentStore.setLong("reminders-last-alternating", alternatingCheckbox.isChecked() ? 1 : 2);
+
                     showcase(activity, Home.SHOWCASE_REMINDER2);
                 } else {
                     JoH.static_toast_long("Something went wrong creating the reminder");
@@ -594,15 +795,14 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         });
         dialogBuilder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                //  if (getPreferencesBooleanDefaultFalse("default_to_voice_notes")) showcasemenu(SHOWCASE_NOTE_LONG);
                 dialog = null;
                 dialogView = null;
 
             }
         });
         dialog = dialogBuilder.create();
-        edt.setInputType(InputType.TYPE_CLASS_TEXT);
-        edt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        titleEditText.setInputType(InputType.TYPE_CLASS_TEXT);
+        titleEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
@@ -617,24 +817,33 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
 
     }
 
+
     ////
     public static void doAlert(final Reminder reminder) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("reminder-alert-wakeup", 20000);
         Log.d(TAG, "Scheduling alert reminder in 10 seconds time");
         // avoid conflicts with other notification alerts in first 10 seconds
+
+        JoH.runOnUiThreadDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "delayed wakeup firing");
+                startReminderWithExtra(REMINDER_WAKEUP, REMINDER_WAKEUP);
+            }
+        }, 9000);
+
         JoH.runOnUiThreadDelayed(new Runnable() {
             @Override
             public void run() {
                 Log.d(TAG, "delayed alert firing");
-                startReminderWithExtra(REMINDER_WAKEUP, REMINDER_WAKEUP);
                 final Intent notificationIntent = new Intent(xdrip.getAppContext(), Reminders.class).putExtra("reminder_id", reminder.getId().toString());
                 final Intent notificationDeleteIntent = new Intent(xdrip.getAppContext(), Reminders.class).putExtra("snooze_id", reminder.getId()).putExtra("snooze", "true");
-                final PendingIntent pendingIntent = PendingIntent.getActivity(xdrip.getAppContext(), NOTIFICATION_ID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                final PendingIntent deleteIntent = PendingIntent.getActivity(xdrip.getAppContext(), NOTIFICATION_ID, notificationDeleteIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                // TODO add sound uri
-                JoH.showNotification(reminder.title, "Reminder due " + JoH.hourMinuteString(reminder.next_due), pendingIntent, NOTIFICATION_ID, true, true, deleteIntent, null);
-                UserError.Log.ueh("Reminder Alert", reminder.title + " due: " + JoH.dateTimeText(reminder.next_due) + ((reminder.snoozed_till > reminder.next_due) ? " snoozed till: " + JoH.dateTimeText(reminder.snoozed_till) : ""));
+                final PendingIntent deleteIntent = PendingIntent.getActivity(xdrip.getAppContext(), NOTIFICATION_ID + 1, notificationDeleteIntent, 0);
+                final PendingIntent pendingIntent = PendingIntent.getActivity(xdrip.getAppContext(), NOTIFICATION_ID, notificationIntent, 0);
 
+                JoH.showNotification(reminder.getTitle(), "Reminder due " + JoH.hourMinuteString(reminder.next_due), pendingIntent, NOTIFICATION_ID, true, true, deleteIntent, (reminder.sound_uri != null) ? Uri.parse(reminder.sound_uri) : null);
+                UserError.Log.ueh("Reminder Alert", reminder.getTitle() + " due: " + JoH.dateTimeText(reminder.next_due) + ((reminder.snoozed_till > reminder.next_due) ? " snoozed till: " + JoH.dateTimeText(reminder.snoozed_till) : ""));
+                reminder.notified();
             }
         }, 10000);
         // intentionally don't release wakelock to ensure sound plays
@@ -658,8 +867,9 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                 int hour = (newmins - min) / 60;
                 calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), hour, min);
                 reminder.next_due = calendar.getTimeInMillis();
+                reminder.snoozed_till = 0; // reset this field
                 reminder.save();
-                mAdapter.notifyItemChanged(position);
+                freshen(reminder);
             }
         });
         timePickerFragment.show(this.getFragmentManager(), "TimePicker");
@@ -731,10 +941,21 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     private void processIncomingBundle(Bundle bundle) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("reminder-bundler", 10000);
         if (bundle != null) {
+
+            if ((bundle != null) && (d)) {
+                for (String key : bundle.keySet()) {
+                    Object value = bundle.get(key);
+                    if (value != null) {
+                        Log.d(TAG, String.format("Bundle: %s %s (%s)", key,
+                                value.toString(), value.getClass().getName()));
+                    }
+                }
+            }
+
             if (bundle.getString("snooze") != null) {
                 long id = bundle.getLong("snooze_id");
                 Log.d(TAG, "Reminder id for snooze: " + id);
-                Reminder reminder = Reminder.byid(id);
+                final Reminder reminder = Reminder.byid(id);
                 if (reminder != null) {
                     final long snooze_time = reminder.last_snoozed_for > 0 ? reminder.last_snoozed_for : default_snooze;
                     snoozeReminder(reminder, snooze_time);
@@ -840,6 +1061,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                 target = new ViewTarget(R.id.fab, activity);
                 title = "You have no reminders yet";
                 message = "Reminders can be used for things like a pump site change or anything else.\n\nThey can repeat, be set for various time periods. Be snoozed, postponed, rescheduled etc.\n\nClick the + button to add a reminder.";
+                delay = 200;
                 break;
 
             case Home.SHOWCASE_REMINDER2:

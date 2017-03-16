@@ -558,6 +558,7 @@ public class JoH {
     }
 
     public static String niceTimeScalarNatural(long t) {
+        if (t > 3000000) t = t + 10000; // round up by 10 seconds if nearly an hour
         if ((t > Constants.DAY_IN_MS) && (t < Constants.WEEK_IN_MS * 2)) {
             final SimpleDateFormat df = new SimpleDateFormat("EEEE", Locale.getDefault());
             final String day = df.format(new Date(JoH.tsl() + t));
@@ -755,13 +756,18 @@ public class JoH {
     }
 
     public static synchronized void playResourceAudio(int id) {
-        playSoundUri(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + xdrip.getAppContext().getPackageName() + "/" + id);
+        playSoundUri(getResourceURI(id));
+    }
+
+    public static String getResourceURI(int id) {
+        return ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + xdrip.getAppContext().getPackageName() + "/" + id;
     }
 
     public static synchronized void playSoundUri(String soundUri) {
         try {
             JoH.getWakeLock("joh-playsound", 10000);
             final MediaPlayer player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(soundUri));
+            player.setLooping(false);
             player.start();
         } catch (Exception e) {
             Log.wtf(TAG, "Failed to play audio: " + soundUri + " exception:" + e);
@@ -940,16 +946,15 @@ public class JoH {
         final Notification.Builder mBuilder = notificationBuilder(title, content, intent);
         final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
         if (vibrate) mBuilder.setVibrate(vibratePattern);
-        if (deleteIntent!=null) mBuilder.setDeleteIntent(deleteIntent);
+        if (deleteIntent != null) mBuilder.setDeleteIntent(deleteIntent);
         mBuilder.setLights(0xff00ff00, 300, 1000);
-        if (sound)
-        {
+        if (sound) {
             Uri soundUri = (sound_uri != null) ? sound_uri : RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             mBuilder.setSound(soundUri);
         }
 
         final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
-       // if (!onetime) mNotifyMgr.cancel(notificationId);
+        // if (!onetime) mNotifyMgr.cancel(notificationId);
 
         mNotifyMgr.notify(notificationId, mBuilder.build());
     }

@@ -16,6 +16,7 @@ Samsung Galaxy S4 (SCH-I545) | 5.0.1
 Samsung Galaxy S6 (G920V) | 6.0.1
 Samsung Galaxy S7 edge (G935T) | 7.0
 HTC 10 | 7.0
+Nexus 5 | 6.0
 Nexus 5X | 7.1.2
 Nexus 6 | 7.0
 Nexus 6P | 7.1.1
@@ -24,7 +25,8 @@ LG G4 (VS986 & H811) | 6.0
 Motorola Moto E (2nd Gen) (XT1526) | 5.1
 Blu R1 HD | 6.0
 Sony Xperia Z3 Compact (D5803) | 6.0.1
-Huawei Y6 SCL-L21 | 5.1
+Huawei Y6 (SCL-L21) | 5.1
+Huawei P8 Lite (ALE-L21) | 6.0
 
 Does your phone achieve better than 90% capture rate with G5 but isn't on this list? Please let us know!
 
