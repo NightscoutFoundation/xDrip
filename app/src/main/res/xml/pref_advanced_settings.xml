@@ -346,7 +346,7 @@
                     android:title="RFDUINO support" />
             </PreferenceScreen>
             <CheckBoxPreference
-                android:defaultValue="false"
+                android:defaultValue="true"
                 android:key="aggressive_service_restart"
                 android:summary="Repeatedly restart the collection service at any hint of missing data. Enable only if you are getting data loss."
                 android:title="Aggressive service restarts" />
@@ -489,12 +489,6 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
-                    android:key="status_line_ratio"
-                    android:summary="Show treatment carb/insulin ratio"
-                    android:title="Carb/Insulin Ratio" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="extra_status_line"
                     android:key="status_line_capture_percentage"
                     android:summary="Percentage of sensor readings received"
                     android:title="Packet capture percentage" />
@@ -581,9 +575,9 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="engineering_mode"
-                    android:key="adrian_calibration_mode"
-                    android:summary="Wider range of allowed slopes. Less failsafes! (engineering mode only)"
-                    android:title="Adrian calibration mode" />
+                    android:key="old_school_calibration_mode"
+                    android:summary="Original narrower range of allowed slopes within xDrip classic calibration algorithm (pre-2017). Default slopes more likely! (engineering mode only)"
+                    android:title="Old school calibration mode" />
             </PreferenceScreen>
             <PreferenceCategory
                 android:key="community_help_category"
