@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 
 
 public class SystemStatusFragment extends Fragment {
@@ -121,7 +122,12 @@ public class SystemStatusFragment extends Fragment {
     private void requestWearCollectorStatus() {
         final PowerManager.WakeLock wl = JoH.getWakeLock("ACTION_STATUS_COLLECTOR",120000);
         if (Home.get_enable_wear()) {
-            startWatchUpdaterService(safeGetContext(), WatchUpdaterService.ACTION_STATUS_COLLECTOR, TAG);
+            if (DexCollectionType.getDexCollectionType().equals(DexcomG5)) {
+                startWatchUpdaterService(safeGetContext(), WatchUpdaterService.ACTION_STATUS_COLLECTOR, TAG, "getBatteryStatusNow", G5CollectionService.getBatteryStatusNow);
+            }
+            else {
+                startWatchUpdaterService(safeGetContext(), WatchUpdaterService.ACTION_STATUS_COLLECTOR, TAG);
+            }
         }
         JoH.releaseWakeLock(wl);
     }

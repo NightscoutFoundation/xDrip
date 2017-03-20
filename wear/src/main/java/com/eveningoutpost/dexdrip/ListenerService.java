@@ -73,6 +73,7 @@ import java.util.concurrent.TimeUnit;
 import static com.eveningoutpost.dexdrip.Models.JoH.ts;
 import static com.eveningoutpost.dexdrip.Services.G5CollectionService.G5_BATTERY_FROM_MARKER;
 import static com.eveningoutpost.dexdrip.Services.G5CollectionService.G5_BATTERY_MARKER;
+import static com.eveningoutpost.dexdrip.Services.G5CollectionService.G5_BATTERY_WEARABLE_SEND;
 import static com.eveningoutpost.dexdrip.Services.G5CollectionService.G5_FIRMWARE_MARKER;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.sgvLevel;
 
@@ -284,6 +285,10 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                             }
                                         }
                                         sendMessagePayload(node, "WEARABLE_RESEND_PATH", path, payload);
+                                        if (PersistentStore.getBoolean(G5_BATTERY_WEARABLE_SEND)) {
+                                            PersistentStore.setBoolean(G5_BATTERY_WEARABLE_SEND, false);
+                                            sendPersistentStore();
+                                        }
                                         break;
                                 }
                             }
@@ -945,6 +950,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     }
                 } else if (path.equals(STATUS_COLLECTOR_PATH)) {
                     Log.d(TAG, "onDataChanged path=" + path);
+                    dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
+                    G5CollectionService.getBatteryStatusNow = dataMap.getBoolean("getBatteryStatusNow", false);
                     sendCollectorStatus(getApplicationContext(), path);
                     sendPersistentStore();
                 } else if (path.equals(WEARABLE_SENSOR_DATA_PATH)) {//KS
