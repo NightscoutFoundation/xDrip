@@ -66,7 +66,6 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 //KS import com.eveningoutpost.dexdrip.utils.BgToSpeech;
-import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.wearable.DataMap;
 
@@ -159,8 +158,6 @@ public class G5CollectionService extends Service {
     private int scanCycleCount = 0;
     public Context mContext;//KS
     private boolean delays = false;
-
-    private static final int LOW_BATTERY_WARNING_LEVEL = 300; // voltage a < this value raises warnings
 
     private static String lastState = "Not running";
     private static String lastStateWatch = "Not running";
@@ -1694,29 +1691,16 @@ public class G5CollectionService extends Service {
     }
 
     public static final String G5_BATTERY_MARKER = "g5-battery-";
-    public static final String G5_BATTERY_LEVEL_MARKER = "g5-battery-level-";
+    public static final String G5_BATTERY_WEARABLE_SEND = "g5-battery-wearable-send";
 
-    public synchronized static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
+    public static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
         UserError.Log.e(TAG, "Store: BatteryRX dbg: " + JoH.bytesToHex(data));
         if (transmitterId.length() != 6) return false;
         if (data.length < 10) return false;
-        final BatteryInfoRxMessage batteryInfoRxMessage = new BatteryInfoRxMessage(data);
-        Log.wtf(TAG, "Saving battery data: " +batteryInfoRxMessage.toString());
+        Log.wtf(TAG, "Saving battery data: " + new BatteryInfoRxMessage(data).toString());
         PersistentStore.setBytes(G5_BATTERY_MARKER + transmitterId, data);
         PersistentStore.setLong(G5_BATTERY_FROM_MARKER + transmitterId, JoH.tsl());
-
-        // TODO logic also needs to handle battery replacements of same transmitter id
-        final long old_level = PersistentStore.getLong(G5_BATTERY_LEVEL_MARKER + transmitterId);
-        if ((batteryInfoRxMessage.voltagea < old_level) || (old_level == 0)) {
-            if (batteryInfoRxMessage.voltagea < LOW_BATTERY_WARNING_LEVEL) {
-                if (JoH.pratelimit("g5-low-battery-warning", 40000)) {
-                    final boolean loud = !PowerStateReceiver.is_power_connected();
-                    JoH.showNotification("G5 Battery Low", "G5 Transmitter battery has dropped to: " + batteryInfoRxMessage.voltagea + " it may fail soon", null, 770, loud, loud, false);
-                }
-            }
-            PersistentStore.setLong(G5_BATTERY_LEVEL_MARKER + transmitterId, batteryInfoRxMessage.voltagea);
-        }
-
+        PersistentStore.setBoolean(G5_BATTERY_WEARABLE_SEND, true);
         return true;
     }
 
