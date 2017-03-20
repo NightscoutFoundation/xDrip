@@ -575,9 +575,9 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="engineering_mode"
-                    android:key="adrian_calibration_mode"
-                    android:summary="Wider range of allowed slopes. Less failsafes! (engineering mode only)"
-                    android:title="Adrian calibration mode" />
+                    android:key="old_school_calibration_mode"
+                    android:summary="Original narrower range of allowed slopes within xDrip classic calibration algorithm (pre-2017). Default slopes more likely! (engineering mode only)"
+                    android:title="Old school calibration mode" />
             </PreferenceScreen>
             <PreferenceCategory
                 android:key="community_help_category"

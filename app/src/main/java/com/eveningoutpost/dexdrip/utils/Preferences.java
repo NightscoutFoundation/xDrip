@@ -755,7 +755,7 @@ public class Preferences extends PreferenceActivity {
             final Preference disableAlertsStaleDataMinutes = findPreference("disable_alerts_stale_data_minutes");
             final PreferenceScreen calibrationSettingsScreen = (PreferenceScreen) findPreference("xdrip_plus_calibration_settings");
             final PreferenceScreen colorScreen = (PreferenceScreen) findPreference("xdrip_plus_color_settings");
-            final Preference adrian_calibration_mode = findPreference("adrian_calibration_mode");
+            final Preference old_school_calibration_mode = findPreference("old_school_calibration_mode");
             final Preference extraTagsForLogs = findPreference("extra_tags_for_logging");
             final Preference enableBF = findPreference("enable_bugfender");
 
@@ -1090,7 +1090,7 @@ public class Preferences extends PreferenceActivity {
                 if (!engineering_mode) {
                     try {
                         if (!Experience.gotData()) getPreferenceScreen().removePreference(motionScreen);
-                        calibrationSettingsScreen.removePreference(adrian_calibration_mode);
+                        calibrationSettingsScreen.removePreference(old_school_calibration_mode);
                     } catch (NullPointerException e) {
                         Log.wtf(TAG, "Nullpointer with engineering mode s ", e);
                     }

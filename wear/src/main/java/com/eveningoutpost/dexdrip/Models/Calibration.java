@@ -647,10 +647,10 @@ public class Calibration extends Model {
             return new LiParameters();
         }
 
-        if (Home.getPreferencesBooleanDefaultFalse("engineering_mode") && Home.getPreferencesBooleanDefaultFalse("adrian_calibration_mode")) {
+      /*  if (Home.getPreferencesBooleanDefaultFalse("engineering_mode") && Home.getPreferencesBooleanDefaultFalse("adrian_calibration_mode")) {
             JoH.static_toast_long("Using possibly UNSAFE Adrian calibration mode!");
             return new DexParametersAdrian();
-        }
+        }*/
 
         return new DexParameters();
     }
