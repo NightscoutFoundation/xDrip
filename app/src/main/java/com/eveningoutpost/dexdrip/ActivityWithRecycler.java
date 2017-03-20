@@ -50,7 +50,7 @@ public class ActivityWithRecycler extends AppCompatActivity {
 
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements
-            ItemTouchHelperViewHolder  {
+            ItemTouchHelperViewHolder {
 
         int position = -1;
 
@@ -66,10 +66,10 @@ public class ActivityWithRecycler extends AppCompatActivity {
         @Override
         public void onItemClear() {
             itemView.setBackgroundColor(Color.TRANSPARENT);
-           }
+        }
     }
 
-    public class RecyclerAdapater extends RecyclerView.Adapter<MyViewHolder> implements ItemTouchHelperAdapter   {
+    public class RecyclerAdapater extends RecyclerView.Adapter<MyViewHolder> implements ItemTouchHelperAdapter {
 
 
         @Override
@@ -101,7 +101,7 @@ public class ActivityWithRecycler extends AppCompatActivity {
 
     private class CustomLinearLayoutManager extends LinearLayoutManager {
 
-        private static final float MILLISECONDS_PER_INCH = 400f;
+        private static final float MILLISECONDS_PER_INCH = 200f;
 
         private CustomLinearLayoutManager(Context context) {
             super(context);

@@ -13,10 +13,23 @@
 
 
         <EditText
+            android:id="@+id/reminder_edit_alt_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Reminder alternate title"
+            android:inputType="text|textCapWords"
+            android:lines="4"
+            android:linksClickable="false"
+            android:maxLines="5"
+            android:minLines="2"
+            android:visibility="visible" />
+
+        <EditText
             android:id="@+id/reminder_edit_new"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Reminder name"
+            android:hint="Reminder title"
+            android:layout_below="@+id/reminder_edit_alt_title"
             android:inputType="text|textCapWords"
             android:lines="4"
             android:linksClickable="false"
@@ -133,6 +146,19 @@
             android:layout_toStartOf="@+id/reminderRepeatDays"
             android:onClick="chooseReminderSound"
             app:srcCompat="@drawable/ic_music_note_white_24dp" />
+
+        <ImageButton
+            android:id="@+id/reminderSwapButton"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="6dp"
+            android:background="@android:color/transparent"
+            android:paddingBottom="2dp"
+            android:paddingLeft="2dp"
+            android:paddingTop="2dp"
+            app:srcCompat="@drawable/ic_swap_vert_white_24dp" />
 
     </RelativeLayout>
 

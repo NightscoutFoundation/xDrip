@@ -47,6 +47,9 @@ public class Reminder extends Model {
             "ALTER TABLE Reminder ADD COLUMN alternating INTEGER",
             "ALTER TABLE Reminder ADD COLUMN alternate INTEGER",
             "ALTER TABLE Reminder ADD COLUMN chime INTEGER",
+            "CREATE INDEX index_Reminder_next_due on Reminder(next_due)",
+            "CREATE INDEX index_Reminder_enabled on Reminder(enabled)",
+            "CREATE INDEX index_Reminder_priority on Reminder(priority)",
             "CREATE INDEX index_Reminder_timestamp on Reminder(timestamp)",
             "CREATE INDEX index_Reminder_snoozed_till on Reminder(snoozed_till)"
     };
@@ -128,6 +131,10 @@ public class Reminder extends Model {
         return isAlternate() ? alternate_title : title;
     }
 
+    public String getAlternateTitle() {
+        return alternate_title != null ? alternate_title : title + " alternate";
+    }
+
     public void updateTitle(String new_title) {
         if (isAlternate()) {
             alternate_title = new_title;
@@ -157,7 +164,7 @@ public class Reminder extends Model {
     }
 
     public boolean isDue() {
-        if (next_due <= JoH.tsl()) {
+        if ((enabled) && (next_due <= JoH.tsl())) {
             return true;
         } else {
             return false;
@@ -246,7 +253,7 @@ public class Reminder extends Model {
                 .where("enabled = ?", true)
                 .where("next_due < ?", now)
                 .where("snoozed_till < ?", now)
-                .orderBy("priority desc, next_due asc")
+                .orderBy("enabled desc, next_due asc")
                 .execute();
         return reminders;
     }
@@ -269,7 +276,7 @@ public class Reminder extends Model {
                 .where("enabled = ?", true)
                 .where("next_due < ?", now)
                 .where("snoozed_till < ?", now)
-                .orderBy("priority desc, next_due asc")
+                .orderBy("enabled desc, priority desc, next_due asc")
                 .executeSingle();
         return reminder;
     }
@@ -278,7 +285,7 @@ public class Reminder extends Model {
         fixUpTable(schema);
         final List<Reminder> reminders = new Select()
                 .from(Reminder.class)
-                .orderBy("priority desc, next_due asc")
+                .orderBy("enabled desc, priority desc, next_due asc")
                 .execute();
         return reminders;
     }

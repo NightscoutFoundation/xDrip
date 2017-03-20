@@ -196,6 +196,9 @@ public class Home extends ActivityWithMenu {
     public static final int SHOWCASE_REMINDER1 = 14;
     public static final int SHOWCASE_REMINDER2 = 15;
     public static final int SHOWCASE_REMINDER3 = 16;
+    public static final int SHOWCASE_REMINDER4 = 17;
+    public static final int SHOWCASE_REMINDER5 = 19;
+    public static final int SHOWCASE_REMINDER6 = 20;
     private static double last_speech_time = 0;
     private PreviewLineChartView previewChart;
     private Button stepsButton;
@@ -2589,9 +2592,7 @@ public class Home extends ActivityWithMenu {
         boolean got_data = Experience.gotData();
         menu.findItem(R.id.crowdtranslate).setVisible(got_data);
 
-        if (get_engineering_mode()) {
-         //   menu.findItem(R.id.showreminders).setVisible(true);
-        }
+        menu.findItem(R.id.showreminders).setVisible(prefs.getBoolean("plus_show_reminders", true));
 
         return super.onCreateOptionsMenu(menu);
     }

@@ -13,6 +13,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -30,6 +31,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -41,7 +43,9 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -56,6 +60,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
 import com.eveningoutpost.dexdrip.profileeditor.TimePickerFragment;
+import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.rits.cloning.Cloner;
@@ -67,9 +72,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.eveningoutpost.dexdrip.Home.SHOWCASE_REMINDER3;
 import static lecho.lib.hellocharts.animation.ChartDataAnimator.DEFAULT_ANIMATION_DURATION;
 
-// TODO Odd/Even reminders
 // TODO swipe right reschedule options
 // TODO wake up option
 
@@ -96,7 +101,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
     private Reminder last_undo, last_swiped;
     private int last_undo_pos;
 
-    private long default_snooze = Constants.MINUTE_IN_MS * 15;
+    private long default_snooze = Constants.MINUTE_IN_MS * 30;
     private SensorManager mSensorManager;
     private Sensor mProximity;
     private boolean proximity = true; // default to near
@@ -259,6 +264,22 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                 }
             });
 
+            holder.title_text.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    showReminderDialog(null, reminders.get(holder.getAdapterPosition()), 0);
+                    return false;
+                }
+            });
+
+            holder.next_due_text.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    showReminderDialog(null, reminders.get(holder.getAdapterPosition()), 0);
+                    return false;
+                }
+            });
+
             holder.small_text.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -300,19 +321,25 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
             final long duein = Math.max(JoH.msTill(reminder_item.next_due), JoH.msTill(reminder_item.snoozed_till));
             holder.wholeBlock.setBackgroundColor(Color.TRANSPARENT);
             String firstpart = "";
-            if ((reminder_item.snoozed_till > JoH.tsl()) && (reminder_item.next_due < JoH.tsl())) {
-                firstpart = "Snoozed for " + JoH.niceTimeTill(reminder_item.snoozed_till);
-            } else {
-                if (duein >= 0) {
-                    String natural_due = JoH.niceTimeScalarNatural(duein);
-                    if (natural_due.matches("^[0-9]+.*")) {
-                        natural_due = "in" + " " + natural_due;
-                    }
-                    firstpart = "Due " + natural_due;
+            if (reminder_item.enabled) {
+                holder.wholeBlock.setAlpha(1.0f);
+                if ((reminder_item.snoozed_till > JoH.tsl()) && (reminder_item.next_due < JoH.tsl())) {
+                    firstpart = "Snoozed for " + JoH.niceTimeTill(reminder_item.snoozed_till);
                 } else {
-                    firstpart = "DUE " + JoH.hourMinuteString(reminder_item.next_due);
-                    holder.wholeBlock.setBackgroundColor(Color.parseColor("#660066"));
+                    if (duein >= 0) {
+                        String natural_due = JoH.niceTimeScalarNatural(duein);
+                        if (natural_due.matches("^[0-9]+.*")) {
+                            natural_due = "in" + " " + natural_due;
+                        }
+                        firstpart = "Due " + natural_due;
+                    } else {
+                        firstpart = "DUE " + JoH.hourMinuteString(reminder_item.next_due);
+                        holder.wholeBlock.setBackgroundColor(Color.parseColor("#660066"));
+                    }
                 }
+            } else {
+                firstpart = "Completed ";
+                holder.wholeBlock.setAlpha(0.3f);
             }
             holder.next_due_text.setText(firstpart + (reminder_item.repeating ? ", repeats every " + JoH.niceTimeScalarRedux(reminder_item.period) : ""));
 
@@ -392,13 +419,34 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         showReminderDialog(v, null, 0);
     }
 
+    private synchronized MediaPlayer playSelectedSound() {
+        return JoH.playSoundUri((selectedSound != null) ? selectedSound : JoH.getResourceURI(R.raw.reminder_default_notification));
+    }
+
     public void chooseReminderSound(View v) {
-        JoH.playSoundUri((selectedSound != null) ? selectedSound : JoH.getResourceURI(R.raw.bt_meter_connect));
+        final MediaPlayer player = playSelectedSound();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select new sound source")
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        try {
+                            player.stop();
+                            player.release();
+                        } catch (Exception e) {
+                            //
+                        }
+                    }
+                })
                 .setItems(R.array.reminderAlertType, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            player.stop();
+                            player.release();
+                        } catch (Exception e) {
+                            //
+                        }
                         if (which == 0) {
                             final Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
                             intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select tone for Alert:");
@@ -413,10 +461,12 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                         } else {
                             JoH.static_toast_long("Using default sound");
                             selectedSound = null;
+                            playSelectedSound();
+                            PersistentStore.setString("reminders-last-sound", "");
                         }
                     }
                 });
-        AlertDialog dialog = builder.create();
+        final AlertDialog dialog = builder.create();
         dialog.show();
     }
 
@@ -596,6 +646,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                 }
             }
         });
+        Log.d(TAG, "Reinjection: scrolling to: " + i);
         recyclerView.smoothScrollToPosition(i);
         JoH.runOnUiThreadDelayed(new Runnable() {
             @Override
@@ -644,11 +695,15 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
             for (int i = max_count; i > 0; i--) {
                 //Log.d(TAG, "Checking position: " + i + " " + (reminders.get(i).next_due - reminder.next_due));
                 // TODO consider snooze?
-                if (reminder.next_due < reminders.get(i).next_due) {
+                if ((reminder.next_due < reminders.get(i).next_due) && (reminder.enabled == reminders.get(i).enabled)) {
                     more_than_pos = i;
-                } else if (((more_than_pos != -1) || (i == max_count)) && (reminder.next_due >= reminders.get(i).next_due)) {
+                } else if (((more_than_pos != -1) || (i == max_count)) && ((reminder.next_due >= reminders.get(i).next_due) && (reminder.enabled == reminders.get(i).enabled))) {
                     return (i == max_count) ? max_count + 1 : more_than_pos;
                 }
+            }
+            if (!reminder.enabled) {
+                Log.d(TAG, "Returning reinjection max_count+1 due to non enabled");
+                return max_count + 1;
             }
         }
         return 0; // is this right?
@@ -656,6 +711,9 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
 
     // TODO edit mode
     private void showReminderDialog(View myitem, final Reminder reminder, int position) {
+
+        if ((dialog != null) && (dialog.isShowing())) return;
+
         final Activity activity = this;
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
@@ -664,6 +722,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
 
         // New Reminder title
         final EditText titleEditText = (EditText) dialogView.findViewById(R.id.reminder_edit_new);
+        final EditText alternateEditText = (EditText) dialogView.findViewById(R.id.reminder_edit_alt_title);
 
         final RadioButton rbday = (RadioButton) dialogView.findViewById(R.id.reminderDayButton);
         final RadioButton rbhour = (RadioButton) dialogView.findViewById(R.id.reminderHourButton);
@@ -717,11 +776,13 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         final CheckBox repeatingCheckbox = (CheckBox) dialogView.findViewById(R.id.reminderRepeatcheckBox);
         final CheckBox chimeOnlyCheckbox = (CheckBox) dialogView.findViewById(R.id.chimeonlycheckbox);
         final CheckBox alternatingCheckbox = (CheckBox) dialogView.findViewById(R.id.alternatingcheckbox);
+        final ImageButton swapButton = (ImageButton) dialogView.findViewById(R.id.reminderSwapButton);
+
 
         if (reminder == null) {
             repeatingCheckbox.setChecked(PersistentStore.getLong("reminders-last-repeating") != 2);
-            chimeOnlyCheckbox.setChecked(PersistentStore.getLong("reminders-last-chimeonly") != 2);
-            alternatingCheckbox.setChecked(PersistentStore.getLong("reminders-last-alternating") != 2);
+            chimeOnlyCheckbox.setChecked(PersistentStore.getLong("reminders-last-chimeonly") == 1);
+            alternatingCheckbox.setChecked(PersistentStore.getLong("reminders-last-alternating") == 1);
             try {
                 reminderDaysEdt.setText(!PersistentStore.getString("reminders-last-number").equals("") ? Integer.toString(Integer.parseInt(PersistentStore.getString("reminders-last-number"))) : "1");
             } catch (Exception e) {
@@ -729,29 +790,64 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
             }
         } else {
             selectedSound = reminder.sound_uri;
-            titleEditText.setText(reminder.getTitle());
+            titleEditText.setText(reminder.title);
+            alternateEditText.setText(reminder.getAlternateTitle());
             repeatingCheckbox.setChecked(reminder.repeating);
             chimeOnlyCheckbox.setChecked(reminder.chime_only);
             alternatingCheckbox.setChecked(reminder.alternating);
             reminderDaysEdt.setText(Long.toString(reminder.periodInUnits()));
         }
 
+        maskAlternatingCheckbox(repeatingCheckbox.isChecked(), alternatingCheckbox);
 
-        dialogBuilder.setTitle("Add Reminder");
+
+        swapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Editable swappage = alternateEditText.getText();
+                alternateEditText.setText(titleEditText.getText());
+                titleEditText.setText(swappage);
+            }
+        });
+
+        repeatingCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                final String insert = chimeOnlyCheckbox.isChecked() ? "sound once" : "alert until dismissed";
+                final String second_insert = isChecked ? "and then repeat every " + JoH.niceTimeScalarNatural(getPeriod(rbday, rbhour, rbweek)) : "but will not repeat after that";
+                JoH.static_toast_long("Reminder will " + insert + " " + second_insert);
+                maskAlternatingCheckbox(isChecked, alternatingCheckbox);
+            }
+        });
+        chimeOnlyCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                final String insert = isChecked ? "sound once" : "alert until dismissed";
+                final String second_insert = repeatingCheckbox.isChecked() ? "and then repeat every " + JoH.niceTimeScalar(getPeriod(rbday, rbhour, rbweek)) : "but will not repeat after that";
+                JoH.static_toast_long("Reminder will " + insert + " " + second_insert);
+            }
+        });
+        alternatingCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                alternateEditText.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                swapButton.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                final String insert = isChecked ? "alternate between different titles every " + JoH.niceTimeScalar(getPeriod(rbday, rbhour, rbweek)) : "always use the same title";
+                JoH.static_toast_long("Reminder will " + insert);
+            }
+        });
+
+        alternateEditText.setVisibility(alternatingCheckbox.isChecked() ? View.VISIBLE : View.GONE);
+        swapButton.setVisibility(alternatingCheckbox.isChecked() ? View.VISIBLE : View.GONE);
+
+        dialogBuilder.setTitle(((reminder == null) ? "Add" : "Edit") + " " + "Reminder");
         //dialogBuilder.setMessage("Enter text below");
         dialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String reminder_title = titleEditText.getText().toString().trim();
                 Log.d(TAG, "Got reminder title: " + reminder_title);
                 // get and scale period
-                long period = Integer.parseInt(reminderDaysEdt.getText().toString());
-                if (rbday.isChecked()) {
-                    period = period * Constants.DAY_IN_MS;
-                } else if (rbhour.isChecked()) {
-                    period = period * Constants.HOUR_IN_MS;
-                } else if (rbweek.isChecked()) {
-                    period = period * Constants.WEEK_IN_MS;
-                }
+                long period = getPeriod(rbday, rbhour, rbweek);
 
                 PersistentStore.setBoolean("reminders-rbday", rbday.isChecked());
                 PersistentStore.setBoolean("reminders-rbhour", rbhour.isChecked());
@@ -763,12 +859,14 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                 }
 
                 if (new_reminder != null) {
-
-
                     if (reminder != null) {
-                        // TODO alternate awareness
                         new_reminder.title = reminder_title;
                         new_reminder.period = period;
+                    }
+
+                    final String alternate_text = alternateEditText.getText().toString();
+                    if (alternate_text.length() > 2) {
+                        new_reminder.alternate_title = alternate_text;
                     }
 
                     new_reminder.sound_uri = selectedSound;
@@ -813,8 +911,43 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         });
 
         dialog.show();
-        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setVisibility(View.INVISIBLE);
+        if ((reminder != null) && (reminder.title.length() > 2)) {
+            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setVisibility(View.VISIBLE);
+        } else {
+            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setVisibility(View.INVISIBLE);
+        }
 
+    }
+
+    private long getPeriod(RadioButton rbday, RadioButton rbhour, RadioButton rbweek) {
+        long period = Integer.parseInt(reminderDaysEdt.getText().toString());
+        if (rbday.isChecked()) {
+            period = period * Constants.DAY_IN_MS;
+        } else if (rbhour.isChecked()) {
+            period = period * Constants.HOUR_IN_MS;
+        } else if (rbweek.isChecked()) {
+            period = period * Constants.WEEK_IN_MS;
+        }
+        return period;
+    }
+
+    // set the state of the alternating checkbox
+    private void maskAlternatingCheckbox(boolean state, CheckBox alternatingCheck) {
+        if (state) {
+            alternatingCheck.setEnabled(true);
+        } else {
+            alternatingCheck.setEnabled(false);
+            alternatingCheck.setChecked(false);
+        }
+    }
+
+    private int getPositionFromReminderId(final int id) {
+        for (int i = 0; i < reminders.size(); i++) {
+            if (reminders.get(i).getId() == id) {
+                return i;
+            }
+        }
+        return -1;
     }
 
 
@@ -828,7 +961,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
             @Override
             public void run() {
                 Log.d(TAG, "delayed wakeup firing");
-                startReminderWithExtra(REMINDER_WAKEUP, REMINDER_WAKEUP);
+                startReminderWithExtra(REMINDER_WAKEUP, reminder.getId().toString());
             }
         }, 9000);
 
@@ -906,6 +1039,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
             animateSnoozeFloater(floatingsnooze.getHeight(), 0, new DecelerateInterpolator(1.5f));
             floaterHidden = false;
             floatingsnooze.setVisibility(View.VISIBLE);
+            showcase(this, SHOWCASE_REMINDER3);
         }
         hideKeyboard(recyclerView);
     }
@@ -976,6 +1110,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                     }
                 });
                 if (bundle.getString(REMINDER_WAKEUP) != null) {
+                    recyclerView.smoothScrollToPosition(getPositionFromReminderId(Integer.parseInt(bundle.getString(REMINDER_WAKEUP))));
                     JoH.runOnUiThreadDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -1042,7 +1177,7 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
         }
     }
 
-    private static void showcase(final Activity activity, int which) {
+    private static void showcase(final Activity activity, final int which) {
 
         final ViewTarget target;
         final String title;
@@ -1060,15 +1195,41 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
             case Home.SHOWCASE_REMINDER1:
                 target = new ViewTarget(R.id.fab, activity);
                 title = "You have no reminders yet";
-                message = "Reminders can be used for things like a pump site change or anything else.\n\nThey can repeat, be set for various time periods. Be snoozed, postponed, rescheduled etc.\n\nClick the + button to add a reminder.";
+                message = "Reminders can be used for things like pump site changes or anything else.\n\nThey can repeat, be set for various time periods. Be snoozed, postponed, rescheduled etc.\n\nClick the + button to add a reminder.";
                 delay = 200;
                 break;
 
             case Home.SHOWCASE_REMINDER2:
                 target = null;
                 title = "Swipe left or right";
-                message = "\u2190 Swipe LEFT to delay or snooze a reminder\n\n\u2192 Swipe RIGHT schedule the next future reminder\n\nTapping on the title or time allows editing.";
-                delay = 1000;
+                message = "\u2190 Swipe LEFT to delay or snooze a reminder\n\n\u2192 Swipe RIGHT schedule the next future reminder\n\nTapping on the title or time allows editing. Long press title to edit other parameters.";
+                break;
+
+            case Home.SHOWCASE_REMINDER3:
+                target = new ViewTarget(R.id.imageButton5, activity);
+                title = "Reminder Snooze Panel - Undo";
+                message = "The Undo button restores the reminder to how it was before it was swiped.";
+                break;
+
+            case Home.SHOWCASE_REMINDER4:
+                target = new ViewTarget(R.id.reminderTrashButton, activity);
+                title = "Reminder Snooze Panel - Trash";
+                message = "The Trash button permanently deletes the swiped reminder!";
+                delay = 10;
+                break;
+
+            case Home.SHOWCASE_REMINDER5:
+                target = new ViewTarget(R.id.imageButton7, activity);
+                title = "Reminder Snooze Panel - Hide";
+                message = "The Hide button hides the snooze panel";
+                delay = 10;
+                break;
+
+            case Home.SHOWCASE_REMINDER6:
+                target = new ViewTarget(R.id.button5, activity);
+                title = "Reminder Snooze Panel - Times";
+                message = "The various buttons quickly change from the default snooze to a different snooze period.";
+                delay = 10;
                 break;
 
             default:
@@ -1104,9 +1265,41 @@ public class Reminders extends ActivityWithRecycler implements SensorEventListen
                             .singleShot(oneshot ? option : -1)
                             .build();
                 }
-
+                myShowcase.setTag(which);
                 myShowcase.setBackgroundColor(Color.TRANSPARENT);
                 myShowcase.setShouldCentreText(false);
+                myShowcase.setOnShowcaseEventListener(new OnShowcaseEventListener() {
+                                                          @Override
+                                                          public void onShowcaseViewHide(ShowcaseView showcaseView) {
+
+                                                          }
+
+                                                          @Override
+                                                          public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+                                                              switch ((int) showcaseView.getTag()) {
+                                                                  case Home.SHOWCASE_REMINDER3:
+                                                                      showcase(activity, Home.SHOWCASE_REMINDER4);
+                                                                      break;
+                                                                  case Home.SHOWCASE_REMINDER4:
+                                                                      showcase(activity, Home.SHOWCASE_REMINDER5);
+                                                                      break;
+                                                                  case Home.SHOWCASE_REMINDER5:
+                                                                      showcase(activity, Home.SHOWCASE_REMINDER6);
+                                                                      break;
+                                                              }
+                                                          }
+
+                                                          @Override
+                                                          public void onShowcaseViewShow(ShowcaseView showcaseView) {
+
+                                                          }
+
+                                                          @Override
+                                                          public void onShowcaseViewTouchBlocked(MotionEvent motionEvent) {
+                                                          }
+                                                      }
+                );
+
 
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                 int margin = (int) activity.getResources().getDimension(R.dimen.button_margin);

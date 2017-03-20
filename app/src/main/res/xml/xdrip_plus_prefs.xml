@@ -354,6 +354,11 @@
                 android:key="plus_extra_features"
                 android:summary="Show extra and alpha test features"
                 android:title="@string/parakeet_and_extra_features" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="plus_show_reminders"
+                android:summary="Show Reminder menus and features"
+                android:title="Enable Reminder features" />
 
         </PreferenceCategory>
     </PreferenceScreen>

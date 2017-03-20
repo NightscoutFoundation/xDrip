@@ -763,14 +763,16 @@ public class JoH {
         return ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + xdrip.getAppContext().getPackageName() + "/" + id;
     }
 
-    public static synchronized void playSoundUri(String soundUri) {
+    public static synchronized MediaPlayer playSoundUri(String soundUri) {
         try {
             JoH.getWakeLock("joh-playsound", 10000);
             final MediaPlayer player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(soundUri));
             player.setLooping(false);
             player.start();
+            return player;
         } catch (Exception e) {
             Log.wtf(TAG, "Failed to play audio: " + soundUri + " exception:" + e);
+            return null;
         }
     }
 
