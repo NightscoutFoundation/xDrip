@@ -49,9 +49,11 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 //KS import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 //KS import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.android.gms.wearable.DataMap;
 
 import java.nio.ByteBuffer;
@@ -148,17 +150,9 @@ public class DexCollectionService extends Service {
         failover_time = 0;
         static_use_rfduino_bluetooth = use_rfduino_bluetooth;
         static_use_transmiter_pl_bluetooth = use_transmiter_pl_bluetooth;
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2){
-            stopSelf();
-            JoH.releaseWakeLock(wl);
-            return START_NOT_STICKY;
-        }
         lastState = "Started " + JoH.hourMinuteString();
         final Context context = getApplicationContext();
-        if (CollectionServiceStarter.isBTWixel(context)
-                || CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()
-                || CollectionServiceStarter.isWifiandBTWixel(context)
-                || CollectionServiceStarter.isFollower(context)) {
+        if (shouldServiceRun()) {
             setFailoverTimer();
         } else {
             lastState = "Stopping "+JoH.hourMinuteString();
@@ -173,6 +167,13 @@ public class DexCollectionService extends Service {
         return START_STICKY;
     }
 
+    private static boolean shouldServiceRun() {
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return false;
+        final boolean result = (DexCollectionType.hasXbridgeWixel() || DexCollectionType.hasBtWixel()) && PersistentStore.getBoolean(CollectionServiceStarter.pref_run_wear_collector);
+        Log.d(TAG, "shouldServiceRun() returning: " + result);
+        return result;
+    }
+
     @Override
     public void onDestroy() {
         status("Shutdown");
@@ -180,16 +181,20 @@ public class DexCollectionService extends Service {
         Log.d(TAG, "onDestroy entered");
         close();
         //KS foregroundServiceStarter.stop();
-        //KS setRetryTimer();
-        if (serviceIntent != null) {
-            Log.d(TAG, "onDestroy stop Alarm serviceIntent");
-            AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarm.cancel(serviceIntent);
+        if (shouldServiceRun()) {//Android killed service
+            setRetryTimer();
         }
-        if (serviceFailoverIntent != null) {
-            Log.d(TAG, "onDestroy stop Alarm serviceFailoverIntent");
-            AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarm.cancel(serviceFailoverIntent);
+        else {//onDestroy triggered by CollectionServiceStart.stopBtService
+            if (serviceIntent != null) {
+                Log.d(TAG, "onDestroy stop Alarm serviceIntent");
+                AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+                alarm.cancel(serviceIntent);
+            }
+            if (serviceFailoverIntent != null) {
+                Log.d(TAG, "onDestroy stop Alarm serviceFailoverIntent");
+                AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+                alarm.cancel(serviceFailoverIntent);
+            }
         }
         //KS BgToSpeech.tearDownTTS();
         Log.i(TAG, "SERVICE STOPPED");

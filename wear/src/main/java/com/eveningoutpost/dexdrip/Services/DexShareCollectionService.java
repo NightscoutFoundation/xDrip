@@ -38,6 +38,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.DexShareAttributes;
 //KS import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 //KS import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 
 import java.nio.charset.StandardCharsets;
@@ -134,11 +135,7 @@ public class DexShareCollectionService extends Service {
         Log.d(TAG, "onStartCommand");
         try {
 
-            if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-                stopSelf();
-                return START_NOT_STICKY;
-            }
-            if (CollectionServiceStarter.isBTShare(getApplicationContext())) {
+            if (shouldServiceRun(getApplicationContext())) {
                 setFailoverTimer();
             } else {
                 stopSelf();
@@ -156,11 +153,27 @@ public class DexShareCollectionService extends Service {
         return START_STICKY;
     }
 
+    private static boolean shouldServiceRun(Context context) {
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return false;
+        final boolean result = CollectionServiceStarter.isBTShare(context) && PersistentStore.getBoolean(CollectionServiceStarter.pref_run_wear_collector);
+        Log.d(TAG, "shouldServiceRun() returning: " + result);
+        return result;
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         close();
-        setRetryTimer();
+        if (shouldServiceRun(getApplicationContext())) {//Android killed service
+            setRetryTimer();
+        }
+        else {//onDestroy triggered by CollectionServiceStart.stopBtService
+            if (pendingIntent != null) {
+                Log.d(TAG, "onDestroy stop Alarm serviceIntent");
+                AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+                alarm.cancel(pendingIntent);
+            }
+        }
         //KS foregroundServiceStarter.stop();
         unregisterReceiver(mPairReceiver);
         //KS BgToSpeech.tearDownTTS();

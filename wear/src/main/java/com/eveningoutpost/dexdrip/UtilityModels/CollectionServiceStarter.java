@@ -31,6 +31,8 @@ import java.io.IOException;
  */
 public class CollectionServiceStarter {
     private Context mContext;
+    public static boolean run_wear_collector = false;//KS
+    final public static String pref_run_wear_collector = "run_wear_collector";
 
     private final static String TAG = CollectionServiceStarter.class.getSimpleName();
 
@@ -268,11 +270,8 @@ public class CollectionServiceStarter {
 
     public static void startBtService(Context context) {
         Log.d(TAG, "startBtService: " + DexCollectionType.getDexCollectionType());
-        //stopBtService(context);
+        stopBtService(context);
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
-        collectionServiceStarter.stopBtWixelService();
-        collectionServiceStarter.stopBtShareService();
-        collectionServiceStarter.stopG5ShareService();
         switch (DexCollectionType.getDexCollectionType()) {
             case DexcomShare:
                 collectionServiceStarter.startBtShareService();
@@ -288,6 +287,7 @@ public class CollectionServiceStarter {
 
     public static void stopBtService(Context context) {
         Log.d(TAG, "stopBtService call stopService");
+        PersistentStore.setBoolean(pref_run_wear_collector, false);
         CollectionServiceStarter collectionServiceStarter = new CollectionServiceStarter(context);
         collectionServiceStarter.stopBtWixelService();
         collectionServiceStarter.stopBtShareService();
@@ -299,6 +299,7 @@ public class CollectionServiceStarter {
         Log.d(TAG, "starting bt wixel service");
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
             Log.d(TAG, "SDK_INT >=JELLY_BEAN_MR2");
+            PersistentStore.setBoolean(pref_run_wear_collector, true);
             this.mContext.startService(new Intent(this.mContext, DexCollectionService.class));
             Log.d(TAG, "After startService");
         }
@@ -313,6 +314,7 @@ public class CollectionServiceStarter {
     public void startBtShareService() {//private
         Log.d(TAG, "starting bt share service");
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            PersistentStore.setBoolean(pref_run_wear_collector, true);
             this.mContext.startService(new Intent(this.mContext, DexShareCollectionService.class));
         }
     }
@@ -320,6 +322,7 @@ public class CollectionServiceStarter {
     public void startBtG5Service() {//private
         Log.d(TAG, "starting G5 service");
         //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+        PersistentStore.setBoolean(pref_run_wear_collector, true);
         G5CollectionService.keep_running = true;
         this.mContext.startService(new Intent(this.mContext, G5CollectionService.class));
         //}
