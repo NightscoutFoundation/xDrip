@@ -21,6 +21,7 @@ public class StatsResult {
     private final int above;
     private double total_carbs = -1;
     private double total_insulin = -1;
+    private double ratio = -1;
     private double stdev = -1;
     private int total_steps = -1;
     private final double avg;
@@ -132,6 +133,27 @@ public class StatsResult {
         }
         return total_insulin;
     }
+
+    public double getRatio() {
+        if (ratio < 0) {
+            // get total insulin
+            Cursor cursor = Cache.openDatabase().rawQuery("select sum(insulin) from treatments  where timestamp >= " + from + " AND timestamp <= " + to, null);
+            cursor.moveToFirst();
+            total_insulin = cursor.getDouble(0);
+            cursor.close();
+
+            // get total carbs
+            cursor = Cache.openDatabase().rawQuery("select sum(carbs) from treatments  where timestamp >= " + from + " AND timestamp <= " + to, null);
+            cursor.moveToFirst();
+            total_carbs = cursor.getDouble(0);
+            cursor.close();
+
+            //calc ratio
+            ratio = (total_carbs / total_insulin);
+        }
+        return ratio;
+    }
+
 
     public int getTotal_steps() {
         if (total_steps < 0) {
