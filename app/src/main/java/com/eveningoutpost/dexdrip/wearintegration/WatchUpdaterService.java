@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.wearintegration;
 
 import android.app.ActivityManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,6 +33,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -61,6 +63,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
 import static com.eveningoutpost.dexdrip.Models.JoH.ts;
 import static com.eveningoutpost.dexdrip.Models.PebbleMovement.last;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
@@ -228,6 +231,10 @@ public class WatchUpdaterService extends WearableListenerService implements
             change = true;
             prefs.putBoolean("force_wearG5", force_wearG5);
             Log.d(TAG, "syncPrefData commit force_wearG5:" + force_wearG5);
+            if (force_wearG5) {
+                final PendingIntent pendingIntent = android.app.PendingIntent.getActivity(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), Home.class), android.app.PendingIntent.FLAG_UPDATE_CURRENT);
+                showNotification("Force Wear Enabled", "Watch has enabled Force Wear Collection Service", pendingIntent, 771, true, true, true);
+            }
         }
 
         if (nfc_sensor_age != mPrefs.getInt("nfc_sensor_age", 0)) {//Used by DexCollectionService
@@ -714,8 +721,9 @@ public class WatchUpdaterService extends WearableListenerService implements
                         Log.d(TAG, "onStartCommand Action=" + ACTION_START_COLLECTOR + " Path=" + START_COLLECTOR_PATH);
                         sendNotification(START_COLLECTOR_PATH, "startCOLLECTOR");
                     } else if (ACTION_STATUS_COLLECTOR.equals(action)) {//KS
-                        Log.d(TAG, "onStartCommand Action=" + ACTION_STATUS_COLLECTOR + " Path=" + STATUS_COLLECTOR_PATH);
-                        sendNotification(STATUS_COLLECTOR_PATH, "statusCOLLECTOR");
+                        Log.d(TAG, "onStartCommand Action=ACTION_STATUS_COLLECTOR Path=STATUS_COLLECTOR_PATH getBatteryStatusNow=" + intent.getBooleanExtra("getBatteryStatusNow", false));
+                        //sendNotification(STATUS_COLLECTOR_PATH, "statusCOLLECTOR");
+                        sendRequestExtra(STATUS_COLLECTOR_PATH, "getBatteryStatusNow", intent.getBooleanExtra("getBatteryStatusNow", false));
                     } else if (ACTION_SYNC_LOGS.equals(action)) {
                         //sendNotification(SYNC_LOGS_PATH, "syncLOG");
                         long rate = (syncLogsRequested == 0 ? 2 : syncLogsRequested * 10);//in seconds
@@ -1194,6 +1202,19 @@ public class WatchUpdaterService extends WearableListenerService implements
             //unique content
             dataMapRequest.getDataMap().putDouble("timestamp", System.currentTimeMillis());
             dataMapRequest.getDataMap().putString(key, value);//"externalStatusString"
+            PutDataRequest putDataRequest = dataMapRequest.asPutDataRequest();
+            Wearable.DataApi.putDataItem(googleApiClient, putDataRequest);
+        } else {
+            Log.e("sendRequestExtra", "No connection to wearable available!");
+        }
+    }
+
+    private void sendRequestExtra(String path, String key, boolean value) {
+        if (googleApiClient.isConnected()) {
+            PutDataMapRequest dataMapRequest = PutDataMapRequest.create(path);//NEW_STATUS_PATH
+            //unique content
+            dataMapRequest.getDataMap().putDouble("timestamp", System.currentTimeMillis());
+            dataMapRequest.getDataMap().putBoolean(key, value);//"externalStatusString"
             PutDataRequest putDataRequest = dataMapRequest.asPutDataRequest();
             Wearable.DataApi.putDataItem(googleApiClient, putDataRequest);
         } else {

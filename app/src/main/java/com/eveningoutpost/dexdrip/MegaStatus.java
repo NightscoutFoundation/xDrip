@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 
 public class MegaStatus extends ActivityWithMenu {
 
@@ -107,7 +108,7 @@ public class MegaStatus extends ActivityWithMenu {
             if (DexCollectionType.usesDexCollectionService(dexCollectionType)) {
                 addAsection(G4_STATUS, "Bluetooth Collector Status");
             }
-            if (dexCollectionType.equals(DexCollectionType.DexcomG5)) {
+            if (dexCollectionType.equals(DexcomG5)) {
                 addAsection(G5_STATUS, "G5 Collector and Transmitter Status");
             }
             if (DexCollectionType.hasWifi()) {
@@ -239,7 +240,12 @@ public class MegaStatus extends ActivityWithMenu {
 
     private void requestWearCollectorStatus() {
         if (Home.get_enable_wear()) {
-            startWatchUpdaterService(xdrip.getAppContext(), WatchUpdaterService.ACTION_STATUS_COLLECTOR, TAG);
+            if (DexCollectionType.getDexCollectionType().equals(DexcomG5)) {
+                startWatchUpdaterService(xdrip.getAppContext(), WatchUpdaterService.ACTION_STATUS_COLLECTOR, TAG, "getBatteryStatusNow", G5CollectionService.getBatteryStatusNow);
+            }
+            else {
+                startWatchUpdaterService(xdrip.getAppContext(), WatchUpdaterService.ACTION_STATUS_COLLECTOR, TAG);
+            }
         }
     }
 
