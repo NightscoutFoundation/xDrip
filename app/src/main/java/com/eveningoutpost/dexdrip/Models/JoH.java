@@ -84,6 +84,7 @@ import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 
+import static android.content.Context.ALARM_SERVICE;
 import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
 
 /**
@@ -916,16 +917,28 @@ public class JoH {
         }
     }
 
-    public static void wakeUpIntent(Context context, long delayMs, PendingIntent pendingIntent) {
+    public static void cancelAlarm(Context context, PendingIntent serviceIntent) {
+        // do we want a try catch block here?
+        final AlarmManager alarm = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+        if (serviceIntent != null) {
+            Log.d(TAG, "Cancelling alarm " + serviceIntent.getCreatorPackage());
+            alarm.cancel(serviceIntent);
+        } else {
+            Log.d(TAG, "Cancelling alarm: serviceIntent is null");
+        }
+    }
+
+    public static long wakeUpIntent(Context context, long delayMs, PendingIntent pendingIntent) {
         final long wakeTime = JoH.tsl() + delayMs;
         Log.d(TAG, "Scheduling wakeup intent: " + dateTimeText(wakeTime));
-        final AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        final AlarmManager alarm = (AlarmManager) context.getSystemService(ALARM_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
         } else
             alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+        return wakeTime;
     }
 
     public static void scheduleNotification(Context context, String title, String body, int delaySeconds, int notification_id) {

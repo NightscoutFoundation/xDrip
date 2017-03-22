@@ -47,6 +47,7 @@ import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -150,13 +151,11 @@ public class DexCollectionService extends Service {
         failover_time = 0;
         static_use_rfduino_bluetooth = use_rfduino_bluetooth;
         static_use_transmiter_pl_bluetooth = use_transmiter_pl_bluetooth;
-        lastState = "Started " + JoH.hourMinuteString();
-        final Context context = getApplicationContext();
-        // TODO follower must be wrong here and should use DexCollectionType
+        status("Started");
         if (shouldServiceRun()) {
             setFailoverTimer();
         } else {
-            lastState = "Stopping " + JoH.hourMinuteString();
+            status("Stopping");
             stopSelf();
             JoH.releaseWakeLock(wl);
             return START_NOT_STICKY;
@@ -167,6 +166,7 @@ public class DexCollectionService extends Service {
         JoH.releaseWakeLock(wl);
         return START_STICKY;
     }
+
 
     private static boolean shouldServiceRun() {
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return false;
@@ -184,18 +184,16 @@ public class DexCollectionService extends Service {
         foregroundServiceStarter.stop();
         if (shouldServiceRun()) {//Android killed service
             setRetryTimer();
+            status("Stopped, attempting restart");
         }
         else {//onDestroy triggered by CollectionServiceStart.stopBtService
-            if (serviceIntent != null) {
-                Log.d(TAG, "onDestroy stop Alarm serviceIntent");
-                AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-                alarm.cancel(serviceIntent);
-            }
-            if (serviceFailoverIntent != null) {
-                Log.d(TAG, "onDestroy stop Alarm serviceFailoverIntent");
-                AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-                alarm.cancel(serviceFailoverIntent);
-            }
+            Log.d(TAG, "onDestroy stop Alarm serviceIntent");
+            JoH.cancelAlarm(this,serviceIntent);
+            Log.d(TAG, "onDestroy stop Alarm serviceFailoverIntent");
+            JoH.cancelAlarm(this,serviceFailoverIntent);
+            status("Service full stop");
+            retry_time = 0;
+            failover_time = 0;
         }
         BgToSpeech.tearDownTTS();
         Log.i(TAG, "SERVICE STOPPED");
@@ -228,54 +226,25 @@ public class DexCollectionService extends Service {
 
     public void setRetryTimer() {
         mStaticState = mConnectionState;
-        if ((CollectionServiceStarter.isBTWixel(getApplicationContext())
-                || CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()
-                || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())) && !Home.get_forced_wear()) {
-            long retry_in;
-            if(CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()) {
-                retry_in = (1000 * 25);
-            }else {
-                //retry_in = (1000*65);
-                retry_in = (1000 * 25); // same for both for testing
-            }
-            Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in / 1000) + " seconds");
-            Calendar calendar = Calendar.getInstance();
-            AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            long wakeTime = calendar.getTimeInMillis() + retry_in;
-            retry_time = wakeTime;
-            if (serviceIntent != null)
-                alarm.cancel(serviceIntent);
+        if (shouldServiceRun()) {
+            final long retry_in = (Constants.SECOND_IN_MS * 25);
+            Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
+            JoH.cancelAlarm(this, serviceIntent);
             serviceIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
-            } else
-                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+            retry_time = JoH.wakeUpIntent(this, retry_in, serviceIntent);
+        } else {
+            Log.d(TAG, "Not setting retry timer as service should not be running");
         }
     }
 
     public void setFailoverTimer() {
-        if ((CollectionServiceStarter.isBTWixel(getApplicationContext())
-                || CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()
-                || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())
-                || CollectionServiceStarter.isFollower(getApplicationContext())) && !Home.get_forced_wear()) {
-
-            long retry_in = (1000 * 60 * 6);
-            Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
-            Calendar calendar = Calendar.getInstance();
-            AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            long wakeTime = calendar.getTimeInMillis() + retry_in;
-            failover_time = wakeTime;
-            if (serviceFailoverIntent != null)
-                alarm.cancel(serviceFailoverIntent);
+        if (shouldServiceRun()) {
+            final long retry_in = (Constants.MINUTE_IN_MS * 6);
+            Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (Constants.MINUTE_IN_MS)) + " minutes");
+            JoH.cancelAlarm(this, serviceFailoverIntent);
             serviceFailoverIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, serviceFailoverIntent);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, serviceFailoverIntent);
-            } else
-                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, serviceFailoverIntent);
+            failover_time = JoH.wakeUpIntent(this, retry_in, serviceFailoverIntent);
+            retry_time = 0; // only one alarm will run
         } else {
             stopSelf();
         }
@@ -338,7 +307,7 @@ public class DexCollectionService extends Service {
             }
         } else if (mConnectionState == STATE_CONNECTED) { //WOOO, we are good to go, nothing to do here!
             status("Last Connected");
-            Log.i(TAG, "attemptConnection: Looks like we are already connected, going to read!");
+            Log.i(TAG, "attemptConnection: Looks like we are already connected, ready to receive");
             mStaticState = mConnectionState;
             return;
         }
@@ -377,6 +346,9 @@ public class DexCollectionService extends Service {
                         mConnectionState = STATE_CONNECTED;
                         ActiveBluetoothDevice.connected();
                         Log.i(TAG, "onConnectionStateChange: Connected to GATT server.");
+                        if (JoH.ratelimit("attempt-connection", 30)) {
+                            attemptConnection(); // refresh status info
+                        }
                         mBluetoothGatt.discoverServices();
                         break;
                     case BluetoothProfile.STATE_DISCONNECTED:
@@ -462,10 +434,7 @@ public class DexCollectionService extends Service {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 
-            PowerManager powerManager = (PowerManager) mContext.getSystemService(POWER_SERVICE);
-            PowerManager.WakeLock wakeLock1 = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                    "DexCollectionService");
-            wakeLock1.acquire();
+            final PowerManager.WakeLock wakeLock1 = JoH.getWakeLock("DexCollectionService", 60000);
             try {
                 final byte[] data = characteristic.getValue();
                 final String hexdump = HexDump.dumpHexString(data);
@@ -477,13 +446,14 @@ public class DexCollectionService extends Service {
                     setSerialDataToTransmitterRawData(data, data.length);
                 }
                 lastdata = data;
+                setFailoverTimer(); // restart the countdown
             } finally {
                 if (Home.getPreferencesBoolean("bluetooth_frequent_reset",false))
                 {
                     Log.e(TAG,"Resetting bluetooth due to constant reset option being set!");
                     JoH.restartBluetooth(getApplicationContext(),5000);
                 }
-                wakeLock1.release();
+                JoH.releaseWakeLock(wakeLock1);
             }
         }
 
