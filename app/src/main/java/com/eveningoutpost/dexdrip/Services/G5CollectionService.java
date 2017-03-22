@@ -312,10 +312,7 @@ public class G5CollectionService extends Service {
 
                 //Log.d(TAG, "SDK: " + Build.VERSION.SDK_INT);
                 //stopScan();
-                boolean wear_sync = prefs.getBoolean("wear_sync", false);
-                boolean enable_wearG5 = prefs.getBoolean("enable_wearG5", false);
-                boolean force_wearG5 = prefs.getBoolean("force_wearG5", false);
-                if (!CollectionServiceStarter.isBTG5(xdrip.getAppContext()) || (wear_sync && enable_wearG5 && force_wearG5)) {
+                if (!shouldServiceRun()) {
                     Log.e(TAG,"Shutting down as no longer using G5 data source");
                     service_running = false;
                     keep_running = false;
@@ -394,6 +391,12 @@ public class G5CollectionService extends Service {
         Log.d(TAG, "getTransmitterDetails() result: Bonded? " + isBondedOrBonding.toString()+(isBonded ? " localed bonded" : " not locally bonded"));
     }
 
+    private static boolean shouldServiceRun() {
+        final boolean result = CollectionServiceStarter.isBTG5(xdrip.getAppContext()) && !Home.get_forced_wear();
+        Log.d(TAG, "shouldServiceRun() returning: " + result);
+        return result;
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -404,7 +407,7 @@ public class G5CollectionService extends Service {
         Log.d(TAG, "onDestroy");
         //SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         scan_interval_timer.cancel();
-        if (pendingIntent != null) {
+        if (pendingIntent != null && !shouldServiceRun()) {
             Log.d(TAG, "onDestroy stop Alarm pendingIntent");
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
             alarm.cancel(pendingIntent);

@@ -49,6 +49,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
@@ -68,6 +69,8 @@ public class DexCollectionService extends Service {
     private final static String TAG = DexCollectionService.class.getSimpleName();
     private SharedPreferences prefs;
     private BgToSpeech bgToSpeech;
+    private static PendingIntent serviceIntent;
+    private static PendingIntent serviceFailoverIntent;
     public DexCollectionService dexCollectionService;
 
     private BluetoothAdapter mBluetoothAdapter;
@@ -147,18 +150,10 @@ public class DexCollectionService extends Service {
         failover_time = 0;
         static_use_rfduino_bluetooth = use_rfduino_bluetooth;
         static_use_transmiter_pl_bluetooth = use_transmiter_pl_bluetooth;
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            stopSelf();
-            JoH.releaseWakeLock(wl);
-            return START_NOT_STICKY;
-        }
         lastState = "Started " + JoH.hourMinuteString();
         final Context context = getApplicationContext();
         // TODO follower must be wrong here and should use DexCollectionType
-        if ((CollectionServiceStarter.isBTWixel(context)
-                || CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()
-                || CollectionServiceStarter.isWifiandBTWixel(context)
-                || CollectionServiceStarter.isFollower(context)) && !Home.get_forced_wear()) {
+        if (shouldServiceRun()) {
             setFailoverTimer();
         } else {
             lastState = "Stopping " + JoH.hourMinuteString();
@@ -173,6 +168,13 @@ public class DexCollectionService extends Service {
         return START_STICKY;
     }
 
+    private static boolean shouldServiceRun() {
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return false;
+        final boolean result = (DexCollectionType.hasXbridgeWixel() || DexCollectionType.hasBtWixel()) && !Home.get_forced_wear();
+        Log.d(TAG, "shouldServiceRun() returning: " + result);
+        return result;
+    }
+
     @Override
     public void onDestroy() {
         status("Shutdown");
@@ -180,7 +182,21 @@ public class DexCollectionService extends Service {
         Log.d(TAG, "onDestroy entered");
         close();
         foregroundServiceStarter.stop();
-        setRetryTimer();
+        if (shouldServiceRun()) {//Android killed service
+            setRetryTimer();
+        }
+        else {//onDestroy triggered by CollectionServiceStart.stopBtService
+            if (serviceIntent != null) {
+                Log.d(TAG, "onDestroy stop Alarm serviceIntent");
+                AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+                alarm.cancel(serviceIntent);
+            }
+            if (serviceFailoverIntent != null) {
+                Log.d(TAG, "onDestroy stop Alarm serviceFailoverIntent");
+                AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+                alarm.cancel(serviceFailoverIntent);
+            }
+        }
         BgToSpeech.tearDownTTS();
         Log.i(TAG, "SERVICE STOPPED");
     }
@@ -227,7 +243,9 @@ public class DexCollectionService extends Service {
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
             long wakeTime = calendar.getTimeInMillis() + retry_in;
             retry_time = wakeTime;
-            PendingIntent serviceIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+            if (serviceIntent != null)
+                alarm.cancel(serviceIntent);
+            serviceIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -249,13 +267,15 @@ public class DexCollectionService extends Service {
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
             long wakeTime = calendar.getTimeInMillis() + retry_in;
             failover_time = wakeTime;
-            PendingIntent serviceIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+            if (serviceFailoverIntent != null)
+                alarm.cancel(serviceFailoverIntent);
+            serviceFailoverIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, serviceFailoverIntent);
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, serviceFailoverIntent);
             } else
-                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, serviceIntent);
+                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, serviceFailoverIntent);
         } else {
             stopSelf();
         }
