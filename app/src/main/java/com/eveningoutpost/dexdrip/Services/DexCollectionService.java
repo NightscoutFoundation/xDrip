@@ -28,8 +28,10 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.IBinder;
@@ -55,6 +57,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.wearable.DataMap;
 
 import java.nio.ByteBuffer;
@@ -63,6 +66,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -76,10 +80,12 @@ public class DexCollectionService extends Service {
 
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothGatt mBluetoothGatt;
+    private String mDeviceAddress;
     private ForegroundServiceStarter foregroundServiceStarter;
     private int mConnectionState = BluetoothProfile.STATE_DISCONNECTING;
     private static int mStaticState = BluetoothProfile.STATE_DISCONNECTING;
     private static int mStaticStateWatch = 0; // default unknown
+    private static String bondedState;
     private BluetoothDevice device;
     private BluetoothGattCharacteristic mCharacteristic;
     // Experimental support for rfduino from Tomasz Stachowicz
@@ -91,6 +97,7 @@ public class DexCollectionService extends Service {
     private static final int STATE_DISCONNECTING = BluetoothProfile.STATE_DISCONNECTING;
     private static final int STATE_CONNECTING = BluetoothProfile.STATE_CONNECTING;
     private static final int STATE_CONNECTED = BluetoothProfile.STATE_CONNECTED;
+    private static final String PREF_DEX_COLLECTION_BONDING = "pref_dex_collection_bonding";
 
     public static double last_time_seen = 0;
     public static String lastState = "Not running";
@@ -122,6 +129,8 @@ public class DexCollectionService extends Service {
     // Experimental support for rfduino from Tomasz Stachowicz
     private final UUID xDripDataCharacteristicSend = use_rfduino_bluetooth ? UUID.fromString(HM10Attributes.HM_TX) : UUID.fromString(HM10Attributes.HM_RX_TX);
 
+    private final String DEFAULT_BT_PIN = "000000"; // HM10/11 default pin
+
     @Override
     public IBinder onBind(Intent intent) {
         throw new UnsupportedOperationException("Not yet implemented");
@@ -141,6 +150,11 @@ public class DexCollectionService extends Service {
             prefs.edit().putInt("bridge_battery",0).apply();
             //if (Home.get_master()) GcmActivity.sendBridgeBattery(prefs.getInt("bridge_battery",-1));
         }
+
+        final IntentFilter pairingRequestFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
+        pairingRequestFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
+        registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
+
         Log.i(TAG, "onCreate: STARTING SERVICE");
     }
 
@@ -182,6 +196,13 @@ public class DexCollectionService extends Service {
         Log.d(TAG, "onDestroy entered");
         close();
         foregroundServiceStarter.stop();
+
+        try {
+            unregisterReceiver(mPairingRequestRecevier);
+        } catch (Exception e) {
+            android.util.Log.e(TAG, "Error unregistering pairing receiver: " + e);
+        }
+
         if (shouldServiceRun()) {//Android killed service
             setRetryTimer();
             status("Stopped, attempting restart");
@@ -294,6 +315,7 @@ public class DexCollectionService extends Service {
             final ActiveBluetoothDevice btDevice = ActiveBluetoothDevice.first();
             if (btDevice != null) {
                 final String deviceAddress = btDevice.address;
+                mDeviceAddress = deviceAddress;
                 try {
                     if (mBluetoothAdapter.isEnabled() && mBluetoothAdapter.getRemoteDevice(deviceAddress) != null) {
                         status("Connecting" + (Home.get_engineering_mode() ? ": "+deviceAddress : ""));
@@ -329,6 +351,14 @@ public class DexCollectionService extends Service {
                 return "UNKNOWN STATE!";
         }
     }
+
+    private final BroadcastReceiver mPairingRequestRecevier = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG,"Received pairing request");
+            JoH.doPairingRequest(context, this, intent, mDeviceAddress, DEFAULT_BT_PIN) ;
+        }
+    };
 
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
@@ -382,6 +412,16 @@ public class DexCollectionService extends Service {
             }
             final PowerManager.WakeLock wl = JoH.getWakeLock("bluetooth-onservices", 60000);
             Log.d(TAG, "onServicesDiscovered received status: " + status);
+
+            if (prefs.getBoolean(PREF_DEX_COLLECTION_BONDING, false)) {
+                if ((mDeviceAddress != null) && (device != null) && (!areWeBonded(mDeviceAddress))) {
+                    if (JoH.ratelimit("dexcollect-create-bond", 20)) {
+                        Log.d(TAG, "Attempting to create bond to: " + mDeviceAddress);
+                        device.setPin(JoH.convertPinToBytes(DEFAULT_BT_PIN));
+                        device.createBond();
+                    }
+                }
+            }
 
             final BluetoothGattService gattService = mBluetoothGatt.getService(xDripDataService);
             if (gattService == null) {
@@ -665,6 +705,30 @@ public class DexCollectionService extends Service {
         BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, transmitterData.timestamp);
     }
 
+    private synchronized boolean areWeBonded(String hunt_address) {
+        if (mBluetoothAdapter == null) {
+            Log.e(TAG, "mBluetoothAdapter is null");
+            return true; // failsafe
+        }
+        final Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+        if ((pairedDevices != null) && (pairedDevices.size() > 0)) {
+            for (BluetoothDevice device : pairedDevices) {
+                final String address = device.getAddress();
+
+                if (address != null) {
+                    if (hunt_address.equals(address)) {
+                        Log.d(TAG, hunt_address + " is bonded");
+                        bondedState = hunt_address;
+                        return true;
+                    }
+                }
+            }
+        }
+        Log.d(TAG, hunt_address + " is not bonded");
+        bondedState = "";
+        return false;
+    }
+
     private void watchdog() {
         if (last_time_seen == 0) return;
         if (prefs.getBoolean("bluetooth_watchdog",false)) {
@@ -738,6 +802,45 @@ public class DexCollectionService extends Service {
         }
         if (last_battery_level > -1) {
             l.add(new StatusItem("Battery level", last_battery_level));
+        }
+
+        if (Home.getPreferencesBooleanDefaultFalse(PREF_DEX_COLLECTION_BONDING)) {
+            if (bondedState != null) {
+                l.add(new StatusItem("Bluetooth Pairing", (bondedState.length() > 0) ? "Bonded" : "Not bonded", (bondedState.length() > 0) ? StatusItem.Highlight.GOOD : StatusItem.Highlight.NOTICE, "long-press",
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                Home.setPreferencesBoolean(PREF_DEX_COLLECTION_BONDING, false);
+                                if (bondedState.length() > 0) {
+                                    JoH.static_toast_long("If you want to unbond use Android bluetooth system settings to Forget device");
+                                    bondedState = null;
+                                }
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        CollectionServiceStarter.restartCollectionService(xdrip.getAppContext());
+                                    }
+                                }
+                                ).start();
+                            }
+                        }));
+            }
+        } else {
+            l.add(new StatusItem("Bluetooth Pairing", "Disabled, tap to enable", StatusItem.Highlight.NORMAL, "long-press",
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            Home.setPreferencesBoolean(PREF_DEX_COLLECTION_BONDING, true);
+                            JoH.static_toast_long("This probably only works on HM10/HM11 devices at the moment and takes a minute");
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    CollectionServiceStarter.restartCollectionService(xdrip.getAppContext());
+                                }
+                            }
+                            ).start();
+                        }
+                    }));
         }
 
         if (retry_time > 0) l.add(new StatusItem("Next Retry", JoH.niceTimeTill(retry_time)));
