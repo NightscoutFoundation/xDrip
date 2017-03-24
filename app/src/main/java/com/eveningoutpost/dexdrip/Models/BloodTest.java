@@ -179,6 +179,30 @@ public class BloodTest extends Model {
         }
     }
 
+    public static BloodTest lastValid() {
+        final List<BloodTest> btl = lastValid(1);
+        if ((btl != null) && (btl.size() > 0)) {
+            return btl.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    public static List<BloodTest> lastValid(int num) {
+        try {
+            return new Select()
+                    .from(BloodTest.class)
+                    .where("state & ? != 0", BloodTest.STATE_VALID)
+                    .orderBy("timestamp desc")
+                    .limit(num)
+                    .execute();
+        } catch (android.database.sqlite.SQLiteException e) {
+            fixUpTable();
+            return null;
+        }
+    }
+
+
     public static BloodTest byUUID(String uuid) {
         if (uuid == null) return null;
         try {
@@ -313,7 +337,7 @@ public class BloodTest extends Model {
 
     synchronized static void opportunisticCalibration() {
         if (Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto")) {
-            final BloodTest bt = last();
+            final BloodTest bt = lastValid();
             if (bt == null) {
                 Log.d(TAG, "opportunistic: No blood tests");
                 return;
