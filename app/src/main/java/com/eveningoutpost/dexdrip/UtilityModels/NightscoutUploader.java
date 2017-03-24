@@ -12,11 +12,13 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.DateUtil;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.mongodb.BasicDBObject;
@@ -31,6 +33,7 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.ResponseBody;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
@@ -42,12 +45,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import retrofit.Call;
 import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.Body;
+import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.POST;
 
@@ -64,9 +69,11 @@ public class NightscoutUploader {
         private static final String TAG = NightscoutUploader.class.getSimpleName();
         private static final int SOCKET_TIMEOUT = 60000;
         private static final int CONNECTION_TIMEOUT = 30000;
+        private static final boolean d = false;
 
         public static long last_exception_time = -1;
         public static String last_exception;
+        public static final String VIA_NIGHTSCOUT_TAG = "via Nightscout";
 
         private static int failurecount = 0;
         private Context mContext;
@@ -91,6 +98,9 @@ public class NightscoutUploader {
             @POST("treatments")
             Call<ResponseBody> uploadTreatments(@Header("api-secret") String secret, @Body RequestBody body);
 
+            @GET("treatments")
+            Call<ResponseBody> downloadTreatments(@Header("api-secret") String secret);
+
         }
 
         private class UploaderException extends RuntimeException {
@@ -113,6 +123,33 @@ public class NightscoutUploader {
             enableMongoUpload = prefs.getBoolean("cloud_storage_mongodb_enable", false);
         }
 
+    public static void launchDownloadRest() {
+        if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable")
+                && Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_download_enable")) {
+            if (JoH.ratelimit("cloud_treatment_download", 60)) {
+                final NightscoutUploader uploader = new NightscoutUploader(xdrip.getAppContext());
+                uploader.downloadRest(500);
+            }
+        }
+    }
+
+    public boolean downloadRest(final long sleep) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (sleep > 0) Thread.sleep(sleep);
+                } catch (InterruptedException e) {
+                    //
+                }
+                if (doRESTtreatmentDownload(prefs)) {
+                    Home.staticRefreshBGCharts();
+                }
+            }
+        }).start();
+        return true;
+    }
+
     public boolean uploadRest(List<BgReading> glucoseDataSets, List<BloodTest> meterRecords, List<Calibration> calRecords) {
 
         boolean apiStatus = false;
@@ -122,8 +159,16 @@ public class NightscoutUploader {
             Log.i(TAG, String.format("Starting upload of %s record using a REST API", glucoseDataSets.size()));
             apiStatus = doRESTUpload(prefs, glucoseDataSets, meterRecords, calRecords);
             Log.i(TAG, String.format("Finished upload of %s record using a REST API in %s ms result: %b", glucoseDataSets.size(), System.currentTimeMillis() - start, apiStatus));
-        }
 
+            if (prefs.getBoolean("cloud_storage_api_download_enable", false)) {
+                start = System.currentTimeMillis();
+                final boolean substatus = doRESTtreatmentDownload(prefs);
+                if (substatus) {
+                    Home.staticRefreshBGCharts();
+                }
+                Log.i(TAG, String.format("Finished download using a REST API in %s ms result: %b", System.currentTimeMillis() - start, substatus));
+            }
+        }
         return apiStatus;
     }
 
@@ -140,6 +185,173 @@ public class NightscoutUploader {
         return mongoStatus;
     }
 
+    private synchronized boolean doRESTtreatmentDownload(SharedPreferences prefs) {
+        final String baseURLSettings = prefs.getString("cloud_storage_api_base", "");
+        final ArrayList<String> baseURIs = new ArrayList<>();
+
+        boolean new_data = false;
+        Log.d(TAG, "doRESTtreatmentDownload() starting run");
+
+        try {
+            for (String baseURLSetting : baseURLSettings.split(" ")) {
+                String baseURL = baseURLSetting.trim();
+                if (baseURL.isEmpty()) continue;
+                baseURIs.add(baseURL + (baseURL.endsWith("/") ? "" : "/"));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Unable to process API Base URL: " + e);
+            return false;
+        }
+        // process a list of base uris
+        for (String baseURI : baseURIs) {
+            try {
+                int apiVersion = 0;
+                URI uri = new URI(baseURI);
+                if ((uri.getHost().startsWith("192.168.")) && prefs.getBoolean("skip_lan_uploads_when_no_lan", true) && (!JoH.isLANConnected())) {
+                    Log.d(TAG, "Skipping Nighscout download from: " + uri.getHost() + " due to no LAN connection");
+                    continue;
+                }
+                if (uri.getPath().endsWith("/v1/")) apiVersion = 1;
+                String baseURL;
+                String secret = uri.getUserInfo();
+                if ((secret == null || secret.isEmpty()) && apiVersion == 0) {
+                    baseURL = baseURI;
+                } else if ((secret == null || secret.isEmpty())) {
+                    throw new Exception("Starting with API v1, a pass phase is required");
+                } else if (apiVersion > 0) {
+                    baseURL = baseURI.replaceFirst("//[^@]+@", "//");
+                } else {
+                    throw new Exception("Unexpected baseURI: " + baseURI);
+                }
+
+                final Retrofit retrofit = new Retrofit.Builder().baseUrl(baseURL).client(client).build();
+                final NightscoutService nightscoutService = retrofit.create(NightscoutService.class);
+
+                if (apiVersion == 1) {
+                    final String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
+                    final Response<ResponseBody> r;
+                    if (hashedSecret != null) {
+                        r = nightscoutService.downloadTreatments(hashedSecret).execute();
+                        if ((r != null) && (r.isSuccess())) {
+                            final String response = r.body().string();
+                            if (d) Log.d(TAG, "Response: " + response);
+                            final JSONArray jsonArray = new JSONArray(response);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                final JSONObject tr = (JSONObject) jsonArray.get(i);
+                                final String etype = tr.getString("eventType");
+                                final String uuid = UUID.nameUUIDFromBytes(tr.getString("_id").getBytes("UTF-8")).toString();
+                                final String nightscout_id = (tr.getString("_id") == null) ? uuid : tr.getString("_id");
+                                if (d) Log.d(TAG, "event: " + etype + " uuid:" + uuid);
+
+                                try {
+                                    if (tr.getString("enteredBy").startsWith(Treatments.XDRIP_TAG)) {
+                                        if (d)
+                                            Log.d(TAG, "Not syncing this item which came from xdrip to avoid duplicates");
+                                        // TODO we could maybe handle updated treatment data from nightscout
+                                        continue;
+                                    }
+                                } catch (JSONException e) {
+                                    //
+                                }
+                                // extract blood test data if present
+                                try {
+                                    if (tr.getString("glucoseType").equals("Finger")) {
+                                        final BloodTest existing = BloodTest.byUUID(uuid);
+                                        if (existing == null) {
+                                            final long timestamp = DateUtil.tolerantFromISODateString(tr.getString("created_at")).getTime();
+                                            double mgdl = JoH.tolerantParseDouble(tr.getString("glucose"));
+                                            if (tr.getString("units").equals("mmol"))
+                                                mgdl = mgdl * Constants.MMOLL_TO_MGDL;
+                                            final BloodTest bt = BloodTest.create(timestamp, mgdl, tr.getString("enteredBy") + " " + VIA_NIGHTSCOUT_TAG);
+                                            if (bt != null) {
+                                                bt.uuid = uuid; // override random uuid with nightscout one
+                                                bt.saveit();
+                                                new_data = true;
+                                                Log.ueh(TAG, "Received new Bloodtest data from Nightscout: " + BgGraphBuilder.unitized_string_with_units_static(mgdl) + " @ " + JoH.dateTimeText(timestamp));
+                                            } else {
+                                                Log.d(TAG, "Error creating bloodtest record");
+                                            }
+                                        } else {
+                                            if (d)
+                                                Log.d(TAG, "Already a bloodtest with uuid: " + uuid);
+                                        }
+                                    } else {
+                                        Log.e(TAG, "Cannot use bloodtest which is not type Finger");
+                                    }
+                                } catch (JSONException e) {
+                                    // Log.d(TAG, "json processing: " + e);
+                                }
+
+                                // extract treatment data if present
+                                double carbs = 0;
+                                double insulin = 0;
+                                try {
+                                    carbs = tr.getDouble("carbs");
+                                } catch (JSONException e) {
+                                    //  Log.d(TAG, "json processing: " + e);
+                                }
+                                try {
+                                    insulin = tr.getDouble("insulin");
+                                } catch (JSONException e) {
+                                    // Log.d(TAG, "json processing: " + e);
+                                }
+
+                                if ((carbs > 0) || (insulin > 0)) {
+                                    final long timestamp = DateUtil.tolerantFromISODateString(tr.getString("created_at")).getTime();
+                                    if (timestamp > 0) {
+                                        if (d)
+                                            Log.d(TAG, "Treatment: Carbs: " + carbs + " Insulin: " + insulin + " timestamp: " + timestamp);
+                                        Treatments existing = Treatments.byuuid(nightscout_id);
+                                        if (existing == null)
+                                            existing = Treatments.byuuid(uuid);
+                                        if (existing == null) {
+                                            // TODO check for close timestamp duplicates perhaps
+                                            Log.ueh(TAG, "New Treatment from Nightscout: Carbs: " + carbs + " Insulin: " + insulin + " timestamp: " + JoH.dateTimeText(timestamp));
+                                            final Treatments t = Treatments.create(carbs, insulin, timestamp);
+                                            t.uuid = nightscout_id; // replace with nightscout uuid
+                                            try {
+                                                t.enteredBy = tr.getString("enteredBy") + " " + VIA_NIGHTSCOUT_TAG;
+                                            } catch (JSONException e) {
+                                                t.enteredBy = VIA_NIGHTSCOUT_TAG;
+                                            }
+                                            t.save();
+                                            new_data = true;
+                                        } else {
+                                            if (d)
+                                                Log.d(TAG, "Treatment with uuid: " + uuid + " / " + nightscout_id + " already exists");
+                                            if ((existing.carbs != carbs) || (existing.insulin != insulin) || (existing.timestamp != timestamp)) {
+                                                Log.ueh(TAG, "Treatment changes from Nightscout: " + carbs + " Insulin: " + insulin + " timestamp: " + JoH.dateTimeText(timestamp));
+                                                existing.carbs = carbs;
+                                                existing.insulin = insulin;
+                                                existing.timestamp = timestamp;
+                                                existing.save();
+                                                new_data = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            Log.d(TAG, "Failed to get treatments from: " + baseURI);
+                        }
+
+                    } else {
+                        Log.d(TAG, "Old api version not supported");
+                    }
+                }
+
+
+            } catch (Exception e) {
+                String msg = "Unable to do REST API Download " + e + e.getMessage() + " url: " + baseURI;
+                last_exception = msg;
+                last_exception_time = JoH.tsl();
+                Log.e(TAG, msg);
+            }
+        }
+        Log.d(TAG, "doRESTtreatmentDownload() finishing run");
+        return new_data;
+    }
+
 
         private boolean doRESTUpload(SharedPreferences prefs, List<BgReading> glucoseDataSets, List<BloodTest> meterRecords, List<Calibration> calRecords) {
             String baseURLSettings = prefs.getString("cloud_storage_api_base", "");
@@ -152,7 +364,7 @@ public class NightscoutUploader {
                     baseURIs.add(baseURL + (baseURL.endsWith("/") ? "" : "/"));
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Unable to process API Base URL");
+                Log.e(TAG, "Unable to process API Base URL: "+e);
                 return false;
             }
             boolean any_successes = false;
@@ -175,11 +387,11 @@ public class NightscoutUploader {
                     } else if (apiVersion > 0) {
                         baseURL = baseURI.replaceFirst("//[^@]+@", "//");
                     } else {
-                        throw new Exception("Unexpected baseURI");
+                        throw new Exception("Unexpected baseURI: "+baseURI);
                     }
 
-                    Retrofit retrofit = new Retrofit.Builder().baseUrl(baseURL).client(client).build();
-                    NightscoutService nightscoutService = retrofit.create(NightscoutService.class);
+                    final Retrofit retrofit = new Retrofit.Builder().baseUrl(baseURL).client(client).build();
+                    final NightscoutService nightscoutService = retrofit.create(NightscoutService.class);
 
                     if (apiVersion == 1) {
                         String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
@@ -353,6 +565,7 @@ public class NightscoutUploader {
     private void populateV1APITreatmentEntry(JSONArray array, Treatments treatment) throws Exception {
 
         if (treatment == null) return;
+        if ((treatment.enteredBy != null) && (treatment.enteredBy.endsWith(VIA_NIGHTSCOUT_TAG))) return; // don't send back to nightscout what came from there
         final JSONObject record = new JSONObject();
         record.put("timestamp", treatment.timestamp);
         record.put("eventType", treatment.eventType);

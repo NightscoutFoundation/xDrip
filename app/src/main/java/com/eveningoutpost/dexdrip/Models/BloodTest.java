@@ -128,6 +128,11 @@ public class BloodTest extends Model {
             return null;
         }
 
+        if (timestamp_ms < 1487759433000L) {
+            UserError.Log.e(TAG, "Timestamp really too far in the past @ " + timestamp_ms);
+            return null;
+        }
+
         final long now = JoH.tsl();
         if (timestamp_ms > now) {
             if ((timestamp_ms - now) > 600000) {

@@ -35,6 +35,11 @@ public class DateUtil {
         return date;
     }
 
+    public static Date tolerantFromISODateString(String isoDateString)
+            throws Exception {
+      return fromISODateString(isoDateString.replaceFirst("\\.[0-9][0-9][0-9]Z$","Z"));
+    }
+
     /**
      * Render date
      *

@@ -14,7 +14,6 @@ import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.GcmActivity;
-import com.eveningoutpost.dexdrip.GoogleDriveInterface;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
@@ -44,6 +43,7 @@ import java.util.UUID;
 @Table(name = "Treatments", id = BaseColumns._ID)
 public class Treatments extends Model {
     private final static String TAG = "jamorham " + Treatments.class.getSimpleName();
+    public final static String XDRIP_TAG = "xdrip";
     public static double activityMultipler = 8.4; // somewhere between 8.2 and 8.8
     private static Treatments lastCarbs;
     private static boolean patched = false;
@@ -102,9 +102,9 @@ public class Treatments extends Model {
         Treatments Treatment = new Treatments();
 
         if (position > 0) {
-            Treatment.enteredBy = "xdrip pos:" + JoH.qs(position, 2);
+            Treatment.enteredBy = XDRIP_TAG + " pos:" + JoH.qs(position, 2);
         } else {
-            Treatment.enteredBy = "xdrip";
+            Treatment.enteredBy = XDRIP_TAG;
         }
 
         Treatment.eventType = "<none>";
@@ -167,9 +167,9 @@ public class Treatments extends Model {
         }
 
         if (position > 0) {
-            Treatment.enteredBy = "xdrip pos:" + JoH.qs(position, 2);
+            Treatment.enteredBy = XDRIP_TAG + " pos:" + JoH.qs(position, 2);
         } else {
-            Treatment.enteredBy = "xdrip";
+            Treatment.enteredBy = XDRIP_TAG;
         }
 
 
@@ -185,7 +185,7 @@ public class Treatments extends Model {
         }
 
         final Treatments Treatment = new Treatments();
-        Treatment.enteredBy = "xdrip";
+        Treatment.enteredBy = XDRIP_TAG;
         Treatment.eventType = "Sensor Start";
         Treatment.created_at = DateUtil.toISOString(timestamp);
         Treatment.uuid = UUID.randomUUID().toString();
