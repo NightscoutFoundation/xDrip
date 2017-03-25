@@ -67,6 +67,7 @@ public class BluetoothGlucoseMeter extends Service {
             = "com.eveningoutpost.dexdrip.BLUETOOTH_GLUCOSE_METER_SERVICE_UPDATE";
     public final static String ACTION_BLUETOOTH_GLUCOSE_METER_NEW_SCAN_DEVICE
             = "com.eveningoutpost.dexdrip.BLUETOOTH_GLUCOSE_METER_NEW_SCAN_DEVICE";
+    public final static String BLUETOOTH_GLUCOSE_METER_TAG = "Bluetooth Glucose Meter";
 
     private final static String TAG = BluetoothGlucoseMeter.class.getSimpleName();
 
@@ -537,7 +538,7 @@ public class BluetoothGlucoseMeter extends Service {
                     JoH.playResourceAudio(R.raw.bt_meter_data_in);
 
                 if ((!ignore_control_solution_tests) || (gtb.sampleType != 10)) {
-                    final BloodTest bt = BloodTest.create((gtb.time - ct.timediff) + gtb.offsetMs(), gtb.mgdl, "Bluetooth Glucose Meter:\n" + mLastManufacturer + "   " + mLastConnectedDeviceAddress);
+                    final BloodTest bt = BloodTest.create((gtb.time - ct.timediff) + gtb.offsetMs(), gtb.mgdl, BLUETOOTH_GLUCOSE_METER_TAG + ":\n" + mLastManufacturer + "   " + mLastConnectedDeviceAddress);
                     if (bt != null) {
                         UserError.Log.d(TAG, "Successfully created new BloodTest: " + bt.toS());
                         bt.glucoseReadingRx = gtb; // add reference
@@ -863,6 +864,22 @@ public class BluetoothGlucoseMeter extends Service {
     public static void immortality() {
         if (started_at == -1) {
             startIfEnabled();
+        } else {
+            startIfNoRecentData();
+        }
+    }
+
+    public static void startIfNoRecentData() {
+        if (JoH.quietratelimit("bluetooth-recent-check", 1800)) {
+            if (Home.getPreferencesBoolean("bluetooth_meter_enabled", false)) {
+                final List<BloodTest> btl = BloodTest.lastMatching(1, BLUETOOTH_GLUCOSE_METER_TAG + "%");
+                if ((btl == null) || (btl.size() == 0) || (JoH.msSince(btl.get(0).created_timestamp) > Constants.HOUR_IN_MS * 6)) {
+                    if (JoH.pratelimit("restart_bluetooth_service", 3600 * 5)) {
+                        UserError.Log.uel(TAG, "Restarting Bluetooth Glucose meter service");
+                        startIfEnabled();
+                    }
+                }
+            }
         }
     }
 
