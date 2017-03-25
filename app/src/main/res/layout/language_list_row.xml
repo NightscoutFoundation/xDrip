@@ -1,56 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/language_list_block"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="9sp"
-        android:text="Id reference"
         android:id="@+id/language_id_reference"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:textColor="#b3ffffff"
-        android:textAlignment="textEnd"
-        android:layout_alignParentEnd="true"
-        android:textIsSelectable="false"
-        android:layout_marginTop="9dp" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="English text"
-        android:id="@+id/language_english_text"
-        android:layout_below="@+id/language_id_reference"
-        android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:textColor="#e6ee9c"
-        android:layout_marginLeft="5dp" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="9dp"
+        android:text="Id reference"
+        android:textAlignment="textEnd"
+        android:textColor="#b3ffffff"
+        android:textIsSelectable="false"
+        android:textSize="9sp" />
+
+    <TextView
+        android:id="@+id/language_english_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/language_id_reference"
+        android:layout_marginLeft="5dp"
+        android:text="English text"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="#e6ee9c" />
 
     <EditText
+        android:id="@+id/language_translated_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Translated Text"
-        android:inputType="text|textNoSuggestions"
-        android:imeOptions="actionDone"
-        android:id="@+id/language_translated_text"
-        android:layout_below="@+id/language_english_text"
-        android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/language_english_text"
         android:layout_marginTop="5dp"
+        android:imeOptions="actionDone"
+        android:inputType="text|textNoSuggestions"
+        android:text="Translated Text"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#a5d6a7"
         android:textIsSelectable="false" />
 
     <ImageButton
+        android:id="@+id/languageElementUndo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/languageElementUndo"
-        android:src="@drawable/ic_undo_variant_grey600_24dp"
-        android:background="@android:color/transparent"
-        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:paddingRight="4dp" />
+        android:layout_alignParentTop="true"
+        android:background="@android:color/transparent"
+        android:paddingRight="4dp"
+        android:src="@drawable/ic_undo_variant_grey600_24dp" />
 </RelativeLayout>
