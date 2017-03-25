@@ -487,6 +487,8 @@ public class DexCollectionService extends Service {
                 }
                 lastdata = data;
                 setFailoverTimer(); // restart the countdown
+                // intentionally left hanging wakelock for 5 seconds after we receive something
+                final PowerManager.WakeLock wakeLock2 = JoH.getWakeLock("DexCollectionLinger", 5000);
             } finally {
                 if (Home.getPreferencesBoolean("bluetooth_frequent_reset",false))
                 {
