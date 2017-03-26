@@ -2315,6 +2315,7 @@ public class Home extends ActivityWithMenu {
                 || prefs.getBoolean("status_line_low", false)
                 || prefs.getBoolean("status_line_carbs", false)
                 || prefs.getBoolean("status_line_insulin", false)
+                || prefs.getBoolean("status_line_ratio", false)
                 || prefs.getBoolean("status_line_accuracy", false)
                 || prefs.getBoolean("status_line_capture_percentage", false)) {
 
@@ -2356,6 +2357,10 @@ public class Home extends ActivityWithMenu {
             if (prefs.getBoolean("status_line_insulin", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
                 extraline.append("U: " + JoH.qs(statsResult.getTotal_insulin(), 2));
+            }
+            if (prefs.getBoolean("status_line_ratio", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                extraline.append("C/I: " + JoH.qs(statsResult.getRatio(), 2));
             }
             if (prefs.getBoolean("status_line_capture_percentage", false)) {
                 if (extraline.length() != 0) extraline.append(' ');

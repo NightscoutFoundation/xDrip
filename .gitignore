@@ -44,3 +44,5 @@ proguard/
 *.DS_Store
 *.swp
 *.orig
+
+*.iml
