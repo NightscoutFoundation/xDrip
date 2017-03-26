@@ -115,7 +115,7 @@
                 android:dependency="broadcast_to_pebble"
                 android:key="pebble_tiny_dots"
                 android:summary="@string/show_tiny_dots_instead"
-                android:title="Use Tiny dot size" />
+                android:title="@string/use_tiny_dots" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="broadcast_to_pebble"
@@ -157,8 +157,8 @@
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="pebble_vibe_alerts"
-                android:summary="Vibrate watch on active glucose alerts"
-                android:title="Vibrate on Alerts" />
+                android:summary="@string/watch_vibrate_active_alerts"
+                android:title="@string/vibrate_alerts" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="broadcast_to_pebble"
@@ -191,7 +191,7 @@
             android:title="@string/install_pebble_apps">
             <Preference
                 android:key="install_pebble_snooze_control"
-                android:summary="Attach it to a pebble button to instantly Snooze any active alert from your watch. Also for Remote Snooze feature."
+                android:summary="@string/attach_to_button"
                 android:title="@string/install_pebble_snooze_control_app">
                 <intent
                     android:action="android.intent.action.MAIN"
@@ -207,8 +207,8 @@
         <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
             android:icon="@drawable/ic_open_in_app_grey600_48dp"
             android:key="xdrip_intrer_app_settings"
-            android:summary="For interacting with other compatible apps"
-            android:title="Inter-app settings">
+            android:summary="@string/for_interacting_compatible_apps"
+            android:title="@string/interapp_settings">
             <SwitchPreference
                 android:defaultValue="false"
                 android:key="broadcast_data_through_intents"
@@ -220,25 +220,25 @@
                 android:defaultValue="false"
                 android:dependency="broadcast_data_through_intents"
                 android:key="broadcast_data_use_best_glucose"
-                android:summary="Use noise smoothing and plugins etc (if enabled) for broadcasted value"
-                android:title="Send Display Glucose" />
+                android:summary="@string/use_plugins_for_brodcast"
+                android:title="@string/send_display_glucose" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="broadcast_data_through_intents"
                 android:key="broadcast_data_through_intents_without_permission"
-                android:summary="Send broadcasts without locking to the older permission model"
+                android:summary="@string/send_broadcasts_old_permission_model"
                 android:title="@string/compatible_broadcast" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="accept_nsclient_treatments"
-                android:summary="Process treatment data received from NSClient app"
+                android:summary="@string/process_nsclient_treatments"
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
-                android:title="Accept Treatments" />
+                android:title="@string/accept_treatments" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="accept_broadcast_calibrations"
-                android:summary="Process calibrations received from other apps"
+                android:summary="@string/process_broadcasted_calibrations"
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="Accept Calibrations" />
@@ -271,17 +271,17 @@
                     android:defaultValue=""
                     android:dependency="bg_to_speech"
                     android:key="speak_readings_custom_language"
-                    android:summary="Custom Locale for Spoken Readings, eg: de or en_IN" />
+                    android:summary="@string/spoken_readings_locale" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="bg_to_speech"
                     android:key="bg_to_speech_repeat_twice"
-                    android:summary="Speak the glucose value twice each time" />
+                    android:summary="@string/speak_glucose_twice" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="bg_to_speech_shortcut"
-                    android:summary="Show a shortcut in the \u2630 menu to toggle Speak Readings"
-                    android:title="Speak Readings Shortcut" />
+                    android:summary="@string/short_speak_readings_shortcut"
+                    android:title="@string/speak_readings_shortcut" />
             </PreferenceScreen>
             <CheckBoxPreference
                 android:defaultValue="true"
@@ -291,9 +291,9 @@
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="requested_ignore_battery_optimizations_new"
-                android:summaryOff="On Android 6+ ensure battery optimization is switched off. Recommended"
-                android:summaryOn="Don't keep asking about battery optimization. Not recommended"
-                android:title="Battery Optimization prompt" />
+                android:summaryOff="@string/battery_optimization_off"
+                android:summaryOn="@string/battery_optimization_on"
+                android:title="@string/battery_optimization_prompt" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="excessive_wakelocks"
@@ -302,88 +302,88 @@
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:icon="@drawable/ic_bluetooth_settings_grey600_48dp"
                 android:key="xdrip_bluetooth_adv_settings"
-                android:summary="Advanced Bluetooth Settings"
-                android:title="Bluetooth Settings">
+                android:summary="@string/advanced_bluetooth_settings"
+                android:title="@string/bluetooth_settings">
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="automatically_turn_bluetooth_on"
-                    android:summary="Automatically enable bluetooth if it is switched off when we try to connect to a bluetooth device"
-                    android:title="Turn Bluetooth on" />
+                    android:summary="@string/auto_turn_on_bluetooth"
+                    android:title="@string/turn_bluetooth_on" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="bluetooth_watchdog"
-                    android:summary="Reset Bluetooth by turning it off and on if we don't get anything in 20 minutes"
-                    android:title="Bluetooth Watchdog" />
+                    android:summary="@string/reset_bluetooth"
+                    android:title="@string/bluetooth_watchdog" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="g5_bluetooth_watchdog"
-                    android:summary="Reset Bluetooth by turning it off and on as a way to keep the G5 data source working. Without this the G5 collector may fail."
-                    android:title="G5 Bluetooth Watchdog" />
+                    android:summary="@string/reset_bluetooth_g5"
+                    android:title="@string/g5_bluetooth_watchdog" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="close_gatt_on_ble_disconnect"
-                    android:summary="If the bluetooth watchdog activates often then you can try unchecking this option to see if it helps"
+                    android:summary="@string/close_gatt"
                     android:title="@string/close_gatt_on_ble_disconnect" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="bluetooth_excessive_wakelocks"
-                    android:summary="Older bluetooth wakelocks which can drain extra battery but might be needed for bluetooth reception"
+                    android:summary="@string/older_bluetooth_wakelocks"
                     android:title="@string/bluetooth_wakelocks" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="bluetooth_frequent_reset"
-                    android:summary="Reset Bluetooth by turning it off and on every few minutes! Only select if you are testing. It may disrupt anything else using bluetooth."
-                    android:title="Constantly reset bluetooth" />
+                    android:summary="@string/reset_bluetooth_on_off"
+                    android:title="@string/constantly_reset_bluetooth" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="use_transmiter_pl_bluetooth"
-                    android:summary="Experimental support for 'Transmiter' device from @FPV-UAV - test only"
-                    android:title="Transmiter (PL) support" />
+                    android:summary="@string/experimental_transmitter_fpv_uav"
+                    android:title="@string/transmitter_pl_support" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="use_rfduino_bluetooth"
-                    android:summary="Experimental support for rfduino from Tomasz Stachowicz"
-                    android:title="RFDUINO support" />
+                    android:summary="@string/experimental_rdfuino_support"
+                    android:title="@string/rfduino_support" />
             </PreferenceScreen>
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="aggressive_service_restart"
-                android:summary="Repeatedly restart the collection service at any hint of missing data. Enable only if you are getting data loss."
-                android:title="Aggressive service restarts" />
+                android:summary="@string/repeatedly_restart_collection_service"
+                android:title="@string/aggressive_service_restarts" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="engineering_mode"
                 android:key="predictive_bg"
-                android:summary="Old method - Not Recommended! Attempts to predict readings each minute based on the past few values."
-                android:title="Display Predictive Values" />
+                android:summary="@string/predictive_readings_old"
+                android:title="@string/display_predictive_values" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="interpret_raw"
-                android:summary="If using Share, xDrip will show values when they are normally hidden on the receiver."
-                android:title="Interpret Raw Values" />
+                android:summary="@string/interpret_share_raw"
+                android:title="@string/interpret_raw" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="infrequent_calibration"
-                android:summary="If needed, use calibrations from longer ago, eg if calibrations are supplied infrequently."
-                android:title="Infrequent Calibration" />
+                android:summary="@string/use_infrequent_calibrations"
+                android:title="@string/infrequent_calibrations" />
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_logging_adv_settings"
-                android:title="Extra Logging Settings">
+                android:title="@string/extra_logging">
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="enable_bugfender"
-                    android:summary="Send Event and Error List Logs automatically to the developer"
-                    android:title="Enable Remote Logging" />
+                    android:summary="@string/send_logs_to_developer"
+                    android:title="@string/enable_remote_logging" />
                 <EditTextPreference
                     android:defaultValue=""
                     android:key="bugfender_appid"
-                    android:title="Set Logging AppID" />
+                    android:title="@string/set_logging_appid" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="engineering_mode"
                     android:key="store_logs"
-                    android:summary="Only enable if you are having trouble with the app."
-                    android:title="Store logs for troubleshooting" />
+                    android:summary="@string/only_enable_on_trouble"
+                    android:title="@string/store_logs" />
                 <EditTextPreference
                     android:defaultValue=""
                     android:dialogMessage="@string/extra_tags_dialog_message"
@@ -395,7 +395,7 @@
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="show_data_tables"
-                android:summary="Show Calibration and BG datatables in the app drawer."
+                android:summary="@string/show_datatables_in_app_drawer"
                 android:title="@string/show_datatables" />
             <CheckBoxPreference
                 android:defaultValue="true"
@@ -405,17 +405,17 @@
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="disable_battery_warning"
-                android:summary="Disable the warning for low transmitter battery state on the home screen. (Only relevant for DIY receivers.)"
+                android:summary="@string/disable_log_transmitter_battery_warning"
                 android:title="@string/disable_battery_warning" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="engineering_mode"
                 android:key="engineering_mode"
-                android:summary="Allows changing the most unsafe settings which could break everything!"
-                android:title="Engineering mode" />
+                android:summary="@string/allow_unsafe_settings"
+                android:title="@string/engineering_mode" />
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_extra_status_line"
-                android:summary="Options for the extra line"
+                android:summary="@string/options_for_extra_line"
                 android:title="@string/extra_status_line">
                 <SwitchPreference
                     android:defaultValue="false"
@@ -436,68 +436,68 @@
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="status_line_avg"
-                    android:summary="Today's average value."
+                    android:summary="@string/todays_average_value"
                     android:title="@string/average" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="status_line_a1c_dcct"
-                    android:summary="A1c estimation in DCCT format (%)"
-                    android:title="A1c DCCT" />
+                    android:summary="@string/ac1_estimation_dcct"
+                    android:title="@string/a1c_dcct" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="status_line_a1c_ifcc"
-                    android:summary="A1c estimation in IFCC format (mmol/mol)"
-                    android:title="A1c IFCC" />
+                    android:summary="@string/ac1_estimation_ifcc"
+                    android:title="@string/a1c_ifcc" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="status_line_in"
-                    android:summary="Percentage of values in range."
+                    android:summary="@string/percentage_in_range"
                     android:title="@string/in_percentage" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="status_line_high"
-                    android:summary="Percentage of values above range."
+                    android:summary="@string/percentage_above_range"
                     android:title="@string/high_percentage" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="status_line_low"
-                    android:summary="Percentage of values below range."
+                    android:summary="@string/percentage_below_range"
                     android:title="@string/low_percentage" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="status_line_stdev"
-                    android:summary="Show standard deviation of values."
-                    android:title="Standard Deviation" />
+                    android:summary="@string/show_standard_deviation"
+                    android:title="@string/standard_deviation" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="status_line_carbs"
-                    android:summary="Show treatment carbohydrate total"
-                    android:title="Total Carbohydrate" />
+                    android:summary="@string/show_total_carbs"
+                    android:title="@string/total_carbs" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="status_line_insulin"
-                    android:summary="Show treatment insulin total"
-                    android:title="Total Insulin" />
+                    android:summary="@string/show_total_insulin"
+                    android:title="@string/total_insulin" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="status_line_capture_percentage"
-                    android:summary="Percentage of sensor readings received"
-                    android:title="Packet capture percentage" />
+                    android:summary="@string/received_readings_percentage"
+                    android:title="@string/capture_percentage" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="status_line_accuracy"
-                    android:summary="Show calibration accuracy evaluation from last 3 days"
-                    android:title="Accuracy Evaluation" />
+                    android:summary="@string/show_calibration_accuracy"
+                    android:title="@string/accuracy_evaluation" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
@@ -508,7 +508,7 @@
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="widget_status_line"
-                    android:summary="Also show the extra status line on the widget"
+                    android:summary="@string/show_extra_status_on_widget"
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/show_on_widget" />
@@ -516,68 +516,68 @@
                     android:defaultValue="true"
                     android:dependency="extra_status_line"
                     android:key="status_line_calibration_long"
-                    android:summary="Show slope and intercept in long form."
+                    android:summary="@string/show_long_calibration_data"
                     android:title="@string/calibration_data_long" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="status_line_calibration_short"
-                    android:summary="Show slope and intercept in short form."
+                    android:summary="@string/show_short_calibration_data"
                     android:title="@string/calibration_data_short" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="extra_status_calibration_plugin"
-                    android:summary="Show slope and glucose data from the active plugin"
-                    android:title="Calibration Plugin" />
+                    android:summary="@string/show_plugin_data"
+                    android:title="@string/calibration_plugin" />
             </PreferenceScreen>
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_plus_calibration_settings"
-                android:summary="Extra options relating to calibrations"
-                android:title="Advanced Calibration">
+                android:summary="@string/extra_calibration_options"
+                android:title="@string/advanced_calibration">
                 <ListPreference
                     android:defaultValue="ask"
                     android:entries="@array/TreatmentCalibrationChoiceDetail"
                     android:entryValues="@array/TreatmentCalibrationChoice"
                     android:key="treatment_fingerstick_calibration_usage"
                     android:shouldDisableView="true"
-                    android:summary="Choose whether to calibrate with the BG value in a Treatment entry"
-                    android:title="Use Treatment BG values" />
+                    android:summary="@string/choose_use_treament_bg"
+                    android:title="@string/usw_treatment_bg" />
                 <ListPreference
                     android:defaultValue="None"
                     android:key="current_calibration_plugin"
                     android:shouldDisableView="true"
-                    android:summary="Experimental secondary calibration plugin"
-                    android:title="Calibration Plugin" />
+                    android:summary="@string/experimental_calibration_plugin"
+                    android:title="@string/calibration_plugin" />
                 <SwitchPreference
                     android:defaultValue="false"
                     android:key="plugin_plot_on_graph"
-                    android:summary="Show glucose results from the plugin on the main graph"
+                    android:summary="@string/show_plugin_results_on_graph"
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="Plugin plot on graph" />
+                    android:title="@string/plugin_plot_on_graph" />
                 <SwitchPreference
                     android:defaultValue="false"
                     android:key="display_glucose_from_plugin"
-                    android:summary="Main glucose display number comes from plugin!"
+                    android:summary="@string/main_glucose_plugin"
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="Use Plugin Glucose" />
+                    android:title="@string/use_plugin_glucose" />
                 <SwitchPreference
                     android:defaultValue="false"
                     android:dependency="engineering_mode"
                     android:enabled="false"
                     android:key="use_pluggable_alg_as_primary"
-                    android:summary="ALL new glucose data will be calculated and saved from the selected plugin and not from the standard xDrip algorithm. This is untested and may be inaccurate and buggy. Use with extreme caution."
+                    android:summary="@string/all_new_glucose_data_plugin"
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="Plugin Override ALL" />
+                    android:title="@string/plugin_override_all" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="engineering_mode"
                     android:key="old_school_calibration_mode"
-                    android:summary="Original narrower range of allowed slopes within xDrip classic calibration algorithm (pre-2017). Default slopes more likely! (engineering mode only)"
-                    android:title="Old school calibration mode" />
+                    android:summary="@string/old_school_calibrations"
+                    android:title="@string/old_school_calibration_mode" />
             </PreferenceScreen>
             <PreferenceCategory
                 android:key="community_help_category"

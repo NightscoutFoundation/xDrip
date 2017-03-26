@@ -5,7 +5,7 @@
     <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
     <PreferenceCategory
         android:key="dataSync"
-        android:title="Data Sync">
+        android:title="@string/data_sync">
         <PreferenceScreen
             android:icon="@drawable/ic_scan"
             android:key="auto_configure"
@@ -14,8 +14,8 @@
         <PreferenceScreen
             android:icon="@drawable/ic_cloud_upload_grey600_48dp"
             android:key="cloud_data_sync"
-            android:summary="Options for Nightscout, MongoDB or Dexcom Share uploading"
-            android:title="Cloud Upload">
+            android:summary="@string/options_for_upload"
+            android:title="@string/cloud_upload">
             <PreferenceScreen
                 android:key="cloud_storage_mongo"
                 android:summary="@string/pref_summary_mongodb_enabled"
@@ -24,7 +24,7 @@
                 <SwitchPreference
                     android:defaultValue="false"
                     android:key="cloud_storage_mongodb_enable"
-                    android:title="Enable Nightscout Mongo DB sync" />
+                    android:title="@string/enable_mongo_sync" />
                 <EditTextPreference
                     android:defaultValue="@string/pref_default_mongodb_uri"
                     android:dependency="cloud_storage_mongodb_enable"
@@ -32,7 +32,7 @@
                     android:dialogTitle="@string/pref_dialog_mongodb_uri"
                     android:inputType="textUri"
                     android:key="cloud_storage_mongodb_uri"
-                    android:title="Mongo DB Uri" />
+                    android:title="@string/mongo_db_uri" />
                 <EditTextPreference
                     android:defaultValue="@string/pref_default_mongodb_collection"
                     android:dependency="cloud_storage_mongodb_enable"
@@ -51,8 +51,8 @@
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="skip_lan_uploads_when_no_lan"
-                    android:summary="For local servers with 192.168.x.x addresses, skip uploads when there is no local network connectivity."
-                    android:title="Skip LAN uploads" />
+                    android:summary="@string/skip_local_lan"
+                    android:title="@string/skip_lan_uploads" />
 
             </PreferenceScreen>
 
@@ -78,8 +78,8 @@
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="skip_lan_uploads_when_no_lan"
-                    android:summary="For local servers with 192.168.x.x addresses, skip uploads when there is no local network connectivity."
-                    android:title="Skip LAN uploads" />
+                    android:summary="@string/skip_local_lan"
+                    android:title="@string/skip_lan_uploads" />
 
             </PreferenceScreen>
 
@@ -91,7 +91,7 @@
                             <SwitchPreference
                                 android:defaultValue="false"
                                 android:key="cloud_storage_influxdb_enable"
-                                android:title="Enable InfluxDB sync" />
+                                android:title="@string/influxdb_sync" />
                             <EditTextPreference
                                 android:defaultValue="@string/pref_default_influxdb_uri"
                                 android:dependency="cloud_storage_influxdb_enable"
@@ -99,7 +99,7 @@
                                 android:dialogTitle="@string/pref_dialog_influxdb_uri"
                                 android:inputType="textUri"
                                 android:key="cloud_storage_influxdb_uri"
-                                android:title="InfluxDB Uri" />
+                                android:title="@string/influxdb_uri" />
                             <EditTextPreference
                                 android:defaultValue="@string/pref_default_influxdb_database"
                                 android:dependency="cloud_storage_influxdb_enable"
@@ -107,7 +107,7 @@
                                 android:dialogTitle="@string/pref_dialog_influxdb_database"
                                 android:inputType="text"
                                 android:key="cloud_storage_influxdb_database"
-                                android:title="InfluxDB Database Name" />
+                                android:title="@string/influxdb_database_name" />
                             <EditTextPreference
                                 android:defaultValue="@string/pref_default_influxdb_username"
                                 android:dependency="cloud_storage_influxdb_enable"
@@ -115,7 +115,7 @@
                                 android:dialogTitle="@string/pref_dialog_influxdb_username"
                                 android:inputType="text"
                                 android:key="cloud_storage_influxdb_username"
-                                android:title="User" />
+                                android:title="@string/user" />
                             <EditTextPreference
                                 android:defaultValue="@string/pref_default_influxdb_password"
                                 android:dependency="cloud_storage_influxdb_enable"
@@ -123,12 +123,12 @@
                                 android:dialogTitle="@string/pref_dialog_influxdb_password"
                                 android:inputType="text"
                                 android:key="cloud_storage_influxdb_password"
-                                android:title="Password" />
+                                android:title="@string/password" />
                             <CheckBoxPreference
                                 android:defaultValue="true"
                                 android:key="skip_lan_uploads_when_no_lan"
-                                android:summary="For local servers with 192.168.x.x addresses, skip uploads when there is no local network connectivity."
-                                android:title="Skip LAN uploads" />
+                                android:summary="@string/skip_local_lan"
+                                android:title="@string/skip_lan_uploads" />
                         </PreferenceScreen>
 
             <PreferenceScreen
@@ -139,39 +139,39 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="share_upload"
-                    android:summary="Enable this to upload to Dexcom's servers"
-                    android:title="Upload BG values as Dexcom Share" />
+                    android:summary="@string/upload_to_dexcom"
+                    android:title="@string/upload_to_dexcom_share" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="dex_share_us_acct"
-                    android:summaryOff="Disabled = Your account and follower apps are from outside the USA"
-                    android:summaryOn="Enabled = Your account and follower apps are from the USA"
-                    android:title="Dexcom USA based account" />
+                    android:summaryOff="@string/accounts_outside_usa"
+                    android:summaryOn="@string/accounts_inside_usa"
+                    android:title="@string/usa_based_account" />
                 <EditTextPreference
                     android:defaultValue=""
                     android:dependency="share_upload"
                     android:key="dexcom_account_name"
-                    android:summary="Your login for Dexcom's Website"
-                    android:title="Dexcom Account Login" />
+                    android:summary="@string/dexcom_login"
+                    android:title="@string/dexcom_user" />
                 <EditTextPreference
                     android:defaultValue=""
                     android:dependency="share_upload"
                     android:inputType="textPassword"
                     android:key="dexcom_account_password"
-                    android:summary="Your password for Dexcom's Website"
-                    android:title="Dexcom Account Password" />
+                    android:summary="@string/dexcom_login_password"
+                    android:title="@string/dexcom_password" />
                 <EditTextPreference
                     android:defaultValue="SM00000000"
                     android:dependency="share_upload"
                     android:key="share_key"
                     android:shouldDisableView="true"
-                    android:title="10 Character Dexcom Receiver Serial Number" />
+                    android:title="@string/dexcom_receiver_serial" />
                 <EditTextPreference
                     android:defaultValue="SM"
                     android:dependency="engineering_mode"
                     android:key="share_test_key"
                     android:shouldDisableView="true"
-                    android:title="10 Character Test Mode Serial Number" />
+                    android:title="@string/dexcom_test_mode_serial" />
                 <Preference
                     android:dependency="share_upload"
                     android:summary="@string/manage_existing_followers"
@@ -186,20 +186,20 @@
         <PreferenceScreen
             android:icon="@drawable/ic_touch_app_grey600_48dp"
             android:key="bluetooth_meters"
-            android:summary="Options for wireless glucose meters"
-            android:title="Glucose Meters">
+            android:summary="@string/glucose_meter_options"
+            android:title="@string/glucose_meters">
 
             <SwitchPreference
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:defaultValue="false"
                 android:key="bluetooth_meter_enabled"
-                android:summary="Automatically connect and retrieve data from a standards compliant glucose meter like the Contour Next One"
-                android:title="Use Bluetooth Meter" />
+                android:summary="@string/auto_connect_to_meter"
+                android:title="@string/use_bluetooth_meter" />
             <Preference
                 android:key="scan_and_pair_meter"
                 android:summary=""
-                android:title="Scan for Bluetooth Meter">
+                android:title="@string/scan_for_bluetooth_meter">
                 <intent
                     android:action="android.intent.action.MAIN"
                     android:targetClass="com.eveningoutpost.dexdrip.GlucoseMeter.BTGlucoseMeterActivity"
@@ -209,20 +209,20 @@
                 android:defaultValue="true"
                 android:key="bluetooth_meter_play_sounds"
                 android:dependency="bluetooth_meter_enabled"
-                android:summary="Enable this to play sound effects when the meter connects, disconnects or syncs data"
-                android:title="Sound effect indicators" />
+                android:summary="@string/meter_connect_sound"
+                android:title="@string/meter_connect_sound_effect" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="bluetooth_meter_enabled"
                 android:key="bluetooth_meter_for_calibrations"
-                android:summary="When a new blood glucose result is received, ask if that should be used to calibrate with"
-                android:title="Use Meter for Calibrations" />
+                android:summary="@string/ask_for_calibration"
+                android:title="@string/use_for_calibrations" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="bluetooth_meter_enabled"
                 android:key="bluetooth_meter_for_calibrations_auto"
-                android:summary="Calibrate using new blood glucose readings if the conditions appear right to do so without asking confirmation (experimental)"
-                android:title="Automatic Calibration" />
+                android:summary="@string/auto_calibration_good_conditions"
+                android:title="@string/automatic_calibration" />
 
         </PreferenceScreen>
 
