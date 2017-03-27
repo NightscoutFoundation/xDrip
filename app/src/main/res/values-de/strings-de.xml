@@ -504,10 +504,10 @@
 	<string name="aggressive_service_restarts">Aggressive Dienstneustarts</string>
 	<string name="alert_calibration_request">Alarmieren, wenn eine Kalibrierung angefordert wird</string>
 	<string name="alert_minutes_reraise">Anzahl der Minuten, bevor derselbe Alarm nach dem Snoozen ertönt</string>
-	<string name="alert_noisy_values">Bei rauschigen Werten nach x Minuten alarmieren</string>
+	<string name="alert_noisy_values">Bei verrauschten Werten nach x Minuten alarmieren</string>
 	<string name="alert_repeat_minutes">Alarmwiederholungszeit</string>
 	<string name="alert_reraise_time">Alarmwiedererhebungszeit</string>
-	<string name="alert_seconds_reraise">Anzahl der Sekunden, die vergehen müssen, bevor derselben Alarm erneut ertönt.</string>
+	<string name="alert_seconds_reraise">Anzahl der Sekunden, die vergehen müssen, bevor derselbe Alarm erneut ertönt.</string>
 	<string name="alert_snooze">Alarm-Snooze</string>
 	<string name="alert_snoozed_by_watch">Alarm von der Uhr gesnoozed</string>
 	<string name="alert_sound">Alarmton</string>
@@ -517,10 +517,10 @@
 	<string name="allow_unsafe_settings">Erlaube das Ändern der unsichersten Einstellung, die alles kaputt machen können!</string>
 	<string name="always_show_bolus_wizard_preview">Zeige immer die Bolus-Assistent-Vorschau an</string>
 	<string name="ask_for_calibration">Frage, wenn ein neuer Blutzucker empfangen wurde, ob dieser zum Kalibrieren benutzt werden soll</string>
-	<string name="attach_to_button">Verknüpfe es mit einem Pebble-Knopf zn einen aktiven Alarm sofort von deiner Uhr snoozen zu können. Auch für die Remote-Snoozing-Funktion.</string>
+	<string name="attach_to_button">Verknüpfe es mit einem Pebble-Knopf um einen aktiven Alarm sofort von deiner Uhr aus snoozen zu können. Auch für die Remote-Snoozing-Funktion.</string>
 	<string name="authentificate_before_reading">Das G5 vor jedem Lesen authentifizieren</string>
 	<string name="auto_calibration_good_conditions">Ohne Fragen mit einem neuen Blutzucker Kalibrieren, wenn die Bedingungen gut scheinen (experimentel)</string>
-	<string name="auto_connect_to_meter">Automatisch mit einem Standard konformen Blutzuckermessgerät, wie dem Contour Next One, verbinden und Daten empfangen</string>
+	<string name="auto_connect_to_meter">Automatisch mit einem standardkonformen Blutzuckermessgerät, wie dem Contour Next One, verbinden und Daten empfangen</string>
 	<string name="auto_turn_on_bluetooth">Bluetooth automatisch aktivieren, wenn es ausgeschaltet ist und wir versuchen eine Verbindung zu einem anderem Bluetoothgerät herzustellen</string>
 	<string name="automatic_calibration">Automatische Kalibrierung</string>
 	<string name="battery_optimization_off">Stelle auf Android 6+ sicher, dass die Batterie-Optimierung ausgeschaltet ist. Empfohlen</string>
@@ -553,7 +553,7 @@
 	<string name="create_shortcut">Eine Abkürzung von der Navigationsleiste zum BZ-Level-Bildschirm</string>
 	<string name="data_sync">Datensynchronisation</string>
 	<string name="default_liver_maximum_impact">Maximaler Standardeinfluss der Leber (0-1)</string>
-	<string name="delayed_but_more_stable">Verzögert aber stabiler bei rauschigen Werten (nicht empfohlen)</string>
+	<string name="delayed_but_more_stable">Verzögert aber stabiler bei verrauschten Werten (nicht empfohlen)</string>
 	<string name="detect_motion_types">Sensoren benutzen um die Arten der Bewegungen zu erkennen</string>
 	<string name="dexcom_login">Dein Betnutzername für Dexcoms Webseite</string>
 	<string name="dexcom_login_password">Dein Passwort für Dexcoms Webseite</string>
@@ -563,7 +563,7 @@
 	<string name="dexcom_user">Dexcom Accountbenutzername</string>
 	<string name="disable_log_transmitter_battery_warning">Deaktiviere die Warnung für einen niedrigen Transmitterbatteriestatus auf dem Startbildschirm. (Nur relevant für DIY-Empfänger.)</string>
 	<string name="display_calculations">Insulin-/Kohenhydratberechnungen anzeigen</string>
-	<string name="display_calculations_everytime">Insulin-/Kohenhydratberechnungen anzeigen immer anzeigen</string>
+	<string name="display_calculations_everytime">Insulin-/Kohenhydratberechnungen immer anzeigen</string>
 	<string name="display_mathamatical_simulations">Mathematische Simulationen basierend auf den Profildaten und Kohlenhydrat-/Insulinlogs anzeigen</string>
 	<string name="display_motion_types">Letzte Bewegungsdaten speichern und auf dem Hauptgraphen anzeigen</string>
 	<string name="display_predictive_values">Vorhergesagte Werte anzeigen</string>
@@ -572,8 +572,8 @@
 	<string name="enable_reminder_features">Reminder-Funktionen aktivieren</string>
 	<string name="enable_remote_logging">Remote-Loggen aktivieren</string>
 	<string name="enable_telemetry">Telemetrie aktivieren</string>
-	<string name="enable_vehicle_mode">Telemetrie aktivieren</string>
-	<string name="engineering_mode">Fahrzeugmodus aktivieren</string>
+	<string name="enable_vehicle_mode">Fahrzeugmodus aktivieren</string>
+	<string name="engineering_mode">Entwicklermodus</string>
 	<string name="even_when_charging">Auch beim Laden</string>
 	<string name="experimental_calibration_plugin">Experimentelle sekundäre Kalibrierungsplugins</string>
 	<string name="experimental_rdfuino_support">Experimentelle Unterstützung für den RFduino von Tomasz Stachowicz</string>
@@ -583,8 +583,7 @@
 	<string name="falling_threshold">Fall-Warngrenze</string>
 	<string name="flair_colors">Flair-Farben</string>
 	<string name="follower_chime_new">Neuer-Follower-Läuten</string>
-	<string name="for_interacting_compatible_apps">Zum interagieren mit anderen kompatiblen Apps</string>
-	<string name="force_english_text">Englischen Text erzwingen</string>
+	<string name="for_interacting_compatible_apps">Zum Interagieren mit anderen kompatiblen Apps</string>
 	<string name="force_g5_ui_thread">G5 auf den UI-Thread zwingen</string>
 	<string name="forcing_alternate_language">Erzwigen momentan das Benutzer einer alternativen Sprache</string>
 	<string name="g5_bluetooth_watchdog">G5 Bluetooth-Watchdog</string>
@@ -598,17 +597,16 @@
 	<string name="glucose_meters">Blutzuckermessgräte</string>
 	<string name="hours_between_calibrations">Stunden zwischen den Kalibrierungen</string>
 	<string name="how_receive_data">Wie wirst du Daten von deinem Dexcom/Transmitter empfangen?</string>
-	<string name="importanttext"></string>
-	<string name="import_db_warning">\n        WARNUNG: Das Importieren eine Datenbank kann einen Datenverlust verursachen. Falls Sie nicht wissen, warum Sie das machen sollten, benutzen Sie es nicht.\n        Im Normalbetrieb von xDrip wird dies nicht benötigt. Benutzen Sie es nur im Falle eines vorherigen Datenverlustes.\n        Falls Sie nicht sind, was zu tun ist, Sie aber immernoch den Import benutzen wollen, fragen Sie einen erfahrenen Benutzer.\n\n\n        Anleitung:\n\n        Platzieren Sie die Datenbank, die Sie installieren wollen, im Ordner \\\'xdrip\\\' auf dem primären Speicher\n        (manchmal auch \\\'interner Speicher\\\' vom Dateiexplorer genannt)\n        Das ist derselbe Ordner in den xDrip auch exportiert.\n        \n        Falls Sie eine eine ZIP-Datei haben, entpacken Sie sie (normalerweise lang drücken->entpacken)\n        Falls sie in einem Unterordner entpackt werden sollte, wird sie immernoch gefunden werden.\n \n        Nachdem die Datei platziert ist, starten Sie die Import-Routine.\n        Scrollen Sie zum korrekten Datenbanknamen, klicken Sie darauf und folgen Sie den Anweisungen auf dem Bildschirm.\n \n \n        WARNUNG: Eine Datenbank kann nur importiert werden, wenn sie dieselbe Version hat, die momentan von xDrip benötigt wird.\n        Die Datenbankversionen werden sich mit zukünftigen xDrip Aktualisierungen vielleicht ändern.\n        Es ist am besten, wenn Sie die Datenbank mit derselben Version von xDrip importieren, mit der sie auch exportiert wurde, und xDrip dann aktualisieren.</string>
+	<string name="import_db_warning">\n        WARNUNG: Das Importieren eine Datenbank kann einen Datenverlust verursachen. Falls Sie nicht wissen, warum Sie das machen sollten, benutzen Sie es nicht.\n        Im Normalbetrieb von xDrip wird dies nicht benötigt. Benutzen Sie es nur im Falle eines vorherigen Datenverlustes.\n        Falls Sie nicht sicher sind, was zu tun ist, Sie aber dennoch den Import benutzen wollen, fragen Sie einen erfahrenen Benutzer.\n\n\n        Anleitung:\n\n        Platzieren Sie die Datenbank, die Sie installieren wollen, im Ordner \\\'xdrip\\\' auf dem primären Speicher\n        (manchmal auch \\\'interner Speicher\\\' vom Dateiexplorer genannt)\n        Das ist derselbe Ordner in den xDrip auch exportiert.\n        \n        Falls Sie eine eine ZIP-Datei haben, entpacken Sie sie (normalerweise lang drücken->entpacken)\n        Falls sie in einem Unterordner entpackt werden sollte, wird sie immernoch gefunden werden.\n \n        Nachdem die Datei platziert ist, starten Sie die Import-Routine.\n        Scrollen Sie zum korrekten Datenbanknamen, klicken Sie darauf und folgen Sie den Anweisungen auf dem Bildschirm.\n \n \n        WARNUNG: Eine Datenbank kann nur importiert werden, wenn sie dieselbe Version hat, die momentan von xDrip benötigt wird.\n        Die Datenbankversionen werden sich mit zukünftigen xDrip Aktualisierungen vielleicht ändern.\n        Es ist am besten, wenn Sie die Datenbank mit derselben Version von xDrip importieren, mit der sie auch exportiert wurde, und xDrip dann aktualisieren.</string>
 	<string name="increase_low_alarms_vehicle_mode">Erhöhe den Wert bei dem Niedrigalarm erhoben werden im Fahrzeugmodus</string>
 	<string name="influxdb_database_name">InfluxDB Datenbankname</string>
 	<string name="influxdb_sync">InfluxDB Synchronisation aktivieren</string>
 	<string name="influxdb_uri">InfluxDB URI</string>
-	<string name="infrequent_calibrations">Unregelmäßige Kalibrierungen</string>
+	<string name="infrequent_calibrations">Seltene Kalibrierungen</string>
 	<string name="insulin_sensitivity">Insulinsensitivität</string>
 	<string name="interapp_settings">Inter-App Einstellungen</string>
 	<string name="interpret_raw">Rohwerte interpretieren</string>
-	<string name="interpret_share_raw">Falls du Share benutzt, wird xDrip werte anzeigen, wenn sie normalerweise auf dem Empfänger versteckt sind.</string>
+	<string name="interpret_share_raw">Falls du Share benutzt, wird xDrip Werte anzeigen, wenn sie normalerweise auf dem Empfänger versteckt sind.</string>
 	<string name="keep_alert_no_calibration">Weiterhin alarmieren, wenn keine Kalibrierung gemacht wurde</string>
 	<string name="label_show_carbs">Kohlenhydrate:%1$sg</string>
 	<string name="label_show_insulin">U:%1$su</string>
@@ -639,7 +637,7 @@
 	<string name="notify_on_low_battery_level">Benachrichtigen, wenn der Ladezustand niedrig wird</string>
 	<string name="notify_when_wear_low_battery">Deaktiviere \"Wear-Collection-Dienst erzwingen\" wegen einem niedrigen Ladezustand der Uhr!</string>
 	<string name="old_school_calibration_mode">Old-School Kalibrierungsmodus</string>
-	<string name="old_school_calibrations">Originale, schmalere Reichtweite erlaubter Steigungen im klassischen xDrip Kalibrierungsalgorithmus (pre-2017). Standardsteigungen wahrscheinlicher! (Entwicklermodus nur)</string>
+	<string name="old_school_calibrations">Originale, schmalere Reichtweite erlaubter Steigungen im klassischen xDrip Kalibrierungsalgorithmus (pre-2017). Standardsteigungen wahrscheinlicher! (nur Entwicklermodus)</string>
 	<string name="older_bluetooth_wakelocks">Ältere Bluetooth-Wakelocks, die mehr Batterie verbrauchen können, aber möglicherweise für den Bluetoothempfang nötig sind</string>
 	<string name="only_accept_same_network">Nur akzepteiren, wenn das entfernte WLAN Netwerk mit demselben Buchstaben startet als unseres und die beiden sich sehr ähneln.</string>
 	<string name="only_enable_on_trouble">Nur aktivieren, wenn du Probleme mit der App hast.</string>
@@ -681,7 +679,7 @@
 	<string name="pref_summary_influxdb_enabled">Falls du eine private InfluxDB Datenbank benutzt, sollte dies aktiviert sein</string>
 	<string name="pref_summary_node_wearG5">Erzwinge das Telefon, diesen Wear-Collection-Dienst zu benutzen</string>
 	<string name="pref_summary_sync_wear_logs">Sende die Wear-Logs zum Ereignisbetrachter</string>
-	<string name="pref_summary_use_wear_health">Sammle und zeige den Schrittzähle an, falls verfügbar</string>
+	<string name="pref_summary_use_wear_health">Sammle und zeige den Schrittzähler an, falls verfügbar</string>
 	<string name="pref_summary_wear_logs_prefix">Prefix, der für Wear-Logeinträge benutzt wird</string>
 	<string name="pref_sync_wear_logs">Wear-Logs synchronisieren</string>
 	<string name="pref_title_ringtone">Klingelton</string>
@@ -697,7 +695,7 @@
 	<string name="repeat_alerts">Alarme wiederholen</string>
 	<string name="repeat_notification_every_90_minutes">Wiederhole den Benachrichtigungston alle 90 Minuten, falls immer noch im Fahrzeugmodus</string>
 	<string name="repeat_sound">Ton wiederholen</string>
-	<string name="repeatedly_restart_collection_service">Wiederholend den Kollektor-Dienst neustarten bei irgendeinem Anzeigen von verpassten Werten. Aktiviere dies nur, wenn du Datenverluste bekommst.</string>
+	<string name="repeatedly_restart_collection_service">Wiederholt den Kollektor-Dienst neustarten bei Anzeichen von verpassten Werten. Aktiviere dies nur, wenn du Datenverluste erfährst.</string>
 	<string name="reraise_before_snooze">Erhebe den Alarm erneut vor der Snooze-Zeit</string>
 	<string name="reraise_not_snoozed_sooner">Erhebe den Alarm erneut, falls nicht früher gesnoozed</string>
 	<string name="reset_bluetooth">Setze Bluetooth zurück, in dem es an und wieder ausgeschaltet wird, wenn wir keine Daten innerhalb von 20 Minuten bekommen</string>
@@ -779,11 +777,53 @@
 	<string name="using_local_language">Benutze momentan die lokale Sprache deines Geräts</string>
 	<string name="usw_treatment_bg">Benutze Behandslungsblutzuckerwerte</string>
 	<string name="vehicle_motion_extras">Aktiviere Extrafunktionen, wenn der Fahrzeugmodus erkannt wurde</string>
-	<string name="vibrate_alerts">Vibriere bei Alarmen</string>
+	<string name="vibrate_alerts">Bei Alarmen vibrieren</string>
 	<string name="vibrate_scanning_status">Vibriere um den Scanstatus anzuzeigen</string>
-	<string name="volume_buttons_snooze">Das Drücken des Lautstärkeknöpfe snoozed einen aktiven Alarm in der App</string>
+	<string name="volume_buttons_snooze">Das Drücken der Lautstärkeknöpfe snoozed einen aktiven Alarm in der App</string>
 	<string name="watch_vibrate_active_alerts">Lass die Uhr bei aktiven Glukosealarmen vibrieren</string>
-	<string name="widget_range_lines">Widget Zielbereichslinien</string>
-	<string name="wifi_name_must_match">WLAN Name muss übereinstimmen</string>
+	<string name="widget_range_lines">Widget-Zielbereichslinien</string>
+	<string name="wifi_name_must_match">WLAN-Name muss übereinstimmen</string>
 	<string name="xdrip_motion_tracking">xDrip+ Bewegungserkennung</string>
+
+    <string-array name="SendToPebbleChoice">
+        <item>Standard Watchface (alt)</item>
+        <item>Farbtrend Watchface</item>
+        <item>Pebble Classic Trend Watchface</item>
+        <item>Pebble Trend Clay Version (Test)</item>
+    </string-array>
+
+
+    <string-array name="PebbleTrendPeriods">
+        <item>1 Stunde</item>
+        <item>2 Stunden</item>
+        <item>4 Stunden</item>
+        <item>4 Stunden</item>
+    </string-array>
+
+    <string-array name="UpdateChannelDetail">
+        <item>Stable - bewährte und getestete Versionen</item>
+        <item>Beta - neue Funktionen, aber nicht gänzlich getestet</item>
+        <item>Alpha - Versionen zum frühen Testen</item>
+    </string-array>
+
+    <string-array name="UpdateChannelDetailE">
+        <item>Stable - bewährte und getestete Versionen</item>
+        <item>Beta - neue Funktionen, aber nicht gänzlich getestet</item>
+        <item>Alpha - Versionen zum frühen Testen</item>
+        <item>Nightly - ungetesteter Rohcode - nur Experten!</item>
+    </string-array>
+
+    <string-array name="TreatmentCalibrationChoiceDetail">
+        <item>Jedes Mal nachfragen</item>
+        <item>Nie benutzen</item>
+        <item>Immer benutzen</item>
+    </string-array>
+
+    <string-array name="BgAlertProfileEntries">
+        <item>Hoch</item>
+        <item>Mittel</item>
+        <item>Ansteigende Lautstärke</item>
+        <item>Nur vibrieren</item>
+        <item>Lautlos</item>
+    </string-array>
 </resources>
