@@ -15,6 +15,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
@@ -128,6 +129,11 @@ public class BloodTest extends Model {
             return null;
         }
 
+        if (timestamp_ms < 1487759433000L) {
+            UserError.Log.e(TAG, "Timestamp really too far in the past @ " + timestamp_ms);
+            return null;
+        }
+
         final long now = JoH.tsl();
         if (timestamp_ms > now) {
             if ((timestamp_ms - now) > 600000) {
@@ -178,6 +184,44 @@ public class BloodTest extends Model {
             return null;
         }
     }
+
+    public static List<BloodTest> lastMatching(int num, String match) {
+        try {
+            return new Select()
+                    .from(BloodTest.class)
+                    .where("source like ?", match)
+                    .orderBy("timestamp desc")
+                    .limit(num)
+                    .execute();
+        } catch (android.database.sqlite.SQLiteException e) {
+            fixUpTable();
+            return null;
+        }
+    }
+
+    public static BloodTest lastValid() {
+        final List<BloodTest> btl = lastValid(1);
+        if ((btl != null) && (btl.size() > 0)) {
+            return btl.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    public static List<BloodTest> lastValid(int num) {
+        try {
+            return new Select()
+                    .from(BloodTest.class)
+                    .where("state & ? != 0", BloodTest.STATE_VALID)
+                    .orderBy("timestamp desc")
+                    .limit(num)
+                    .execute();
+        } catch (android.database.sqlite.SQLiteException e) {
+            fixUpTable();
+            return null;
+        }
+    }
+
 
     public static BloodTest byUUID(String uuid) {
         if (uuid == null) return null;
@@ -313,13 +357,18 @@ public class BloodTest extends Model {
 
     synchronized static void opportunisticCalibration() {
         if (Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto")) {
-            final BloodTest bt = last();
+            final BloodTest bt = lastValid();
             if (bt == null) {
                 Log.d(TAG, "opportunistic: No blood tests");
                 return;
             }
             if (JoH.msSince(bt.timestamp) > Constants.DAY_IN_MS) {
                 Log.d(TAG, "opportunistic: Blood test older than 1 days ago");
+                return;
+            }
+
+            if ((bt.uuid != null) && (bt.uuid.length() > 1) && PersistentStore.getString("last-bt-auto-calib-uuid").equals(bt.uuid)) {
+                Log.d(TAG, "Already processed uuid: " + bt.uuid);
                 return;
             }
 
@@ -371,6 +420,7 @@ public class BloodTest extends Model {
 
 
             Log.d(TAG, "opportunistic: attempting auto calibration");
+            PersistentStore.setString("last-bt-auto-calib-uuid", bt.uuid);
             Home.startHomeWithExtra(xdrip.getAppContext(),
                     Home.BLUETOOTH_METER_CALIBRATION,
                     BgGraphBuilder.unitized_string_static(bt.mgdl),

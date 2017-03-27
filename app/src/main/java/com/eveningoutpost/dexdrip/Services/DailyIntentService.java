@@ -71,6 +71,11 @@ public class DailyIntentService extends IntentService {
                     Log.e(TAG, "DailyIntentService exception on PebbleMovement ", e);
                 }
                 try {
+                    BluetoothGlucoseMeter.startIfNoRecentData();
+                } catch (Exception e) {
+                    Log.e(TAG, "DailyIntentService exception on BluetoothGlucoseMeter");
+                }
+                try {
                     checkForAnUpdate(getApplicationContext());
                 } catch (Exception e) {
                     Log.e(TAG, "DailyIntentService exception on checkForAnUpdate ", e);

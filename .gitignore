@@ -44,3 +44,7 @@ proguard/
 *.DS_Store
 *.swp
 *.orig
+*.patch
+*.iml
+*.exe
+*.dll

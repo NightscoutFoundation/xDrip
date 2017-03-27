@@ -75,6 +75,19 @@
                     android:key="cloud_storage_api_base"
                     android:title="@string/pref_title_api_url" />
 
+                <SwitchPreference
+                    android:defaultValue="true"
+                    android:dependency="cloud_storage_api_enable"
+                    android:key="cloud_storage_api_download_enable"
+                    android:summary="Also try to download data from Nightscout"
+                    android:title="Download data" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="cloud_storage_api_download_enable"
+                    android:key="bluetooth_meter_for_calibrations_auto"
+                    android:summary="Calibrate using new blood glucose readings if the conditions appear right to do so without asking confirmation (experimental)"
+                    android:title="Automatic Calibration" />
+
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="skip_lan_uploads_when_no_lan"
