@@ -489,6 +489,12 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
+                    android:key="status_line_royce_ratio"
+                    android:summary="Show treatment carb/insulin ratio"
+                    android:title="Carb/Insulin Ratio" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="extra_status_line"
                     android:key="status_line_capture_percentage"
                     android:summary="@string/received_readings_percentage"
                     android:title="@string/capture_percentage" />

@@ -1196,6 +1196,12 @@ public class JoH {
         return map;
     }
 
+    public static ByteBuffer bArrayAsBuffer(byte[] bytes) {
+        final ByteBuffer bb = ByteBuffer.allocate(bytes.length);
+        bb.put(bytes);
+        return bb;
+    }
+
     public static long checksum(byte[] bytes) {
         if (bytes == null) return 0;
         final CRC32 crc = new CRC32();

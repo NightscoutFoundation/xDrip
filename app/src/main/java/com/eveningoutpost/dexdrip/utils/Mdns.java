@@ -241,7 +241,8 @@ public class Mdns {
 
             @Override
             public void onResolveFailed(NsdServiceInfo serviceInfo, int errorCode) {
-                UserError.Log.e(TAG, "Resolve failed " + errorCode);
+                if (JoH.quietratelimit("mdns-error", 30))
+                    UserError.Log.e(TAG, "Resolve failed " + errorCode);
                 outstanding.decrementAndGet();
                 locked_until = 0;
             }
