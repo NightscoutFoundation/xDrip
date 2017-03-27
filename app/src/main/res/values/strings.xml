@@ -533,7 +533,7 @@
     <string name="title_activity_btglucose_meter">Meter Scan</string>
     <string name="notify_when_wear_low_battery">Disabling Force Wear Collection Service due to Wear Low Battery!</string>
     <string name="notify_disable_wearG5_on_missedreadings">Disabling Force Wear Collection Service due to %1$d minutes of missed readings on watch!</string>
-    <string name="format_decimal_treatments">#.##</string>
+    <string name="format_decimal_treatments" translatable="false">#.##</string>
     <string name="label_show_insulin">U:%1$su</string>
     <string name="label_show_carbs">Carbs:%1$sg</string>
     <string name="label_show_steps">Steps:%1$d</string>
@@ -541,17 +541,17 @@
     <string name="label_show_steps_mi">mi:%1$s</string>
 
     <string name="pref_summary_influxdb_enabled">If using a private InfluxDB database, this should be enabled</string>
-    <string name="pref_title_influxdb">InfluxDB</string>
-    <string name="pref_default_influxdb_uri">https://{host}:{port}</string>
+    <string name="pref_title_influxdb" translatable="false">InfluxDB</string>
+    <string name="pref_default_influxdb_uri" translatable="false">https://{host}:{port}</string>
     <string name="pref_message_influxdb_uri">Replace example values in {}\'s with your correct values</string>
     <string name="pref_dialog_influxdb_uri">Enter InfluxDB URI</string>
-    <string name="pref_default_influxdb_database">xdrip</string>
+    <string name="pref_default_influxdb_database" translatable="false">xdrip</string>
     <string name="pref_message_influxdb_database">The database where to store measurements. Remember to create this on the server.</string>
     <string name="pref_dialog_influxdb_database">Database</string>
-    <string name="pref_default_influxdb_username">root</string>
+    <string name="pref_default_influxdb_username" translatable="false">root</string>
     <string name="pref_message_influxdb_username">Username for authentication. It is recommended to not allow usage without authentication.</string>
     <string name="pref_dialog_influxdb_username">User</string>
-    <string name="pref_default_influxdb_password">root</string>
+    <string name="pref_default_influxdb_password" translatable="false">root</string>
     <string name="pref_message_influxdb_password">Password for authentication. It is recommended to not allow usage without authentication.</string>
     <string name="pref_dialog_influxdb_password">Password</string>
 
@@ -611,9 +611,9 @@
     <string name="options_for_extra_line">Options for the extra line</string>
     <string name="todays_average_value">Today\'s average value.</string>
     <string name="ac1_estimation_dcct">A1c estimation in DCCT format (%)</string>
-    <string name="a1c_dcct">A1c DCCT</string>
+    <string name="a1c_dcct" translatable="false">A1c DCCT</string>
     <string name="ac1_estimation_ifcc">A1c estimation in IFCC format (mmol/mol)</string>
-    <string name="a1c_ifcc">A1c IFCC</string>
+    <string name="a1c_ifcc" translatable="false">A1c IFCC</string>
     <string name="percentage_in_range">Percentage of values in range.</string>
     <string name="percentage_below_range">Percentage of values below range.</string>
     <string name="percentage_above_range">Percentage of values above range.</string>
