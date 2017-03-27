@@ -490,7 +490,6 @@
 	<string name="split">Teilen</string>
 	<string name="delete">Löschen</string>
 
-	<string name="a1c_dcct"></string>
 	<string name="ac1_estimation_dcct">A1c-Vorhersage im DCCT-Format (%)</string>
 	<string name="ac1_estimation_ifcc">A1c-Vorhersage im IFCC-Format (mmol/mol)</string>
 	<string name="acccept_remote_snoozes">Remote-Snoozes annehmen</string>
