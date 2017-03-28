@@ -54,6 +54,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.HM10Attributes;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
+import com.eveningoutpost.dexdrip.UtilityModels.XbridgePlus;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -85,6 +86,7 @@ public class DexCollectionService extends Service {
     private int mConnectionState = BluetoothProfile.STATE_DISCONNECTING;
     private static int mStaticState = BluetoothProfile.STATE_DISCONNECTING;
     private static int mStaticStateWatch = 0; // default unknown
+    private static byte[] immediateSend;
     private static String bondedState;
     private BluetoothDevice device;
     private BluetoothGattCharacteristic mCharacteristic;
@@ -336,6 +338,14 @@ public class DexCollectionService extends Service {
         setRetryTimer();
     }
 
+    private synchronized void checkImmediateSend() {
+        if (immediateSend != null) {
+            Log.d(TAG,"Sending immediate data: "+JoH.bytesToHex(immediateSend));
+            sendBtMessage(JoH.bArrayAsBuffer(immediateSend));
+            immediateSend = null;
+        }
+    }
+
     private static String getStateStr(int mConnectionState) {
         mStaticState = mConnectionState;
         switch (mConnectionState){
@@ -468,6 +478,8 @@ public class DexCollectionService extends Service {
             } else {
                 Log.w(TAG, "onServicesDiscovered: characteristic " + xDripDataCharacteristic + " not found");
             }
+
+            checkImmediateSend(); // TODO maybe find a better home for this
             JoH.releaseWakeLock(wl);
         }
 
@@ -542,6 +554,12 @@ public class DexCollectionService extends Service {
             Log.w(TAG, "sendBtMessage: use_rfduino_bluetooth");
             mCharacteristicSend.setValue(value);
             return mBluetoothGatt.writeCharacteristic(mCharacteristicSend);
+        }
+
+        if (mCharacteristic == null) {
+            status("Error: mCharacteristic was null in sendBtMessage");
+            Log.e(TAG, lastState);
+            return false;
         }
 
         mCharacteristic.setValue(value);
@@ -848,6 +866,16 @@ public class DexCollectionService extends Service {
         if (retry_time > 0) l.add(new StatusItem("Next Retry", JoH.niceTimeTill(retry_time)));
         if (failover_time > 0)
             l.add(new StatusItem("Next Wake up", JoH.niceTimeTill(failover_time)));
+
+        if (Home.get_engineering_mode() && DexCollectionType.hasLibre()) {
+            l.add(new StatusItem("Request Data", "Test for xBridgePlus protocol", immediateSend == null ? StatusItem.Highlight.NORMAL : StatusItem.Highlight.NOTICE, "long-press", new Runnable() {
+                @Override
+                public void run() {
+                    immediateSend = XbridgePlus.sendDataRequestPacket();
+                    CollectionServiceStarter.restartCollectionService(xdrip.getAppContext()); // TODO quicker/cleaner restart
+                }
+            }));
+        }
 
         if (Home.get_engineering_mode() && (static_last_hexdump != null)) {
             l.add(new StatusItem("Received Data", filterHexdump(static_last_hexdump)));
