@@ -454,7 +454,7 @@ public class G5CollectionService extends Service {
     }
 
     public synchronized void keepAlive(int wake_in_ms) {
-        Log.e(TAG,"keepAlive keep_running=" + keep_running);
+        Log.d(TAG,"keepAlive keep_running=" + keep_running);
         if (!keep_running) return;
         if (JoH.ratelimit("G5-keepalive", 5)) {
             long wakeTime;
@@ -579,7 +579,7 @@ public class G5CollectionService extends Service {
 
     public synchronized void cycleScan(int delay) {
 
-        Log.e(TAG,"cycleScan keep_running=" + keep_running);
+        Log.d(TAG,"cycleScan keep_running=" + keep_running);
         if (!keep_running) {
             Log.e(TAG," OnDestroy failed to stop service. Shutting down now to prevent service from being initiated onScanResult().");
             stopSelf();
@@ -635,11 +635,11 @@ public class G5CollectionService extends Service {
     }
 
     private synchronized void scanLogic() {
-        Log.e(TAG,"scanLogic keep_running=" + keep_running);
+        Log.d(TAG,"scanLogic keep_running=" + keep_running);
         if (!keep_running) return;
 
         if (alwaysOnScreem()) {
-            Log.e(TAG, "scanLogic call forceScreenOn");
+            Log.d(TAG, "scanLogic call forceScreenOn");
             if (enforceMainThread()) {
                 Handler iHandler = new Handler(Looper.getMainLooper());
                 iHandler.post(new Runnable() {
@@ -735,9 +735,9 @@ public class G5CollectionService extends Service {
     private synchronized void forceScreenOn() {
         //Home.startHomeWithExtra(getApplicationContext(), Home.HOME_FULL_WAKEUP, "1");
         final int timeout = (3 * 60 * 1000);
-        Log.e(TAG, "forceScreenOn set wakelock for FULL_WAKE_LOCK");
+        Log.d(TAG, "forceScreenOn set wakelock for FULL_WAKE_LOCK");
         if (fullWake == null || !fullWake.isHeld()) {
-            UserError.Log.e(TAG, "Current time: " + JoH.dateTimeText(JoH.tsl()));
+            UserError.Log.d(TAG, "Current time: " + JoH.dateTimeText(JoH.tsl()));
             fullWake = JoH.getWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "FORCE_FULL_WAKE_LOCK", timeout);
         }
         else {
@@ -750,12 +750,12 @@ public class G5CollectionService extends Service {
         if (isScanning) {
             Log.d(TAG, "alreadyScanning");
             scan_interval_timer.cancel();
-            Log.e(TAG,"startScan keep_running=" + keep_running);
+            Log.d(TAG,"startScan keep_running=" + keep_running);
             if (!keep_running) return;
             return;
         }
 
-        Log.e(TAG,"startScan keep_running=" + keep_running);
+        Log.d(TAG,"startScan keep_running=" + keep_running);
         if (!keep_running) return;
 
         if (alwaysOnScreem()) {
@@ -848,7 +848,7 @@ public class G5CollectionService extends Service {
                         @Override
                         public void run() {
                             mBluetoothAdapter.enable();
-                            Log.e(TAG, "Cycling BT-gatt - enableing BT");
+                            Log.e(TAG, "Cycling BT-gatt - enabling BT");
                             cycling_bt = false;
                         }
                     }, 3000);
@@ -1699,7 +1699,7 @@ public class G5CollectionService extends Service {
     public static final String G5_BATTERY_MARKER = "g5-battery-";
     public static final String G5_BATTERY_WEARABLE_SEND = "g5-battery-wearable-send";
 
-    public static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
+    public synchronized static boolean setStoredBatteryBytes(String transmitterId, byte[] data) {
         UserError.Log.e(TAG, "Store: BatteryRX dbg: " + JoH.bytesToHex(data));
         if (transmitterId.length() != 6) return false;
         if (data.length < 10) return false;

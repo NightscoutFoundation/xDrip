@@ -356,11 +356,11 @@ public class BgReading extends Model implements ShareUploadableBg {
                     .orderBy("abs(timestamp - " + timestamp + ") asc")
                     .executeSingle();
             if (bgReading != null && Math.abs(bgReading.timestamp - timestamp) < precision) { //cool, so was it actually within precision of that bg reading?
-                Log.i(TAG, "getForPreciseTimestamp: Found a BG timestamp match");
+                //Log.d(TAG, "getForPreciseTimestamp: Found a BG timestamp match");
                 return bgReading;
             }
         }
-        Log.w(TAG, "getForPreciseTimestamp: No luck finding a BG timestamp match: " + JoH.dateTimeText((long) timestamp) + " precision:" + precision + " Sensor: " + ((sensor == null) ? "null" : sensor.getId()));
+        Log.d(TAG, "getForPreciseTimestamp: No luck finding a BG timestamp match: " + JoH.dateTimeText((long) timestamp) + " precision:" + precision + " Sensor: " + ((sensor == null) ? "null" : sensor.getId()));
         return null;
     }
 
@@ -486,7 +486,11 @@ public class BgReading extends Model implements ShareUploadableBg {
             // used when we are not fast inserting data
             if (!quick) {
                 bgReading.perform_calculations();
-                Log.d(TAG, "Start Notifications Service for BG: " + bgReading.calculated_value);
+
+                //KS if (JoH.ratelimit("opportunistic-calibration", 60)) {
+                //    BloodTest.opportunisticCalibration();
+                //}
+
                 context.startService(new Intent(context, Notifications.class));
             }
             BgSendQueue.handleNewBgReading(bgReading, "create", context, Home.get_follower(), quick);
@@ -898,6 +902,10 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static void bgReadingInsertFromJson(String json, boolean do_notification) {
+        if ((json == null) || (json.length() == 0)) {
+            Log.e(TAG, "bgreadinginsertfromjson passed a null or zero length json");
+            return;
+        }
         BgReading bgr = fromJSON(json);
         if (bgr != null) {
             try {
@@ -965,6 +973,13 @@ public class BgReading extends Model implements ShareUploadableBg {
         return new Select()
                 .from(BgReading.class)
                 .where("uuid = ?", uuid)
+                .executeSingle();
+    }
+
+    public static BgReading byid(long id) {
+        return new Select()
+                .from(BgReading.class)
+                .where("_ID = ?", id)
                 .executeSingle();
     }
 
@@ -1217,7 +1232,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public void find_new_raw_curve() {
-        List<BgReading> last_3 = BgReading.latest(3);
+        final List<BgReading> last_3 = BgReading.latest(3);
         if ((last_3 != null) && (last_3.size() == 3)) {
 
             final BgReading latest = last_3.get(0);
@@ -1272,8 +1287,8 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
     public static double weightedAverageRaw(double timeA, double timeB, double calibrationTime, double rawA, double rawB) {
-        double relativeSlope = (rawB -  rawA)/(timeB - timeA);
-        double relativeIntercept = rawA - (relativeSlope * timeA);
+        final double relativeSlope = (rawB -  rawA)/(timeB - timeA);
+        final double relativeIntercept = rawA - (relativeSlope * timeA);
         return ((relativeSlope * calibrationTime) + relativeIntercept);
     }
 
@@ -1490,7 +1505,7 @@ public class BgReading extends Model implements ShareUploadableBg {
             UserNotification.DeleteNotificationByType("bg_unclear_readings_alert");
             return false;
         }
-
+        
         Boolean bg_unclear_readings_alerts = prefs.getBoolean("bg_unclear_readings_alerts", false);
         if (!bg_unclear_readings_alerts || (!DexCollectionType.hasFiltered())) {
             Log.d(TAG_ALERT, "getUnclearReading returned false since feature is disabled");
@@ -1506,14 +1521,14 @@ public class BgReading extends Model implements ShareUploadableBg {
             Notifications.bgUnclearAlert(context);
             return true;
         }
-
+        
         UserNotification.DeleteNotificationByType("bg_unclear_readings_alert");
-
+        
         if (UnclearTime > 0 ) {
             Log.d(TAG_ALERT, "We are in an clear state, but not for too long. Alerts are disabled");
             return true;
         }
-
+        
         return false;
     }
 
