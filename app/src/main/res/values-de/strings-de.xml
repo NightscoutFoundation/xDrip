@@ -616,7 +616,6 @@
 	<string name="log_and_plot_motion">Bewegung loggen und darstellen</string>
 	<string name="low_battery_percentage">Niedriger Batteriestatusprozentsatz</string>
 	<string name="low_prediction_values">Unterzucker-Vorhersagewerte</string>
-	<string name="low_level_value"></string>
 	<string name="main_glucose_plugin">Der angezeigte Hauptglukosewert kommt vom Plugin!</string>
 	<string name="maximum_value">Die obere Grenze deines Zielbereichs</string>
 	<string name="meter_connect_sound">Aktiviere dies, damit Soundeffekte abgespielt werden, wein das Messgerät sich verbindet, die Verbindung trennt oder Datenk synchronisiert.</string>
@@ -758,7 +757,6 @@
 	<string name="unbond_g5_before_read">Das G5 vor jedem Lesen unbounden.</string>
 	<string name="upload_to_dexcom">Aktiviere dies zum Hochladen auf Dexcoms Server.</string>
 	<string name="upload_to_dexcom_share">Lade Blutzuckerwerte als Dexcom Share hoch.</string>
-	<string name="upper_title_bar_flair"></string>
 	<string name="usa_based_account">Dexcom USA basierter Account</string>
 	<string name="use_any_tag">Benutze die Any-Tag optimierte Lesemethode</string>
 	<string name="use_bluetooth_meter">Benutze das Bluetooth-Messgerät</string>
@@ -784,4 +782,9 @@
 	<string name="widget_range_lines">Widget-Zielbereichslinien</string>
 	<string name="wifi_name_must_match">WLAN-Name muss übereinstimmen</string>
 	<string name="xdrip_motion_tracking">xDrip+ Bewegungserkennung</string>
+	<string name="lower_button_bar_falir">Farbe der System-Navigationsleiste</string>
+	<string name="upper_title_bar_flair">Farbe der System-Statusleiste</string>
+
+	<!-- Difficult translation -->
+	<string name="low_level_value">Systemnaher Diagnose-/Prototypwert</string>
 </resources>
