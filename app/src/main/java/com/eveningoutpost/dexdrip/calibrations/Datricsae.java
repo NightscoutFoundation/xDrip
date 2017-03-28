@@ -45,16 +45,24 @@ public class Datricsae extends CalibrationAbstract {
 
     @Override
     public synchronized CalibrationData getCalibrationData(long until) {
-        // TODO cache must understand until and match appropriately
-        //CalibrationData cd = loadDataFromCache(TAG);
-        CalibrationData cd = null;
+        // first is most recent
+        final List<Calibration> calibrations = Calibration.latestValid(CALIBRATIONS_TO_USE, until);
+        if ((calibrations == null) || (calibrations.size() == 0)) return null;
+        //Log.d(TAG,"graph: DATRICSAE: got: "+calibrations.size()+" until: "+JoH.dateTimeText(until)+" last: "+JoH.dateTimeText(calibrations.get(0).timestamp));
+        // have we got enough data to have a go
+
+        final long highest_calibration_timestamp = calibrations.get(0).timestamp;
+
+        CalibrationData cd = loadDataFromCache(TAG, highest_calibration_timestamp);
+        if (d) {
+            if (cd == null) {
+                Log.d(TAG, "GETCALIB No cache match for: " + JoH.dateTimeText(highest_calibration_timestamp));
+            } else {
+                Log.d(TAG, "GETCALIB Cache hit " + cd.slope + " " + cd.intercept + " " + JoH.dateTimeText(highest_calibration_timestamp) + " " + JoH.dateTimeText(until));
+            }
+        }
         if (cd == null) {
 
-            // first is most recent
-            final List<Calibration> calibrations = Calibration.latestValid(CALIBRATIONS_TO_USE, until);
-            if ((calibrations == null) || (calibrations.size() == 0)) return null;
-            //Log.d(TAG,"graph: DATRICSAE: got: "+calibrations.size()+" until: "+JoH.dateTimeText(until)+" last: "+JoH.dateTimeText(calibrations.get(0).timestamp));
-            // have we got enough data to have a go
             if (calibrations.size() < FALLBACK_TO_ORIGINAL_CALIBRATIONS_MINIMUM) {
                 // just use whatever xDrip original would have come up with at this point
                 cd = new CalibrationData(calibrations.get(0).slope, calibrations.get(0).intercept);
@@ -156,11 +164,12 @@ public class Datricsae extends CalibrationAbstract {
                     cd = new CalibrationData(calibrations.get(0).slope, calibrations.get(0).intercept);
                     Log.wtf(TAG, "ERROR: Math Error REVERTING TO FALLBACK! " + e + "  / slope: " + calibrations.get(0).slope);
                 }
+                saveDataToCache(TAG, cd, until, highest_calibration_timestamp); // Save cached data
             }
         } else {
-            Log.d(TAG, "Returning cached calibration data object");
+           if (d) Log.d(TAG, "Returning cached calibration data object");
         }
-        //saveDataToCache(TAG, cd); // Save cached data when not in development
+
         return cd; // null if invalid
     }
 
@@ -171,7 +180,7 @@ public class Datricsae extends CalibrationAbstract {
 
     @Override
     public boolean invalidateCache() {
-        return saveDataToCache(TAG, null);
+        return clearMemoryCache();
     }
 
     // this means we invalidate the cache close to a calibration if our alg
