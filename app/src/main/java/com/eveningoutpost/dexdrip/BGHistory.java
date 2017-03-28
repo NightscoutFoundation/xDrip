@@ -199,6 +199,11 @@ public class BGHistory extends ActivityWithMenu {
                 double carbs = statsResult.getTotal_carbs();
                 sb.append(getResources().getString(R.string.label_show_carbs, df.format(carbs)));
             }
+            if (Home.getPreferencesBoolean("status_line_royce_ratio", false)) {
+                sb.append(' ');
+                double ratio = statsResult.getRatio();
+                sb.append(getResources().getString(R.string.label_show_royceratio, df.format(ratio)));
+            }
             if (Home.getPreferencesBoolean("use_pebble_health", true)) {
                 sb.append('\n');
                 int steps = statsResult.getTotal_steps();

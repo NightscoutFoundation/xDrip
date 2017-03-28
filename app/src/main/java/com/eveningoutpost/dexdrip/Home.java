@@ -2313,6 +2313,7 @@ public class Home extends ActivityWithMenu {
                 || prefs.getBoolean("status_line_in", false)
                 || prefs.getBoolean("status_line_high", false)
                 || prefs.getBoolean("status_line_low", false)
+                || prefs.getBoolean("status_line_stdev", false)
                 || prefs.getBoolean("status_line_carbs", false)
                 || prefs.getBoolean("status_line_insulin", false)
                 || prefs.getBoolean("status_line_royce_ratio", false)

@@ -138,6 +138,11 @@ public class StatsResult {
         }
     }
 
+    public double getRatio() {
+        //return getTotal_carbs() / getTotal_insulin();//KS TODO support treatments
+        return -1;
+    }
+
     public double getTotal_insulin() {
         /* if (total_insulin < 0) {//KS TODO support treatments
             Cursor cursor = Cache.openDatabase().rawQuery("select sum(insulin) from treatments  where timestamp >= " + from + " AND timestamp <= " + to, null);
