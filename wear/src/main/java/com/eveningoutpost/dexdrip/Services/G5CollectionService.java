@@ -157,7 +157,7 @@ public class G5CollectionService extends Service {
     private int maxScanCycles = 24;
     private int scanCycleCount = 0;
     public Context mContext;//KS
-    private boolean delays = false;
+    //private boolean delays = false;
 
     private static String lastState = "Not running";
     private static String lastStateWatch = "Not running";
@@ -170,7 +170,7 @@ public class G5CollectionService extends Service {
     // test params
     private static final boolean ignoreLocalBondingState = false; // don't try to bond gives: GATT_ERR_UNLIKELY but no more 133s
     private static final boolean delayOnBond = false; // delay while bonding also gives ERR_UNLIKELY but no more 133s
-    private static final boolean tryPreBondWithDelay = true; // prebond with delay seems to help
+    private static final boolean tryPreBondWithDelay = false; // prebond with delay seems to help
     private static final boolean tryOnDemandBondWithDelay = true; // bond when requested
     private static final boolean delayOn133Errors = true; // add some delays with 133 errors
     private static final boolean useKeepAlive = true; // add some delays with 133 errors
