@@ -97,7 +97,7 @@ public class NavDrawerBuilder {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            if (DexCollectionType.hasBluetooth()) {
+            if (DexCollectionType.hasBluetooth() && (DexCollectionType.getDexCollectionType() != DexCollectionType.DexcomG5)) {
                 // if (CollectionServiceStarter.isBTWixel(context) ||
                 //       CollectionServiceStarter.isBTShare(context) ||
                 //     CollectionServiceStarter.isWifiandBTWixel(context) ||
