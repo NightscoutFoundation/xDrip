@@ -536,6 +536,7 @@
     <string name="format_decimal_treatments">#.##</string>
     <string name="label_show_insulin">U:%1$su</string>
     <string name="label_show_carbs">Carbs:%1$sg</string>
+    <string name="label_show_royceratio">C/I:%1$s</string>
     <string name="label_show_steps">Steps:%1$d</string>
     <string name="label_show_steps_km">km:%1$s</string>
     <string name="label_show_steps_mi">mi:%1$s</string>

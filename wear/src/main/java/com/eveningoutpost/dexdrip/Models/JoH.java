@@ -14,14 +14,15 @@ import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+//KS import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+//KS import android.graphics.Canvas;
+//KS import android.graphics.Color;
+//KS import android.graphics.Paint;
 import android.graphics.Point;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -36,8 +37,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
-import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.AppCompatActivity;
+//KS import android.support.v7.app.AlertDialog;
+//KS import android.support.v4.app.NotificationCompat;
+//KS import android.support.v7.app.AppCompatActivity;
+//KS import android.support.v7.view.ContextThemeWrapper;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
 import android.util.Base64;
@@ -49,8 +52,10 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.utils.BestGZIPOutputStream;
+//KS import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.UnsignedInts;
@@ -72,6 +77,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
@@ -80,6 +86,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.Inflater;
 
+import static android.bluetooth.BluetoothDevice.PAIRING_VARIANT_PIN;
+import static android.content.Context.ALARM_SERVICE;
 //KS import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
 
 /**
@@ -133,6 +141,9 @@ public class JoH {
 
     public static long msSince(long when) {
         return (tsl() - when);
+    }
+    public static long msTill(long when) {
+        return (when - tsl());
     }
 
     public static long absMsSince(long when) {
@@ -376,6 +387,16 @@ public class JoH {
         }
     }
 
+    /*KS// compare stored byte array hashes
+    public static synchronized boolean differentBytes(String name, byte[] bytes) {
+        final String id = "differentBytes-" + name;
+        final String last_hash = PersistentStore.getString(id);
+        final String this_hash = CipherUtils.getSHA256(bytes);
+        if (this_hash.equals(last_hash)) return false;
+        PersistentStore.setString(id, this_hash);
+        return true;
+    }*/
+
     // return true if below rate limit (persistent version)
     public static synchronized boolean pratelimit(String name, int seconds) {
         // check if over limit
@@ -401,6 +422,17 @@ public class JoH {
         // check if over limit
         if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (seconds * 1000))) {
             Log.d(TAG, name + " rate limited: " + seconds + " seconds");
+            return false;
+        }
+        // not over limit
+        rateLimits.put(name, JoH.tsl());
+        return true;
+    }
+
+    // return true if below rate limit
+    public static synchronized boolean quietratelimit(String name, int seconds) {
+        // check if over limit
+        if ((rateLimits.containsKey(name)) && (JoH.tsl() - rateLimits.get(name) < (seconds * 1000))) {
             return false;
         }
         // not over limit
@@ -521,10 +553,10 @@ public class JoH {
     public static String niceTimeScalar(long t) {
         String unit = "second";
         t = t / 1000;
-        if (t > 60) {
+        if (t > 59) {
             unit = "minute";
             t = t / 60;
-            if (t > 60) {
+            if (t > 59) {
                 unit = "hour";
                 t = t / 60;
                 if (t > 24) {
@@ -539,6 +571,21 @@ public class JoH {
         }
         if (t != 1) unit = unit + "s";
         return qs((double) t, 0) + " " + unit;
+    }
+
+    public static String niceTimeScalarNatural(long t) {
+        if (t > 3000000) t = t + 10000; // round up by 10 seconds if nearly an hour
+        if ((t > Constants.DAY_IN_MS) && (t < Constants.WEEK_IN_MS * 2)) {
+            final SimpleDateFormat df = new SimpleDateFormat("EEEE", Locale.getDefault());
+            final String day = df.format(new Date(JoH.tsl() + t));
+            return ((t > Constants.WEEK_IN_MS) ? "next " : "") + day;
+        } else {
+            return niceTimeScalar(t);
+        }
+    }
+
+    public static String niceTimeScalarRedux(long t) {
+        return niceTimeScalar(t).replaceFirst("^1 ", "");
     }
 
     public static double tolerantParseDouble(String str) throws NumberFormatException {
@@ -625,7 +672,7 @@ public class JoH {
 
     public static String getWifiSSID() {
         try {
-            final WifiManager wifi_manager = (WifiManager) xdrip.getAppContext().getSystemService(Context.WIFI_SERVICE);
+            final WifiManager wifi_manager = (WifiManager) xdrip.getAppContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             if (wifi_manager.isWifiEnabled()) {
                 final WifiInfo wifiInfo = wifi_manager.getConnectionInfo();
                 if (wifiInfo != null) {
@@ -678,6 +725,12 @@ public class JoH {
         return mainHandler.postDelayed(theRunnable, delay);
     }
 
+    public static void removeUiThreadRunnable(Runnable theRunnable)
+    {
+        final Handler mainHandler = new Handler(xdrip.getAppContext().getMainLooper());
+        mainHandler.removeCallbacks(theRunnable);
+    }
+
     public static void static_toast(final Context context, final String msg, final int length) {
         try {
             if (!runOnUiThread(new Runnable() {
@@ -713,17 +766,45 @@ public class JoH {
         static_toast(context, msg, Toast.LENGTH_LONG);
     }
 
+    /* KS public static void show_ok_dialog(final Activity activity, String title, String message, final Runnable runnable) {
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(activity, R.style.AppTheme));
+            builder.setTitle(title);
+            builder.setMessage(message);
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    if (runnable != null) {
+                        runOnUiThreadDelayed(runnable, 10);
+                    }
+                }
+            });
+
+            builder.create().show();
+        } catch (Exception e) {
+            Log.wtf(TAG, "show_dialog exception: " + e);
+            static_toast_long(message);
+        }
+    }*/
+
     public static synchronized void playResourceAudio(int id) {
-        playSoundUri(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + xdrip.getAppContext().getPackageName() + "/" + id);
+        playSoundUri(getResourceURI(id));
     }
 
-    public static synchronized void playSoundUri(String soundUri) {
+    public static String getResourceURI(int id) {
+        return ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + xdrip.getAppContext().getPackageName() + "/" + id;
+    }
+
+    public static synchronized MediaPlayer playSoundUri(String soundUri) {
         try {
             JoH.getWakeLock("joh-playsound", 10000);
             final MediaPlayer player = MediaPlayer.create(xdrip.getAppContext(), Uri.parse(soundUri));
+            player.setLooping(false);
             player.start();
+            return player;
         } catch (Exception e) {
             Log.wtf(TAG, "Failed to play audio: " + soundUri + " exception:" + e);
+            return null;
         }
     }
 
@@ -867,19 +948,31 @@ public class JoH {
         }
     }
 
-    public static void wakeUpIntent(Context context, long delayMs, PendingIntent pendingIntent) {
+    public static void cancelAlarm(Context context, PendingIntent serviceIntent) {
+        // do we want a try catch block here?
+        final AlarmManager alarm = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+        if (serviceIntent != null) {
+            Log.d(TAG, "Cancelling alarm " + serviceIntent.getCreatorPackage());
+            alarm.cancel(serviceIntent);
+        } else {
+            Log.d(TAG, "Cancelling alarm: serviceIntent is null");
+        }
+    }
+
+    public static long wakeUpIntent(Context context, long delayMs, PendingIntent pendingIntent) {
         final long wakeTime = JoH.tsl() + delayMs;
         Log.d(TAG, "Scheduling wakeup intent: " + dateTimeText(wakeTime));
-        final AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        final AlarmManager alarm = (AlarmManager) context.getSystemService(ALARM_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
         } else
             alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+        return wakeTime;
     }
 
-   public static void scheduleNotification(Context context, String title, String body, int delaySeconds, int notification_id) {
+    public static void scheduleNotification(Context context, String title, String body, int delaySeconds, int notification_id) {
         final Intent notificationIntent = new Intent(context, Home.class).putExtra(Home.SHOW_NOTIFICATION, title).putExtra("notification_body", body).putExtra("notification_id", notification_id);
         final PendingIntent pendingIntent = PendingIntent.getActivity(context, notification_id, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         Log.d(TAG, "Scheduling notification: " + title + " / " + body);
@@ -892,13 +985,17 @@ public class JoH {
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, boolean onetime) {
+        showNotification(title, content, intent, notificationId, sound, vibrate, null, null);
+    }
+
+    public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri) {
         final Notification.Builder mBuilder = notificationBuilder(title, content, intent);
         final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
         if (vibrate) mBuilder.setVibrate(vibratePattern);
+        if (deleteIntent != null) mBuilder.setDeleteIntent(deleteIntent);
         mBuilder.setLights(0xff00ff00, 300, 1000);
-        if (sound)
-        {
-            Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        if (sound) {
+            Uri soundUri = (sound_uri != null) ? sound_uri : RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             mBuilder.setSound(soundUri);
         }
 
@@ -968,13 +1065,40 @@ public class JoH {
         return Settings.Global.getInt(context.getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
     }
 
-    @TargetApi(19)
+
+    public static byte[] convertPinToBytes(String pin) {
+        if (pin == null) {
+            return null;
+        }
+        byte[] pinBytes;
+        try {
+            pinBytes = pin.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException uee) {
+            Log.e(TAG, "UTF-8 not supported?!?");  // this should not happen
+            return null;
+        }
+        if (pinBytes.length <= 0 || pinBytes.length > 16) {
+            return null;
+        }
+        return pinBytes;
+    }
+
     public static void doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress) {
+        doPairingRequest(context, broadcastReceiver, intent, mBluetoothDeviceAddress, null);
+    }
+
+    @TargetApi(19)
+    public static void doPairingRequest(Context context, BroadcastReceiver broadcastReceiver, Intent intent, String mBluetoothDeviceAddress, String pinHint) {
         if (BluetoothDevice.ACTION_PAIRING_REQUEST.equals(intent.getAction())) {
             final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
             if (device != null) {
                 int type = intent.getIntExtra(BluetoothDevice.EXTRA_PAIRING_VARIANT, BluetoothDevice.ERROR);
                 if ((mBluetoothDeviceAddress != null) && (device.getAddress().equals(mBluetoothDeviceAddress))) {
+                    if ((type == PAIRING_VARIANT_PIN) && (pinHint != null)) {
+                        device.setPin(convertPinToBytes(pinHint));
+                        Log.d(TAG, "Setting pairing pin to " + pinHint);
+                        broadcastReceiver.abortBroadcast();
+                    }
                     try {
                         UserError.Log.e(TAG, "Pairing type: " + type);
                         device.setPairingConfirmation(true);

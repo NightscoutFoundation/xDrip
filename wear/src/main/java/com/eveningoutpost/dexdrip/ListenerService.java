@@ -1354,11 +1354,13 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             prefs.putBoolean("status_line_carbs", dataMap.getBoolean("status_line_carbs", false));
             prefs.putBoolean("status_line_insulin", dataMap.getBoolean("status_line_insulin", false));
             prefs.putBoolean("status_line_stdev", dataMap.getBoolean("status_line_stdev", false));
+            prefs.putBoolean("status_line_royce_ratio", dataMap.getBoolean("status_line_royce_ratio", false));
             prefs.putBoolean("status_line_capture_percentage", dataMap.getBoolean("status_line_capture_percentage", false));
             //Calibration plugin
             prefs.putBoolean("extra_status_calibration_plugin", dataMap.getBoolean("extra_status_calibration_plugin", false));
             prefs.putBoolean("display_glucose_from_plugin", dataMap.getBoolean("display_glucose_from_plugin", false));
             prefs.putBoolean("use_pluggable_alg_as_primary", dataMap.getBoolean("use_pluggable_alg_as_primary", false));
+            prefs.putBoolean("old_school_calibration_mode", dataMap.getBoolean("old_school_calibration_mode", false));
 
             prefs.commit();
 
@@ -1832,18 +1834,19 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
     private void setupStepSensor() {
         if (mPrefs.getBoolean("use_wear_health", false) || mPrefs.getBoolean("showSteps", false)) {
-            Log.e(TAG, "Start Step Counter Sensor");
+            Log.d(TAG, "Start Step Counter Sensor");
             //startService(new Intent(this, SensorService.class));
             resetCounters();
             stopMeasurement();
             startMeasurement();
         }
         else {
-            Log.e(TAG, "Stop Step Counter Sensor");
+            Log.d(TAG, "Stop Step Counter Sensor");
             //stopService(new Intent(this, SensorService.class));
             stopMeasurement();
         }
     }
+
     private final SensorEventListener mListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
@@ -1852,20 +1855,20 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             int type = event.sensor.getType();
             Log.d(TAG, "onSensorChanged Sensor " + type + " name = " + event.sensor.getStringType());
             Log.d(TAG, "onSensorChanged accuracy = " + event.accuracy);
-            Log.e(TAG, "onSensorChanged MaxDelay = " + event.sensor.getMaxDelay());
-            Log.e(TAG, "onSensorChanged t = " + t + " text = " + JoH.dateTimeText(t));
-            Log.e(TAG, "onSensorChanged last_movement_timestamp = " + last_movement_timestamp + " text = " + JoH.dateTimeText(last_movement_timestamp));
+            Log.d(TAG, "onSensorChanged MaxDelay = " + event.sensor.getMaxDelay());
+            Log.d(TAG, "onSensorChanged t = " + t + " text = " + JoH.dateTimeText(t));
+            Log.d(TAG, "onSensorChanged last_movement_timestamp = " + last_movement_timestamp + " text = " + JoH.dateTimeText(last_movement_timestamp));
 
             // Calculate the delay from when event was recorded until it was received here in ms
             // Event timestamp is recorded in us accuracy, but ms accuracy is sufficient here
             long delay = System.currentTimeMillis() - (event.timestamp / 1000000L);//Timestamp when sensor was registered
-            Log.e(TAG, "onSensorChanged delay = " + delay + " JoH.DateTimeText(delay) = " + JoH.dateTimeText(delay) + " (delay + (event.timestamp / 1000000L)) = " + delay + (event.timestamp / 1000000L) + " text= " + JoH.dateTimeText(delay + (event.timestamp / 1000000L)));
+            Log.d(TAG, "onSensorChanged delay = " + delay + " JoH.DateTimeText(delay) = " + JoH.dateTimeText(delay) + " (delay + (event.timestamp / 1000000L)) = " + delay + (event.timestamp / 1000000L) + " text= " + JoH.dateTimeText(delay + (event.timestamp / 1000000L)));
 
             PebbleMovement last = PebbleMovement.last();
             boolean sameDay = last != null ? isSameDay(t, last.timestamp) : false;
             if (!sameDay) {
                 initCounters();
-                Log.e(TAG, "onSensorChanged initCounters initCounters mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
+                Log.d(TAG, "onSensorChanged initCounters initCounters mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + last_movement_timestamp);
             }
             if (mCounterSteps < 1) {
                 // initial value
@@ -1877,7 +1880,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             // This is needed to keep the counter consistent across rotation changes.
             mSteps = mSteps + mPreviousCounterSteps;
             PersistentStore.setLong(pref_msteps, (long)mSteps);
-            Log.e(TAG, "onSensorChanged Total step count: " + mSteps + " mCounterSteps: " + mCounterSteps + " mPreviousCounterSteps: " + mPreviousCounterSteps + " event.values[0]: " + event.values[0]);
+            Log.d(TAG, "onSensorChanged Total step count: " + mSteps + " mCounterSteps: " + mCounterSteps + " mPreviousCounterSteps: " + mPreviousCounterSteps + " event.values[0]: " + event.values[0]);
 
             if (last_movement_timestamp < t) {//KS BUG SW3 seems to set event.timestamp to time when sensor listener is registered
                 Log.d(TAG, "onSensorChanged Movement for mSteps: " + mSteps + " event.values[0]: " + event.values[0] +
@@ -1885,15 +1888,15 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         " received: " + JoH.dateTimeText(t) + " last_movement_timestamp: " + JoH.dateTimeText(last_movement_timestamp)
                 );
                 if (last_movement_timestamp == 0 || (sameDay && last != null && last.metric == mSteps)) {//skip initial movement or duplicate steps
-                    Log.e(TAG, "onSensorChanged Initial sensor movement! Skip initial movement record, or duplicate record. last.metric=" + (last != null ? last.metric : "null"));
+                    Log.d(TAG, "onSensorChanged Initial sensor movement! Skip initial movement record, or duplicate record. last.metric=" + (last != null ? last.metric : "null"));
                 }
                 else {
                     final PebbleMovement pm = PebbleMovement.createEfficientRecord(t, mSteps);//event.timestamp * 1000, (int) event.values[0]
-                    Log.e(TAG, "Saving Movement: " + pm.toS());
+                    Log.d(TAG, "Saving Movement: " + pm.toS());
                 }
                 last_movement_timestamp = t;
                 PersistentStore.setLong(pref_last_movement_timestamp, last_movement_timestamp);
-                Log.e(TAG, "onSensorChanged sendLocalMessage mSteps: " + mSteps + " t: " + JoH.dateTimeText(t) + " last_movement_timestamp: " + JoH.dateTimeText(last_movement_timestamp));
+                Log.d(TAG, "onSensorChanged sendLocalMessage mSteps: " + mSteps + " t: " + JoH.dateTimeText(t) + " last_movement_timestamp: " + JoH.dateTimeText(last_movement_timestamp));
                 sendSensorLocalMessage(mSteps, t);
             }
             else {
@@ -1913,7 +1916,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         curCal.setTimeInMillis(t);
         Calendar lastCal = Calendar.getInstance();
         lastCal.setTimeInMillis(last);
-        Log.e(TAG, "isSameDay Sensor curCal.DAY_OF_MONTH=" + curCal.get(Calendar.DAY_OF_MONTH) + " lastCal.DAY_OF_MONTH=" + lastCal.get(Calendar.DAY_OF_MONTH) + " t=" + JoH.dateTimeText(t) + " last.timestamp=" + JoH.dateTimeText(last) + " " + last);
+        Log.d(TAG, "isSameDay Sensor curCal.DAY_OF_MONTH=" + curCal.get(Calendar.DAY_OF_MONTH) + " lastCal.DAY_OF_MONTH=" + lastCal.get(Calendar.DAY_OF_MONTH) + " t=" + JoH.dateTimeText(t) + " last.timestamp=" + JoH.dateTimeText(last) + " " + last);
         if (curCal.get(Calendar.DAY_OF_MONTH) == lastCal.get(Calendar.DAY_OF_MONTH) &&
                 curCal.get(Calendar.YEAR) == lastCal.get(Calendar.YEAR) &&
                 curCal.get(Calendar.MONTH) == lastCal.get(Calendar.MONTH) ) {
@@ -1939,16 +1942,16 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             if (stepCounterSensor != null) {
                 if (mPrefs.getBoolean("showSteps", false)) {
                     int delay = Integer.parseInt(mPrefs.getString("step_delay_time", "10"));
-                    Log.e(TAG, "startMeasurement delay " + delay + " seconds.");
-                    Log.e(TAG, "startMeasurement Event listener for step counter sensor registered with a max delay of " + delay + " seconds.");
+                    Log.d(TAG, "startMeasurement delay " + delay + " seconds.");
+                    Log.d(TAG, "startMeasurement Event listener for step counter sensor registered with a max delay of " + delay + " seconds.");
                     mSensorManager.registerListener(mListener, stepCounterSensor, SensorManager.SENSOR_DELAY_UI, delay * BATCH_LATENCY_1s);
                 }
                 else {
-                    Log.e(TAG, "startMeasurement Event listener for step counter sensor registered with a max delay of " + BATCH_LATENCY_400s);
+                    Log.d(TAG, "startMeasurement Event listener for step counter sensor registered with a max delay of " + BATCH_LATENCY_400s);
                     mSensorManager.registerListener(mListener, stepCounterSensor, SensorManager.SENSOR_DELAY_NORMAL, BATCH_LATENCY_400s);
                 }
             } else {
-                Log.e(TAG, "startMeasurement No Step Counter Sensor found");
+                Log.d(TAG, "startMeasurement No Step Counter Sensor found");
             }
         }
     }
@@ -1966,11 +1969,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         boolean sameDay = last != null ? ListenerService.isSameDay(System.currentTimeMillis(), last.timestamp) : false;
         if (!sameDay) {
             initCounters();
-            Log.e(TAG, "restartMeasurement Sensor isSameDay=false initCounters mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + JoH.dateTimeText(last_movement_timestamp));
+            Log.d(TAG, "restartMeasurement Sensor isSameDay=false initCounters mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + JoH.dateTimeText(last_movement_timestamp));
             stopMeasurement();
             startMeasurement();
         } else {
-            Log.e(TAG, "restartMeasurement Sensor isSameDay=true PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + JoH.dateTimeText(last_movement_timestamp));
+            Log.d(TAG, "restartMeasurement Sensor isSameDay=true PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + JoH.dateTimeText(last_movement_timestamp));
         }
     }
 
@@ -1978,24 +1981,24 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         //initCounters();
         mSteps = (int) PersistentStore.getLong(pref_msteps);
         last_movement_timestamp = (int) PersistentStore.getLong(pref_last_movement_timestamp);
-        Log.e(TAG, "resetCounters Sensor Enter PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + JoH.dateTimeText(last_movement_timestamp));
+        Log.d(TAG, "resetCounters Sensor Enter PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + JoH.dateTimeText(last_movement_timestamp));
 
         PebbleMovement last = PebbleMovement.last();
         boolean sameDay = last != null ? ListenerService.isSameDay(System.currentTimeMillis(), last.timestamp) : false;
         if (!sameDay) {
             initCounters();
-            Log.e(TAG, "resetCounters Sensor isSameDay=false initCounters mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + JoH.dateTimeText(last_movement_timestamp));
+            Log.d(TAG, "resetCounters Sensor isSameDay=false initCounters mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + JoH.dateTimeText(last_movement_timestamp));
         } else {
             mCounterSteps = 0;
             mPreviousCounterSteps = mSteps;
-            Log.e(TAG, "resetCounters Sensor isSameDay=true PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + JoH.dateTimeText(last_movement_timestamp));
+            Log.d(TAG, "resetCounters Sensor isSameDay=true PersistentStore mSteps = " + mSteps + " mCounterSteps = " + mCounterSteps + " mPreviousCounterSteps = " + mPreviousCounterSteps + " last_movement_timestamp = " + JoH.dateTimeText(last_movement_timestamp));
         }
     }
 
     private synchronized void initCounters() {
         long t = System.currentTimeMillis();
         final PebbleMovement pm = PebbleMovement.createEfficientRecord(t, 0);
-        Log.e(TAG, "initCounters Saving First Movement: " + pm.toS() + " at midnight t=" + JoH.dateTimeText(t));
+        Log.d(TAG, "initCounters Saving First Movement: " + pm.toS() + " at midnight t=" + JoH.dateTimeText(t));
         mSteps = 0;
         mCounterSteps = 0;
         mPreviousCounterSteps = 0;
@@ -2011,12 +2014,12 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     //Log all available sensors to logcat
     private void logAvailableSensors() {
         final List<android.hardware.Sensor> sensors = mSensorManager.getSensorList(android.hardware.Sensor.TYPE_ALL);
-        Log.e(TAG, "=== LIST AVAILABLE SENSORS ===");
-        Log.e(TAG, String.format(Locale.getDefault(), "|%-35s|%-38s|%-6s|", "SensorName", "StringType", "Type"));
+        Log.d(TAG, "=== LIST AVAILABLE SENSORS ===");
+        Log.d(TAG, String.format(Locale.getDefault(), "|%-35s|%-38s|%-6s|", "SensorName", "StringType", "Type"));
         for (android.hardware.Sensor sensor : sensors) {
             Log.v(TAG, String.format(Locale.getDefault(), "|%-35s|%-38s|%-6s|", sensor.getName(), sensor.getStringType(), sensor.getType()));
         }
-        Log.e(TAG, "=== LIST AVAILABLE SENSORS ===");
+        Log.d(TAG, "=== LIST AVAILABLE SENSORS ===");
     }
 
     @Override

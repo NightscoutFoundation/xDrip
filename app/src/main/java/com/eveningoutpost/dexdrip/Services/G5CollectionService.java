@@ -438,7 +438,7 @@ public class G5CollectionService extends Service {
     }
 
     public synchronized void keepAlive(int wake_in_ms) {
-        Log.e(TAG,"keepAlive keep_running=" + keep_running);
+        Log.d(TAG,"keepAlive keep_running=" + keep_running);
         if (!keep_running) return;
         if (JoH.ratelimit("G5-keepalive", 5)) {
             long wakeTime;
@@ -561,7 +561,7 @@ public class G5CollectionService extends Service {
 
     public synchronized void cycleScan(int delay) {
 
-        Log.e(TAG,"cycleScan keep_running=" + keep_running);
+        Log.d(TAG,"cycleScan keep_running=" + keep_running);
         if (!keep_running) {
             Log.e(TAG," OnDestroy failed to stop service. Shutting down now to prevent service from being initiated onScanResult().");
             stopSelf();
@@ -617,7 +617,7 @@ public class G5CollectionService extends Service {
     }
 
     private synchronized void scanLogic() {
-        Log.e(TAG,"scanLogic keep_running=" + keep_running);
+        Log.d(TAG,"scanLogic keep_running=" + keep_running);
         if (!keep_running) return;
         if (JoH.ratelimit("G5-scanlogic", 2)) {
             try {
@@ -680,12 +680,12 @@ public class G5CollectionService extends Service {
         if (isScanning) {
             Log.d(TAG, "alreadyScanning");
             scan_interval_timer.cancel();
-            Log.e(TAG,"startScan keep_running=" + keep_running);
+            Log.d(TAG,"startScan keep_running=" + keep_running);
             if (!keep_running) return;
             return;
         }
 
-        Log.e(TAG,"startScan keep_running=" + keep_running);
+        Log.d(TAG,"startScan keep_running=" + keep_running);
         if (!keep_running) return;
 
         getTransmitterDetails();
