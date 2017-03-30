@@ -95,7 +95,7 @@ android {
     buildToolsVersion '25.0.0'
 
     defaultConfig {
-        applicationId "com.eveningoutpost.dexdrip"
+        applicationId "jamorham.xdrip.plus.variant1"
         minSdkVersion 17
         targetSdkVersion 23
         // change versionCode only when downgrade should be prevented
