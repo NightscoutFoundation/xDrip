@@ -164,6 +164,7 @@ public abstract class CalibrationAbstract {
         }
     }
 
+    // persistent old style cache
     protected static boolean saveDataToCache(String tag, CalibrationData data) {
         final String lookup_tag = "CalibrationDataCache-" + tag;
         memory_cache.put(lookup_tag, data);
@@ -171,6 +172,26 @@ public abstract class CalibrationAbstract {
         return true;
     }
 
+    // memory only cache
+    protected static boolean clearMemoryCache() {
+        memory_cache.clear();
+        return true;
+    }
+
+    // memory only cache - TODO possible room for improvement using timestamp as well
+    protected static boolean saveDataToCache(String tag, CalibrationData data, long timestamp, long last_calibration) {
+        final String lookup_tag = tag + last_calibration;
+        memory_cache.put(lookup_tag, data);
+        return true;
+    }
+
+    // memory only cache
+    protected static CalibrationData loadDataFromCache(String tag, long timestamp) {
+        final String lookup_tag = tag + timestamp;
+        return memory_cache.get(lookup_tag);
+    }
+
+    // persistent old style cache
     protected static CalibrationData loadDataFromCache(String tag) {
         final String lookup_tag = "CalibrationDataCache-" + tag;
         if (!memory_cache.containsKey(lookup_tag)) {

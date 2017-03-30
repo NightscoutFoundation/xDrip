@@ -1304,12 +1304,16 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMap.putBoolean("status_line_carbs", mPrefs.getBoolean("status_line_carbs", false));
             dataMap.putBoolean("status_line_insulin", mPrefs.getBoolean("status_line_insulin", false));
             dataMap.putBoolean("status_line_stdev", mPrefs.getBoolean("status_line_stdev", false));
+            dataMap.putBoolean("status_line_royce_ratio", mPrefs.getBoolean("status_line_royce_ratio", false));
             dataMap.putBoolean("status_line_capture_percentage", mPrefs.getBoolean("status_line_capture_percentage", false));
 
             //Calibration plugin
             dataMap.putBoolean("extra_status_calibration_plugin", mPrefs.getBoolean("extra_status_calibration_plugin", false));
             dataMap.putBoolean("display_glucose_from_plugin", Home.getPreferencesBooleanDefaultFalse("display_glucose_from_plugin"));
             dataMap.putBoolean("use_pluggable_alg_as_primary", Home.getPreferencesBooleanDefaultFalse("use_pluggable_alg_as_primary"));
+            if (Home.getPreferencesBooleanDefaultFalse("engineering_mode")) {
+                dataMap.putBoolean("old_school_calibration_mode", Home.getPreferencesBooleanDefaultFalse("old_school_calibration_mode"));
+            }
 
         }
         //Step Counter

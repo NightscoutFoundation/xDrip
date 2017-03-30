@@ -344,7 +344,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         }
         // merge the information
         if (allTransmitterRawData.size() == 0) {
-            System.out.println("Could not read anything from " + hostsNames);
+            //System.out.println("Could not read anything from " + hostsNames);
             Log.e(TAG, "Could not read anything from " + hostsNames);
             return null;
 
@@ -363,80 +363,96 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
 
     }
 
-    public static List<TransmitterRawData> Read(String hostName,int port, int numberOfRecords)
-    {
-        List<TransmitterRawData> trd_list = new LinkedList<TransmitterRawData>();
+    public static List<TransmitterRawData> Read(String hostName, int port, int numberOfRecords) {
+        final List<TransmitterRawData> trd_list = new LinkedList<TransmitterRawData>();
+        Log.i(TAG, "Read called: " + hostName + " port: " + port);
+
+        final boolean skip_lan = Home.getPreferencesBooleanDefaultFalse("skip_lan_uploads_when_no_lan");
+
+        if (skip_lan && (hostName.endsWith(".local")) && !JoH.isLANConnected()) {
+            Log.d(TAG, "Skipping due to no lan: " + hostName);
+            statusLog(hostName, "Skipping, no LAN");
+            return trd_list; // blank
+        }
+
+        final long time_start = JoH.tsl();
+        String currentAddress = "null";
         long newest_timestamp = 0;
-        try
-        {
-            Log.i(TAG, "Read called: "+hostName+" port: "+port);
-            Gson gson = new GsonBuilder().create();
+
+        try {
+
+            final Gson gson = new GsonBuilder().create();
 
             // An example of using gson.
-            ComunicationHeader ch = new ComunicationHeader();
-            ch.version = 1;
-            ch.numberOfRecords = numberOfRecords;
-            String flat = gson.toJson(ch);
-            ComunicationHeader ch2 = gson.fromJson(flat, ComunicationHeader.class);
-            System.out.println("Results code" + flat + ch2.version);
+            final ComunicationHeader ch = new ComunicationHeader(numberOfRecords);
+            //ch.version = 1;
+            //ch.numberOfRecords = numberOfRecords;
+            // String flat = gson.toJson(ch);
+            //ComunicationHeader ch2 = gson.fromJson(flat, ComunicationHeader.class);
+            //System.out.println("Results code" + flat + ch2.version);
 
             // Real client code
-            InetSocketAddress ServerAdress = new InetSocketAddress(Mdns.genericResolver(hostName), port);
-            Socket MySocket = new Socket();
-            MySocket.connect(ServerAdress, 10000);
+            final InetSocketAddress ServerAddress = new InetSocketAddress(Mdns.genericResolver(hostName), port);
+            currentAddress = ServerAddress.getAddress().getHostAddress();
+            if (skip_lan && currentAddress.startsWith("192.168.") && !JoH.isLANConnected()) {
+                Log.d(TAG, "Skipping due to no lan: " + hostName);
+                statusLog(hostName, "Skipping, no LAN");
+                return trd_list; // blank
+            }
+
+            final Socket MySocket = new Socket();
+            MySocket.connect(ServerAddress, 10000);
 
             //System.out.println("After the new socket \n");
-            MySocket.setSoTimeout(2000);
+            MySocket.setSoTimeout(3000);
 
             //System.out.println("client connected... " );
 
-            PrintWriter out = new PrintWriter(MySocket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(MySocket.getInputStream()));
+            final PrintWriter out = new PrintWriter(MySocket.getOutputStream(), true);
+            final BufferedReader in = new BufferedReader(new InputStreamReader(MySocket.getInputStream()));
 
-            out.println(flat);
+            out.println(ch.toJson());
 
-            while(true) {
+            while (true) {
                 String data = in.readLine();
-                if(data == null) {
-                    System.out.println("recieved null exiting");
+                if (data == null) {
+                    Log.d(TAG, "recieved null exiting");
                     break;
                 }
-                if(data.equals("")) {
-                    System.out.println("recieved \"\" exiting");
+                if (data.equals("")) {
+                    Log.d(TAG, "recieved \"\" exiting");
                     break;
                 }
 
                 //System.out.println( "data size " +data.length() + " data = "+ data);
-                TransmitterRawData trd = gson.fromJson(data, TransmitterRawData.class);
+                final TransmitterRawData trd = gson.fromJson(data, TransmitterRawData.class);
                 trd.CaptureDateTime = System.currentTimeMillis() - trd.RelativeTime;
-                MapsActivity.newMapLocation(trd.GeoLocation,trd.CaptureDateTime);
+                MapsActivity.newMapLocation(trd.GeoLocation, trd.CaptureDateTime);
 
                 if (newest_timestamp < trd.getCaptureDateTime()) {
                     statusLog(hostName, JoH.hourMinuteString() + " OK data from:", trd.getCaptureDateTime());
                     newest_timestamp = trd.getCaptureDateTime();
                 }
 
-                trd_list.add(0,trd);
+                trd_list.add(0, trd);
                 //  System.out.println( trd.toTableString());
-                if(trd_list.size() == numberOfRecords) {
-                	// We have the data we want, let's get out
-                	break;
+                if (trd_list.size() == numberOfRecords) {
+                    // We have the data we want, let's get out
+                    break;
                 }
             }
 
 
             MySocket.close();
             return trd_list;
-        }catch(SocketTimeoutException s) {
-            Log.e(TAG, "Socket timed out! " + s.toString());
+        } catch (SocketTimeoutException s) {
+            Log.e(TAG, "Socket timed out! " + hostName + " : " + currentAddress + " : " + s.toString() + " after: " + JoH.msSince(time_start));
             statusLog(hostName, JoH.hourMinuteString() + " " + s.toString());
-        }
-        catch(IOException e) {
-            Log.e(TAG, "cought IOException! "+ e.toString());
+        } catch (IOException e) {
+            Log.e(TAG, "caught IOException! " + hostName + " : " + currentAddress + " : " + " : " + e.toString());
             statusLog(hostName, JoH.hourMinuteString() + " " + e.toString());
-        }
-        catch (IllegalArgumentException e) {
-            Log.e(TAG,"Argument error on: "+hostName+" "+e.toString());
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Argument error on: " + hostName + " " + e.toString());
         }
         return trd_list;
     }
@@ -538,7 +554,9 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         int packetsToRead = (int) (gapTime / (5 * 60000));
         packetsToRead = Math.min(packetsToRead, 200); // don't read too much, but always read 1.
         packetsToRead = Math.max(packetsToRead, 1); 
-        
+
+
+
         Log.d(TAG,"reading " + packetsToRead + " packets");
 		LastReadingArr = Read(recieversIpAddresses ,packetsToRead);
 		

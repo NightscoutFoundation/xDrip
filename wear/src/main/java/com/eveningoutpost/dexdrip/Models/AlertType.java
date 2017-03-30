@@ -345,7 +345,11 @@ public class AlertType extends Model {
 
         fixUpTable();
 
-        AlertType at = get_alert(uuid);
+        final AlertType at = get_alert(uuid);
+        if (at == null) {
+            Log.e(TAG, "Alert Type null during update");
+            return;
+        }
         at.name = name;
         at.above = above;
         at.threshold = threshold;

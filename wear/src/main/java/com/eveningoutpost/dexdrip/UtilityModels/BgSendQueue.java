@@ -428,7 +428,11 @@ public class BgSendQueue extends Model {
                 || prefs.getBoolean("status_line_in", false)
                 || prefs.getBoolean("status_line_high", false)
                 || prefs.getBoolean("status_line_low", false)
+                || prefs.getBoolean("status_line_stdev", false)
                 || prefs.getBoolean("status_line_carbs", false)
+                || prefs.getBoolean("status_line_insulin", false)
+                || prefs.getBoolean("status_line_royce_ratio", false)
+                || prefs.getBoolean("status_line_accuracy", false)
                 || prefs.getBoolean("status_line_capture_percentage", false)) {
 
             final StatsResult statsResult = new StatsResult(prefs, Home.getPreferencesBooleanDefaultFalse("extra_status_stats_24h"));
@@ -472,11 +476,27 @@ public class BgSendQueue extends Model {
                 double insulin = statsResult.getTotal_insulin();
                 extraline.append(insulin == -1 ? "" : "U: " + JoH.qs(insulin, 2));
             }
+            if (prefs.getBoolean("status_line_royce_ratio", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                double ratio = statsResult.getRatio();
+                extraline.append(ratio == -1 ? "" : "C/I: " + JoH.qs(ratio, 2));
+            }
             if (prefs.getBoolean("status_line_capture_percentage", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
                 final String accuracy = null;//KS TODO = BloodTest.evaluateAccuracy(WEEK_IN_MS);
                 extraline.append(statsResult.getCapturePercentage(false) + ((accuracy != null) ? " " + accuracy : ""));
             }
+            /*TODO if (prefs.getBoolean("status_line_accuracy", false)) {
+                final long accuracy_period = DAY_IN_MS * 3;
+                if (extraline.length() != 0) extraline.append(' ');
+                final String accuracy_report = Accuracy.evaluateAccuracy(accuracy_period);
+                if ((accuracy_report != null) && (accuracy_report.length() > 0)) {
+                    extraline.append(accuracy_report);
+                } else {
+                    final String accuracy = BloodTest.evaluateAccuracy(accuracy_period);
+                    extraline.append(((accuracy != null) ? " " + accuracy : ""));
+                }
+            }*/
         }
         /* //KS TODO
         if (prefs.getBoolean("extra_status_calibration_plugin", false)) {
