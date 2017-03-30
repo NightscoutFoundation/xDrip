@@ -54,6 +54,7 @@ public class Mdns {
     }
 
     private static final HashMap<String, LookUpInfo> iplookup = new HashMap<>();
+    private static boolean hunt_running = false;
 
     private final AtomicInteger outstanding = new AtomicInteger();
     private long locked_until = 0;
@@ -116,6 +117,10 @@ public class Mdns {
 
     private void hunt() {
         final PowerManager.WakeLock wl = JoH.getWakeLock("mdns-hunt", 30000);
+        if (hunt_running) {
+            UserError.Log.wtf(TAG,"Hunt already running");
+        }
+        hunt_running = true;
         mNsdManager = (NsdManager) (xdrip.getAppContext().getSystemService(Context.NSD_SERVICE));
 
         mResolveListener = initializeResolveListener();
@@ -134,6 +139,7 @@ public class Mdns {
                 }
                 UserError.Log.d(TAG, "Shutting down");
                 mNsdManager.stopServiceDiscovery(mDiscoveryListener);
+                hunt_running = false;
                 JoH.releaseWakeLock(wl);
             }
         }).start();
@@ -253,7 +259,7 @@ public class Mdns {
                 final InetAddress host = serviceInfo.getHost();
                 final String address = host.getHostAddress();
                 UserError.Log.d(TAG, serviceInfo.getServiceName() + " Resolved address = " + address);
-                final String short_name = shortenName(serviceInfo.getServiceName());
+                final String short_name = shortenName(serviceInfo.getServiceName().toLowerCase());
                 if (!address.contains(":") || (iplookup.get(short_name) == null) || (JoH.msSince(iplookup.get(short_name).received) > 60000)) {
                     iplookup.put(short_name, new LookUpInfo(address, JoH.tsl(), serviceInfo));
                 } else {
@@ -333,7 +339,7 @@ public class Mdns {
             }
         }
         if (l.size() > 1) {
-            if (JoH.ratelimit("mdns-check-showcase", 5)) {
+            if (JoH.quietratelimit("mdns-check-showcase", 5)) {
                 JoH.runOnUiThreadDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -351,7 +357,7 @@ public class Mdns {
     private static void startupInfo(Context context) {
 
         if (MegaStatus.runnableView == null) return;
-        if (JoH.ratelimit("mdns-showcase", 60)) {
+        if (JoH.quietratelimit("mdns-showcase", 60)) {
             final boolean oneshot = true;
             final int option = Home.SHOWCASE_MDNS;
             if ((oneshot) && (ShotStateStore.hasShot(option))) return;
