@@ -207,7 +207,7 @@
 	<string name="pref_wear_connectG5">Verbinde die Uhr mit dem G5</string>
 	<string name="pref_summary_wear_connectG5">Direkte Verbindung zum G5</string>
 	<string name="pref_use_wear_connectG5">Verwende den G5 Kollektor-Dienst</string>
-	<string name="pref_summary_use_wear_connectG5">Erzwinge das Telefon, den Wear-Collection-Dienst zu benutzen</string>
+	<string name="pref_summary_use_wear_connectG5">Zwinge das Telefon, den Wear-Collection-Dienst zu benutzen</string>
 	<string name="pebble_integration">Pebble Integration</string>
 	<string name="send_data_to_pebble_watchface">Daten an Pebble Watch senden</string>
 	<string name="pebble_watch_integration">Pebble Watch Integration</string>
@@ -480,7 +480,7 @@
 	<string name="predictive_model_inner_workings">Vorhersagemodell (Erweiterte Anzeige)</string>
 	<string name="noise_model_inner_workings">Rauschmodell (Erweiterte Anzeige)</string>
 	<string name="glucose_number_from_filtered">Glukose aus gefilterten Werten</string>
-	<string name="if_the_phone_has_text_to_speech">Sofern das Telefon über Text-in-Sprache verfügt, wird jeder neue Wert vorgelesen.</string>
+	<string name="if_the_phone_has_text_to_speech">Sofern das Telefon über Text-zu-Sprache verfügt, wird jeder neue Wert vorgelesen.</string>
 	<string name="upload_logs">Hochladen von Logs</string>
 	<string name="short_off_text_for_switches">AUS</string>
 	<string name="short_on_text_for_switches">AN</string>
@@ -547,7 +547,7 @@
 	<string name="close_gatt">Wenn der Bluetooth-Watchdog oft aktiviert wird, dann kannst du versuchen diese Option abzuwählen, um zu testen, ob es hilft.</string>
 	<string name="cloud_upload">Cloud-Upload</string>
 	<string name="collector_battery_alerts">Kollektor-Batteriealarme</string>
-	<string name="confirm_remote_snoozes">Einen Dialog zum Bestätigen von jedem Remote-Snozze erscheinen lassen.</string>
+	<string name="confirm_remote_snoozes">Einen Dialog zum Bestätigen von jedem Remote-Snooze erscheinen lassen.</string>
 	<string name="confirm_sensing_snooze">Snooze senden bestätigen</string>
 	<string name="constantly_reset_bluetooth">Bluetooth ständig zurücksetzen</string>
 	<string name="create_shortcut">Eine Abkürzung von der Navigationsleiste zum BZ-Level-Bildschirm.</string>
@@ -585,7 +585,7 @@
 	<string name="follower_chime_new">Neuer-Follower-Läuten</string>
 	<string name="for_interacting_compatible_apps">Zum Interagieren mit anderen kompatiblen Apps</string>
 	<string name="force_g5_ui_thread">G5 auf den UI-Thread zwingen</string>
-	<string name="forcing_alternate_language">Erzwige momentan das Benutzen einer alternativen Sprache</string>
+	<string name="forcing_alternate_language">Erzwingt momentan das Benutzen einer alternativen Sprache</string>
 	<string name="g5_bluetooth_watchdog">G5 Bluetooth-Watchdog</string>
 	<string name="g5_debug_settings">G5 Debugeinstellungen</string>
 	<string name="g5_experimental_mode">Experimenteller Modus, der keine Rohdaten benutzt</string>
@@ -597,7 +597,6 @@
 	<string name="glucose_meters">Blutzuckermessgräte</string>
 	<string name="hours_between_calibrations">Stunden zwischen den Kalibrierungen</string>
 	<string name="how_receive_data">Wie wirst du Daten von deinem Dexcom/Transmitter empfangen?</string>
-	<string name="import_db_warning">\n        WARNUNG: Das Importieren eine Datenbank kann einen Datenverlust verursachen. Falls Sie nicht wissen, warum Sie das machen sollten, benutzen Sie es nicht.\n        Im Normalbetrieb von xDrip wird dies nicht benötigt. Benutzen Sie es nur im Falle eines vorherigen Datenverlustes.\n        Falls Sie nicht sicher sind, was zu tun ist, Sie aber dennoch den Import benutzen wollen, fragen Sie einen erfahrenen Benutzer.\n\n\n        Anleitung:\n\n        Platzieren Sie die Datenbank, die Sie installieren wollen, im Ordner \\\'xdrip\\\' auf dem primären Speicher\n        (manchmal auch \\\'interner Speicher\\\' vom Dateiexplorer genannt)\n        Das ist derselbe Ordner in den xDrip auch exportiert.\n        \n        Falls Sie eine eine ZIP-Datei haben, entpacken Sie sie (normalerweise lang drücken->entpacken)\n        Falls sie in einem Unterordner entpackt werden sollte, wird sie immernoch gefunden werden.\n \n        Nachdem die Datei platziert ist, starten Sie die Import-Routine.\n        Scrollen Sie zum korrekten Datenbanknamen, klicken Sie darauf und folgen Sie den Anweisungen auf dem Bildschirm.\n \n \n        WARNUNG: Eine Datenbank kann nur importiert werden, wenn sie dieselbe Version hat, die momentan von xDrip benötigt wird.\n        Die Datenbankversionen werden sich mit zukünftigen xDrip Aktualisierungen vielleicht ändern.\n        Es ist am besten, wenn Sie die Datenbank mit derselben Version von xDrip importieren, mit der sie auch exportiert wurde, und xDrip dann aktualisieren.</string>
 	<string name="increase_low_alarms_vehicle_mode">Erhöhe den Wert bei dem Niedrig-Alarme erhoben werden im Fahrzeugmodus.</string>
 	<string name="influxdb_database_name">InfluxDB Datenbankname</string>
 	<string name="influxdb_sync">InfluxDB Synchronisation aktivieren</string>
@@ -674,9 +673,9 @@
 	<string name="pref_summary_disable_wearG5_on_lowbattery">Deaktiviere das Erzwingen des Wear-Collection-Dienstes beim Batterie-Niedrig-Alarm der Uhr.</string>
 	<string name="pref_summary_disable_wearG5_on_missedreadings">Deaktiviere das Erzwingen des Wear-Collection-Dienstes bei Minuten verpasster Werte.</string>
 	<string name="pref_summary_enable_wearG5">Verbinde die Uhr zum BT-Kollektor, wenn das Telefon außer Reichweite ist.</string>
-	<string name="pref_summary_force_wearG5">Erzwinge das Telefon, den Wear-Collection-Dienst zu benutzen.</string>
+	<string name="pref_summary_force_wearG5">Zwinge das Telefon, den Wear-Collection-Dienst zu benutzen.</string>
 	<string name="pref_summary_influxdb_enabled">Falls du eine private InfluxDB Datenbank benutzt, sollte dies aktiviert sein.</string>
-	<string name="pref_summary_node_wearG5">Erzwinge das Telefon, diesen Wear-Collection-Dienst zu benutzen.</string>
+	<string name="pref_summary_node_wearG5">Zwinge das Telefon, diesen Wear-Collection-Dienst zu benutzen.</string>
 	<string name="pref_summary_sync_wear_logs">Sende die Wear-Logs zum Ereignisbetrachter.</string>
 	<string name="pref_summary_use_wear_health">Sammle und zeige den Schrittzähler an, falls verfügbar.</string>
 	<string name="pref_summary_wear_logs_prefix">Prefix, der für Wear-Logeinträge benutzt wird.</string>
@@ -699,7 +698,7 @@
 	<string name="reraise_not_snoozed_sooner">Erhebe den Alarm erneut, falls nicht früher gesnoozed.</string>
 	<string name="reset_bluetooth">Setze Bluetooth zurück, in dem es an und wieder ausgeschaltet wird, wenn keine Daten innerhalb von 20 Minuten empfangen werden.</string>
 	<string name="reset_bluetooth_g5">Setze Bluetooth zurück, in dem es an und wieder ausgeschaltet wird, damit die G5-Datenquelle funktioniert. Ohne dies wird der G5-Kollektor vielleicht versagen.</string>
-	<string name="reset_bluetooth_on_off">Setze Bluetooth zurück in dem es alle paar Minuten and und wieder ausgeschaltet wird! Wähle dies nur zum Testen aus. Dies kann Anderes von der Bluetooth-Nutzung abhalten.</string>
+	<string name="reset_bluetooth_on_off">Setze Bluetooth zurück indem es alle paar Minuten and und wieder ausgeschaltet wird! Wähle dies nur zum Testen aus. Dies kann Anderes von der Bluetooth-Nutzung abhalten.</string>
 	<string name="rfduino_support">RFduino Unterstützung</string>
 	<string name="rising_threshold">Steigungswarngrenze</string>
 	<string name="scan_for_bluetooth_meter">Nach einem Bluetooth-Messgerät scannen</string>
@@ -737,7 +736,7 @@
 	<string name="skip_local_lan">Überspringe Uploads für lokale Server mit 192.168.x.x Adressen, wenn keine Verbindung zu einem lokalen Netzwerk besteht.</string>
 	<string name="snoozes_will_silence_all">Snoozes werden als Mobilteile in der Gruppe, die die Akzeptierungs-Einstellung unten gesetzt haben, verstummen lassen.</string>
 	<string name="speak_glucose_twice">Sprich den Glukosewert jedesmal zwei mal</string>
-	<string name="speak_readings_shortcut">Werte-Sprechen-Verknüpfung</string>
+	<string name="speak_readings_shortcut">Werte-Vorlesen-Verknüpfung</string>
 	<string name="spoken_readings_locale">Benutzerdefinierte Sprache für gesprochene Werte, z.B. de oder en_IN</string>
 	<string name="standard_deviation">Standardabweichung</string>
 	<string name="step_counter_1st_color">Schrittzähler 1. Farbe</string>
@@ -756,7 +755,7 @@
 	<string name="turn_bluetooth_on">Schalte Bluetooth ein</string>
 	<string name="unbond_g5_before_read">Das G5 vor jedem Lesen unbounden.</string>
 	<string name="upload_to_dexcom">Aktiviere dies zum Hochladen auf Dexcoms Server.</string>
-	<string name="upload_to_dexcom_share">Lade Blutzuckerwerte als Dexcom Share hoch.</string>
+	<string name="upload_to_dexcom_share">Lade Blutzuckerwerte zu Dexcom Share hoch.</string>
 	<string name="usa_based_account">Dexcom USA basierter Account</string>
 	<string name="use_any_tag">Benutze die Any-Tag optimierte Lesemethode</string>
 	<string name="use_bluetooth_meter">Benutze das Bluetooth-Messgerät</string>
