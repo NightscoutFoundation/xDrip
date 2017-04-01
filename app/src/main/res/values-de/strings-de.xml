@@ -501,7 +501,7 @@
 	<string name="alert_calibration_request">Alarmieren, wenn eine Kalibrierung angefordert wird</string>
 	<string name="alert_minutes_reraise">Anzahl der Minuten, bevor derselbe Alarm nach dem Snoozen ertönt</string>
 	<string name="alert_noisy_values">Bei verrauschten Werten nach x Minuten alarmieren</string>
-	<string name="alert_repeat_minutes">Alarm-Abpsiel-Intervall</string>
+	<string name="alert_repeat_minutes">Alarmwiederholzeit</string>
 	<string name="alert_reraise_time">Alarm-Abpsiel-Intervall</string>
 	<string name="alert_seconds_reraise">Anzahl der Sekunden, die vergehen müssen, bevor derselbe Alarm erneut ertönt.</string>
 	<string name="alert_snooze">Alarm-Snooze</string>
