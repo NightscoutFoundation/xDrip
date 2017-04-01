@@ -204,10 +204,6 @@
 	<string name="wear_integration">Wear Integration</string>
 	<string name="send_data_to_android_wear_watch">Daten an Watchface senden</string>
 	<string name="android_wear_integration">Android Wear Integration</string>
-	<string name="pref_wear_connectG5">Verbinde die Uhr mit dem G5</string>
-	<string name="pref_summary_wear_connectG5">Direkte Verbindung zum G5</string>
-	<string name="pref_use_wear_connectG5">Verwende den G5 Kollektor-Dienst</string>
-	<string name="pref_summary_use_wear_connectG5">Zwinge das Telefon, den Wear-Collection-Dienst zu benutzen</string>
 	<string name="pebble_integration">Pebble Integration</string>
 	<string name="send_data_to_pebble_watchface">Daten an Pebble Watch senden</string>
 	<string name="pebble_watch_integration">Pebble Watch Integration</string>
@@ -480,7 +476,7 @@
 	<string name="predictive_model_inner_workings">Vorhersagemodell (Erweiterte Anzeige)</string>
 	<string name="noise_model_inner_workings">Rauschmodell (Erweiterte Anzeige)</string>
 	<string name="glucose_number_from_filtered">Glukose aus gefilterten Werten</string>
-	<string name="if_the_phone_has_text_to_speech">Sofern das Telefon über Text-zu-Sprache verfügt, wird jeder neue Wert vorgelesen.</string>
+	<string name="if_the_phone_has_text_to_speech">Sofern das Telefon über Text-in-Sprache verfügt, wird jeder neue Wert vorgelesen.</string>
 	<string name="upload_logs">Hochladen von Logs</string>
 	<string name="short_off_text_for_switches">AUS</string>
 	<string name="short_on_text_for_switches">AN</string>
@@ -490,8 +486,8 @@
 	<string name="split">Teilen</string>
 	<string name="delete">Löschen</string>
 
-	<string name="ac1_estimation_dcct">A1c-Vorhersage im DCCT-Format (%)</string>
-	<string name="ac1_estimation_ifcc">A1c-Vorhersage im IFCC-Format (mmol/mol)</string>
+	<string name="ac1_estimation_dcct">HbA1c-Vorhersage im DCCT-Format (%)</string>
+	<string name="ac1_estimation_ifcc">HbA1c-Vorhersage im IFCC-Format (mmol/mol)</string>
 	<string name="acccept_remote_snoozes">Remote-Snoozes annehmen</string>
 	<string name="accept_treatments">Behandlungen annehmen</string>
 	<string name="accounts_inside_usa">Aktiviert = Dein Account und deine Follower-Apps sind aus den USA.</string>
@@ -505,13 +501,13 @@
 	<string name="alert_calibration_request">Alarmieren, wenn eine Kalibrierung angefordert wird</string>
 	<string name="alert_minutes_reraise">Anzahl der Minuten, bevor derselbe Alarm nach dem Snoozen ertönt</string>
 	<string name="alert_noisy_values">Bei verrauschten Werten nach x Minuten alarmieren</string>
-	<string name="alert_repeat_minutes">Alarmwiederholungszeit</string>
-	<string name="alert_reraise_time">Alarmwiedererhebungszeit</string>
+	<string name="alert_repeat_minutes">Alarm-Abpsiel-Intervall</string>
+	<string name="alert_reraise_time">Alarm-Abpsiel-Intervall</string>
 	<string name="alert_seconds_reraise">Anzahl der Sekunden, die vergehen müssen, bevor derselbe Alarm erneut ertönt.</string>
 	<string name="alert_snooze">Alarm-Snooze</string>
 	<string name="alert_snoozed_by_watch">Alarm von der Uhr gesnoozed</string>
 	<string name="alert_sound">Alarmton</string>
-	<string name="all_new_glucose_data_plugin">\"ALLE neuen Glukosedaten werden vom ausgewählten Plugin und nicht vom xDrip-Algorithmus berechnet und gespeichert. Dies ist nicht getestet und kann ungenau und fehlerhaft sein. Nur unter extremer Vorsicht benutzen.</string>
+	<string name="all_new_glucose_data_plugin">ALLE neuen Glukosedaten werden vom ausgewählten Plugin und nicht vom xDrip-Algorithmus berechnet und gespeichert. Dies ist nicht getestet und kann ungenau und fehlerhaft sein. Nur unter extremer Vorsicht benutzen.</string>
 	<string name="allow_remotes_silence">Anderen Mobilgeräten erlauben, Alarme auf diesem verstummen zu lassen.</string>
 	<string name="allow_sensor_scanning">Erlaube das Scannen von Sensoren, wenn die App geöffnet ist. Vergangene Daten werden aufgefüllt. Hoch experimentell! Beachte, dass die den Sensor kaputt machen kann. Überprüfe erst die Telefonkompatiblität mit einem fast abgelaufenen Sensor. Du wurdest gewarnt!</string>
 	<string name="allow_unsafe_settings">Erlaube das Ändern der unsichersten Einstellung, die alles kaputt machen können!</string>
