@@ -6,6 +6,7 @@ import android.content.Intent;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.Models.JoH.cancelNotification;
@@ -44,7 +45,7 @@ public class CheckBridgeBattery {
                     notification_showing = true;
                     lowbattery = true;
                     final PendingIntent pendingIntent = android.app.PendingIntent.getActivity(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), Home.class), android.app.PendingIntent.FLAG_UPDATE_CURRENT);
-                    showNotification("Low bridge battery", "Bridge battery dropped to: " + this_level + "%", pendingIntent, NOTIFICATION_ITEM, true, true, false);
+                    showNotification(xdrip.getAppContext().getString(R.string.low_bridge_battery), xdrip.getAppContext().getString(R.string.bridge_battery_dropped_to, this_level), pendingIntent, NOTIFICATION_ITEM, true, true, false);
                 }
             } else {
                 if (notification_showing) {

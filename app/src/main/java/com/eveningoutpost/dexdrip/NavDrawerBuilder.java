@@ -72,7 +72,7 @@ public class NavDrawerBuilder {
                         if (last_two_calibrations.size() > 1) {
                             if (bGreadings_in_last_30_mins.size() >= 2) {
                                 if (time_now - last_two_calibrations.get(0).timestamp < (1000 * 60 * 60)) { //Put steps in place to discourage over calibration
-                                    this.nav_drawer_options.add(CalibrationOverride.menu_name);
+                                    this.nav_drawer_options.add(context.getString(R.string.override_calibration));
                                     this.nav_drawer_intents.add(new Intent(context, CalibrationOverride.class));
                                 } else {
                                     this.nav_drawer_options.add(context.getString(R.string.add_calibration));
@@ -83,12 +83,12 @@ public class NavDrawerBuilder {
                                 this.nav_drawer_intents.add(new Intent(context, Home.class));
                             }
                         } else {
-                            this.nav_drawer_options.add(DoubleCalibrationActivity.menu_name);
+                            this.nav_drawer_options.add(context.getString(R.string.add_double_calibration));
                             this.nav_drawer_intents.add(new Intent(context, DoubleCalibrationActivity.class));
                         }
                     }
                 }
-                this.nav_drawer_options.add(StopSensor.menu_name);
+                this.nav_drawer_options.add(context.getString(R.string.stop_sensor));
                 this.nav_drawer_intents.add(new Intent(context, StopSensor.class));
             } else {
                 this.nav_drawer_options.add(context.getString(R.string.start_sensor));
@@ -102,7 +102,7 @@ public class NavDrawerBuilder {
                 //       CollectionServiceStarter.isBTShare(context) ||
                 //     CollectionServiceStarter.isWifiandBTWixel(context) ||
                 //   CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()) {
-                this.nav_drawer_options.add(BluetoothScan.menu_name);
+                this.nav_drawer_options.add(context.getString(R.string.bluetooth_scan));
                 this.nav_drawer_intents.add(new Intent(context, BluetoothScan.class));
             }
         }
@@ -114,7 +114,7 @@ public class NavDrawerBuilder {
 
         boolean bg_alerts = prefs.getBoolean("bg_alerts_from_main_menu", false);
         if (bg_alerts) {
-            this.nav_drawer_options.add(AlertList.menu_name);
+            this.nav_drawer_options.add(context.getString(R.string.bg_level_alerts));
             this.nav_drawer_intents.add(new Intent(context, AlertList.class));
         }
 
@@ -124,7 +124,7 @@ public class NavDrawerBuilder {
         }
 
         if (use_note_search || (Treatments.last() != null)) {
-            this.nav_drawer_options.add(NoteSearch.menu_name);
+            this.nav_drawer_options.add(context.getString(R.string.note_search));
             this.nav_drawer_intents.add(new Intent(context, NoteSearch.class));
             use_note_search = true; // cache
         }

@@ -131,14 +131,14 @@ public class BluetoothGlucoseMeter extends Service {
                     mConnectionState = STATE_CONNECTED;
                     mLastConnectedDeviceAddress = gatt.getDevice().getAddress();
 
-                    statusUpdate("Connected to device: " + mLastConnectedDeviceAddress);
+                    statusUpdate(getString(R.string.connected_to_device, mLastConnectedDeviceAddress));
                     if ((playSounds() && (JoH.ratelimit("bt_meter_connect_sound", 3)))) {
                         JoH.playResourceAudio(R.raw.bt_meter_connect);
                     }
 
                     Log.d(TAG, "Delay for settling");
                     waitFor(600);
-                    statusUpdate("Discovering services");
+                    statusUpdate(getString(R.string.discovering_services));
                     service_discovery_count = 0; // reset as new non retried connnection
                     discover_services();
                     // Bluetooth_CMD.poll_queue(); // do we poll here or on service discovery - should we clear here?
@@ -149,7 +149,7 @@ public class BluetoothGlucoseMeter extends Service {
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 final int old_connection_state = mConnectionState;
                 mConnectionState = STATE_DISCONNECTED;
-                statusUpdate("Disconnected");
+                statusUpdate(getString(R.string.disconnected));
                 if ((old_connection_state == STATE_CONNECTED) && (playSounds() && (JoH.ratelimit("bt_meter_disconnect_sound", 3)))) {
                     JoH.playResourceAudio(R.raw.bt_meter_disconnect);
                 }
@@ -166,17 +166,17 @@ public class BluetoothGlucoseMeter extends Service {
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 services_discovered = true;
-                statusUpdate("Services discovered");
+                statusUpdate(getString(R.string.services_discovered));
 
                 bondingstate = mBluetoothGatt.getDevice().getBondState();
                 if (bondingstate != BluetoothDevice.BOND_BONDED) {
-                    statusUpdate("Attempting to create pairing bond - device must be in pairing mode!");
+                    statusUpdate(getString(R.string.attempting_creating_pairing_bond));
                     sendDeviceUpdate(gatt.getDevice());
                     mBluetoothGatt.getDevice().createBond();
                     waitFor(1000);
                     bondingstate = mBluetoothGatt.getDevice().getBondState();
                     if (bondingstate != BluetoothDevice.BOND_BONDED) {
-                        statusUpdate("Pairing appeared to fail");
+                        statusUpdate(getString(R.string.pairing_failed));
                     } else {
                         sendDeviceUpdate(gatt.getDevice());
                     }
@@ -185,7 +185,7 @@ public class BluetoothGlucoseMeter extends Service {
                 }
 
                 if (queue.isEmpty()) {
-                    statusUpdate("Requesting data from meter");
+                    statusUpdate(getString(R.string.requesting_data_from_meter));
                     Bluetooth_CMD.read(DEVICE_INFO_SERVICE, MANUFACTURER_NAME, "get device manufacturer");
                     Bluetooth_CMD.read(CURRENT_TIME_SERVICE, TIME_CHARACTERISTIC, "get device time");
 
@@ -245,15 +245,15 @@ public class BluetoothGlucoseMeter extends Service {
                 if (characteristic.getUuid().equals(TIME_CHARACTERISTIC)) {
                     UserError.Log.d(TAG, "Got time characteristic read data");
                     ct = new CurrentTimeRx(characteristic.getValue());
-                    statusUpdate("Device time: " + ct.toNiceString());
+                    statusUpdate(getString(R.string.device_time, ct.toNiceString()));
                 } else if (characteristic.getUuid().equals(DATE_TIME_CHARACTERISTIC)) {
                     UserError.Log.d(TAG, "Got date time characteristic read data");
                     ct = new CurrentTimeRx(characteristic.getValue());
-                    statusUpdate("Device time: " + ct.toNiceString());
+                    statusUpdate(getString(R.string.device_time, ct.toNiceString()));
                 } else if (characteristic.getUuid().equals(MANUFACTURER_NAME)) {
                     mLastManufacturer = characteristic.getStringValue(0);
                     UserError.Log.d(TAG, "Manufacturer Name: " + mLastManufacturer);
-                    statusUpdate("Device from: " + mLastManufacturer);
+                    statusUpdate(getString(R.string.device_from, mLastManufacturer));
 
                     // Roche Aviva Connect uses a DateTime characteristic instead
                     if (mLastManufacturer.startsWith("Roche")) {
@@ -349,7 +349,7 @@ public class BluetoothGlucoseMeter extends Service {
                     if (device.getName() != null) {
                         if (device.getAddress().equals(address)) {
                             Log.e(TAG, "Unpairing.. " + address);
-                            JoH.static_toast_long("Unpairing: " + address);
+                            JoH.static_toast_long(xdrip.getAppContext().getString(R.string.unparing, address));
                             try {
                                 Method m = device.getClass().getMethod("removeBond", (Class[]) null);
                                 m.invoke(device, (Object[]) null);
@@ -523,7 +523,7 @@ public class BluetoothGlucoseMeter extends Service {
             final GlucoseReadingRx gtb = new GlucoseReadingRx(characteristic.getValue(), gatt.getDevice().getAddress());
             UserError.Log.d(TAG, "Result: " + gtb.toString());
             if (ct == null) {
-                statusUpdate("Cannot process glucose record as we do not know device time!");
+                statusUpdate(getString(R.string.cannot_process_glucose_record));
             } else {
                 if (!Home.getPreferencesStringDefaultBlank("selected_bluetooth_meter_address").equals(mLastConnectedDeviceAddress)) {
                     Home.setPreferencesString("selected_bluetooth_meter_address", mLastConnectedDeviceAddress);
@@ -532,7 +532,7 @@ public class BluetoothGlucoseMeter extends Service {
                     JoH.static_toast_long("Success with: " + mLastConnectedDeviceAddress + "  Enabling auto-start");
                     sendDeviceUpdate(gatt.getDevice(), true); // force update
                 }
-                statusUpdate("Glucose Record: " + JoH.dateTimeText((gtb.time - ct.timediff) + gtb.offsetMs()) + "\n" + unitized_string_with_units_static(gtb.mgdl));
+                statusUpdate(getString(R.string.glucose_record, JoH.dateTimeText((gtb.time - ct.timediff) + gtb.offsetMs()) + "\n" + unitized_string_with_units_static(gtb.mgdl)));
 
                 if (playSounds() && JoH.ratelimit("bt_meter_data_in", 1))
                     JoH.playResourceAudio(R.raw.bt_meter_data_in);
@@ -624,7 +624,7 @@ public class BluetoothGlucoseMeter extends Service {
                                                                 "auto");
                                                     } else {
                                                         Log.d(TAG, "Delaying calibration for later");
-                                                        JoH.static_toast_long("Waiting for 15 minutes more sensor data for calibration");
+                                                        JoH.static_toast_long(getString(R.string.waiting_for_more_sensor_data));
                                                     }
                                                 } else {
                                                     if (Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations")) {
@@ -723,7 +723,7 @@ public class BluetoothGlucoseMeter extends Service {
         }
 
         // Previously connected device.  Try to reconnect.
-        statusUpdate("Trying to connect to: " + address);
+        statusUpdate(getString(R.string.trying_to_connect_to, address));
         if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)
                 && mBluetoothGatt != null) {
             if (d) Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
@@ -737,7 +737,7 @@ public class BluetoothGlucoseMeter extends Service {
 
         final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         if (device == null) {
-            statusUpdate("Device not found.  Unable to connect.");
+            statusUpdate(getString(R.string.device_not_found_unable_to_connect));
             return false;
         }
         mBluetoothGatt = device.connectGatt(this, true, mGattCallback);
@@ -813,7 +813,7 @@ public class BluetoothGlucoseMeter extends Service {
 
     private void scanLeDevice(final boolean enable) {
         final boolean force_old = true;
-        statusUpdate(enable ? "Starting Scanning" + "\nMake sure meter is turned on - For pairing hold the meter power button until it flashes blue" : "Stopped Scanning");
+        statusUpdate(enable ? getString(R.string.starting_scanning) : getString(R.string.stopped_scanning));
         if (enable) {
             JoH.runOnUiThreadDelayed(new Runnable() {
                 @Override
@@ -991,7 +991,7 @@ public class BluetoothGlucoseMeter extends Service {
                     long queue_age = System.currentTimeMillis() - btc.timestamp;
                     if (d) Log.d(TAG, "check queue age.. " + queue_age + " on " + btc.note);
                     if (queue_age > QUEUE_TIMEOUT) {
-                        statusUpdate("Timed out on: " + btc.note + (isBonded() ? "" : "\nYou may need to enable the meter's pairing mode by holding the power button when turning it on until it flashes blue"));
+                        statusUpdate(xdrip.getAppContext().getString(R.string.timed_out_on) + btc.note + (isBonded() ? "" : xdrip.getAppContext().getString(R.string.you_may_need_enabling_pairing_mode)));
                         queue.clear();
                         last_queue_command = null;
                         close();

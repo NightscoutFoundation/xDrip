@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -57,6 +58,7 @@ import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 
 
+@TargetApi(19)
 public class SystemStatusFragment extends Fragment {
     private static final int SMALL_SCREEN_WIDTH = 300;
     //public static final String menu_name = "System Status";
@@ -154,7 +156,7 @@ public class SystemStatusFragment extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onActivityCreated(savedInstanceState);
         // setContentView(R.layout.activity_system_status);
         // JoH.fixActionBar(this);
         prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
@@ -251,12 +253,12 @@ public class SystemStatusFragment extends Fragment {
             transmitter_status_view.setText("" + td.sensor_battery_level);
             GcmActivity.requestSensorBatteryUpdate(); // always ask
             if (td.sensor_battery_level <= Constants.TRANSMITTER_BATTERY_EMPTY) {
-                transmitter_status_view.append(" - very low");
+                transmitter_status_view.append(getString(R.string.status_very_low));
             } else if (td.sensor_battery_level <= Constants.TRANSMITTER_BATTERY_LOW) {
-                transmitter_status_view.append(" - low");
-                transmitter_status_view.append("\n(experimental interpretation)");
+                transmitter_status_view.append(getString(R.string.status_low));
+                transmitter_status_view.append(getString(R.string.experimental_interpretation));
             } else {
-                transmitter_status_view.append(" - ok");
+                transmitter_status_view.append(getString(R.string.status_ok));
             }
         }
 
@@ -272,11 +274,11 @@ public class SystemStatusFragment extends Fragment {
             sensor_status.append(df.format(date));
             sensor_status.append(" (");
             sensor_status.append((System.currentTimeMillis() - sens.started_at) / (1000 * 60 * 60 * 24));
-            sensor_status.append("d ");
+            sensor_status.append(getString(R.string.sensor_status_day_short));
             sensor_status.append(((System.currentTimeMillis() - sens.started_at) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            sensor_status.append("h)");
+            sensor_status.append(getString(R.string.sensor_status_hour_short));
         } else {
-            sensor_status.append("not available");
+            sensor_status.append(getString(R.string.sensor_status_not_available));
         }
         sensor_status_view.setText(sensor_status.toString());
 
@@ -288,7 +290,7 @@ public class SystemStatusFragment extends Fragment {
         try {
             versionName = safeGetContext().getPackageManager().getPackageInfo(safeGetContext().getPackageName(), PackageManager.GET_META_DATA).versionName;
             int versionNumber = safeGetContext().getPackageManager().getPackageInfo(safeGetContext().getPackageName(), PackageManager.GET_META_DATA).versionCode;
-            versionName += "\nCode: " + BuildConfig.buildVersion + "\nDowngradable to: " + versionNumber;
+            versionName += getString(R.string.version_name, BuildConfig.buildVersion, versionNumber);
             version_name_view.setText(versionName);
         } catch (PackageManager.NameNotFoundException e) {
             //e.printStackTrace();
@@ -304,7 +306,7 @@ public class SystemStatusFragment extends Fragment {
         if (activeBluetoothDevice != null) {
             current_device.setText(activeBluetoothDevice.name);
         } else {
-            current_device.setText("None Set");
+            current_device.setText(R.string.none_set);
         }
 
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
@@ -330,16 +332,16 @@ public class SystemStatusFragment extends Fragment {
                     }
                 }
             } else {
-                current_device.setText("No Bluetooth");
+                current_device.setText(R.string.no_bluetooth);
             }
         }
     }
 
     private void setConnectionStatusFollower() {
         if (GcmListenerSvc.lastMessageReceived == 0) {
-            connection_status.setText("No data");
+            connection_status.setText(R.string.no_data);
         } else {
-            connection_status.setText((JoH.qs((JoH.ts() - GcmListenerSvc.lastMessageReceived) / 60000, 0)) + " mins ago");
+            connection_status.setText((JoH.qs((JoH.ts() - GcmListenerSvc.lastMessageReceived) / 60000, 0)) + getString(R.string.mins_ago));
         }
     }
 
@@ -347,7 +349,7 @@ public class SystemStatusFragment extends Fragment {
         if (ParakeetHelper.isParakeetCheckingIn()) {
             connection_status.setText(ParakeetHelper.parakeetStatusString());
         } else {
-            connection_status.setText("No data");
+            connection_status.setText(R.string.no_data);
         }
     }
 
@@ -367,9 +369,9 @@ public class SystemStatusFragment extends Fragment {
             }
         }
         if (connected) {
-            connection_status.setText("Connected");
+            connection_status.setText(R.string.connected);
         } else {
-            connection_status.setText("Not Connected");
+            connection_status.setText(R.string.not_connected);
         }
 
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
@@ -387,7 +389,7 @@ public class SystemStatusFragment extends Fragment {
 
                             if (transmitterIdLastTwo.equals(deviceNameLastTwo)) {
                                 final String fw = G5CollectionService.getFirmwareVersionString(defaultTransmitter.transmitterId);
-                                connection_status.setText(device.getName() + " Authed" + ((fw != null) ? ("\n" + fw) : ""));
+                                connection_status.setText(device.getName() + getString(R.string.authed) + ((fw != null) ? ("\n" + fw) : ""));
                                 break;
                             }
 
@@ -395,7 +397,7 @@ public class SystemStatusFragment extends Fragment {
                     }
                 }
             } else {
-                connection_status.setText("No bluetooth");
+                connection_status.setText(R.string.no_bluetooth);
             }
         }
     }
@@ -404,14 +406,14 @@ public class SystemStatusFragment extends Fragment {
         try {
 
             if ((mBluetoothManager == null) || ((android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) && (mBluetoothManager.getAdapter() == null))) {
-                notes.append("\n- This device does not seem to support bluetooth");
+                notes.append(getString(R.string.bluetooth_not_supported_by_device));
             } else {
                 if ((android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
                         && !mBluetoothManager.getAdapter().isEnabled()) {
-                    notes.append("\n- Bluetooth seems to be turned off");
+                    notes.append(getString(R.string.bluetooth_is_turned_of));
                 } else {
                     if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                        notes.append("\n- The android version of this device is not compatible with Bluetooth Low Energy");
+                        notes.append(getString(R.string.android_version_ble_incompatible));
                     }
                 }
             }
@@ -425,7 +427,7 @@ public class SystemStatusFragment extends Fragment {
         final List<BgReading> futureReadings = BgReading.futureReadings();
         final List<Calibration> futureCalibrations = Calibration.futureCalibrations();
         if ((futureReadings != null && futureReadings.size() > 0) || (futureCalibrations != null && futureCalibrations.size() > 0)) {
-            notes.append("\n- Your device has future data on it, Please double check the time and timezone on this phone.");
+            notes.append(getString(R.string.future_data_on_device));
             futureDataDeleteButton.setVisibility(View.VISIBLE);
         }
         futureDataDeleteButton.setOnClickListener(new View.OnClickListener() {
@@ -454,7 +456,7 @@ public class SystemStatusFragment extends Fragment {
         restart_collection_service.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View v) {
                 v.setEnabled(false);
-                JoH.static_toast_short("Restarting Collector!");
+                JoH.static_toast_short(getString(R.string.restarting_collector));
                 v.setAlpha(0.2f);
                 startWatchUpdaterService(safeGetContext(), WatchUpdaterService.ACTION_START_COLLECTOR, TAG);
                 CollectionServiceStarter.restartCollectionService(safeGetContext());
@@ -482,8 +484,8 @@ public class SystemStatusFragment extends Fragment {
                                 try {
                                     Method m = bluetoothDevice.getClass().getMethod("removeBond", (Class[]) null);
                                     m.invoke(bluetoothDevice, (Object[]) null);
-                                    notes.append("\n- Bluetooth unbonded, if using share tell it to forget your device.");
-                                    notes.append("\n- Scan for devices again to set connection back up!");
+                                    notes.append(getString(R.string.bluetooth_unbonded));
+                                    notes.append(getString(R.string.scan_for_devices));
                                 } catch (Exception e) {
                                     Log.e("SystemStatus", e.getMessage(), e);
                                 }
@@ -526,7 +528,7 @@ public class SystemStatusFragment extends Fragment {
                                     try {
                                         Method m = device.getClass().getMethod("removeBond", (Class[]) null);
                                         m.invoke(device, (Object[]) null);
-                                        notes.append("\nG5 Transmitter unbonded, switch device mode to prevent re-pairing to G5.");
+                                        notes.append(getString(R.string.g5_transmitter_unbonded));
                                     } catch (Exception e) {
                                         Log.e("SystemStatus", e.getMessage(), e);
                                     }

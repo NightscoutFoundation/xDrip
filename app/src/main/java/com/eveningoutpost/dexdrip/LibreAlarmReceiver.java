@@ -137,7 +137,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                                     processReadingDataTransferObject(object);
                                 } catch (Exception e) {
                                     Log.wtf(TAG, "Could not process data structure from LibreAlarm: " + e.toString());
-                                    JoH.static_toast_long("LibreAlarm data format appears incompatible!? protocol changed?");
+                                    JoH.static_toast_long(context.getString(R.string.librealarm_data_format_incompatible));
 
                                 }
                                 break;
@@ -174,7 +174,7 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
                 return; // do not try to insert again
             } else {
                 Log.wtf(TAG, "Sensor age has gone backwards!!! " + sensorAge);
-                JoH.static_toast_long("Sensor age has gone backwards!!");
+                JoH.static_toast_long(xdrip.getAppContext().getString(R.string.sensor_age_backwards));
                 sensorAge = thisSensorAge;
                 Home.setPreferencesInt("nfc_sensor_age", (int) sensorAge);
                 Home.setPreferencesBoolean("nfc_age_problem", true);

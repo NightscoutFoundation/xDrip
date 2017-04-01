@@ -74,7 +74,7 @@ public class LocationHelper {
                     android.Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
 
-                JoH.show_ok_dialog(activity, "Please Allow Permission", "Without Location permission android bluetooth scan doesn't work", new Runnable() {
+                JoH.show_ok_dialog(activity, activity.getString(R.string.please_allow_permission), activity.getString(R.string.bluetooth_scan_location_permission), new Runnable() {
                     @Override
                     public void run() {
                         try {
@@ -82,7 +82,7 @@ public class LocationHelper {
                                     new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
                                     0);
                         } catch (Exception e) {
-                            JoH.static_toast_long("Got Exception with Location Permission: " + e);
+                            JoH.static_toast_long(activity.getString(R.string.location_permission_exception, e));
                         }
                     }
                 });

@@ -1,5 +1,8 @@
 package com.eveningoutpost.dexdrip.calibrations;
 
+import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.xdrip;
+
 /**
  * Created by jamorham on 04/10/2016.
  * <p>
@@ -10,7 +13,7 @@ package com.eveningoutpost.dexdrip.calibrations;
 
 public class FixedSlopeExample extends CalibrationAbstract {
 
-    private static final String TAG = "Fixed Slope Example";
+    private static final String TAG = xdrip.getAppContext().getString(R.string.fixed_slope_tag);
 
     @Override
     public String getAlgorithmName() {
@@ -19,7 +22,7 @@ public class FixedSlopeExample extends CalibrationAbstract {
 
     @Override
     public String getAlgorithmDescription() {
-        return "never use for real data";
+        return xdrip.getAppContext().getString(R.string.fixed_slope_description);
     }
 
     @Override

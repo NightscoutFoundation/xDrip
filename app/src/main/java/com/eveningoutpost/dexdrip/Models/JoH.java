@@ -741,7 +741,7 @@ public class JoH {
             AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(activity, R.style.AppTheme));
             builder.setTitle(title);
             builder.setMessage(message);
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                     if (runnable != null) {
@@ -827,7 +827,7 @@ public class JoH {
     public static Bitmap screenShot(View view, String annotation) {
 
         if (view == null) {
-            static_toast_long("View is null in screenshot!");
+            static_toast_long(xdrip.getAppContext().getString(R.string.view_null_screenshot));
             return null;
         }
         final int width = view.getWidth();
@@ -914,7 +914,7 @@ public class JoH {
         try {
             context.startActivity(Intent.createChooser(intent, "Share"));
         } catch (ActivityNotFoundException e) {
-            static_toast_long("No suitable app to show an image!");
+            static_toast_long(context.getString(R.string.no_suitable_app_imagae));
         }
     }
 
@@ -1079,9 +1079,9 @@ public class JoH {
                         if (JoH.ratelimit("failed pair confirmation", 200)) {
                             // BluetoothDevice.PAIRING_VARIANT_CONSENT)
                             if (type == 3) {
-                                JoH.static_toast_long("Please confirm the bluetooth pairing request");
+                                JoH.static_toast_long(context.getString(R.string.confirm_pairing_request));
                             } else {
-                                JoH.static_toast_long("Failed to pair, may need to do it via Android Settings");
+                                JoH.static_toast_long(context.getString(R.string.failed_to_pair));
                                 device.createBond(); // for what it is worth
                             }
                         }

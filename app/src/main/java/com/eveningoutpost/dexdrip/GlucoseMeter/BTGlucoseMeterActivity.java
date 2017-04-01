@@ -66,10 +66,10 @@ public class BTGlucoseMeterActivity extends ListActivityWithMenu {
         setContentView(R.layout.activity_btglucose_meter);
 
         statusText = (TextView) findViewById(R.id.btg_scan_status);
-        statusText.setText("Starting up");
+        statusText.setText(R.string.starting_up);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            JoH.static_toast_long("The android version of this device is not compatible with Bluetooth Low Energy");
+            JoH.static_toast_long(getString(R.string.not_compatible_ble));
             finish();
         } else {
 
@@ -118,30 +118,30 @@ public class BTGlucoseMeterActivity extends ListActivityWithMenu {
                     final MyBluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
                     if (device != null) {
                         final AlertDialog.Builder builder = new AlertDialog.Builder(adapterView.getContext());
-                        builder.setTitle("Choose Action");
-                        builder.setMessage("You can disconnect from this device or forget its pairing here");
+                        builder.setTitle(R.string.choose_action);
+                        builder.setMessage(R.string.disconnect_or_forget);
 
-                        builder.setNeutralButton("Do Nothing", new DialogInterface.OnClickListener() {
+                        builder.setNeutralButton(R.string.do_nothing, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                             }
                         });
 
-                        builder.setPositiveButton("Disconnect", new DialogInterface.OnClickListener() {
+                        builder.setPositiveButton(R.string.disconnect, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                                 if (Home.getPreferencesStringDefaultBlank("selected_bluetooth_meter_address").equals(device.address)) {
                                     Home.setPreferencesString("selected_bluetooth_meter_address", "");
                                     mLeDeviceListAdapter.changed();
-                                    JoH.static_toast_long("Disconnected!");
+                                    JoH.static_toast_long(getString(R.string.disconnected_2));
                                     BluetoothGlucoseMeter.start_service(null);
                                 } else {
-                                    JoH.static_toast_short("Not connected to this device!");
+                                    JoH.static_toast_short(getString(R.string.not_connected_to_device));
                                 }
                             }
                         });
 
-                        builder.setNegativeButton("Forget Pair", new DialogInterface.OnClickListener() {
+                        builder.setNegativeButton(R.string.forget_pair, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 start_forget(device.address);
@@ -191,9 +191,9 @@ public class BTGlucoseMeterActivity extends ListActivityWithMenu {
         if (!bluetooth_manager.getAdapter().isEnabled()) {
             if (Home.getPreferencesBoolean("automatically_turn_bluetooth_on", true)) {
                 JoH.setBluetoothEnabled(getApplicationContext(), true);
-                Toast.makeText(this, "Trying to turn Bluetooth on", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.try_bluetooth_on, Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(this, "Please turn Bluetooth on!", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.please_turn_bluetooth_on, Toast.LENGTH_LONG).show();
             }
         }
     }

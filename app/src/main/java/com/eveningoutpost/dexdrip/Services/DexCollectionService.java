@@ -48,6 +48,7 @@ import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
@@ -803,36 +804,36 @@ public class DexCollectionService extends Service {
 
         final boolean forced_wear = Home.get_forced_wear();
 
-        l.add(new StatusItem("Phone Service State", lastState + (forced_wear ? " (Watch Forced)" : "")));
-        l.add(new StatusItem("Bluetooth Device", JoH.ucFirst(getStateStr(mStaticState))));
+        l.add(new StatusItem(xdrip.getAppContext().getString(R.string.phone_service_state), lastState + (forced_wear ? " (Watch Forced)" : "")));
+        l.add(new StatusItem(xdrip.getAppContext().getString(R.string.bluetooth_device), JoH.ucFirst(getStateStr(mStaticState))));
 
 
         if (static_use_transmiter_pl_bluetooth) {
-            l.add(new StatusItem("Hardware", "Transmiter PL"));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.hardware), "Transmiter PL"));
         }
 
         if (static_use_rfduino_bluetooth) {
-            l.add(new StatusItem("Hardware", "Rfduino"));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.hardware), "Rfduino"));
         }
 
         // TODO add LimiTTer info
 
         if (last_transmitter_Data != null) {
-            l.add(new StatusItem("Glucose data from", JoH.niceTimeSince(last_transmitter_Data.timestamp) + " ago"));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.glucose_data_from), JoH.niceTimeSince(last_transmitter_Data.timestamp) + " ago"));
         }
         if (last_battery_level > -1) {
-            l.add(new StatusItem("Battery level", last_battery_level));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.battery_level), last_battery_level));
         }
 
         if (Home.getPreferencesBooleanDefaultFalse(PREF_DEX_COLLECTION_BONDING)) {
             if (bondedState != null) {
-                l.add(new StatusItem("Bluetooth Pairing", (bondedState.length() > 0) ? "Bonded" : "Not bonded", (bondedState.length() > 0) ? StatusItem.Highlight.GOOD : StatusItem.Highlight.NOTICE, "long-press",
+                l.add(new StatusItem(xdrip.getAppContext().getString(R.string.bluetooth_pairing), (bondedState.length() > 0) ? xdrip.getAppContext().getString(R.string.bonded) : xdrip.getAppContext().getString(R.string.not_bonded), (bondedState.length() > 0) ? StatusItem.Highlight.GOOD : StatusItem.Highlight.NOTICE, "long-press",
                         new Runnable() {
                             @Override
                             public void run() {
                                 Home.setPreferencesBoolean(PREF_DEX_COLLECTION_BONDING, false);
                                 if (bondedState.length() > 0) {
-                                    JoH.static_toast_long("If you want to unbond use Android bluetooth system settings to Forget device");
+                                    JoH.static_toast_long(xdrip.getAppContext().getString(R.string.system_settings_to_unbond));
                                     bondedState = null;
                                 }
                                 new Thread(new Runnable() {
@@ -851,7 +852,7 @@ public class DexCollectionService extends Service {
                         @Override
                         public void run() {
                             Home.setPreferencesBoolean(PREF_DEX_COLLECTION_BONDING, true);
-                            JoH.static_toast_long("This probably only works on HM10/HM11 devices at the moment and takes a minute");
+                            JoH.static_toast_long(xdrip.getAppContext().getString(R.string.only_hm10_hm11));
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -863,12 +864,12 @@ public class DexCollectionService extends Service {
                     }));
         }
 
-        if (retry_time > 0) l.add(new StatusItem("Next Retry", JoH.niceTimeTill(retry_time)));
+        if (retry_time > 0) l.add(new StatusItem(xdrip.getAppContext().getString(R.string.next_retry), JoH.niceTimeTill(retry_time)));
         if (failover_time > 0)
-            l.add(new StatusItem("Next Wake up", JoH.niceTimeTill(failover_time)));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.next_wake_up), JoH.niceTimeTill(failover_time)));
 
         if (Home.get_engineering_mode() && DexCollectionType.hasLibre()) {
-            l.add(new StatusItem("Request Data", "Test for xBridgePlus protocol", immediateSend == null ? StatusItem.Highlight.NORMAL : StatusItem.Highlight.NOTICE, "long-press", new Runnable() {
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.request_data), xdrip.getAppContext().getString(R.string.test_for_xbridge_plus), immediateSend == null ? StatusItem.Highlight.NORMAL : StatusItem.Highlight.NOTICE, "long-press", new Runnable() {
                 @Override
                 public void run() {
                     immediateSend = XbridgePlus.sendDataRequestPacket();
@@ -878,36 +879,36 @@ public class DexCollectionService extends Service {
         }
 
         if (Home.get_engineering_mode() && (static_last_hexdump != null)) {
-            l.add(new StatusItem("Received Data", filterHexdump(static_last_hexdump)));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.received_data), filterHexdump(static_last_hexdump)));
         }
         if (Home.get_engineering_mode() && (static_last_sent_hexdump != null)) {
-            l.add(new StatusItem("Sent Data", filterHexdump(static_last_sent_hexdump)));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.sent_data), filterHexdump(static_last_sent_hexdump)));
         }
 
         //WATCH
         if (forced_wear) {
             l.add(new StatusItem());
-            l.add(new StatusItem("Watch Service State", lastStateWatch));
-            l.add(new StatusItem("Bridge Device", JoH.ucFirst(getStateStr(mStaticStateWatch))));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.watch_service_state), lastStateWatch));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.bridge_device), JoH.ucFirst(getStateStr(mStaticStateWatch))));
 
             // TODO add LimiTTer info
 
             if ((last_transmitter_DataWatch != null) && (last_transmitter_DataWatch.timestamp > 0)) {
-                l.add(new StatusItem("Watch Glucose data", JoH.niceTimeSince(last_transmitter_DataWatch.timestamp) + " ago"));
+                l.add(new StatusItem(xdrip.getAppContext().getString(R.string.watch_glucose_data), JoH.niceTimeSince(last_transmitter_DataWatch.timestamp) + " ago"));
             }
             if (last_battery_level_watch > -1) {
-                l.add(new StatusItem("Bridge Battery level", last_battery_level_watch));
+                l.add(new StatusItem(xdrip.getAppContext().getString(R.string.bridge_battery_level), last_battery_level_watch));
             }
 
             if (retry_time_watch > 0) l.add(new StatusItem("Watch Next Retry", JoH.niceTimeTill(retry_time_watch)));
             if (failover_time_watch > 0)
-                l.add(new StatusItem("Watch Wake up", JoH.niceTimeTill(failover_time_watch)));
+                l.add(new StatusItem(xdrip.getAppContext().getString(R.string.watch_wake_up), JoH.niceTimeTill(failover_time_watch)));
 
             if (Home.get_engineering_mode() && (static_last_hexdump_watch != null) && (static_last_hexdump_watch.length()>0)) {
-                l.add(new StatusItem("Watch Received Data", filterHexdump(static_last_hexdump_watch)));
+                l.add(new StatusItem(xdrip.getAppContext().getString(R.string.watch_received_data), filterHexdump(static_last_hexdump_watch)));
             }
             if (Home.get_engineering_mode() && (static_last_sent_hexdump_watch != null) && (static_last_sent_hexdump_watch.length()>0)) {
-                l.add(new StatusItem("Watch Sent Data", filterHexdump(static_last_sent_hexdump_watch)));
+                l.add(new StatusItem(xdrip.getAppContext().getString(R.string.watch_sent_data), filterHexdump(static_last_sent_hexdump_watch)));
             }
         }
 

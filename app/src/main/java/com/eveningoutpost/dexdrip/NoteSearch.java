@@ -59,14 +59,13 @@ public class NoteSearch extends ListActivityWithMenu {
     private Cursor dbCursor;
 
     private static final String TAG = "NoteSearch";
-    //Strings TODO: move to strings.xml (omitted during dev to avoid merge conflicts)
-    private static final String LOAD_MORE = "load more";
     public static String menu_name = "Note Search";
-    private static final String SEARCHING = "searching...";
-    private static final String COLLECTING = "collecting...";
-    private static final String CARBS = "carbs";
-    private static final String INSULIN = "insulin";
-    private static final String NOTHING = "nothing found";
+    private static final String LOAD_MORE = xdrip.getAppContext().getString(R.string.load_more);
+    private static final String SEARCHING = xdrip.getAppContext().getString(R.string.searching);
+    private static final String COLLECTING = xdrip.getAppContext().getString(R.string.collecting);
+    private static final String CARBS = xdrip.getAppContext().getString(R.string.carbs);
+    private static final String INSULIN = xdrip.getAppContext().getString(R.string.insulin);
+    private static final String NOTHING = xdrip.getAppContext().getString(R.string.nothing_found);
     private long last_keypress_time = -1;
     private static final long KEY_PAUSE = 500; // latency we use to initiate searches
 
@@ -116,10 +115,10 @@ public class NoteSearch extends ListActivityWithMenu {
                     treatmentText.setText(sResult.note);
 
                     new AlertDialog.Builder(activity)
-                            .setTitle("Edit Note")
-                            .setMessage("Adjust note text here. There is no undo of this")
+                            .setTitle(R.string.edit_note)
+                            .setMessage(R.string.adjust_note_here)
                             .setView(treatmentText)
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     final String noteText = treatmentText.getText().toString().trim();
                                     sResult.note = noteText;
@@ -127,7 +126,7 @@ public class NoteSearch extends ListActivityWithMenu {
                                     SQLiteUtils.execSql("update Treatments set notes = ? where uuid = ?", new String[]{sResult.note, sResult.uuid});
                                 }
                             })
-                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                 }
                             })
@@ -218,7 +217,7 @@ public class NoteSearch extends ListActivityWithMenu {
         final String searchTerm = searchTextField.getText().toString().trim();
 
         if ("".equals(searchTerm)) {
-            if (from_interactive) JoH.static_toast_short("No search term found");
+            if (from_interactive) JoH.static_toast_short(getString(R.string.no_search_term_found));
             return;
         }
 

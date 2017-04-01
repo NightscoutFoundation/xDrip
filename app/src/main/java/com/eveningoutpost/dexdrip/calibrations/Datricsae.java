@@ -8,7 +8,9 @@ import com.eveningoutpost.dexdrip.Models.Forecast;
 import com.eveningoutpost.dexdrip.Models.Forecast.PolyTrendLine;
 import com.eveningoutpost.dexdrip.Models.Forecast.TrendLine;
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +26,7 @@ import java.util.List;
 
 public class Datricsae extends CalibrationAbstract {
 
-    private static final String TAG = "Datricsae";
+    private static final String TAG = xdrip.getAppContext().getString(R.string.datricsae_tag);
     private static final double MINIMUM_SLOPE = 0.5;
     private static final double MAXIMUM_SLOPE = 1.5;
     private static final int CALIBRATIONS_TO_USE = 8;
@@ -40,7 +42,7 @@ public class Datricsae extends CalibrationAbstract {
 
     @Override
     public String getAlgorithmDescription() {
-        return "pronounced: da-trix-ee - highly experimental";
+        return xdrip.getAppContext().getString(R.string.datricsae_description);
     }
 
     @Override

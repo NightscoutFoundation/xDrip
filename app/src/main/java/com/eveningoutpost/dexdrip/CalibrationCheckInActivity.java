@@ -38,7 +38,7 @@ public class CalibrationCheckInActivity extends ActivityWithMenu {
 
                 if (Sensor.isActive()) {
                     SyncingService.startActionCalibrationCheckin(getApplicationContext());
-                    Toast.makeText(getApplicationContext(), "Checked in all calibrations", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), R.string.checked_in_all_calibrations, Toast.LENGTH_LONG).show();
                     Intent tableIntent = new Intent(v.getContext(), Home.class);
                     startActivity(tableIntent);
                     finish();

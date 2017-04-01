@@ -173,7 +173,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
 
                                 } else {
                                     Log.e(TAG, "Calibration creation resulted in null");
-                                    JoH.static_toast_long("Could not create calibration!");
+                                    JoH.static_toast_long(getString(R.string.could_not_create_calibration));
                                     // TODO probably follower must ensure it has a valid sensor regardless..
                                 }
                             } else if (Home.get_follower()) {
@@ -185,13 +185,13 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
 
                         } catch (NumberFormatException e) {
                             Log.e(TAG, "Number format exception ", e);
-                            Home.toaststatic("Got error parsing number in calibration");
+                            Home.toaststatic(getString(R.string.got_error_parsing_number));
                         }
                         // }
                         // }.start();
                         finish();
                     } else {
-                        value.setError("Calibration Can Not be blank");
+                        value.setError(getString(R.string.calibration_cannot_be_blank));
                     }
                 } else {
                     Log.w("CALERROR", "Sensor is not active, cannot calibrate");
@@ -207,6 +207,6 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
         final String uuid = UUID.randomUUID().toString();
         GcmActivity.pushCalibration2(calValue, uuid, offset);
         UndoRedo.addUndoCalibration(uuid);
-        JoH.static_toast_long("Calibration sent to master for processing");
+        JoH.static_toast_long(xdrip.getAppContext().getString(R.string.calibration_sent_to_master));
     }
 }

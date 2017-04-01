@@ -122,7 +122,7 @@ public class NSClientReceiver extends BroadcastReceiver {
                     if (glucose_number > 0) {
 
                         if (timeoffset < 0) {
-                            Home.toaststaticnext("Got calibration in the future - cannot process!");
+                            Home.toaststaticnext(xdrip.getAppContext().getString(R.string.got_calibration_future));
                             break;
                         }
 

@@ -131,8 +131,8 @@ public class CalibrationGraph extends ActivityWithMenu {
         }
         Axis axisX = new Axis();
         Axis axisY = new Axis().setHasLines(true);
-        axisX.setName("Raw Value");
-        axisY.setName("Glucose " + (doMgdl ? "mg/dl" : "mmol/l"));
+        axisX.setName(getString(R.string.raw_value));
+        axisY.setName(getString(R.string.glucose) + (doMgdl ? "mg/dl" : "mmol/l"));
 
 
         data = new LineChartData(lines);
@@ -256,8 +256,8 @@ public class CalibrationGraph extends ActivityWithMenu {
         editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_NUMBER_FLAG_DECIMAL);
 
         new AlertDialog.Builder(this)
-                .setTitle("Ovewrite Intercept")
-                .setMessage("Overwrite Intercept")
+                .setTitle(getString(R.string.overwrite_intercept))
+                .setMessage(getString(R.string.overwrite_intercept))
                 .setView(editText)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -270,15 +270,15 @@ public class CalibrationGraph extends ActivityWithMenu {
                             CalibrationSendQueue.addToQueue(calibration, getApplicationContext());
                             recreate();
                         } else {
-                            JoH.static_toast_long("Input not found! Cancelled!");
+                            JoH.static_toast_long(getString(R.string.input_not_found));
                         }
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        JoH.static_toast_long("Cancelled!");
+                        JoH.static_toast_long(getString(R.string.cancelled));
                     }
                 })
                 .show();
@@ -289,10 +289,10 @@ public class CalibrationGraph extends ActivityWithMenu {
         editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
 
         new AlertDialog.Builder(this)
-                .setTitle("Ovewrite Slope")
-                .setMessage("Overwrite Slope")
+                .setTitle(getString(R.string.overwrite_intercept))
+                .setMessage(getString(R.string.overwrite_intercept))
                 .setView(editText)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         String text = editText.getText().toString();
                         if (!TextUtils.isEmpty(text)) {
@@ -303,15 +303,15 @@ public class CalibrationGraph extends ActivityWithMenu {
                             CalibrationSendQueue.addToQueue(calibration, getApplicationContext());
                             recreate();
                         } else {
-                            JoH.static_toast_long("Input not found! Cancelled!");
+                            JoH.static_toast_long(getString(R.string.cancelled));
                         }
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        JoH.static_toast_long("Cancelled!");
+                        JoH.static_toast_long(getString(R.string.cancelled));
                     }
                 })
                 .show();

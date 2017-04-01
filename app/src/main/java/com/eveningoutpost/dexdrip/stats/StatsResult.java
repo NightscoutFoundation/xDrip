@@ -1,13 +1,13 @@
 package com.eveningoutpost.dexdrip.stats;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.preference.PreferenceManager;
 
 import com.activeandroid.Cache;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.text.DecimalFormat;
 
@@ -160,20 +160,20 @@ public class StatsResult {
     public long getPossibleCaptures() {return possibleCaptures;}
 
     public String getInPercentage(){
-        return "in:" +  ((getTotalReadings()>0)?(in*100/getTotalReadings()) + "%":"-%");
+        return xdrip.getAppContext().getString(R.string.status_in) +  ((getTotalReadings()>0)?(in*100/getTotalReadings()) + "%":"-%");
     }
 
     public String getLowPercentage(){
-        return "lo:" +  ((getTotalReadings()>0)?(below*100/getTotalReadings()) + "%":"-%");
+        return xdrip.getAppContext().getString(R.string.status_lo) +  ((getTotalReadings()>0)?(below*100/getTotalReadings()) + "%":"-%");
     }
 
     public String getHighPercentage(){
-        return "hi:" +  ((getTotalReadings()>0)?(above*100/getTotalReadings()) + "%":"-%");
+        return xdrip.getAppContext().getString(R.string.status_hi) +  ((getTotalReadings()>0)?(above*100/getTotalReadings()) + "%":"-%");
     }
 
     public String getA1cDCCT(){
         if(getTotalReadings()==0) return "A1c:?%";
-        return "A1c:" + (Math.round(10 * (avg + 46.7) / 28.7) / 10d) + "%";
+        return xdrip.getAppContext().getString(R.string.status_a1c) + (Math.round(10 * (avg + 46.7) / 28.7) / 10d) + "%";
     }
 
     public String getA1cIFCC() {
@@ -181,21 +181,21 @@ public class StatsResult {
     }
 
         public String getA1cIFCC(boolean shortVersion){
-        if(getTotalReadings()==0) return "A1c:?";
-        return (shortVersion?"":"A1c:") + ((int) Math.round(((avg + 46.7) / 28.7 - 2.15) * 10.929));
+        if(getTotalReadings()==0) return xdrip.getAppContext().getString(R.string.status_a1c) + "?";
+        return (shortVersion?"":xdrip.getAppContext().getString(R.string.status_a1c)) + ((int) Math.round(((avg + 46.7) / 28.7 - 2.15) * 10.929));
     }
 
     public String getAverageUnitised(){
-        if(getTotalReadings()==0) return "Avg:?";
-        if(mgdl) return "Avg:" + Math.round(avg);
-        return "Avg:" + (new DecimalFormat("#.0")).format(avg*Constants.MGDL_TO_MMOLL);
+        if(getTotalReadings()==0) return xdrip.getAppContext().getString(R.string.status_a1c) + "?";
+        if(mgdl) return xdrip.getAppContext().getString(R.string.status_a1c) + Math.round(avg);
+        return xdrip.getAppContext().getString(R.string.status_a1c) + (new DecimalFormat("#.0")).format(avg*Constants.MGDL_TO_MMOLL);
     }
 
     public String getStdevUnitised(){
         calc_StdDev();
-        if(getTotalReadings()==0) return "sd:?";
-        if(mgdl) return "sd:" + (Math.round(stdev * 10) / 10d);
-        return "sd:" + (new DecimalFormat("#.0")).format((Math.round(stdev * Constants.MGDL_TO_MMOLL * 100) / 100d));
+        if(getTotalReadings()==0) return xdrip.getAppContext().getString(R.string.status_sd) + "?";
+        if(mgdl) return xdrip.getAppContext().getString(R.string.status_sd) + (Math.round(stdev * 10) / 10d);
+        return xdrip.getAppContext().getString(R.string.status_sd) + (new DecimalFormat("#.0")).format((Math.round(stdev * Constants.MGDL_TO_MMOLL * 100) / 100d));
     }
 
     public int getCapturePercentage() {
@@ -203,7 +203,7 @@ public class StatsResult {
     }
 
     public String getCapturePercentage(boolean extended) {
-        String result = "Cap:" + ((possibleCaptures > 0) ? Math.round(getTotalReadings() * 100d / possibleCaptures) + "%" : "-%");
+        String result = xdrip.getAppContext().getString(R.string.status_cap) + ((possibleCaptures > 0) ? Math.round(getTotalReadings() * 100d / possibleCaptures) + "%" : "-%");
 
         if (extended) {
             result += " (" + getTotalReadings() + "/" + getPossibleCaptures() + ")";

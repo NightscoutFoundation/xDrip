@@ -2,7 +2,9 @@ package com.eveningoutpost.dexdrip.G5Model;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -43,7 +45,7 @@ public class VersionRequestRxMessage extends TransmitterMessage {
     }
 
     public String toString() {
-        return String.format(Locale.US, "Status: %s / Firmware: %s / BT-Firmware: %s / Other-FW: %s / hardwareV: %d / asic: %d",
+        return xdrip.getAppContext().getString(R.string.g5_version_status,
                 TransmitterStatus.getBatteryLevel(status).toString(), firmware_version_string, bluetooth_firmware_version_string, other_firmware_version, hardwarev, asic);
     }
 

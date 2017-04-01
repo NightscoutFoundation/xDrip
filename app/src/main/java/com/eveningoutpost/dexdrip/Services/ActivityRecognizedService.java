@@ -222,7 +222,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
     private static void disableMotionTrackingDueToErrors(Context context) {
         final long requested = getInternalPrefsLong(REQUESTED);
         final long received = getInternalPrefsLong(RECEIVED);
-        Home.toaststaticnext("DISABLED MOTION TRACKING DUE TO FAILURES! See Error Log!");
+        Home.toaststaticnext(context.getString(R.string.disabled_motion_tracking));
         final String msg = "Had to disable motion tracking feature as it did not seem to be working and may be incompatible with your phone. Please report this to the developers using the send logs feature: " + requested + " vs " + received + " " + JoH.getDeviceDetails();
         UserError.Log.wtf(TAG, msg);
         UserError.Log.ueh(TAG, msg);
@@ -236,10 +236,10 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(xdrip.getAppContext(), 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
-        builder.setContentText("Shut down motion detection! See Error Logs - Please report to developer" + JoH.dateTimeText(JoH.tsl()));
+        builder.setContentText(context.getString(R.string.shut_down_motion_detection) + JoH.dateTimeText(JoH.tsl()));
         builder.setContentIntent(pendingIntent);
         builder.setSmallIcon(R.drawable.ic_launcher);
-        builder.setContentTitle("Problem with motion detection!");
+        builder.setContentTitle(context.getString(R.string.problem_with_motion_detection));
         NotificationManagerCompat.from(context).notify(VEHICLE_NOTIFICATION_ERROR_ID, builder.build());
     }
 
@@ -480,11 +480,11 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
             }
         } else {
             if (connectionResult.getErrorCode() == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED) {
-                JoH.static_toast_long("Google Play Services update download needed for Motion");
+                JoH.static_toast_long(getString(R.string.play_services_update_needed));
                 Intent notificationIntent = new Intent(Intent.ACTION_VIEW);
                 notificationIntent.setData(Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.gms"));
                 final PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-                JoH.showNotification("Google Update Needed","Google Play Services update download needed for Motion. Download update via Google Play Store and try motion again after installed.",contentIntent,60302,true,true,true);
+                JoH.showNotification(getString(R.string.google_update_needed),getString(R.string.play_services_update_needed_for_motion),contentIntent,60302,true,true,true);
                 UserError.Log.ueh(TAG,"Google Play Services updated needed for motion - disabling motion for now");
                 Home.setPreferencesBoolean("motion_tracking_enabled", false);
 
@@ -624,7 +624,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
             setInternalPrefsLong(VEHICLE_MODE_LAST_ALERT, JoH.tsl());
             builder.setSound(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getPackageName() + "/" + R.raw.labbed_musical_chime));
         }
-        builder.setContentTitle(getString(R.string.app_name) + " " + "Vehicle mode");
+        builder.setContentTitle(getString(R.string.app_name) + " " + getString(R.string.vehicle_mode));
         cancel_vehicle_notification();
         NotificationManagerCompat.from(this).notify(VEHICLE_NOTIFICATION_ID, builder.build());
     }
@@ -638,7 +638,7 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
             if (is_in_vehicle_mode()) {
                 if (Home.getPreferencesBoolean("repeat_sound_in_vehicle_mode", true)) {
                     if (get_minutes_since_last_alert() > 90) {
-                        raise_vehicle_notification("Still in Vehicle mode, duration: " + get_vehicle_mode_minutes() + " mins");
+                        raise_vehicle_notification(getString(R.string.still_in_vehicle_mode, get_vehicle_mode_minutes()));
                     }
                 }
             }

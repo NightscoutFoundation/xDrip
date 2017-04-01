@@ -129,8 +129,8 @@ public class CalibrationDataTable extends ListActivity implements NavigationDraw
                     };
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setMessage("Disable this calibration?\nFlagged calibrations will no longer have an effect.").setPositiveButton("Yes", dialogClickListener)
-                            .setNegativeButton("No", dialogClickListener).show();
+                    builder.setMessage(R.string.disable_calibration).setPositiveButton(R.string.yes, dialogClickListener)
+                            .setNegativeButton(R.string.no, dialogClickListener).show();
                     return true;
                 }
             });

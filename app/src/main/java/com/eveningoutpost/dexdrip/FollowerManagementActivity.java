@@ -116,25 +116,25 @@ public class FollowerManagementActivity extends ActivityWithMenu {
                                                     public void onResponse(Response<String> response, Retrofit retrofit) {
                                                         if (response.isSuccess()) {
                                                             populateFollowerList();
-                                                            Toast.makeText(getApplicationContext(), "Follower invite sent succesfully", Toast.LENGTH_LONG).show();
+                                                            Toast.makeText(getApplicationContext(), R.string.follower_invite_sent, Toast.LENGTH_LONG).show();
                                                         } else {
-                                                            Toast.makeText(getApplicationContext(), "Failed to invite follower", Toast.LENGTH_LONG).show();
+                                                            Toast.makeText(getApplicationContext(), R.string.failed_to_invite_follower, Toast.LENGTH_LONG).show();
                                                         }
                                                     }
 
                                                     @Override
                                                     public void onFailure(Throwable t) {
-                                                        Toast.makeText(getApplicationContext(), "Failed to invite follower", Toast.LENGTH_LONG).show();
+                                                        Toast.makeText(getApplicationContext(), R.string.failed_to_invite_follower, Toast.LENGTH_LONG).show();
                                                     }
                                                 });
                                             } else {
-                                                Toast.makeText(getApplicationContext(), "Failed to invite follower", Toast.LENGTH_LONG).show();
+                                                Toast.makeText(getApplicationContext(), R.string.failed_to_invite_follower, Toast.LENGTH_LONG).show();
                                             }
                                         }
 
                                         @Override
                                         public void onFailure(Throwable t) {
-                                            Toast.makeText(getApplicationContext(), "Failed to invite follower", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(getApplicationContext(), R.string.failed_to_invite_follower, Toast.LENGTH_LONG).show();
                                         }
                                     }
                             );

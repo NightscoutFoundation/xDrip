@@ -399,22 +399,22 @@ public class GcmActivity extends FauxActivity {
     static void sendSnoozeToRemoteWithConfirm(final Context context) {
         final long when = JoH.tsl();
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Confirm Remote Snooze");
-        builder.setMessage("Are you sure you wish to snooze all other devices in your sync group?");
-        builder.setPositiveButton("YES, send it!", new DialogInterface.OnClickListener() {
+        builder.setTitle(R.string.confirm_remote_snooze);
+        builder.setMessage(R.string.are_you_sure_sending_snooze);
+        builder.setPositiveButton(R.string.yes_send_it, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
                 if ((JoH.tsl() - when) < 120000) {
                     sendRealSnoozeToRemote();
                     UserError.Log.ueh(TAG, "Sent snooze to remote after confirmation");
                 } else {
-                    JoH.static_toast_long("Took too long to confirm! Ignoring!");
+                    JoH.static_toast_long(context.getString(R.string.confirming_took_to_long));
                     UserError.Log.ueh(TAG, "Ignored snooze confirmation as took > 2 minutes to confirm!");
                 }
             }
         });
 
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.no_uppercase, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -741,7 +741,7 @@ public class GcmActivity extends FauxActivity {
             xdrip.getAppContext().startService(intent);
         } else {
             cease_all_activity = true;
-            final String msg = "ERROR: Connecting to Google Services - check google login or reboot?";
+            final String msg = xdrip.getAppContext().getString(R.string.error_connecting_to_play_services);
             JoH.static_toast_long(msg);
             Home.toaststaticnext(msg);
         }
@@ -812,21 +812,21 @@ public class GcmActivity extends FauxActivity {
                                 if (JoH.ratelimit("ack-failure", 7200)) {
                                     if (JoH.isAnyNetworkConnected()) {
                                         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                                        builder.setTitle("Possible Sync Problem");
-                                        builder.setMessage("It appears we haven't been able to send/receive sync data for the last: " + JoH.qs(ack_outstanding / 60000, 0) + " minutes\n\nDo you want to perform a reset of the sync system?");
-                                        builder.setPositiveButton("YES, Do it!", new DialogInterface.OnClickListener() {
+                                        builder.setTitle(R.string.possible_sync_problem);
+                                        builder.setMessage(context.getString(R.string.syncing_failed) + JoH.qs(ack_outstanding / 60000, 0) + " minutes\n\nDo you want to perform a reset of the sync system?");
+                                        builder.setPositiveButton(R.string.yes_do_it, new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dialog.dismiss();
-                                                JoH.static_toast(context, "Resetting...", Toast.LENGTH_LONG);
+                                                JoH.static_toast(context, context.getString(R.string.resetting), Toast.LENGTH_LONG);
                                                 SdcardImportExport.forceGMSreset();
                                             }
                                         });
-                                        builder.setNeutralButton("Maybe Later", new DialogInterface.OnClickListener() {
+                                        builder.setNeutralButton(R.string.maybe_later, new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dialog.dismiss();
                                             }
                                         });
-                                        builder.setNegativeButton("NO, Never", new DialogInterface.OnClickListener() {
+                                        builder.setNegativeButton(R.string.no_never, new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dialog.dismiss();
@@ -875,7 +875,7 @@ public class GcmActivity extends FauxActivity {
                         }
                     }
                 } else {
-                    final String msg = "This device is not supported for play services.";
+                    final String msg = context.getString(R.string.device_not_supported_play_services);
                     Log.i(TAG, msg);
                     JoH.static_toast_long(msg);
                     cease_all_activity = true;

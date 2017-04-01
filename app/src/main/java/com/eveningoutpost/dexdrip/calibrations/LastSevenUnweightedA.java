@@ -5,7 +5,9 @@ import android.util.Log;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.Forecast.PolyTrendLine;
 import com.eveningoutpost.dexdrip.Models.Forecast.TrendLine;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +33,7 @@ import java.util.List;
 
 public class LastSevenUnweightedA extends CalibrationAbstract {
 
-    private static final String TAG = "Last7Ua";
+    private static final String TAG = xdrip.getAppContext().getString(R.string.last_seven_unweighted_tag);
 
     @Override
     public String getAlgorithmName() {
@@ -40,7 +42,7 @@ public class LastSevenUnweightedA extends CalibrationAbstract {
 
     @Override
     public String getAlgorithmDescription() {
-        return "Unweighted last 7 calibrations. Example only";
+        return xdrip.getAppContext().getString(R.string.last_seven_unweighted_description);
     }
 
     @Override

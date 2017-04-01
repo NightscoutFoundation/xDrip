@@ -1,6 +1,8 @@
 package com.eveningoutpost.dexdrip.GlucoseMeter;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -39,7 +41,7 @@ public class CurrentTimeRx extends BluetoothCHelper {
     }
 
     public String toNiceString() {
-        return "Difference: " + ((int) (timediff / 1000)) + " secs: " + JoH.dateTimeText(time);
+        return xdrip.getAppContext().getString(R.string.diference, ((int) (timediff / 1000)), JoH.dateTimeText(time));
     }
 
     public String toString() {

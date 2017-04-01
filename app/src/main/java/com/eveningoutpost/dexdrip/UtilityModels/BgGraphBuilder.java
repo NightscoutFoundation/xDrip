@@ -2,14 +2,12 @@ package com.eveningoutpost.dexdrip.UtilityModels;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
@@ -281,10 +279,10 @@ public class BgGraphBuilder {
     }
 
     public static String noiseString(double thisnoise) {
-        if (thisnoise > NOISE_HIGH) return "Extreme";
-        if (thisnoise > NOISE_TOO_HIGH_FOR_PREDICT) return "Very High";
-        if (thisnoise > NOISE_TRIGGER) return "High";
-        return "Low";
+        if (thisnoise > NOISE_HIGH) return xdrip.getAppContext().getString(R.string.noise_extreme);
+        if (thisnoise > NOISE_TOO_HIGH_FOR_PREDICT) return xdrip.getAppContext().getString(R.string.noise_very_high);
+        if (thisnoise > NOISE_TRIGGER) return xdrip.getAppContext().getString(R.string.noise_high);
+        return xdrip.getAppContext().getString(R.string.noise_low);
     }
 
     private void extend_line(List<PointValue> points, float x, float y) {

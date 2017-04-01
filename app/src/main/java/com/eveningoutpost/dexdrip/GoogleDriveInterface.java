@@ -287,7 +287,7 @@ public class GoogleDriveInterface extends FauxActivity {
             if ((mykey.length() > 16)) {
                 return mykey;
             } else {
-                Home.toaststaticnext("Custom sync key is too short - make it >16 characters");
+                Home.toaststaticnext(xdrip.getAppContext().getString(R.string.custom_sync_key_too_short));
             }
         }
         return null;

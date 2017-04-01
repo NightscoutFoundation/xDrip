@@ -66,7 +66,7 @@ public class DoubleCalibrationActivity extends ActivityWithMenu {
                             final double multiplier = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl") ? 1 : Constants.MMOLL_TO_MGDL;
                             if ((calValue_1 * multiplier < 40) || (calValue_1 * multiplier > 400)
                                     || (calValue_2 * multiplier < 40) || (calValue_2 * multiplier > 400)) {
-                                JoH.static_toast_long("Calibration out of range");
+                                JoH.static_toast_long(getString(R.string.calibration_out_of_range2));
                             } else {
                                 Calibration.initialCalibration(calValue_1, calValue_2, getApplicationContext());
 
@@ -77,10 +77,10 @@ public class DoubleCalibrationActivity extends ActivityWithMenu {
                                 finish();
                             }
                         } else {
-                            value_2.setError("Calibration Can Not be blank");
+                            value_2.setError(getString(R.string.calibration_cannot_be_blank));
                         }
                     } else {
-                        value_1.setError("Calibration Can Not be blank");
+                        value_1.setError(getString(R.string.calibration_cannot_be_blank));
                     }
                 } else {
                     Log.w("DoubleCalibration", "ERROR, sensor is not active");

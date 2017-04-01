@@ -230,7 +230,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             buttonRemove.setVisibility(View.GONE);
             // One can not snooze an alert that is still not in the database...
             buttonPreSnooze.setVisibility(View.GONE);
-            status = getString(R.string.adding)+" " + (above ? getString(R.string.high) : getString(R.string.low)) + " "+getString(R.string.alert);
+            status = above ? getString(R.string.adding_high_alert) : getString(R.string.adding_low_alert);
             startHour = 0;
             startMinute = 0;
             endHour = 23;
@@ -262,7 +262,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             audioPath = getExtra(savedInstanceState, "audioPath" ,at.mp3_file);
             alertMp3File.setText(shortPath(audioPath));
 
-            status = "editing " + (above ? "high" : "low") + " alert";
+            status = above ? getString(R.string.editing_high_alert) : getString(R.string.editing_low_alert);
             startHour = AlertType.time2Hours(at.start_time_minutes);
             startMinute = AlertType.time2Minutes(at.start_time_minutes);
             endHour = AlertType.time2Hours(at.end_time_minutes);
@@ -374,7 +374,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         if(overrideSilence) {
             checkboxAlertOverride.setText("");
         } else {
-            checkboxAlertOverride.setText("Warning, no alert will be played at phone silent/vibrate mode!!!");
+            checkboxAlertOverride.setText(R.string.warning_no_alert_in_silent_mode);
         }
     }
 
@@ -383,7 +383,7 @@ public class EditAlertActivity extends ActivityWithMenu {
         List<AlertType> highAlerts = AlertType.getAll(true);
 
         if(threshold < MIN_ALERT || threshold > MAX_ALERT) {
-            Toast.makeText(getApplicationContext(), "threshold has to be between " +unitsConvert2Disp(doMgdl, MIN_ALERT) + " and " + unitsConvert2Disp(doMgdl, MAX_ALERT),Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.threshold_range, unitsConvert2Disp(doMgdl, MIN_ALERT), unitsConvert2Disp(doMgdl, MAX_ALERT)),Toast.LENGTH_LONG).show();
             return false;
         }
         // We want to make sure that for each threashold there is only one alert. Otherwise, which file should we play.
@@ -391,7 +391,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             if(lowAlert.threshold == threshold  && overlapping(lowAlert, allDay, startTime, endTime) && lowAlert.active) {
                 if(uuid == null || ! uuid.equals(lowAlert.uuid)){ //new alert or not myself
                     Toast.makeText(getApplicationContext(),
-                            "Each alert should have it's own threshold. Please choose another threshold.",Toast.LENGTH_LONG).show();
+                            R.string.unique_threshold,Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
@@ -400,7 +400,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             if(highAlert.threshold == threshold  && overlapping(highAlert, allDay, startTime, endTime) && highAlert.active) {
                 if(uuid == null || ! uuid.equals(highAlert.uuid)){ //new alert or not myself
                     Toast.makeText(getApplicationContext(),
-                            "Each alert should have it's own threshold. Please choose another threshold.",Toast.LENGTH_LONG).show();
+                            R.string.unique_threshold,Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
@@ -411,7 +411,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             for (AlertType lowAlert : lowAlerts) {
                 if(threshold < lowAlert.threshold  && overlapping(lowAlert, allDay, startTime, endTime) && lowAlert.active) {
                     Toast.makeText(getApplicationContext(),
-                            "High alert threshold has to be higher than all low alerts. Please choose another threshold.",Toast.LENGTH_LONG).show();
+                            R.string.high_threshold_low,Toast.LENGTH_LONG).show();
                     return false;
                 }
             }
@@ -420,7 +420,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             for (AlertType highAlert : highAlerts) {
                 if(threshold > highAlert.threshold  && overlapping(highAlert, allDay, startTime, endTime) && highAlert.active) {
                     Toast.makeText(getApplicationContext(),
-                            "Low alert threshold has to be lower than all high alerts. Please choose another threshold.",Toast.LENGTH_LONG).show();
+                            R.string.low_threshold_high,Toast.LENGTH_LONG).show();
                     return false;
                 }
             }

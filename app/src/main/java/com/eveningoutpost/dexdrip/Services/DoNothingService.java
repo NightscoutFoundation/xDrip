@@ -15,9 +15,11 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -162,28 +164,28 @@ public class DoNothingService extends Service {
     public static List<StatusItem> megaStatus() {
         final List<StatusItem> l = new ArrayList<>();
         if (Home.get_master()) {
-            l.add(new StatusItem("Service State", "We are the Master"));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.service_state), xdrip.getAppContext().getString(R.string.we_are_master)));
 
         } else {
-            l.add(new StatusItem("Service State", lastState));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.service_state), lastState));
 
 
             if (last_bg != null) {
                 if (JoH.ratelimit("follower-bg-status", 5)) {
                     last_bg = BgReading.last();
                 }
-                l.add(new StatusItem("Glucose Data", JoH.niceTimeSince(last_bg.timestamp)+" ago"));
+                l.add(new StatusItem(xdrip.getAppContext().getString(R.string.glucose_data), JoH.niceTimeSince(last_bg.timestamp)+xdrip.getAppContext().getString(R.string.ago)));
             } else {
                 last_bg = BgReading.last();
             }
 
             if (wakeUpErrors > 0) {
-                l.add(new StatusItem("Slow Wake up", JoH.niceTimeScalar(wake_time_difference)));
-                l.add(new StatusItem("Wake Up Errors", wakeUpErrors));
+                l.add(new StatusItem(xdrip.getAppContext().getString(R.string.slow_wake_up), JoH.niceTimeScalar(wake_time_difference)));
+                l.add(new StatusItem(xdrip.getAppContext().getString(R.string.wake_up_errors), wakeUpErrors));
             }
 
             if (nextWakeUpTime != -1) {
-                l.add(new StatusItem("Next Wake up: ", JoH.niceTimeTill(nextWakeUpTime)));
+                l.add(new StatusItem(xdrip.getAppContext().getString(R.string.next_wake_up2), JoH.niceTimeTill(nextWakeUpTime)));
 
             }
         }

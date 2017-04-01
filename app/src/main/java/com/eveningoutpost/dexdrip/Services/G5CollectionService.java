@@ -61,6 +61,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -1543,7 +1544,7 @@ public class G5CollectionService extends Service {
                 // was this the first success after we force enabled always_authenticate?
                 if (force_always_authenticate && (successes == 1)) {
                     Log.wtf(TAG, "We apparently only got a reading after forcing the Always Authenticate option");
-                    Home.toaststaticnext("Please Enable G5 Always Authenticate debug option!");
+                    Home.toaststaticnext(getString(R.string.enable_g5_always_authentificate));
                     // TODO should we actually change the settings here?
                 }
             } else if (firstByte == GlucoseRxMessage.opcode) {
@@ -1879,37 +1880,37 @@ public class G5CollectionService extends Service {
     public static List<StatusItem> megaStatus() {
         final List<StatusItem> l = new ArrayList<>();
 
-        l.add(new StatusItem("Phone Service State", lastState));
+        l.add(new StatusItem(xdrip.getAppContext().getString(R.string.phone_service_state), lastState));
         if (static_last_timestamp > 0) {
-            l.add(new StatusItem("Phone got Glucose", JoH.niceTimeSince(static_last_timestamp) + " ago"));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.phone_got_glucose), JoH.niceTimeSince(static_last_timestamp) + " ago"));
         }
 
         if (Home.getPreferencesBooleanDefaultFalse("wear_sync") &&
                 Home.getPreferencesBooleanDefaultFalse("enable_wearG5")) {
-            l.add(new StatusItem("Watch Service State", lastStateWatch));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.watch_service_state), lastStateWatch));
             if (static_last_timestamp_watch > 0) {
-                l.add(new StatusItem("Watch got Glucose", JoH.niceTimeSince(static_last_timestamp_watch) + " ago"));
+                l.add(new StatusItem(xdrip.getAppContext().getString(R.string.watch_got_glucose), JoH.niceTimeSince(static_last_timestamp_watch) + xdrip.getAppContext().getString(R.string.ago)));
             }
         }
 
         final String tx_id = Home.getPreferencesStringDefaultBlank("dex_txid");
 
-        l.add(new StatusItem("Transmitter ID", tx_id));
+        l.add(new StatusItem(xdrip.getAppContext().getString(R.string.transmitter_id2), tx_id));
         // get firmware details
         VersionRequestRxMessage vr = getFirmwareDetails(tx_id);
         if ((vr != null) && (vr.firmware_version_string.length() > 0)) {
 
-            l.add(new StatusItem("Firmware Version", vr.firmware_version_string));
-            l.add(new StatusItem("Bluetooth Version", vr.bluetooth_firmware_version_string));
-            l.add(new StatusItem("Other Version", vr.other_firmware_version));
-            l.add(new StatusItem("Hardware Version", vr.hardwarev));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.firmware_version), vr.firmware_version_string));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.bluetooth_version), vr.bluetooth_firmware_version_string));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.other_version), vr.other_firmware_version));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.hardware_version), vr.hardwarev));
            if (vr.asic != 61440) l.add(new StatusItem("ASIC", vr.asic, StatusItem.Highlight.NOTICE)); // TODO color code
         }
 
         BatteryInfoRxMessage bt = getBatteryDetails(tx_id);
         long last_battery_query = PersistentStore.getLong(G5_BATTERY_FROM_MARKER + tx_id);
         if (getBatteryStatusNow) {
-            l.add(new StatusItem("Battery Status Request Queued", "Will attempt to read battery status on next sensor reading", StatusItem.Highlight.NOTICE, "long-press",
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.battery_status_request_queued), xdrip.getAppContext().getString(R.string.will_attempt_reading_battery), StatusItem.Highlight.NOTICE, "long-press",
                     new Runnable() {
                         @Override
                         public void run() {
@@ -1918,19 +1919,19 @@ public class G5CollectionService extends Service {
                     }));
         }
         if ((bt != null) && (last_battery_query > 0)) {
-            l.add(new StatusItem("Battery Last queried", JoH.niceTimeSince(last_battery_query) + " " + "ago", StatusItem.Highlight.NORMAL, "long-press",
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.battery_last_queried), JoH.niceTimeSince(last_battery_query) + xdrip.getAppContext().getString(R.string.ago), StatusItem.Highlight.NORMAL, "long-press",
                     new Runnable() {
                         @Override
                         public void run() {
                             getBatteryStatusNow = true;
                         }
                     }));
-            l.add(new StatusItem("Transmitter Status", TransmitterStatus.getBatteryLevel(vr.status).toString()));
-            l.add(new StatusItem("Transmitter Days", bt.runtime + ((last_transmitter_timestamp > 0) ? " / " + JoH.qs((double) last_transmitter_timestamp / 86400, 1) : "")));
-            l.add(new StatusItem("Voltage A", bt.voltagea, bt.voltagea < 300 ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
-            l.add(new StatusItem("Voltage B", bt.voltageb, bt.voltageb < 290 ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
-            l.add(new StatusItem("Resistance", bt.resist, bt.resist > 1400 ? StatusItem.Highlight.BAD : (bt.resist > 1000 ? StatusItem.Highlight.NOTICE : (bt.resist > 750 ? StatusItem.Highlight.NORMAL : StatusItem.Highlight.GOOD))));
-            l.add(new StatusItem("Temperature", bt.temperature + " \u2103"));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.transmitter_status), TransmitterStatus.getBatteryLevel(vr.status).toString()));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.transmitter_days), bt.runtime + ((last_transmitter_timestamp > 0) ? " / " + JoH.qs((double) last_transmitter_timestamp / 86400, 1) : "")));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.voltage_a), bt.voltagea, bt.voltagea < 300 ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.voltage_b), bt.voltageb, bt.voltageb < 290 ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.resistance), bt.resist, bt.resist > 1400 ? StatusItem.Highlight.BAD : (bt.resist > 1000 ? StatusItem.Highlight.NOTICE : (bt.resist > 750 ? StatusItem.Highlight.NORMAL : StatusItem.Highlight.GOOD))));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.temperature), bt.temperature + " \u2103"));
         }
 
 

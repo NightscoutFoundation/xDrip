@@ -69,9 +69,9 @@ public class SnoozeActivity extends ActivityWithMenu {
 
     static String getNameFromTime(int time) {
         if (time < 120) {
-            return time + " minutes";
+            return time + xdrip.getAppContext().getString(R.string.minutes);
         }
-        return (time / 60.0) + " hours";
+        return (time / 60.0) + xdrip.getAppContext().getString(R.string.hours);
     }
 
     static int getTimeFromSnoozeValue(int pickedNumber) {
@@ -346,10 +346,10 @@ public class SnoozeActivity extends ActivityWithMenu {
         } else {
             sendRemoteSnooze.setVisibility(View.GONE);
             if(!aba.ready_to_alarm()) {
-                status = "Active alert exists named \"" + activeBgAlert.name
-                        + (aba.is_snoozed?"\" Alert snoozed until ":"\" Alert will rerise at ")
+                status = getString(R.string.active_alert_exists_named)+" \"" + activeBgAlert.name
+                        + (aba.is_snoozed?getString(R.string.alert_snoozed_until):getString(R.string.alert_will_reraise_at))
                         + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date(aba.next_alert_at)) +
-                        " (" + (aba.next_alert_at - now) / 60000 + " minutes left)";
+                        " (" + (aba.next_alert_at - now) / 60000 + getString(R.string.minutes_left);
             } else {
                 status = getString(R.string.active_alert_exists_named)+" \"" + activeBgAlert.name + "\" "+getString(R.string.bracket_not_snoozed);
             }
@@ -382,7 +382,7 @@ public class SnoozeActivity extends ActivityWithMenu {
     }
 
     public void setSendRemoteSnoozeOnClick(View v) {
-        JoH.static_toast_short("Remote snooze..");
+        JoH.static_toast_short(getString(R.string.remote_snooze));
         AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
     }
 

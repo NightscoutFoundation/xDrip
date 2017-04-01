@@ -303,15 +303,15 @@ public class Mdns {
                                                     String new_receiver_list = (receiver_list.length() > 0) ? receiver_list + "," + new_receiver : new_receiver;
                                                     UserError.Log.d(TAG, "Updating receiver list to: " + new_receiver_list);
                                                     Home.setPreferencesString("wifi_recievers_addresses", new_receiver_list);
-                                                    JoH.static_toast_long("Added receiver: " + JoH.ucFirst(entry.getKey()));
+                                                    JoH.static_toast_long(context.getString(R.string.added_receiver, JoH.ucFirst(entry.getKey())));
                                                     break;
                                             }
                                         }
                                     };
                                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                                    builder.setTitle("Add " + JoH.ucFirst(entry.getKey()) + " to list of receivers?");
-                                    builder.setMessage("Is this device running a collector?\n\n" + entry.getKey() + ".local can be automatically added to list of receivers").setPositiveButton("Add", dialogClickListener)
-                                            .setNegativeButton("No", dialogClickListener).show();
+                                    builder.setTitle(context.getString(R.string.add_to_list_of_receivers, JoH.ucFirst(entry.getKey())));
+                                    builder.setMessage(context.getString(R.string.is_this_device_running_collector, entry.getKey())).setPositiveButton(R.string.add, dialogClickListener)
+                                            .setNegativeButton(R.string.no, dialogClickListener).show();
                                 } else {
                                     // remove item
                                     final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -322,15 +322,15 @@ public class Mdns {
                                                     String new_receiver_list = receiver_list.replace(new_receiver, "").replace(",,", ",").replaceFirst(",$", "").replaceFirst("^,", "");
                                                     UserError.Log.d(TAG, "Updating receiver list to: " + new_receiver_list);
                                                     Home.setPreferencesString("wifi_recievers_addresses", new_receiver_list);
-                                                    JoH.static_toast_long("Removed receiver: " + JoH.ucFirst(entry.getKey()));
+                                                    JoH.static_toast_long(context.getString(R.string.removed_receiver, entry.getKey()));
                                                     break;
                                             }
                                         }
                                     };
                                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                                    builder.setTitle("Remove " + JoH.ucFirst(entry.getKey()) + " from list of receivers?");
-                                    builder.setPositiveButton("Remove", dialogClickListener)
-                                            .setNegativeButton("No", dialogClickListener).show();
+                                    builder.setTitle(context.getString(R.string.remove_from_list_of_receivers, entry.getKey()));
+                                    builder.setPositiveButton(R.string.remove, dialogClickListener)
+                                            .setNegativeButton(R.string.no, dialogClickListener).show();
                                 }
 
 
@@ -365,8 +365,8 @@ public class Mdns {
             // This could do with being in a utility static method also used in Home
             final int size1 = 200;
             final int size2 = 70;
-            final String title = "Tap to add or remove";
-            final String message = "Devices discovered on the local network can be added or removed as collectors by tapping on them.";
+            final String title = context.getString(R.string.tap_to_add_or_remove);
+            final String message = context.getString(R.string.devices_can_be_added);
             final ViewTarget target = new ViewTarget(MegaStatus.runnableView);
             final Activity activity = (Activity) context;
 

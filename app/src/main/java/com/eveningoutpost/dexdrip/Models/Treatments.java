@@ -77,12 +77,12 @@ public class Treatments extends Model {
         // if treatment more than 1 minutes in the future
         final long future_seconds = (timestamp - JoH.tsl()) / 1000;
         if (future_seconds > (60 * 60)) {
-            JoH.static_toast_long("Refusing to create a treatement more than 1 hours in the future!");
+            JoH.static_toast_long(xdrip.getAppContext().getString(R.string.refusing_future_treatment));
             return null;
         }
         if ((future_seconds > 60) && (future_seconds < 86400) && ((carbs > 0) || (insulin > 0))) {
             final Context context = xdrip.getAppContext();
-            JoH.scheduleNotification(context, "Treatment Reminder", "@" + JoH.hourMinuteString(timestamp) + " : "
+            JoH.scheduleNotification(context, context.getString(R.string.treatment_reminder), "@" + JoH.hourMinuteString(timestamp) + " : "
                     + carbs + " " + context.getString(R.string.carbs) + " / "
                     + insulin + " " + context.getString(R.string.units), (int) future_seconds, 34026);
         }
@@ -328,7 +328,7 @@ public class Treatments extends Model {
             return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(json, Treatments.class);
         } catch (Exception e) {
             Log.d(TAG, "Got exception parsing treatment json: " + e.toString());
-            Home.toaststatic("Error on treatment, probably decryption key mismatch");
+            Home.toaststatic(xdrip.getAppContext().getString(R.string.error_on_treatment));
             return null;
         }
     }

@@ -11,7 +11,9 @@ import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -252,7 +254,7 @@ public class Sensor extends Model {
            return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(json,Sensor.class);
         } catch (Exception e) {
             Log.d(TAG, "Got exception parsing Sensor json: " + e.toString());
-            Home.toaststaticnext("Error on Sensor sync.");
+            Home.toaststaticnext(xdrip.getAppContext().getString(R.string.error_sensor_sync));
             return null;
         }
     }

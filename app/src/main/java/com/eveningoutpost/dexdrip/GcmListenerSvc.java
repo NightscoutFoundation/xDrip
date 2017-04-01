@@ -171,7 +171,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                                 } else {
                                     Log.e(TAG, "Couldn't decrypt payload!");
                                     payload = "";
-                                    Home.toaststaticnext("Having problems decrypting incoming data - check keys");
+                                    Home.toaststaticnext(getString(R.string.having_problems_decrypting_incoming_data));
                                 }
                             }
                     }
@@ -306,7 +306,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                     if (!Home.getPreferencesBoolean("act_as_motion_master", false)) {
                         ActivityRecognizedService.spoofActivityRecogniser(getApplicationContext(), payload);
                     } else {
-                        Home.toaststaticnext("Receiving motion updates from a different master! Make only one the master!");
+                        Home.toaststaticnext(getString(R.string.receiving_motion_updates_different_master));
                     }
                 }
             } else if (action.equals("sra")) {
@@ -327,7 +327,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                                     if (JoH.pratelimit("received-remote-snooze", 30)) {
                                         AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1, false);
                                         UserError.Log.ueh(TAG, "Accepted remote snooze");
-                                        JoH.static_toast_long("Received remote snooze!");
+                                        JoH.static_toast_long(getString(R.string.received_remote_snooze));
                                     } else {
                                         Log.e(TAG, "Rate limited remote snooze");
                                     }
@@ -490,7 +490,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
     public static List<StatusItem> megaStatus() {
         final List<StatusItem> l = new ArrayList<>();
         if (lastMessageReceived > 0)
-            l.add(new StatusItem("Network traffic", JoH.niceTimeSince(lastMessageReceived)+ " ago"));
+            l.add(new StatusItem(xdrip.getAppContext().getString(R.string.network_traffic), JoH.niceTimeSince(lastMessageReceived)+ xdrip.getAppContext().getString(R.string.ago)));
         return l;
     }
 

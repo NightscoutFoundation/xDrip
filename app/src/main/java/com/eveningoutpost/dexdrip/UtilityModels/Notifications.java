@@ -582,16 +582,16 @@ public class Notifications extends IntentService {
         b.setCategory(NotificationCompat.CATEGORY_STATUS);
         final BestGlucose.DisplayGlucose dg = (use_best_glucose) ? BestGlucose.getDisplayGlucose() : null;
         final boolean use_color_in_notification = false; // could be preference option
-        final SpannableString titleString = new SpannableString(lastReading == null ? "BG Reading Unavailable" : (dg != null) ? (dg.spannableString(dg.unitized + " " + dg.delta_arrow,use_color_in_notification))
+        final SpannableString titleString = new SpannableString(lastReading == null ? getString(R.string.bg_reading_unavailable) : (dg != null) ? (dg.spannableString(dg.unitized + " " + dg.delta_arrow,use_color_in_notification))
                 : (lastReading.displayValue(mContext) + " " + lastReading.slopeArrow()));
         b.setContentTitle(titleString)
-                .setContentText("xDrip Data collection service is running.")
+                .setContentText(getString(R.string.data_collection_service_is_running))
                 .setSmallIcon(R.drawable.ic_action_communication_invert_colors_on)
                 .setUsesChronometer(false);
         if (lastReading != null) {
 
             b.setWhen(lastReading.timestamp);
-            final SpannableString deltaString = new SpannableString("Delta: " + ((dg != null) ? (dg.spannableString(dg.unitized_delta + (dg.from_plugin ? " "+context.getString(R.string.p_in_circle) : "")))
+            final SpannableString deltaString = new SpannableString(getString(R.string.delta) + ((dg != null) ? (dg.spannableString(dg.unitized_delta + (dg.from_plugin ? " "+context.getString(R.string.p_in_circle) : "")))
                     : bgGraphBuilder.unitizedDeltaString(true, true)));
 
             b.setContentText(deltaString);
@@ -638,13 +638,13 @@ public class Notifications extends IntentService {
                             notifiationBitmap.recycle();
                     } catch (RuntimeException e) {
                         Log.e(TAG, "Got runtime exception in bgOngoingNotification runnable: ", e);
-                        Home.toaststaticnext("Problem displaying ongoing notification");
+                        Home.toaststaticnext(getString(R.string.problem_displaying_notification));
                     }
                 }
             });
         } catch (RuntimeException e) {
             Log.e(TAG, "Got runtime exception in bgOngoingNotification: ", e);
-            Home.toaststaticnext("Problem displaying ongoing notification");
+            Home.toaststaticnext(getString(R.string.problem_displaying_notification));
         }
     }
 
@@ -758,9 +758,9 @@ public class Notifications extends IntentService {
                 userNotification.delete();
             }
             final long calibration_hours = Calibration.msSinceLastCalibration() / (1000 * 60 * 60);
-            UserNotification.create(calibration_hours + " hours since last Calibration  (@" + JoH.hourMinuteString() + ")", "calibration_alert", new Date().getTime());
-            String title = "Calibration Needed";
-            String content = calibration_hours + " hours since last calibration";
+            UserNotification.create(getString(R.string.hours_since_last_calibration, calibration_hours, JoH.hourMinuteString()), "calibration_alert", new Date().getTime());
+            String title = getString(R.string.calibration_needed);
+            String content = getString(R.string.hours_since_last_calibration2, calibration_hours);
             Intent intent = new Intent(mContext, AddCalibration.class);
             calibrationNotificationCreate(title, content, intent, calibrationNotificationId);
         }
@@ -770,8 +770,8 @@ public class Notifications extends IntentService {
         UserNotification userNotification = UserNotification.lastDoubleCalibrationAlert();
         if ((userNotification == null) || (userNotification.timestamp <= ((new Date().getTime()) - (60000 * calibration_snooze)))) {
             if (userNotification != null) { userNotification.delete(); }
-            UserNotification.create("Double Calibration", "double_calibration_alert", new Date().getTime());
-            String title = "Sensor is ready";
+            UserNotification.create(getString(R.string.double_calibration), "double_calibration_alert", new Date().getTime());
+            String title = getString(R.string.sensor_is_ready);
             String content = getString(R.string.sensor_is_ready_please_enter_double_calibration) + "  (@" + JoH.hourMinuteString() + ")";
             Intent intent = new Intent(mContext, DoubleCalibrationActivity.class);
             calibrationNotificationCreate(title, content, intent, calibrationNotificationId);
@@ -782,9 +782,9 @@ public class Notifications extends IntentService {
         UserNotification userNotification = UserNotification.lastExtraCalibrationAlert();
         if ((userNotification == null) || (userNotification.timestamp <= ((new Date().getTime()) - (60000 * calibration_snooze)))) {
             if (userNotification != null) { userNotification.delete(); }
-            UserNotification.create("Extra Calibration Requested", "extra_calibration_alert", new Date().getTime());
-            String title = "Calibration Requested";
-            String content = "Increase performance by calibrating now" + "  (@" + JoH.hourMinuteString() + ")";
+            UserNotification.create(getString(R.string.extra_calibration_requested), "extra_calibration_alert", new Date().getTime());
+            String title = getString(R.string.calibration_requested);
+            String content = getString(R.string.increase_performance_calibration, JoH.hourMinuteString());
             Intent intent = new Intent(mContext, AddCalibration.class);
             calibrationNotificationCreate(title, content, intent, extraCalibrationNotificationId);
         }
@@ -792,19 +792,19 @@ public class Notifications extends IntentService {
 
     public static void bgUnclearAlert(Context context) {
         long otherAlertReraiseSec = MissedReadingService.getOtherAlertReraiseSec(context, "bg_unclear_readings_alert");
-        OtherAlert(context, "bg_unclear_readings_alert", "Unclear Sensor Readings" + "  (@" + JoH.hourMinuteString() + ")", uncleanAlertNotificationId, true, otherAlertReraiseSec);
+        OtherAlert(context, "bg_unclear_readings_alert", context.getString(R.string.unclear_sensor_readings, JoH.hourMinuteString()), uncleanAlertNotificationId, true, otherAlertReraiseSec);
     }
 
     public static void bgMissedAlert(Context context) {
         long otherAlertReraiseSec = MissedReadingService.getOtherAlertReraiseSec(context, "bg_missed_alerts");
-        OtherAlert(context, "bg_missed_alerts", "BG Readings Missed" + "  (@" + JoH.hourMinuteString() + ")", missedAlertNotificationId, true, otherAlertReraiseSec);
+        OtherAlert(context, "bg_missed_alerts", context.getString(R.string.bg_readings_missed, JoH.hourMinuteString()), missedAlertNotificationId, true, otherAlertReraiseSec);
     }
 
     public static void RisingAlert(Context context, boolean on) {
-        RiseDropAlert(context, on, "bg_rise_alert", "bg rising fast" + "  (@" + JoH.hourMinuteString() + ")", riseAlertNotificationId);
+        RiseDropAlert(context, on, "bg_rise_alert", context.getString(R.string.bg_rising_fast2, JoH.hourMinuteString()), riseAlertNotificationId);
     }
     public static void DropAlert(Context context, boolean on) {
-        RiseDropAlert(context, on, "bg_fall_alert", "bg falling fast" + "  (@" + JoH.hourMinuteString() + ")", failAlertNotificationId);
+        RiseDropAlert(context, on, "bg_fall_alert", context.getString(R.string.bg_falling_fast2, JoH.hourMinuteString()), failAlertNotificationId);
     }
 
     public static void lowPredictAlert(Context context, boolean on, String msg) {

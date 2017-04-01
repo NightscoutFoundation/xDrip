@@ -94,8 +94,8 @@ public class StatsActivity extends ActivityWithMenu {
         // This could do with being in a utility static method also used in Home
         final int size1 = 50;
         final int size2 = 20;
-        final String title = "Swipe for Different Reports";
-        final String message = "Swipe left and right to see different report tabs.\n\nChoose time period for Today, Yesterday, 7 Days etc.\n\nFull screen mode, print colors and Sharing are supported from the butttons and 3 dot menu.";
+        final String title = getString(R.string.swipe_for_different_reports);
+        final String message = getString(R.string.swipe_left_and_right);
         final ViewTarget target = new ViewTarget(R.id.button_stats_7d, this);
         final Activity activity = this;
 
@@ -188,19 +188,19 @@ public class StatsActivity extends ActivityWithMenu {
         switch (state)
         {
             case TODAY:
-                stateString = "Today";
+                stateString = getString(R.string.today);
                 break;
             case YESTERDAY:
-                stateString = "Yesterday";
+                stateString = getString(R.string.yesterday);
                 break;
             case D7:
-                stateString = "7 days";
+                stateString = getString(R.string.seven_days);
                 break;
             case D30:
-                stateString = "30 days";
+                stateString = getString(R.string.thirty_days);
                 break;
             case D90:
-                stateString = "90 days";
+                stateString = getString(R.string.ninety_days);
                 break;
         }
 
@@ -337,7 +337,7 @@ public class StatsActivity extends ActivityWithMenu {
         } catch (Exception e)
         {
             Log.e(TAG,"Got exception sharing statistics: "+e);
-            JoH.static_toast_long("Got an error: "+e);
+            JoH.static_toast_long(getString(R.string.got_an_error, e));
         }
     }
 
@@ -364,7 +364,7 @@ public class StatsActivity extends ActivityWithMenu {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 statisticsShare((MenuItem)null);
             } else {
-                JoH.static_toast_long(this, "Cannot save screenshot without permission");
+                JoH.static_toast_long(this, getString(R.string.cannot_save_screenshot_permission));
             }
         }
     }
@@ -438,11 +438,11 @@ public class StatsActivity extends ActivityWithMenu {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "General";
+                    return getString(R.string.general);
                 case 1:
-                    return "Range Pi Chart";
+                    return getString(R.string.range_pi_chart);
                 default:
-                    return "Percentile Chart";
+                    return getString(R.string.percentile_chart);
             }
         }
 

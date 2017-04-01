@@ -5,6 +5,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileEditor;
 import com.eveningoutpost.dexdrip.profileeditor.ProfileItem;
@@ -207,28 +208,28 @@ public class Profile {
             Profile.setSensitivityDefault(tolerantParseDouble(prefs.getString("profile_insulin_sensitivity_default", "0")));
         } catch (Exception e) {
             if (JoH.ratelimit("invalid-insulin-profile", 60)) {
-                Home.toaststatic("Invalid insulin sensitivity");
+                Home.toaststatic(xdrip.getAppContext().getString(R.string.invalid_insulin_sensitivity));
             }
         }
         try {
             Profile.setDefaultCarbRatio(tolerantParseDouble(prefs.getString("profile_carb_ratio_default", "0")));
         } catch (Exception e) {
             if (JoH.ratelimit("invalid-insulin-profile", 60)) {
-                Home.toaststatic("Invalid default carb ratio!");
+                Home.toaststatic(xdrip.getAppContext().getString(R.string.invalid_default_carb_ratio));
             }
         }
         try {
             Profile.setCarbAbsorptionDefault(tolerantParseDouble(prefs.getString("profile_carb_absorption_default", "0")));
         } catch (Exception e) {
             if (JoH.ratelimit("invalid-insulin-profile", 60)) {
-                Home.toaststatic("Invalid carb absorption rate");
+                Home.toaststatic(xdrip.getAppContext().getString(R.string.invalid_carb_absorption_rate));
             }
         }
         try {
             Profile.setInsulinActionTimeDefault(tolerantParseDouble(prefs.getString("xplus_insulin_dia", "3.0")));
         } catch (Exception e) {
             if (JoH.ratelimit("invalid-insulin-profile", 60)) {
-                Home.toaststatic("Invalid insulin action time");
+                Home.toaststatic(xdrip.getAppContext().getString(R.string.invalid_insulin_action_time));
             }
         }
         profileItemList = null;

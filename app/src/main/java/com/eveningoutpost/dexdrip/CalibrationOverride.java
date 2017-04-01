@@ -75,7 +75,7 @@ public class CalibrationOverride extends ActivityWithMenu {
 
                             } else {
                                 Log.e(TAG, "Calibration creation resulted in null");
-                                JoH.static_toast_long("Could not create calibration!");
+                                JoH.static_toast_long(getString(R.string.could_not_create_calibration));
                             }
                             Intent tableIntent = new Intent(v.getContext(), Home.class);
                             startActivity(tableIntent);
@@ -84,7 +84,7 @@ public class CalibrationOverride extends ActivityWithMenu {
                             value.setError("Number error: " + e);
                         }
                     } else {
-                        value.setError("Calibration Can Not be blank");
+                        value.setError(getString(R.string.calibration_cannot_be_blank));
                     }
                 } else {
                     Log.w("Calibration", "ERROR, no active sensor");

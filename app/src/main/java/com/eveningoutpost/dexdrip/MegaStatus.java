@@ -90,37 +90,37 @@ public class MegaStatus extends ActivityWithMenu {
         MegaStatusAdapters.add(new MegaStatusListAdapter());
     }
 
-    private static final String G4_STATUS = "BT Device";
-    private static final String G5_STATUS = "G5 Status";
-    private static final String IP_COLLECTOR = "IP Collector";
-    private static final String XDRIP_PLUS_SYNC = "Followers";
-    private static final String UPLOADERS = "Uploaders";
+    private static final String G4_STATUS = mActivity.getString(R.string.bt_device);
+    private static final String G5_STATUS = mActivity.getString(R.string.g5_status);
+    private static final String IP_COLLECTOR = mActivity.getString(R.string.ip_collector);
+    private static final String XDRIP_PLUS_SYNC = mActivity.getString(R.string.followers);
+    private static final String UPLOADERS = mActivity.getString(R.string.uploaders);
 
     private void populateSectionList() {
 
         if (sectionList.isEmpty()) {
 
-            addAsection("Classic Status Page", "Legacy System Status");
+            addAsection(getString(R.string.classic_status_page), getString(R.string.legacy_system_status));
 
             final DexCollectionType dexCollectionType = DexCollectionType.getDexCollectionType();
 
             // probably want a DexCollectionService related set
             if (DexCollectionType.usesDexCollectionService(dexCollectionType)) {
-                addAsection(G4_STATUS, "Bluetooth Collector Status");
+                addAsection(G4_STATUS, getString(R.string.bluetooth_collector_status));
             }
             if (dexCollectionType.equals(DexcomG5)) {
-                addAsection(G5_STATUS, "G5 Collector and Transmitter Status");
+                addAsection(G5_STATUS, getString(R.string.g5_collector_and_transmitter_status));
             }
             if (DexCollectionType.hasWifi()) {
-                addAsection(IP_COLLECTOR, "Wifi Wixel / Parakeet Status");
+                addAsection(IP_COLLECTOR, getString(R.string.wifi_wixel_status));
             }
             if (Home.get_master_or_follower()) {
-                addAsection(XDRIP_PLUS_SYNC, "xDrip+ Sync Group");
+                addAsection(XDRIP_PLUS_SYNC, getString(R.string.xdrip_sync_group));
             }
             if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_mongodb_enable")
                     || Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable")
                     || Home.getPreferencesBooleanDefaultFalse("share_upload")) {
-                addAsection(UPLOADERS, "Cloud Uploader Queues");
+                addAsection(UPLOADERS, getString(R.string.cloud_uploader_queues));
             }
 
             //addAsection("Misc", "Currently Empty");
@@ -135,27 +135,19 @@ public class MegaStatus extends ActivityWithMenu {
             UserError.Log.e(TAG, "Adapter or Section were null in populate()");
             return;
         }
-
         la.clear(false);
-        switch (section) {
-
-            case G4_STATUS:
-                la.addRows(DexCollectionService.megaStatus());
-                break;
-            case G5_STATUS:
-                la.addRows(G5CollectionService.megaStatus());
-                break;
-            case IP_COLLECTOR:
-                la.addRows(WifiCollectionService.megaStatus(mActivity));
-                break;
-            case XDRIP_PLUS_SYNC:
-                la.addRows(DoNothingService.megaStatus());
-                la.addRows(GcmListenerSvc.megaStatus());
-                la.addRows(RollCall.megaStatus());
-                break;
-            case UPLOADERS:
-                la.addRows(UploaderQueue.megaStatus());
-                break;
+        if(section.equals(G4_STATUS)) {
+            la.addRows(DexCollectionService.megaStatus());
+        } else if(section.equals(G5_STATUS)) {
+            la.addRows(G5CollectionService.megaStatus());
+        } else if(section.equals(IP_COLLECTOR)) {
+            la.addRows(WifiCollectionService.megaStatus(mActivity));
+        } else if(section.equals(XDRIP_PLUS_SYNC)) {
+            la.addRows(DoNothingService.megaStatus());
+            la.addRows(GcmListenerSvc.megaStatus());
+            la.addRows(RollCall.megaStatus());
+        } else if(section.equals(UPLOADERS)) {
+            la.addRows(UploaderQueue.megaStatus());
         }
         la.changed();
     }
@@ -312,8 +304,8 @@ public class MegaStatus extends ActivityWithMenu {
         // This could do with being in a utility static method also used in Home
         final int size1 = 300;
         final int size2 = 130;
-        final String title = "Swipe for Different Pages";
-        final String message = "Swipe left and right to see different status tabs.\n\n";
+        final String title = getString(R.string.swipe_for_different_pages);
+        final String message = getString(R.string.swipe_to_see_different_status_tabs);
         final ViewTarget target = new ViewTarget(R.id.pager_title_strip, this);
         final Activity activity = this;
 

@@ -118,8 +118,8 @@ public class BgReadingTable extends ListActivity implements NavigationDrawerFrag
                     };
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setMessage("Flag reading as \"bad\".\nFlagged readings have no impact on the statistics.").setPositiveButton("Yes", dialogClickListener)
-                            .setNegativeButton("No", dialogClickListener).show();
+                    builder.setMessage(R.string.flag_reading_as_bad).setPositiveButton(R.string.yes, dialogClickListener)
+                            .setNegativeButton(R.string.no, dialogClickListener).show();
                     return true;
                 }
             });

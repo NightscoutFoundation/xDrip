@@ -51,7 +51,7 @@ public class StopSensor extends ActivityWithMenu {
                 Sensor.stopSensor();
                 AlertPlayer.getPlayer().stopAlert(getApplicationContext(), true, false);
 
-                Toast.makeText(getApplicationContext(), "Sensor stopped", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.sensor_stopped, Toast.LENGTH_LONG).show();
 
                 LibreAlarmReceiver.clearSensorStats();
                 PluggableCalibration.invalidateAllCaches();
@@ -77,17 +77,17 @@ public class StopSensor extends ActivityWithMenu {
     public void resetAllCalibrations(View v) {
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Are you sure?");
-        builder.setMessage("Do you want to delete and reset the calibrations for this sensor?");
+        builder.setTitle(R.string.are_you_sure2);
+        builder.setMessage(R.string.want_deleting_calibrations);
 
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
 
             }
         });
 
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Calibration.invalidateAllForSensor();

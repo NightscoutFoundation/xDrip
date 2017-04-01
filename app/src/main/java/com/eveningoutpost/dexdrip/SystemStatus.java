@@ -234,9 +234,9 @@ public class SystemStatus extends ActivityWithMenu {
 
     private void setConnectionStatusFollower() {
         if (GcmListenerSvc.lastMessageReceived == 0) {
-            connection_status.setText("No data");
+            connection_status.setText(R.string.no_data);
         } else {
-            connection_status.setText((JoH.qs((JoH.ts() - GcmListenerSvc.lastMessageReceived) / 60000, 0)) + " mins ago");
+            connection_status.setText((JoH.qs((JoH.ts() - GcmListenerSvc.lastMessageReceived) / 60000, 0)) + getString(R.string.mins_ago));
         }
     }
     private void setConnectionStatusWifiWixel() {
@@ -244,7 +244,7 @@ public class SystemStatus extends ActivityWithMenu {
         {
             connection_status.setText(ParakeetHelper.parakeetStatusString());
         } else {
-            connection_status.setText("No data");
+            connection_status.setText(R.string.no_data);
         }
     }
 
@@ -258,9 +258,9 @@ public class SystemStatus extends ActivityWithMenu {
             }
         }
         if(connected) {
-            connection_status.setText("Connected");
+            connection_status.setText(R.string.connected);
         } else {
-            connection_status.setText("Not Connected");
+            connection_status.setText(R.string.not_connected);
         }
 
         String collection_method = prefs.getString("dex_collection_method", "BluetoothWixel");
@@ -278,7 +278,7 @@ public class SystemStatus extends ActivityWithMenu {
 
                             if (transmitterIdLastTwo.equals(deviceNameLastTwo)) {
                                 final String fw = G5CollectionService.getFirmwareVersionString(defaultTransmitter.transmitterId);
-                                connection_status.setText(device.getName() + " Authed" + ((fw != null) ? ("\n" + fw) : ""));
+                                connection_status.setText(device.getName() + getString(R.string.authed) + ((fw != null) ? ("\n" + fw) : ""));
                                 break;
                             }
 
@@ -286,7 +286,7 @@ public class SystemStatus extends ActivityWithMenu {
                     }
                 }
             } else {
-                connection_status.setText("No bluetooth");
+                connection_status.setText(R.string.no_bluetooth);
             }
         }
     }
@@ -294,14 +294,14 @@ public class SystemStatus extends ActivityWithMenu {
     private void setNotes() {
         try {
             if ((mBluetoothManager == null) || ((android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) && (mBluetoothManager.getAdapter() == null))) {
-                notes.append("\n- This device does not seem to support bluetooth");
+                notes.append(getString(R.string.bluetooth_not_supported_by_device));
             } else {
                 if ((android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2)
                         && !mBluetoothManager.getAdapter().isEnabled()) {
-                    notes.append("\n- Bluetooth seems to be turned off");
+                    notes.append(getString(R.string.bluetooth_is_turned_of));
                 } else {
                     if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                        notes.append("\n- The android version of this device is not compatible with Bluetooth Low Energy");
+                        notes.append(getString(R.string.android_version_ble_incompatible));
                     }
                 }
             }
@@ -316,7 +316,7 @@ public class SystemStatus extends ActivityWithMenu {
         final List<BgReading> futureReadings = BgReading.futureReadings();
         final List<Calibration> futureCalibrations = Calibration.futureCalibrations();
         if((futureReadings != null && futureReadings.size() > 0) || (futureCalibrations != null && futureCalibrations.size() > 0)) {
-            notes.append("\n- Your device has future data on it, Please double check the time and timezone on this phone.");
+            notes.append(getString(R.string.future_data_on_device));
             futureDataDeleteButton.setVisibility(View.VISIBLE);
         }
         futureDataDeleteButton.setOnClickListener(new View.OnClickListener() {
@@ -345,7 +345,7 @@ public class SystemStatus extends ActivityWithMenu {
         restart_collection_service.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View v) {
                 v.setEnabled(false);
-                JoH.static_toast_short("Restarting Collector!");
+                JoH.static_toast_short(getString(R.string.restarting_collector));
                 v.setAlpha(0.2f);
                 CollectionServiceStarter.restartCollectionService(getApplicationContext());
                 set_current_values();
@@ -372,8 +372,8 @@ public class SystemStatus extends ActivityWithMenu {
                                 try {
                                     Method m = bluetoothDevice.getClass().getMethod("removeBond", (Class[]) null);
                                     m.invoke(bluetoothDevice, (Object[]) null);
-                                    notes.append("\n- Bluetooth unbonded, if using share tell it to forget your device.");
-                                    notes.append("\n- Scan for devices again to set connection back up!");
+                                    notes.append(getString(R.string.bluetooth_unbonded));
+                                    notes.append(getString(R.string.scan_for_devices));
                                 } catch (Exception e) { Log.e("SystemStatus", e.getMessage(), e); }
                             }
                         }
@@ -414,7 +414,7 @@ public class SystemStatus extends ActivityWithMenu {
                                     try {
                                         Method m = device.getClass().getMethod("removeBond", (Class[]) null);
                                         m.invoke(device, (Object[]) null);
-                                        notes.append("\nG5 Transmitter unbonded, switch device mode to prevent re-pairing to G5.");
+                                        notes.append(getString(R.string.g5_transmitter_unbonded));
                                     } catch (Exception e) { Log.e("SystemStatus", e.getMessage(), e); }
                                 }
 

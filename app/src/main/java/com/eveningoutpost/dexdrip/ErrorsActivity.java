@@ -119,12 +119,12 @@ public class ErrorsActivity extends ActivityWithMenu {
 
     public void uploadLogs(View v) {
         StringBuilder tmp = new StringBuilder(20000);
-        tmp.append("The following logs will be sent to the developers: \n\nPlease also include your email address or we will not know who they are from!\n\n");
+        tmp.append(getString(R.string.the_following_logs_will_be_sent));
         for (UserError item : errors) {
             tmp.append(item.toString());
             tmp.append("\n");
             if (tmp.length() > 200000) {
-                JoH.static_toast(this, "Could not package up all logs, using most recent", Toast.LENGTH_LONG);
+                JoH.static_toast(this, getString(R.string.could_not_package_all_logs), Toast.LENGTH_LONG);
                 break;
             }
         }

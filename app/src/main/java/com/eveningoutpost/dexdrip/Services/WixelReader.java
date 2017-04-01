@@ -15,10 +15,12 @@ import com.eveningoutpost.dexdrip.Models.TransmitterData;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.Models.Sensor;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
 import com.eveningoutpost.dexdrip.utils.Mdns;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.OkHttpClient;
@@ -76,7 +78,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         wakeLock.acquire();
         lockCounter++;
         Log.d(TAG,"wakelock acquired " + lockCounter);
-        if (lockCounter>5) Home.toaststaticnext("Wixel Reader WakeLock bug "+lockCounter);
+        if (lockCounter>5) Home.toaststaticnext(mContext.getString(R.string.wixel_reader_wakelock_bug, lockCounter));
     }
 
     public static boolean IsConfigured(Context ctx) {
@@ -633,7 +635,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
         final List<StatusItem> l = new ArrayList<>();
         for (Map.Entry<String, String> entry : hostStatus.entrySet()) {
             final long status_time = hostStatusTime.get(entry.getKey());
-            if (entry.getValue().length()>0) l.add(new StatusItem(entry.getKey(), entry.getValue() + ((status_time != 0) ? (" " + JoH.niceTimeSince(status_time) + " " + "ago") : ""),JoH.msSince(status_time) <= BgGraphBuilder.DEXCOM_PERIOD ? StatusItem.Highlight.GOOD : JoH.msSince(status_time) <= BgGraphBuilder.DEXCOM_PERIOD*2 ? StatusItem.Highlight.NOTICE : StatusItem.Highlight.NORMAL));
+            if (entry.getValue().length()>0) l.add(new StatusItem(entry.getKey(), entry.getValue() + ((status_time != 0) ? (" " + JoH.niceTimeSince(status_time) + xdrip.getAppContext().getString(R.string.ago)) : ""),JoH.msSince(status_time) <= BgGraphBuilder.DEXCOM_PERIOD ? StatusItem.Highlight.GOOD : JoH.msSince(status_time) <= BgGraphBuilder.DEXCOM_PERIOD*2 ? StatusItem.Highlight.NOTICE : StatusItem.Highlight.NORMAL));
         }
         return l;
     }

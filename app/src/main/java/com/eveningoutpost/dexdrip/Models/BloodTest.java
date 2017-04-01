@@ -12,6 +12,7 @@ import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.AddCalibration;
 import com.eveningoutpost.dexdrip.GlucoseMeter.GlucoseReadingRx;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
@@ -313,7 +314,7 @@ public class BloodTest extends Model {
             return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(json, BloodTest.class);
         } catch (Exception e) {
             UserError.Log.d(TAG, "Got exception parsing bloodtest json: " + e.toString());
-            Home.toaststaticnext("Error on Bloodtest sync, probably decryption key mismatch");
+            Home.toaststaticnext(xdrip.getAppContext().getString(R.string.error_bloodtest_sync));
             return null;
         }
     }

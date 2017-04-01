@@ -412,7 +412,7 @@ public class AlertPlayer {
         }
 
         String title = bgValue + " " + alert.name;
-        String content = "BG LEVEL ALERT: " + bgValue + "  (@" + JoH.hourMinuteString() + ")";
+        String content = ctx.getString(R.string.bg_level_alert, bgValue, JoH.hourMinuteString());
         Intent intent = new Intent(ctx, SnoozeActivity.class);
 
         boolean localOnly = (Home.get_forced_wear() && PersistentStore.getBoolean("bg_notifications_watch"));

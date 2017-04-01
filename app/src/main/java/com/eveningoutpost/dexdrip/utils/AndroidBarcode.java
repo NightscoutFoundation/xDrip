@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.R;
 import com.google.zxing.client.android.Intents;
 import com.google.zxing.integration.android.IntentIntegrator;
 
@@ -34,7 +35,7 @@ public class AndroidBarcode extends AppCompatActivity
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     new IntentIntegrator(activity).initiateScan();
                 } else {
-                    toast("Without camera permission we cannot scan a barcode");
+                    toast(getString(R.string.no_camera_permission));
                 }
                 return;
             }

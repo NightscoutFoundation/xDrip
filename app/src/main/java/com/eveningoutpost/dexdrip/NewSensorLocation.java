@@ -57,13 +57,13 @@ public class NewSensorLocation extends ActivityWithMenu {
 
         locations = new LinkedList<Location>();
 
-        locations.add(new Location("I don't wish to share", PRIVATE_ID));
-        locations.add(new Location("Upper arm", 1));
-        locations.add(new Location("Thigh", 2));
-        locations.add(new Location("Belly (abdomen)", 3));
-        locations.add(new Location("Lower back", 4));
-        locations.add(new Location("Buttocks", 5));
-        locations.add(new Location("Other", OTHER_ID));
+        locations.add(new Location(getString(R.string.dont_share), PRIVATE_ID));
+        locations.add(new Location(getString(R.string.upper_arm), 1));
+        locations.add(new Location(getString(R.string.thigh), 2));
+        locations.add(new Location(getString(R.string.belly), 3));
+        locations.add(new Location(getString(R.string.lower_back), 4));
+        locations.add(new Location(getString(R.string.buttocks), 5));
+        locations.add(new Location(getString(R.string.other), OTHER_ID));
 
         for(Location location : locations) {
             AddButton(location.location, location.location_id);
@@ -108,7 +108,7 @@ public class NewSensorLocation extends ActivityWithMenu {
                         }
                     }
                 }
-                Toast.makeText(getApplicationContext(), "Sensor locaton is " + location, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), getString(R.string.sensor_location_is, location), Toast.LENGTH_LONG).show();
 
 
                 Log.d("NEW SENSOR", "Sensor location is " + location);

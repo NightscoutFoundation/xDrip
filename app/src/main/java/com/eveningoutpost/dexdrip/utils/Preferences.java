@@ -118,7 +118,7 @@ public class Preferences extends PreferenceActivity {
         public void onTaskCompleted(byte[] result) {
             if (result.length > 0) {
                 if ((staticKey == null) || (staticKey.length != 16)) {
-                    toast("Error processing security key");
+                    toast(getString(R.string.error_processing_security_key));
                 } else {
                     byte[] plainbytes = JoH.decompressBytesToBytes(CipherUtils.decryptBytes(result, staticKey));
                     staticKey = null;
@@ -126,11 +126,11 @@ public class Preferences extends PreferenceActivity {
                     if (plainbytes.length > 0) {
                         SdcardImportExport.storePreferencesFromBytes(plainbytes, getApplicationContext());
                     } else {
-                        toast("Error processing data - empty");
+                        toast(getString(R.string.error_processing_data));
                     }
                 }
             } else {
-                toast("Error processing settings - no data - try again?");
+                toast(getString(R.string.error_processing_settings));
             }
         }
     }
@@ -447,16 +447,16 @@ public class Preferences extends PreferenceActivity {
     };
 
     private static String format_carb_ratio(String oldValue, String newValue) {
-        return oldValue.replaceAll(" \\(.*\\)$", "") + "  (" + newValue + "g per Unit)";
+        return oldValue.replaceAll(" \\(.*\\)$", "") + xdrip.getAppContext().getString(R.string.carb_ratio_format, newValue);
     }
 
     private static String format_carb_absorption_rate(String oldValue, String newValue) {
-        return oldValue.replaceAll(" \\(.*\\)$", "") + "  (" + newValue + "g per hour)";
+        return oldValue.replaceAll(" \\(.*\\)$", "") + xdrip.getAppContext().getString(R.string.carb_absorption_rate_format, newValue);
     }
 
     private static String format_insulin_sensitivity(String oldValue, String newValue) {
         try {
-            return oldValue.replaceAll("  \\(.*\\)$", "") + "  (" + newValue + " " + static_units + " per U)";
+            return oldValue.replaceAll("  \\(.*\\)$", "") + xdrip.getAppContext().getString(R.string.insulin_sensitivity_format, newValue + " " + static_units);
         } catch (Exception e) {
             return "ERROR - Invalid number";
         }
@@ -948,10 +948,9 @@ public class Preferences extends PreferenceActivity {
                     public boolean onPreferenceChange(final Preference preference, final Object newValue) {
                         final AlertDialog.Builder builder = new AlertDialog.Builder(preference.getContext());
                         if ((boolean) newValue) {
-                            builder.setTitle("Stop! Are you sure?");
-                            builder.setMessage("This can sometimes crash / break a sensor!\nWith some phones there can be problems, try on expiring sensor first for safety. You have been warned.");
-
-                            builder.setPositiveButton("I AM SURE", new DialogInterface.OnClickListener() {
+                            builder.setTitle(R.string.are_you_sure);
+                            builder.setMessage(R.string.unstable);
+                            builder.setPositiveButton(R.string.i_am_sure, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
                                     ((SwitchPreference)preference).setChecked(true);
@@ -959,7 +958,7 @@ public class Preferences extends PreferenceActivity {
                                     NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), (boolean) newValue && prefs.getBoolean("nfc_scan_homescreen", false));
                                 }
                             });
-                            builder.setNegativeButton("NOPE", new DialogInterface.OnClickListener() {
+                            builder.setNegativeButton(R.string.nope, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
                                 }
@@ -1511,7 +1510,7 @@ public class Preferences extends PreferenceActivity {
                 final String nfc_expiry_days_string = AllPrefsFragment.this.prefs.getString("nfc_expiry_days", "14.5");
 
                 final CheckBoxPreference nfc_show_age = (CheckBoxPreference) findPreference("nfc_show_age");
-                nfc_show_age.setSummaryOff("Show the sensor expiry time based on " + nfc_expiry_days_string + " days");
+                nfc_show_age.setSummaryOff(getString(R.string.show_sensor_expiry, nfc_expiry_days_string));
                 if (show_age == null) show_age = nfc_show_age.isChecked();
                 if (show_age) {
                     nfcScreen.removePreference(nfc_expiry_days);
@@ -1551,10 +1550,10 @@ public class Preferences extends PreferenceActivity {
                     try {
                         word = (locale_choice.getEntries()[locale_choice.findIndexOfValue(param)]).toString();
                     } catch (Exception e) {
-                        word = "Unknown";
+                        word = getString(R.string.unknown);
                     }
                 }
-                force_english.setTitle("Force " + word + " Text");
+                force_english.setTitle(getString(R.string.force_text, word));
             } catch (NullPointerException e) {
                 Log.e(TAG, "Nullpointer in update_force_english_title: " + e);
             }
@@ -1582,26 +1581,26 @@ public class Preferences extends PreferenceActivity {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-            builder.setTitle("Pebble Install");
+            builder.setTitle(R.string.pebble_install);
 
             switch (pebbleType)
                 {
                     case 2:
-                        builder.setMessage("Install Standard Pebble Watchface?");
+                        builder.setMessage(R.string.install_standard_pebble_watchface);
                         break;
                     case 3:
-                        builder.setMessage("Install Pebble Trend Watchface?");
+                        builder.setMessage(R.string.install_pebble_trend_watchface2);
                         break;
                     case 4:
-                        builder.setMessage("Install Pebble Classic Trend Watchface?");
+                        builder.setMessage(R.string.install_pebble_classsic_trend_watchface);
                         break;
                     case 5:
-                        builder.setMessage("Install Pebble Clay Trend Watchface?");
+                        builder.setMessage(R.string.install_pebble_clay_trend_watchface);
                         break;
                 }
 
 
-            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(R.string.yes_uppercase, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
 
@@ -1624,16 +1623,16 @@ public class Preferences extends PreferenceActivity {
                         @Override
                         public void run() {
                             AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                            builder.setTitle("Snooze Control Install");
+                            builder.setTitle(R.string.snooze_controll_install);
                             builder.setMessage("Install Pebble Snooze Button App?");
                             // inner
-                            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                            builder.setPositiveButton(R.string.yes_uppercase, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
                                     context.startActivity(new Intent(context, InstallPebbleSnoozeControlApp.class));
                                 }
                             });
-                            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            builder.setNegativeButton(R.string.no_uppercase, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
@@ -1723,8 +1722,8 @@ public class Preferences extends PreferenceActivity {
                     if ((Boolean) newValue) {
                         prefs.edit().putBoolean("bg_to_speech", true).commit(); // early write before we exit method
                         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-                        alertDialog.setTitle("Install Text-To-Speech Data?");
-                        alertDialog.setMessage("Install Text-To-Speech Data?\n(After installation of languages you might have to press \"Restart Collector\" in System Status.)");
+                        alertDialog.setTitle(R.string.install_tts_data);
+                        alertDialog.setMessage(R.string.install_tts_data2);
                         alertDialog.setCancelable(true);
                         alertDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             @Override

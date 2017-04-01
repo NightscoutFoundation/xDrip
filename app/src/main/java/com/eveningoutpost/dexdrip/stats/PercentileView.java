@@ -118,9 +118,9 @@ public class PercentileView extends View {
     }
 
     private void drawLegend(Canvas canvas) {
-        canvas.drawText("10%/90%", dpOffset + dp2px(10), dp2px(14), outerPaintLabel);
-        canvas.drawText("25%/75%", dpOffset + dp2px(80), dp2px(14), innerPaintLabel);
-        canvas.drawText("50% (median)", dpOffset + dp2px(150), dp2px(14), medianPaintLabel);
+        canvas.drawText(getContext().getString(R.string.l_10_90), dpOffset + dp2px(10), dp2px(14), outerPaintLabel);
+        canvas.drawText(getContext().getString(R.string.l_25_75), dpOffset + dp2px(80), dp2px(14), innerPaintLabel);
+        canvas.drawText(getContext().getString(R.string.l_50_median), dpOffset + dp2px(150), dp2px(14), medianPaintLabel);
     }
 
 

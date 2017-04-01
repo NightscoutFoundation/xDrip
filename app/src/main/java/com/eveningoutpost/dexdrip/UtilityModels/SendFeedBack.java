@@ -46,7 +46,7 @@ public class SendFeedBack extends AppCompatActivity {
                 final String str = bundle.getString("request_translation");
                 if (str != null) {
                     // don't extract string - english only
-                    ((EditText) findViewById(R.id.yourText)).setText("Dear developers, please may I request that you add translation capability for: "+str+"\n\n");
+                    ((EditText) findViewById(R.id.yourText)).setText(getString(R.string.translation_request, str));
 
                 }
                 final String str2 = bundle.getString("generic_text");
@@ -77,7 +77,7 @@ public class SendFeedBack extends AppCompatActivity {
         client.interceptors().add(new GzipRequestInterceptor());
 
         if (yourtext.length() == 0) {
-            toast("No text entered - cannot send blank");
+            toast(getString(R.string.no_text_entered));
             return;
         }
         toast("Sending..");
@@ -102,11 +102,11 @@ public class SendFeedBack extends AppCompatActivity {
                             //Home.toaststatic("Feedback sent successfully");
                             finish();
                         } else {
-                            JoH.static_toast_short("Error sending feedback: " + response.message().toString());
+                            JoH.static_toast_short(getString(R.string.error_sending_feedback, response.message().toString()));
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "Got exception in execute: " + e.toString());
-                       JoH.static_toast_short("Error with network connection");
+                       JoH.static_toast_short(getString(R.string.error_with_network_connection));
                     }
                 }
             }).start();

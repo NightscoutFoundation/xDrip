@@ -268,7 +268,7 @@ public class UpdateActivity extends AppCompatActivity {
             if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 downloadNow(null);
             } else {
-                JoH.static_toast_long(this, "Cannot download without storage permission");
+                JoH.static_toast_long(this, getString(R.string.cannot_download_permission));
             }
         }
     }
@@ -278,10 +278,10 @@ public class UpdateActivity extends AppCompatActivity {
             if (prefs.getBoolean(useInternalDownloaderPrefsName, true)) {
                 if (checkPermissions()) {
                     if (downloading) {
-                        JoH.static_toast_long(this, "Already downloading!");
+                        JoH.static_toast_long(this, getString(R.string.already_downloading));
                     } else {
                         downloading = true;
-                        JoH.static_toast_long(this, "Attempting background download...");
+                        JoH.static_toast_long(this, getString(R.string.attempting_background_download));
                         mScrollView.post(new Runnable() {
                             public void run() {
                                 mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
@@ -291,7 +291,7 @@ public class UpdateActivity extends AppCompatActivity {
 
                     }
                 } else {
-                    JoH.static_toast_long(this, "Need permission to download file");
+                    JoH.static_toast_long(this, getString(R.string.need_permission_to_download_file));
                 }
             } else {
                 Intent downloadActivity = new Intent(Intent.ACTION_VIEW, Uri.parse(DOWNLOAD_URL + "&rr=" + JoH.qs(JoH.ts())));
@@ -391,7 +391,7 @@ public class UpdateActivity extends AppCompatActivity {
 
                     } catch (IOException e) {
                         Log.e(TAG, "Download error: " + e.toString());
-                        JoH.static_toast_long(getApplicationContext(), "Data error: ");
+                        JoH.static_toast_long(getApplicationContext(), getString(R.string.data_error));
                         return false;
                     } finally {
                         if (inputStream != null) {
@@ -405,7 +405,7 @@ public class UpdateActivity extends AppCompatActivity {
                     return false;
                 }
             } catch (SocketTimeoutException e) {
-                JoH.static_toast_long(getApplicationContext(), "Download timeout!");
+                JoH.static_toast_long(getApplicationContext(), getString(R.string.download_timeout));
                 return false;
             } catch (IOException e) {
                 Log.e(TAG, "Exception in download: " + e);
@@ -431,7 +431,7 @@ public class UpdateActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Boolean result) {
-            progressText.setText(result ? "Downloaded" : "Failed");
+            progressText.setText(result ? getString(R.string.downloaded) : getString(R.string.failed));
             downloading = false;
             if (result) {
                 if ((filename != null) && (filename.length() > 5) && (dest_file != null)) {
@@ -460,7 +460,7 @@ public class UpdateActivity extends AppCompatActivity {
                         } catch (Exception e) {
                             Log.e(TAG, "Got exception deleting corrupt file: " + e);
                         }
-                        JoH.static_toast_long("File appears corrupt!");
+                        JoH.static_toast_long(getString(R.string.file_appears_corrupt));
                         finish();
                     }
                 }

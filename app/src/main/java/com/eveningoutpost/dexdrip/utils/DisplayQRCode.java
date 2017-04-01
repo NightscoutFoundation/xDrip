@@ -157,7 +157,7 @@ public class DisplayQRCode extends AppCompatActivity {
                                                 break;
                                             }
                                             default: {
-                                                toast("Invalid callback option on upload");
+                                                toast(xdrip.getAppContext().getString(R.string.invalid_callback_option));
                                             }
                                         }
                                     } else {
@@ -165,12 +165,12 @@ public class DisplayQRCode extends AppCompatActivity {
                                         toast(reply);
                                     }
                                 } else {
-                                    toast("Error please try again");
+                                    toast(xdrip.getAppContext().getString(R.string.error_please_try_again));
                                 }
                             } catch (Exception e) {
                                 Log.e(TAG, "Got exception in execute: " + e.toString());
                                 e.printStackTrace();
-                                toast("Error with connection");
+                                toast(xdrip.getAppContext().getString(R.string.error_with_connection));
                             }
                         }
                     }).start();
@@ -184,7 +184,7 @@ public class DisplayQRCode extends AppCompatActivity {
                 toast("Something went wrong preparing the settings");
             }
         } else {
-            toast("Could not read data somewhere");
+            toast(mInstance.getString(R.string.could_not_read_data_somewhere));
         }
     }
 
@@ -194,7 +194,7 @@ public class DisplayQRCode extends AppCompatActivity {
         if ((result != null) && (result.length > 0)) {
             uploadBytes(result, 1);
         } else {
-            toast("Could not read preferences file");
+            toast(getString(R.string.could_not_read_preferences_file));
         }
     }
 

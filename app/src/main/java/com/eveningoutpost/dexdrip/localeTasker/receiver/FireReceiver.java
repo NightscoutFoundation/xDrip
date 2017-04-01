@@ -148,18 +148,18 @@ public final class FireReceiver extends BroadcastReceiver {
                             if (message_array.length > 1) {
                                 if (Arrays.asList(volumeArray).contains(message_array[1])) {
                                     Home.setPreferencesString("bg_alert_profile", message_array[1]);
-                                    JoH.static_toast_long("Volume Profile changed by Tasker to: "+message_array[1]);
+                                    JoH.static_toast_long(context.getString(R.string.volume_profile_changed_tasker, message_array[1]));
                                 } else {
-                                    JoH.static_toast_long("Invalid volume parameter: one of: " + Arrays.asList(volumeArray).toString());
+                                    JoH.static_toast_long(context.getString(R.string.invalid_volume_parameter, Arrays.asList(volumeArray).toString()));
                                 }
                             } else {
-                                JoH.static_toast_long("VOLUME command must be followed by volume profile name: "+Arrays.asList(volumeArray).toString());
+                                JoH.static_toast_long(context.getString(R.string.volume_profile_name_follow, Arrays.asList(volumeArray).toString()));
                             }
                             break;
 
                         case "SNOOZE":
                             AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
-                            JoH.static_toast_long("SNOOZE from Tasker");
+                            JoH.static_toast_long(context.getString(R.string.snooze_from_tasker));
                             break;
 
 
@@ -211,7 +211,7 @@ public final class FireReceiver extends BroadcastReceiver {
 //
 //                        break;
                         default:
-                            Toast.makeText(context, "Unknown xDrip first Tasker parameter " + message_array[0], Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, context.getString(R.string.unknown_tasker_parameter, message_array[0]), Toast.LENGTH_LONG).show();
                             break;
                     }
 

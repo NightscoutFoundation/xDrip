@@ -29,6 +29,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.utils.Preferences;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.google.gson.Gson;
@@ -412,7 +413,7 @@ public class ProfileEditor extends AppCompatActivity {
                         Double.parseDouble(Home.getPreferencesStringWithDefault("profile_insulin_sensitivity_default", "0.1")));
                 myprofileItemList.add(item);
             } catch (Exception e) {
-                Home.toaststatic("Problem with default insulin parameters");
+                Home.toaststatic(xdrip.getAppContext().getString(R.string.problem_default_insulin_parameters));
             }
         }
         return myprofileItemList;

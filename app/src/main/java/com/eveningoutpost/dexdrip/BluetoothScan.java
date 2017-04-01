@@ -86,13 +86,13 @@ public class BluetoothScan extends ListActivityWithMenu {
         if (!bluetooth_manager.getAdapter().isEnabled()) {
             if (Home.getPreferencesBoolean("automatically_turn_bluetooth_on",true)) {
                 JoH.setBluetoothEnabled(getApplicationContext(),true);
-                Toast.makeText(this, "Trying to turn Bluetooth on", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.trying_to_turn_bluetooth_on, Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(this, "Please turn Bluetooth on!", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.please_turn_bluetooth_on, Toast.LENGTH_LONG).show();
             }
         } else {
             if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                Toast.makeText(this, "The android version of this device is not compatible with Bluetooth Low Energy", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.not_compatible_ble, Toast.LENGTH_LONG).show();
             }
         }
         // Will request that GPS be enabled for devices running Marshmallow or newer.
@@ -135,17 +135,17 @@ public class BluetoothScan extends ListActivityWithMenu {
         switch (item.getItemId()) {
             case R.id.menu_scan:
                 BluetoothManager bluetooth_manager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-                Toast.makeText(this, "Scanning", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.scanning, Toast.LENGTH_LONG).show();
                 if(bluetooth_manager == null) {
-                    Toast.makeText(this, "This device does not seem to support bluetooth", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, R.string.device_not_supporting_bluetooth, Toast.LENGTH_LONG).show();
                     return true;
                 } else {
                     if(!bluetooth_manager.getAdapter().isEnabled()) {
-                        Toast.makeText(this, "Bluetooth is turned off on this device currently", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, R.string.bluetooth_is_turned_off, Toast.LENGTH_LONG).show();
                         return true;
                     } else {
                         if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2){
-                            Toast.makeText(this, "The android version of this device is not compatible with Bluetooth Low Energy", Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, R.string.not_compatible_ble, Toast.LENGTH_LONG).show();
                             return true;
                         }
                     }
@@ -508,7 +508,7 @@ public class BluetoothScan extends ListActivityWithMenu {
         Button cancelButton = (Button) dialog.findViewById(R.id.cancelButton);
         final EditText serialNumberView = (EditText) dialog.findViewById(R.id.editTextField);
         serialNumberView.setHint("SM00000000");
-        ((TextView) dialog.findViewById(R.id.instructionsTextField)).setText("Enter Your Dexcom Receiver Serial Number");
+        ((TextView) dialog.findViewById(R.id.instructionsTextField)).setText(R.string.enter_receiver_serial);
 
         dialog.findViewById(R.id.scannerButton).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -545,7 +545,7 @@ public class BluetoothScan extends ListActivityWithMenu {
         final EditText serialNumberView = (EditText) dialog.findViewById(R.id.editTextField);
         serialNumberView.setHint("00000");
         serialNumberView.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
-        ((TextView) dialog.findViewById(R.id.instructionsTextField)).setText("Enter Your Dexcom Transmitter ID");
+        ((TextView) dialog.findViewById(R.id.instructionsTextField)).setText(R.string.enter_transmitter_id);
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override

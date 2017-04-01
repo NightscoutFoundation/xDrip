@@ -65,12 +65,12 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
             sortDatabasesAlphabetically();
             showDatabasesInList();
         } else if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            JoH.static_toast_long("Need permission for saved files");
+            JoH.static_toast_long(getString(R.string.need_permission_saved_files));
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     MY_PERMISSIONS_REQUEST_STORAGE);
         } else {
-            postImportDB("\'xdrip\' is not a directory... aborting.");
+            postImportDB(getString(R.string.xdrip_is_not_a_directory));
         }
     }
 
@@ -78,7 +78,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
         LayoutInflater inflater= LayoutInflater.from(this);
         View view=inflater.inflate(R.layout.import_db_warning, null);
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setTitle("Import Instructions");
+        alertDialog.setTitle(R.string.import_instructions);
         alertDialog.setView(view);
         alertDialog.setCancelable(false);
         alertDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -138,7 +138,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
         setListAdapter(adapter);
 
         if (databaseNames.size() == 0) {
-            postImportDB("No databases found.");
+            postImportDB(getString(R.string.no_databases_found));
         }
     }
 
@@ -168,8 +168,8 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                 //do nothing
             }
         });
-        builder.setTitle("Confirm Import");
-        builder.setMessage("Do you really want to import '" + databases.get(position).getName() + "'?\n This may negatively affect the data integrity of your system!");
+        builder.setTitle(R.string.confirm_import);
+        builder.setMessage(getString(R.string.confirm_import_database, databases.get(position).getName()));
         AlertDialog dialog = builder.create();
         dialog.show();
 
@@ -214,11 +214,11 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
 
     public void importDB(int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Importing, please wait");
-        builder.setMessage("Importing, please wait");
+        builder.setTitle(R.string.importing_please_wait);
+        builder.setMessage(R.string.importing_please_wait);
         AlertDialog dialog = builder.create();
         dialog.show();
-        dialog.setMessage("Step 1: checking prerequisites");
+        dialog.setMessage(getString(R.string.checking_prerequisites));
         dialog.setCancelable(false);
         LoadTask lt = new LoadTask(dialog, databases.get(position));
         lt.execute();
@@ -234,7 +234,7 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                 returnToHome();
             }
         });
-        builder.setTitle("Import Result");
+        builder.setTitle(R.string.import_result);
         builder.setMessage(result);
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -268,16 +268,16 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
                 db.close();
                 if (getDBVersion() != version) {
                     statusDialog.dismiss();
-                    return "Wrong Database version.\n(" + version + " instead of " + getDBVersion() + ")";
+                    return getString(R.string.wrong_db_version, version, getDBVersion());
                 }
             } catch (SQLiteException e){
                 statusDialog.dismiss();
-                return "Database cannot be opened... aborting.";
+                return getString(R.string.cannot_open_db);
             }
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    statusDialog.setMessage("Step 2: exporting current DB");
+                    statusDialog.setMessage(getString(R.string.exporting_current_db));
                 }
             });
 
@@ -286,13 +286,13 @@ public class ImportDatabaseActivity extends ListActivityWithMenu {
 
             if (export == null) {
                 statusDialog.dismiss();
-                return "Exporting database not successfull... aborting.";
+                return getString(R.string.database_export_failed);
             }
 
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    statusDialog.setMessage("Step 3: importing DB");
+                    statusDialog.setMessage(getString(R.string.importing_db));
                 }
             });
 

@@ -92,8 +92,8 @@ public class ParakeetHelper {
             Log.d(TAG, "checkParakeetNotifications:" + waiting_for_parakeet + " " + timestamp + " vs " + wait_timestamp);
             if (timestamp > wait_timestamp) {
                 Log.d(TAG, "sending notification");
-                sendNotification("The parakeet has connected to the web service.",
-                        "Parakeet has connected!");
+                sendNotification(xdrip.getAppContext().getString(R.string.parakeet_has_connected_to_web_service),
+                        xdrip.getAppContext().getString(R.string.parakeet_has_connected));
                 waiting_for_parakeet = false;
                 if (!PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).getBoolean("parakeet_first_run_done", false)) {
                     PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).edit().putBoolean("parakeet_first_run_done", true).apply();
@@ -117,6 +117,8 @@ public class ParakeetHelper {
                                 Log.i(TAG, "Parakeet missing for: " + minutes_since + " mins");
                                 sendNotification("The parakeet has not connected > " + minutes_since + " mins",
                                         "Parakeet missing");
+                                sendNotification(xdrip.getAppContext().getString(R.string.parakeet_has_not_connected, minutes_since),
+                                        xdrip.getAppContext().getString(R.string.parakeet_missing));
                                 // TODO some more sophisticated persisting notification
                             }
                         }
@@ -207,12 +209,12 @@ public class ParakeetHelper {
                     notifyOnNextCheckin(true);
                     String[] results = string_result.split(" ");
                     if (results[1].contains("0")) {
-                        toast(xdrip.getAppContext(), "Parakeet code sent! Now waiting..");
+                        toast(xdrip.getAppContext(), xdrip.getAppContext().getString(R.string.parakeet_code_sent));
                     } else {
-                        toast(xdrip.getAppContext(), "Parakeet code sent! Code: " + results[1]);
+                        toast(xdrip.getAppContext(), xdrip.getAppContext().getString(R.string.parakeet_code_sent_code) + results[1]);
                     }
                 } else {
-                    toast(xdrip.getAppContext(), "Error - is app engine receiver recent enough?");
+                    toast(xdrip.getAppContext(), xdrip.getAppContext().getString(R.string.error_receiver_rent_enough));
                 }
 
             } catch (Exception e) {

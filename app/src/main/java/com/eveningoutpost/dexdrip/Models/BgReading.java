@@ -973,7 +973,7 @@ public class BgReading extends Model implements ShareUploadableBg {
            return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(json,BgReading.class);
         } catch (Exception e) {
             Log.d(TAG, "Got exception parsing BgReading json: " + e.toString());
-            Home.toaststaticnext("Error on BGReading sync, probably decryption key mismatch");
+            Home.toaststaticnext(xdrip.getAppContext().getString(R.string.error_bgreading_sync));
             return null;
         }
     }
@@ -1321,7 +1321,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                                 threshold_mins = Long.parseLong(Home.getPreferencesStringWithDefault("persistent_high_threshold_mins", "60"));
                             } catch (NumberFormatException e) {
                                 threshold_mins = 60;
-                                Home.toaststaticnext("Invalid persistent high for longer than minutes setting: using 60 mins instead");
+                                Home.toaststaticnext(xdrip.getAppContext().getString(R.string.persistent_high_alert_long));
                             }
                             if (high_for_mins > threshold_mins) {
                                 // we have been high for longer than the threshold - raise alert

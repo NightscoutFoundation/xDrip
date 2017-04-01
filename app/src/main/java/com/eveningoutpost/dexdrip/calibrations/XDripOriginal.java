@@ -2,6 +2,8 @@ package com.eveningoutpost.dexdrip.calibrations;
 
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.List;
 
@@ -15,7 +17,7 @@ import java.util.List;
 
 public class XDripOriginal extends CalibrationAbstract {
 
-    private static final String TAG = "xDrip Original";
+    private static final String TAG = xdrip.getAppContext().getString(R.string.classic_tag);
 
     @Override
     public String getAlgorithmName() {
@@ -24,7 +26,7 @@ public class XDripOriginal extends CalibrationAbstract {
 
     @Override
     public String getAlgorithmDescription() {
-        return " classic algorithm";
+        return xdrip.getAppContext().getString(R.string.classic_description);
     }
 
     @Override

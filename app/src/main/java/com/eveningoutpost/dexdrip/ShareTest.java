@@ -252,25 +252,25 @@ public class ShareTest extends Activity {
     public void attemptConnection() {
         mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         if (device != null) {
-            details.append("\nConnection state: " + " Device is not null");
+            details.append(getString(R.string.connection_state) + getString(R.string.device_is__not_null));
             mConnectionState = mBluetoothManager.getConnectionState(device, BluetoothProfile.GATT);
         }
 
         Log.i(TAG, "Connection state: " + mConnectionState);
-        details.append("\nConnection state: " + mConnectionState);
+        details.append(getString(R.string.connection_state) + mConnectionState);
         if (mConnectionState == STATE_DISCONNECTED || mConnectionState == STATE_DISCONNECTING) {
             ActiveBluetoothDevice btDevice = new Select().from(ActiveBluetoothDevice.class)
                     .orderBy("_ID desc")
                     .executeSingle();
             if (btDevice != null) {
-                details.append("\nBT Device: " + btDevice.name);
+                details.append(getString(R.string.bt_device_details) + btDevice.name);
                 mDeviceName = btDevice.name;
                 mDeviceAddress = btDevice.address;
                 mBluetoothAdapter = mBluetoothManager.getAdapter();
                 boolean newConnection = true;
                 if(newConnection) {
                     is_connected = connect(mDeviceAddress);
-                    details.append("\nConnecting...: ");
+                    details.append(getString(R.string.connecting));
                 }
             }
         }
@@ -326,15 +326,15 @@ public class ShareTest extends Activity {
 
     public boolean connect(final String address) {
 
-        details.append("\nConnecting to device");
+        details.append(getString(R.string.connecting_to_device_details));
         Log.i(TAG, "CONNECTING TO DEVICE");
         if (mBluetoothAdapter == null || address == null) {
-            details.append("\nBT adapter is null");
+            details.append(getString(R.string.bt_adapter_is_nzll));
             Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
             return false;
         }
         if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress) && mBluetoothGatt != null) {
-            details.append("\nTrying to use an existing mBluetoothGatt for connection.");
+            details.append(getString(R.string.trying_to_use_existing_gatt));
             if (mBluetoothGatt.connect()) {
                 mConnectionState = STATE_CONNECTING;
                 return true;
@@ -346,12 +346,12 @@ public class ShareTest extends Activity {
             device.setPin("000000".getBytes());
             if (device == null) {
                 Log.w(TAG, "Device not found.  Unable to connect.");
-                details.append("\nDevice not found.  Unable to connect.");
+                details.append(getString(R.string.device_not_found));
                 return false;
             }
             mBluetoothGatt = device.connectGatt(getApplicationContext(), true, mGattCallback);
             Log.i(TAG, "Trying to create a new connection.");
-            details.append("\nTrying to create a new connection to device");
+            details.append(getString(R.string.trying_creating_new_connection));
             mConnectionState = STATE_CONNECTING;
             return true;
         }
@@ -463,10 +463,10 @@ public class ShareTest extends Activity {
                     mBluetoothGatt.discoverServices();
                 } else if (state == BluetoothDevice.BOND_NONE){
                     Log.d(TAG, "CALLBACK RECIEVED: Not Bonded");
-                    Toast.makeText(getApplicationContext(), "unBonded", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), R.string.unbonded, Toast.LENGTH_LONG).show();
                 } else if (state == BluetoothDevice.BOND_BONDING) {
                     Log.d(TAG, "CALLBACK RECIEVED: Trying to bond");
-                    Toast.makeText(getApplicationContext(), "trying to bond", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), R.string.trying_to_bonsd, Toast.LENGTH_LONG).show();
                 }
             }
         }

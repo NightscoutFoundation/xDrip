@@ -74,7 +74,7 @@ public class StartNewSensor extends ActivityWithMenu {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && DexCollectionType.hasBluetooth()) {
                     if (!LocationHelper.locationPermission(StartNewSensor.this)) {
-                        JoH.show_ok_dialog(activity, "Please Allow Permission", "Location permission needed to use Bluetooth!", new Runnable() {
+                        JoH.show_ok_dialog(activity, getString(R.string.please_allow_permission), getString(R.string.location_permission_needed_bleutooth), new Runnable() {
                             @Override
                             public void run() {
                                 activity.requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 0);
@@ -96,15 +96,15 @@ public class StartNewSensor extends ActivityWithMenu {
 
         ucalendar = Calendar.getInstance();
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle("Did you insert it today?");
-        builder.setMessage("We need to know when the sensor was inserted to improve calculation accuracy.\n\nWas it inserted today?");
-        builder.setPositiveButton("YES, today", new DialogInterface.OnClickListener() {
+        builder.setTitle(R.string.did_you_insert_today);
+        builder.setMessage(R.string.insertion_time_needed);
+        builder.setPositiveButton(R.string.yes_today, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
                 askSesorInsertionTime();
             }
         });
-        builder.setNegativeButton("Not today", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.not_today, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
                 if (DexCollectionType.hasLibre()) {
@@ -116,7 +116,7 @@ public class StartNewSensor extends ActivityWithMenu {
                     if (!Home.get_engineering_mode()) {
                         datePickerFragment.setEarliestDate(JoH.tsl() - (30L * 24 * 60 * 60 * 1000)); // 30 days
                     }
-                    datePickerFragment.setTitle("Which day was it inserted?");
+                    datePickerFragment.setTitle(getString(R.string.which_day_was_it_inserted));
                     datePickerFragment.setDateCallback(new ProfileAdapter.DatePickerCallbacks() {
                         @Override
                         public void onDateSet(int year, int month, int day) {
@@ -142,7 +142,7 @@ public class StartNewSensor extends ActivityWithMenu {
 
         TimePickerFragment timePickerFragment = new TimePickerFragment();
         timePickerFragment.setTime(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
-        timePickerFragment.setTitle("What time was it inserted?");
+        timePickerFragment.setTitle(getString(R.string.what_time_was_insert));
         timePickerFragment.setTimeCallback(new ProfileAdapter.TimePickerCallbacks() {
             @Override
             public void onTimeUpdated(int newmins) {
@@ -164,14 +164,14 @@ public class StartNewSensor extends ActivityWithMenu {
         Log.d(TAG, "Starting sensor time: " + JoH.dateTimeText(ucalendar.getTime().getTime()));
 
         if (new Date().getTime() + 15 * 60000 < startTime) {
-            Toast.makeText(this, "ERROR: SENSOR START TIME IN FUTURE", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.error_start_time_future, Toast.LENGTH_LONG).show();
             return;
         }
 
         Sensor.create(startTime);
         Log.d("NEW SENSOR", "Sensor started at " + startTime);
 
-        Toast.makeText(this, "NEW SENSOR STARTED", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, R.string.new_sensor_started, Toast.LENGTH_LONG).show();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         // TODO add link pickers feature
@@ -180,7 +180,7 @@ public class StartNewSensor extends ActivityWithMenu {
         startWatchUpdaterService(this, WatchUpdaterService.ACTION_SYNC_SENSOR, TAG);
 
         LibreAlarmReceiver.clearSensorStats();
-        JoH.scheduleNotification(this, "Sensor should be ready", getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
+        JoH.scheduleNotification(this, getString(R.string.sensor_should_be_ready), getString(R.string.please_enter_two_calibrations_to_get_started), 60 * 130, Home.SENSOR_READY_ID);
 
         // reverse libre hacky workaround
         Treatments.SensorStart((DexCollectionType.hasLibre() ? startTime + (3600000) : startTime));

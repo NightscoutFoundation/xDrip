@@ -2,7 +2,9 @@ package com.eveningoutpost.dexdrip.G5Model;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -43,7 +45,7 @@ public class BatteryInfoRxMessage extends TransmitterMessage {
     }
 
     public String toString() {
-        return String.format(Locale.US, "Status: %s / VoltageA: %d / VoltageB: %d / Resistance: %d / Run Time: %d / Temperature: %d",
+        return xdrip.getAppContext().getString(R.string.g5_battery_status,
                 TransmitterStatus.getBatteryLevel(status).toString(), voltagea, voltageb, resist, runtime, temperature);
     }
 

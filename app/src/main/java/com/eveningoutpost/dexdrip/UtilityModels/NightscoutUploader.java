@@ -17,6 +17,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.base.Charsets;
@@ -459,7 +460,7 @@ public class NightscoutUploader {
             } catch (Exception e) {
                 Log.e(TAG, "Exception uploading REST API treatments: " + e.getMessage());
                 if (e.getMessage().equals("Not Found")) {
-                    final String msg = "Please ensure careportal plugin is enabled on nightscout for treatment upload!";
+                    final String msg = mContext.getString(R.string.ensure_careportal_plugin);
                     Log.wtf(TAG, msg);
                     Home.toaststaticnext(msg);
                     last_exception = msg;
@@ -837,7 +838,7 @@ public class NightscoutUploader {
                         failurecount++;
                         if (failurecount>4)
                         {
-                            Home.toaststaticnext("Mongo "+failurecount+" up fails: "+e.getMessage().substring(0,51));
+                            Home.toaststaticnext(mContext.getString(R.string.mongo_fails, failurecount, e.getMessage().substring(0, 51)));
                         }
                     } finally {
                         if(client != null) { client.close(); }

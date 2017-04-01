@@ -4,6 +4,8 @@ import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
+import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,7 +133,7 @@ public class UndoRedo {
 
                 // TODO do same for calibrations - not complete yet
                 if (item.Calibration_uuid != null) {
-                    JoH.static_toast_short("Cannot Redo calibrations yet :(");
+                    JoH.static_toast_short(xdrip.getAppContext().getString(R.string.cannot_redo_calibrations_yet));
                     //undo_queue.add(item);
                     redo_queue.remove(location);
                     return true;

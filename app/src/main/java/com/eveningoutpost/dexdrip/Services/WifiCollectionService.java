@@ -15,6 +15,7 @@ import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -161,8 +162,8 @@ public class WifiCollectionService extends Service {
     // data for MegaStatus
     public static List<StatusItem> megaStatus(Context context) {
         final List<StatusItem> l = new ArrayList<>();
-        l.add(new StatusItem("IP Collector Service", lastState));
-        l.add(new StatusItem("Next poll", JoH.niceTimeTill(PersistentStore.getLong(WIFI_COLLECTION_WAKEUP))));
+        l.add(new StatusItem(context.getString(R.string.ip_collector_service), lastState));
+        l.add(new StatusItem(context.getString(R.string.next_poll), JoH.niceTimeTill(PersistentStore.getLong(WIFI_COLLECTION_WAKEUP))));
         l.addAll(WixelReader.megaStatus());
         l.addAll(Mdns.megaStatus(context));
         return l;

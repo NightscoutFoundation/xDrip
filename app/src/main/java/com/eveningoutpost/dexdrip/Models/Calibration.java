@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.CalSubrecord;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -463,7 +464,7 @@ public class Calibration extends Model {
 
         if ((bg < 40) || (bg > 400)) {
             Log.wtf(TAG, "Invalid out of range calibration glucose mg/dl value of: " + bg);
-            JoH.static_toast_long("Calibration out of range: " + bg + " mg/dl");
+            JoH.static_toast_long(context.getString(R.string.calibration_out_of_range, bg));
             return null;
         }
 
@@ -580,7 +581,7 @@ public class Calibration extends Model {
 
             if (calibrations == null) {
                 Log.e(TAG, "Somehow ended up with null calibration list!");
-                Home.toaststatic("Somehow ended up with null calibration list!");
+                Home.toaststatic(xdrip.getAppContext().getString(R.string.null_calibration_list));
                 return;
             }
 
@@ -590,7 +591,7 @@ public class Calibration extends Model {
                 ActiveAndroid.clearCache();
                 calibrations = allForSensorLimited(5);
                 if (calibrations.size() > ccount) {
-                    Home.toaststaticnext("Calibrated using data beyond last 4 days");
+                    Home.toaststaticnext(xdrip.getAppContext().getString(R.string.calibration_beyond_four_days));
                 }
             }
             ActiveAndroid.clearCache();
@@ -676,7 +677,7 @@ public class Calibration extends Model {
         }
 
         if (Home.getPreferencesBooleanDefaultFalse("engineering_mode") && Home.getPreferencesBooleanDefaultFalse("old_school_calibration_mode")) {
-            JoH.static_toast_long("Using old pre-2017 calibration mode!");
+            JoH.static_toast_long(xdrip.getAppContext().getString(R.string.using_old_calibration_mode));
             return new DexOldSchoolParameters();
         }
 
@@ -1170,7 +1171,7 @@ public class Calibration extends Model {
                 cal.invalidate();
             }
         }
-        String msg = "Deleted all calibrations for sensor";
+        String msg = xdrip.getAppContext().getString(R.string.deleted_all_calibrations);
         Log.ueh(TAG, msg);
         JoH.static_toast_long(msg);
     }
