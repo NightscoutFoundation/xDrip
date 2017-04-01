@@ -204,10 +204,6 @@
 	<string name="wear_integration">Wear Integration</string>
 	<string name="send_data_to_android_wear_watch">Daten an Watchface senden</string>
 	<string name="android_wear_integration">Android Wear Integration</string>
-	<string name="pref_wear_connectG5">Verbinde die Uhr mit dem G5</string>
-	<string name="pref_summary_wear_connectG5">Direkte Verbindung zum G5</string>
-	<string name="pref_use_wear_connectG5">Verwende den G5 Kollektor-Dienst</string>
-	<string name="pref_summary_use_wear_connectG5">Zwinge das Telefon, den Wear-Collection-Dienst zu benutzen</string>
 	<string name="pebble_integration">Pebble Integration</string>
 	<string name="send_data_to_pebble_watchface">Daten an Pebble Watch senden</string>
 	<string name="pebble_watch_integration">Pebble Watch Integration</string>
