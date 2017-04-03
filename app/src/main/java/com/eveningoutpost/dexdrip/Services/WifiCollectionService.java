@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -164,6 +165,10 @@ public class WifiCollectionService extends Service {
         l.add(new StatusItem("IP Collector Service", lastState));
         l.add(new StatusItem("Next poll", JoH.niceTimeTill(PersistentStore.getLong(WIFI_COLLECTION_WAKEUP))));
         l.addAll(WixelReader.megaStatus());
+        final int bridgeBattery = Home.getPreferencesInt("parakeet_battery", 0);
+        if (bridgeBattery > 0) {
+            l.add(new StatusItem("Parakeet Battery", bridgeBattery + "%", bridgeBattery < 50 ? bridgeBattery < 40 ? StatusItem.Highlight.BAD : StatusItem.Highlight.NOTICE : StatusItem.Highlight.GOOD));
+        }
         l.addAll(Mdns.megaStatus(context));
         return l;
     }
