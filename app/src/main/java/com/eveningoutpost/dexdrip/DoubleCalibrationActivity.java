@@ -27,6 +27,7 @@ public class DoubleCalibrationActivity extends ActivityWithMenu {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        xdrip.checkForcedEnglish(this);
         super.onCreate(savedInstanceState);
         if (CollectionServiceStarter.isBTShare(getApplicationContext())) {
             Intent intent = new Intent(this, Home.class);
@@ -35,6 +36,12 @@ public class DoubleCalibrationActivity extends ActivityWithMenu {
         }
         setContentView(R.layout.activity_double_calibration);
         addListenerOnButton();
+    }
+
+    @Override
+    protected void onResume() {
+        xdrip.checkForcedEnglish(this);
+        super.onResume();
     }
 
     @Override

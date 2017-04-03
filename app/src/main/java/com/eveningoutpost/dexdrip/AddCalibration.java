@@ -34,6 +34,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        xdrip.checkForcedEnglish(this);
         super.onCreate(savedInstanceState);
         if (CollectionServiceStarter.isBTShare(getApplicationContext())) {
             Intent intent = new Intent(this, Home.class);
@@ -45,7 +46,9 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
         automatedCalibration();
     }
 
+    @Override
     protected void onResume() {
+        xdrip.checkForcedEnglish(this);
         super.onResume();
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), getString(R.string.add_calibration), this);
