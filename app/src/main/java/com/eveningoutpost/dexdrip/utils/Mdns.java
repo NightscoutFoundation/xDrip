@@ -59,7 +59,7 @@ public class Mdns {
     private final AtomicInteger outstanding = new AtomicInteger();
     private long locked_until = 0;
     private NsdManager mNsdManager;
-    private NsdManager.DiscoveryListener mDiscoveryListener;
+    private static NsdManager.DiscoveryListener mDiscoveryListener;
     private NsdManager.ResolveListener mResolveListener;
 
 
@@ -118,13 +118,14 @@ public class Mdns {
     private void hunt() {
         final PowerManager.WakeLock wl = JoH.getWakeLock("mdns-hunt", 30000);
         if (hunt_running) {
-            UserError.Log.wtf(TAG,"Hunt already running");
+            UserError.Log.wtf(TAG, "Hunt already running");
         }
         hunt_running = true;
         mNsdManager = (NsdManager) (xdrip.getAppContext().getSystemService(Context.NSD_SERVICE));
 
         mResolveListener = initializeResolveListener();
         initializeDiscoveryListener();
+
         mNsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, mDiscoveryListener);
         new Thread(new Runnable() {
             @Override
@@ -185,6 +186,14 @@ public class Mdns {
 
     private void initializeDiscoveryListener() {
 
+        if (mDiscoveryListener != null) {
+            try {
+                mNsdManager.stopServiceDiscovery(mDiscoveryListener);
+                UserError.Log.wtf(TAG, "Discovery service was active when it shouldn't be!");
+            } catch (Exception e) {
+                UserError.Log.d(TAG, "Could not stop service during initialization: " + e);
+            }
+        }
         mDiscoveryListener = new NsdManager.DiscoveryListener() {
 
 
@@ -229,7 +238,9 @@ public class Mdns {
 
             @Override
             public void onStopDiscoveryFailed(String serviceType, int errorCode) {
-                myStopServiceDiscovery();
+                if (JoH.ratelimit("mdns-onStopDiscoveryFailed", 10)) {
+                    myStopServiceDiscovery();
+                }
             }
 
             private void myStopServiceDiscovery() {
@@ -249,6 +260,11 @@ public class Mdns {
             public void onResolveFailed(NsdServiceInfo serviceInfo, int errorCode) {
                 if (JoH.quietratelimit("mdns-error", 30))
                     UserError.Log.e(TAG, "Resolve failed " + errorCode);
+                try {
+                    mNsdManager.stopServiceDiscovery(mDiscoveryListener);
+                } catch (Exception e) {
+                    UserError.Log.d(TAG, "Failed top stop service discovery on failure: " + e);
+                }
                 outstanding.decrementAndGet();
                 locked_until = 0;
             }
