@@ -28,6 +28,7 @@ Nexus 6 | 7.0
 Nexus 6P | 7.1.1
 LG V20 (LG-H918) | 7.0
 LG G4 (VS986 & H811) | 6.0
+LeEco Le Pro3 (LEX727) | 6.0.1
 Motorola Moto E (2nd Gen) (XT1526) | 5.1
 Motorola G3 | 6.0
 Blu R1 HD | 6.0
