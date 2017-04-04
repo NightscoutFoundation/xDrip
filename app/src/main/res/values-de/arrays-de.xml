@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="SendToPebbleChoice">
+        <item>Standard Watchface (alt)</item>
+        <item>Farbtrend Watchface</item>
+        <item>Pebble Classic Trend Watchface</item>
+        <item>Pebble Trend Clay Version (Test)</item>
+    </string-array>
+
+
+    <string-array name="PebbleTrendPeriods">
+        <item>1 Stunde</item>
+        <item>2 Stunden</item>
+        <item>3 Stunden</item>
+        <item>4 Stunden</item>
+    </string-array>
+
+    <string-array name="UpdateChannelDetail">
+        <item>Stable - bewährte und getestete Versionen</item>
+        <item>Beta - neue Funktionen, aber nicht gänzlich getestet</item>
+        <item>Alpha - Versionen zum frühen Testen</item>
+    </string-array>
+
+    <string-array name="UpdateChannelDetailE">
+        <item>Stable - bewährte und getestete Versionen</item>
+        <item>Beta - neue Funktionen, aber nicht gänzlich getestet</item>
+        <item>Alpha - Versionen zum frühen Testen</item>
+        <item>Nightly - ungetesteter Rohcode - nur Experten!</item>
+    </string-array>
+
+    <string-array name="TreatmentCalibrationChoiceDetail">
+        <item>Jedes Mal nachfragen</item>
+        <item>Nie benutzen</item>
+        <item>Immer benutzen</item>
+    </string-array>
+
+    <string-array name="BgAlertProfileEntries">
+        <item>Hoch</item>
+        <item>Mittel</item>
+        <item>Ansteigende Lautstärke</item>
+        <item>Nur vibrieren</item>
+        <item>Lautlos</item>
+    </string-array>
+</resources>

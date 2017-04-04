@@ -2,7 +2,7 @@
 <resources>
 
     <string name="pref_I_understand_title"> I UNDERSTAND AND AGREE</string>
-    <string name="pref_I_understand_summery">xDrip+ MUST NOT BE USED TO MAKE MEDICAL DECISIONS. IT IS A RESEARCH TOOL ONLY AND IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.</string>
+    <string name="pref_I_understand_summery" translatable="false">xDrip+ MUST NOT BE USED TO MAKE MEDICAL DECISIONS. IT IS A RESEARCH TOOL ONLY AND IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.</string>
     <string name="import_db_warning">
         WARNING: Importing a database might cause SEVERE DATA LOSS. If you don\'t know why you want to use the import, don\'t use it.
         In regular operation of xDrip it is not needed. Just use it in case of previous data loss.
@@ -23,41 +23,41 @@
     <string name="importanttext">Do NOT use or rely on this software or any associated materials for any medical purpose or decision.\n\nDo NOT rely on this system for any real-time alarms or time critical data.\n\nDo NOT use or rely on this system for treatment decisions or use as a substitute for professional healthcare judgement.\n\nAll software and materials have been provided for informational purposes only as a proof of concept to assist possibilities for further research.\n\nNo claims at all are made about fitness for any purpose and everything is provided \"AS IS\". Any part of the system can fail at any time.\n\nAlways seek the advice of a qualified healthcare professional for any medical questions.\n\nAlways follow your glucose-sensor manufacturers\' instructions when using any equipment; do not discontinue use of accompanying reader or receiver, other than as advised by your doctor.\n\nThis software is not associated with or endorsed by any equipment manufacturer and all trademarks are those of their respective owners.\n\nYour use of this software is entirely at your own risk.\n\nNo charge has been made by the developers for the use of this software.\n\nThis is an open-source project which has been created by volunteers. The source code is published free and open-source for you to inspect and evaluate.\n\nBy using this software and/or website you agree that you are over 18 years of age and have read, understood and agree to all of the above.\n</string>
 
 
-    <string name="local_target_package">com.eveningoutpost.dexdrip</string>
-    <string name="app_name">xDrip+</string>
-    <string name="app_name_launcher">xDrip+</string>
-    <string name="wserviceurl">https://xdrip-plus-updates.appspot.com</string>
+    <string name="local_target_package" translatable="false">com.eveningoutpost.dexdrip</string>
+    <string name="app_name" translatable="false">xDrip+</string>
+    <string name="app_name_launcher" translatable="false">xDrip+</string>
+    <string name="wserviceurl" translatable="false">https://xdrip-plus-updates.appspot.com</string>
     <string name="all_settings_wizard">all_settings_wizard</string>
-    <string name="wizard_uuid">wizard_uuid</string>
-    <string name="wizard_key">wizard_key</string>
-    <string name="prev_arrow"><![CDATA[<<]]></string>
-    <string name="next_arrow"><![CDATA[>>]]></string>
+    <string name="wizard_uuid" translatable="false">wizard_uuid</string>
+    <string name="wizard_key" translatable="false">wizard_key</string>
+    <string name="prev_arrow" translatable="false"><![CDATA[<<]]></string>
+    <string name="next_arrow" translatable="false"><![CDATA[>>]]></string>
 
-    <string name="zero">0</string>
-    <string name="one">1</string>
-    <string name="two">2</string>
-    <string name="three">3</string>
-    <string name="four">4</string>
-    <string name="five">5</string>
-    <string name="six">6</string>
-    <string name="seven">7</string>
-    <string name="eight">8</string>
-    <string name="nine">9</string>
-    <string name="star">*</string>
-    <string name="dot">\u2022</string>
-    <string name="hash">#</string>
-    <string name="gcmtpc">/topics/</string>
-    <string name="gcmtpcs">/topics/</string>
-    <string name="gcmstpcs">/topics/</string>
-    <string name="tick">\u2713</string>
-    <string name="backarrow">\u2190</string>
+    <string name="zero" translatable="false">0</string>
+    <string name="one" translatable="false">1</string>
+    <string name="two" translatable="false">2</string>
+    <string name="three" translatable="false">3</string>
+    <string name="four" translatable="false">4</string>
+    <string name="five" translatable="false">5</string>
+    <string name="six" translatable="false">6</string>
+    <string name="seven" translatable="false">7</string>
+    <string name="eight" translatable="false">8</string>
+    <string name="nine" translatable="false">9</string>
+    <string name="star" translatable="false">*</string>
+    <string name="dot" translatable="false">\u2022</string>
+    <string name="hash" translatable="false">#</string>
+    <string name="gcmtpc" translatable="false">/topics/</string>
+    <string name="gcmtpcs" translatable="false">/topics/</string>
+    <string name="gcmstpcs" translatable="false">/topics/</string>
+    <string name="tick" translatable="false">\u2713</string>
+    <string name="backarrow" translatable="false">\u2190</string>
     <string name="call">Call</string>
 
     <string name="appwidget_text" translatable="false">EXAMPLE</string>
-    <string name="plugin_name">xDrip</string>
-    <string name="pref_default_mongodb_collection">entries</string>
-    <string name="pref_default_mongodb_device_status_collection">devicestatus</string>
-    <string name="p_in_circle">Ⓟ</string>
+    <string name="plugin_name" translatable="false">xDrip</string>
+    <string name="pref_default_mongodb_collection" translatable="false">entries</string>
+    <string name="pref_default_mongodb_device_status_collection" translatable="false">devicestatus</string>
+    <string name="p_in_circle" translatable="false">Ⓟ</string>
 
 
 </resources>
