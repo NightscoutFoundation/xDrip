@@ -139,7 +139,11 @@ public class Mdns {
                     }
                 }
                 UserError.Log.d(TAG, "Shutting down");
-                mNsdManager.stopServiceDiscovery(mDiscoveryListener);
+                try {
+                    mNsdManager.stopServiceDiscovery(mDiscoveryListener);
+                } catch (IllegalArgumentException | IllegalStateException e) {
+                    UserError.Log.e(TAG, "Could not stop timed service discovery: " + e);
+                }
                 hunt_running = false;
                 JoH.releaseWakeLock(wl);
             }
@@ -263,7 +267,7 @@ public class Mdns {
                 try {
                     mNsdManager.stopServiceDiscovery(mDiscoveryListener);
                 } catch (Exception e) {
-                    UserError.Log.d(TAG, "Failed top stop service discovery on failure: " + e);
+                    UserError.Log.d(TAG, "Failed to stop service discovery on failure: " + e);
                 }
                 outstanding.decrementAndGet();
                 locked_until = 0;
