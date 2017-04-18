@@ -35,16 +35,16 @@ public class XDripOriginal extends CalibrationAbstract {
         if (cd == null) {
             UserError.Log.d(TAG, "Regenerating Calibration data cache");
             final List<Calibration> calibrationl = Calibration.latestValid(1, until);
-            if ((calibrationl != null) && (calibrationl.size()>0)) {
-            final Calibration calibration = calibrationl.get(0); // first and only
-            if (calibration != null) {
+            if ((calibrationl != null) && (calibrationl.size() > 0)) {
+                final Calibration calibration = calibrationl.get(0); // first and only
+                if (calibration != null) {
 
-                // produce the CalibrationData result
-                cd = new CalibrationData(calibration.slope, calibration.intercept);
+                    // produce the CalibrationData result
+                    cd = new CalibrationData(calibration.slope, calibration.intercept);
 
-               // saveDataToCache(TAG, cd);
+                    // saveDataToCache(TAG, cd);
+                }
             }
-        }
         }
         return cd; // null if invalid
     }
