@@ -21,7 +21,7 @@ public class PebbleDisplayStandard extends PebbleDisplayAbstract {
 
     private final static String TAG = PebbleDisplayStandard.class.getSimpleName();
 
-    public static double last_time_seen = 0;
+    private static double last_time_seen = 0;
 
 
     @Override

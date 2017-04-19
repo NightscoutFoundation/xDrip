@@ -462,7 +462,8 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
 
 
     public void sendData() {
-        if (PebbleKit.isWatchConnected(mContext)) {
+        final boolean online = PebbleKit.isWatchConnected(mContext);
+        if (online) {
             if (sendStep == 5) {
                 sendStep = 0;
                 done = false;
@@ -512,6 +513,7 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
                 sendingData = false;
             }
         }
+        pebble_watchdog(online, TAG);
     }
 
 

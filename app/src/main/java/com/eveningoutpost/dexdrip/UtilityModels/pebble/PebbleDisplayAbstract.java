@@ -7,11 +7,16 @@ import android.os.BatteryManager;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Preferences;
+import com.eveningoutpost.dexdrip.xdrip;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
@@ -39,6 +44,8 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
 
     protected static final boolean use_best_glucose = true;
     protected BestGlucose.DisplayGlucose dg;
+
+    protected long last_seen_timestamp = 0;
 
     public void receiveNack(int transactionId) {
         // default no implementation
@@ -74,6 +81,27 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
             return 50;
         }
         return (int) (((float) level / (float) scale) * 100.0f);
+    }
+
+    synchronized void pebble_watchdog(boolean online, String tag) {
+        if (online) {
+            last_seen_timestamp = JoH.tsl();
+        } else {
+            if (last_seen_timestamp == 0) return;
+            if ((JoH.msSince(last_seen_timestamp) > 20 * Constants.MINUTE_IN_MS)) {
+                if (!JoH.isOngoingCall()) {
+                    last_seen_timestamp = JoH.tsl();
+                    if (Home.getPreferencesBooleanDefaultFalse("bluetooth_watchdog")) {
+                        UserError.Log.e(tag, "Triggering pebble watchdog reset!");
+                        JoH.restartBluetooth(xdrip.getAppContext());
+                    } else {
+                        UserError.Log.e(tag, "Would have Triggered pebble watchdog reset but bluetooth watchdog is disabled");
+                    }
+                } else {
+                    UserError.Log.d(tag, "Ongoing call blocking pebble watchdog reset");
+                }
+            }
+        }
     }
 
 
