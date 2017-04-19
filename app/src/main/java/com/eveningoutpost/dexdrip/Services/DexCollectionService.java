@@ -100,6 +100,8 @@ public class DexCollectionService extends Service {
     private static final int STATE_CONNECTING = BluetoothProfile.STATE_CONNECTING;
     private static final int STATE_CONNECTED = BluetoothProfile.STATE_CONNECTED;
     private static final String PREF_DEX_COLLECTION_BONDING = "pref_dex_collection_bonding";
+    private static final String PREF_DEX_COLLECTION_POLLING = "pref_dex_collection_polling";
+    private static final long POLLING_PERIOD = (Constants.MINUTE_IN_MS * 5) - Constants.SECOND_IN_MS;
 
     public static double last_time_seen = 0;
     public static String lastState = "Not running";
@@ -107,10 +109,12 @@ public class DexCollectionService extends Service {
     private static int last_battery_level = -1;
     private static long retry_time = 0;
     private static long failover_time = 0;
+    private static long poll_backoff = 0;
     private static int watchdog_count = 0;
 
     private static boolean static_use_transmiter_pl_bluetooth = false;
     private static boolean static_use_rfduino_bluetooth = false;
+    private static boolean static_use_polling = false;
     private static String static_last_hexdump;
     private static String static_last_sent_hexdump;
 
@@ -118,6 +122,7 @@ public class DexCollectionService extends Service {
     public static String lastStateWatch = "Not running";
     private static TransmitterData last_transmitter_DataWatch;
     private static int last_battery_level_watch = -1;
+    private static long last_poll_sent = 0;
     private static long retry_time_watch = 0;
     private static long failover_time_watch = 0;
     private static String static_last_hexdump_watch;
@@ -126,6 +131,8 @@ public class DexCollectionService extends Service {
     // Experimental support for "Transmiter PL" from Marek Macner @FPV-UAV
     private final boolean use_transmiter_pl_bluetooth = Home.getPreferencesBooleanDefaultFalse("use_transmiter_pl_bluetooth");
     private final boolean use_rfduino_bluetooth = Home.getPreferencesBooleanDefaultFalse("use_rfduino_bluetooth");
+  //  private final boolean use_polling = Home.getPreferencesBooleanDefaultFalse(PREF_DEX_COLLECTION_POLLING) && DexCollectionType.hasLibre();
+    private final boolean use_polling = Home.getPreferencesBooleanDefaultFalse(PREF_DEX_COLLECTION_POLLING);
     private final UUID xDripDataService = use_transmiter_pl_bluetooth ? UUID.fromString(HM10Attributes.TRANSMITER_PL_SERVICE) : UUID.fromString(HM10Attributes.HM_10_SERVICE);
     private final UUID xDripDataCharacteristic = use_transmiter_pl_bluetooth ? UUID.fromString(HM10Attributes.TRANSMITER_PL_RX_TX) : UUID.fromString(HM10Attributes.HM_RX_TX);
     // Experimental support for rfduino from Tomasz Stachowicz
@@ -167,6 +174,7 @@ public class DexCollectionService extends Service {
         failover_time = 0;
         static_use_rfduino_bluetooth = use_rfduino_bluetooth;
         static_use_transmiter_pl_bluetooth = use_transmiter_pl_bluetooth;
+        static_use_polling = use_polling;
         status("Started");
         if (shouldServiceRun()) {
             setFailoverTimer();
@@ -260,9 +268,9 @@ public class DexCollectionService extends Service {
         }
     }
 
-    public void setFailoverTimer() {
+    public synchronized void setFailoverTimer() {
         if (shouldServiceRun()) {
-            final long retry_in = (Constants.MINUTE_IN_MS * 6);
+            final long retry_in = use_polling ? whenToPollNext() : (Constants.MINUTE_IN_MS * 6);
             Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (Constants.MINUTE_IN_MS)) + " minutes");
             JoH.cancelAlarm(this, serviceFailoverIntent);
             serviceFailoverIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
@@ -271,6 +279,15 @@ public class DexCollectionService extends Service {
         } else {
             stopSelf();
         }
+    }
+
+    private long whenToPollNext() {
+        final long poll_time = Math.max((Constants.SECOND_IN_MS * 5) + poll_backoff, POLLING_PERIOD - JoH.msSince(lastPacketTime));
+        if (poll_backoff < (Constants.MINUTE_IN_MS * 6)) {
+            poll_backoff += Constants.SECOND_IN_MS;
+        }
+        Log.d(TAG, "Scheduling next poll in: " + JoH.niceTimeScalar(poll_time) + " @ " + JoH.dateTimeText(poll_time + JoH.tsl())+ " period diff: "+(POLLING_PERIOD - JoH.msSince(lastPacketTime)));
+        return poll_time;
     }
 
     private static void status(String msg) {
@@ -333,6 +350,9 @@ public class DexCollectionService extends Service {
             status("Last Connected");
             Log.i(TAG, "attemptConnection: Looks like we are already connected, ready to receive");
             mStaticState = mConnectionState;
+            if (use_polling && (JoH.msSince(lastPacketTime) >= POLLING_PERIOD)) {
+                pollForData();
+            }
             return;
         }
         setRetryTimer();
@@ -343,6 +363,14 @@ public class DexCollectionService extends Service {
             Log.d(TAG,"Sending immediate data: "+JoH.bytesToHex(immediateSend));
             sendBtMessage(JoH.bArrayAsBuffer(immediateSend));
             immediateSend = null;
+        }
+    }
+
+    private synchronized void pollForData() {
+        if (JoH.ratelimit("poll-for-data", 2)) {
+            Log.d(TAG, "Polling for data");
+            last_poll_sent = JoH.tsl();
+            sendBtMessage(JoH.bArrayAsBuffer(XbridgePlus.sendDataRequestPacket()));
         }
     }
 
@@ -690,6 +718,7 @@ public class DexCollectionService extends Service {
                     sendBtMessage(ackMessage);
                     //duplicates are already filtered in TransmitterData.create - so no need to filter here
                     lastPacketTime = secondsNow;
+                    poll_backoff = 0;
                     Log.v(TAG, "setSerialDataToTransmitterRawData: Creating TransmitterData at " + timestamp);
                     processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
                     if (Home.get_master()) GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery",-1));
@@ -806,6 +835,9 @@ public class DexCollectionService extends Service {
         l.add(new StatusItem("Phone Service State", lastState + (forced_wear ? " (Watch Forced)" : "")));
         l.add(new StatusItem("Bluetooth Device", JoH.ucFirst(getStateStr(mStaticState))));
 
+        if (static_use_polling) {
+            l.add(new StatusItem("Polling mode", ((last_poll_sent > 0) ? "Last poll: " + JoH.niceTimeSince(last_poll_sent) + " ago" : "Enabled")));
+        }
 
         if (static_use_transmiter_pl_bluetooth) {
             l.add(new StatusItem("Hardware", "Transmiter PL"));

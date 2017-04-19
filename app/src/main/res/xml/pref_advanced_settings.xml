@@ -344,6 +344,12 @@
                     android:key="use_rfduino_bluetooth"
                     android:summary="@string/experimental_rdfuino_support"
                     android:title="@string/rfduino_support" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="pref_dex_collection_polling"
+                    android:dependency="engineering_mode"
+                    android:summary="Experimental support for xBridge+ polling feature"
+                    android:title="xBridge+ Polling Mode" />
             </PreferenceScreen>
             <CheckBoxPreference
                 android:defaultValue="true"
