@@ -70,6 +70,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PERIOD;
+
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class DexCollectionService extends Service {
     private final static String TAG = DexCollectionService.class.getSimpleName();
@@ -102,6 +104,7 @@ public class DexCollectionService extends Service {
     private static final String PREF_DEX_COLLECTION_BONDING = "pref_dex_collection_bonding";
     private static final String PREF_DEX_COLLECTION_POLLING = "pref_dex_collection_polling";
     private static final long POLLING_PERIOD = (Constants.MINUTE_IN_MS * 5) - Constants.SECOND_IN_MS;
+    private static final long RETRY_PERIOD = DEXCOM_PERIOD - (Constants.SECOND_IN_MS * 35);
 
     public static double last_time_seen = 0;
     public static String lastState = "Not running";
@@ -110,6 +113,7 @@ public class DexCollectionService extends Service {
     private static long retry_time = 0;
     private static long failover_time = 0;
     private static long poll_backoff = 0;
+    private static long retry_backoff = 0;
     private static int watchdog_count = 0;
 
     private static boolean static_use_transmiter_pl_bluetooth = false;
@@ -258,7 +262,8 @@ public class DexCollectionService extends Service {
     public void setRetryTimer() {
         mStaticState = mConnectionState;
         if (shouldServiceRun()) {
-            final long retry_in = (Constants.SECOND_IN_MS * 25);
+            //final long retry_in = (Constants.SECOND_IN_MS * 25);
+            final long retry_in = whenToRetryNext();
             Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
             JoH.cancelAlarm(this, serviceIntent);
             serviceIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
@@ -281,12 +286,21 @@ public class DexCollectionService extends Service {
         }
     }
 
+    private long whenToRetryNext() {
+        final long poll_time = Math.max((Constants.SECOND_IN_MS * 10) + retry_backoff, RETRY_PERIOD - JoH.msSince(lastPacketTime));
+        if (retry_backoff < (Constants.MINUTE_IN_MS)) {
+            retry_backoff += Constants.SECOND_IN_MS;
+        }
+        Log.d(TAG, "Scheduling next retry in: " + JoH.niceTimeScalar(poll_time) + " @ " + JoH.dateTimeText(poll_time + JoH.tsl()) + " period diff: " + (RETRY_PERIOD - JoH.msSince(lastPacketTime)));
+        return poll_time;
+    }
+
     private long whenToPollNext() {
         final long poll_time = Math.max((Constants.SECOND_IN_MS * 5) + poll_backoff, POLLING_PERIOD - JoH.msSince(lastPacketTime));
         if (poll_backoff < (Constants.MINUTE_IN_MS * 6)) {
             poll_backoff += Constants.SECOND_IN_MS;
         }
-        Log.d(TAG, "Scheduling next poll in: " + JoH.niceTimeScalar(poll_time) + " @ " + JoH.dateTimeText(poll_time + JoH.tsl())+ " period diff: "+(POLLING_PERIOD - JoH.msSince(lastPacketTime)));
+        Log.d(TAG, "Scheduling next poll in: " + JoH.niceTimeScalar(poll_time) + " @ " + JoH.dateTimeText(poll_time + JoH.tsl()) + " period diff: " + (POLLING_PERIOD - JoH.msSince(lastPacketTime)));
         return poll_time;
     }
 
@@ -479,25 +493,34 @@ public class DexCollectionService extends Service {
             mCharacteristic = gattCharacteristic;
             final int charaProp = gattCharacteristic.getProperties();
             if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+                // TODO isn't this condition always true, shouldn't it be & instead of | ?
                 mBluetoothGatt.setCharacteristicNotification(gattCharacteristic, true);
 
-                // Experimental support for "Transmiter PL" from Marek Macner @FPV-UAV
-                if (use_transmiter_pl_bluetooth) {
-                    BluetoothGattDescriptor descriptor = gattCharacteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
-                    Log.i(TAG, "Transmiter Descriptor found: " + descriptor.getUuid());
-                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    mBluetoothGatt.writeDescriptor(descriptor);
+                try {
+                    final BluetoothGattDescriptor bdescriptor = gattCharacteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
+                    Log.i(TAG, "Bluetooth Notification Descriptor found: " + bdescriptor.getUuid());
+                    bdescriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    mBluetoothGatt.writeDescriptor(bdescriptor);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error setting notification value descriptor: " + e);
                 }
+
+                // Experimental support for "Transmiter PL" from Marek Macner @FPV-UAV
+                //if (use_transmiter_pl_bluetooth) {
+                    // BluetoothGattDescriptor descriptor = gattCharacteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
+                    //   Log.i(TAG, "Transmiter Descriptor found: " + descriptor.getUuid());
+                    //   descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    //   mBluetoothGatt.writeDescriptor(descriptor);
+                //}
 
                 // Experimental support for rfduino from Tomasz Stachowicz
                 if (use_rfduino_bluetooth) {
-                    BluetoothGattDescriptor descriptor = gattCharacteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
-                    Log.i(TAG, "Transmiter Descriptor found use_rfduino_bluetooth: " + descriptor.getUuid());
-                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    mBluetoothGatt.writeDescriptor(descriptor);
+                    //  BluetoothGattDescriptor descriptor = gattCharacteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
+                    //  Log.i(TAG, "Transmiter Descriptor found use_rfduino_bluetooth: " + descriptor.getUuid());
+                    //  descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    //  mBluetoothGatt.writeDescriptor(descriptor);
                     Log.w(TAG, "onServicesDiscovered: use_rfduino_bluetooth send characteristic " + xDripDataCharacteristicSend + " found");
-                    final BluetoothGattCharacteristic gattCharacteristicSend = gattService.getCharacteristic(xDripDataCharacteristicSend);
-                    mCharacteristicSend = gattCharacteristicSend;
+                    mCharacteristicSend = gattService.getCharacteristic(xDripDataCharacteristicSend);
                 } else {
                     mCharacteristicSend = mCharacteristic;
                 }
@@ -719,6 +742,7 @@ public class DexCollectionService extends Service {
                     //duplicates are already filtered in TransmitterData.create - so no need to filter here
                     lastPacketTime = secondsNow;
                     poll_backoff = 0;
+                    retry_backoff = 0;
                     Log.v(TAG, "setSerialDataToTransmitterRawData: Creating TransmitterData at " + timestamp);
                     processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
                     if (Home.get_master()) GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery",-1));
