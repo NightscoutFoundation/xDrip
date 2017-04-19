@@ -12,6 +12,7 @@ import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Reminder;
+import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
@@ -62,10 +63,10 @@ public class MissedReadingService extends IntentService {
         }
 
         if ((prefs.getBoolean("aggressive_service_restart", false) || DexCollectionType.isFlakey())) {//!Home.get_enable_wear() &&
-            if (!BgReading.last_within_millis(stale_millis)) {
+            if (!BgReading.last_within_millis(stale_millis) && Sensor.isActive()) {
                 if (JoH.ratelimit("aggressive-restart", aggressive_backoff_timer)) {
-                    Log.e(TAG, "Aggressively restarting collector service due to lack of reception: backoff: "+aggressive_backoff_timer);
-                    if (aggressive_backoff_timer < 1200) aggressive_backoff_timer+=60;
+                    Log.e(TAG, "Aggressively restarting collector service due to lack of reception: backoff: " + aggressive_backoff_timer);
+                    if (aggressive_backoff_timer < 1200) aggressive_backoff_timer += 60;
                     CollectionServiceStarter.restartCollectionService(context);
                 } else {
                     aggressive_backoff_timer = 120; // reset
