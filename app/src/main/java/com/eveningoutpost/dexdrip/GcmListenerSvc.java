@@ -188,16 +188,16 @@ public class GcmListenerSvc extends FirebaseMessagingService {
             // new treatment
             if (action.equals("nt")) {
                 Log.i(TAG, "Attempting GCM push to Treatment");
-                GcmActivity.pushTreatmentFromPayloadString(payload);
+                if (Home.get_master_or_follower()) GcmActivity.pushTreatmentFromPayloadString(payload);
             } else if (action.equals("dat")) {
                 Log.i(TAG, "Attempting GCM delete all treatments");
-                Treatments.delete_all();
+                if (Home.get_master_or_follower()) Treatments.delete_all();
             } else if (action.equals("dt")) {
                 Log.i(TAG, "Attempting GCM delete specific treatment");
-                Treatments.delete_by_uuid(filter(payload));
+                if (Home.get_master_or_follower()) Treatments.delete_by_uuid(filter(payload));
             } else if (action.equals("clc")) {
                 Log.i(TAG, "Attempting to clear last calibration");
-                Calibration.clearLastCalibration();
+                if (Home.get_master_or_follower()) Calibration.clearLastCalibration();
             } else if (action.equals("cal")) {
                 String[] message_array = filter(payload).split("\\s+");
                 if ((message_array.length == 3) && (message_array[0].length() > 0)

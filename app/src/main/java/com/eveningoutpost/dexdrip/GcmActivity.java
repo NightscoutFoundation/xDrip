@@ -478,7 +478,8 @@ public class GcmActivity extends FauxActivity {
             @Override
             public void run() {
                 final PowerManager.WakeLock wl = JoH.getWakeLock("syncBGTable", 300000);
-                if ((JoH.ts() - last_sync_fill) > (60 * 1000 * (5 + bg_sync_backoff))) {
+                //if ((JoH.ts() - last_sync_fill) > (60 * 1000 * (5 + bg_sync_backoff))) {
+                if (JoH.pratelimit("last-sync-fill", 60 * (5 + bg_sync_backoff))) {
                     last_sync_fill = JoH.ts();
                     bg_sync_backoff++;
 
