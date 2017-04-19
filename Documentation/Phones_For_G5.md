@@ -8,12 +8,14 @@ In theory, using the same phone with the same Android version should allow you t
 Phone Model | Android Version
 --- | ---
 Google Pixel | 7.1.1 |
+Google Pixel | 7.1.2 |
 Google Pixel XL | 7.1.1
 Google Pixel XL | 7.1.2
 OnePlus A3003 | 7.0
 OnePlus A0001 | 6.0.1
 Samsung Galaxy S4 (SCH-I545) | 5.0.1
 Samsung Galaxy S5 (SM-G900V) | 6.0.1
+Samsung Galaxy Note 5 (N920V) | 7.0
 Samsung Galaxy S6 (G920V) | 6.0.1
 Samsung Galaxy S7 (SM-G930P) | 7.0
 Samsung Galaxy S7 (SM-G930V) | 7.0
@@ -23,9 +25,11 @@ Samsung Galaxy S7 edge (G935T) | 7.0
 Samsung Galaxy Express Prime (SM-J320A) | 6.0.1
 HTC 10 | 7.0
 Nexus 5 | 6.0
+Nexus 5X | 7.1.1
 Nexus 5X | 7.1.2
 Nexus 6 | 7.0
 Nexus 6P | 7.1.1
+Nexus 6P | 7.1.2
 LG V20 (LG-H918) | 7.0
 LG G4 (VS986 & H811) | 6.0
 LeEco Le Pro3 (LEX727) | 6.0.1
