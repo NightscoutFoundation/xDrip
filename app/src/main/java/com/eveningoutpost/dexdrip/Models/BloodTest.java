@@ -130,7 +130,7 @@ public class BloodTest extends Model {
         }
 
         if (timestamp_ms < 1487759433000L) {
-            UserError.Log.e(TAG, "Timestamp really too far in the past @ " + timestamp_ms);
+            UserError.Log.d(TAG, "Timestamp really too far in the past @ " + timestamp_ms);
             return null;
         }
 
