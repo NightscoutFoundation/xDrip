@@ -276,7 +276,9 @@ public class NightscoutUploader {
                                                 Log.d(TAG, "Already a bloodtest with uuid: " + uuid);
                                         }
                                     } else {
-                                        Log.e(TAG, "Cannot use bloodtest which is not type Finger");
+                                        if (JoH.quietratelimit("blood-test-type-finger", 2)) {
+                                            Log.e(TAG, "Cannot use bloodtest which is not type Finger: " + tr.getString("glucoseType"));
+                                        }
                                     }
                                 } catch (JSONException e) {
                                     // Log.d(TAG, "json processing: " + e);
@@ -437,14 +439,14 @@ public class NightscoutUploader {
                 if (dupe == null) {
                     populateV1APIMeterReadingEntry(array, record); // also add calibrations as meter records
                 } else {
-                    Log.e(TAG, "Found duplicate blood test entry for this calibration record: " + record.bg + " vs " + dupe.mgdl + " mg/dl");
+                    Log.d(TAG, "Found duplicate blood test entry for this calibration record: " + record.bg + " vs " + dupe.mgdl + " mg/dl");
                 }
                 populateV1APICalibrationEntry(array, record);
             }
 
             if (array.length() > 0) {//KS
-                RequestBody body = RequestBody.create(MediaType.parse("application/json"), array.toString());
-                Response<ResponseBody> r = nightscoutService.upload(secret, body).execute();
+                final RequestBody body = RequestBody.create(MediaType.parse("application/json"), array.toString());
+                final Response<ResponseBody> r = nightscoutService.upload(secret, body).execute();
                 if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
 
                 try {
