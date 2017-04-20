@@ -128,7 +128,7 @@ public class ShareRest {
             sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
             final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
-            OkHttpClient okHttpClient = new OkHttpClient();
+            final OkHttpClient okHttpClient = new OkHttpClient();
             okHttpClient.networkInterceptors().add(new Interceptor() {
                 @Override
                 public Response intercept(Chain chain) throws IOException {
