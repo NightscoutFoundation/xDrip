@@ -288,6 +288,20 @@ public class Treatments extends Model {
         return delete_last(false);
     }
 
+    public static void delete_by_timestamp(long timestamp) {
+        delete_by_timestamp(timestamp, 1500, false);
+    }
+
+    public static void delete_by_timestamp(long timestamp, int accuracy, boolean from_interactive) {
+        final Treatments t = byTimestamp(timestamp, accuracy); // do we need to alter default accuracy?
+        if (t != null) {
+            Log.d(TAG, "Deleting treatment closest to: " + JoH.dateTimeText(timestamp) + " matches uuid: " + t.uuid);
+            delete_by_uuid(t.uuid, from_interactive);
+        } else {
+            Log.e(TAG, "Couldn't find a treatment near enough to " + JoH.dateTimeText(timestamp) + " to delete!");
+        }
+    }
+
     public static void delete_by_uuid(String uuid)
     {
         delete_by_uuid(uuid,false);
@@ -297,7 +311,7 @@ public class Treatments extends Model {
         Treatments thistreat = byuuid(uuid);
         if (thistreat != null) {
 
-            UploaderQueue.newEntry("delete",thistreat);
+            UploaderQueue.newEntry("delete", thistreat);
             if (from_interactive) {
                 GcmActivity.push_delete_treatment(thistreat);
                 SyncService.startSyncService(3000); // sync in 3 seconds

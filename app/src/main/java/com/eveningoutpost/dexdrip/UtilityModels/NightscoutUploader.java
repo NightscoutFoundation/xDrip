@@ -52,9 +52,12 @@ import retrofit.Call;
 import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.Body;
+import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.POST;
+import retrofit.http.Path;
+import retrofit.http.Query;
 
 /**
  * THIS CLASS WAS BUILT BY THE NIGHTSCOUT GROUP FOR THEIR NIGHTSCOUT ANDROID UPLOADER
@@ -101,6 +104,12 @@ public class NightscoutUploader {
             @GET("treatments")
             Call<ResponseBody> downloadTreatments(@Header("api-secret") String secret);
 
+            @GET("treatments.json")
+            Call<ResponseBody> findTreatmentByUUID(@Header("api-secret") String secret, @Query("find[uuid]") String uuid);
+
+            @DELETE("treatments/{id}")
+            Call<ResponseBody> deleteTreatment(@Header("api-secret") String secret, @Path("id") String id);
+
         }
 
         private class UploaderException extends RuntimeException {
@@ -131,6 +140,11 @@ public class NightscoutUploader {
                 uploader.downloadRest(500);
             }
         }
+    }
+
+    public static String uuid_to_id(String uuid) {
+        if (uuid.length() == 24) return uuid; // already converted
+        return uuid.replaceAll("-", "").substring(0, 24);
     }
 
     public boolean downloadRest(final long sleep) {
@@ -588,12 +602,50 @@ public class NightscoutUploader {
             JSONArray array = new JSONArray();
             for (UploaderQueue up : tups) {
                 if ((up.action.equals("insert") || (up.action.equals("update")))) {
-                    Treatments treatment = Treatments.byid(up.reference_id);
+                    final Treatments treatment = Treatments.byid(up.reference_id);
                     populateV1APITreatmentEntry(array, treatment);
                 } else if (up.action.equals("delete")) {
                     if (up.reference_uuid != null) {
-                        Log.d(TAG, "Cannot delete treatment using REST-API: " + up.reference_uuid);
-                        up.completed(THIS_QUEUE); // mark as completed so as not to tie up the queue for now
+                        if (apiSecret != null) {
+                            // do we already have a nightscout style reference id
+                            String this_id = up.reference_uuid.length() == 24 ? up.reference_uuid : null;
+                            Response<ResponseBody> lookup = null;
+                            if (this_id == null) {
+                                // look up the _id to delete as we can't use find with delete action nor can we specify our own _id on submission circa nightscout 0.9.2
+                                lookup = nightscoutService.findTreatmentByUUID(apiSecret, up.reference_uuid).execute();
+                            }
+                            // throw an exception if we failed lookup
+                            if ((this_id == null) && (lookup != null) && !lookup.isSuccess()) {
+                                throw new UploaderException(lookup.message(), lookup.code());
+                            } else {
+                                // parse the result
+                                if (this_id == null) {
+                                    try {
+                                        final String response = lookup.body().string();
+                                        final JSONArray jsonArray = new JSONArray(response);
+                                        final JSONObject tr = (JSONObject) jsonArray.get(0); // can only be one
+                                        this_id = tr.getString("_id");
+                                    } catch (Exception e) {
+                                        Log.e(TAG, "Got exception parsing treatment lookup response: " + e);
+                                    }
+                                }
+                                // is the id valid now?
+                                if ((this_id != null) && (this_id.length() == 24)) {
+                                    final Response<ResponseBody> r = nightscoutService.deleteTreatment(apiSecret, this_id).execute();
+                                    if (!r.isSuccess()) {
+                                        throw new UploaderException(r.message(), r.code());
+                                    } else {
+                                        up.completed(THIS_QUEUE);
+                                        Log.d(TAG, "Success for RESTAPI treatment delete: " + up.reference_uuid + " _id: " + this_id);
+                                    }
+                                } else {
+                                    Log.wtf(TAG, "Couldn't find a reference _id for uuid: " + up.reference_uuid + " got: " + this_id);
+                                    up.completed(THIS_QUEUE); // don't retry
+                                }
+                            }
+                        } else {
+                            Log.wtf(TAG, "Cannot delete treatments without api secret being set");
+                        }
                     }
                 } else {
                     Log.e(TAG, "Unsupported operation type for treatment: " + up.action);

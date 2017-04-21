@@ -128,6 +128,7 @@ import lecho.lib.hellocharts.view.PreviewLineChartView;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPlugin;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
 
@@ -2825,6 +2826,32 @@ public class Home extends ActivityWithMenu {
 
             }
         });
+        if (Treatments.byTimestamp(timestamp, (int) (2.5 * MINUTE_IN_MS)) != null) {
+            dialogBuilder.setNeutralButton("Delete", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // are you sure?
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+                    builder.setTitle("Confirm Delete");
+                    builder.setMessage("Are you sure you want to delete this Treatment?");
+                    builder.setPositiveButton("Yes, Delete", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            Treatments.delete_by_timestamp(timestamp, (int) (2.5 * MINUTE_IN_MS), true); // 2.5 min resolution
+                            staticRefreshBGCharts();
+                            JoH.static_toast_short("Deleted!");
+                        }
+                    });
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    final AlertDialog alert = builder.create();
+                    alert.show();
+                    dialog = null;
+                }
+            });
+        }
         dialog = dialogBuilder.create();
         edt.setInputType(InputType.TYPE_CLASS_TEXT);
         edt.setOnFocusChangeListener(new View.OnFocusChangeListener() {

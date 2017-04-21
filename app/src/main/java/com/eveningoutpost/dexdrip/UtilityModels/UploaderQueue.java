@@ -303,7 +303,9 @@ public class UploaderQueue extends Model {
 
             // per class of data
             for (String type : getClasses()) {
-                Log.d(TAG, "Getting stats for class: " + type + " in " + circuits_for_stats.valueAt(i));
+                if (JoH.quietratelimit("uploader-stats", 10)) {
+                    Log.d(TAG, "Getting stats for class: " + type + " in " + circuits_for_stats.valueAt(i));
+                }
                 int count_pending = getQueueSizeByType(type, bitfield, false);
                 int count_completed = getQueueSizeByType(type, bitfield, true);
                 int count_total = count_pending + count_completed;
