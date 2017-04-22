@@ -26,6 +26,8 @@ import com.google.gson.annotations.Expose;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.eveningoutpost.dexdrip.Services.SyncService.startSyncService;
+
 /**
  * Created by jamorham on 15/11/2016.
  */
@@ -337,7 +339,17 @@ public class UploaderQueue extends Model {
 
 
         if (last_query > 0)
-            l.add(new StatusItem("Last poll", JoH.niceTimeSince(last_query)+" ago"));
+            l.add(new StatusItem("Last poll", JoH.niceTimeSince(last_query) + " ago", StatusItem.Highlight.NORMAL, "long-press",
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            if (JoH.ratelimit("nightscout-manual-poll", 15)) {
+                                startSyncService(100);
+                                JoH.static_toast_short("Polling");
+                            }
+                        }
+                    }));
+
 
         if (NightscoutUploader.last_exception_time > 0) {
             l.add(new StatusItem("REST-API problem\n" + JoH.dateTimeText(NightscoutUploader.last_exception_time), NightscoutUploader.last_exception, JoH.msSince(NightscoutUploader.last_exception_time) < (Constants.MINUTE_IN_MS * 6) ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));

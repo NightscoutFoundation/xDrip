@@ -56,6 +56,7 @@ import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.POST;
+import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
@@ -100,6 +101,9 @@ public class NightscoutUploader {
 
             @POST("treatments")
             Call<ResponseBody> uploadTreatments(@Header("api-secret") String secret, @Body RequestBody body);
+
+            @PUT("treatments")
+            Call<ResponseBody> upsertTreatments(@Header("api-secret") String secret, @Body RequestBody body);
 
             @GET("treatments")
             Call<ResponseBody> downloadTreatments(@Header("api-secret") String secret);
@@ -252,46 +256,49 @@ public class NightscoutUploader {
                             final JSONArray jsonArray = new JSONArray(response);
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 final JSONObject tr = (JSONObject) jsonArray.get(i);
-                                final String etype = tr.getString("eventType");
-                                final String uuid = UUID.nameUUIDFromBytes(tr.getString("_id").getBytes("UTF-8")).toString();
-                                final String nightscout_id = (tr.getString("_id") == null) ? uuid : tr.getString("_id");
-                                if (d) Log.d(TAG, "event: " + etype + " uuid:" + uuid);
 
+                                final String etype = tr.has("eventType") ? tr.getString("eventType") : "<null>";
+                               // TODO if we are using upsert then we should favour _id over uuid!?
+                                final String uuid = (tr.has("uuid") && (tr.getString("uuid") != null)) ? tr.getString("uuid") : UUID.nameUUIDFromBytes(tr.getString("_id").getBytes("UTF-8")).toString();
+                                final String nightscout_id = (tr.getString("_id") == null) ? uuid : tr.getString("_id");
+                                if (d) Log.d(TAG, "event: " + etype + "_id: "+nightscout_id+" uuid:" + uuid);
+
+                                boolean from_xdrip = false;
                                 try {
                                     if (tr.getString("enteredBy").startsWith(Treatments.XDRIP_TAG)) {
-                                        if (d)
-                                            Log.d(TAG, "Not syncing this item which came from xdrip to avoid duplicates");
-                                        // TODO we could maybe handle updated treatment data from nightscout
-                                        continue;
+                                        from_xdrip = true;
+                                        if (d) Log.d(TAG, "This record came from xDrip");
                                     }
                                 } catch (JSONException e) {
                                     //
                                 }
                                 // extract blood test data if present
                                 try {
-                                    if (tr.getString("glucoseType").equals("Finger")) {
-                                        final BloodTest existing = BloodTest.byUUID(uuid);
-                                        if (existing == null) {
-                                            final long timestamp = DateUtil.tolerantFromISODateString(tr.getString("created_at")).getTime();
-                                            double mgdl = JoH.tolerantParseDouble(tr.getString("glucose"));
-                                            if (tr.getString("units").equals("mmol"))
-                                                mgdl = mgdl * Constants.MMOLL_TO_MGDL;
-                                            final BloodTest bt = BloodTest.create(timestamp, mgdl, tr.getString("enteredBy") + " " + VIA_NIGHTSCOUT_TAG);
-                                            if (bt != null) {
-                                                bt.uuid = uuid; // override random uuid with nightscout one
-                                                bt.saveit();
-                                                new_data = true;
-                                                Log.ueh(TAG, "Received new Bloodtest data from Nightscout: " + BgGraphBuilder.unitized_string_with_units_static(mgdl) + " @ " + JoH.dateTimeText(timestamp));
+                                    if (!from_xdrip) {
+                                        if (tr.getString("glucoseType").equals("Finger")) {
+                                            final BloodTest existing = BloodTest.byUUID(uuid);
+                                            if (existing == null) {
+                                                final long timestamp = DateUtil.tolerantFromISODateString(tr.getString("created_at")).getTime();
+                                                double mgdl = JoH.tolerantParseDouble(tr.getString("glucose"));
+                                                if (tr.getString("units").equals("mmol"))
+                                                    mgdl = mgdl * Constants.MMOLL_TO_MGDL;
+                                                final BloodTest bt = BloodTest.create(timestamp, mgdl, tr.getString("enteredBy") + " " + VIA_NIGHTSCOUT_TAG);
+                                                if (bt != null) {
+                                                    bt.uuid = uuid; // override random uuid with nightscout one
+                                                    bt.saveit();
+                                                    new_data = true;
+                                                    Log.ueh(TAG, "Received new Bloodtest data from Nightscout: " + BgGraphBuilder.unitized_string_with_units_static(mgdl) + " @ " + JoH.dateTimeText(timestamp));
+                                                } else {
+                                                    Log.d(TAG, "Error creating bloodtest record");
+                                                }
                                             } else {
-                                                Log.d(TAG, "Error creating bloodtest record");
+                                                if (d)
+                                                    Log.d(TAG, "Already a bloodtest with uuid: " + uuid);
                                             }
                                         } else {
-                                            if (d)
-                                                Log.d(TAG, "Already a bloodtest with uuid: " + uuid);
-                                        }
-                                    } else {
-                                        if (JoH.quietratelimit("blood-test-type-finger", 2)) {
-                                            Log.e(TAG, "Cannot use bloodtest which is not type Finger: " + tr.getString("glucoseType"));
+                                            if (JoH.quietratelimit("blood-test-type-finger", 2)) {
+                                                Log.e(TAG, "Cannot use bloodtest which is not type Finger: " + tr.getString("glucoseType"));
+                                            }
                                         }
                                     }
                                 } catch (JSONException e) {
@@ -301,6 +308,7 @@ public class NightscoutUploader {
                                 // extract treatment data if present
                                 double carbs = 0;
                                 double insulin = 0;
+                                String notes = null;
                                 try {
                                     carbs = tr.getDouble("carbs");
                                 } catch (JSONException e) {
@@ -311,8 +319,13 @@ public class NightscoutUploader {
                                 } catch (JSONException e) {
                                     // Log.d(TAG, "json processing: " + e);
                                 }
+                                try {
+                                    notes = tr.getString("notes");
+                                } catch (JSONException e) {
+                                    // Log.d(TAG, "json processing: " + e);
+                                }
 
-                                if ((carbs > 0) || (insulin > 0)) {
+                                if ((carbs > 0) || (insulin > 0) || (notes != null)) {
                                     final long timestamp = DateUtil.tolerantFromISODateString(tr.getString("created_at")).getTime();
                                     if (timestamp > 0) {
                                         if (d)
@@ -320,28 +333,40 @@ public class NightscoutUploader {
                                         Treatments existing = Treatments.byuuid(nightscout_id);
                                         if (existing == null)
                                             existing = Treatments.byuuid(uuid);
-                                        if (existing == null) {
+                                        if ((existing == null) && (!from_xdrip)) {
                                             // TODO check for close timestamp duplicates perhaps
                                             Log.ueh(TAG, "New Treatment from Nightscout: Carbs: " + carbs + " Insulin: " + insulin + " timestamp: " + JoH.dateTimeText(timestamp));
-                                            final Treatments t = Treatments.create(carbs, insulin, timestamp);
-                                            t.uuid = nightscout_id; // replace with nightscout uuid
+                                            final Treatments t = Treatments.create(carbs, insulin, timestamp, nightscout_id);
+                                            //t.uuid = nightscout_id; // replace with nightscout uuid
                                             try {
                                                 t.enteredBy = tr.getString("enteredBy") + " " + VIA_NIGHTSCOUT_TAG;
                                             } catch (JSONException e) {
                                                 t.enteredBy = VIA_NIGHTSCOUT_TAG;
                                             }
+                                            if (tr.has("notes")) t.notes = tr.getString("notes");
                                             t.save();
+                                            // sync again!
+                                           // pushTreatmentSync(t, false);
                                             new_data = true;
                                         } else {
-                                            if (d)
-                                                Log.d(TAG, "Treatment with uuid: " + uuid + " / " + nightscout_id + " already exists");
-                                            if ((existing.carbs != carbs) || (existing.insulin != insulin) || (existing.timestamp != timestamp)) {
-                                                Log.ueh(TAG, "Treatment changes from Nightscout: " + carbs + " Insulin: " + insulin + " timestamp: " + JoH.dateTimeText(timestamp));
-                                                existing.carbs = carbs;
-                                                existing.insulin = insulin;
-                                                existing.timestamp = timestamp;
-                                                existing.save();
-                                                new_data = true;
+                                            if (existing != null) {
+                                                if (d)
+                                                    Log.d(TAG, "Treatment with uuid: " + uuid + " / " + nightscout_id + " already exists");
+                                                if (notes == null) notes = "";
+                                                if (existing.notes == null) existing.notes = "";
+                                                if ((existing.carbs != carbs) || (existing.insulin != insulin) || ((existing.timestamp / Constants.SECOND_IN_MS) != (timestamp / Constants.SECOND_IN_MS))
+                                                        || (!existing.notes.equals(notes))) {
+                                                    Log.ueh(TAG, "Treatment changes from Nightscout: " + carbs + " Insulin: " + insulin + " timestamp: " + JoH.dateTimeText(timestamp) + " " + notes + " " + " vs " + existing.carbs + " " + existing.insulin + " " + JoH.dateTimeText(existing.timestamp) + " " + existing.notes);
+                                                    existing.carbs = carbs;
+                                                    existing.insulin = insulin;
+                                                    existing.timestamp = timestamp;
+                                                    existing.created_at = DateUtil.toISOString(timestamp);
+                                                    existing.notes = notes;
+                                                    existing.save();
+                                                    new_data = true;
+                                                }
+                                            } else {
+                                                Log.d(TAG, "Skipping record creation as original source is xDrip");
                                             }
                                         }
                                     }
@@ -358,7 +383,7 @@ public class NightscoutUploader {
 
 
             } catch (Exception e) {
-                String msg = "Unable to do REST API Download " + e + e.getMessage() + " url: " + baseURI;
+                String msg = "Unable to do REST API Download " + e + " " + e.getMessage() + " url: " + baseURI;
                 last_exception = msg;
                 last_exception_time = JoH.tsl();
                 Log.e(TAG, msg);
@@ -599,11 +624,18 @@ public class NightscoutUploader {
         final long THIS_QUEUE = UploaderQueue.NIGHTSCOUT_RESTAPI;
         final List<UploaderQueue> tups = UploaderQueue.getPendingbyType(Treatments.class.getSimpleName(), THIS_QUEUE);
         if (tups != null) {
-            JSONArray array = new JSONArray();
+            JSONArray insert_array = new JSONArray();
+            JSONArray upsert_array = new JSONArray();
             for (UploaderQueue up : tups) {
                 if ((up.action.equals("insert") || (up.action.equals("update")))) {
                     final Treatments treatment = Treatments.byid(up.reference_id);
-                    populateV1APITreatmentEntry(array, treatment);
+                    if (up.action.equals("insert")) {
+                        //populateV1APITreatmentEntry(insert_array, treatment);
+                        // TODO always use singular upserts for now
+                        populateV1APITreatmentEntry(upsert_array, treatment);
+                    } else if (up.action.equals("update")) {
+                        populateV1APITreatmentEntry(upsert_array, treatment);
+                    }
                 } else if (up.action.equals("delete")) {
                     if (up.reference_uuid != null) {
                         if (apiSecret != null) {
@@ -648,24 +680,65 @@ public class NightscoutUploader {
                         }
                     }
                 } else {
-                    Log.e(TAG, "Unsupported operation type for treatment: " + up.action);
+                    Log.wtf(TAG, "Unsupported operation type for treatment: " + up.action);
+                    up.completed(THIS_QUEUE); // don't retry it
                 }
             }
-            if (array.length() == 0) return;
-            final RequestBody body = RequestBody.create(MediaType.parse("application/json"), array.toString());
-            final Response<ResponseBody> r;
-            if (apiSecret != null) {
-                r = nightscoutService.uploadTreatments(apiSecret, body).execute();
-                if (!r.isSuccess()) {
-                    throw new UploaderException(r.message(), r.code());
+            // handle insert types
+            if (insert_array.length() != 0) {
+                final RequestBody body = RequestBody.create(MediaType.parse("application/json"), insert_array.toString());
+                final Response<ResponseBody> r;
+                if (apiSecret != null) {
+                    r = nightscoutService.uploadTreatments(apiSecret, body).execute();
+                    if (!r.isSuccess()) {
+                        throw new UploaderException(r.message(), r.code());
+                    } else {
+                        Log.d(TAG, "Success for RESTAPI treatment insert upload");
+                        for (UploaderQueue up : tups) {
+                            if (up.action.equals("insert")) {
+                                up.completed(THIS_QUEUE); // approve all types for this queue
+                            }
+                        }
+                    }
                 } else {
-                    Log.d(TAG, "Success for RESTAPI treatment upload");
-                    for (UploaderQueue up : tups) {
-                        up.completed(THIS_QUEUE); // approve all types for this queue
+                    Log.wtf(TAG, "Cannot upload treatments without api secret being set");
+                }
+            }
+            // handle upsert types
+            if (upsert_array.length() != 0) {
+                for (int i = 0; i < upsert_array.length(); i++) {
+                    JSONObject item = (JSONObject) upsert_array.get(i);
+                    final String match_uuid = item.getString("uuid");
+                    item.put("_id", uuid_to_id(match_uuid));
+                    final RequestBody body = RequestBody.create(MediaType.parse("application/json"), item.toString());
+                    final Response<ResponseBody> r;
+                    if (apiSecret != null) {
+                        r = nightscoutService.upsertTreatments(apiSecret, body).execute();
+                        if (!r.isSuccess()) {
+                            throw new UploaderException(r.message(), r.code());
+                        } else {
+                            Log.d(TAG, "Success for RESTAPI treatment upsert upload: " + match_uuid);
+
+                            for (UploaderQueue up : tups) {
+                                if (d) Log.d(TAG, "upsert: " + match_uuid + " / " + up.reference_uuid + " " + up.action + " " + up.reference_id);
+                                if ((up.action.equals("update") || (up.action.equals("insert")))
+                                        && (up.reference_uuid.equals(match_uuid) || (uuid_to_id(up.reference_uuid).equals(match_uuid)))) {
+                                    if( d) Log.d(TAG, "upsert: matched");
+                                    up.completed(THIS_QUEUE); // approve all types for this queue
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        Log.wtf(TAG, "Cannot upload treatments without api secret being set");
+                        return;
                     }
                 }
-            } else {
-                Log.wtf(TAG, "Cannot upload treatments without api secret being set");
+                // if we got this far without exception then mark everything as completed to fix harmless erroneous queue entries
+                for (UploaderQueue up : tups) {
+                    if (d) Log.d(TAG, "Marking all items completed");
+                    up.completed(THIS_QUEUE);
+                }
             }
         }
     }
