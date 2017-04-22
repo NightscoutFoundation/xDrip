@@ -624,7 +624,8 @@ public class NightscoutUploader {
         final boolean always_send_battery = true; // nightscout doesn't currently display device device status if it thinks its stale
         final List<String> batteries = new ArrayList<>();
         batteries.add("Phone");
-        if (DexCollectionType.hasBattery()) batteries.add("Bridge");
+        if (DexCollectionType.hasBattery() || (Home.get_forced_wear() && DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomG5)))
+            batteries.add("Bridge");
         if (DexCollectionType.hasWifi()) batteries.add("Parakeet");
 
         for (String battery : batteries) {
@@ -675,6 +676,7 @@ public class NightscoutUploader {
                 //}
                 //}
 
+                UserError.Log.d(TAG, "json.toString(): " + json.toString());
 
                 final RequestBody body = RequestBody.create(MediaType.parse("application/json"), json.toString());
                 Response<ResponseBody> r;
