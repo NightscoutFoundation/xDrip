@@ -74,6 +74,10 @@ public class Treatments extends Model {
     public String created_at;
 
     public static synchronized Treatments create(final double carbs, final double insulin, long timestamp) {
+        return create(carbs, insulin, timestamp, null);
+    }
+
+    public static synchronized Treatments create(final double carbs, final double insulin, long timestamp, String suggested_uuid) {
         // if treatment more than 1 minutes in the future
         final long future_seconds = (timestamp - JoH.tsl()) / 1000;
         if (future_seconds > (60 * 60)) {
@@ -86,10 +90,10 @@ public class Treatments extends Model {
                     + carbs + " " + context.getString(R.string.carbs) + " / "
                     + insulin + " " + context.getString(R.string.units), (int) future_seconds, 34026);
         }
-        return create(carbs, insulin, timestamp, -1);
+        return create(carbs, insulin, timestamp, -1, suggested_uuid);
     }
 
-    public static synchronized Treatments create(final double carbs, final double insulin, long timestamp, double position) {
+    public static synchronized Treatments create(final double carbs, final double insulin, long timestamp, double position, String suggested_uuid) {
         // TODO sanity check values
         Log.d(TAG, "Creating treatment: Insulin: " + Double.toString(insulin) + " / Carbs: " + Double.toString(carbs));
 
@@ -112,10 +116,10 @@ public class Treatments extends Model {
         Treatment.insulin = insulin;
         Treatment.timestamp = timestamp;
         Treatment.created_at = DateUtil.toISOString(timestamp);
-        Treatment.uuid = UUID.randomUUID().toString();
+        Treatment.uuid = suggested_uuid != null ? suggested_uuid : UUID.randomUUID().toString();
         Treatment.save();
-       // GcmActivity.pushTreatmentAsync(Treatment);
-      //  NSClientChat.pushTreatmentAsync(Treatment);
+        // GcmActivity.pushTreatmentAsync(Treatment);
+        //  NSClientChat.pushTreatmentAsync(Treatment);
         pushTreatmentSync(Treatment);
         UndoRedo.addUndoTreatment(Treatment.uuid);
         return Treatment;
@@ -174,7 +178,7 @@ public class Treatments extends Model {
 
 
         Treatment.save();
-        pushTreatmentSync(Treatment);
+        pushTreatmentSync(Treatment, is_new);
         if (is_new) UndoRedo.addUndoTreatment(Treatment.uuid);
         return Treatment;
     }
@@ -194,8 +198,11 @@ public class Treatments extends Model {
         return Treatment;
     }
 
-
     private static void pushTreatmentSync(Treatments treatment) {
+        pushTreatmentSync(treatment, true); // new entry by default
+    }
+
+    private static void pushTreatmentSync(Treatments treatment, boolean is_new) {
         if (Home.get_master_or_follower()) GcmActivity.pushTreatmentAsync(treatment);
 
         if (!(Home.getPreferencesBoolean("cloud_storage_api_enable", false) || Home.getPreferencesBoolean("cloud_storage_mongodb_enable", false))) {
@@ -204,7 +211,7 @@ public class Treatments extends Model {
             Log.d(TAG, "Skipping NSClient treatment broadcast as nightscout direct sync is enabled");
         }
 
-        if (UploaderQueue.newEntry("insert", treatment) != null) {
+        if (UploaderQueue.newEntry(is_new ? "insert" : "update", treatment) != null) {
             SyncService.startSyncService(3000); // sync in 3 seconds
         }
     }
