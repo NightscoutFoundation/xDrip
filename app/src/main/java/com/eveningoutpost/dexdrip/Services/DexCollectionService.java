@@ -603,6 +603,11 @@ public class DexCollectionService extends Service {
         // Experimental support for rfduino from Tomasz Stachowicz
         if (use_rfduino_bluetooth ) {
             Log.w(TAG, "sendBtMessage: use_rfduino_bluetooth");
+            if (mCharacteristicSend == null) {
+                status("Error: mCharacteristicSend was null in sendBtMessage");
+                Log.e(TAG, lastState);
+                return false;
+            }
             mCharacteristicSend.setValue(value);
             return mBluetoothGatt.writeCharacteristic(mCharacteristicSend);
         }
