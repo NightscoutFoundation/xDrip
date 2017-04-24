@@ -75,10 +75,6 @@ public class TransmitterData extends Model {
             } else {
                 transmitterData.timestamp = timestamp;
             }
-            int wearBatteryLevel = CheckBridgeBattery.getBatteryLevel(Home.getAppContext());
-            Log.i(TAG, "create wearBatteryLevel=" + wearBatteryLevel);
-            Home.setPreferencesInt("bridge_battery", wearBatteryLevel);//TODO confirm wear battery should be used as bridge
-            CheckBridgeBattery.checkBridgeBattery();
             Log.i(TAG, "Created transmitterData record with Raw value of " + transmitterData.raw_data + " and Filtered value of " + transmitterData.filtered_data + " at " + timestamp + " with timestamp " + transmitterData.timestamp);
         } else { //this is NOT a dexbridge packet.  Process accordingly.
             Log.i(TAG, "create Processing a BTWixel or IPWixel packet");
