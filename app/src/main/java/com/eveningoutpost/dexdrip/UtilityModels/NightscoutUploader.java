@@ -36,6 +36,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -99,6 +100,9 @@ public class NightscoutUploader {
             @POST("devicestatus")
             Call<ResponseBody> uploadDeviceStatus(@Header("api-secret") String secret, @Body RequestBody body);
 
+            @GET("status.json")
+            Call<ResponseBody> getStatus(@Header("api-secret") String secret);
+
             @POST("treatments")
             Call<ResponseBody> uploadTreatments(@Header("api-secret") String secret, @Body RequestBody body);
 
@@ -142,6 +146,34 @@ public class NightscoutUploader {
             if (JoH.ratelimit("cloud_treatment_download", 60)) {
                 final NightscoutUploader uploader = new NightscoutUploader(xdrip.getAppContext());
                 uploader.downloadRest(500);
+            }
+        }
+    }
+
+    private void doStatusUpdate(NightscoutService nightscoutService, String url, String hashedSecret) {
+        final String store_marker = "nightscout-status-poll-" + url;
+        final String old_data = PersistentStore.getString(store_marker);
+        int retry_secs = (old_data.length() == 0) ? 20 : 86400;
+        if (old_data.equals("error")) retry_secs = 3600;
+        if (JoH.pratelimit("poll-nightscout-status-" + url, retry_secs)) {
+            try {
+                final Response<ResponseBody> r;
+                r = nightscoutService.getStatus(hashedSecret).execute();
+                if ((r != null) && (r.isSuccess())) {
+                    final String response = r.body().string();
+                    if (d) Log.d(TAG, "Status Response: " + response);
+                    // TODO do we need to parse json here or should we just store string?
+                    final JSONObject tr = new JSONObject(response);
+                    if (d) Log.d(TAG, url + " " + tr.toString());
+                    PersistentStore.setString(store_marker, tr.toString());
+                } else {
+                    PersistentStore.setString(store_marker, "error");
+                    Log.d(TAG, "Failure to get status data from: " + url + " " + ((r != null) ? r.message() : ""));
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "Got json exception in status update parsing: " + e);
+            } catch (IOException e) {
+                Log.e(TAG, "Got exception attempting status update: " + e);
             }
         }
     }
@@ -249,6 +281,7 @@ public class NightscoutUploader {
                     final String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
                     final Response<ResponseBody> r;
                     if (hashedSecret != null) {
+                        doStatusUpdate(nightscoutService, retrofit.baseUrl().url().toString(), hashedSecret); // update status if needed
                         r = nightscoutService.downloadTreatments(hashedSecret).execute();
                         if ((r != null) && (r.isSuccess())) {
                             final String response = r.body().string();
@@ -335,15 +368,21 @@ public class NightscoutUploader {
                                             existing = Treatments.byuuid(uuid);
                                         if ((existing == null) && (!from_xdrip)) {
                                             // TODO check for close timestamp duplicates perhaps
-                                            Log.ueh(TAG, "New Treatment from Nightscout: Carbs: " + carbs + " Insulin: " + insulin + " timestamp: " + JoH.dateTimeText(timestamp));
-                                            final Treatments t = Treatments.create(carbs, insulin, timestamp, nightscout_id);
+                                            Log.ueh(TAG, "New Treatment from Nightscout: Carbs: " + carbs + " Insulin: " + insulin + " timestamp: " + JoH.dateTimeText(timestamp) + ((notes != null) ? " Note: "+notes : ""));
+                                            final Treatments t;
+                                            if ((carbs > 0) || (insulin > 0)) {
+                                                t = Treatments.create(carbs, insulin, timestamp, nightscout_id);
+                                            } else {
+                                                t = Treatments.create_note(notes, timestamp, -1, nightscout_id);
+                                            }
+
                                             //t.uuid = nightscout_id; // replace with nightscout uuid
                                             try {
                                                 t.enteredBy = tr.getString("enteredBy") + " " + VIA_NIGHTSCOUT_TAG;
                                             } catch (JSONException e) {
                                                 t.enteredBy = VIA_NIGHTSCOUT_TAG;
                                             }
-                                            if (tr.has("notes")) t.notes = tr.getString("notes");
+                                            if (notes != null) t.notes = notes;
                                             t.save();
                                             // sync again!
                                            // pushTreatmentSync(t, false);
@@ -436,6 +475,7 @@ public class NightscoutUploader {
 
                     if (apiVersion == 1) {
                         String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
+                        doStatusUpdate(nightscoutService, retrofit.baseUrl().url().toString(), hashedSecret); // update status if needed
                         doRESTUploadTo(nightscoutService, hashedSecret, glucoseDataSets, meterRecords, calRecords);
                     } else {
                         doLegacyRESTUploadTo(nightscoutService, glucoseDataSets);
@@ -751,8 +791,10 @@ public class NightscoutUploader {
         final boolean always_send_battery = true; // nightscout doesn't currently display device device status if it thinks its stale
         final List<String> batteries = new ArrayList<>();
         batteries.add("Phone");
-        if (DexCollectionType.hasBattery() || (Home.get_forced_wear() && DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomG5)))
+        if ((DexCollectionType.hasBattery() && (Home.getPreferencesBoolean("send_bridge_battery_to_nightscout", true)))
+                || (Home.get_forced_wear() && DexCollectionType.getDexCollectionType().equals(DexCollectionType.DexcomG5))) {
             batteries.add("Bridge");
+        }
         if (DexCollectionType.hasWifi()) batteries.add("Parakeet");
 
         for (String battery : batteries) {
@@ -803,7 +845,6 @@ public class NightscoutUploader {
                 //}
                 //}
 
-                UserError.Log.d(TAG, "json.toString(): " + json.toString());
 
                 final RequestBody body = RequestBody.create(MediaType.parse("application/json"), json.toString());
                 Response<ResponseBody> r;

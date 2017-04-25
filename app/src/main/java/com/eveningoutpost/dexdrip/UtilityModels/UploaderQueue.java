@@ -23,6 +23,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +61,11 @@ public class UploaderQueue extends Model {
     private static long last_cleanup = 0;
     private static long last_new_entry = 0;
     private static long last_query = 0;
+
+    // mega status cache
+    private static ArrayList<String> processedBaseURIs;
+    private static ArrayList<String> processedBaseURInames;
+
 
     // Bitfields
     public static final long MONGO_DIRECT = 1;
@@ -351,13 +360,93 @@ public class UploaderQueue extends Model {
                     }));
 
 
+        // enumerate status items for nightscout rest-api
+        if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable")) {
+            try {
+
+                if ((processedBaseURIs == null) || (JoH.ratelimit("uploader-base-urls-cache", 60))) {
+                    // Rebuild url cache
+                    processedBaseURIs = new ArrayList<>();
+                    processedBaseURInames = new ArrayList<>();
+                    final String baseURLSettings = Home.getPreferencesStringDefaultBlank("cloud_storage_api_base");
+                    final ArrayList<String> baseURIs = new ArrayList<>();
+
+                    for (String baseURLSetting : baseURLSettings.split(" ")) {
+                        String baseURL = baseURLSetting.trim();
+                        if (baseURL.isEmpty()) continue;
+                        baseURIs.add(baseURL + (baseURL.endsWith("/") ? "" : "/"));
+                    }
+                    for (String baseURI : baseURIs) {
+                        final URI uri = new URI(baseURI);
+                        final String baseURL = baseURI.replaceFirst("//[^@]+@", "//");
+                        processedBaseURIs.add(baseURL);
+                        processedBaseURInames.add(uri.getHost());
+                    }
+                }
+
+                // lookup status for each url in cache
+                for (int i = 0; i < processedBaseURIs.size(); i++) {
+                    try {
+                        final String store_marker = "nightscout-status-poll-" + processedBaseURIs.get(i);
+                        final JSONObject status = new JSONObject(PersistentStore.getString(store_marker));
+                        l.add(new StatusItem(processedBaseURInames.get(i), status.getString("name") + " " + status.getString("version"), StatusItem.Highlight.NORMAL, "long-press",
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        refreshStatus(store_marker);
+                                    }
+                                }));
+
+                        if (status.has("careportalEnabled") && !status.getBoolean("careportalEnabled")) {
+                            l.add(new StatusItem("Config error in Nightscout at " + processedBaseURInames.get(i), "You must enable the careportal plugin or treatment sync will be broken", StatusItem.Highlight.BAD, "long-press",
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            refreshStatus(store_marker);
+                                        }
+                                    }));
+                        }
+
+                        final JSONObject extended = status.getJSONObject("extendedSettings");
+                        final JSONObject dextended = (extended.has("devicestatus") ? extended.getJSONObject("devicestatus") : null);
+                        if ((dextended == null) || !dextended.has("advanced") || !dextended.getBoolean("advanced"))
+                            l.add(new StatusItem("Config error in Nightscout at " + processedBaseURInames.get(i), "You must set DEVICESTATUS_ADVANCED env item to True for multiple battery status to work properly", StatusItem.Highlight.BAD, "long-press",
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            refreshStatus(store_marker);
+                                        }
+                                    }));
+
+
+                    } catch (JSONException e) {
+
+                    }
+                }
+            } catch (Exception e) {
+                //
+            }
+
+        }
+
+
+        ///
+
         if (NightscoutUploader.last_exception_time > 0) {
             l.add(new StatusItem("REST-API problem\n" + JoH.dateTimeText(NightscoutUploader.last_exception_time), NightscoutUploader.last_exception, JoH.msSince(NightscoutUploader.last_exception_time) < (Constants.MINUTE_IN_MS * 6) ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
         }
 
         if (last_cleanup > 0)
-            l.add(new StatusItem("Last clean up", JoH.niceTimeSince(last_cleanup)+ " ago"));
+            l.add(new StatusItem("Last clean up", JoH.niceTimeSince(last_cleanup) + " ago"));
 
         return l;
+    }
+
+    private static void refreshStatus(String store_marker) {
+        PersistentStore.setString(store_marker, "");
+        if (JoH.ratelimit("nightscout-manual-poll", 15)) {
+            startSyncService(100);
+            JoH.static_toast_short("Refreshing Status");
+        }
     }
 }

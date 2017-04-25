@@ -127,10 +127,14 @@ public class Treatments extends Model {
 
     // Note
     public static synchronized Treatments create_note(String note, long timestamp) {
-        return create_note(note, timestamp, -1);
+        return create_note(note, timestamp, -1, null);
     }
 
     public static synchronized Treatments create_note(String note, long timestamp, double position) {
+        return create_note(note, timestamp, position, null);
+    }
+
+    public static synchronized Treatments create_note(String note, long timestamp, double position, String suggested_uuid) {
         // TODO sanity check values
         Log.d(TAG, "Creating treatment note: " + note);
 
@@ -160,7 +164,7 @@ public class Treatments extends Model {
             Treatment.notes = note;
             Treatment.timestamp = timestamp;
             Treatment.created_at = DateUtil.toISOString(timestamp);
-            Treatment.uuid = UUID.randomUUID().toString();
+            Treatment.uuid = suggested_uuid != null ? suggested_uuid : UUID.randomUUID().toString();
 
         } else {
             if (Treatment.notes == null) Treatment.notes = "";
@@ -251,6 +255,7 @@ public class Treatments extends Model {
     }
 
     public static Treatments byuuid(String uuid) {
+        if (uuid == null) return null;
         return new Select()
                 .from(Treatments.class)
                 .where("uuid = ?", uuid)
@@ -362,13 +367,22 @@ public class Treatments extends Model {
         Log.d(TAG, "converting treatment from json: ");
         Treatments mytreatment = fromJSON(json);
         if (mytreatment != null) {
+            if (mytreatment.uuid == null) {
+                try {
+                    final JSONObject jsonobj = new JSONObject(json);
+                    if (jsonobj.has("_id")) mytreatment.uuid = jsonobj.getString("_id");
+                } catch (JSONException e) {
+                    //
+                }
+                if (mytreatment.uuid == null) mytreatment.uuid = UUID.randomUUID().toString();
+            }
             Treatments dupe_treatment = byTimestamp(mytreatment.timestamp);
             if (dupe_treatment != null) {
                 Log.i(TAG, "Duplicate treatment for: " + mytreatment.timestamp);
 
                 if ((dupe_treatment.uuid !=null) && (mytreatment.uuid !=null) && (dupe_treatment.uuid.equals(mytreatment.uuid)) && (mytreatment.notes != null))
                 {
-                    if ((dupe_treatment.notes == null) || (dupe_treatment.notes.length()<mytreatment.notes.length()))
+                    if ((dupe_treatment.notes == null) || (dupe_treatment.notes.length() < mytreatment.notes.length()))
                     {
                         dupe_treatment.notes = mytreatment.notes;
                         fixUpTable();

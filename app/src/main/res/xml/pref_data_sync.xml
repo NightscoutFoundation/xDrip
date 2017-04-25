@@ -87,62 +87,70 @@
                     android:key="bluetooth_meter_for_calibrations_auto"
                     android:summary="Calibrate using new blood glucose readings if the conditions appear right to do so without asking confirmation (experimental)"
                     android:title="Automatic Calibration" />
+                <PreferenceScreen
+                    android:key="rest_api_extra_options"
+                    android:summary=""
+                    android:title="Extra Options">
+                    <CheckBoxPreference
+                        android:defaultValue="true"
+                        android:key="skip_lan_uploads_when_no_lan"
+                        android:summary="@string/skip_local_lan"
+                        android:title="@string/skip_lan_uploads" />
+                    <CheckBoxPreference
+                        android:defaultValue="true"
+                        android:key="send_bridge_battery_to_nightscout"
+                        android:summary="Send your bridge battery level to Nightscout. Uncheck if your battery sensor is broken."
+                        android:title="Upload bridge battery" />
+                </PreferenceScreen>
+            </PreferenceScreen>
 
+            <PreferenceScreen
+                android:key="cloud_storage_influxdb"
+                android:summary="@string/pref_summary_influxdb_enabled"
+                android:title="@string/pref_title_influxdb">
+
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="cloud_storage_influxdb_enable"
+                    android:title="@string/influxdb_sync" />
+                <EditTextPreference
+                    android:defaultValue="@string/pref_default_influxdb_uri"
+                    android:dependency="cloud_storage_influxdb_enable"
+                    android:dialogMessage="@string/pref_message_influxdb_uri"
+                    android:dialogTitle="@string/pref_dialog_influxdb_uri"
+                    android:inputType="textUri"
+                    android:key="cloud_storage_influxdb_uri"
+                    android:title="@string/influxdb_uri" />
+                <EditTextPreference
+                    android:defaultValue="@string/pref_default_influxdb_database"
+                    android:dependency="cloud_storage_influxdb_enable"
+                    android:dialogMessage="@string/pref_message_influxdb_database"
+                    android:dialogTitle="@string/pref_dialog_influxdb_database"
+                    android:inputType="text"
+                    android:key="cloud_storage_influxdb_database"
+                    android:title="@string/influxdb_database_name" />
+                <EditTextPreference
+                    android:defaultValue="@string/pref_default_influxdb_username"
+                    android:dependency="cloud_storage_influxdb_enable"
+                    android:dialogMessage="@string/pref_message_influxdb_username"
+                    android:dialogTitle="@string/pref_dialog_influxdb_username"
+                    android:inputType="text"
+                    android:key="cloud_storage_influxdb_username"
+                    android:title="@string/user" />
+                <EditTextPreference
+                    android:defaultValue="@string/pref_default_influxdb_password"
+                    android:dependency="cloud_storage_influxdb_enable"
+                    android:dialogMessage="@string/pref_message_influxdb_password"
+                    android:dialogTitle="@string/pref_dialog_influxdb_password"
+                    android:inputType="text"
+                    android:key="cloud_storage_influxdb_password"
+                    android:title="@string/password" />
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="skip_lan_uploads_when_no_lan"
                     android:summary="@string/skip_local_lan"
                     android:title="@string/skip_lan_uploads" />
-
             </PreferenceScreen>
-
-            <PreferenceScreen
-                           android:key="cloud_storage_influxdb"
-                            android:summary="@string/pref_summary_influxdb_enabled"
-                            android:title="@string/pref_title_influxdb">
-
-                            <SwitchPreference
-                                android:defaultValue="false"
-                                android:key="cloud_storage_influxdb_enable"
-                                android:title="@string/influxdb_sync" />
-                            <EditTextPreference
-                                android:defaultValue="@string/pref_default_influxdb_uri"
-                                android:dependency="cloud_storage_influxdb_enable"
-                                android:dialogMessage="@string/pref_message_influxdb_uri"
-                                android:dialogTitle="@string/pref_dialog_influxdb_uri"
-                                android:inputType="textUri"
-                                android:key="cloud_storage_influxdb_uri"
-                                android:title="@string/influxdb_uri" />
-                            <EditTextPreference
-                                android:defaultValue="@string/pref_default_influxdb_database"
-                                android:dependency="cloud_storage_influxdb_enable"
-                                android:dialogMessage="@string/pref_message_influxdb_database"
-                                android:dialogTitle="@string/pref_dialog_influxdb_database"
-                                android:inputType="text"
-                                android:key="cloud_storage_influxdb_database"
-                                android:title="@string/influxdb_database_name" />
-                            <EditTextPreference
-                                android:defaultValue="@string/pref_default_influxdb_username"
-                                android:dependency="cloud_storage_influxdb_enable"
-                                android:dialogMessage="@string/pref_message_influxdb_username"
-                                android:dialogTitle="@string/pref_dialog_influxdb_username"
-                                android:inputType="text"
-                                android:key="cloud_storage_influxdb_username"
-                                android:title="@string/user" />
-                            <EditTextPreference
-                                android:defaultValue="@string/pref_default_influxdb_password"
-                                android:dependency="cloud_storage_influxdb_enable"
-                                android:dialogMessage="@string/pref_message_influxdb_password"
-                                android:dialogTitle="@string/pref_dialog_influxdb_password"
-                                android:inputType="text"
-                                android:key="cloud_storage_influxdb_password"
-                                android:title="@string/password" />
-                            <CheckBoxPreference
-                                android:defaultValue="true"
-                                android:key="skip_lan_uploads_when_no_lan"
-                                android:summary="@string/skip_local_lan"
-                                android:title="@string/skip_lan_uploads" />
-                        </PreferenceScreen>
 
             <PreferenceScreen
                 android:key="dexcom_server_upload_screen"
@@ -203,11 +211,11 @@
             android:title="@string/glucose_meters">
 
             <SwitchPreference
-                android:switchTextOff="@string/short_off_text_for_switches"
-                android:switchTextOn="@string/short_on_text_for_switches"
                 android:defaultValue="false"
                 android:key="bluetooth_meter_enabled"
                 android:summary="@string/auto_connect_to_meter"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/use_bluetooth_meter" />
             <Preference
                 android:key="scan_and_pair_meter"
@@ -220,8 +228,8 @@
             </Preference>
             <CheckBoxPreference
                 android:defaultValue="true"
-                android:key="bluetooth_meter_play_sounds"
                 android:dependency="bluetooth_meter_enabled"
+                android:key="bluetooth_meter_play_sounds"
                 android:summary="@string/meter_connect_sound"
                 android:title="@string/meter_connect_sound_effect" />
             <CheckBoxPreference
