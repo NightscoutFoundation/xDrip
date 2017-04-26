@@ -20,6 +20,8 @@ import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import android.Manifest;
 import android.app.ActivityManager;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
@@ -1338,6 +1340,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             prefs.putString("falling_bg_val", dataMap.getString("falling_bg_val", "2"));
             prefs.putBoolean("rising_alert", dataMap.getBoolean("rising_alert", false));
             prefs.putString("rising_bg_val", dataMap.getString("rising_bg_val", "2"));
+            prefs.putBoolean("aggressive_service_restart", dataMap.getBoolean("aggressive_service_restart", false));
             //Step Counter
             prefs.putBoolean("use_wear_health", dataMap.getBoolean("use_wear_health", true));
             //Extra Status Line
@@ -1726,9 +1729,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         if (is_using_bt) {
             if (checkLocationPermissions()) {
                 Log.d(TAG, "startBtService start BT Collection Service: " + DexCollectionType.getDexCollectionType());
-                if (restartWatchDog()) {
-                    stopBtService();
-                }
+                //if (restartWatchDog()) {
+                //    stopBtService();
+                //}
                 if (!isCollectorRunning()) {
                     CollectionServiceStarter.startBtService(getApplicationContext());
                     Log.d(TAG, "startBtService AFTER startService mLocationPermissionApproved " + mLocationPermissionApproved);
@@ -1784,6 +1787,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         Log.d(TAG, "stopService call stopService");
         CollectionServiceStarter.stopBtService(getApplicationContext());
         Log.d(TAG, "stopBtService should have called onDestroy");
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        PendingIntent wakeIntent = PendingIntent.getService(this, 0, new Intent(this, Notifications.class), PendingIntent.FLAG_UPDATE_CURRENT);
+        wakeIntent.cancel();
+        alarmManager.cancel(wakeIntent);
+        Log.d(TAG, "stopBtService cancel Notifications wakeIntent");
     }
 
     public static void requestData(Context context) {
