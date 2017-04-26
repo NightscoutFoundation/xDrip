@@ -652,7 +652,7 @@ public class G5CollectionService extends Service {
                 forceScreenOn();
             }
         }
-        if (JoH.ratelimit("G5-scanlogic", 2)) {
+        if (JoH.ratelimit("G5-scanlogic", 1)) {//KS test change 2 -> 1 to support restart collecter after 6 min missed readings
             try {
                 mLEScanner.stopScan(mScanCallback);
                 isScanning = false;
@@ -1854,6 +1854,7 @@ public class G5CollectionService extends Service {
         Log.e(TAG, "millisecondsSinceTxAd: " + millisecondsSinceTx );
         Log.e(TAG, "advertiseTimeMS.get(0): " + advertiseTimeMS.get(0) + " " + JoH.dateTimeText(advertiseTimeMS.get(0)));
         Log.e(TAG, "timeInMillisecondsOfLastSuccessfulSensorRead: " + " " + timeInMillisecondsOfLastSuccessfulSensorRead + JoH.dateTimeText(timeInMillisecondsOfLastSuccessfulSensorRead) );
+        Log.e(TAG, "getNextAdvertiseTime expectedTxTime: " + expectedTxTime + " " + JoH.dateTimeText(expectedTxTime));
         //Log.e(TAG, "timeToExpected: " + timeToExpected );
         //Log.e(TAG, "expectedTxTime: " + expectedTxTime );
 

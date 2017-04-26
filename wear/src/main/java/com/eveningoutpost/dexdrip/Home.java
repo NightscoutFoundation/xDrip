@@ -434,7 +434,7 @@ public class Home extends BaseWatchFace {
     {
         if (DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) return (60000 * 13);
         if (DexCollectionType.getDexCollectionType() == DexCollectionType.DexcomG5 &&
-            Home.getPreferencesBooleanDefaultFalse("engineering_mode")) return (60000 * 6);
+            Home.getPreferencesBooleanDefaultFalse("engineering_mode")) return (60000 * 5);
         return (60000 * 11);
     }
 }

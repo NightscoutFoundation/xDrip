@@ -497,7 +497,7 @@ public class Notifications extends IntentService {
             Log.e("Notifications" , "ArmTimer recieved a negative time, will fire in 6 minutes");
             wakeTime = now + 6 * 60000;
         } else if  (wakeTime >=  now + 6 * 60000) {
-        	 Log.i("Notifications" , "ArmTimer recieved a biger time, will fire in 6 minutes");
+        	 Log.i("Notifications" , "ArmTimer recieved a bigger time, will fire in 6 minutes");
              wakeTime = now + 6 * 60000;
         }  else if (wakeTime == now) {
             Log.e("Notifications", "should arm right now, waiting one more second to avoid infinitue loop");
