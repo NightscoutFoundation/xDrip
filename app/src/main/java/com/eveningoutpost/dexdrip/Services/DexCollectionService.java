@@ -383,6 +383,11 @@ public class DexCollectionService extends Service {
     private synchronized void pollForData() {
         if (JoH.ratelimit("poll-for-data", 2)) {
             Log.d(TAG, "Polling for data");
+            try {
+                Thread.sleep(500); // delay for wakeup readiness
+            } catch (InterruptedException e) {
+                //
+            }
             last_poll_sent = JoH.tsl();
             sendBtMessage(JoH.bArrayAsBuffer(XbridgePlus.sendDataRequestPacket()));
         }
