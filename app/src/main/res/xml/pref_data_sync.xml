@@ -237,7 +237,7 @@
                 android:dependency="bluetooth_meter_enabled"
                 android:key="bluetooth_meter_for_calibrations"
                 android:summary="@string/ask_for_calibration"
-                android:title="@string/use_for_calibrations" />
+                android:title="@string/use_meter_for_calibrations" />
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:dependency="bluetooth_meter_enabled"

@@ -68,8 +68,8 @@
                 android:editable="true"
                 android:key="wear_logs_prefix"
                 android:summary="@string/pref_summary_wear_logs_prefix"
-                android:title="@string/pref_wear_logs_prefix"
-                android:textIsSelectable="true"/>
+                android:textIsSelectable="true"
+                android:title="@string/pref_wear_logs_prefix" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="use_pebble_health"
@@ -283,142 +283,6 @@
                     android:summary="@string/short_speak_readings_shortcut"
                     android:title="@string/speak_readings_shortcut" />
             </PreferenceScreen>
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="run_service_in_foreground"
-                android:summary="@string/shows_a_persistent_notification"
-                android:title="@string/run_collector_in_foreground" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="requested_ignore_battery_optimizations_new"
-                android:summaryOff="@string/battery_optimization_off"
-                android:summaryOn="@string/battery_optimization_on"
-                android:title="@string/battery_optimization_prompt" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="excessive_wakelocks"
-                android:summary="@string/older_gratuitous_wakelocks"
-                android:title="@string/use_excessive_wakelocks" />
-            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                android:icon="@drawable/ic_bluetooth_settings_grey600_48dp"
-                android:key="xdrip_bluetooth_adv_settings"
-                android:summary="@string/advanced_bluetooth_settings"
-                android:title="@string/bluetooth_settings">
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="automatically_turn_bluetooth_on"
-                    android:summary="@string/auto_turn_on_bluetooth"
-                    android:title="@string/turn_bluetooth_on" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="bluetooth_watchdog"
-                    android:summary="@string/reset_bluetooth"
-                    android:title="@string/bluetooth_watchdog" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="g5_bluetooth_watchdog"
-                    android:summary="@string/reset_bluetooth_g5"
-                    android:title="@string/g5_bluetooth_watchdog" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="close_gatt_on_ble_disconnect"
-                    android:summary="@string/close_gatt"
-                    android:title="@string/close_gatt_on_ble_disconnect" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="bluetooth_excessive_wakelocks"
-                    android:summary="@string/older_bluetooth_wakelocks"
-                    android:title="@string/bluetooth_wakelocks" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="bluetooth_frequent_reset"
-                    android:summary="@string/reset_bluetooth_on_off"
-                    android:title="@string/constantly_reset_bluetooth" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="use_transmiter_pl_bluetooth"
-                    android:summary="@string/experimental_transmitter_fpv_uav"
-                    android:title="@string/transmitter_pl_support" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="use_rfduino_bluetooth"
-                    android:summary="@string/experimental_rdfuino_support"
-                    android:title="@string/rfduino_support" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="pref_dex_collection_polling"
-                    android:dependency="engineering_mode"
-                    android:summary="Experimental support for xBridge+ polling feature"
-                    android:title="xBridge+ Polling Mode" />
-            </PreferenceScreen>
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="aggressive_service_restart"
-                android:summary="@string/repeatedly_restart_collection_service"
-                android:title="@string/aggressive_service_restarts" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:dependency="engineering_mode"
-                android:key="predictive_bg"
-                android:summary="@string/predictive_readings_old"
-                android:title="@string/display_predictive_values" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="interpret_raw"
-                android:summary="@string/interpret_share_raw"
-                android:title="@string/interpret_raw" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="infrequent_calibration"
-                android:summary="@string/use_infrequent_calibrations"
-                android:title="@string/infrequent_calibrations" />
-            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                android:key="xdrip_logging_adv_settings"
-                android:title="@string/extra_logging">
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="enable_bugfender"
-                    android:summary="@string/send_logs_to_developer"
-                    android:title="@string/enable_remote_logging" />
-                <EditTextPreference
-                    android:defaultValue=""
-                    android:key="bugfender_appid"
-                    android:title="@string/set_logging_appid" />
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:dependency="engineering_mode"
-                    android:key="store_logs"
-                    android:summary="@string/only_enable_on_trouble"
-                    android:title="@string/store_logs" />
-                <EditTextPreference
-                    android:defaultValue=""
-                    android:dialogMessage="@string/extra_tags_dialog_message"
-                    android:dialogTitle="@string/extra_tags_dialog_title"
-                    android:inputType="textUri"
-                    android:key="extra_tags_for_logging"
-                    android:title="@string/extra_tags_for_logging" />
-            </PreferenceScreen>
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="show_data_tables"
-                android:summary="@string/show_datatables_in_app_drawer"
-                android:title="@string/show_datatables" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="display_bridge_battery"
-                android:summary="Choose to display the bridge battery level"
-                android:title="@string/display_bridge_battery" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="disable_battery_warning"
-                android:summary="@string/disable_log_transmitter_battery_warning"
-                android:title="@string/disable_battery_warning" />
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:dependency="engineering_mode"
-                android:key="engineering_mode"
-                android:summary="@string/allow_unsafe_settings"
-                android:title="@string/engineering_mode" />
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_extra_status_line"
                 android:summary="@string/options_for_extra_line"
@@ -548,13 +412,18 @@
                 android:summary="@string/extra_calibration_options"
                 android:title="@string/advanced_calibration">
                 <ListPreference
-                    android:defaultValue="ask"
+                    android:defaultValue="auto"
                     android:entries="@array/TreatmentCalibrationChoiceDetail"
                     android:entryValues="@array/TreatmentCalibrationChoice"
                     android:key="treatment_fingerstick_calibration_usage"
                     android:shouldDisableView="true"
                     android:summary="@string/choose_use_treament_bg"
                     android:title="@string/usw_treatment_bg" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="bluetooth_meter_for_calibrations_auto"
+                    android:summary="@string/auto_calibration_good_conditions"
+                    android:title="@string/automatic_calibration" />
                 <ListPreference
                     android:defaultValue="None"
                     android:key="current_calibration_plugin"
@@ -590,6 +459,150 @@
                     android:key="old_school_calibration_mode"
                     android:summary="@string/old_school_calibrations"
                     android:title="@string/old_school_calibration_mode" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="infrequent_calibration"
+                    android:summary="@string/use_infrequent_calibrations"
+                    android:title="@string/infrequent_calibrations" />
+            </PreferenceScreen>
+
+            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                android:icon="@drawable/ic_bluetooth_settings_grey600_48dp"
+                android:key="xdrip_bluetooth_adv_settings"
+                android:summary="@string/advanced_bluetooth_settings"
+                android:title="@string/bluetooth_settings">
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="automatically_turn_bluetooth_on"
+                    android:summary="@string/auto_turn_on_bluetooth"
+                    android:title="@string/turn_bluetooth_on" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="bluetooth_watchdog"
+                    android:summary="@string/reset_bluetooth"
+                    android:title="@string/bluetooth_watchdog" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="g5_bluetooth_watchdog"
+                    android:summary="@string/reset_bluetooth_g5"
+                    android:title="@string/g5_bluetooth_watchdog" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="close_gatt_on_ble_disconnect"
+                    android:summary="@string/close_gatt"
+                    android:title="@string/close_gatt_on_ble_disconnect" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="bluetooth_excessive_wakelocks"
+                    android:summary="@string/older_bluetooth_wakelocks"
+                    android:title="@string/bluetooth_wakelocks" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="bluetooth_frequent_reset"
+                    android:summary="@string/reset_bluetooth_on_off"
+                    android:title="@string/constantly_reset_bluetooth" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="use_transmiter_pl_bluetooth"
+                    android:summary="@string/experimental_transmitter_fpv_uav"
+                    android:title="@string/transmitter_pl_support" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="use_rfduino_bluetooth"
+                    android:summary="@string/experimental_rdfuino_support"
+                    android:title="@string/rfduino_support" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="engineering_mode"
+                    android:key="pref_dex_collection_polling"
+                    android:summary="Experimental support for xBridge+ polling feature"
+                    android:title="xBridge+ Polling Mode" />
+            </PreferenceScreen>
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="aggressive_service_restart"
+                android:summary="@string/repeatedly_restart_collection_service"
+                android:title="@string/aggressive_service_restarts" />
+
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="interpret_raw"
+                android:summary="@string/interpret_share_raw"
+                android:title="@string/interpret_raw" />
+
+            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                android:key="xdrip_logging_adv_settings"
+                android:title="@string/extra_logging">
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="enable_bugfender"
+                    android:summary="@string/send_logs_to_developer"
+                    android:title="@string/enable_remote_logging" />
+                <EditTextPreference
+                    android:defaultValue=""
+                    android:key="bugfender_appid"
+                    android:title="@string/set_logging_appid" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="engineering_mode"
+                    android:key="store_logs"
+                    android:summary="@string/only_enable_on_trouble"
+                    android:title="@string/store_logs" />
+                <EditTextPreference
+                    android:defaultValue=""
+                    android:dialogMessage="@string/extra_tags_dialog_message"
+                    android:dialogTitle="@string/extra_tags_dialog_title"
+                    android:inputType="textUri"
+                    android:key="extra_tags_for_logging"
+                    android:title="@string/extra_tags_for_logging" />
+            </PreferenceScreen>
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="show_data_tables"
+                android:summary="@string/show_datatables_in_app_drawer"
+                android:title="@string/show_datatables" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="display_bridge_battery"
+                android:summary="Choose to display the bridge battery level"
+                android:title="@string/display_bridge_battery" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="disable_battery_warning"
+                android:summary="@string/disable_log_transmitter_battery_warning"
+                android:title="@string/disable_battery_warning" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="engineering_mode"
+                android:key="engineering_mode"
+                android:summary="@string/allow_unsafe_settings"
+                android:title="@string/engineering_mode" />
+            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                android:key="xdrip_other_misc_extra_screen"
+                android:summary=""
+                android:title="Other misc options">
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="run_service_in_foreground"
+                    android:summary="@string/shows_a_persistent_notification"
+                    android:title="@string/run_collector_in_foreground" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="requested_ignore_battery_optimizations_new"
+                    android:summaryOff="@string/battery_optimization_off"
+                    android:summaryOn="@string/battery_optimization_on"
+                    android:title="@string/battery_optimization_prompt" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="excessive_wakelocks"
+                    android:summary="@string/older_gratuitous_wakelocks"
+                    android:title="@string/use_excessive_wakelocks" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="engineering_mode"
+                    android:key="predictive_bg"
+                    android:summary="@string/predictive_readings_old"
+                    android:title="@string/display_predictive_values" />
             </PreferenceScreen>
             <PreferenceCategory
                 android:key="community_help_category"

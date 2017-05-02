@@ -707,7 +707,7 @@
     <string name="meter_connect_sound">Enable this to play sound effects when the meter connects, disconnects or syncs data</string>
     <string name="meter_connect_sound_effect">Sound effect indicators</string>
     <string name="ask_for_calibration">When a new blood glucose result is received, ask if that should be used to calibrate with</string>
-    <string name="use_for_calibrations">Use Meter for Calibrations</string>
+    <string name="use_meter_for_calibrations">Use Meter for Calibrations</string>
     <string name="auto_calibration_good_conditions">Calibrate using new blood glucose readings if the conditions appear right to do so without asking confirmation (experimental)</string>
     <string name="automatic_calibration">Automatic Calibration</string>
     <string name="maximum_value">The maximum value you consider to be in range.</string>
