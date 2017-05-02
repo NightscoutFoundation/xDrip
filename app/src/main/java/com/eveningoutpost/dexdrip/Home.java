@@ -675,15 +675,14 @@ public class Home extends ActivityWithMenu {
                     Log.d(TAG, "ProcessCalibrationNoUI number: " + glucosenumber + " offset: " + timeoffset);
 
                     final String calibration_type = getPreferencesStringWithDefault("treatment_fingerstick_calibration_usage","ask");
-                    if (calibration_type.equals("ask"))
-                    {
+                    if (calibration_type.equals("ask")) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         builder.setTitle("Use BG for Calibration?");
                         builder.setMessage("Do you want to use this entered finger-stick blood glucose test to calibrate with?\n\n(you can change when this dialog is displayed in Settings)");
 
                         builder.setPositiveButton("YES, Calibrate", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                calintent.putExtra("note_only","false");
+                                calintent.putExtra("note_only", "false");
                                 calintent.putExtra("from_interactive", "true");
                                 startIntentThreadWithDelayedRefresh(calintent);
                                 dialog.dismiss();
@@ -693,7 +692,7 @@ public class Home extends ActivityWithMenu {
                         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                            // TODO make this a blood test entry xx
+                                // TODO make this a blood test entry xx
                                 calintent.putExtra("note_only", "true");
                                 startIntentThreadWithDelayedRefresh(calintent);
                                 dialog.dismiss();
@@ -703,9 +702,36 @@ public class Home extends ActivityWithMenu {
                         AlertDialog alert = builder.create();
                         alert.show();
 
+                    } else if (calibration_type.equals("auto")) {
+                        Log.d(TAG, "Creating bloodtest  record from cal input data");
+                        BloodTest.createFromCal(glucosenumber, timeoffset, "Manual Entry");
+                        if ((!Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto"))
+                                && (JoH.pratelimit("ask_about_auto_calibration", 86400 * 30))) {
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                            builder.setTitle("Enable automatic calibration");
+                            builder.setMessage("Entered blood tests which occur during flat trend periods can automatically be used to recalibrate after 20 minutes. This should provide the most accurate method to calibrate with.\n\nDo you want to enable this feature?");
+
+                            builder.setPositiveButton("YES, enable", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Home.setPreferencesBoolean("bluetooth_meter_for_calibrations_auto", true);
+                                    JoH.static_toast_long("Automated calibration enabled");
+                                    dialog.dismiss();
+                                }
+                            });
+
+                            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+
+                            final AlertDialog alert = builder.create();
+                            alert.show();
+                        }
+                        // offer choice to enable auto-calibration mode if not already enabled on pratelimit
                     } else {
                         // if use for calibration == "no" then this is a "note_only" type, otherwise it isn't
-                        // TODO make this a blood test entry xx
                         calintent.putExtra("note_only", calibration_type.equals("never") ? "true" : "false");
                         startIntentThreadWithDelayedRefresh(calintent);
                     }

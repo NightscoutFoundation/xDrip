@@ -83,12 +83,14 @@
     </string-array>
 
     <string-array name="TreatmentCalibrationChoice">
+        <item>auto</item>
         <item>ask</item>
         <item>never</item>
         <item>always</item>
     </string-array>
 
     <string-array name="TreatmentCalibrationChoiceDetail">
+        <item>Automatic mode (best)</item>
         <item>Ask me every time</item>
         <item>Never use them</item>
         <item>Always use them</item>

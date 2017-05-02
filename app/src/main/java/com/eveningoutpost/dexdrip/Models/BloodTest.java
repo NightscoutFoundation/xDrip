@@ -30,6 +30,7 @@ import com.squareup.wire.Wire;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -161,6 +162,22 @@ public class BloodTest extends Model {
             UserError.Log.d(TAG, "Not creating new reading as timestamp is too close");
         }
         return null;
+    }
+
+    public static BloodTest createFromCal(double bg, double timeoffset, String source) {
+        final String unit = Home.getPreferencesStringWithDefault("units", "mgdl");
+
+        if (unit.compareTo("mgdl") != 0) {
+            bg = bg * Constants.MMOLL_TO_MGDL;
+        }
+
+        if ((bg < 40) || (bg > 400)) {
+            Log.wtf(TAG, "Invalid out of range bloodtest glucose mg/dl value of: " + bg);
+            JoH.static_toast_long("Bloodtest out of range: " + bg + " mg/dl");
+            return null;
+        }
+
+        return create((long) (new Date().getTime() - timeoffset), bg, source);
     }
 
     public static BloodTest last() {
