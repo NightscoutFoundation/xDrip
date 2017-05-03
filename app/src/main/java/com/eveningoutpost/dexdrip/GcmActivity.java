@@ -550,6 +550,7 @@ public class GcmActivity extends FauxActivity {
     }
 
     private static void push_treatment(Treatments thistreatment) {
+        if ((thistreatment.uuid == null) || (thistreatment.uuid.length() < 5)) return;
         String json = thistreatment.toJSON();
         sendMessage(myIdentity(), "nt", json);
     }
@@ -716,6 +717,7 @@ public class GcmActivity extends FauxActivity {
 
     private void tryGCMcreate() {
         Log.d(TAG, "try GCMcreate");
+        checkCease();
         if (cease_all_activity) return;
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -857,6 +859,7 @@ public class GcmActivity extends FauxActivity {
     }
 
     static Boolean checkPlayServices(Context context, Activity activity) {
+        checkCease();
         if (cease_all_activity) return false;
         final GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(context);
