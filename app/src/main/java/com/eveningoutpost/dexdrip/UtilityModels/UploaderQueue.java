@@ -159,6 +159,12 @@ public class UploaderQueue extends Model {
             result.reference_uuid = obj instanceof Calibration ? ((Calibration) obj).uuid : null;
         if (result.reference_uuid == null)
             result.reference_uuid = obj instanceof BloodTest ? ((BloodTest) obj).uuid : null;
+
+        if (result.reference_uuid == null) {
+            Log.d(TAG, "reference_uuid was null so refusing to create new entry");
+            return null;
+        }
+
         result.action = action;
 
         result.bitfield_complete = 0;

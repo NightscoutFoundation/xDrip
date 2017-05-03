@@ -321,7 +321,7 @@ public class BgReading extends Model implements ShareUploadableBg {
         return null;
     }
 
-    static BgReading getForPreciseTimestamp(double timestamp, double precision) {
+    public static BgReading getForPreciseTimestamp(double timestamp, double precision) {
         return getForPreciseTimestamp(timestamp, precision, true);
     }
 
