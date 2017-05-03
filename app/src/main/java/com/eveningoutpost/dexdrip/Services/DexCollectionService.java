@@ -75,8 +75,9 @@ import static com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder.DEXCOM_PER
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class DexCollectionService extends Service {
     private final static String TAG = DexCollectionService.class.getSimpleName();
+    private static final boolean d = false;
     private SharedPreferences prefs;
-    private BgToSpeech bgToSpeech;
+    //private BgToSpeech bgToSpeech;
     private static PendingIntent serviceIntent;
     private static PendingIntent serviceFailoverIntent;
     public DexCollectionService dexCollectionService;
@@ -157,7 +158,7 @@ public class DexCollectionService extends Service {
         dexCollectionService = this;
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         listenForChangeInSettings();
-        bgToSpeech = BgToSpeech.setupTTS(mContext); //keep reference to not being garbage collected
+        //bgToSpeech = BgToSpeech.setupTTS(mContext); //keep reference to not being garbage collected
         if(CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()){
             Log.i(TAG,"onCreate: resetting bridge_battery preference to 0");
             prefs.edit().putInt("bridge_battery",0).apply();
@@ -199,7 +200,7 @@ public class DexCollectionService extends Service {
     private static boolean shouldServiceRun() {
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return false;
         final boolean result = (DexCollectionType.hasXbridgeWixel() || DexCollectionType.hasBtWixel()) && !Home.get_forced_wear();
-        Log.d(TAG, "shouldServiceRun() returning: " + result);
+        if (d) Log.d(TAG, "shouldServiceRun() returning: " + result);
         return result;
     }
 
@@ -375,21 +376,31 @@ public class DexCollectionService extends Service {
     private synchronized void checkImmediateSend() {
         if (immediateSend != null) {
             Log.d(TAG,"Sending immediate data: "+JoH.bytesToHex(immediateSend));
-            sendBtMessage(JoH.bArrayAsBuffer(immediateSend));
+            sendBtMessage(immediateSend);
             immediateSend = null;
         }
     }
 
     private synchronized void pollForData() {
         if (JoH.ratelimit("poll-for-data", 2)) {
-            Log.d(TAG, "Polling for data");
-            try {
-                Thread.sleep(500); // delay for wakeup readiness
-            } catch (InterruptedException e) {
-                //
-            }
-            last_poll_sent = JoH.tsl();
-            sendBtMessage(JoH.bArrayAsBuffer(XbridgePlus.sendDataRequestPacket()));
+            new Thread() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "Polling for data");
+                    try {
+                        Thread.sleep(500); // delay for wakeup readiness
+                    } catch (InterruptedException e) {
+                        //
+                    }
+                    last_poll_sent = JoH.tsl();
+                    if ((JoH.msSince(lastPacketTime) > Home.stale_data_millis()) && (JoH.ratelimit("poll-request-part-b", 15))) {
+                        Log.d(TAG, "Stale data so requesting backfill");
+                        sendBtMessage(XbridgePlus.sendLast15BRequestPacket());
+                    } else {
+                        sendBtMessage(XbridgePlus.sendDataRequestPacket());
+                    }
+                }
+            }.start();
         }
     }
 
@@ -592,7 +603,11 @@ public class DexCollectionService extends Service {
         }
     }
 
-    private boolean sendBtMessage(final ByteBuffer message) {
+    private boolean sendBtMessage(byte[] buffer) {
+        return sendBtMessage(JoH.bArrayAsBuffer(buffer));
+    }
+
+    private synchronized boolean sendBtMessage(final ByteBuffer message) {
         //check mBluetoothGatt is available
         Log.i(TAG, "sendBtMessage: entered");
         if (mBluetoothGatt == null) {
@@ -697,70 +712,81 @@ public class DexCollectionService extends Service {
         long timestamp = new Date().getTime();
         last_time_seen = JoH.ts();
         watchdog_count=0;
-        if (((buffer.length > 0) && (buffer[0] == 0x07 || buffer[0] == 0x11 || buffer[0] == 0x15)) || CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()) {
-            Log.i(TAG, "setSerialDataToTransmitterRawData: Dealing with Dexbridge packet!");
-            int DexSrc;
-            int TransmitterID;
-            String TxId;
-            Calendar c = Calendar.getInstance();
-            long secondsNow = c.getTimeInMillis();
-            ByteBuffer tmpBuffer = ByteBuffer.allocate(len);
-            tmpBuffer.order(ByteOrder.LITTLE_ENDIAN);
-            tmpBuffer.put(buffer, 0, len);
-            ByteBuffer txidMessage = ByteBuffer.allocate(6);
-            txidMessage.order(ByteOrder.LITTLE_ENDIAN);
-            if (buffer[0] == 0x07 && buffer[1] == -15) {
-                //We have a Beacon packet.  Get the TXID value and compare with dex_txid
-                Log.i(TAG, "setSerialDataToTransmitterRawData: Received Beacon packet.");
-                //DexSrc starts at Byte 2 of a Beacon packet.
-                DexSrc = tmpBuffer.getInt(2);
-                TxId = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("dex_txid", "00000");
-                TransmitterID = convertSrc(TxId);
-                if (TxId.compareTo("00000") != 0 && Integer.compare(DexSrc, TransmitterID) != 0) {
-                    Log.w(TAG, "setSerialDataToTransmitterRawData: TXID wrong.  Expected " + TransmitterID + " but got " + DexSrc);
-                    txidMessage.put(0, (byte) 0x06);
-                    txidMessage.put(1, (byte) 0x01);
-                    txidMessage.putInt(2, TransmitterID);
-                    sendBtMessage(txidMessage);
-                }
-                return;
+        if (XbridgePlus.isXbridgeExtensionPacket(buffer)) {
+            // handle xBridge+ protocol packets
+            final byte[] reply = XbridgePlus.decodeXbridgeExtensionPacket(buffer);
+            if (reply != null) {
+                Log.d(TAG, "Sending reply message from xBridge decoder");
+                sendBtMessage(reply);
             }
-            if ((buffer[0] == 0x11 || buffer[0] == 0x15) && buffer[1] == 0x00) {
-                //we have a data packet.  Check to see if the TXID is what we are expecting.
-                Log.i(TAG, "setSerialDataToTransmitterRawData: Received Data packet");
-                if (len >= 0x11) {
-                    //DexSrc starts at Byte 12 of a data packet.
-                    DexSrc = tmpBuffer.getInt(12);
+        } else {
+
+            if (((buffer.length > 0) && (buffer[0] == 0x07 || buffer[0] == 0x11 || buffer[0] == 0x15)) || CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()) {
+                Log.i(TAG, "setSerialDataToTransmitterRawData: Dealing with Dexbridge packet!");
+                int DexSrc;
+                int TransmitterID;
+                String TxId;
+                Calendar c = Calendar.getInstance();
+                long secondsNow = c.getTimeInMillis();
+                ByteBuffer tmpBuffer = ByteBuffer.allocate(len);
+                tmpBuffer.order(ByteOrder.LITTLE_ENDIAN);
+                tmpBuffer.put(buffer, 0, len);
+                ByteBuffer txidMessage = ByteBuffer.allocate(6);
+                txidMessage.order(ByteOrder.LITTLE_ENDIAN);
+                if (buffer[0] == 0x07 && buffer[1] == -15) {
+                    //We have a Beacon packet.  Get the TXID value and compare with dex_txid
+                    Log.i(TAG, "setSerialDataToTransmitterRawData: Received Beacon packet.");
+                    //DexSrc starts at Byte 2 of a Beacon packet.
+                    DexSrc = tmpBuffer.getInt(2);
                     TxId = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("dex_txid", "00000");
                     TransmitterID = convertSrc(TxId);
-                    if (Integer.compare(DexSrc, TransmitterID) != 0) {
-                        Log.w(TAG, "TXID wrong.  Expected " + TransmitterID + " but got " + DexSrc);
+                    if (TxId.compareTo("00000") != 0 && Integer.compare(DexSrc, TransmitterID) != 0) {
+                        Log.w(TAG, "setSerialDataToTransmitterRawData: TXID wrong.  Expected " + TransmitterID + " but got " + DexSrc);
                         txidMessage.put(0, (byte) 0x06);
                         txidMessage.put(1, (byte) 0x01);
                         txidMessage.putInt(2, TransmitterID);
                         sendBtMessage(txidMessage);
                     }
-                    PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt("bridge_battery", ByteBuffer.wrap(buffer).get(11)).apply();
-                    last_battery_level = Home.getPreferencesInt("bridge_battery",-1);
-                    //All is OK, so process it.
-                    //first, tell the wixel it is OK to sleep.
-                    Log.d(TAG, "setSerialDataToTransmitterRawData: Sending Data packet Ack, to put wixel to sleep");
-                    ByteBuffer ackMessage = ByteBuffer.allocate(2);
-                    ackMessage.put(0, (byte) 0x02);
-                    ackMessage.put(1, (byte) 0xF0);
-                    sendBtMessage(ackMessage);
-                    //duplicates are already filtered in TransmitterData.create - so no need to filter here
-                    lastPacketTime = secondsNow;
-                    poll_backoff = 0;
-                    retry_backoff = 0;
-                    Log.v(TAG, "setSerialDataToTransmitterRawData: Creating TransmitterData at " + timestamp);
-                    processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
-                    if (Home.get_master()) GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery",-1));
-                    CheckBridgeBattery.checkBridgeBattery();
+                    return;
                 }
+                if ((buffer[0] == 0x11 || buffer[0] == 0x15) && buffer[1] == 0x00) {
+                    //we have a data packet.  Check to see if the TXID is what we are expecting.
+                    Log.i(TAG, "setSerialDataToTransmitterRawData: Received Data packet");
+                    if (len >= 0x11) {
+                        //DexSrc starts at Byte 12 of a data packet.
+                        DexSrc = tmpBuffer.getInt(12);
+                        TxId = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("dex_txid", "00000");
+                        TransmitterID = convertSrc(TxId);
+                        if (Integer.compare(DexSrc, TransmitterID) != 0) {
+                            Log.w(TAG, "TXID wrong.  Expected " + TransmitterID + " but got " + DexSrc);
+                            txidMessage.put(0, (byte) 0x06);
+                            txidMessage.put(1, (byte) 0x01);
+                            txidMessage.putInt(2, TransmitterID);
+                            sendBtMessage(txidMessage);
+                        }
+                        PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt("bridge_battery", ByteBuffer.wrap(buffer).get(11)).apply();
+                        last_battery_level = Home.getPreferencesInt("bridge_battery", -1);
+                        //All is OK, so process it.
+                        //first, tell the wixel it is OK to sleep.
+                        Log.d(TAG, "setSerialDataToTransmitterRawData: Sending Data packet Ack, to put wixel to sleep");
+                        ByteBuffer ackMessage = ByteBuffer.allocate(2);
+                        ackMessage.put(0, (byte) 0x02);
+                        ackMessage.put(1, (byte) 0xF0);
+                        sendBtMessage(ackMessage);
+                        //duplicates are already filtered in TransmitterData.create - so no need to filter here
+                        lastPacketTime = secondsNow;
+                        poll_backoff = 0;
+                        retry_backoff = 0;
+                        Log.v(TAG, "setSerialDataToTransmitterRawData: Creating TransmitterData at " + timestamp);
+                        processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
+                        if (Home.get_master())
+                            GcmActivity.sendBridgeBattery(Home.getPreferencesInt("bridge_battery", -1));
+                        CheckBridgeBattery.checkBridgeBattery();
+                    }
+                }
+            } else {
+                processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
             }
-        } else {
-            processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
         }
     }
 
