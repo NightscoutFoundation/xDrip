@@ -131,6 +131,10 @@
         <service
             android:name=".Services.SnoozeOnNotificationDismissService"
             android:exported="false" />
+        <service
+            android:name=".Services.MissedReadingService"
+            android:enabled="true"
+            android:exported="true" />
         <activity
             android:name=".NWPreferences"
             android:icon="@drawable/ic_icon"

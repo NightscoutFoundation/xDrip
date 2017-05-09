@@ -40,7 +40,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.UserNotification;
 import com.eveningoutpost.dexdrip.R;
 //KS import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
-//KS import com.eveningoutpost.dexdrip.Services.MissedReadingService;
+import com.eveningoutpost.dexdrip.Services.MissedReadingService;
 import com.eveningoutpost.dexdrip.Services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.PowerStateReceiver;
@@ -138,9 +138,11 @@ public class Notifications extends IntentService {
 
                 ReadPerfs(context);
                 unclearReading = notificationSetter(context);
-                ArmTimer(context, unclearReading);
-                //KS context.startService(new Intent(context, MissedReadingService.class));
+                //ArmTimer(context, unclearReading);
+                //context.startService(new Intent(context, MissedReadingService.class));
             }
+            ArmTimer(context, unclearReading);//KS start this to handle Collector restart
+            context.startService(new Intent(context, MissedReadingService.class));//KS start this to handle Collector restart
 
         } finally {
             if (wl.isHeld()) wl.release();
@@ -495,7 +497,7 @@ public class Notifications extends IntentService {
             Log.e("Notifications" , "ArmTimer recieved a negative time, will fire in 6 minutes");
             wakeTime = now + 6 * 60000;
         } else if  (wakeTime >=  now + 6 * 60000) {
-        	 Log.i("Notifications" , "ArmTimer recieved a biger time, will fire in 6 minutes");
+        	 Log.i("Notifications" , "ArmTimer recieved a bigger time, will fire in 6 minutes");
              wakeTime = now + 6 * 60000;
         }  else if (wakeTime == now) {
             Log.e("Notifications", "should arm right now, waiting one more second to avoid infinitue loop");

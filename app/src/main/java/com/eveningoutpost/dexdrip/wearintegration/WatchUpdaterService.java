@@ -1289,6 +1289,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMap.putString("falling_bg_val", mPrefs.getString("falling_bg_val", "2"));
             dataMap.putBoolean("rising_alert", mPrefs.getBoolean("rising_alert", false));
             dataMap.putString("rising_bg_val", mPrefs.getString("rising_bg_val", "2"));
+            dataMap.putBoolean("aggressive_service_restart", mPrefs.getBoolean("aggressive_service_restart", false));
 
             //Extra Status Line
             dataMap.putBoolean("extra_status_line", mPrefs.getBoolean("extra_status_line", false));
