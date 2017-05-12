@@ -619,7 +619,7 @@ public class G5CollectionService extends Service {
     private synchronized void scanLogic() {
         Log.d(TAG,"scanLogic keep_running=" + keep_running);
         if (!keep_running) return;
-        if (JoH.ratelimit("G5-scanlogic", 2)) {
+        if (JoH.ratelimit("G5-scanlogic", 1)) {//KS test change 2 -> 1 to support restart collector after n min missed readings
             try {
                 mLEScanner.stopScan(mScanCallback);
                 isScanning = false;
