@@ -148,7 +148,6 @@ public class Treatments extends Model {
         }
 
         boolean is_new = false;
-
         // find treatment
         Treatments Treatment = byTimestamp(timestamp, 60 * 1000 * 5);
 
@@ -182,7 +181,7 @@ public class Treatments extends Model {
 
 
         Treatment.save();
-        pushTreatmentSync(Treatment, is_new);
+        pushTreatmentSync(Treatment, is_new, suggested_uuid);
         if (is_new) UndoRedo.addUndoTreatment(Treatment.uuid);
         return Treatment;
     }
@@ -203,10 +202,10 @@ public class Treatments extends Model {
     }
 
     private static void pushTreatmentSync(Treatments treatment) {
-        pushTreatmentSync(treatment, true); // new entry by default
+        pushTreatmentSync(treatment, true, null); // new entry by default
     }
 
-    private static void pushTreatmentSync(Treatments treatment, boolean is_new) {
+    private static void pushTreatmentSync(Treatments treatment, boolean is_new, String suggested_uuid) {
         if (Home.get_master_or_follower()) GcmActivity.pushTreatmentAsync(treatment);
 
         if (!(Home.getPreferencesBoolean("cloud_storage_api_enable", false) || Home.getPreferencesBoolean("cloud_storage_mongodb_enable", false))) {
@@ -215,8 +214,11 @@ public class Treatments extends Model {
             Log.d(TAG, "Skipping NSClient treatment broadcast as nightscout direct sync is enabled");
         }
 
-        if (UploaderQueue.newEntry(is_new ? "insert" : "update", treatment) != null) {
-            SyncService.startSyncService(3000); // sync in 3 seconds
+        if (suggested_uuid == null) {
+            // only sync to nightscout if source of change was not from nightscout
+            if (UploaderQueue.newEntry(is_new ? "insert" : "update", treatment) != null) {
+                SyncService.startSyncService(3000); // sync in 3 seconds
+            }
         }
     }
 
