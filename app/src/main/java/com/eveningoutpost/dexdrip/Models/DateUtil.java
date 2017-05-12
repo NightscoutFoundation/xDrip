@@ -19,6 +19,7 @@ public class DateUtil {
 
     private static final String FORMAT_DATE_ISO = "yyyy-MM-dd'T'HH:mm:ss'Z'"; // eg 2017-03-24T22:03:27Z
     private static final String FORMAT_DATE_ISO2 = "yyyy-MM-dd'T'HH:mm:ssZ"; // eg 2017-03-27T17:38:14+03:00
+    private static final String FORMAT_DATE_ISO3 = "yyyy-MM-dd'T'HH:mmZ"; // eg 2017-05-12T08:16-0400
 
     /**
      * Takes in an ISO date string of the following format:
@@ -34,11 +35,21 @@ public class DateUtil {
         f.setTimeZone(TimeZone.getTimeZone("UTC"));
         return f.parse(isoDateString);
     }
-    private static Date fromISODateString2(String isoDateString)
+    private static Date fromISODateString3(String isoDateString)
             throws Exception {
-        SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO2);
+        SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO3);
         f.setTimeZone(TimeZone.getTimeZone("UTC"));
         return f.parse(isoDateString);
+    }
+    private static Date fromISODateString2(String isoDateString)
+            throws Exception {
+        try {
+            SimpleDateFormat f = new SimpleDateFormat(FORMAT_DATE_ISO2);
+            f.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return f.parse(isoDateString);
+        } catch (java.text.ParseException e) {
+            return fromISODateString3(isoDateString);
+        }
     }
 
     public static Date tolerantFromISODateString(String isoDateString)
