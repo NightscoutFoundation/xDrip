@@ -22,7 +22,7 @@
     - [Debugging Android Wear](#debugging-android-wear)
 
 ##Enable xDrip+ Android Wear Integration
-xDrip+ supports wear integration through its wear app.  The xDrip+ wear app is installed with the standard xDrip+ apk.  The latest release supports a standalone mode which allows the wear app to communicate directly with the Bluetooth Collector, whether it is a Dexcom G5, a Dexcom G4 + xBridge, or a Libre LimiTTer.
+xDrip+ supports wear integration through its wear app.  The xDrip+ wear app is installed with the standard xDrip+ apk. On **Android Wear 1.x** watches, the wear component gets synced automatically to the watch. On **Android Wear 2.0** watches you need to install (activate) the wear component separately from the Play-Store on the _watch_ (under the section "Apps on your phone") after installing xDrip+ on the phone. The latest release supports a standalone mode which allows the wear app to communicate directly with the Bluetooth Collector, whether it is a Dexcom G5, a Dexcom G4 + xBridge, or a Libre LimiTTer.
 
 
 The wear standalone feature is enabled via the following xDrip+ Settings located under **Smart Watch Features**, and corresponding watch **XDrip Prefs** settings.
