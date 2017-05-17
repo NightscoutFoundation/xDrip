@@ -1274,7 +1274,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
             String dex_txid = dataMap.getString("dex_txid", "ABCDEF");
             Log.d(TAG, "syncPrefData dataMap dex_txid=" + dex_txid);
-            if (!dex_txid.equals(mPrefs.getString("dex_txid", "ABCDEF"))) {
+            if (!dex_txid.equals(mPrefs.getString("dex_txid", ""))) {
                 Log.d(TAG, "syncPrefData dex_txid:" + dex_txid);
                 prefs.putString("dex_txid", dex_txid);
                 stopBtService();//Change requires collector restart
