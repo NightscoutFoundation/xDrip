@@ -627,7 +627,7 @@ public class DexCollectionService extends Service {
                 TxId = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("dex_txid", "00000");
                 TransmitterID = convertSrc(TxId);
                 if (TxId.compareTo("00000") != 0 && Integer.compare(DexSrc, TransmitterID) != 0) {
-                    Log.w(TAG, "setSerialDataToTransmitterRawData: TXID wrong.  Expected " + TransmitterID + " but got " + DexSrc);
+                    Log.w(TAG, "setSerialDataToTransmitterRawData: TXID wrong.  Expected " + TransmitterID + " but got " + DexSrc + " dex_txid: " + TxId);
                     txidMessage.put(0, (byte) 0x06);
                     txidMessage.put(1, (byte) 0x01);
                     txidMessage.putInt(2, TransmitterID);

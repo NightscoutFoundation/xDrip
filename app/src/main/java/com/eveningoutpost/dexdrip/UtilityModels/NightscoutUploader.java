@@ -357,6 +357,8 @@ public class NightscoutUploader {
                                 } catch (JSONException e) {
                                     // Log.d(TAG, "json processing: " + e);
                                 }
+                                if ((notes != null) && ((notes.equals("AndroidAPS started") || notes.equals("null"))))
+                                    notes = null;
 
                                 if ((carbs > 0) || (insulin > 0) || (notes != null)) {
                                     final long timestamp = DateUtil.tolerantFromISODateString(tr.getString("created_at")).getTime();
@@ -969,7 +971,7 @@ public class NightscoutUploader {
                                         record.put("timestamp", treatment.timestamp);
                                         record.put("eventType", treatment.eventType);
                                         record.put("enteredBy", treatment.enteredBy);
-                                        record.put("notes", treatment.notes);
+                                        if (treatment.notes != null) record.put("notes", treatment.notes);
                                         record.put("uuid", treatment.uuid);
                                         record.put("carbs", treatment.carbs);
                                         record.put("insulin", treatment.insulin);

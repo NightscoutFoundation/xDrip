@@ -14,10 +14,18 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.google.android.gms.wearable.DataMap;
 
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import static com.eveningoutpost.dexdrip.ListenerService.SendData;
@@ -47,6 +55,23 @@ public class Simulation extends Activity {
     private ImageButton btnTime;
     private boolean recognitionRunning = false;
     private boolean inflated = false;
+    private boolean watchkeypad = false;
+    double carbs = 0;
+    double insulin = 0;
+    double timeoffset = 0;
+    String thisnotes = "";
+    double thisnumber = -1;
+    double thisglucosenumber = 0;
+    double thiscarbsnumber = 0;
+    double thisinsulinnumber = 0;
+    double thistimeoffset = 0;
+    String thistimetext = "";
+    String thisword = "";
+    boolean carbsset = false;
+    boolean insulinset = false;
+    boolean glucoseset = false;
+    boolean timeset = false;
+    boolean watchkeypadset = false;
 
     public static void static_toast(final Context context, final String msg, final int length) {
         try {
@@ -177,64 +202,73 @@ public class Simulation extends Activity {
             } else {
                 // datamap bundle
                 try {
-                    final String WEARABLE_TREATMENT_PAYLOAD = "/xdrip_plus_treatment_payload";
-                    DataMap dataMap = DataMap.fromBundle(intent.getBundleExtra(WEARABLE_TREATMENT_PAYLOAD));
-                    double insulin = dataMap.getDouble("insulin");
-                    if (insulin > 0) {
-                        mInsulinText.setText(Double.toString(insulin) + " units");
-                        mInsulinText.setVisibility(View.VISIBLE);
-                        btnInsulinDose.setVisibility(View.VISIBLE);
-                        hascontent = true;
-                    } else {
-                        mInsulinText.setVisibility(View.INVISIBLE);
-                        btnInsulinDose.setVisibility(View.INVISIBLE);
-                    }
+                    Bundle treatmentBundle = intent.getBundleExtra(ListenerService.WEARABLE_TREATMENT_PAYLOAD);
+                    if (treatmentBundle != null) {
+                        DataMap dataMap = DataMap.fromBundle(treatmentBundle);
+                        if (dataMap != null) {
+                            initValues();
+                            watchkeypad = dataMap.getBoolean("watchkeypad", false);
+                            thisnotes = dataMap.getString("notes", "");
+                            if (watchkeypad)
+                                createTreatment(thisnotes);
+                            insulin = dataMap.getDouble("insulin", thisinsulinnumber);
+                            if (insulin > 0) {
+                                mInsulinText.setText(Double.toString(insulin) + " units");
+                                mInsulinText.setVisibility(View.VISIBLE);
+                                btnInsulinDose.setVisibility(View.VISIBLE);
+                                hascontent = true;
+                            } else {
+                                mInsulinText.setVisibility(View.INVISIBLE);
+                                btnInsulinDose.setVisibility(View.INVISIBLE);
+                            }
 
-                    double carbs = dataMap.getDouble("carbs");
-                    if (carbs > 0) {
-                        mCarbsText.setText(Integer.toString((int) carbs) + " carbs");
-                        mCarbsText.setVisibility(View.VISIBLE);
-                        btnCarbohydrates.setVisibility(View.VISIBLE);
-                        hascontent = true;
-                    } else {
-                        mCarbsText.setVisibility(View.INVISIBLE);
-                        btnCarbohydrates.setVisibility(View.INVISIBLE);
-                    }
+                            carbs = dataMap.getDouble("carbs", thiscarbsnumber);
+                            if (carbs > 0) {
+                                mCarbsText.setText(Integer.toString((int) carbs) + " carbs");
+                                mCarbsText.setVisibility(View.VISIBLE);
+                                btnCarbohydrates.setVisibility(View.VISIBLE);
+                                hascontent = true;
+                            } else {
+                                mCarbsText.setVisibility(View.INVISIBLE);
+                                btnCarbohydrates.setVisibility(View.INVISIBLE);
+                            }
 
-                    double bloodtest = dataMap.getDouble("bloodtest");
-                    if (bloodtest > 0) {
-                        mBloodText.setText(Double.toString(bloodtest) + " " + (dataMap.getBoolean("ismgdl") ? "mgdl" : "mmol"));
-                        mBloodText.setVisibility(View.VISIBLE);
-                        btnBloodGlucose.setVisibility(View.VISIBLE);
-                        hascontent = true;
-                    } else {
-                        mBloodText.setVisibility(View.INVISIBLE);
-                        btnBloodGlucose.setVisibility(View.INVISIBLE);
-                    }
-                    String timestring = dataMap.getString("timestring");
-                    double timeoffset = dataMap.getDouble("timeoffset");
-                    if ((timeoffset > 0) && (timestring.length() > 0)) {
-                        mTimeText.setText(timestring);
-                        mTimeText.setVisibility(View.VISIBLE);
-                        btnTime.setVisibility(View.VISIBLE);
-                        hascontent = true;
-                    } else {
-                        mTimeText.setVisibility(View.INVISIBLE);
-                        btnTime.setVisibility(View.INVISIBLE);
-                    }
+                            double bloodtest = dataMap.getDouble("bloodtest", thisglucosenumber);
+                            if (bloodtest > 0) {
+                                mBloodText.setText(Double.toString(bloodtest) + " " + (dataMap.getBoolean("ismgdl") ? "mgdl" : "mmol"));
+                                mBloodText.setVisibility(View.VISIBLE);
+                                btnBloodGlucose.setVisibility(View.VISIBLE);
+                                hascontent = true;
+                            } else {
+                                mBloodText.setVisibility(View.INVISIBLE);
+                                btnBloodGlucose.setVisibility(View.INVISIBLE);
+                            }
+                            String timestring = dataMap.getString("timestring", thistimetext);
+                            timeoffset = dataMap.getDouble("timeoffset", thistimeoffset);
+                            if ((timeoffset > 0) && (timestring.length() > 0)) {
+                                mTimeText.setText(timestring);
+                                mTimeText.setVisibility(View.VISIBLE);
+                                btnTime.setVisibility(View.VISIBLE);
+                                hascontent = true;
+                            } else {
+                                mTimeText.setVisibility(View.INVISIBLE);
+                                btnTime.setVisibility(View.INVISIBLE);
+                            }
 
-                    if ((insulin > 0) || (carbs > 0) || (bloodtest > 0)) {
-                        btnApprove.setVisibility(View.VISIBLE);
-                        btnCancel.setVisibility(View.VISIBLE);
-                    } else {
-                        btnApprove.setVisibility(View.INVISIBLE);
-                        btnCancel.setVisibility(View.INVISIBLE);
-                    }
+                            if ((insulin > 0) || (carbs > 0) || (bloodtest > 0)) {
+                                btnApprove.setVisibility(View.VISIBLE);
+                                btnCancel.setVisibility(View.VISIBLE);
+                            } else {
+                                btnApprove.setVisibility(View.INVISIBLE);
+                                btnCancel.setVisibility(View.INVISIBLE);
+                            }
 
-                    if (!hascontent) {
-                        finish();
-                    } else {
-                        KeypadInputActivity.resetValues();
+                            if (!hascontent) {
+                                finish();
+                            } else {
+                                KeypadInputActivity.resetValues();
+                            }
+                        }
                     }
 
                 } catch (Exception e) {
@@ -242,11 +276,18 @@ public class Simulation extends Activity {
                 }
 
                 try {
-                    final String WEARABLE_TOAST_NOTIFICATON = "/xdrip_plus_toast";
-                    DataMap dataMap = DataMap.fromBundle(intent.getBundleExtra(WEARABLE_TOAST_NOTIFICATON));
-                    final String msg = dataMap.getString("msg");
-                    static_toast(this, msg, dataMap.getInt("length"));
-                    if ((!hascontent) || (msg.contains("Treatment cancelled")) || (msg.contains("Treatment processed"))) finish();
+                    Bundle toastBundle = intent.getBundleExtra(ListenerService.WEARABLE_TOAST_NOTIFICATON);
+                    String msg = "";
+                    if (toastBundle != null) {
+                        DataMap dataMap = DataMap.fromBundle(toastBundle);
+                        if (dataMap != null) {
+                            msg = dataMap.getString("msg");
+                            if (msg != null && !msg.isEmpty())
+                                static_toast(this, msg, dataMap.getInt("length"));
+                        }
+                    }
+                    if ((!hascontent) || (msg.contains("Treatment cancelled")) || (msg.contains("Treatment processed")))
+                        finish();
                 } catch (Exception e) {
                     Log.e(TAG, "Got exception processing toast intent: " + e);
                 }
@@ -273,6 +314,7 @@ public class Simulation extends Activity {
                             mTextView.setText(results);
                             mTextView.setVisibility(View.VISIBLE);
                         }
+                        //TODO add speech recognition using the initiallexicon.txt used in Home.initializeSearchWords for Home.classifyWord called by naturalLanguageRecognition()
                         SendData(this, WEARABLE_VOICE_PAYLOAD, results.getBytes(StandardCharsets.UTF_8));
                     }
                     //   last_speech_time = JoH.ts();
@@ -290,12 +332,20 @@ public class Simulation extends Activity {
     }
 
     public void Approve(View myview) {
-        SendData(this, WEARABLE_APPROVE_TREATMENT, null);
+        if (watchkeypad) {
+            Treatments.create(carbs, insulin, thisnotes, Treatments.getTimeStampWithOffset(timeoffset));
+        }
+        else
+            SendData(this, WEARABLE_APPROVE_TREATMENT, null);
         finish();
     }
 
     public void Cancel(View myview) {
-        SendData(this, WEARABLE_CANCEL_TREATMENT, null);
+        if (watchkeypad) {
+            JoH.static_toast(xdrip.getAppContext(), "Treatment cancelled", Toast.LENGTH_SHORT);
+        }
+        else
+            SendData(this, WEARABLE_CANCEL_TREATMENT, null);
         finish();
     }
 
@@ -321,5 +371,154 @@ public class Simulation extends Activity {
                     Toast.LENGTH_LONG).show();
         }
 
+    }
+    private void handleWordPair() {
+        boolean preserve = false;
+        if ((thisnumber == -1) || (thisword == "")) return;
+
+        Log.d(TAG, "GOT WORD PAIR: " + thisnumber + " = " + thisword);
+
+        switch (thisword) {
+
+            case "watchkeypad":
+                if ((watchkeypadset == false) && (thisnumber > 0)) {
+                    watchkeypad = true;
+                    watchkeypadset = true;
+                    Log.d(TAG, "Treatment entered on watchkeypad: " + Double.toString(thisnumber));
+                } else {
+                    Log.d(TAG, "watchkeypad already set");
+                }
+                break;
+
+            case "rapid":
+            case "units":
+                if ((insulinset == false) && (thisnumber > 0)) {
+                    thisinsulinnumber = thisnumber;
+                    Log.d(TAG, "Rapid dose: " + Double.toString(thisnumber));
+                    insulinset = true;
+                } else {
+                    Log.d(TAG, "Rapid dose already set");
+                    preserve = true;
+                }
+                break;
+
+            case "carbs":
+                if ((carbsset == false) && (thisnumber > 0)) {
+                    thiscarbsnumber = thisnumber;
+                    carbsset = true;
+                    Log.d(TAG, "Carbs eaten: " + Double.toString(thisnumber));
+                } else {
+                    Log.d(TAG, "Carbs already set");
+                }
+                break;
+
+            case "blood":
+                if ((glucoseset == false) && (thisnumber > 0)) {
+                    thisglucosenumber = thisnumber;
+                    Log.d(TAG, "Blood test: " + Double.toString(thisnumber));
+                    glucoseset = true;
+                } else {
+                    Log.d(TAG, "Blood glucose already set");
+                }
+                break;
+
+            case "time":
+                Log.d(TAG, "processing time keyword");
+                if ((timeset == false) && (thisnumber >= 0)) {
+
+                    final NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
+                    final DecimalFormat df = (DecimalFormat) nf;
+                    //DecimalFormat df = new DecimalFormat("#");
+                    df.setMinimumIntegerDigits(2);
+                    df.setMinimumFractionDigits(2);
+                    df.setMaximumFractionDigits(2);
+                    df.setMaximumIntegerDigits(2);
+
+                    final Calendar c = Calendar.getInstance();
+
+                    final SimpleDateFormat simpleDateFormat1 =
+                            new SimpleDateFormat("dd/M/yyyy ", Locale.US);
+                    final SimpleDateFormat simpleDateFormat2 =
+                            new SimpleDateFormat("dd/M/yyyy HH.mm", Locale.US); // TODO double check 24 hour 12.00 etc
+                    final String datenew = simpleDateFormat1.format(c.getTime()) + df.format(thisnumber);
+
+                    Log.d(TAG, "Time Timing data datenew: " + datenew);
+
+                    final Date datethen;
+                    final Date datenow = new Date();
+
+                    try {
+                        datethen = simpleDateFormat2.parse(datenew);
+                        double difference = datenow.getTime() - datethen.getTime();
+                        // is it more than 1 hour in the future? If so it must be yesterday
+                        if (difference < -(1000 * 60 * 60)) {
+                            difference = difference + (86400 * 1000);
+                        } else {
+                            // - midnight feast pre-bolus nom nom
+                            if (difference > (60 * 60 * 23 * 1000))
+                                difference = difference - (86400 * 1000);
+                        }
+
+                        Log.d(TAG, "Time Timing data: " + df.format(thisnumber) + " = difference ms: " + JoH.qs(difference));
+                        thistimetext = df.format(thisnumber);
+                        timeset = true;
+                        thistimeoffset = difference;
+                    } catch (ParseException e) {
+                        // toast to explain?
+                        Log.d(TAG, "Got exception parsing date time");
+                    }
+                } else {
+                    Log.d(TAG, "Time data already set");
+                }
+                break;
+        } // end switch
+    }
+
+    private void initValues() {
+        thiscarbsnumber = 0;
+        thisinsulinnumber = 0;
+        thistimeoffset = 0;
+        thisglucosenumber = 0;
+        watchkeypadset = false;
+        carbsset = false;
+        insulinset = false;
+        glucoseset = false;
+        timeset = false;
+    }
+
+    private void createTreatment(String allWords) {
+        Log.d(TAG, "createTreatment allWords=" + allWords);
+        allWords = allWords.trim();
+        allWords = allWords.replaceAll(":", "."); // fix real times
+        allWords = allWords.replaceAll("(\\d)([a-zA-Z])", "$1 $2"); // fix like 22mm
+        allWords = allWords.replaceAll("([0-9].[0-9])([0-9][0-9])", "$1 $2"); // fix multi number order like blood 3.622 grams
+        allWords = allWords.toLowerCase();
+        Log.d(TAG, "createTreatment after regex allWords=" + allWords);
+        // reset parameters for new speech
+        glucoseset = false;
+        insulinset = false;
+        carbsset = false;
+        timeset = false;
+        watchkeypadset = false;
+        thisnumber = -1;
+        thisword = "";
+        thistimetext = "";
+        String[] wordsArray = allWords.split(" ");
+        for (int i = 0; i < wordsArray.length; i++) {
+            // per word in input stream
+            try {
+                double thisdouble = Double.parseDouble(wordsArray[i]);
+                thisnumber = thisdouble; // if no exception
+                handleWordPair();
+            } catch (NumberFormatException nfe) {
+                // detection of number or not
+                Log.d(TAG, "createTreatment NumberFormatException wordsArray[i]=" + wordsArray[i]);
+                //String result = classifyWord(wordsArray[i]);
+                //if (result != null)
+                thisword = wordsArray[i];//result;
+                handleWordPair();
+            }
+        }
+        //Treatments.create(thiscarbsnumber, thisinsulinnumber, allWords, Treatments.getTimeStampWithOffset(thistimeoffset));
     }
 }

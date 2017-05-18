@@ -366,7 +366,7 @@ public class Treatments extends Model {
     }
 
     public static synchronized boolean pushTreatmentFromJson(String json, boolean from_interactive) {
-        Log.d(TAG, "converting treatment from json: ");
+        Log.d(TAG, "converting treatment from json: " + json);
         Treatments mytreatment = fromJSON(json);
         if (mytreatment != null) {
             if (mytreatment.uuid == null) {

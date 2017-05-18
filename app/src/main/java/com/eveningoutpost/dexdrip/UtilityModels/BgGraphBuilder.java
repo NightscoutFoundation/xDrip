@@ -1280,8 +1280,10 @@ public class BgGraphBuilder {
                             mylabel = mylabel + (Double.toString(treatment.carbs) + "g").replace(".0g", "g");
                         }
                         pv.setLabel(mylabel); // standard label
+                        Log.d(TAG, "watchkeypad pv.mylabel: " + mylabel);
                         if ((treatment.notes != null) && (treatment.notes.length() > 0)) {
                             pv.note = treatment.notes;
+                            Log.d(TAG, "watchkeypad pv.note: " + pv.note + " mylabel: " + mylabel);
                             try {
                                 final Pattern p = Pattern.compile(".*?pos:([0-9.]+).*");
                                 final Matcher m = p.matcher(treatment.enteredBy);

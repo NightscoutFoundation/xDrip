@@ -93,6 +93,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String RESET_DB_PATH = "/resetweardb";
     private static final String SYNC_BGS_PATH = "/syncwearbgs";//KS
     private static final String SYNC_LOGS_PATH = "/syncwearlogs";
+    private static final String SYNC_TREATMENTS_PATH = "/syncweartreatments";
     private static final String SYNC_LOGS_REQUESTED_PATH = "/syncwearlogsrequested";
     private static final String SYNC_STEP_SENSOR_PATH = "/syncwearstepsensor";
     private static final String CLEAR_LOGS_PATH = "/clearwearlogs";
@@ -454,6 +455,31 @@ public class WatchUpdaterService extends WearableListenerService implements
                 }
             }
             sendDataReceived(DATA_ITEM_RECEIVED_PATH,"DATA_RECEIVED_LOGS count=" + entries.size(), timeOfLastEntry, bBenchmark?"BM":"STEP", -1);
+        }
+    }
+
+    private synchronized void syncTreatmentsData(DataMap dataMap, boolean bBenchmark) {
+        Log.d(TAG, "syncTreatmentsData");
+
+        ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
+        long timeOfLastEntry = 0;
+        if (entries != null) {
+            Log.d(TAG, "syncTreatmentsData count=" + entries.size());
+            for (DataMap entry : entries) {
+                if (entry != null) {
+                    Log.d(TAG, "syncTreatmentsData entry=" + entry);
+                    String record = entry.getString("entry");
+                    if (record != null && record.length() > 1) {
+                        Log.d(TAG, "Received wearable: voice payload: " + record);
+                        receivedText(getApplicationContext(), record);
+                        Log.d(TAG, "syncTreatmentsData add Table record=" + record);
+                        long timestamp = entry.getLong("timestamp");
+                        timeOfLastEntry = (long) timestamp + 1;
+                        Log.d(TAG, "syncTreatmentsData WATCH treatments timestamp=" + JoH.dateTimeText((long) timestamp));
+                    }
+                }
+            }
+            sendDataReceived(DATA_ITEM_RECEIVED_PATH,"DATA_RECEIVED_LOGS count=" + entries.size(), timeOfLastEntry, bBenchmark?"BM":"TREATMENTS", -1);
         }
     }
 
@@ -1057,6 +1083,16 @@ public class WatchUpdaterService extends WearableListenerService implements
                             if (dataMap != null) {
                                 Log.d(TAG, "onMessageReceived SYNC_STEP_SENSOR_PATH dataMap=" + dataMap);
                                 syncStepSensorData(dataMap, false);
+                            }
+                        }
+                        break;
+                    case SYNC_TREATMENTS_PATH:
+                        Log.d(TAG, "onMessageReceived SYNC_TREATMENTS_PATH");
+                        if (event.getData() != null) {
+                            dataMap = DataMap.fromByteArray(event.getData());
+                            if (dataMap != null) {
+                                Log.d(TAG, "onMessageReceived SYNC_TREATMENTS_PATH dataMap=" + dataMap);
+                                syncTreatmentsData(dataMap, false);
                             }
                         }
                         break;
