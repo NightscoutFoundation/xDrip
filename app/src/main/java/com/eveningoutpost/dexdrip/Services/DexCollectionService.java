@@ -168,7 +168,6 @@ public class DexCollectionService extends Service {
         final IntentFilter pairingRequestFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
         pairingRequestFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
         registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
-
         Log.i(TAG, "onCreate: STARTING SERVICE");
     }
 
@@ -230,6 +229,7 @@ public class DexCollectionService extends Service {
             status("Service full stop");
             retry_time = 0;
             failover_time = 0;
+            retry_backoff = 0;
         }
         BgToSpeech.tearDownTTS();
         Log.i(TAG, "SERVICE STOPPED");
