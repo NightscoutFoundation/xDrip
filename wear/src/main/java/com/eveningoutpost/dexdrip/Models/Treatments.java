@@ -5,6 +5,7 @@ package com.eveningoutpost.dexdrip.Models;
  */
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.provider.BaseColumns;
 
 import com.activeandroid.Model;
@@ -98,7 +99,7 @@ public class Treatments extends Model {
         fixUpTable();
         Log.d(TAG, "Creating treatment: Insulin: " + Double.toString(insulin) + " / Carbs: " + Double.toString(carbs));
 
-        if ((carbs == 0) && (insulin == 0)) return null;
+        if ((carbs == 0) && (insulin == 0) && (notes == null)) return null;
 
         if (timestamp == 0) {
             timestamp = new Date().getTime();
@@ -124,6 +125,7 @@ public class Treatments extends Model {
         //  NSClientChat.pushTreatmentAsync(Treatment);
         //pushTreatmentSync(Treatment);
         //UndoRedo.addUndoTreatment(Treatment.uuid);
+        Log.d(TAG, "Treatment.created_at: " + Treatment.created_at + " notes: " + notes);
         return Treatment;
     }
 
@@ -285,6 +287,34 @@ public class Treatments extends Model {
                 .where("timestamp <= ? and timestamp >= ?", (timestamp + plus_minus_millis), (timestamp - plus_minus_millis)) // window
                 .orderBy("abs(timestamp-" + Long.toString(timestamp) + ") asc")
                 .executeSingle();
+    }
+
+    public static void cleanup(long timestamp) {
+        try {
+            List<Treatments> data = new Select()
+                    .from(Treatments.class)
+                    .where("timestamp < ?", timestamp)
+                    .orderBy("timestamp desc")
+                    .execute();
+            if (data != null) Log.d(TAG, "cleanup BgReading size=" + data.size());
+            new Cleanup().execute(data);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception running cleanup " + e.toString());
+        }
+    }
+
+    private static class Cleanup extends AsyncTask<List<Treatments>, Integer, Boolean> {
+        @Override
+        protected Boolean doInBackground(List<Treatments>... errors) {
+            try {
+                for(Treatments data : errors[0]) {
+                    data.delete();
+                }
+                return true;
+            } catch(Exception e) {
+                return false;
+            }
+        }
     }
 
     public static void delete_all() {

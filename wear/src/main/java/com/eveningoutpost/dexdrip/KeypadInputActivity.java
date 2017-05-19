@@ -4,22 +4,16 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.Treatments;
-
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -38,17 +32,6 @@ import static com.eveningoutpost.dexdrip.ListenerService.SendData;
 public class KeypadInputActivity extends Activity {
 
     private final static String TAG = "jamorham " + KeypadInputActivity.class.getSimpleName();
-    double thisnumber = -1;
-    double thisglucosenumber = 0;
-    double thiscarbsnumber = 0;
-    double thisinsulinnumber = 0;
-    double thistimeoffset = 0;
-    String thistimetext = "";
-    String thisword = "";
-    boolean carbsset = false;
-    boolean insulinset = false;
-    boolean glucoseset = false;
-    boolean timeset = false;
     private TextView mDialTextView;
     private Button zeroButton, oneButton, twoButton, threeButton, fourButton, fiveButton,
             sixButton, sevenButton, eightButton, nineButton, starButton, backSpaceButton;
@@ -293,137 +276,24 @@ public class KeypadInputActivity extends Activity {
         updateTab();
     }
 
-    private void handleWordPair() {
-        boolean preserve = false;
-        if ((thisnumber == -1) || (thisword == "")) return;
-
-        Log.d(TAG, "GOT WORD PAIR: " + thisnumber + " = " + thisword);
-
-        switch (thisword) {
-
-            case "carbs":
-                if ((carbsset == false) && (thisnumber > 0)) {
-                    thiscarbsnumber = thisnumber;
-                    carbsset = true;
-                    Log.d(TAG, "Carbs eaten: " + Double.toString(thisnumber));
-                } else {
-                    Log.d(TAG, "Carbs already set");
-                }
-                break;
-
-            case "blood":
-                if ((glucoseset == false) && (thisnumber > 0)) {
-                    thisglucosenumber = thisnumber;
-                    Log.d(TAG, "Blood test: " + Double.toString(thisnumber));
-                    glucoseset = true;
-                } else {
-                    Log.d(TAG, "Blood glucose already set");
-                }
-                break;
-
-            case "time":
-                Log.d(TAG, "processing time keyword");
-                if ((timeset == false) && (thisnumber >= 0)) {
-
-                    final NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
-                    final DecimalFormat df = (DecimalFormat) nf;
-                    //DecimalFormat df = new DecimalFormat("#");
-                    df.setMinimumIntegerDigits(2);
-                    df.setMinimumFractionDigits(2);
-                    df.setMaximumFractionDigits(2);
-                    df.setMaximumIntegerDigits(2);
-
-                    final Calendar c = Calendar.getInstance();
-
-                    final SimpleDateFormat simpleDateFormat1 =
-                            new SimpleDateFormat("dd/M/yyyy ", Locale.US);
-                    final SimpleDateFormat simpleDateFormat2 =
-                            new SimpleDateFormat("dd/M/yyyy HH.mm", Locale.US); // TODO double check 24 hour 12.00 etc
-                    final String datenew = simpleDateFormat1.format(c.getTime()) + df.format(thisnumber);
-
-                    Log.d(TAG, "Time Timing data datenew: " + datenew);
-
-                    final Date datethen;
-                    final Date datenow = new Date();
-
-                    try {
-                        datethen = simpleDateFormat2.parse(datenew);
-                        double difference = datenow.getTime() - datethen.getTime();
-                        // is it more than 1 hour in the future? If so it must be yesterday
-                        if (difference < -(1000 * 60 * 60)) {
-                            difference = difference + (86400 * 1000);
-                        } else {
-                            // - midnight feast pre-bolus nom nom
-                            if (difference > (60 * 60 * 23 * 1000))
-                                difference = difference - (86400 * 1000);
-                        }
-
-                        Log.d(TAG, "Time Timing data: " + df.format(thisnumber) + " = difference ms: " + JoH.qs(difference));
-                        thistimetext = df.format(thisnumber);
-                        timeset = true;
-                        thistimeoffset = difference;
-                    } catch (ParseException e) {
-                        // toast to explain?
-                        Log.d(TAG, "Got exception parsing date time");
-                    }
-                } else {
-                    Log.d(TAG, "Time data already set");
-                }
-                break;
-        } // end switch
-    }
-
-    private void createTreatment(String allWords) {
-        allWords = allWords.trim();
-        allWords = allWords.replaceAll(":", "."); // fix real times
-        allWords = allWords.replaceAll("(\\d)([a-zA-Z])", "$1 $2"); // fix like 22mm
-        allWords = allWords.replaceAll("([0-9].[0-9])([0-9][0-9])", "$1 $2"); // fix multi number order like blood 3.622 grams
-        allWords = allWords.toLowerCase();
-        // reset parameters for new speech
-        glucoseset = false;
-        insulinset = false;
-        carbsset = false;
-        timeset = false;
-        thisnumber = -1;
-        thisword = "";
-        thistimetext = "";
-        String[] wordsArray = allWords.split(" ");
-        for (int i = 0; i < wordsArray.length; i++) {
-            // per word in input stream
-            try {
-                double thisdouble = Double.parseDouble(wordsArray[i]);
-                thisnumber = thisdouble; // if no exception
-                handleWordPair();
-            } catch (NumberFormatException nfe) {
-                // detection of number or not
-                //String result = classifyWord(wordsArray[i]);
-                //if (result != null)
-                    thisword = wordsArray[i];//result;
-                handleWordPair();
-            }
-        }
-        //Treatments.create(thiscarbsnumber, thisinsulinnumber, allWords, Treatments.getTimeStampWithOffset(thistimeoffset));
+    private String getTime() {
+        final Calendar c = Calendar.getInstance();
+        final SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("HH.mm", Locale.US);
+        final String datenew = simpleDateFormat1.format(c.getTime());
+        return datenew;
     }
 
     private void submitAll() {
 
         String mystring = "";
-        //Long curtime = (long) (new Date().getTime());
-        mystring += "1 watchkeypad ";//curtime.toString() + " watchkeypad ";
-        mystring += (getValue("time").length() > 0) ? getValue("time") + " time " : "";
+        mystring += "1 watchkeypad ";
+        mystring += (getValue("time").length() > 0) ? getValue("time") + " time " : getTime() + " time ";
         mystring += (getValue("bloodtest").length() > 0) ? getValue("bloodtest") + " blood " : "";
         mystring += (getValue("carbs").length() > 0) ? (!getValue("carbs").equals("0") ? getValue("carbs") + " carbs " : "") : "";
         mystring += (getValue("insulin").length() > 0) ? (!getValue("insulin").equals("0") ? getValue("insulin") + " units " : "") : "";
 
         if (mystring.length() > 1) {
-            //createTreatment(mystring);
             ListenerService.sendTreatment(mystring);
-            /*ListenerService.sendTreatment(
-                    thiscarbsnumber,
-                    thisinsulinnumber,
-                    thisglucosenumber,
-                    thistimeoffset,
-                    thistimetext, mystring);*/
             //SendData(this, WEARABLE_VOICE_PAYLOAD, mystring.getBytes(StandardCharsets.UTF_8));
             finish();
         }

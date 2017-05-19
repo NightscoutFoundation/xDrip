@@ -333,7 +333,7 @@ public class Simulation extends Activity {
 
     public void Approve(View myview) {
         if (watchkeypad) {
-            Treatments.create(carbs, insulin, thisnotes, Treatments.getTimeStampWithOffset(timeoffset));
+            Treatments.create(carbs, insulin, thisnotes, new Date().getTime());
         }
         else
             SendData(this, WEARABLE_APPROVE_TREATMENT, null);
@@ -519,6 +519,5 @@ public class Simulation extends Activity {
                 handleWordPair();
             }
         }
-        //Treatments.create(thiscarbsnumber, thisinsulinnumber, allWords, Treatments.getTimeStampWithOffset(thistimeoffset));
     }
 }

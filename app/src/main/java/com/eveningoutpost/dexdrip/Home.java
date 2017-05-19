@@ -782,10 +782,11 @@ public class Home extends ActivityWithMenu {
         // preserve globals before threading off
         final double myglucosenumber = thisglucosenumber;
         final double mytimeoffset = thistimeoffset;
-        WatchUpdaterService.sendWearToast("Treatment processed", Toast.LENGTH_LONG);
         // proccess and approve all treatments
         // TODO Handle BG Tests here also
         if (watchkeypad) {
+            JoH.static_toast_long("Treatment processed");
+            WatchUpdaterService.sendWearLocalToast("Treatment processed", Toast.LENGTH_LONG);
             Long time = Treatments.getTimeStampWithOffset(mytimeoffset);
             Treatments exists = Treatments.byTimestamp(time);
             if (exists == null) {
@@ -796,15 +797,18 @@ public class Home extends ActivityWithMenu {
                 Log.d(TAG, "processAndApproveTreatment Treatment already exists carbs=" + thiscarbsnumber + " insulin=" + thisinsulinnumber + " timestamp=" + JoH.dateTimeText(time));
             }
         }
-        else
+        else {
+            WatchUpdaterService.sendWearToast("Treatment processed", Toast.LENGTH_LONG);
             Treatments.create(thiscarbsnumber, thisinsulinnumber, Treatments.getTimeStampWithOffset(mytimeoffset));
+        }
         hideAllTreatmentButtons();
 
         if (hideTreatmentButtonsIfAllDone()) {
             updateCurrentBgInfo("approve button");
         }
         if (watchkeypad) {
-            BloodTest.createFromCal(myglucosenumber, mytimeoffset, "Manual Entry");
+            if (myglucosenumber > 0)
+                BloodTest.createFromCal(myglucosenumber, mytimeoffset, "Manual Entry");
             watchkeypad = false;
             watchkeypadset = false;
         }
