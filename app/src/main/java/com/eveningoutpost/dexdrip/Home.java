@@ -705,7 +705,9 @@ public class Home extends ActivityWithMenu {
                     } else if (calibration_type.equals("auto")) {
                         Log.d(TAG, "Creating bloodtest  record from cal input data");
                         BloodTest.createFromCal(glucosenumber, timeoffset, "Manual Entry");
+                        GcmActivity.syncBloodTests();
                         if ((!Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto"))
+                                && (DexCollectionType.getDexCollectionType() != DexCollectionType.Follower)
                                 && (JoH.pratelimit("ask_about_auto_calibration", 86400 * 30))) {
                             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                             builder.setTitle("Enable automatic calibration");
