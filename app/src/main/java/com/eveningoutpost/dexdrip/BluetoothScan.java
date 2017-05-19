@@ -166,7 +166,7 @@ public class BluetoothScan extends ListActivityWithMenu {
     }
 
     @TargetApi(19)
-    private void scanLeDevice(final boolean enable) {
+    private synchronized void scanLeDevice(final boolean enable) {
         if (enable) {
             // Stops scanning after a pre-defined scan period.
             Log.d(TAG,"Start scan 19");
@@ -174,13 +174,13 @@ public class BluetoothScan extends ListActivityWithMenu {
                 @Override
                 public void run() {
                     is_scanning = false;
-                    bluetooth_adapter.stopLeScan(mLeScanCallback);
+                    if (bluetooth_adapter != null) bluetooth_adapter.stopLeScan(mLeScanCallback);
                     invalidateOptionsMenu();
                 }
             }, SCAN_PERIOD);
 
             is_scanning = true;
-            bluetooth_adapter.startLeScan(mLeScanCallback);
+            if (bluetooth_adapter != null) bluetooth_adapter.startLeScan(mLeScanCallback);
         } else {
             is_scanning = false;
             if(bluetooth_adapter != null && bluetooth_adapter.isEnabled()) {
