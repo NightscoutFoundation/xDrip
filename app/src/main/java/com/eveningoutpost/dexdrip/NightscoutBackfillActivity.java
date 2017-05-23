@@ -58,6 +58,7 @@ public class NightscoutBackfillActivity extends AppCompatActivity implements Nav
     @Override
     protected void onResume() {
         xdrip.checkForcedEnglish(this);
+        setTitle("Nightscout Backfill");
         super.onResume();
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), "Nightscout Backfill", this);
