@@ -86,6 +86,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
+import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.languageeditor.LanguageEditor;
@@ -1213,6 +1214,8 @@ public class Home extends ActivityWithMenu {
             BloodTest.cleanup(-100000);
         } else if (allWords.contentEquals("delete all persistent store")) {
             SdcardImportExport.deletePersistentStore();
+        } else if (allWords.contentEquals("delete uploader queue")) {
+            UploaderQueue.emptyQueue();
         } else if (allWords.contentEquals("clear battery warning")) {
             try {
                 final Sensor sensor = Sensor.currentSensor();
