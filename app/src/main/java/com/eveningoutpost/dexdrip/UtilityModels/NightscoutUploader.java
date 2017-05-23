@@ -567,6 +567,7 @@ public class NightscoutUploader {
             json.put("rssi", 100);
             json.put("noise", record.noiseValue());
             json.put("delta", new BigDecimal(record.currentSlope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP)); // jamorham for automation
+            json.put("sysTime", format.format(record.timestamp));
             array.put(json);
         }
         else
@@ -598,6 +599,7 @@ public class NightscoutUploader {
             json.put("date", record.timestamp);
             json.put("dateString", format.format(record.timestamp));
             json.put("mbg", record.bg);
+            json.put("sysTime", format.format(record.timestamp));
             array.put(json);
         }
 
@@ -614,6 +616,7 @@ public class NightscoutUploader {
             json.put("date", record.timestamp);
             json.put("dateString", format.format(record.timestamp));
             json.put("mbg", record.mgdl);
+            json.put("sysTime", format.format(record.timestamp));
             array.put(json);
         }
 
@@ -642,6 +645,7 @@ public class NightscoutUploader {
                 json.put("intercept", ((record.intercept * -1000) / (record.slope)));
                 json.put("scale", 1);
             }
+            json.put("sysTime", format.format(record.timestamp));
             array.put(json);
         }
 
@@ -650,6 +654,7 @@ public class NightscoutUploader {
         if (treatment == null) return;
         if ((treatment.enteredBy != null) && (treatment.enteredBy.endsWith(VIA_NIGHTSCOUT_TAG))) return; // don't send back to nightscout what came from there
         final JSONObject record = new JSONObject();
+        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
         record.put("timestamp", treatment.timestamp);
         record.put("eventType", treatment.eventType);
         record.put("enteredBy", treatment.enteredBy);
@@ -658,6 +663,7 @@ public class NightscoutUploader {
         record.put("carbs", treatment.carbs);
         record.put("insulin", treatment.insulin);
         record.put("created_at", treatment.created_at);
+        record.put("sysTime", format.format(treatment.timestamp));
         array.put(record);
     }
 
