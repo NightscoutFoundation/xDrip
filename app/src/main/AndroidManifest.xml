@@ -10,6 +10,7 @@
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
     <uses-feature android:name="android.hardware.usb.host" />
+    <uses-feature android:name="android.hardware.nfc" android:required="false" />
 
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="com.google.android.permission.PROVIDE_BACKGROUND" />
@@ -536,6 +537,12 @@
             android:parentActivityName=".Home" />
         <activity
             android:name=".Reminders"
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustPan">
+        </activity>
+        <activity
+            android:name=".NightscoutBackfillActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustPan">
