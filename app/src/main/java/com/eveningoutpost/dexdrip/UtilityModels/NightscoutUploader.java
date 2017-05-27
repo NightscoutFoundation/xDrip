@@ -27,8 +27,11 @@ import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.WriteConcern;
+import com.squareup.okhttp.Authenticator;
+import com.squareup.okhttp.Credentials;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.ResponseBody;
 
@@ -38,6 +41,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -49,6 +53,7 @@ import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import okio.BufferedSink;
 import retrofit.Call;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -136,6 +141,26 @@ public class NightscoutUploader {
             client.setConnectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
             client.setWriteTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
             client.setReadTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
+            client.setAuthenticator(new Authenticator() {
+                @Override
+                public Request authenticate(Proxy proxy, com.squareup.okhttp.Response response) throws IOException {
+                    String baseURI = prefs.getString("cloud_storage_api_base", "");
+                    baseURI = baseURI.replaceFirst("(https|http):\\/\\/", "");
+                    baseURI = baseURI.substring(0, baseURI.lastIndexOf('@'));
+                    String[] split = baseURI.split("(?<!\\\\):");
+                    if (split.length != 3) return null;
+                    String username = split[0];
+                    String password = split[1];
+                    String credentials = Credentials.basic(username, password);
+                    if (credentials.equals(response.request().header("Authorization"))) return null;
+                    return response.request().newBuilder().header("Authorization", credentials).build();
+                }
+
+                @Override
+                public Request authenticateProxy(Proxy proxy, com.squareup.okhttp.Response response) throws IOException {
+                    return null;
+                }
+            });
             enableRESTUpload = prefs.getBoolean("cloud_storage_api_enable", false);
             enableMongoUpload = prefs.getBoolean("cloud_storage_mongodb_enable", false);
         }
