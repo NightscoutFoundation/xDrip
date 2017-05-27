@@ -94,34 +94,34 @@ public class NightscoutUploader {
 
         public interface NightscoutService {
             @POST("entries")
-            Call<ResponseBody> upload(@Header("api-secret") String secret, @Body RequestBody body);
+            Call<ResponseBody> upload(@Header("api-secret") String secret, @Body RequestBody body, @Header("Authorization") String authorization);
 
             @POST("entries")
-            Call<ResponseBody> upload(@Body RequestBody body);
+            Call<ResponseBody> upload(@Body RequestBody body, @Header("Authorization") String authorization);
 
             @POST("devicestatus")
-            Call<ResponseBody> uploadDeviceStatus(@Body RequestBody body);
+            Call<ResponseBody> uploadDeviceStatus(@Body RequestBody body, @Header("Authorization") String authorization);
 
             @POST("devicestatus")
-            Call<ResponseBody> uploadDeviceStatus(@Header("api-secret") String secret, @Body RequestBody body);
+            Call<ResponseBody> uploadDeviceStatus(@Header("api-secret") String secret, @Body RequestBody body, @Header("Authorization") String authorization);
 
             @GET("status.json")
-            Call<ResponseBody> getStatus(@Header("api-secret") String secret);
+            Call<ResponseBody> getStatus(@Header("api-secret") String secret, @Header("Authorization") String authorization);
 
             @POST("treatments")
-            Call<ResponseBody> uploadTreatments(@Header("api-secret") String secret, @Body RequestBody body);
+            Call<ResponseBody> uploadTreatments(@Header("api-secret") String secret, @Body RequestBody body, @Header("Authorization") String authorization);
 
             @PUT("treatments")
-            Call<ResponseBody> upsertTreatments(@Header("api-secret") String secret, @Body RequestBody body);
+            Call<ResponseBody> upsertTreatments(@Header("api-secret") String secret, @Body RequestBody body, @Header("Authorization") String authorization);
 
             @GET("treatments")
-            Call<ResponseBody> downloadTreatments(@Header("api-secret") String secret);
+            Call<ResponseBody> downloadTreatments(@Header("api-secret") String secret, @Header("Authorization") String authorization);
 
             @GET("treatments.json")
-            Call<ResponseBody> findTreatmentByUUID(@Header("api-secret") String secret, @Query("find[uuid]") String uuid);
+            Call<ResponseBody> findTreatmentByUUID(@Header("api-secret") String secret, @Query("find[uuid]") String uuid, @Header("Authorization") String authorization);
 
             @DELETE("treatments/{id}")
-            Call<ResponseBody> deleteTreatment(@Header("api-secret") String secret, @Path("id") String id);
+            Call<ResponseBody> deleteTreatment(@Header("api-secret") String secret, @Path("id") String id, @Header("Authorization") String authorization);
 
         }
 
@@ -141,26 +141,6 @@ public class NightscoutUploader {
             client.setConnectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
             client.setWriteTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
             client.setReadTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
-            client.setAuthenticator(new Authenticator() {
-                @Override
-                public Request authenticate(Proxy proxy, com.squareup.okhttp.Response response) throws IOException {
-                    String baseURI = prefs.getString("cloud_storage_api_base", "");
-                    baseURI = baseURI.replaceFirst("(https|http):\\/\\/", "");
-                    baseURI = baseURI.substring(0, baseURI.lastIndexOf('@'));
-                    String[] split = baseURI.split("(?<!\\\\):");
-                    if (split.length != 3) return null;
-                    String username = split[0];
-                    String password = split[1];
-                    String credentials = Credentials.basic(username, password);
-                    if (credentials.equals(response.request().header("Authorization"))) return null;
-                    return response.request().newBuilder().header("Authorization", credentials).build();
-                }
-
-                @Override
-                public Request authenticateProxy(Proxy proxy, com.squareup.okhttp.Response response) throws IOException {
-                    return null;
-                }
-            });
             enableRESTUpload = prefs.getBoolean("cloud_storage_api_enable", false);
             enableMongoUpload = prefs.getBoolean("cloud_storage_mongodb_enable", false);
         }
@@ -175,7 +155,7 @@ public class NightscoutUploader {
         }
     }
 
-    private void doStatusUpdate(NightscoutService nightscoutService, String url, String hashedSecret) {
+    private void doStatusUpdate(NightscoutService nightscoutService, String url, String hashedSecret, String authorization) {
         final String store_marker = "nightscout-status-poll-" + url;
         final String old_data = PersistentStore.getString(store_marker);
         int retry_secs = (old_data.length() == 0) ? 20 : 86400;
@@ -183,7 +163,7 @@ public class NightscoutUploader {
         if (JoH.pratelimit("poll-nightscout-status-" + url, retry_secs)) {
             try {
                 final Response<ResponseBody> r;
-                r = nightscoutService.getStatus(hashedSecret).execute();
+                r = nightscoutService.getStatus(hashedSecret, authorization).execute();
                 if ((r != null) && (r.isSuccess())) {
                     final String response = r.body().string();
                     if (d) Log.d(TAG, "Status Response: " + response);
@@ -288,7 +268,13 @@ public class NightscoutUploader {
                 }
                 if (uri.getPath().endsWith("/v1/")) apiVersion = 1;
                 String baseURL;
-                String secret = uri.getUserInfo();
+                String[] split = uri.getUserInfo().split("(?<!\\\\\\\\):");
+                String secret = null;
+                String authorization = null;
+                if(split.length == 3) {
+                    authorization = Credentials.basic(split[0], split[1]);
+                    secret = split[2];
+                } else secret = uri.getUserInfo();
                 if ((secret == null || secret.isEmpty()) && apiVersion == 0) {
                     baseURL = baseURI;
                 } else if ((secret == null || secret.isEmpty())) {
@@ -306,8 +292,8 @@ public class NightscoutUploader {
                     final String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
                     final Response<ResponseBody> r;
                     if (hashedSecret != null) {
-                        doStatusUpdate(nightscoutService, retrofit.baseUrl().url().toString(), hashedSecret); // update status if needed
-                        r = nightscoutService.downloadTreatments(hashedSecret).execute();
+                        doStatusUpdate(nightscoutService, retrofit.baseUrl().url().toString(), hashedSecret, authorization); // update status if needed
+                        r = nightscoutService.downloadTreatments(hashedSecret, authorization).execute();
                         if ((r != null) && (r.isSuccess())) {
                             final String response = r.body().string();
                             if (d) Log.d(TAG, "Response: " + response);
@@ -486,7 +472,13 @@ public class NightscoutUploader {
                     }
                     if (uri.getPath().endsWith("/v1/")) apiVersion = 1;
                     String baseURL;
-                    String secret = uri.getUserInfo();
+                    String[] split = uri.getUserInfo().split("(?<!\\\\\\\\):");
+                    String secret = null;
+                    String authorization = null;
+                    if(split.length == 3) {
+                        authorization = Credentials.basic(split[0], split[1]);
+                        secret = split[2];
+                    } else secret = uri.getUserInfo();
                     if ((secret == null || secret.isEmpty()) && apiVersion == 0) {
                         baseURL = baseURI;
                     } else if ((secret == null || secret.isEmpty())) {
@@ -502,10 +494,10 @@ public class NightscoutUploader {
 
                     if (apiVersion == 1) {
                         String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
-                        doStatusUpdate(nightscoutService, retrofit.baseUrl().url().toString(), hashedSecret); // update status if needed
-                        doRESTUploadTo(nightscoutService, hashedSecret, glucoseDataSets, meterRecords, calRecords);
+                        doStatusUpdate(nightscoutService, retrofit.baseUrl().url().toString(), hashedSecret, authorization); // update status if needed
+                        doRESTUploadTo(nightscoutService, hashedSecret, glucoseDataSets, meterRecords, calRecords, authorization);
                     } else {
-                        doLegacyRESTUploadTo(nightscoutService, glucoseDataSets);
+                        doLegacyRESTUploadTo(nightscoutService, glucoseDataSets, authorization);
                     }
                     any_successes = true;
                 } catch (Exception e) {
@@ -518,20 +510,20 @@ public class NightscoutUploader {
             return any_successes;
         }
 
-        private void doLegacyRESTUploadTo(NightscoutService nightscoutService, List<BgReading> glucoseDataSets) throws Exception {
+        private void doLegacyRESTUploadTo(NightscoutService nightscoutService, List<BgReading> glucoseDataSets, String authorization) throws Exception {
             for (BgReading record : glucoseDataSets) {
-                Response<ResponseBody> r = nightscoutService.upload(populateLegacyAPIEntry(record)).execute();
+                Response<ResponseBody> r = nightscoutService.upload(populateLegacyAPIEntry(record), authorization).execute();
                 if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
 
             }
             try {
-                postDeviceStatus(nightscoutService, null);
+                postDeviceStatus(nightscoutService, null, authorization);
             } catch (Exception e) {
                 Log.e(TAG, "Ignoring legacy devicestatus post exception: " + e);
             }
         }
 
-        private void doRESTUploadTo(NightscoutService nightscoutService, String secret, List<BgReading> glucoseDataSets, List<BloodTest> meterRecords, List<Calibration> calRecords) throws Exception {
+        private void doRESTUploadTo(NightscoutService nightscoutService, String secret, List<BgReading> glucoseDataSets, List<BloodTest> meterRecords, List<Calibration> calRecords, String authorization) throws Exception {
             final JSONArray array = new JSONArray();
 
             for (BgReading record : glucoseDataSets) {
@@ -552,18 +544,18 @@ public class NightscoutUploader {
 
             if (array.length() > 0) {//KS
                 final RequestBody body = RequestBody.create(MediaType.parse("application/json"), array.toString());
-                final Response<ResponseBody> r = nightscoutService.upload(secret, body).execute();
+                final Response<ResponseBody> r = nightscoutService.upload(secret, body, authorization).execute();
                 if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
 
                 try {
-                    postDeviceStatus(nightscoutService, secret);
+                    postDeviceStatus(nightscoutService, secret, authorization);
                 } catch (Exception e) {
                     Log.e(TAG, "Ignoring devicestatus post exception: " + e);
                 }
             }
 
             try {
-                postTreatments(nightscoutService, secret);
+                postTreatments(nightscoutService, secret, authorization);
             } catch (Exception e) {
                 Log.e(TAG, "Exception uploading REST API treatments: " + e.getMessage());
                 if (e.getMessage().equals("Not Found")) {
@@ -692,7 +684,7 @@ public class NightscoutUploader {
         array.put(record);
     }
 
-    private void postTreatments(NightscoutService nightscoutService, String apiSecret) throws Exception {
+    private void postTreatments(NightscoutService nightscoutService, String apiSecret, String authorization) throws Exception {
         Log.d(TAG, "Processing treatments for RESTAPI");
         final long THIS_QUEUE = UploaderQueue.NIGHTSCOUT_RESTAPI;
         final List<UploaderQueue> tups = UploaderQueue.getPendingbyType(Treatments.class.getSimpleName(), THIS_QUEUE);
@@ -717,7 +709,7 @@ public class NightscoutUploader {
                             Response<ResponseBody> lookup = null;
                             if (this_id == null) {
                                 // look up the _id to delete as we can't use find with delete action nor can we specify our own _id on submission circa nightscout 0.9.2
-                                lookup = nightscoutService.findTreatmentByUUID(apiSecret, up.reference_uuid).execute();
+                                lookup = nightscoutService.findTreatmentByUUID(apiSecret, up.reference_uuid, authorization).execute();
                             }
                             // throw an exception if we failed lookup
                             if ((this_id == null) && (lookup != null) && !lookup.isSuccess()) {
@@ -736,7 +728,7 @@ public class NightscoutUploader {
                                 }
                                 // is the id valid now?
                                 if ((this_id != null) && (this_id.length() == 24)) {
-                                    final Response<ResponseBody> r = nightscoutService.deleteTreatment(apiSecret, this_id).execute();
+                                    final Response<ResponseBody> r = nightscoutService.deleteTreatment(apiSecret, this_id, authorization).execute();
                                     if (!r.isSuccess()) {
                                         throw new UploaderException(r.message(), r.code());
                                     } else {
@@ -762,7 +754,7 @@ public class NightscoutUploader {
                 final RequestBody body = RequestBody.create(MediaType.parse("application/json"), insert_array.toString());
                 final Response<ResponseBody> r;
                 if (apiSecret != null) {
-                    r = nightscoutService.uploadTreatments(apiSecret, body).execute();
+                    r = nightscoutService.uploadTreatments(apiSecret, body, authorization).execute();
                     if (!r.isSuccess()) {
                         throw new UploaderException(r.message(), r.code());
                     } else {
@@ -786,7 +778,7 @@ public class NightscoutUploader {
                     final RequestBody body = RequestBody.create(MediaType.parse("application/json"), item.toString());
                     final Response<ResponseBody> r;
                     if (apiSecret != null) {
-                        r = nightscoutService.upsertTreatments(apiSecret, body).execute();
+                        r = nightscoutService.upsertTreatments(apiSecret, body, authorization).execute();
                         if (!r.isSuccess()) {
                             throw new UploaderException(r.message(), r.code());
                         } else {
@@ -818,7 +810,7 @@ public class NightscoutUploader {
 
     private static final String LAST_NIGHTSCOUT_BATTERY_LEVEL = "last-nightscout-battery-level";
 
-    private void postDeviceStatus(NightscoutService nightscoutService, String apiSecret) throws Exception {
+    private void postDeviceStatus(NightscoutService nightscoutService, String apiSecret, String authorization) throws Exception {
 
         // TODO optimize based on changes avoiding stale marker issues
         final boolean always_send_battery = true; // nightscout doesn't currently display device device status if it thinks its stale
@@ -882,9 +874,9 @@ public class NightscoutUploader {
                 final RequestBody body = RequestBody.create(MediaType.parse("application/json"), json.toString());
                 Response<ResponseBody> r;
                 if (apiSecret != null) {
-                    r = nightscoutService.uploadDeviceStatus(apiSecret, body).execute();
+                    r = nightscoutService.uploadDeviceStatus(apiSecret, body, authorization).execute();
                 } else
-                    r = nightscoutService.uploadDeviceStatus(body).execute();
+                    r = nightscoutService.uploadDeviceStatus(body, authorization).execute();
                 if (!r.isSuccess()) throw new UploaderException(r.message(), r.code());
                 // } else {
                 //     UserError.Log.d(TAG, "Battery level is same as previous - not uploading: " + battery_level);
