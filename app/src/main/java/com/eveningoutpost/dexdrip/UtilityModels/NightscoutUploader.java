@@ -271,7 +271,7 @@ public class NightscoutUploader {
                 String[] split = uri.getUserInfo().split("(?<!\\\\\\\\):");
                 String secret = null;
                 String authorization = null;
-                if(split.length == 3) {
+                if((apiVersion == 0 && split.length == 2) || (apiVersion > 0 && split.length == 3)) {
                     authorization = Credentials.basic(split[0], split[1]);
                     secret = split[2];
                 } else secret = uri.getUserInfo();
@@ -475,7 +475,7 @@ public class NightscoutUploader {
                     String[] split = uri.getUserInfo().split("(?<!\\\\\\\\):");
                     String secret = null;
                     String authorization = null;
-                    if(split.length == 3) {
+                    if((apiVersion == 0 && split.length == 2) || (apiVersion > 0 && split.length == 3)) {
                         authorization = Credentials.basic(split[0], split[1]);
                         secret = split[2];
                     } else secret = uri.getUserInfo();
