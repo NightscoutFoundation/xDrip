@@ -1870,6 +1870,10 @@ public class Home extends ActivityWithMenu {
         return get_follower() || get_master();
     }
 
+    public static boolean follower_or_accept_follower() {
+        return get_follower() || Home.getPreferencesBoolean("plus_accept_follower_actions", true);
+    }
+
     public static boolean get_forced_wear() {
         return getPreferencesBooleanDefaultFalse("wear_sync") &&
                 getPreferencesBooleanDefaultFalse("enable_wearG5") &&

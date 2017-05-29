@@ -499,6 +499,12 @@
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="plus_follow_master"
+                android:key="plus_accept_follower_actions"
+                android:summary="Treatments and Calibrations from followers will be accepted"
+                android:title="Accept follower actions" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="plus_follow_master"
                 android:key="plus_follow_geolocation"
                 android:summary="@string/send_parakeet_map_location_to_followers"
                 android:title="@string/sync_parakeet_geolocation" />
