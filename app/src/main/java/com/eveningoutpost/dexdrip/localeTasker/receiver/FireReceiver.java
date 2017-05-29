@@ -29,6 +29,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
+import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.localeTasker.Constants;
 import com.eveningoutpost.dexdrip.localeTasker.bundle.BundleScrubber;
 import com.eveningoutpost.dexdrip.localeTasker.bundle.PluginBundleManager;
@@ -162,7 +163,22 @@ public final class FireReceiver extends BroadcastReceiver {
                             JoH.static_toast_long("SNOOZE from Tasker");
                             break;
 
-
+                        case "RESTART":
+                            if (message_array.length> 1) {
+                                switch (message_array[1].toUpperCase()) {
+                                    case "COLLECTOR":
+                                        CollectionServiceStarter.restartCollectionService(xdrip.getAppContext());
+                                        JoH.static_toast_long("Collector restarted by Tasker");
+                                        break;
+                                    case "APP":
+                                        JoH.static_toast_long("xDrip restarted by Tasker");
+                                        JoH.hardReset();
+                                        break;
+                                    default:
+                                        JoH.static_toast_long("Unknown parameter to tasker restart command");
+                                }
+                            }
+                           break;
 
 
 //                    case "PREFS":
