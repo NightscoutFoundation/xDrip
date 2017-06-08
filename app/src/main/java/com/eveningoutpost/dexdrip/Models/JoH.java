@@ -1087,9 +1087,14 @@ public class JoH {
                     }
                     try {
                         UserError.Log.e(TAG, "Pairing type: " + type);
-                        device.setPairingConfirmation(true);
-                        JoH.static_toast_short("Pairing");
-                        broadcastReceiver.abortBroadcast();
+                        if (type != PAIRING_VARIANT_PIN) {
+                            device.setPairingConfirmation(true);
+                            JoH.static_toast_short("xDrip Pairing");
+                            broadcastReceiver.abortBroadcast();
+                        } else {
+                            Log.d(TAG,"Attempting to passthrough PIN pairing");
+                        }
+
                     } catch (Exception e) {
                         UserError.Log.e(TAG, "Could not set pairing confirmation due to exception: " + e);
                         if (JoH.ratelimit("failed pair confirmation", 200)) {
