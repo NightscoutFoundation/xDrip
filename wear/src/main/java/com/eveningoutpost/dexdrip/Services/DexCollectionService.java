@@ -185,16 +185,13 @@ public class DexCollectionService extends Service {
             setRetryTimer();
         }
         else {//onDestroy triggered by CollectionServiceStart.stopBtService
-            if (serviceIntent != null) {
-                Log.d(TAG, "onDestroy stop Alarm serviceIntent");
-                AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-                alarm.cancel(serviceIntent);
-            }
-            if (serviceFailoverIntent != null) {
-                Log.d(TAG, "onDestroy stop Alarm serviceFailoverIntent");
-                AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-                alarm.cancel(serviceFailoverIntent);
-            }
+            Log.d(TAG, "onDestroy stop Alarm serviceIntent");
+            JoH.cancelAlarm(this,serviceIntent);
+            Log.d(TAG, "onDestroy stop Alarm serviceFailoverIntent");
+            JoH.cancelAlarm(this,serviceFailoverIntent);
+            status("Service full stop");
+            retry_time = 0;
+            failover_time = 0;
         }
         //KS BgToSpeech.tearDownTTS();
         Log.i(TAG, "SERVICE STOPPED");

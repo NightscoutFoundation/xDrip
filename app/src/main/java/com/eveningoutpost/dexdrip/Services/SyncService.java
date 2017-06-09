@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.MongoSendTask;
@@ -18,6 +19,7 @@ public class SyncService extends IntentService {
     private Boolean enableRESTUpload;
     private Boolean enableMongoUpload;
     private Boolean enableInfluxUpload;
+    private Boolean enableWearUpload;
     private SharedPreferences prefs;
 
     public SyncService() {
@@ -32,18 +34,19 @@ public class SyncService extends IntentService {
         enableRESTUpload = prefs.getBoolean("cloud_storage_api_enable", false);
         enableMongoUpload = prefs.getBoolean("cloud_storage_mongodb_enable", false);
         enableInfluxUpload = prefs.getBoolean("cloud_storage_influxdb_enable", false);
+        enableWearUpload = Home.get_show_wear_treatments();
         attemptSend();
     }
 
     public void attemptSend() {
-        if (enableRESTUpload || enableMongoUpload || enableInfluxUpload) {
+        if (enableRESTUpload || enableMongoUpload || enableInfluxUpload || enableWearUpload) {
             synctoCloudDatabases();
         }
         setRetryTimer();
     }
 
     public void setRetryTimer() {
-        if (enableRESTUpload || enableMongoUpload || enableInfluxUpload) { //Check for any upload type being enabled
+        if (enableRESTUpload || enableMongoUpload || enableInfluxUpload || enableWearUpload) { //Check for any upload type being enabled
             final PendingIntent serviceIntent = PendingIntent.getService(this, 0, new Intent(this, SyncService.class), PendingIntent.FLAG_CANCEL_CURRENT);
             JoH.wakeUpIntent(this, (1000 * 60 * 6), serviceIntent); // TODO use static method below instead
         }

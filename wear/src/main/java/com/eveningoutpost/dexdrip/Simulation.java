@@ -15,7 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.google.android.gms.wearable.DataMap;
 
 import java.nio.charset.StandardCharsets;
@@ -58,6 +57,7 @@ public class Simulation extends Activity {
     private boolean watchkeypad = false;
     double carbs = 0;
     double insulin = 0;
+    double bloodtest = 0;
     double timeoffset = 0;
     String thisnotes = "";
     double thisnumber = -1;
@@ -233,7 +233,7 @@ public class Simulation extends Activity {
                                 btnCarbohydrates.setVisibility(View.INVISIBLE);
                             }
 
-                            double bloodtest = dataMap.getDouble("bloodtest", thisglucosenumber);
+                            bloodtest = dataMap.getDouble("bloodtest", thisglucosenumber);
                             if (bloodtest > 0) {
                                 mBloodText.setText(Double.toString(bloodtest) + " " + (dataMap.getBoolean("ismgdl") ? "mgdl" : "mmol"));
                                 mBloodText.setVisibility(View.VISIBLE);
@@ -333,7 +333,15 @@ public class Simulation extends Activity {
 
     public void Approve(View myview) {
         if (watchkeypad) {
-            Treatments.create(carbs, insulin, thisnotes, new Date().getTime());
+            //Treatments.create(carbs, insulin, thisnotes, new Date().getTime());
+            DataMap dataMap = new DataMap();
+            dataMap.putDouble("timeoffset", timeoffset);
+            dataMap.putDouble("carbs", carbs);
+            dataMap.putDouble("insulin", insulin);
+            dataMap.putDouble("bloodtest", bloodtest);
+            dataMap.putString("notes", thisnotes);
+            //dataMap.putLong("timestamp", System.currentTimeMillis());
+            ListenerService.createTreatment(dataMap, this);
         }
         else
             SendData(this, WEARABLE_APPROVE_TREATMENT, null);

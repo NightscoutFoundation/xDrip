@@ -9,18 +9,18 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
-import com.eveningoutpost.dexdrip.AddCalibration;
-import com.eveningoutpost.dexdrip.GlucoseMeter.GlucoseReadingRx;
+//KS import com.eveningoutpost.dexdrip.AddCalibration;
+//KS import com.eveningoutpost.dexdrip.GlucoseMeter.GlucoseReadingRx;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.Services.SyncService;
+//KS import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
-import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
-import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
-import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
-import com.eveningoutpost.dexdrip.messages.BloodTestMessage;
-import com.eveningoutpost.dexdrip.messages.BloodTestMultiMessage;
+//KS import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
+//KS import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
+//KS import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+//KS import com.eveningoutpost.dexdrip.messages.BloodTestMessage;
+//KS import com.eveningoutpost.dexdrip.messages.BloodTestMultiMessage;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.math.DoubleMath;
 import com.google.gson.Gson;
@@ -77,7 +77,7 @@ public class BloodTest extends Model {
     public String uuid;
 
 
-    public GlucoseReadingRx glucoseReadingRx;
+    //KS public GlucoseReadingRx glucoseReadingRx;
 
     // patches and saves
     public Long saveit() {
@@ -101,7 +101,7 @@ public class BloodTest extends Model {
                 .create();
         return gson.toJson(this);
     }
-
+/* //KS
     private BloodTestMessage toMessageNative() {
         return new BloodTestMessage.Builder()
                 .timestamp(timestamp)
@@ -118,16 +118,18 @@ public class BloodTest extends Model {
         btl.add(this);
         return toMultiMessage(btl);
     }
-
+*/
 
     // static methods
     private static final long CLOSEST_READING_MS = 30000; // 30 seconds
 
     public static BloodTest create(long timestamp_ms, double mgdl, String source) {
-        return createFromCal(timestamp_ms, mgdl, source, null);
+        return create(timestamp_ms, mgdl, source, null);
     }
 
     public static BloodTest create(long timestamp_ms, double mgdl, String source, String suggested_uuid) {
+
+        UserError.Log.d(TAG, "Create BloodTest mgdl=" + mgdl + " timestamp=" + JoH.dateTimeText(timestamp_ms));
 
         if ((timestamp_ms == 0) || (mgdl == 0)) {
             UserError.Log.e(TAG, "Either timestamp or mgdl is zero - cannot create reading");
@@ -158,9 +160,10 @@ public class BloodTest extends Model {
             bt.state = STATE_VALID;
             bt.source = source;
             bt.saveit();
-            if (UploaderQueue.newEntry("insert", bt) != null) {
+            UserError.Log.d(TAG, "Created BloodTest uuid=" + bt.uuid + " mgdl=" + bt.mgdl + " timestamp=" + JoH.dateTimeText(bt.timestamp));
+           /*KS if (UploaderQueue.newEntry("insert", bt) != null) {
                 SyncService.startSyncService(3000); // sync in 3 seconds
-            }
+            }*/
             return bt;
         } else {
             UserError.Log.d(TAG, "Not creating new reading as timestamp is too close");
@@ -173,6 +176,7 @@ public class BloodTest extends Model {
     }
 
     public static BloodTest createFromCal(double bg, double timeoffset, String source, String suggested_uuid) {
+        UserError.Log.d(TAG, "createFromCal call create");
         final String unit = Home.getPreferencesStringWithDefault("units", "mgdl");
 
         if (unit.compareTo("mgdl") != 0) {
@@ -272,7 +276,7 @@ public class BloodTest extends Model {
             return null;
         }
     }
-
+/*//KS
     public static byte[] toMultiMessage(List<BloodTest> btl) {
         if (btl == null) return null;
         final List<BloodTestMessage> BloodTestMessageList = new ArrayList<>();
@@ -327,7 +331,7 @@ public class BloodTest extends Model {
             UserError.Log.e(TAG, "exception processFromMessage: " + e);
         }
     }
-
+*/
     public static BloodTest fromJSON(String json) {
         if ((json == null) || (json.length() == 0)) {
             UserError.Log.d(TAG, "Empty json received in bloodtest fromJson");
@@ -345,15 +349,28 @@ public class BloodTest extends Model {
 
     public static BloodTest getForPreciseTimestamp(long timestamp, long precision) {
         BloodTest bloodTest = new Select()
-                .from(BloodTest.class)
-                .where("timestamp <= ?", (timestamp + precision))
-                .where("timestamp >= ?", (timestamp - precision))
-                .orderBy("abs(timestamp - " + timestamp + ") asc")
-                .executeSingle();
+            .from(BloodTest.class)
+            .where("timestamp <= ?", (timestamp + precision))
+            .where("timestamp >= ?", (timestamp - precision))
+            .orderBy("abs(timestamp - " + timestamp + ") asc")
+            .executeSingle();
         if ((bloodTest != null) && (Math.abs(bloodTest.timestamp - timestamp) < precision)) {
             return bloodTest;
         }
         return null;
+    }
+
+    public static List<BloodTest> latest(int number) {
+            try {
+                return new Select()
+                .from(BloodTest.class)
+                .orderBy("timestamp desc")
+                .limit(number)
+                .execute();
+        } catch (android.database.sqlite.SQLiteException e) {
+            fixUpTable();
+            return new ArrayList<>();
+        }
     }
 
     public static List<BloodTest> latestForGraph(int number, double startTime) {
@@ -379,7 +396,7 @@ public class BloodTest extends Model {
             return new ArrayList<>();
         }
     }
-
+/*//KS
     synchronized static void opportunisticCalibration() {
         if (Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto")) {
             final BloodTest bt = lastValid();
@@ -508,7 +525,7 @@ public class BloodTest extends Model {
         // +- symbol
         return "\u00B1" + (!domgdl ? JoH.qs(avg * Constants.MGDL_TO_MMOLL, 2) + " mmol" : JoH.qs(avg, 1) + " mgdl");
     }
-
+*/
     public static List<BloodTest> cleanup(int retention_days) {
         return new Delete()
                 .from(BloodTest.class)

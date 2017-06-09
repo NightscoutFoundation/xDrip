@@ -223,6 +223,7 @@ public class Home extends ActivityWithMenu {
     double thisinsulinnumber = 0;
     double thistimeoffset = 0;
     String thisword = "";
+    String thisuuid = "";
     private static String nexttoast;
     boolean carbsset = false;
     boolean insulinset = false;
@@ -790,8 +791,8 @@ public class Home extends ActivityWithMenu {
             Long time = Treatments.getTimeStampWithOffset(mytimeoffset);
             Treatments exists = Treatments.byTimestamp(time);
             if (exists == null) {
-                Log.d(TAG, "processAndApproveTreatment create watchkeypad Treatment carbs=" + thiscarbsnumber + " insulin=" + thisinsulinnumber + " timestamp=" + JoH.dateTimeText(time));
-                Treatments.create(thiscarbsnumber, thisinsulinnumber, time);
+                Log.d(TAG, "processAndApproveTreatment create watchkeypad Treatment carbs=" + thiscarbsnumber + " insulin=" + thisinsulinnumber + " timestamp=" + JoH.dateTimeText(time) + " uuid=" + thisuuid);
+                Treatments.create(thiscarbsnumber, thisinsulinnumber, time, thisuuid);
             }
             else {
                 Log.d(TAG, "processAndApproveTreatment Treatment already exists carbs=" + thiscarbsnumber + " insulin=" + thisinsulinnumber + " timestamp=" + JoH.dateTimeText(time));
@@ -808,7 +809,7 @@ public class Home extends ActivityWithMenu {
         }
         if (watchkeypad) {
             if (myglucosenumber > 0)
-                BloodTest.createFromCal(myglucosenumber, mytimeoffset, "Manual Entry");
+                BloodTest.createFromCal(myglucosenumber, mytimeoffset, "Manual Entry", thisuuid);
             watchkeypad = false;
             watchkeypadset = false;
         }
@@ -1175,7 +1176,8 @@ public class Home extends ActivityWithMenu {
 
     private String classifyWord(String word) {
         if (word.equals("watchkeypad")) return "watchkeypad";
-        // convert fuzzy recognised word to our keyword from lexicon
+        if (word.equals("uuid")) return "uuid";
+// convert fuzzy recognised word to our keyword from lexicon
         for (wordData thislex : searchWords.entries) {
             if (thislex.matchWords.contains(word)) {
                 Log.d(TAG, "Matched spoken word: " + word + " => " + thislex.lexicon);
@@ -1194,13 +1196,20 @@ public class Home extends ActivityWithMenu {
                     Toast.LENGTH_LONG).show();
             return;
         }
+        Log.d(TAG, "Processing speech input allWords: " + allWords);
+        thisuuid = "";
+        int end = allWords.indexOf(" uuid ");
+        if (end > 0) {
+            thisuuid = (end > 0 ? allWords.substring(0, end) : "");
+            allWords = allWords.substring(end + 6, allWords.length());
+        }
         allWords = allWords.trim();
         allWords = allWords.replaceAll(":", "."); // fix real times
         allWords = allWords.replaceAll("(\\d)([a-zA-Z])", "$1 $2"); // fix like 22mm
         allWords = allWords.replaceAll("([0-9].[0-9])([0-9][0-9])", "$1 $2"); // fix multi number order like blood 3.622 grams
         allWords = allWords.toLowerCase();
 
-        Log.d(TAG, "Processing speech input: " + allWords);
+        Log.d(TAG, "Processing speech input allWords: " + allWords + " UUID: " + thisuuid);
 
         if (allWords.contentEquals("delete last treatment")
                 || allWords.contentEquals("cancel last treatment")
@@ -1901,6 +1910,11 @@ public class Home extends ActivityWithMenu {
 
     public static boolean get_master_or_follower() {
         return get_follower() || get_master();
+    }
+
+    public static boolean get_show_wear_treatments() {
+        return getPreferencesBooleanDefaultFalse("wear_sync") &&
+                getPreferencesBooleanDefaultFalse("show_wear_treatments");
     }
 
     public static boolean get_forced_wear() {

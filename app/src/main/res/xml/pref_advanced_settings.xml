@@ -70,6 +70,12 @@
                 android:summary="@string/pref_summary_wear_logs_prefix"
                 android:textIsSelectable="true"
                 android:title="@string/pref_wear_logs_prefix" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="wear_sync"
+                android:key="show_wear_treatments"
+                android:summary="@string/pref_summary_show_treatments"
+                android:title="@string/pref_show_treatments" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="use_pebble_health"

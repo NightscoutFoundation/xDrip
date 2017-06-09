@@ -61,6 +61,8 @@ import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
+import static com.eveningoutpost.dexdrip.Models.Treatments.pushTreatmentSyncToWatch;
+
 /**
  * THIS CLASS WAS BUILT BY THE NIGHTSCOUT GROUP FOR THEIR NIGHTSCOUT ANDROID UPLOADER
  * https://github.com/nightscout/android-uploader/
@@ -388,6 +390,7 @@ public class NightscoutUploader {
                                             t.save();
                                             // sync again!
                                            // pushTreatmentSync(t, false);
+                                            pushTreatmentSyncToWatch(t, true);
                                             new_data = true;
                                         } else {
                                             if (existing != null) {
@@ -404,6 +407,7 @@ public class NightscoutUploader {
                                                     existing.created_at = DateUtil.toISOString(timestamp);
                                                     existing.notes = notes;
                                                     existing.save();
+                                                    pushTreatmentSyncToWatch(existing, false);
                                                     new_data = true;
                                                 }
                                             } else {

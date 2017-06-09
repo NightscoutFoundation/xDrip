@@ -98,6 +98,8 @@
     <string name="pref_summary_always_get_new_keys">This will attempt a full authentication each read attempt. Redundant if Unbond before each read is also selected.</string>
     <string name="pref_always_unbond_G5">Unbond G5/read</string>
     <string name="pref_summary_always_unbond_G5">This will remove the G5 from your device\'s paired device list, and attempt a full authentication and bonding with each read attempt.</string>
+    <string name="pref_show_treatments">Show Treatments</string>
+    <string name="pref_summary_show_treatments">Show Treatment points on graph</string>
     <string name="pref_show_steps">Show Steps</string>
     <string name="pref_summary_show_steps">Show Step Counter</string>
     <string name="pref_show_external_status">Show Status</string>
@@ -178,5 +180,13 @@
     <string name="cancel">Cancel</string>
     <string name="set">Set</string>
     <string name="alert_snoozed_by_phone">Alert snoozed by phone</string>
+    <string name="action_buttons_text">Enter Treatment, Refresh DB, Restart Collector, XDrip Prefs</string>
+    <string name="table_buttons_text">View Bloodtests, Treatments, Calibrations and BG data</string>
+    <string name="sensor_table">Sensor Table</string>
+    <string name="bg_readings_table">BgReadings Table</string>
+    <string name="calibration_data_table">Calibration Table</string>
+    <string name="BloodTestTable">BloodTest Table</string>
+    <string name="TreatmentsTable">Treatments Table</string>
+    <string name="notify_refreshdb">Requested Wear DB refresh</string>
 
 </resources>

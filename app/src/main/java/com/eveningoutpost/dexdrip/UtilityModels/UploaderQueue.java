@@ -72,6 +72,7 @@ public class UploaderQueue extends Model {
     public static final long NIGHTSCOUT_RESTAPI = 1 << 1;
     public static final long TEST_OUTPUT_PLUGIN = 1 << 2;
     public static final long INFLUXDB_RESTAPI = 1 << 3;
+    public static final long WATCH_WEARAPI = 1 << 4;
 
 
     public static final long DEFAULT_UPLOAD_CIRCUITS = 0;
@@ -82,6 +83,7 @@ public class UploaderQueue extends Model {
             append(NIGHTSCOUT_RESTAPI, "Nightscout REST");
             append(TEST_OUTPUT_PLUGIN, "Test Plugin");
             append(INFLUXDB_RESTAPI, "InfluxDB REST");
+            append(WATCH_WEARAPI, "Watch Wear API");
         }
     };
 
@@ -146,7 +148,41 @@ public class UploaderQueue extends Model {
         result.bitfield_wanted = DEFAULT_UPLOAD_CIRCUITS
                 | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_mongodb_enable") ? MONGO_DIRECT : 0)
                 | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable") ? NIGHTSCOUT_RESTAPI : 0)
-                | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_influxdb_enable") ? INFLUXDB_RESTAPI : 0);
+                | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_influxdb_enable") ? INFLUXDB_RESTAPI : 0)
+                | (Home.get_show_wear_treatments() ? WATCH_WEARAPI : 0);
+        if (result.bitfield_wanted == 0) return null; // no queue required
+        result.timestamp = JoH.tsl();
+        result.reference_id = obj.getId();
+        // TODO this probably could be neater
+        if (result.reference_uuid == null)
+            result.reference_uuid = obj instanceof BgReading ? ((BgReading) obj).uuid : null;
+        if (result.reference_uuid == null)
+            result.reference_uuid = obj instanceof Treatments ? ((Treatments) obj).uuid : null;
+        if (result.reference_uuid == null)
+            result.reference_uuid = obj instanceof Calibration ? ((Calibration) obj).uuid : null;
+        if (result.reference_uuid == null)
+            result.reference_uuid = obj instanceof BloodTest ? ((BloodTest) obj).uuid : null;
+
+        if (result.reference_uuid == null) {
+            Log.d(TAG, "reference_uuid was null so refusing to create new entry");
+            return null;
+        }
+
+        result.action = action;
+
+        result.bitfield_complete = 0;
+        result.type = obj.getClass().getSimpleName();
+        result.saveit();
+        if (d) UserError.Log.d(TAG, result.toS());
+        last_new_entry = JoH.tsl();
+        return result;
+    }
+
+    public static UploaderQueue newEntryForWatch(String action, Model obj) {
+        UserError.Log.d(TAG, "new entry called for watch");
+        final UploaderQueue result = new UploaderQueue();
+        result.bitfield_wanted = DEFAULT_UPLOAD_CIRCUITS
+                | (Home.get_show_wear_treatments() ? WATCH_WEARAPI : 0);
         if (result.bitfield_wanted == 0) return null; // no queue required
         result.timestamp = JoH.tsl();
         result.reference_id = obj.getId();

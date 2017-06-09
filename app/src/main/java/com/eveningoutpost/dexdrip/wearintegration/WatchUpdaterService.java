@@ -17,11 +17,13 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.Models.AlertType;
 import com.eveningoutpost.dexdrip.Models.BgReading;
+import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.TransmitterData;
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;
@@ -97,10 +99,13 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String SYNC_LOGS_REQUESTED_PATH = "/syncwearlogsrequested";
     private static final String SYNC_STEP_SENSOR_PATH = "/syncwearstepsensor";
     private static final String CLEAR_LOGS_PATH = "/clearwearlogs";
+    private static final String CLEAR_TREATMENTS_PATH = "/clearweartreatments";
     private static final String STATUS_COLLECTOR_PATH = "/statuscollector";
     private static final String START_COLLECTOR_PATH = "/startcollector";
     private static final String WEARABLE_REPLYMSG_PATH = "/nightscout_watch_data_replymsg";
     private static final String WEARABLE_INITDB_PATH = "/nightscout_watch_data_initdb";
+    private static final String WEARABLE_TREATMENTS_DATA_PATH = "/nightscout_watch_treatments_data";//KS
+    private static final String WEARABLE_BLOODTEST_DATA_PATH = "/nightscout_watch_bloodtest_data";//KS
     private static final String WEARABLE_INITPREFS_PATH = "/nightscout_watch_data_initprefs";
     private static final String WEARABLE_CALIBRATION_DATA_PATH = "/nightscout_watch_cal_data";//KS
     private static final String WEARABLE_BG_DATA_PATH = "/nightscout_watch_bg_data";//KS
@@ -129,6 +134,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String TAG = "jamorham watchupdater";
     private static GoogleApiClient googleApiClient;
     private static long lastRequest = 0;//KS
+    private static final Integer sendTreatmentsCount = 60;//KS
     private static final Integer sendCalibrationCount = 3;//KS
     private final static Integer sendBgCount = 4;//KS
     private boolean wear_integration = false;
@@ -202,6 +208,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         int nfc_sensor_age = dataMap.getInt("nfc_sensor_age", -1);//Used in DexCollectionService LimiTTer
         boolean bg_notifications_watch = dataMap.getBoolean("bg_notifications_watch", false);
         boolean persistent_high_alert_enabled_watch = dataMap.getBoolean("persistent_high_alert_enabled_watch", false);
+        boolean show_wear_treatments = dataMap.getBoolean("show_wear_treatments", false);
 
         boolean change = false;
 
@@ -258,6 +265,12 @@ public class WatchUpdaterService extends WearableListenerService implements
             Log.d(TAG, "syncPrefData commit enable_wearG5: " + enable_wearG5);
         }
 
+        if (show_wear_treatments != mPrefs.getBoolean("show_wear_treatments", false)) {
+            change = true;
+            prefs.putBoolean("show_wear_treatments", show_wear_treatments);
+            Log.d(TAG, "syncPrefData show_wear_treatments:" + show_wear_treatments);
+        }
+
         if (change) {
             prefs.commit();
         }
@@ -289,6 +302,8 @@ public class WatchUpdaterService extends WearableListenerService implements
             else {
                 Log.d(TAG, "processConnect enable_wearG5=false - startBtService");
                 startBtService();
+                if (mPrefs.getBoolean("show_wear_treatments", false))
+                    initWearTreatments();
             }
         }
         else {
@@ -908,6 +923,8 @@ public class WatchUpdaterService extends WearableListenerService implements
                                 Log.d(TAG, "CheckWearableConnected onPeerConnected call initWearData for node=" + peer.getDisplayName());
                                 initWearData();
                             }
+                            else if (mPrefs.getBoolean("show_wear_treatments", false))
+                                initWearTreatments();
                         }
                         if (enable_wearG5) {
                             //Only stop service if Phone will rely on Wear Collection Service
@@ -1352,6 +1369,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                 dataMap.putBoolean("old_school_calibration_mode", Home.getPreferencesBooleanDefaultFalse("old_school_calibration_mode"));
             }
 
+            dataMap.putBoolean("show_wear_treatments", Home.getPreferencesBooleanDefaultFalse("show_wear_treatments"));
         }
         //Step Counter
         dataMap.putBoolean("use_wear_health", mPrefs.getBoolean("use_pebble_health", true));
@@ -1463,51 +1481,210 @@ public class WatchUpdaterService extends WearableListenerService implements
         return dataMap;
     }
 
-    private void sendWearCalibrationData(Integer count) {//KS
-        try {
-            if (count == null) return;
-            if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
-                googleApiConnect();
-            }
-            Log.d(TAG, "sendWearCalibrationData");
-            final Sensor sensor = Sensor.currentSensor();
-            final Calibration last = Calibration.last();
-
-            List<Calibration> latest;
-            BgReading lastBgReading = BgReading.last();
-            //From BgReading: if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp) && ((lastBgReading.calibration.timestamp + (60000 * 20)) > bgReading.timestamp))
-            //From BgReading:     lastBgReading.calibration.rawValueOverride()
-            if (lastBgReading != null && lastBgReading.calibration != null && lastBgReading.calibration_flag == true) {
-                Log.d(TAG, "sendWearCalibrationData lastBgReading.calibration_flag=" + lastBgReading.calibration_flag + " lastBgReading.timestamp: " + lastBgReading.timestamp + " lastBgReading.calibration.timestamp: " + lastBgReading.calibration.timestamp);
-                latest = Calibration.allForSensor();
-            }
-            else {
-                latest = Calibration.latest(count);
-            }
-
-            if ((sensor != null) && (last != null) && (latest != null && !latest.isEmpty())) {
-                Log.d(TAG, "sendWearCalibrationData latest count = " + latest.size());
-                final DataMap entries = dataMap(last);
-                final ArrayList<DataMap> dataMaps = new ArrayList<>(latest.size());
-                if (sensor.uuid != null) {
-                    for (Calibration bg : latest) {
-                        if ((bg != null) && (bg.sensor_uuid != null) && (bg.sensor_uuid.equals(sensor.uuid))) {
-                            dataMaps.add(dataMap(bg));
-                        }
-                    }
-                }
-                entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
-                entries.putDataMapArrayList("entries", dataMaps);
-                if (googleApiClient != null)
-                    new SendToDataLayerThread(WEARABLE_CALIBRATION_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, entries);
-            } else
-                Log.d(TAG, "sendWearCalibrationData latest count = 0");
-        } catch (NullPointerException e) {
-            Log.e(TAG, "Nullpointer exception in sendWearCalibrationData: " + e);
-        }
+    public static boolean sendWearUpload(List<BgReading> bgs, List<Calibration> cals, List<BloodTest> bts, List<Treatments> treatsAdd, List<String> treatsDel) {
+        //TODO boolean statusBgs = sendWearBgData(0, 0, bgs);
+        boolean statusCals = sendWearCalibrationData(0, 0, cals);
+        boolean statusBts = sendWearBloodTestData(0, 0, bts);
+        boolean statusTreats = sendWearTreatmentsData(0, 0, treatsAdd);
+        boolean statusTreatsDel = sendWearTreatmentsDataDelete(treatsDel);
+        return (statusCals && statusBts && statusTreats && statusTreatsDel);
     }
 
-    private DataMap dataMap(Calibration bg) {//KS
+    public static boolean sendWearTreatmentsDataDelete(List<String> list) {
+        if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
+            googleApiClient.connect();
+        }
+        if (googleApiClient != null) {
+            if (!list.isEmpty()) {
+                Log.d(TAG, "sendWearTreatmentsDataDelete graph size=" + list.size());
+                DataMap entries = new DataMap();
+                entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
+                entries.putString("action", "delete");
+                entries.putStringArrayList("entries", (new ArrayList<String>(list)));
+                new SendToDataLayerThread(WEARABLE_TREATMENTS_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, entries);
+            }
+            else
+                Log.d(TAG, "sendWearTreatmentsDataDelete treatments count = 0");
+        } else {
+            Log.e(TAG, "sendWearTreatmentsData No connection to wearable available for send treatment!");
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean sendWearTreatmentsData(Integer count, long startTime) {
+        return sendWearTreatmentsData(count, startTime, null);
+    }
+
+    public static boolean sendWearTreatmentsData(Integer count, long startTime, List<Treatments> list) {
+        try {
+            if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
+                googleApiClient.connect();
+            }
+            Treatments last = list != null && list.size() > 0 ? list.get(0) : Treatments.last();
+            if (last != null) {
+                Log.d(TAG, "sendWearTreatmentsData last.timestamp:" +  JoH.dateTimeText(last.timestamp));
+            }
+            else {
+                Log.d(TAG, "sendWearTreatmentsData no treatments exist");
+                return true;
+            }
+            List<Treatments> graph;
+            if (list != null)
+                graph = list;
+            else if (startTime == 0)
+                graph = Treatments.latest(count);
+            else
+                graph = Treatments.latestForGraph(count, startTime);
+            if (!graph.isEmpty()) {
+                Log.d(TAG, "sendWearTreatmentsData graph size=" + graph.size());
+                final ArrayList<DataMap> dataMaps = new ArrayList<>(graph.size());
+                DataMap entries = dataMap(last);
+                for (Treatments data : graph) {
+                    dataMaps.add(dataMap(data));
+                }
+                Log.d(TAG, "sendWearTreatmentsData entries=" + entries);
+                entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
+                entries.putString("action", "insert");
+                entries.putDataMapArrayList("entries", dataMaps);
+                new SendToDataLayerThread(WEARABLE_TREATMENTS_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, entries);
+                //return entries;
+            }
+            else
+                Log.d(TAG, "sendWearTreatmentsData treatments count = 0");
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Nullpointer exception in sendWearTreatmentsData: " + e);
+            return false;
+        }
+        return true;
+    }
+
+    private static DataMap dataMap(Treatments data) {
+        DataMap dataMap = new DataMap();
+        String json = data.toS();
+        Log.d(TAG, "dataMap BG GSON: " + json);
+        dataMap.putString("data", json);
+        return dataMap;
+    }
+
+    public static boolean sendWearBloodTestData(Integer count, long startTime) {
+        return sendWearBloodTestData(count, startTime, null);
+    }
+
+    public static boolean sendWearBloodTestData(Integer count, long startTime, List<BloodTest> list) {//DataMap
+        try {
+            if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
+                googleApiClient.connect();
+            }
+            BloodTest last = list != null && list.size() > 0 ? list.get(0) : BloodTest.last();
+            if (last != null) {
+                Log.d(TAG, "sendWearBloodTestData last.timestamp:" +  JoH.dateTimeText(last.timestamp));
+            }
+            else {
+                Log.d(TAG, "sendWearBloodTestData no BloodTest exist");
+                return true;
+            }
+            List<BloodTest> graph;
+            if (list != null)
+                graph = list;
+            else if (startTime == 0)
+                graph = BloodTest.last(count);
+            else
+                graph = BloodTest.latestForGraph(count, startTime);
+            if (!graph.isEmpty()) {
+                Log.d(TAG, "sendWearBloodTestData graph size=" + graph.size());
+                final ArrayList<DataMap> dataMaps = new ArrayList<>(graph.size());
+                DataMap entries = dataMap(last);
+                for (BloodTest data : graph) {
+                    dataMaps.add(dataMap(data));
+                }
+                Log.d(TAG, "sendWearBloodTestData entries=" + entries);
+                entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
+                entries.putDataMapArrayList("entries", dataMaps);
+                new SendToDataLayerThread(WEARABLE_BLOODTEST_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, entries);
+                //return entries;
+            }
+            else
+                Log.d(TAG, "sendWearBloodTestData BloodTest count = 0");
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Nullpointer exception in sendWearBloodTestData: " + e);
+            return false;
+        }
+        return true;
+    }
+
+    private static DataMap dataMap(BloodTest data) {
+        DataMap dataMap = new DataMap();
+        String json = data.toS();
+        Log.d(TAG, "dataMap BG GSON: " + json);
+        dataMap.putString("data", json);
+        return dataMap;
+    }
+
+    private boolean sendWearCalibrationData(Integer count) {
+        return sendWearCalibrationData(count, 0);
+    }
+
+    private boolean sendWearCalibrationData(Integer count, long startTime) {
+        return sendWearCalibrationData(count, startTime, null);
+    }
+
+    private static boolean sendWearCalibrationData(Integer count, long startTime, List<Calibration> list) {
+        try {
+            if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
+                googleApiClient.connect();
+            }
+            //if ((googleApiClient != null) && (googleApiClient.isConnected())) {
+            if (googleApiClient != null) {
+                Log.d(TAG, "sendWearCalibrationData");
+                final Sensor sensor = Sensor.currentSensor();
+                final Calibration last = list != null && list.size() > 0 ? list.get(0) : Calibration.last();
+
+                List<Calibration> latest;
+                BgReading lastBgReading = BgReading.last();
+                //From BgReading: if (lastBgReading.calibration_flag == true && ((lastBgReading.timestamp + (60000 * 20)) > bgReading.timestamp) && ((lastBgReading.calibration.timestamp + (60000 * 20)) > bgReading.timestamp))
+                //From BgReading:     lastBgReading.calibration.rawValueOverride()
+                if (list != null)
+                    latest = list;
+                else if (startTime != 0)
+                    latest = Calibration.latestForGraph(count, startTime);
+                else if (lastBgReading != null && lastBgReading.calibration != null && lastBgReading.calibration_flag == true) {
+                    Log.d(TAG, "sendWearCalibrationData lastBgReading.calibration_flag=" + lastBgReading.calibration_flag + " lastBgReading.timestamp: " + lastBgReading.timestamp + " lastBgReading.calibration.timestamp: " + lastBgReading.calibration.timestamp);
+                    latest = Calibration.allForSensor();
+                }
+                else {
+                    latest = Calibration.latest(count);
+                }
+
+                if ((sensor != null) && (last != null) && (latest != null && !latest.isEmpty())) {
+                    Log.d(TAG, "sendWearCalibrationData latest count = " + latest.size());
+                    final DataMap entries = dataMap(last);
+                    final ArrayList<DataMap> dataMaps = new ArrayList<>(latest.size());
+                    if (sensor.uuid != null) {
+                        for (Calibration bg : latest) {
+                            if ((bg != null) && (bg.sensor_uuid != null) && (bg.sensor_uuid.equals(sensor.uuid))) {
+                                dataMaps.add(dataMap(bg));
+                            }
+                        }
+                    }
+                    entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
+                    entries.putDataMapArrayList("entries", dataMaps);
+                    if (googleApiClient != null)
+                        new SendToDataLayerThread(WEARABLE_CALIBRATION_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, entries);
+                } else
+                    Log.d(TAG, "sendWearCalibrationData latest count = 0");
+            } else {
+                Log.e(TAG, "sendWearCalibrationData No connection to wearable available for send treatment!");
+                return false;
+            }
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Nullpointer exception in sendWearCalibrationData: " + e);
+            return false;
+        }
+        return true;
+    }
+
+    private static DataMap dataMap(Calibration bg) {//KS
         DataMap dataMap = new DataMap();
         String json = bg.toS();
         Log.d(TAG, "dataMap BG GSON: " + json);
@@ -1515,15 +1692,29 @@ public class WatchUpdaterService extends WearableListenerService implements
         return dataMap;
     }
 
-    private void sendWearBgData(Integer count) {//KS
+    private boolean sendWearBgData(Integer count) {
+        return sendWearCalibrationData(count, 0);
+    }
+
+    private boolean sendWearBgData(Integer count, long startTime) {
+        return sendWearBgData(count, startTime, null);
+    }
+
+    private boolean sendWearBgData(Integer count, long startTime, List<BgReading> list) {
         try {
-            if (count == null) return;
             if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
                 googleApiConnect();
             }
             Log.d(TAG, "sendWearBgData");
             final BgReading last = BgReading.last();
-            final List<BgReading> latest = BgReading.latest(count);
+            List<BgReading> latest;
+            if (list != null)
+                latest = list;
+            else if (startTime != 0)
+                latest = BgReading.latestForGraph(count, startTime);
+            else
+                latest = BgReading.latest(count);
+            //final List<BgReading> latest = BgReading.latest(count);
             if ((last != null) && (latest != null && !latest.isEmpty())) {
                 Log.d(TAG, "sendWearBgData latest count = " + latest.size());
                 final DataMap entries = dataMap(last);
@@ -1544,7 +1735,9 @@ public class WatchUpdaterService extends WearableListenerService implements
                 Log.d(TAG, "sendWearBgData lastest count = 0");
         } catch (NullPointerException e) {
             Log.e(TAG, "Nullpointer exception in sendWearBgData: " + e);
+            return false;
         }
+        return true;
     }
 
     private DataMap dataMap(BgReading bg) {//KS
@@ -1567,12 +1760,27 @@ public class WatchUpdaterService extends WearableListenerService implements
             sendSensorData();
             sendActiveBtDeviceData();
             sendAlertTypeData();
-            sendWearCalibrationData(sendCalibrationCount);
-            sendWearBgData(sendBgCount);
+            if (mPrefs.getBoolean("show_wear_treatments", false)) {
+                initWearTreatments();
+            }
+            else {
+                sendWearCalibrationData(sendCalibrationCount);
+                sendWearBgData(sendBgCount);
+            }
             sendData();//ensure BgReading.Last is displayed on watch
         } else {
             Log.d(TAG, "Not doing initWearData as we are not using G5 as data source");
         }
+    }
+
+    private void initWearTreatments() {
+        long startTime = new Date().getTime() - (60000 * 60 * 24 * 3);//3 days
+        Log.d(TAG, "initWearTreatments clear treatments and re-init from startTime=" + JoH.dateTimeText(startTime));
+        sendNotification(CLEAR_TREATMENTS_PATH, "clearTreatments");//ensures deleted treatments are cleared
+        sendWearTreatmentsData(sendTreatmentsCount, startTime);
+        sendWearBloodTestData(sendTreatmentsCount, startTime);
+        sendWearCalibrationData(sendTreatmentsCount, startTime);
+        sendWearBgData(sendTreatmentsCount, startTime);
     }
 
     private long sgvLevel(double sgv_double, SharedPreferences prefs, BgGraphBuilder bgGB) {

@@ -21,8 +21,10 @@ import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
+import com.google.gson.internal.bind.DateTypeAdapter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -95,7 +97,7 @@ public class Treatments extends Model {
 
     public static synchronized Treatments create(final double carbs, final double insulin, long timestamp, double position, String suggested_uuid) {
         // TODO sanity check values
-        Log.d(TAG, "Creating treatment: Insulin: " + Double.toString(insulin) + " / Carbs: " + Double.toString(carbs));
+        Log.d(TAG, "Creating treatment: Insulin: " + Double.toString(insulin) + " / Carbs: " + Double.toString(carbs) + (suggested_uuid != null && !suggested_uuid.isEmpty() ? " uuid: " + suggested_uuid : ""));
 
         if ((carbs == 0) && (insulin == 0)) return null;
 
@@ -222,6 +224,14 @@ public class Treatments extends Model {
         }
     }
 
+    public static void pushTreatmentSyncToWatch(Treatments treatment, boolean is_new) {
+        Log.d(TAG, "pushTreatmentSyncToWatch Add treatment to UploaderQueue.");
+        // only sync to nightscout if source of change was not from nightscout
+        if (UploaderQueue.newEntryForWatch(is_new ? "insert" : "update", treatment) != null) {
+            SyncService.startSyncService(3000); // sync in 3 seconds
+        }
+    }
+
     // This shouldn't be needed but it seems it is
     private static void fixUpTable() {
         if (patched) return;
@@ -250,10 +260,24 @@ public class Treatments extends Model {
     }
 
     public static Treatments last() {
+        fixUpTable();
         return new Select()
                 .from(Treatments.class)
                 .orderBy("_ID desc")
                 .executeSingle();
+    }
+
+    public static List<Treatments> latest(int num) {
+        try {
+            return new Select()
+                    .from(Treatments.class)
+                    .orderBy("timestamp desc")
+                    .limit(num)
+                    .execute();
+        } catch (android.database.sqlite.SQLiteException e) {
+            fixUpTable();
+            return null;
+        }
     }
 
     public static Treatments byuuid(String uuid) {
@@ -888,6 +912,15 @@ public class Treatments extends Model {
             e.printStackTrace();
             return "";
         }
+    }
+
+    public String toS() {
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                .serializeSpecialFloatingPointValues()
+                .create();
+        return gson.toJson(this);
     }
 }
 

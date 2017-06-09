@@ -10,6 +10,7 @@ import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
             types.add(BgReading.class.getSimpleName());
             types.add(Calibration.class.getSimpleName());
             types.add(BloodTest.class.getSimpleName());
+            types.add(Treatments.class.getSimpleName());
 
             if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_mongodb_enable")) {
                 circuits.add(UploaderQueue.MONGO_DIRECT);
@@ -47,6 +49,9 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
             if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_influxdb_enable")) {
                 circuits.add(UploaderQueue.INFLUXDB_RESTAPI);
             }
+            if (Home.get_show_wear_treatments()) {
+                circuits.add(UploaderQueue.WATCH_WEARAPI);
+            }
 
 
             for (long THIS_QUEUE : circuits) {
@@ -54,6 +59,8 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
                 final List<BgReading> bgReadings = new ArrayList<>();
                 final List<Calibration> calibrations = new ArrayList<>();
                 final List<BloodTest> bloodtests = new ArrayList<>();
+                final List<Treatments> treatmentsAdd = new ArrayList<>();
+                final List<String> treatmentsDel = new ArrayList<>();
                 final List<UploaderQueue> items = new ArrayList<>();
 
                 for (String type : types) {
@@ -87,10 +94,22 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
                                         } else {
                                             Log.wtf(TAG, "Bloodtest with ID: " + up.reference_id + " appears to have been deleted");
                                         }
+                                    } else if (type.equals(Treatments.class.getSimpleName())) {
+                                        final Treatments this_treat = Treatments.byid(up.reference_id);
+                                        if (this_treat != null) {
+                                            treatmentsAdd.add(this_treat);
+                                        } else {
+                                            Log.wtf(TAG, "Treatments with ID: " + up.reference_id + " appears to have been deleted");
+                                        }
                                     }
                                     break;
                                 case "delete":
-                                    // items.add(up);
+                                    if ((THIS_QUEUE == UploaderQueue.WATCH_WEARAPI || THIS_QUEUE == UploaderQueue.NIGHTSCOUT_RESTAPI) && type.equals(Treatments.class.getSimpleName())) {
+                                        items.add(up);
+                                        Log.wtf(TAG, "Delete Treatments with ID: " + up.reference_uuid);
+                                        treatmentsDel.add(up.reference_uuid);
+                                    }
+                                    else
                                     if (up.reference_uuid != null) {
                                         Log.d(TAG, UploaderQueue.getCircuitName(THIS_QUEUE) + " delete not yet implemented: " + up.reference_uuid);
                                         up.completed(THIS_QUEUE); // mark as completed so as not to tie up the queue for now
@@ -105,9 +124,10 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
                 }
 
                 if ((bgReadings.size() > 0) || (calibrations.size() > 0) || (bloodtests.size() > 0)
+                        || (treatmentsAdd.size() > 0 || treatmentsDel.size() > 0)
                         || (UploaderQueue.getPendingbyType(Treatments.class.getSimpleName(), THIS_QUEUE, 1).size() > 0)) {
 
-                    Log.d(TAG, UploaderQueue.getCircuitName(THIS_QUEUE) + " Processing: " + bgReadings.size() + " BgReadings and " + calibrations.size() + " Calibrations");
+                    Log.d(TAG, UploaderQueue.getCircuitName(THIS_QUEUE) + " Processing: " + bgReadings.size() + " BgReadings and " + calibrations.size() + " Calibrations " + bloodtests.size() + " bloodtests " + treatmentsAdd.size() + " treatmentsAdd " + treatmentsDel.size() + " treatmentsDel");
                     boolean uploadStatus = false;
 
                     if (THIS_QUEUE == UploaderQueue.MONGO_DIRECT) {
@@ -117,8 +137,10 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
                         final NightscoutUploader uploader = new NightscoutUploader(xdrip.getAppContext());
                         uploadStatus = uploader.uploadRest(bgReadings, bloodtests, calibrations);
                     } else if (THIS_QUEUE == UploaderQueue.INFLUXDB_RESTAPI) {
-                        final InfluxDBUploader influxDBUploader = new InfluxDBUploader(xdrip.getAppContext());;
+                        final InfluxDBUploader influxDBUploader = new InfluxDBUploader(xdrip.getAppContext());
                         uploadStatus = influxDBUploader.upload(bgReadings, calibrations, calibrations);
+                    } else if (THIS_QUEUE == UploaderQueue.WATCH_WEARAPI) {
+                        uploadStatus = WatchUpdaterService.sendWearUpload(bgReadings, calibrations, bloodtests, treatmentsAdd, treatmentsDel);
                     }
 
                     // TODO some kind of fail counter?

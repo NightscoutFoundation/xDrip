@@ -10,6 +10,8 @@
         - [XDrip Watchface Settings](#xdrip-watchface-settings)
         - [Watchface Tap Feature](#watchface-tap-feature)
         - [Battery Usage](#battery-usage)
+    - [3-Dot Menu](#3-dot-menu)
+    - [XDrip Treatments](#treatments)
 - [Troubleshooting xDrip+ Wear](#troubleshooting-xdrip-wear)
     - [Confirm Collector runs on the Phone with Wear Integration](#confirm-collector-runs-on-the-phone-with-wear-integration)
     - [Confirm Collector runs on the Watch with Wear Integration](#confirm-collector-runs-on-the-watch-with-wear-integration)
@@ -214,6 +216,28 @@ The following images show an example of BT Collector running under each device, 
 For G4 and G5 BT Collectors, when BT Collector is running on the Phone, the battery usage displays the phone's battery usage as indicated by its label, "Uploader".
 When BT Collector is running on the watch, battery usage shows the watches' battery usage as indicated by its label, "Wear".
 When the BT Collector is connected to a bridge device, the battery usage displays that device's battery usage as indicated by its label, "Bridge".
+
+##3-Dot Menu
+The 3-dot Menu icon is displayed in the upper, left corner on the XDrip watchface, below the Steps icon if enabled.  Tapping it will activate a new activity with two rows of 4 icons, each with a separate task as shown in the following screenshot.
+
+<img align="middle" src="./images/3-dot-menu.png" title="XDrip Watchface 3-Dot Menu">
+
+The second row of icons in the Menu allow the user to view data tables as shown in the following examples.
+
+<img align="middle" src="./images/data-tables.png" title="XDrip Watchface 3-Dot Menu Data Tables">
+
+##XDrip Treatments
+Treatment data points can be displayed on the watchface graph by enabling the "Show Treatments" preference, either on the Phone under Wear Integration, or via the watch XDrip Prefs activity as shown in the following screenshot.
+
+Once enabled, treatments entered via the phone or watch UI will be displayed on the watch.  Insulin, Carbs, Notes are displayed with a green diamond.  Bloodtests are displayed with a red square, and Calibrations are displayed with a red circle.  Each of these are outlined with a yellow rim for a 3-dimensional effect.  Treatments entered on the watch will be saved to the Wear database and posted to the phone upon next connection.  Likewise, treatments entered on the phone will be posted to the watch upon next connection so that data should remain in-sync when Show Treatments is enabled.
+
+Note, this process only supports treatments entered by the Keyboard Input Activity.  Spoken Treatment is currently not supported since many watches do not support speech recognition well.  Treatments entered via the Spoken Treatment Activity continues to work as before and requires a connection to the phone for data to be processed.
+
+<img align="middle" src="./images/prefs-show-treatments.png" title="XDrip Show Treatments Preference">
+
+The following screenshot shows an example of entering Treatments on the watch.
+
+<img align="middle" src="./images/enter-treatments.png" title="XDrip Enter Treatments">
 
 ##Troubleshooting xDrip Wear
 The BT Collector connects to the transmitter every 5 mins by design. This is how the Collector's BLE works. The following provides some troubleshooting suggestions if readings are not being receiving every 5 minutes.

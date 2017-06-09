@@ -85,6 +85,11 @@ public class Home extends BaseWatchFace {
                 JoH.static_toast_long(mExtraStatusLine);
             }
         }
+        if (tapType == TAP_TYPE_TOUCH && linearLayout(mMenuLinearLayout, x, y)) {
+            Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intent);
+        }
     }
 
     private boolean linearLayout(LinearLayout layout,int x, int y) {
@@ -97,6 +102,7 @@ public class Home extends BaseWatchFace {
 
     private void changeChartTimeframe() {
         int timeframe = Integer.parseInt(sharedPrefs.getString("chart_timeframe", "3"));
+        Log.e(TAG, "changeChartTimeframe timeframe: " + timeframe);
         timeframe = (timeframe%5) + 1;
         sharedPrefs.edit().putString("chart_timeframe", "" + timeframe).commit();
     }
