@@ -23,6 +23,7 @@ xDrip+ Wear Setup and Troubleshooting Guide
     - [Confirm Collector device exists under Watch Settings->Bluetooth -> Devices](#confirm-collector-device-exists-under-watch-settings-bt-devices)
     - [Confirm Calibration Preferences are consistent on both phone and watch](#confirm-calibration-preferences-are-consistent-on-both-phone-and-watch)
     - [Confirm Noise Preferences are consistent on both phone and watch](#confirm-noise-preferences-are-consistent-on-both-phone-and-watch)
+    - [Confirm Location Permission is enabled in Watch Settings](#confirm-location-permission-is-enabled-in-watch-wettings)
     - [Debugging Android Wear](#debugging-android-wear)
 
 # Enable xDrip+ Android Wear Integration
