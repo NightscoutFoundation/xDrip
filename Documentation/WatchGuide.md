@@ -342,9 +342,9 @@ Refer to [Collector](#collector) above for additional details.
   However, this Permission is required, and therefore, if not enabled, the Collection Service will not be able to connect to the transmitter via BLE.
   Connection errors such as the following (for G5CollectionService, DexcomG5 Hardware Service) will continued to be logged to the Events log:
 
-  ```06-10 07:47:03.427 2162-2172/? E/G5CollectionService: Encountered 133: true```
-
   ```
+  06-10 07:47:03.427 2162-2172/? E/G5CollectionService: Encountered 133: true
+
   06-10 07:57:14.936 2162-2173/? I/G5CollectionService: Read code: 7 - Transmitter NOT already authenticated?
   06-10 07:57:14.937 2162-2173/? E/G5CollectionService: Sending new AuthRequestTxMessage to Authentication ...
   06-10 07:57:14.958 2162-2173/? D/G5CollectionService: New AuthRequestTxMessage: 01346163356234373302
@@ -353,7 +353,7 @@ Refer to [Collector](#collector) above for additional details.
   06-10 07:57:14.984 2162-2173/? E/G5CollectionService: STATE_DISCONNECTED: Connection terminated by peer
   ```
 
-  Causing the Collector to restart the Bluetooth:
+  Causing the Collector to restart Bluetooth:
   ```
   06-10 07:57:15.183 2162-2751/? E/G5CollectionService: Cycling BT-gatt - disabling BT
   ...
