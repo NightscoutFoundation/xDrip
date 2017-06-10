@@ -292,7 +292,7 @@ Refer to [XDrip BT Settings](#xdrip-bt-settings) above for additional details.
 
 ### Confirm Collection Method is consistent on both phone and watch
 
-  Confirm the phone's Harware Data Source preference matches the watch's BT Collector preference.  The watch's BT Collector preference is a read-only preference.  It gets set based on the phone's Hardware Data Source preference. The following values correspond to the collectors:
+  Confirm the phone's Hardware Data Source preference matches the watch's BT Collector preference.  The watch's BT Collector preference is a read-only preference.  It gets set based on the phone's Hardware Data Source preference. The following values correspond to the collectors:
    - BluetoothWixel("BluetoothWixel"),
    - DexcomShare("DexcomShare"),
    - DexbridgeWixel("DexbridgeWixel"),
@@ -324,6 +324,45 @@ Refer to [Collector](#collector) above for additional details.
     - BG Estimate should correspond to your phone value.
 
   - xDrip+ Display Settings - **Smooth Sensor Noise** should be disabled.
+
+### Confirm Location Permission is enabled in Watch Settings
+
+  Android Wear requires Location Access to be manually accepted by the user.
+
+  However, sometimes the user overlooks this dialog.
+
+  Further, this preference may appear to be enabled under the Watch -> Settings -> Permissions - XDrip Prefs, when it actually is DISABLED, perhaps an Android Wear bug.
+  Evidence of this can be seen in the Events log (refer to [Syncing BGs and Wear Database](#syncing-bgs-and-wear-database) UserError Table) with the following log entry:
+  ```
+    E/jamorham JoH: Could not set pairing confirmation due to exception: java.lang.SecurityException: Need BLUETOOTH PRIVILEGED permission: Neither user 10035 nor current process has android.permission.BLUETOOTH_PRIVILEGED.
+  ```
+  This message appears to occur only once, so it is easily missed if logging is not enabled via the Sync Wear Logs preference.
+
+  However, this Permission is required, and therefore, if not enabled, the Collection Service will not be able to connect to the transmitter via BLE.
+  Connection errors such as the following (for G5CollectionService, DexcomG5 Hardware Service) will continued to be logged to the Events log:
+
+  ```06-10 07:47:03.427 2162-2172/? E/G5CollectionService: Encountered 133: true```
+
+  ```
+  06-10 07:57:14.936 2162-2173/? I/G5CollectionService: Read code: 7 - Transmitter NOT already authenticated?
+  06-10 07:57:14.937 2162-2173/? E/G5CollectionService: Sending new AuthRequestTxMessage to Authentication ...
+  06-10 07:57:14.958 2162-2173/? D/G5CollectionService: New AuthRequestTxMessage: 01346163356234373302
+  06-10 07:57:14.959 2162-2173/? I/G5CollectionService: AuthRequestTX: 01346163356234373302
+  06-10 07:57:14.961 2162-2173/? E/G5CollectionService: OnCharacteristic READ finished: status: Gatt Success
+  06-10 07:57:14.984 2162-2173/? E/G5CollectionService: STATE_DISCONNECTED: Connection terminated by peer
+  ```
+
+  Causing the Collector to restart the Bluetooth:
+  ```
+  06-10 07:57:15.183 2162-2751/? E/G5CollectionService: Cycling BT-gatt - disabling BT
+  ...
+  06-10 07:57:18.204 2162-2752/? E/G5CollectionService: Cycling BT-gatt - enabling BT
+  ```
+
+  The following steps are recommended for resolution:
+  1. Toggle the ```Location ENABLED preference``` to disable it under Watch Settings (refer to [Initial Wear Enablement Requests Location Permission](#initial-wear-enablement-requests-location-permission)).
+  2. Restart the Collector on Wear (refer to [3-Dot Menu](#3-dot-menu) Restart Collector or alternatively, Restart Collector in xDrip+ System Status).  This should force the Location Access Permission dialog to be displayed on the watch for user acceptance.
+  3. Or, if the above fail to resolve the issue, uninstall then reinstall the Wear app.  This will force the Location Access Permission dialog to be displayed on the watch for user acceptance.
 
 # ADB DEBUG
 ### Debugging Android Wear
