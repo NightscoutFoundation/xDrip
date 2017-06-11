@@ -541,17 +541,8 @@ public class GcmActivity extends FauxActivity {
     }
 
     public static void pushTreatmentAsync(final Treatments thistreatment) {
-        new Thread() {
-            @Override
-            public void run() {
-                push_treatment(thistreatment);
-            }
-        }.start();
-    }
-
-    private static void push_treatment(Treatments thistreatment) {
         if ((thistreatment.uuid == null) || (thistreatment.uuid.length() < 5)) return;
-        String json = thistreatment.toJSON();
+        final String json = thistreatment.toJSON();
         sendMessage(myIdentity(), "nt", json);
     }
 
@@ -587,28 +578,31 @@ public class GcmActivity extends FauxActivity {
             // For master, we now send the entire table, no need to send this specific table each time
             return;
         }
-        String currenttime = Double.toString(new Date().getTime());
-        String tosend = currenttime + " " + bg_value + " " + seconds_ago;
-        sendMessage(myIdentity(), "cal", tosend);
+        if (Home.get_follower()) {
+            final String currenttime = Double.toString(new Date().getTime());
+            final String tosend = currenttime + " " + bg_value + " " + seconds_ago;
+            sendMessage(myIdentity(), "cal", tosend);
+        }
     }
 
     static void pushCalibration2(double bgValue, String uuid, long offset) {
         Log.i(TAG, "pushCalibration2 called: " + JoH.qs(bgValue, 1) + " " + uuid + " " + offset);
+        if (Home.get_master_or_follower()) {
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+            final String unit = prefs.getString("units", "mgdl");
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
-        final String unit = prefs.getString("units", "mgdl");
+            if (unit.compareTo("mgdl") != 0) {
+                bgValue = bgValue * Constants.MMOLL_TO_MGDL;
+            }
 
-        if (unit.compareTo("mgdl") != 0) {
-            bgValue = bgValue * Constants.MMOLL_TO_MGDL;
+            if ((bgValue < 40) || (bgValue > 400)) {
+                Log.wtf(TAG, "Invalid out of range calibration glucose mg/dl value of: " + bgValue);
+                JoH.static_toast_long("Calibration out of range: " + bgValue + " mg/dl");
+                return;
+            }
+            final String json = newCalibrationToJson(bgValue, uuid, offset);
+            GcmActivity.sendMessage(myIdentity(), "cal2", json);
         }
-
-        if ((bgValue < 40) || (bgValue > 400)) {
-            Log.wtf(TAG, "Invalid out of range calibration glucose mg/dl value of: " + bgValue);
-            JoH.static_toast_long("Calibration out of range: " + bgValue + " mg/dl");
-            return;
-        }
-        String json = newCalibrationToJson(bgValue, uuid, offset);
-        GcmActivity.sendMessage(myIdentity(), "cal2", json);
     }
 
     public static void clearLastCalibration() {

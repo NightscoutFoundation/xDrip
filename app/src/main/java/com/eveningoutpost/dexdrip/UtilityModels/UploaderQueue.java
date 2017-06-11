@@ -304,6 +304,20 @@ public class UploaderQueue extends Model {
     }
 
 
+    public static void emptyQueue() {
+        fixUpTable();
+        try {
+            new Delete()
+                    .from(UploaderQueue.class)
+                    .execute();
+            last_cleanup = JoH.tsl();
+            JoH.static_toast_long("Uploader queue emptied!");
+        } catch (Exception e) {
+            UserError.Log.d(TAG, "Exception cleaning uploader queue: " + e);
+        }
+    }
+
+
     public static void cleanQueue() {
         // delete all completed records > 24 hours old
         fixUpTable();

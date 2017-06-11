@@ -129,19 +129,21 @@ public class WifiCollectionService extends Service {
         if (CollectionServiceStarter.isWifiWixel(getApplicationContext())
                 || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())
                 || CollectionServiceStarter.isWifiandDexBridge()) {
-            long retry_in = WixelReader.timeForNextRead();
+            final long retry_in = WixelReader.timeForNextRead();
             Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             // TODO use JoH.wakeIntent
-            Calendar calendar = Calendar.getInstance();
-            AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+            final Calendar calendar = Calendar.getInstance();
+            //AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
             PersistentStore.setLong(WIFI_COLLECTION_WAKEUP, calendar.getTimeInMillis() + retry_in);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            JoH.wakeUpIntent(this, retry_in, PendingIntent.getService(this, 0, new Intent(this, WifiCollectionService.class), PendingIntent.FLAG_UPDATE_CURRENT));
+          /*  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, WifiCollectionService.class), 0));
             } else if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
                 alarm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, WifiCollectionService.class), 0));
             } else {
                 alarm.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, WifiCollectionService.class), 0));
-            }
+            }*/
         } else {
             stopSelf();
         }

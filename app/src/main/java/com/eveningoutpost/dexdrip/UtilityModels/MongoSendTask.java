@@ -8,9 +8,11 @@ import com.eveningoutpost.dexdrip.InfluxDB.InfluxDBUploader;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import java.util.List;
 public class MongoSendTask extends AsyncTask<String, Void, Void> {
     public static Exception exception;
     private static final String TAG = MongoSendTask.class.getSimpleName();
+    public static final String BACKFILLING_BOOSTER = "backfilling-nightscout";
 
     public MongoSendTask(Context pContext) {
     }
@@ -44,7 +47,11 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
                 circuits.add(UploaderQueue.MONGO_DIRECT);
             }
             if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable")) {
-                circuits.add(UploaderQueue.NIGHTSCOUT_RESTAPI);
+                if ((Home.getPreferencesBoolean("cloud_storage_api_use_mobile", true) || (JoH.isLANConnected()))) {
+                    circuits.add(UploaderQueue.NIGHTSCOUT_RESTAPI);
+                } else {
+                    Log.e(TAG, "Skipping Nightscout upload due to mobile data only");
+                }
             }
             if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_influxdb_enable")) {
                 circuits.add(UploaderQueue.INFLUXDB_RESTAPI);
@@ -149,10 +156,21 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
                             up.completed(THIS_QUEUE); // approve all types for this queue
                         }
                         Log.d(TAG, UploaderQueue.getCircuitName(THIS_QUEUE) + " Marking: " + items.size() + " Items as successful");
+
+                        if (PersistentStore.getBoolean(BACKFILLING_BOOSTER)) {
+                            Log.d(TAG,"Scheduling boosted repeat query");
+                            SyncService.startSyncService(2000);
+                        }
+
                     }
+
 
                 } else {
                     Log.d(TAG, "Nothing to upload for: " + UploaderQueue.getCircuitName(THIS_QUEUE));
+                    if (PersistentStore.getBoolean(BACKFILLING_BOOSTER)) {
+                        PersistentStore.setBoolean(BACKFILLING_BOOSTER, false);
+                        Log.d(TAG,"Switched off backfilling booster");
+                    }
                 }
 
             }

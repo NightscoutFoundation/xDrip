@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PointF;
+import android.os.Build;
 import android.os.Handler;
 import android.service.dreams.DreamService;
 import android.util.AttributeSet;
@@ -145,6 +146,14 @@ public class XDripDreamService extends DreamService {
         mBouncer.addView(inflatedLayout, new FrameLayout.LayoutParams(widget_width, widget_height));
 
         setContentView(mBouncer);
+        if (Build.VERSION.SDK_INT >= 21) {
+            try {
+                getWindow().setNavigationBarColor(Color.BLACK);
+                getWindow().setStatusBarColor(Color.BLACK);
+            } catch (Exception e) {
+                //
+            }
+        }
 
     }
 
