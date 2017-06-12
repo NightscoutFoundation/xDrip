@@ -50,10 +50,10 @@ public class DailyIntentService extends IntentService {
                     Log.e(TAG, "DailyIntentService exception on UserError ", e);
                 }
                 try {
-                    BgSendQueue.cleanQueue();
+                    BgSendQueue.cleanQueue(); // no longer used
 
                 } catch (Exception e) {
-                    Log.e(TAG, "DailyIntentService exception on BgSendQueue ", e);
+                    Log.d(TAG, "DailyIntentService exception on BgSendQueue "+ e);
                 }
                 try {
                     CalibrationSendQueue.cleanQueue();

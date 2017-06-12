@@ -179,6 +179,9 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                     Log.e(TAG, "Couldn't decrypt as key not initialized");
                     payload = "";
                 }
+            } else {
+                if (payload.length() > 0)
+                    UserError.Log.wtf(TAG, "Got short payload: " + payload + " on action: " + action);
             }
 
             Log.i(TAG, "Got action: " + action + " with payload: " + payload);
@@ -188,46 +191,47 @@ public class GcmListenerSvc extends FirebaseMessagingService {
             // new treatment
             if (action.equals("nt")) {
                 Log.i(TAG, "Attempting GCM push to Treatment");
-                if (Home.get_master_or_follower()) GcmActivity.pushTreatmentFromPayloadString(payload);
+                if (Home.get_master_or_follower() && Home.follower_or_accept_follower()) GcmActivity.pushTreatmentFromPayloadString(payload);
             } else if (action.equals("dat")) {
                 Log.i(TAG, "Attempting GCM delete all treatments");
-                if (Home.get_master_or_follower()) Treatments.delete_all();
+                if (Home.get_master_or_follower() && Home.follower_or_accept_follower()) Treatments.delete_all();
             } else if (action.equals("dt")) {
                 Log.i(TAG, "Attempting GCM delete specific treatment");
-                if (Home.get_master_or_follower()) Treatments.delete_by_uuid(filter(payload));
+                if (Home.get_master_or_follower() && Home.follower_or_accept_follower()) Treatments.delete_by_uuid(filter(payload));
             } else if (action.equals("clc")) {
                 Log.i(TAG, "Attempting to clear last calibration");
-                if (Home.get_master_or_follower()) Calibration.clearLastCalibration();
+                if (Home.get_master_or_follower() && Home.follower_or_accept_follower()) Calibration.clearLastCalibration();
             } else if (action.equals("cal")) {
-                String[] message_array = filter(payload).split("\\s+");
-                if ((message_array.length == 3) && (message_array[0].length() > 0)
-                        && (message_array[1].length() > 0) && (message_array[2].length() > 0)) {
-                    // [0]=timestamp [1]=bg_String [2]=bgAge
-                    Intent calintent = new Intent();
-                    calintent.setClassName(getString(R.string.local_target_package), "com.eveningoutpost.dexdrip.AddCalibration");
-                    calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                if (Home.get_master_or_follower() && Home.follower_or_accept_follower()) {
+                    String[] message_array = filter(payload).split("\\s+");
+                    if ((message_array.length == 3) && (message_array[0].length() > 0)
+                            && (message_array[1].length() > 0) && (message_array[2].length() > 0)) {
+                        // [0]=timestamp [1]=bg_String [2]=bgAge
+                        Intent calintent = new Intent();
+                        calintent.setClassName(getString(R.string.local_target_package), "com.eveningoutpost.dexdrip.AddCalibration");
+                        calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                    long timediff = (long) ((new Date().getTime() - Double.parseDouble(message_array[0])) / 1000);
-                    Log.i(TAG, "Remote calibration latency calculated as: " + Long.toString(timediff) + " seconds");
-                    if (timediff > 0) {
-                        message_array[2] = Long.toString(Long.parseLong(message_array[2]) + timediff);
+                        long timediff = (long) ((new Date().getTime() - Double.parseDouble(message_array[0])) / 1000);
+                        Log.i(TAG, "Remote calibration latency calculated as: " + Long.toString(timediff) + " seconds");
+                        if (timediff > 0) {
+                            message_array[2] = Long.toString(Long.parseLong(message_array[2]) + timediff);
+                        }
+                        Log.i(TAG, "Processing remote CAL " + message_array[1] + " age: " + message_array[2]);
+                        calintent.putExtra("bg_string", message_array[1]);
+                        calintent.putExtra("bg_age", message_array[2]);
+                        if (timediff < 3600) {
+                            getApplicationContext().startActivity(calintent);
+                        }
+                    } else {
+                        Log.e(TAG, "Invalid CAL payload");
                     }
-                    Log.i(TAG, "Processing remote CAL " + message_array[1] + " age: " + message_array[2]);
-                    calintent.putExtra("bg_string", message_array[1]);
-                    calintent.putExtra("bg_age", message_array[2]);
-                    if (timediff < 3600) {
-                        getApplicationContext().startActivity(calintent);
-                    }
-                } else {
-                    Log.e(TAG, "Invalid CAL payload");
-                    
                 }
             } else if (action.equals("cal2")) {
                 Log.i(TAG, "Received cal2 packet");
-                if (Home.get_master()) {
-                    NewCalibration newCalibration = GcmActivity.getNewCalibration(payload);
+                if (Home.get_master() && Home.follower_or_accept_follower()) {
+                    final NewCalibration newCalibration = GcmActivity.getNewCalibration(payload);
                     if (newCalibration != null) {
-                        Intent calintent = new Intent();
+                        final Intent calintent = new Intent();
                         calintent.setClassName(getString(R.string.local_target_package), "com.eveningoutpost.dexdrip.AddCalibration");
                         calintent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -398,7 +402,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                     GcmActivity.syncSensor(Sensor.currentSensor(), false);
                 }
             } else if (action.equals("btmm")) {
-                if (Home.get_master_or_follower()) {
+                if (Home.get_master_or_follower() && Home.follower_or_accept_follower()) {
                     BloodTest.processFromMultiMessage(bpayload);
                 } else {
                     Log.i(TAG, "Receive multi blood test but we are neither master or follower");

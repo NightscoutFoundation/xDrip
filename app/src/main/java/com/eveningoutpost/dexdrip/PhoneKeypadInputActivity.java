@@ -2,7 +2,6 @@ package com.eveningoutpost.dexdrip;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -12,6 +11,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
 import java.util.HashMap;
@@ -36,6 +36,7 @@ public class PhoneKeypadInputActivity extends Activity {
             bloodtesttabbutton, timetabbutton, speakbutton;
 
     private static String currenttab = "insulin";
+    private static final String LAST_TAB_STORE = "phone-keypad-treatment-last-tab";
     private static final String TAG = "KeypadInput";
     private static Map<String, String> values = new HashMap<String, String>();
     private String units;
@@ -50,7 +51,7 @@ public class PhoneKeypadInputActivity extends Activity {
         int width = dm.widthPixels;
         int height = dm.heightPixels;
         final int refdpi = 320;
-        Log.d(TAG, "Width height: " + width + " " + height+" DPI:"+dm.densityDpi);
+        Log.d(TAG, "Width height: " + width + " " + height + " DPI:" + dm.densityDpi);
         getWindow().setLayout((int) Math.min(((520 * dm.densityDpi) / refdpi), width), (int) Math.min((650 * dm.densityDpi) / refdpi, height));
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         WindowManager.LayoutParams lp = getWindow().getAttributes();
@@ -326,11 +327,11 @@ public class PhoneKeypadInputActivity extends Activity {
         switch (currenttab) {
             case "insulin":
                 insulintabbutton.setBackgroundColor(onColor);
-                append = " "+getString(R.string.units);
+                append = " " + getString(R.string.units);
                 break;
             case "carbs":
                 carbstabbutton.setBackgroundColor(onColor);
-                append = " "+getString(R.string.carbs);
+                append = " " + getString(R.string.carbs);
                 break;
             case "bloodtest":
                 bloodtesttabbutton.setBackgroundColor(onColor);
@@ -338,7 +339,7 @@ public class PhoneKeypadInputActivity extends Activity {
                 break;
             case "time":
                 timetabbutton.setBackgroundColor(onColor);
-                append = " "+getString(R.string.when);
+                append = " " + getString(R.string.when);
                 break;
         }
         value = getValue(currenttab);
@@ -354,11 +355,15 @@ public class PhoneKeypadInputActivity extends Activity {
 
     @Override
     protected void onResume() {
+        final String savedtab = PersistentStore.getString(LAST_TAB_STORE);
+        if (savedtab.length() > 0) currenttab = savedtab;
+        updateTab();
         super.onResume();
     }
 
     @Override
     protected void onPause() {
+        PersistentStore.setString(LAST_TAB_STORE, currenttab);
         super.onPause();
     }
 }

@@ -43,6 +43,7 @@ import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -83,6 +84,8 @@ public class NightscoutUploader {
         public static final String VIA_NIGHTSCOUT_TAG = "via Nightscout";
 
         private static int failurecount = 0;
+        private static HashSet<String> bad_uuids = new HashSet<>();
+        private static HashSet<String> bad_bloodtest_uuids = new HashSet<>();
         private Context mContext;
         private Boolean enableRESTUpload;
         private Boolean enableMongoUpload;
@@ -296,6 +299,10 @@ public class NightscoutUploader {
                                // TODO if we are using upsert then we should favour _id over uuid!?
                                 final String uuid = (tr.has("uuid") && (tr.getString("uuid") != null)) ? tr.getString("uuid") : UUID.nameUUIDFromBytes(tr.getString("_id").getBytes("UTF-8")).toString();
                                 final String nightscout_id = (tr.getString("_id") == null) ? uuid : tr.getString("_id");
+                                if (bad_uuids.contains(nightscout_id)) {
+                                    Log.d(TAG, "Skipping previously baulked uuid: " + nightscout_id);
+                                    continue;
+                                }
                                 if (d) Log.d(TAG, "event: " + etype + "_id: "+nightscout_id+" uuid:" + uuid);
 
                                 boolean from_xdrip = false;
@@ -311,6 +318,10 @@ public class NightscoutUploader {
                                 try {
                                     if (!from_xdrip) {
                                         if (tr.getString("glucoseType").equals("Finger")) {
+                                            if (bad_bloodtest_uuids.contains(nightscout_id)) {
+                                                Log.d(TAG, "Skipping baulked bloodtest nightscout id: " + nightscout_id);
+                                                continue;
+                                            }
                                             final BloodTest existing = BloodTest.byUUID(uuid);
                                             if (existing == null) {
                                                 final long timestamp = DateUtil.tolerantFromISODateString(tr.getString("created_at")).getTime();
@@ -325,6 +336,7 @@ public class NightscoutUploader {
                                                     Log.ueh(TAG, "Received new Bloodtest data from Nightscout: " + BgGraphBuilder.unitized_string_with_units_static(mgdl) + " @ " + JoH.dateTimeText(timestamp));
                                                 } else {
                                                     Log.d(TAG, "Error creating bloodtest record");
+                                                    bad_bloodtest_uuids.add(nightscout_id);
                                                 }
                                             } else {
                                                 if (d)
@@ -359,7 +371,7 @@ public class NightscoutUploader {
                                 } catch (JSONException e) {
                                     // Log.d(TAG, "json processing: " + e);
                                 }
-                                if ((notes != null) && ((notes.equals("AndroidAPS started") || notes.equals("null"))))
+                                if ((notes != null) && ((notes.equals("AndroidAPS started") || notes.equals("null") || (notes.equals("Bolus Std")))))
                                     notes = null;
 
                                 if ((carbs > 0) || (insulin > 0) || (notes != null)) {
@@ -376,8 +388,14 @@ public class NightscoutUploader {
                                             final Treatments t;
                                             if ((carbs > 0) || (insulin > 0)) {
                                                 t = Treatments.create(carbs, insulin, timestamp, nightscout_id);
+                                                if (notes != null) t.notes = notes;
                                             } else {
                                                 t = Treatments.create_note(notes, timestamp, -1, nightscout_id);
+                                                if (t == null) {
+                                                    Log.d(TAG, "Create note baulked and returned null, so skipping");
+                                                    bad_uuids.add(nightscout_id);
+                                                    continue;
+                                                }
                                             }
 
                                             //t.uuid = nightscout_id; // replace with nightscout uuid
@@ -386,7 +404,7 @@ public class NightscoutUploader {
                                             } catch (JSONException e) {
                                                 t.enteredBy = VIA_NIGHTSCOUT_TAG;
                                             }
-                                            if (notes != null) t.notes = notes;
+
                                             t.save();
                                             // sync again!
                                            // pushTreatmentSync(t, false);
@@ -399,13 +417,17 @@ public class NightscoutUploader {
                                                 if (notes == null) notes = "";
                                                 if (existing.notes == null) existing.notes = "";
                                                 if ((existing.carbs != carbs) || (existing.insulin != insulin) || ((existing.timestamp / Constants.SECOND_IN_MS) != (timestamp / Constants.SECOND_IN_MS))
-                                                        || (!existing.notes.equals(notes))) {
+                                                        || (!existing.notes.contains(notes))) {
                                                     Log.ueh(TAG, "Treatment changes from Nightscout: " + carbs + " Insulin: " + insulin + " timestamp: " + JoH.dateTimeText(timestamp) + " " + notes + " " + " vs " + existing.carbs + " " + existing.insulin + " " + JoH.dateTimeText(existing.timestamp) + " " + existing.notes);
                                                     existing.carbs = carbs;
                                                     existing.insulin = insulin;
                                                     existing.timestamp = timestamp;
                                                     existing.created_at = DateUtil.toISOString(timestamp);
-                                                    existing.notes = notes;
+                                                    if (existing.notes.length() > 0) {
+                                                        existing.notes += " \u2192 " + notes;
+                                                    } else {
+                                                        existing.notes = notes;
+                                                    }
                                                     existing.save();
                                                     pushTreatmentSyncToWatch(existing, false);
                                                     new_data = true;
@@ -571,6 +593,7 @@ public class NightscoutUploader {
             json.put("rssi", 100);
             json.put("noise", record.noiseValue());
             json.put("delta", new BigDecimal(record.currentSlope() * 5 * 60 * 1000).setScale(3, BigDecimal.ROUND_HALF_UP)); // jamorham for automation
+            json.put("sysTime", format.format(record.timestamp));
             array.put(json);
         }
         else
@@ -602,6 +625,7 @@ public class NightscoutUploader {
             json.put("date", record.timestamp);
             json.put("dateString", format.format(record.timestamp));
             json.put("mbg", record.bg);
+            json.put("sysTime", format.format(record.timestamp));
             array.put(json);
         }
 
@@ -618,6 +642,7 @@ public class NightscoutUploader {
             json.put("date", record.timestamp);
             json.put("dateString", format.format(record.timestamp));
             json.put("mbg", record.mgdl);
+            json.put("sysTime", format.format(record.timestamp));
             array.put(json);
         }
 
@@ -646,6 +671,7 @@ public class NightscoutUploader {
                 json.put("intercept", ((record.intercept * -1000) / (record.slope)));
                 json.put("scale", 1);
             }
+            json.put("sysTime", format.format(record.timestamp));
             array.put(json);
         }
 
@@ -654,6 +680,7 @@ public class NightscoutUploader {
         if (treatment == null) return;
         if ((treatment.enteredBy != null) && (treatment.enteredBy.endsWith(VIA_NIGHTSCOUT_TAG))) return; // don't send back to nightscout what came from there
         final JSONObject record = new JSONObject();
+        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
         record.put("timestamp", treatment.timestamp);
         record.put("eventType", treatment.eventType);
         record.put("enteredBy", treatment.enteredBy);
@@ -662,6 +689,7 @@ public class NightscoutUploader {
         record.put("carbs", treatment.carbs);
         record.put("insulin", treatment.insulin);
         record.put("created_at", treatment.created_at);
+        record.put("sysTime", format.format(treatment.timestamp));
         array.put(record);
     }
 

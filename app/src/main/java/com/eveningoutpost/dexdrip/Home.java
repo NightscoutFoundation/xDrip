@@ -86,6 +86,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
+import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.languageeditor.LanguageEditor;
@@ -708,7 +709,9 @@ public class Home extends ActivityWithMenu {
                     } else if (calibration_type.equals("auto")) {
                         Log.d(TAG, "Creating bloodtest  record from cal input data");
                         BloodTest.createFromCal(glucosenumber, timeoffset, "Manual Entry");
+                        GcmActivity.syncBloodTests();
                         if ((!Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto"))
+                                && (DexCollectionType.getDexCollectionType() != DexCollectionType.Follower)
                                 && (JoH.pratelimit("ask_about_auto_calibration", 86400 * 30))) {
                             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                             builder.setTitle("Enable automatic calibration");
@@ -1246,6 +1249,8 @@ public class Home extends ActivityWithMenu {
             BloodTest.cleanup(-100000);
         } else if (allWords.contentEquals("delete all persistent store")) {
             SdcardImportExport.deletePersistentStore();
+        } else if (allWords.contentEquals("delete uploader queue")) {
+            UploaderQueue.emptyQueue();
         } else if (allWords.contentEquals("clear battery warning")) {
             try {
                 final Sensor sensor = Sensor.currentSensor();
@@ -1915,6 +1920,10 @@ public class Home extends ActivityWithMenu {
     public static boolean get_show_wear_treatments() {
         return getPreferencesBooleanDefaultFalse("wear_sync") &&
                 getPreferencesBooleanDefaultFalse("show_wear_treatments");
+    }
+
+    public static boolean follower_or_accept_follower() {
+        return get_follower() || Home.getPreferencesBoolean("plus_accept_follower_actions", true);
     }
 
     public static boolean get_forced_wear() {

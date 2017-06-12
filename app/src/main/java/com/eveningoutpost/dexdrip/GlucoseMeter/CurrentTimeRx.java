@@ -18,6 +18,8 @@ public class CurrentTimeRx extends BluetoothCHelper {
     public long timediff;
     public long timediff_calculated;
 
+    public CurrentTimeRx() { }
+
     public CurrentTimeRx(byte[] packet) {
 
         if (packet.length >= 7) {

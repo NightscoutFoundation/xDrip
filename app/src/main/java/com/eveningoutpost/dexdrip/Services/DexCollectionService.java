@@ -168,7 +168,6 @@ public class DexCollectionService extends Service {
         final IntentFilter pairingRequestFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
         pairingRequestFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY - 1);
         registerReceiver(mPairingRequestRecevier, pairingRequestFilter);
-
         Log.i(TAG, "onCreate: STARTING SERVICE");
     }
 
@@ -231,7 +230,11 @@ public class DexCollectionService extends Service {
             retry_time = 0;
             failover_time = 0;
         }
-        BgToSpeech.tearDownTTS();
+        //BgToSpeech.tearDownTTS();
+
+        retry_backoff = 0;
+        poll_backoff = 0;
+
         Log.i(TAG, "SERVICE STOPPED");
     }
 
@@ -267,7 +270,7 @@ public class DexCollectionService extends Service {
             final long retry_in = whenToRetryNext();
             Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
             JoH.cancelAlarm(this, serviceIntent);
-            serviceIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+            serviceIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), PendingIntent.FLAG_UPDATE_CURRENT);
             retry_time = JoH.wakeUpIntent(this, retry_in, serviceIntent);
         } else {
             Log.d(TAG, "Not setting retry timer as service should not be running");
@@ -279,7 +282,7 @@ public class DexCollectionService extends Service {
             final long retry_in = use_polling ? whenToPollNext() : (Constants.MINUTE_IN_MS * 6);
             Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (Constants.MINUTE_IN_MS)) + " minutes");
             JoH.cancelAlarm(this, serviceFailoverIntent);
-            serviceFailoverIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), 0);
+            serviceFailoverIntent = PendingIntent.getService(this, 1, new Intent(this, this.getClass()), PendingIntent.FLAG_UPDATE_CURRENT);
             failover_time = JoH.wakeUpIntent(this, retry_in, serviceFailoverIntent);
             retry_time = 0; // only one alarm will run
         } else {
@@ -309,7 +312,7 @@ public class DexCollectionService extends Service {
         lastState = msg + " " + JoH.hourMinuteString();
     }
 
-    public void attemptConnection() {
+    synchronized void attemptConnection() {
         status("Attempting connection");
         final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         if (bluetoothManager == null) {
