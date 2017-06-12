@@ -371,6 +371,7 @@ public class NightscoutUploader {
                                 } catch (JSONException e) {
                                     // Log.d(TAG, "json processing: " + e);
                                 }
+
                                 if ((notes != null) && ((notes.equals("AndroidAPS started") || notes.equals("null") || (notes.equals("Bolus Std")))))
                                     notes = null;
 

@@ -1917,6 +1917,7 @@ public class Home extends ActivityWithMenu {
         return get_follower() || get_master();
     }
 
+
     public static boolean get_show_wear_treatments() {
         return getPreferencesBooleanDefaultFalse("wear_sync") &&
                 getPreferencesBooleanDefaultFalse("show_wear_treatments");
