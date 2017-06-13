@@ -189,12 +189,12 @@ public class BGHistory extends ActivityWithMenu {
             sb.append(' ');
             sb.append(statsResult.getStdevUnitised());
             DecimalFormat df = new DecimalFormat(getResources().getString(R.string.format_decimal_treatments));
-            if (Home.getPreferencesBoolean("status_line_carbs", true)) {
+            if (Home.getPreferencesBoolean("status_line_insulin", true)) {
                 sb.append('\n');
                 double insulin = statsResult.getTotal_insulin();
                 sb.append(getResources().getString(R.string.label_show_insulin, df.format(insulin)));
             }
-            if (Home.getPreferencesBoolean("status_line_insulin", true)) {
+            if (Home.getPreferencesBoolean("status_line_carbs", true)) {
                 sb.append(' ');
                 double carbs = statsResult.getTotal_carbs();
                 sb.append(getResources().getString(R.string.label_show_carbs, df.format(carbs)));

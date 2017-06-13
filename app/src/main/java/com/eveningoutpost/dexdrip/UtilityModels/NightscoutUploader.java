@@ -62,6 +62,8 @@ import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
+import static com.eveningoutpost.dexdrip.Models.Treatments.pushTreatmentSyncToWatch;
+
 /**
  * THIS CLASS WAS BUILT BY THE NIGHTSCOUT GROUP FOR THEIR NIGHTSCOUT ANDROID UPLOADER
  * https://github.com/nightscout/android-uploader/
@@ -369,6 +371,7 @@ public class NightscoutUploader {
                                 } catch (JSONException e) {
                                     // Log.d(TAG, "json processing: " + e);
                                 }
+
                                 if ((notes != null) && ((notes.equals("AndroidAPS started") || notes.equals("null") || (notes.equals("Bolus Std")))))
                                     notes = null;
 
@@ -406,6 +409,7 @@ public class NightscoutUploader {
                                             t.save();
                                             // sync again!
                                            // pushTreatmentSync(t, false);
+                                            pushTreatmentSyncToWatch(t, true);
                                             new_data = true;
                                         } else {
                                             if (existing != null) {
@@ -426,6 +430,7 @@ public class NightscoutUploader {
                                                         existing.notes = notes;
                                                     }
                                                     existing.save();
+                                                    pushTreatmentSyncToWatch(existing, false);
                                                     new_data = true;
                                                 }
                                             } else {

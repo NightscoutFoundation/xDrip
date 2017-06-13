@@ -124,6 +124,10 @@ public class BloodTest extends Model {
     private static final long CLOSEST_READING_MS = 30000; // 30 seconds
 
     public static BloodTest create(long timestamp_ms, double mgdl, String source) {
+        return createFromCal(timestamp_ms, mgdl, source, null);
+    }
+
+    public static BloodTest create(long timestamp_ms, double mgdl, String source, String suggested_uuid) {
 
         if ((timestamp_ms == 0) || (mgdl == 0)) {
             UserError.Log.e(TAG, "Either timestamp or mgdl is zero - cannot create reading");
@@ -149,7 +153,7 @@ public class BloodTest extends Model {
             final BloodTest bt = new BloodTest();
             bt.timestamp = timestamp_ms;
             bt.mgdl = mgdl;
-            bt.uuid = UUID.randomUUID().toString();
+            bt.uuid = suggested_uuid == null ? UUID.randomUUID().toString() : suggested_uuid;
             bt.created_timestamp = JoH.tsl();
             bt.state = STATE_VALID;
             bt.source = source;
@@ -165,6 +169,10 @@ public class BloodTest extends Model {
     }
 
     public static BloodTest createFromCal(double bg, double timeoffset, String source) {
+        return createFromCal(bg, timeoffset, source, null);
+    }
+
+    public static BloodTest createFromCal(double bg, double timeoffset, String source, String suggested_uuid) {
         final String unit = Home.getPreferencesStringWithDefault("units", "mgdl");
 
         if (unit.compareTo("mgdl") != 0) {
@@ -177,7 +185,7 @@ public class BloodTest extends Model {
             return null;
         }
 
-        return create((long) (new Date().getTime() - timeoffset), bg, source);
+        return create((long) (new Date().getTime() - timeoffset), bg, source, suggested_uuid);
     }
 
     public static BloodTest last() {

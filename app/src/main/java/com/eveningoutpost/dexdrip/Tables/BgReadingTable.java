@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.app.ListActivity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
@@ -95,6 +96,14 @@ public class BgReadingTable extends ListActivity implements NavigationDrawerFrag
             tag.raw_data_value.setText(Double.toString(bgReading.age_adjusted_raw_value));
             tag.raw_data_slope.setText(Double.toString(bgReading.raw_data));
             tag.raw_data_timestamp.setText(new Date(bgReading.timestamp).toString());
+
+            if (bgReading.ignoreForStats) {
+                // red invalid/cancelled/overridden
+                view.setBackgroundColor(Color.parseColor("#660000"));
+            } else {
+                // normal grey
+                view.setBackgroundColor(Color.parseColor("#212121"));
+            }
 
             view.setLongClickable(true);
             view.setOnLongClickListener(new View.OnLongClickListener() {

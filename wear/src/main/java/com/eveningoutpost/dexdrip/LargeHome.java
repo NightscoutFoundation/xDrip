@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.wearable.watchface.WatchFaceStyle;
@@ -47,6 +48,11 @@ public class LargeHome extends BaseWatchFace {
             if (sharedPrefs.getBoolean("extra_status_line", false) && mExtraStatusLine != null && !mExtraStatusLine.isEmpty()) {
                 JoH.static_toast_long(mExtraStatusLine);
             }
+        }
+        if (tapType == TAP_TYPE_TOUCH && linearLayout(mMenuLinearLayout, x, y)) {
+            Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intent);
         }
     }
 

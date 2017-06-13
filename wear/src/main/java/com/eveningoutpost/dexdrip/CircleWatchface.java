@@ -90,6 +90,8 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
     public LinearLayout mDirectionDelta;
     public Button stepsButton;
     public LinearLayout mStepsLinearLayout;
+    public Button menuButton;
+    public LinearLayout mMenuLinearLayout;
     public String mExtraStatusLine = "";
     public String mStepsToast = "";
     public int mStepsCount = 0;
@@ -178,6 +180,11 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
                 JoH.static_toast_long(mExtraStatusLine);
             }
         }
+        if (tapType == TAP_TYPE_TOUCH && linearLayout(mMenuLinearLayout, x, y)) {
+            Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intent);
+        }
     }
 
     private boolean linearLayout(LinearLayout layout,int x, int y) {
@@ -197,6 +204,8 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         TextView textView = null;
 
         mDirectionDelta = (LinearLayout) myLayout.findViewById(R.id.directiondelta_layout);
+        menuButton=(Button)myLayout.findViewById(R.id.menuButton);
+        mMenuLinearLayout = (LinearLayout) myLayout.findViewById(R.id.menu_layout);
         stepsButton=(Button)myLayout.findViewById(R.id.walkButton);
         mStepsLinearLayout = (LinearLayout) myLayout.findViewById(R.id.steps_layout);
         if (sharedPrefs.getBoolean("showSteps", false)) {

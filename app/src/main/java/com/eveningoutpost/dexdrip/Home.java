@@ -224,11 +224,14 @@ public class Home extends ActivityWithMenu {
     double thisinsulinnumber = 0;
     double thistimeoffset = 0;
     String thisword = "";
+    String thisuuid = "";
     private static String nexttoast;
     boolean carbsset = false;
     boolean insulinset = false;
     boolean glucoseset = false;
     boolean timeset = false;
+    boolean watchkeypad = false;
+    boolean watchkeypadset = false;
     private wordDataWrapper searchWords = null;
     private AlertDialog dialog;
 
@@ -783,16 +786,38 @@ public class Home extends ActivityWithMenu {
         // preserve globals before threading off
         final double myglucosenumber = thisglucosenumber;
         final double mytimeoffset = thistimeoffset;
-        WatchUpdaterService.sendWearToast("Treatment processed", Toast.LENGTH_LONG);
         // proccess and approve all treatments
         // TODO Handle BG Tests here also
-        Treatments.create(thiscarbsnumber, thisinsulinnumber, Treatments.getTimeStampWithOffset(mytimeoffset));
+        if (watchkeypad) {
+            JoH.static_toast_long("Treatment processed");
+            WatchUpdaterService.sendWearLocalToast("Treatment processed", Toast.LENGTH_LONG);
+            Long time = Treatments.getTimeStampWithOffset(mytimeoffset);
+            Treatments exists = Treatments.byTimestamp(time);
+            if (exists == null) {
+                Log.d(TAG, "processAndApproveTreatment create watchkeypad Treatment carbs=" + thiscarbsnumber + " insulin=" + thisinsulinnumber + " timestamp=" + JoH.dateTimeText(time) + " uuid=" + thisuuid);
+                Treatments.create(thiscarbsnumber, thisinsulinnumber, time, thisuuid);
+            }
+            else {
+                Log.d(TAG, "processAndApproveTreatment Treatment already exists carbs=" + thiscarbsnumber + " insulin=" + thisinsulinnumber + " timestamp=" + JoH.dateTimeText(time));
+            }
+        }
+        else {
+            WatchUpdaterService.sendWearToast("Treatment processed", Toast.LENGTH_LONG);
+            Treatments.create(thiscarbsnumber, thisinsulinnumber, Treatments.getTimeStampWithOffset(mytimeoffset));
+        }
         hideAllTreatmentButtons();
 
         if (hideTreatmentButtonsIfAllDone()) {
             updateCurrentBgInfo("approve button");
         }
-        processCalibrationNoUI(myglucosenumber, mytimeoffset);
+        if (watchkeypad) {
+            if (myglucosenumber > 0)
+                BloodTest.createFromCal(myglucosenumber, mytimeoffset, "Manual Entry", thisuuid);
+            watchkeypad = false;
+            watchkeypadset = false;
+        }
+        else
+            processCalibrationNoUI(myglucosenumber, mytimeoffset);
         staticRefreshBGCharts();
     }
 
@@ -806,7 +831,7 @@ public class Home extends ActivityWithMenu {
                 last_speech_time = JoH.ts();
                 naturalLanguageRecognition(receivedText);
             }
-            if (bundle.getString(WatchUpdaterService.WEARABLE_APPROVE_TREATMENT) != null)
+            if (bundle.getString(WatchUpdaterService.WEARABLE_APPROVE_TREATMENT) != null || watchkeypad)
                 processAndApproveTreatment();
             else if (bundle.getString(WatchUpdaterService.WEARABLE_CANCEL_TREATMENT) != null)
                 cancelTreatment();
@@ -865,6 +890,7 @@ public class Home extends ActivityWithMenu {
             } else if (bundle.getString(Home.ACTIVITY_SHOWCASE_INFO) != null) {
                 showcasemenu(SHOWCASE_MOTION_DETECTION);
             } else if (bundle.getString(Home.BLOOD_TEST_ACTION) != null) {
+                Log.d(TAG, "BLOOD_TEST_ACTION");
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Blood Test Action");
                 builder.setMessage("What would you like to do?");
@@ -1152,7 +1178,9 @@ public class Home extends ActivityWithMenu {
     }
 
     private String classifyWord(String word) {
-        // convert fuzzy recognised word to our keyword from lexicon
+        if (word.equals("watchkeypad")) return "watchkeypad";
+        if (word.equals("uuid")) return "uuid";
+// convert fuzzy recognised word to our keyword from lexicon
         for (wordData thislex : searchWords.entries) {
             if (thislex.matchWords.contains(word)) {
                 Log.d(TAG, "Matched spoken word: " + word + " => " + thislex.lexicon);
@@ -1171,13 +1199,20 @@ public class Home extends ActivityWithMenu {
                     Toast.LENGTH_LONG).show();
             return;
         }
+        Log.d(TAG, "Processing speech input allWords: " + allWords);
+        thisuuid = "";
+        int end = allWords.indexOf(" uuid ");
+        if (end > 0) {
+            thisuuid = (end > 0 ? allWords.substring(0, end) : "");
+            allWords = allWords.substring(end + 6, allWords.length());
+        }
         allWords = allWords.trim();
         allWords = allWords.replaceAll(":", "."); // fix real times
         allWords = allWords.replaceAll("(\\d)([a-zA-Z])", "$1 $2"); // fix like 22mm
         allWords = allWords.replaceAll("([0-9].[0-9])([0-9][0-9])", "$1 $2"); // fix multi number order like blood 3.622 grams
         allWords = allWords.toLowerCase();
 
-        Log.d(TAG, "Processing speech input: " + allWords);
+        Log.d(TAG, "Processing speech input allWords: " + allWords + " UUID: " + thisuuid);
 
         if (allWords.contentEquals("delete last treatment")
                 || allWords.contentEquals("cancel last treatment")
@@ -1229,6 +1264,8 @@ public class Home extends ActivityWithMenu {
         }
 
         // reset parameters for new speech
+        watchkeypad = false;
+        watchkeypadset = false;
         glucoseset = false;
         insulinset = false;
         carbsset = false;
@@ -1260,6 +1297,16 @@ public class Home extends ActivityWithMenu {
         Log.d(TAG, "GOT WORD PAIR: " + thisnumber + " = " + thisword);
 
         switch (thisword) {
+
+            case "watchkeypad":
+                if ((watchkeypadset == false) && (thisnumber > 0)) {
+                    watchkeypad = true;
+                    watchkeypadset = true;
+                    Log.d(TAG, "Treatment entered on watchkeypad: " + Double.toString(thisnumber));
+                } else {
+                    Log.d(TAG, "watchkeypad already set");
+                }
+                break;
 
             case "rapid":
                 if ((insulinset == false) && (thisnumber > 0)) {
@@ -1376,7 +1423,7 @@ public class Home extends ActivityWithMenu {
         }
 
         // don't show approve/cancel if we only have time
-        if (insulinset || glucoseset || carbsset) {
+        if ((insulinset || glucoseset || carbsset) && !watchkeypad) {
             btnApprove.setVisibility(View.VISIBLE);
             btnCancel.setVisibility(View.VISIBLE);
 
@@ -1413,7 +1460,7 @@ public class Home extends ActivityWithMenu {
 
         }
 
-        if (insulinset || glucoseset || carbsset || timeset) {
+        if ((insulinset || glucoseset || carbsset || timeset) && !watchkeypad) {
             if (chart != null) {
                 chart.setAlpha((float) 0.10);
             }
@@ -1868,6 +1915,12 @@ public class Home extends ActivityWithMenu {
 
     public static boolean get_master_or_follower() {
         return get_follower() || get_master();
+    }
+
+
+    public static boolean get_show_wear_treatments() {
+        return getPreferencesBooleanDefaultFalse("wear_sync") &&
+                getPreferencesBooleanDefaultFalse("show_wear_treatments");
     }
 
     public static boolean follower_or_accept_follower() {
