@@ -124,7 +124,7 @@ public class BloodTest extends Model {
     private static final long CLOSEST_READING_MS = 30000; // 30 seconds
 
     public static BloodTest create(long timestamp_ms, double mgdl, String source) {
-        return createFromCal(timestamp_ms, mgdl, source, null);
+        return create(timestamp_ms, mgdl, source, null);
     }
 
     public static BloodTest create(long timestamp_ms, double mgdl, String source, String suggested_uuid) {

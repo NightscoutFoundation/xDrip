@@ -335,7 +335,7 @@ public class NightscoutUploader {
                                                     new_data = true;
                                                     Log.ueh(TAG, "Received new Bloodtest data from Nightscout: " + BgGraphBuilder.unitized_string_with_units_static(mgdl) + " @ " + JoH.dateTimeText(timestamp));
                                                 } else {
-                                                    Log.d(TAG, "Error creating bloodtest record");
+                                                    Log.d(TAG, "Error creating bloodtest record: " + mgdl + " mgdl " + tr.toString());
                                                     bad_bloodtest_uuids.add(nightscout_id);
                                                 }
                                             } else {
