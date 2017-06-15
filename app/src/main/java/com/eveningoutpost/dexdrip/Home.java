@@ -533,32 +533,35 @@ public class Home extends ActivityWithMenu {
         }
 
 
-        if ((checkedeula) && Experience.isNewbie() && !Home.getPreferencesStringWithDefault("units", "mgdl").equals("mmol")) {
-            Log.d(TAG, "Newbie mmol prompt");
-            if (Experience.defaultUnitsAreMmol()) {
-                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Glucose units mmol/L or mg/dL");
-                builder.setMessage("Is your typical blood glucose value:\n\n5.5 (mmol/L)\nor\n100 (mg/dL)\n\nPlease select below");
+        if ((checkedeula) && Experience.isNewbie()) {
+            if (!SdcardImportExport.handleBackup(this)) {
+                if (!Home.getPreferencesStringWithDefault("units", "mgdl").equals("mmol")) {
+                    Log.d(TAG, "Newbie mmol prompt");
+                    if (Experience.defaultUnitsAreMmol()) {
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setTitle("Glucose units mmol/L or mg/dL");
+                        builder.setMessage("Is your typical blood glucose value:\n\n5.5 (mmol/L)\nor\n100 (mg/dL)\n\nPlease select below");
 
-                builder.setNegativeButton("5.5", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        Home.setPreferencesString("units", "mmol");
-                        Preferences.handleUnitsChange(null, "mmol", null);
-                        Home.staticRefreshBGCharts();
-                        toast("Settings updated to mmol/L");
+                        builder.setNegativeButton("5.5", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                Home.setPreferencesString("units", "mmol");
+                                Preferences.handleUnitsChange(null, "mmol", null);
+                                Home.staticRefreshBGCharts();
+                                toast("Settings updated to mmol/L");
+                            }
+                        });
+
+                        builder.setPositiveButton("100", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                        builder.create().show();
                     }
-                });
-
-                builder.setPositiveButton("100", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                builder.create().show();
-
+                }
             }
         }
 
@@ -1652,6 +1655,7 @@ public class Home extends ActivityWithMenu {
 
     @Override
     protected void onResume() {
+
         xdrip.checkForcedEnglish(xdrip.getAppContext());
         super.onResume();
         handleFlairColors();
@@ -2176,6 +2180,28 @@ public class Home extends ActivityWithMenu {
         final boolean isSensorActive = Sensor.isActive();
         if (!isSensorActive) {
             notificationText.setText(R.string.now_start_your_sensor);
+
+            if (!Experience.gotData() && JoH.ratelimit("start-sensor_prompt", 20)) {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                final Context context = this;
+                builder.setTitle("Start Sensor?");
+                builder.setMessage("Data Source is set to: " + DexCollectionType.getDexCollectionType().toString() + "\n\nDo you want to change settings or start sensor?");
+                builder.setNegativeButton("Change settings", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        startActivity(new Intent(context, Preferences.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    }
+                });
+                builder.setPositiveButton("Start sensor", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        startActivity(new Intent(context, StartNewSensor.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    }
+                });
+                builder.create().show();
+            }
+
             return;
         }
 
