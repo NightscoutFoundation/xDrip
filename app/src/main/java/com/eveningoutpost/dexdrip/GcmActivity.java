@@ -474,6 +474,7 @@ public class GcmActivity extends FauxActivity {
     }
 
     static void syncBGTable2() {
+        if (!Sensor.isActive()) return;
         new Thread() {
             @Override
             public void run() {

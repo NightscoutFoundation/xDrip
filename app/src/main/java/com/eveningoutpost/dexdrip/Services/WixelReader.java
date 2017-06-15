@@ -25,6 +25,8 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import org.json.JSONException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -453,6 +455,8 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
             statusLog(hostName, JoH.hourMinuteString() + " " + e.toString());
         } catch (IllegalArgumentException e) {
             Log.e(TAG, "Argument error on: " + hostName + " " + e.toString());
+        } catch (NullPointerException e) {
+            Log.e(TAG,"Got null pointer exception "+hostName+" " +e.toString());
         }
         return trd_list;
     }
