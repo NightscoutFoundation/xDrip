@@ -19,9 +19,13 @@ public class CheckBridgeBattery {
 
     private static final String TAG = CheckBridgeBattery.class.getSimpleName();
     private static final String PREFS_ITEM = "bridge_battery";
+    private static final String PARAKEET_PREFS_ITEM = "parakeet_battery";
     private static final int NOTIFICATION_ITEM = 541;
+    private static final int PARAKEET_NOTIFICATION_ITEM = 542;
     private static int last_level = -1;
+    private static int last_parakeet_level = -1;
     private static boolean notification_showing = false;
+    private static boolean parakeet_notification_showing = false;
     private static int threshold = 20;
     private static final int repeat_seconds = 1200;
 
@@ -55,6 +59,35 @@ public class CheckBridgeBattery {
             last_level = this_level;
         }
         return lowbattery;
+    }
+
+
+    public static void checkParakeetBattery() {
+
+        if (!Home.getPreferencesBooleanDefaultFalse("bridge_battery_alerts")) return;
+
+        try {
+            threshold = Integer.parseInt(Home.getPreferencesStringWithDefault("bridge_battery_alert_level", "30"));
+        } catch (NumberFormatException e) {
+            UserError.Log.e(TAG, "Got error parsing alert level");
+        }
+
+        final int this_level = Home.getPreferencesInt(PARAKEET_PREFS_ITEM, -1);
+        if ((this_level > 0) && (threshold > 0)) {
+            if ((this_level < threshold) && (this_level < last_parakeet_level)) {
+                if (JoH.pratelimit("parakeet-battery-warning", repeat_seconds)) {
+                    parakeet_notification_showing = true;
+                    final PendingIntent pendingIntent = android.app.PendingIntent.getActivity(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), Home.class), android.app.PendingIntent.FLAG_UPDATE_CURRENT);
+                    showNotification("Low Parakeet battery", "Parakeet battery dropped to: " + this_level + "%", pendingIntent, PARAKEET_NOTIFICATION_ITEM, true, true, false);
+                }
+            } else {
+                if (parakeet_notification_showing) {
+                    cancelNotification(PARAKEET_NOTIFICATION_ITEM);
+                    parakeet_notification_showing = false;
+                }
+            }
+            last_parakeet_level = this_level;
+        }
     }
 
 

@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
+import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.Mdns;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -589,6 +590,7 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
                 if (LastReading.UploaderBatteryLife > 0)
                 {
                     PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt("parakeet_battery", LastReading.UploaderBatteryLife).apply();
+                    CheckBridgeBattery.checkParakeetBattery();
                 }
 
     		}
