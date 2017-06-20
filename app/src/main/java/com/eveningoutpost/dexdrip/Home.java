@@ -1181,6 +1181,7 @@ public class Home extends ActivityWithMenu {
     }
 
     private String classifyWord(String word) {
+        if (word == null) return null;
         if (word.equals("watchkeypad")) return "watchkeypad";
         if (word.equals("uuid")) return "uuid";
 // convert fuzzy recognised word to our keyword from lexicon
@@ -1276,7 +1277,7 @@ public class Home extends ActivityWithMenu {
         thisnumber = -1;
         thisword = "";
 
-        String[] wordsArray = allWords.split(" ");
+        final String[] wordsArray = allWords.split(" ");
         for (int i = 0; i < wordsArray.length; i++) {
             // per word in input stream
             try {
@@ -1285,17 +1286,30 @@ public class Home extends ActivityWithMenu {
                 handleWordPair();
             } catch (NumberFormatException nfe) {
                 // detection of number or not
-                String result = classifyWord(wordsArray[i]);
+                final String result = classifyWord(wordsArray[i]);
                 if (result != null)
                     thisword = result;
                 handleWordPair();
+                if (thisword.equals("note")) {
+                    String note_text = "";
+                    for (int j = i + 1; j < wordsArray.length; j++) {
+                        if (note_text.length() > 0) note_text += " ";
+                        note_text += wordsArray[j];
+                    }
+                    if (note_text.length() > 0) {
+                        // TODO respect historic timeset?
+                        Treatments.create_note(note_text, JoH.tsl());
+                        staticRefreshBGCharts();
+                        break; // don't process any more
+                    }
+                }
             }
         }
     }
 
     private void handleWordPair() {
         boolean preserve = false;
-        if ((thisnumber == -1) || (thisword == "")) return;
+        if ((thisnumber == -1) || (thisword.equals(""))) return;
 
         Log.d(TAG, "GOT WORD PAIR: " + thisnumber + " = " + thisword);
 
