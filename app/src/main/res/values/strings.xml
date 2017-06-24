@@ -611,6 +611,8 @@
     <string name="disable_log_transmitter_battery_warning">Disable the warning for low transmitter battery state on the home screen. (Only relevant for DIY receivers.)</string>
     <string name="engineering_mode">Engineering mode</string>
     <string name="allow_unsafe_settings">Allows changing the most unsafe settings which could break everything!</string>
+    <string name="daily_save_db">Save Database Daily</string>
+    <string name="allow_daily_db_save">Allows the Daily Intent Service to save the database before purging</string>
     <string name="options_for_extra_line">Options for the extra line</string>
     <string name="todays_average_value">Today\'s average value.</string>
     <string name="ac1_estimation_dcct">A1c estimation in DCCT format (%)</string>

@@ -15,6 +15,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
+import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
 import com.eveningoutpost.dexdrip.utils.Telemetry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 
@@ -37,6 +38,16 @@ public class DailyIntentService extends IntentService {
             if (JoH.pratelimit("daily-intent-service", 60000)) {
                 Log.i(TAG, "DailyIntentService onHandleIntent Starting");
                 Long start = JoH.tsl();
+
+                // @TecMunky -- save database before pruning - allows daily capture of database
+                if (Home.getPreferencesBooleanDefaultFalse("save_db_ondemand")) {
+                    try {
+                        String export = DatabaseUtil.saveSql(getBaseContext(), "daily");
+                    } catch (Exception e) {
+                        Log.e(TAG, "DailyIntentService exception on Daily Save Database - ", e);
+                    }
+                }
+
                 // prune old database records
                 //mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 try {
