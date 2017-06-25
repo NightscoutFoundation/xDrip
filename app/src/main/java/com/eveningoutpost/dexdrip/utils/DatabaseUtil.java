@@ -87,7 +87,7 @@ public class DatabaseUtil {
 
                     foStream = new FileOutputStream(zipOutputFile);
                     zipOutputStream = new ZipOutputStream(new BufferedOutputStream(foStream));
-                    zipOutputStream.putNextEntry(new ZipEntry("export" + DateFormat.format("yyyyMMdd-kkmmss", System.currentTimeMillis()) + ".sqlite"));
+                    zipOutputStream.putNextEntry(new ZipEntry(prefix + DateFormat.format("yyyyMMdd-kkmmss", System.currentTimeMillis()) + ".sqlite"));
 
                     byte buffer[] = new byte[BUFFER_SIZE];
                     int count;
