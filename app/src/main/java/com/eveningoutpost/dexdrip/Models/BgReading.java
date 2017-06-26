@@ -17,11 +17,13 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.ShareModels.ShareUploadableBg;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.messages.BgReadingMessage;
 import com.eveningoutpost.dexdrip.messages.BgReadingMultiMessage;
@@ -540,6 +542,13 @@ public class BgReading extends Model implements ShareUploadableBg {
         Log.i("BG GSON: ", bgReading.toS());
     }
 
+    public static void pushBgReadingSyncToWatch(BgReading bgReading, boolean is_new) {
+        Log.d(TAG, "pushTreatmentSyncToWatch Add treatment to UploaderQueue.");
+        if (UploaderQueue.newEntryForWatch(is_new ? "insert" : "update", bgReading) != null) {
+            SyncService.startSyncService(3000); // sync in 3 seconds
+        }
+    }
+
     public static String activeSlopeArrow() {
         double slope = (float) (BgReading.activeSlope() * 60000);
         return slopeToArrowSymbol(slope);
@@ -772,6 +781,21 @@ public class BgReading extends Model implements ShareUploadableBg {
     public static List<BgReading> latestForGraph(int number, long startTime, long endTime) {
         return new Select()
                 .from(BgReading.class)
+                .where("timestamp >= " + Math.max(startTime, 0))
+                .where("timestamp <= " + endTime)
+                .where("calculated_value != 0")
+                .where("raw_data != 0")
+                .orderBy("timestamp desc")
+                .limit(number)
+                .execute();
+    }
+
+    public static List<BgReading> latestForGraphSensor(int number, long startTime, long endTime) {
+        Sensor sensor = Sensor.currentSensor();
+        if (sensor == null) { return null; }
+        return new Select()
+                .from(BgReading.class)
+                .where("Sensor = ? ", sensor.getId())
                 .where("timestamp >= " + Math.max(startTime, 0))
                 .where("timestamp <= " + endTime)
                 .where("calculated_value != 0")

@@ -520,6 +520,8 @@ public class Calibration extends Model {
                     bgReading.calibration = calibration;
                     bgReading.calibration_flag = true;
                     bgReading.save();
+                    //TODO Should be performed AFTER new calibration has been PUSHED via CalibrationSendQueue.addToQueue!! Note, note_only does not get PUSHED!
+                    //TODO BgReading.pushBgReadingSyncToWatch(bgReading, false);
                 }
 
                 if ((!is_follower) && (!note_only)) {
@@ -777,6 +779,7 @@ public class Calibration extends Model {
                     bgReading.calculated_value = new_calculated_value;
 
                     bgReading.save();
+                    //TODO BgReading.pushBgReadingSyncToWatch(bgReading, false);
                     i += 1;
                 }
             } catch (NullPointerException e) {
@@ -795,6 +798,7 @@ public class Calibration extends Model {
                     bgReading.calculated_value = newYvalue;
                     BgReading.updateCalculatedValue(bgReading);
                     bgReading.save();
+                    //TODO BgReading.pushBgReadingSyncToWatch(bgReading, false);
                 }
             } catch (NullPointerException e) {
                 Log.wtf(TAG, "Null pointer in AdjustRecentReadings ==2: " + e);
@@ -1064,6 +1068,22 @@ public class Calibration extends Model {
     public static List<Calibration> latestForGraph(int number, long startTime, long endTime) {
         return new Select()
                 .from(Calibration.class)
+                .where("timestamp >= " + Math.max(startTime, 0))
+                .where("timestamp <= " + endTime)
+                .where("(slope != 0 or slope_confidence = ?)", note_only_marker)
+                .orderBy("timestamp desc")
+                .limit(number)
+                .execute();
+    }
+
+    public static List<Calibration> latestForGraphSensor(int number, long startTime, long endTime) {
+        Sensor sensor = Sensor.currentSensor();
+        if (sensor == null) {
+            return null;
+        }
+        return new Select()
+                .from(Calibration.class)
+                .where("Sensor = ? ", sensor.getId())
                 .where("timestamp >= " + Math.max(startTime, 0))
                 .where("timestamp <= " + endTime)
                 .where("(slope != 0 or slope_confidence = ?)", note_only_marker)

@@ -62,17 +62,13 @@ public class Home extends BaseWatchFace {
             }
             chartTapTime = eventTime;
         }
-        if (tapType == TAP_TYPE_TAP&&
-                ((x >=mDirectionDelta.getLeft() &&
-                x <= mDirectionDelta.getRight()&&
-                y >= mDirectionDelta.getTop() &&
-                y <= mDirectionDelta.getBottom()) )) {//||
+        if (tapType == TAP_TYPE_TAP && linearLayout(mDirectionDelta, x, y)) {
             if (eventTime - fontsizeTapTime < 800) {
                 setSmallFontsize(true);
             }
             fontsizeTapTime = eventTime;
         }
-        if (tapType == TAP_TYPE_TOUCH && x >=mDirectionDelta.getLeft() && linearLayout(mLinearLayout, x, y)) {
+        if (tapType == TAP_TYPE_TOUCH && linearLayout(mLinearLayout, x, y)) {
             JoH.static_toast_short(mStatusLine);
         }
         if (tapType == TAP_TYPE_TOUCH && linearLayout(mStepsLinearLayout, x, y)) {

@@ -10,10 +10,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.BloodTest;
+import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,10 +43,19 @@ public class BloodTestTable extends ListActivity {
 
     private void getData() {
         UserError.Log.d(TAG, "getData");
-        final List<BloodTest> latest = BloodTest.latest(60);//5000
-        ListAdapter adapter = new thisAdapter(this, latest);
+        final long startTime = new Date().getTime() - (60000 * 60 * 24 * 3);//3 days
+        final List<BloodTest> latest = BloodTest.latestForGraph(60, startTime);
 
+        ListAdapter adapter = new thisAdapter(this, latest);
         this.setListAdapter(adapter);
+
+        String msg = "";
+        int size = 0;
+        if (latest != null) size = latest.size();
+        if (size == 0) {
+            msg = getResources().getString(R.string.notify_table_size, "BloodTest", size);
+            JoH.static_toast(xdrip.getAppContext(), msg, Toast.LENGTH_SHORT);
+        }
     }
 
     public static class thisCursorAdapterViewHolder {

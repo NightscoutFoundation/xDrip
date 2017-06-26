@@ -124,7 +124,7 @@ public class BloodTest extends Model {
     private static final long CLOSEST_READING_MS = 30000; // 30 seconds
 
     public static BloodTest create(long timestamp_ms, double mgdl, String source) {
-        return createFromCal(timestamp_ms, mgdl, source, null);
+        return create(timestamp_ms, mgdl, source, null);
     }
 
     public static BloodTest create(long timestamp_ms, double mgdl, String source, String suggested_uuid) {
@@ -186,6 +186,13 @@ public class BloodTest extends Model {
         }
 
         return create((long) (new Date().getTime() - timeoffset), bg, source, suggested_uuid);
+    }
+
+    public static void pushBloodTestSyncToWatch(BloodTest bt, boolean is_new) {
+        Log.d(TAG, "pushTreatmentSyncToWatch Add treatment to UploaderQueue.");
+        if (UploaderQueue.newEntryForWatch(is_new ? "insert" : "update", bt) != null) {
+            SyncService.startSyncService(3000); // sync in 3 seconds
+        }
     }
 
     public static BloodTest last() {
@@ -294,6 +301,10 @@ public class BloodTest extends Model {
                 }
                 bt = new BloodTest();
                 is_new = true;
+            } else {
+                if (bt.state != Wire.get(btm.state, BloodTestMessage.DEFAULT_STATE)) {
+                    is_new = true;
+                }
             }
             bt.timestamp = Wire.get(btm.timestamp, BloodTestMessage.DEFAULT_TIMESTAMP);
             bt.mgdl = Wire.get(btm.mgdl, BloodTestMessage.DEFAULT_MGDL);

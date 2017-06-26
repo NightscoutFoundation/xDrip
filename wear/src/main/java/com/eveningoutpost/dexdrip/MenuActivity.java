@@ -33,7 +33,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import static com.eveningoutpost.dexdrip.ListenerService.SendData;
-import static com.eveningoutpost.dexdrip.ListenerService.WEARABLE_INITDB_PATH;
+import static com.eveningoutpost.dexdrip.ListenerService.WEARABLE_INITTREATMENTS_PATH;
 
 /**
  * Adapted from WearDialer which is:
@@ -172,7 +172,7 @@ public class MenuActivity extends Activity {
                 break;
             case "refreshdb":
                 refreshdbbutton.setBackgroundColor(onColor);
-                ListenerService.SendData(this, WEARABLE_INITDB_PATH, null);
+                ListenerService.SendData(this, WEARABLE_INITTREATMENTS_PATH, null);
                 msg = getResources().getString(R.string.notify_refreshdb);
                 JoH.static_toast(xdrip.getAppContext(), msg, Toast.LENGTH_SHORT);
                 break;

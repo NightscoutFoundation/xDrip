@@ -335,7 +335,7 @@ public class NightscoutUploader {
                                                     new_data = true;
                                                     Log.ueh(TAG, "Received new Bloodtest data from Nightscout: " + BgGraphBuilder.unitized_string_with_units_static(mgdl) + " @ " + JoH.dateTimeText(timestamp));
                                                 } else {
-                                                    Log.d(TAG, "Error creating bloodtest record");
+                                                    Log.d(TAG, "Error creating bloodtest record: " + mgdl + " mgdl " + tr.toString());
                                                     bad_bloodtest_uuids.add(nightscout_id);
                                                 }
                                             } else {
@@ -409,7 +409,7 @@ public class NightscoutUploader {
                                             t.save();
                                             // sync again!
                                            // pushTreatmentSync(t, false);
-                                            pushTreatmentSyncToWatch(t, true);
+                                            if (Home.get_show_wear_treatments()) pushTreatmentSyncToWatch(t, true);
                                             new_data = true;
                                         } else {
                                             if (existing != null) {
@@ -430,7 +430,7 @@ public class NightscoutUploader {
                                                         existing.notes = notes;
                                                     }
                                                     existing.save();
-                                                    pushTreatmentSyncToWatch(existing, false);
+                                                    if (Home.get_show_wear_treatments()) pushTreatmentSyncToWatch(existing, false);
                                                     new_data = true;
                                                 }
                                             } else {
