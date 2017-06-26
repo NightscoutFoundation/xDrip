@@ -120,6 +120,7 @@
                 <data android:scheme="wear" android:host="*" android:pathPrefix="/xdrip"/>
                 <data android:scheme="wear" android:host="*" android:pathPrefix="/nightscout"/>
                 <data android:scheme="wear" android:host="*" android:pathPrefix="/sendstatustowear"/>
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/openwearsettings"/>
             </intent-filter>
         </service>
         <service
