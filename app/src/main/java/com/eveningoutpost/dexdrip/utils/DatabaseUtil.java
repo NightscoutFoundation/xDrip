@@ -47,6 +47,12 @@ public class DatabaseUtil {
     }
 
     public static String saveSql(Context context) {
+        // TecMunky 6/23/17 overload saveSql function to call modified function
+        return DatabaseUtil.saveSql(context, "export");
+    }
+
+    public static String saveSql(Context context, String prefix) {
+        // TecMunky 6/23/17 modify function with added prefix string variable
 
         FileInputStream srcStream = null;
         BufferedInputStream biStream = null;
@@ -64,7 +70,10 @@ public class DatabaseUtil {
 
             final StringBuilder sb = new StringBuilder();
             sb.append(dir);
-            sb.append("/export");
+            //sb.append("/export");
+            // TecMunky 6/23/17 replace "/export" with "/" and prefix
+            sb.append("/");
+            sb.append(prefix);
             sb.append(DateFormat.format("yyyyMMdd-kkmmss", System.currentTimeMillis()));
             sb.append(".zip");
             zipFilename = sb.toString();
@@ -78,7 +87,7 @@ public class DatabaseUtil {
 
                     foStream = new FileOutputStream(zipOutputFile);
                     zipOutputStream = new ZipOutputStream(new BufferedOutputStream(foStream));
-                    zipOutputStream.putNextEntry(new ZipEntry("export" + DateFormat.format("yyyyMMdd-kkmmss", System.currentTimeMillis()) + ".sqlite"));
+                    zipOutputStream.putNextEntry(new ZipEntry(prefix + DateFormat.format("yyyyMMdd-kkmmss", System.currentTimeMillis()) + ".sqlite"));
 
                     byte buffer[] = new byte[BUFFER_SIZE];
                     int count;

@@ -583,6 +583,11 @@
                 android:key="engineering_mode"
                 android:summary="@string/allow_unsafe_settings"
                 android:title="@string/engineering_mode" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="save_db_ondemand"
+                android:summary="@string/allow_daily_db_save"
+                android:title="@string/daily_save_db" />
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_other_misc_extra_screen"
                 android:summary=""
