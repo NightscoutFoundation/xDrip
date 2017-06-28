@@ -149,7 +149,7 @@ public class UploaderQueue extends Model {
                 | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_mongodb_enable") ? MONGO_DIRECT : 0)
                 | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable") ? NIGHTSCOUT_RESTAPI : 0)
                 | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_influxdb_enable") ? INFLUXDB_RESTAPI : 0)
-                | (Home.get_show_wear_treatments() ? WATCH_WEARAPI : 0);
+                | (Home.getPreferencesBooleanDefaultFalse("wear_sync") ? WATCH_WEARAPI : 0);
         if (result.bitfield_wanted == 0) return null; // no queue required
         result.timestamp = JoH.tsl();
         result.reference_id = obj.getId();
@@ -182,7 +182,7 @@ public class UploaderQueue extends Model {
         UserError.Log.d(TAG, "new entry called for watch");
         final UploaderQueue result = new UploaderQueue();
         result.bitfield_wanted = DEFAULT_UPLOAD_CIRCUITS
-                | (Home.get_show_wear_treatments() ? WATCH_WEARAPI : 0);
+                | (Home.getPreferencesBooleanDefaultFalse("wear_sync") ? WATCH_WEARAPI : 0);
         if (result.bitfield_wanted == 0) return null; // no queue required
         result.timestamp = JoH.tsl();
         result.reference_id = obj.getId();

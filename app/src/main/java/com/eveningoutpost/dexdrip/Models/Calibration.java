@@ -520,16 +520,15 @@ public class Calibration extends Model {
                     bgReading.calibration = calibration;
                     bgReading.calibration_flag = true;
                     bgReading.save();
-                    //TODO Should be performed AFTER new calibration has been PUSHED via CalibrationSendQueue.addToQueue!! Note, note_only does not get PUSHED!
-                    //TODO BgReading.pushBgReadingSyncToWatch(bgReading, false);
                 }
 
                 if ((!is_follower) && (!note_only)) {
                     BgSendQueue.handleNewBgReading(bgReading, "update", context);
                     // TODO probably should add a more fine grained prefs option in future
                     calculate_w_l_s(prefs.getBoolean("infrequent_calibration", false));
-                    adjustRecentBgReadings(adjustPast ? 30 : 2);
                     CalibrationSendQueue.addToQueue(calibration, context);
+                    BgReading.pushBgReadingSyncToWatch(bgReading, false);
+                    adjustRecentBgReadings(adjustPast ? 30 : 2);
                     context.startService(new Intent(context, Notifications.class));
                     Calibration.requestCalibrationIfRangeTooNarrow();
                     newFingerStickData();
@@ -779,7 +778,7 @@ public class Calibration extends Model {
                     bgReading.calculated_value = new_calculated_value;
 
                     bgReading.save();
-                    //TODO BgReading.pushBgReadingSyncToWatch(bgReading, false);
+                    BgReading.pushBgReadingSyncToWatch(bgReading, false);
                     i += 1;
                 }
             } catch (NullPointerException e) {
@@ -798,7 +797,7 @@ public class Calibration extends Model {
                     bgReading.calculated_value = newYvalue;
                     BgReading.updateCalculatedValue(bgReading);
                     bgReading.save();
-                    //TODO BgReading.pushBgReadingSyncToWatch(bgReading, false);
+                    BgReading.pushBgReadingSyncToWatch(bgReading, false);
                 }
             } catch (NullPointerException e) {
                 Log.wtf(TAG, "Null pointer in AdjustRecentReadings ==2: " + e);
@@ -809,6 +808,7 @@ public class Calibration extends Model {
             // TODO this method call is probably only needed when we are called for initial calibration, it should probably be moved
             bgReadings.get(0).find_new_raw_curve();
             bgReadings.get(0).find_new_curve();
+            BgReading.pushBgReadingSyncToWatch(bgReadings.get(0), false);
         } catch (NullPointerException e) {
             Log.wtf(TAG, "Got null pointer exception in adjustRecentBgReadings");
         }

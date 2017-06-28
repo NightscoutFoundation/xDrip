@@ -117,13 +117,13 @@ public class BgReadingTable extends ListActivity implements NavigationDrawerFrag
                                 case DialogInterface.BUTTON_POSITIVE:
                                     bgReading.ignoreForStats = true;
                                     bgReading.save();
-                                    if (Home.get_show_wear_treatments()) BgReading.pushBgReadingSyncToWatch(bgReading, false);
+                                    if (Home.getPreferencesBooleanDefaultFalse("wear_sync")) BgReading.pushBgReadingSyncToWatch(bgReading, false);
                                     break;
 
                                 case DialogInterface.BUTTON_NEGATIVE:
                                     bgReading.ignoreForStats = false;
                                     bgReading.save();
-                                    if (Home.get_show_wear_treatments()) BgReading.pushBgReadingSyncToWatch(bgReading, false);
+                                    if (Home.getPreferencesBooleanDefaultFalse("wear_sync")) BgReading.pushBgReadingSyncToWatch(bgReading, false);
                                     break;
                             }
                         }

@@ -544,8 +544,10 @@ public class BgReading extends Model implements ShareUploadableBg {
 
     public static void pushBgReadingSyncToWatch(BgReading bgReading, boolean is_new) {
         Log.d(TAG, "pushTreatmentSyncToWatch Add treatment to UploaderQueue.");
-        if (UploaderQueue.newEntryForWatch(is_new ? "insert" : "update", bgReading) != null) {
-            SyncService.startSyncService(3000); // sync in 3 seconds
+        if (Home.getPreferencesBooleanDefaultFalse("wear_sync")) {
+            if (UploaderQueue.newEntryForWatch(is_new ? "insert" : "update", bgReading) != null) {
+                SyncService.startSyncService(3000); // sync in 3 seconds
+            }
         }
     }
 
