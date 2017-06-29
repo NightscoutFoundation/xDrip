@@ -379,6 +379,11 @@ public class BluetoothScan extends ListActivityWithMenu {
                     prefs.edit().putString("dex_collection_method", "LimiTTer").apply();
                 }
                 returnToHome();
+            } else if (device.getName().toLowerCase().contains("blueReader")) {
+                if (!CollectionServiceStarter.isLimitter()) {
+                    prefs.edit().putString("dex_collection_method", "LimiTTer").apply();
+                }
+                returnToHome();
             } else {
                 returnToHome();
             }
