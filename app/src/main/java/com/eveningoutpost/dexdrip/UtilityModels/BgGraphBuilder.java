@@ -28,6 +28,7 @@ import com.eveningoutpost.dexdrip.Models.Iob;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Models.Profile;
+import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
@@ -1489,18 +1490,20 @@ public class BgGraphBuilder {
                         String bwp_update = "";
                         if (d)
                             Log.i(TAG, "Predictive BWP: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
-                        if (((low_occurs_at < 1) || Home.getPreferencesBooleanDefaultFalse("always_show_bwp")) && (Home.getPreferencesBooleanDefaultFalse("show_bwp"))) {
-                            if (evaluation[0] > Profile.minimum_carb_recommendation) {
-                                //PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));
-                                //iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));
-                                bwp_update = "\u224F" + " Carbs: " + JoH.qs(evaluation[0], 0);
-                                //annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
-                            } else if (evaluation[1] > Profile.minimum_insulin_recommendation) {
-                                //PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (11 * bgScale));
-                                //iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
+                        if (!BgReading.isDataStale()) {
+                            if (((low_occurs_at < 1) || Home.getPreferencesBooleanDefaultFalse("always_show_bwp")) && (Home.getPreferencesBooleanDefaultFalse("show_bwp"))) {
+                                if (evaluation[0] > Profile.minimum_carb_recommendation) {
+                                    //PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));
+                                    //iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));
+                                    bwp_update = "\u224F" + " Carbs: " + JoH.qs(evaluation[0], 0);
+                                    //annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
+                                } else if (evaluation[1] > Profile.minimum_insulin_recommendation) {
+                                    //PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (11 * bgScale));
+                                    //iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
 
-                                bwp_update = "\u224F" + " Insulin: " + JoH.qs(evaluation[1], 1) + ((low_occurs_at > 0) ? (" " + "\u26A0") : ""); // warning symbol
-                                //annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
+                                    bwp_update = "\u224F" + " Insulin: " + JoH.qs(evaluation[1], 1) + ((low_occurs_at > 0) ? (" " + "\u26A0") : ""); // warning symbol
+                                    //annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
+                                }
                             }
                         }
                         Home.updateStatusLine("bwp", bwp_update); // always send so we can blank if needed
