@@ -1026,7 +1026,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         Log.e(TAG, "onDataChanged CLEAR_LOGS_PATH exception on UserError ", e);
                     }
                 } else if (path.equals(CLEAR_TREATMENTS_PATH)) {
-                    Log.d(TAG, "onDataChanged CLEAR_TREATMENTS_PATH=" + path);
+                    Log.d(TAG, "onDataChanged CLEAR_TREATMENTS_PATH=" + path + " last_send_previous_treatments=" + JoH.dateTimeText(last_send_previous_treatments));
                     try {
                         Treatments.cleanup(last_send_previous_treatments);
                     } catch (Exception e) {
@@ -1789,25 +1789,25 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         if (record != null) {
                             Treatments data = gson.fromJson(record, Treatments.class);
                             Treatments exists = Treatments.byuuid(data.uuid);
-                            if (action.equals("insert")) {
-                                if (exists != null) {
-                                    Log.d(TAG, "syncTreatmentsData save existing Treatments for action insert uuid=" + data.uuid + " timestamp=" + data.timestamp + " timeString=" + JoH.dateTimeText(data.timestamp) + " carbs=" + data.carbs + " insulin=" + data.insulin);
-                                    if (exists.timestamp != data.timestamp) {//currently only tracking timestamp on watch
-                                        changed = true;
-                                    }
-                                    exists.enteredBy = data.enteredBy;
-                                    exists.eventType = data.eventType;
-                                    exists.insulin = data.insulin;
-                                    exists.carbs = data.carbs;
-                                    exists.created_at = data.created_at;
-                                    exists.notes = data.notes;
-                                    exists.timestamp = data.timestamp;
-                                    exists.save();
-                                } else {
+                            if (exists != null) {
+                                Log.d(TAG, "syncTreatmentsData save existing Treatments for action insert uuid=" + data.uuid + " timestamp=" + data.timestamp + " timeString=" + JoH.dateTimeText(data.timestamp) + " carbs=" + data.carbs + " insulin=" + data.insulin + " exists.systime=" + JoH.dateTimeText(exists.systimestamp));
+                                if (exists.timestamp != data.timestamp) {//currently only tracking timestamp on watch
                                     changed = true;
-                                    data.save();
-                                    Log.d(TAG, "syncTreatmentsData create new treatment for action insert uuid=" + data.uuid + " timestamp=" + data.timestamp + " timeString=" + JoH.dateTimeText(data.timestamp) + " carbs=" + data.carbs + " insulin=" + data.insulin);
                                 }
+                                exists.enteredBy = data.enteredBy;
+                                exists.eventType = data.eventType;
+                                exists.insulin = data.insulin;
+                                exists.carbs = data.carbs;
+                                exists.created_at = data.created_at;
+                                exists.notes = data.notes;
+                                exists.timestamp = data.timestamp;
+                                exists.systimestamp = exists.systimestamp > 0 ? exists.systimestamp : data.timestamp < last_send_previous_treatments ? data.timestamp : last_send_previous_treatments > 0 ? last_send_previous_treatments - 1 : JoH.tsl();
+                                exists.save();
+                            } else {
+                                changed = true;
+                                data.systimestamp = data.timestamp < last_send_previous_treatments ? data.timestamp : last_send_previous_treatments > 0 ? last_send_previous_treatments - 1 : JoH.tsl();
+                                data.save();
+                                Log.d(TAG, "syncTreatmentsData create new treatment for action insert uuid=" + data.uuid + " timestamp=" + data.timestamp + " timeString=" + JoH.dateTimeText(data.timestamp) + " carbs=" + data.carbs + " insulin=" + data.insulin + " systime=" + JoH.dateTimeText(data.systimestamp));
                             }
                         }
                     }

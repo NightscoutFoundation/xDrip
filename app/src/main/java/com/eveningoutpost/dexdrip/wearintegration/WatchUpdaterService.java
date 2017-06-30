@@ -619,11 +619,11 @@ public class WatchUpdaterService extends WearableListenerService implements
     private void forceGoogleApiConnect() {
         if ((googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) || googleApiClient == null) {
             try {
-                Log.d(TAG, "doInBackground: forcing google api reconnection");
+                Log.d(TAG, "forceGoogleApiConnect: forcing google api reconnection");
                 googleApiConnect();
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
-                //
+                Log.d(TAG, "forceGoogleApiConnect: exception:" + e);
             }
         }
     }
@@ -1276,7 +1276,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             PutDataRequest putDataRequest = dataMapRequest.asPutDataRequest();
             Wearable.DataApi.putDataItem(googleApiClient, putDataRequest);
         } else {
-            Log.e(notification, "No connection to wearable available!");
+            Log.e(TAG, "sendNotification No connection to wearable available!");
         }
     }
 
@@ -1815,7 +1815,7 @@ public class WatchUpdaterService extends WearableListenerService implements
 
     private void initWearTreatments() {
         long startTime = new Date().getTime() - (60000 * 60 * 24 * 3);//3 days
-        if (JoH.ratelimit("watch_init_wear_treatments_data",120)) {
+        if (JoH.ratelimit("watch_init_wear_treatments_data",60)) {
             Log.d(TAG, "initWearTreatments clear treatments and re-init from startTime=" + JoH.dateTimeText(startTime));
             sendNotification(CLEAR_TREATMENTS_PATH, "clearTreatments");//this necessary to ensure deleted treatments are cleared
             sendWearTreatmentsData(sendTreatmentsCount, startTime);
