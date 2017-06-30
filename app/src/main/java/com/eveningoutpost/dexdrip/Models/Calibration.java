@@ -42,16 +42,17 @@ class DexParameters extends SlopeParameters {
     DexParameters() {
         LOW_SLOPE_1 = 0.75;
         LOW_SLOPE_2 = 0.70;
-        HIGH_SLOPE_1 = 1.3;
-        HIGH_SLOPE_2 = 1.4;
+        HIGH_SLOPE_1 = 1.5;
+        HIGH_SLOPE_2 = 1.6;
         DEFAULT_LOW_SLOPE_LOW = 0.75;
         DEFAULT_LOW_SLOPE_HIGH = 0.70;
         DEFAULT_SLOPE = 1;
-        DEFAULT_HIGH_SLOPE_HIGH = 1.3;
-        DEFAULT_HIGH_SLOPE_LOW = 1.2;
+        DEFAULT_HIGH_SLOPE_HIGH = 1.5;
+        DEFAULT_HIGH_SLOPE_LOW = 1.4;
     }
 
 }
+
 
 class DexOldSchoolParameters extends SlopeParameters {
     /*
@@ -857,6 +858,20 @@ public class Calibration extends Model {
         }
     }
 
+    public static void clearCalibrationByUUID(String uuid) {
+        final Calibration calibration = Calibration.byuuid(uuid);
+        if (calibration != null) {
+            CalibrationRequest.clearAll();
+            Log.d(TAG, "Trying to clear last calibration: " + uuid);
+            calibration.invalidate();
+            CalibrationSendQueue.addToQueue(calibration, xdrip.getAppContext());
+            newFingerStickData();
+        } else {
+            Log.d(TAG,"Could not find calibration to clear: "+uuid);
+        }
+    }
+
+
 
     public String toS() {
         Gson gson = new GsonBuilder()
@@ -891,7 +906,7 @@ public class Calibration extends Model {
             CalibrationSendQueue.addToQueue(calibration, xdrip.getAppContext());
             newFingerStickData();
             if (from_interactive) {
-                GcmActivity.clearLastCalibration();
+                GcmActivity.clearLastCalibration(uuid);
             }
         }
     }
