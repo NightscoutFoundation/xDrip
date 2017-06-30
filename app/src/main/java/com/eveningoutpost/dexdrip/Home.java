@@ -126,6 +126,7 @@ import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
 import lecho.lib.hellocharts.view.PreviewLineChartView;
 
+import static com.eveningoutpost.dexdrip.Models.BloodTest.pushBloodTestSyncToWatch;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
@@ -930,6 +931,7 @@ public class Home extends ActivityWithMenu {
                                         dialog.dismiss();
                                         bt.removeState(BloodTest.STATE_VALID);
                                         GcmActivity.syncBloodTests();
+                                        if (Home.get_show_wear_treatments()) BloodTest.pushBloodTestSyncToWatch(bt, false);
                                         staticRefreshBGCharts();
                                         JoH.static_toast_short("Deleted!");
                                     }
@@ -2482,15 +2484,15 @@ public class Home extends ActivityWithMenu {
             if (prefs.getBoolean("status_line_carbs", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
                 //extraline.append("Carbs: " + statsResult.getTotal_carbs());
-                extraline.append("Carbs: " + Math.round(statsResult.getTotal_carbs()));
+                extraline.append("Carbs:" + Math.round(statsResult.getTotal_carbs()));
             }
             if (prefs.getBoolean("status_line_insulin", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
-                extraline.append("U: " + JoH.qs(statsResult.getTotal_insulin(), 2));
+                extraline.append("U:" + JoH.qs(statsResult.getTotal_insulin(), 2));
             }
             if (prefs.getBoolean("status_line_royce_ratio", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
-                extraline.append("C/I: " + JoH.qs(statsResult.getRatio(), 2));
+                extraline.append("C/I:" + JoH.qs(statsResult.getRatio(), 2));
             }
             if (prefs.getBoolean("status_line_capture_percentage", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
@@ -3056,6 +3058,7 @@ public class Home extends ActivityWithMenu {
                 break;
             case R.id.action_open_watch_settings:
                 startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_OPEN_SETTINGS));
+                break;
             case R.id.action_sync_watch_db:
                 startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_RESET_DB));
                 break;

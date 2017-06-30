@@ -80,9 +80,7 @@ import static com.eveningoutpost.dexdrip.Services.G5CollectionService.G5_BATTERY
 import static com.eveningoutpost.dexdrip.Services.G5CollectionService.G5_BATTERY_WEARABLE_SEND;
 import static com.eveningoutpost.dexdrip.Services.G5CollectionService.G5_FIRMWARE_MARKER;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.doMgdl;
-import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.getBloodTests;
-import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.getCalibrations;
-import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.getTreatments;
+import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.extraStatusLine;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.resendData;
 import static com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue.sgvLevel;
 
@@ -95,30 +93,31 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String WEARABLE_RESEND_PATH = "/nightscout_watch_data_resend";
     private static final String OPEN_SETTINGS = "/openwearsettings";
     private static final String NEW_STATUS_PATH = "/sendstatustowear";
-    private static final String SYNC_DB_PATH = "/syncweardb";//KS
-    private static final String RESET_DB_PATH = "/resetweardb";//KS
-    private static final String SYNC_BGS_PATH = "/syncwearbgs";//KS
-    private static final String SYNC_LOGS_PATH = "/syncwearlogs";
-    private static final String SYNC_TREATMENTS_PATH = "/syncweartreatments";
-    private static final String SYNC_LOGS_REQUESTED_PATH = "/syncwearlogsrequested";
-    private static final String SYNC_STEP_SENSOR_PATH = "/syncwearstepsensor";
-    private static final String CLEAR_LOGS_PATH = "/clearwearlogs";
-    private static final String CLEAR_TREATMENTS_PATH = "/clearweartreatments";
-    private static final String STATUS_COLLECTOR_PATH = "/statuscollector";
-    private static final String START_COLLECTOR_PATH = "/startcollector";
-    private static final String WEARABLE_REPLYMSG_PATH = "/nightscout_watch_data_replymsg";
-    public static final String WEARABLE_INITDB_PATH = "/nightscout_watch_data_initdb";
-    private static final String WEARABLE_TREATMENTS_DATA_PATH = "/nightscout_watch_treatments_data";//KS
-    private static final String WEARABLE_BLOODTEST_DATA_PATH = "/nightscout_watch_bloodtest_data";//KS
-    private static final String WEARABLE_INITPREFS_PATH = "/nightscout_watch_data_initprefs";
-    private static final String WEARABLE_BG_DATA_PATH = "/nightscout_watch_bg_data";//KS
-    private static final String WEARABLE_CALIBRATION_DATA_PATH = "/nightscout_watch_cal_data";//KS
-    private static final String WEARABLE_SENSOR_DATA_PATH = "/nightscout_watch_sensor_data";//KS
-    private static final String WEARABLE_PREF_DATA_PATH = "/nightscout_watch_pref_data";//KS
-    private static final String WEARABLE_ACTIVEBTDEVICE_DATA_PATH = "/nightscout_watch_activebtdevice_data";//KS
-    private static final String WEARABLE_ALERTTYPE_DATA_PATH = "/nightscout_watch_alerttype_data";//KS
+    private static final String SYNC_DB_PATH = "/xdrip_plus_syncweardb";//KS
+    private static final String RESET_DB_PATH = "/xdrip_plus_resetweardb";//KS
+    private static final String SYNC_BGS_PATH = "/xdrip_plus_syncwearbgs";//KS
+    private static final String SYNC_LOGS_PATH = "/xdrip_plus_syncwearlogs";
+    private static final String SYNC_TREATMENTS_PATH = "/xdrip_plus_syncweartreatments";
+    private static final String SYNC_LOGS_REQUESTED_PATH = "/xdrip_plus_syncwearlogsrequested";
+    private static final String SYNC_STEP_SENSOR_PATH = "/xdrip_plus_syncwearstepsensor";
+    private static final String CLEAR_LOGS_PATH = "/xdrip_plus_clearwearlogs";
+    private static final String CLEAR_TREATMENTS_PATH = "/xdrip_plus_clearweartreatments";
+    private static final String STATUS_COLLECTOR_PATH = "/xdrip_plus_statuscollector";
+    private static final String START_COLLECTOR_PATH = "/xdrip_plus_startcollector";
+    private static final String WEARABLE_REPLYMSG_PATH = "/xdrip_plus_watch_data_replymsg";
+    public static final String WEARABLE_INITDB_PATH = "/xdrip_plus_watch_data_initdb";
+    public static final String WEARABLE_INITTREATMENTS_PATH = "/xdrip_plus_watch_data_inittreatments";
+    private static final String WEARABLE_TREATMENTS_DATA_PATH = "/xdrip_plus_watch_treatments_data";//KS
+    private static final String WEARABLE_BLOODTEST_DATA_PATH = "/xdrip_plus_watch_bloodtest_data";//KS
+    private static final String WEARABLE_INITPREFS_PATH = "/xdrip_plus_watch_data_initprefs";
+    private static final String WEARABLE_BG_DATA_PATH = "/xdrip_plus_watch_bg_data";//KS
+    private static final String WEARABLE_CALIBRATION_DATA_PATH = "/xdrip_plus_watch_cal_data";//KS
+    private static final String WEARABLE_SENSOR_DATA_PATH = "/xdrip_plus_watch_sensor_data";//KS
+    private static final String WEARABLE_PREF_DATA_PATH = "/xdrip_plus_watch_pref_data";//KS
+    private static final String WEARABLE_ACTIVEBTDEVICE_DATA_PATH = "/xdrip_plus_watch_activebtdevice_data";//KS
+    private static final String WEARABLE_ALERTTYPE_DATA_PATH = "/xdrip_plus_watch_alerttype_data";//KS
     private static final String WEARABLE_SNOOZE_ALERT = "/xdrip_plus_snooze_payload";
-    private static final String DATA_ITEM_RECEIVED_PATH = "/data-item-received";//KS
+    private static final String DATA_ITEM_RECEIVED_PATH = "/xdrip_plus_data-item-received";//KS
     private static final String ACTION_RESEND = "com.dexdrip.stephenblack.nightwatch.RESEND_DATA";
     private static final String ACTION_SENDDATA = "com.dexdrip.stephenblack.nightwatch.SEND_DATA";
     public static final String WEARABLE_FIELD_SENDPATH = "field_xdrip_plus_sendpath";
@@ -126,15 +125,16 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     public static final String WEARABLE_TREATMENT_PAYLOAD = "/xdrip_plus_treatment_payload";
     public static final String WEARABLE_TOAST_NOTIFICATON = "/xdrip_plus_toast";
     private static final String WEARABLE_TOAST_LOCAL_NOTIFICATON = "/xdrip_plus_local_toast";
+    public static final String WEARABLE_G5BATTERY_PAYLOAD = "/xdrip_plus_battery_payload";
     public final static String ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE
             = "com.eveningoutpost.dexdrip.BLUETOOTH_COLLECTION_SERVICE_UPDATE";
 
     // Phone
     private static final String CAPABILITY_PHONE_APP = "phone_app_sync_bgs";
-    private String localnode = null;
+    private static String localnode = "";
 
     private static final String TAG = "jamorham listener";
-    private SharedPreferences mPrefs;//KS
+    private static SharedPreferences mPrefs;//KS
     private static boolean mLocationPermissionApproved;//KS
     private static long last_send_previous = 0;//KS
     final private static String pref_last_send_previous = "last_send_previous";
@@ -148,6 +148,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     final private static int send_log_count = 600;//1000 records equals @160K non-compressed, 23K compressed, max transfer 2.7 seconds
     final private static int send_step_count = 600;
     final private static int send_treatments_count = 100;
+    final private static int three_days_ms = 3*24*60*60*1000;
     //private static boolean doDeleteDB = false;//TODO remove once confirm not needed
     private boolean is_using_bt = false;
     private static int aggressive_backoff_timer = 120;
@@ -203,15 +204,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             final PowerManager.WakeLock wl = JoH.getWakeLock(getApplicationContext(), "data-requestor-background", 120000);
             try {
                 // force reconnection if it is not present
-                if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
-                    try {
-                        Log.d(TAG, "doInBackground: forcing google api reconnection");
-                        googleApiConnect();
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        //
-                    }
-                }
+                forceGoogleApiConnect();
+
+                DataMap datamap;
                 SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());//KS
                 boolean enable_wearG5 = sharedPrefs.getBoolean("enable_wearG5", false); //KS
                 boolean force_wearG5 = sharedPrefs.getBoolean("force_wearG5", false); //KS
@@ -231,10 +226,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
                         //NodeApi.GetConnectedNodesResult nodes =
                         //        Wearable.NodeApi.getConnectedNodes(googleApiClient).await();
-                        NodeApi.GetLocalNodeResult localnodes = Wearable.NodeApi.getLocalNode(googleApiClient).await(60, TimeUnit.SECONDS);
-                        Node getnode = localnodes.getNode();
-                        localnode = getnode != null ? getnode.getDisplayName() + "|" + getnode.getId() : "";
-                        Log.d(TAG, "doInBackground.  getLocalNode name=" + localnode);
+                        if (localnode == null || (localnode != null && localnode.isEmpty())) setLocalNodeName();
                         CapabilityApi.GetCapabilityResult capabilityResult =
                                 Wearable.CapabilityApi.getCapability(
                                         googleApiClient, CAPABILITY_PHONE_APP,
@@ -250,7 +242,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                             phoneNode = updatePhoneSyncBgsCapability(capabilityInfo);
                             count = capabilityInfo.getNodes().size();
                         }
-                        Log.d(TAG, "doInBackground connected.  CapabilityApi.GetCapabilityResult mPhoneNodeID=" + (phoneNode != null ? phoneNode.getId() : "") + " count=" + count);//KS
+                        Log.d(TAG, "doInBackground connected.  CapabilityApi.GetCapabilityResult mPhoneNodeID=" + (phoneNode != null ? phoneNode.getId() : "") + " count=" + count + " localnode=" + localnode);//KS
                         if (count > 0) {
                             if (enable_wearG5) {
                                 if (force_wearG5) {
@@ -270,8 +262,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                 }
                                 switch (path) {
                                     case WEARABLE_INITDB_PATH:
+                                    case WEARABLE_INITTREATMENTS_PATH:
                                     case WEARABLE_REPLYMSG_PATH:
-                                    case WEARABLE_FIELD_SENDPATH:
+                                    case WEARABLE_G5BATTERY_PAYLOAD:
                                     case WEARABLE_SNOOZE_ALERT:
                                     case SYNC_BGS_PATH:
                                     case SYNC_LOGS_PATH:
@@ -279,8 +272,13 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                     case SYNC_STEP_SENSOR_PATH:
                                         sendMessagePayload(node, path, path, payload);
                                         break;
+                                    case SYNC_TREATMENTS_PATH:
+                                        datamap = getWearTreatmentsData(send_treatments_count, last_send_previous_treatments, 0);
+                                        if (datamap != null) {
+                                            sendMessagePayload(node, "SYNC_TREATMENTS_PATH", SYNC_TREATMENTS_PATH, datamap.toByteArray());
+                                        }
+                                        break;
                                     default:
-                                        DataMap datamap;
                                         if (enable_wearG5) {//KS
                                             datamap = getWearTransmitterData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
                                             if (datamap != null) {
@@ -519,9 +517,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     }
 
     private synchronized DataMap getWearTransmitterData(int count, long last_send_time, int min_count) {//KS
-        if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
-            googleApiConnect();
-        }
+        forceGoogleApiConnect();
 
         Log.d(TAG, "getWearTransmitterData last_send_time:" + JoH.dateTimeText(last_send_time));
 
@@ -554,9 +550,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     }
 
     private synchronized DataMap getWearLogData(int count, long last_send_time, int min_count, long syncLogsRequested) {
-        if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
-            googleApiConnect();
-        }
+        forceGoogleApiConnect();
 
         Log.d(TAG, "getWearLogData last_send_time:" + JoH.dateTimeText(last_send_time) + " max count=" + count + " min_count=" + min_count + " syncLogsRequested=" + syncLogsRequested);
 
@@ -591,9 +585,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
 
     private synchronized DataMap getWearStepSensorData(int count, long last_send_time, int min_count) {//final int sensorType, final int accuracy, final long timestamp, final float[] values) {
-        if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
-            googleApiConnect();
-        }
+        forceGoogleApiConnect();
 
         Log.d(TAG, "getWearStepSensorData last_send_time:" + JoH.dateTimeText(last_send_time));
 
@@ -630,9 +622,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     }
 
     private synchronized DataMap getWearTreatmentsData(int count, long last_send_time, int min_count) {
-        if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
-            googleApiConnect();
-        }
+        forceGoogleApiConnect();
 
         Log.d(TAG, "getWearTreatmentsData last_send_time:" + JoH.dateTimeText(last_send_time) + " max count=" + count + " min_count=" + min_count);
 
@@ -666,9 +656,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
     private void sendPrefSettings() {//KS
 
-        if (googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
-            googleApiConnect();
-        }
+        Log.d(TAG, "sendPrefSettings enter localnode=" + localnode);
+        forceGoogleApiConnect();
         DataMap dataMap = new DataMap();
         boolean enable_wearG5 = mPrefs.getBoolean("enable_wearG5", false);
         boolean force_wearG5 = mPrefs.getBoolean("force_wearG5", false);
@@ -676,6 +665,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         String dex_txid = mPrefs.getString("dex_txid", "ABCDEF");
         boolean show_wear_treatments = mPrefs.getBoolean("show_wear_treatments", false);
 
+        if (localnode == null || (localnode != null && localnode.isEmpty())) setLocalNodeName();
         Log.d(TAG, "sendPrefSettings enable_wearG5: " + enable_wearG5 + " force_wearG5:" + force_wearG5 + " node_wearG5:" + node_wearG5 + " localnode:" + localnode + " dex_txid:" + dex_txid + " show_wear_treatments:" + show_wear_treatments);
         dataMap.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
         dataMap.putBoolean("enable_wearG5", enable_wearG5);
@@ -694,7 +684,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         dataMap.putInt("nfc_sensor_age", mPrefs.getInt("nfc_sensor_age", -1));//Used in DexCollectionService for LimiTTer
         dataMap.putBoolean("bg_notifications_watch", mPrefs.getBoolean("bg_notifications", false));
         dataMap.putBoolean("persistent_high_alert_enabled_watch", mPrefs.getBoolean("persistent_high_alert_enabled", false));
-        dataMap.putBoolean("show_wear_treatments", mPrefs.getBoolean("show_wear_treatments", false));
+        dataMap.putBoolean("show_wear_treatments", show_wear_treatments);
         sendData(WEARABLE_PREF_DATA_PATH, dataMap.toByteArray());
 
         SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(this).edit();
@@ -774,8 +764,20 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         Wearable.MessageApi.addListener(googleApiClient, this);
     }
 
+    private void forceGoogleApiConnect() {
+        if ((googleApiClient != null && !googleApiClient.isConnected() && !googleApiClient.isConnecting()) || googleApiClient == null) {
+            try {
+                Log.d(TAG, "forceGoogleApiConnect: forcing google api reconnection");
+                googleApiConnect();
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                //
+            }
+        }
+    }
+
     @Override
-    public void onPeerConnected(Node peer) {//KS
+    public void onPeerConnected(Node peer) {//Deprecated with BIND_LISTENER
         super.onPeerConnected(peer);
         String id = peer.getId();
         String name = peer.getDisplayName();
@@ -789,7 +791,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     }
 
     @Override
-    public void onPeerDisconnected(Node peer) {//KS
+    public void onPeerDisconnected(Node peer) {//Deprecated with BIND_LISTENER
         super.onPeerDisconnected(peer);
         String id = peer.getId();
         String name = peer.getDisplayName();
@@ -850,6 +852,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             else if (key.compareTo("use_wear_health") == 0 || key.compareTo("showSteps") == 0 || key.compareTo("step_delay_time") == 0) {
                 setupStepSensor();
             }
+            /*else if (key.compareTo("show_wear_treatments") == 0) {
+                Log.d(TAG, "OnSharedPreferenceChangeListener sendPrefSettings for key=" + key);
+                Context context = xdrip.getAppContext();
+                showTreatments(context, "all");
+            }*/
             else {//if(key.compareTo("dex_txid") == 0 || key.compareTo(DexCollectionType.DEX_COLLECTION_METHOD) == 0){
                 //Restart collector for change in the following received from phone in syncPrefData():
                 //DexCollectionType.DEX_COLLECTION_METHOD - dex_collection_method, share_key or dex_txid
@@ -920,9 +927,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     }
                     messageIntent.putExtra("data", dataMap.toBundle());
                     LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
-                    showTreatments(context, "cals");
-                    showTreatments(context, "bts");
-                    showTreatments(context, "treats");
+                    //showTreatments(context, "all");
                 } else if (path.equals(WEARABLE_TREATMENT_PAYLOAD)) {
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     Intent intent = new Intent(getApplicationContext(), Simulation.class);
@@ -955,7 +960,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     final PowerManager.WakeLock wl = JoH.getWakeLock(getApplicationContext(), "watchlistener-SYNC_DB_PATH",120000);
                     //BgReading.deleteALL();
                     //Calibration.deleteALL();
-                    long retainFrom = Home.getPreferencesBooleanDefaultFalse("extra_status_stats_24h")?last_send_previous-(24*60*60*1000): StatsResult.getTodayTimestamp();
+                    long retainFrom = Home.getPreferencesBooleanDefaultFalse("extra_status_stats_24h")?last_send_previous-three_days_ms: StatsResult.getTodayTimestamp();//retain 3 days for Table Views
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH delete BgReading and Calibration < retainFrom=" + JoH.dateTimeText(retainFrom));
                     BgReading.cleanup(retainFrom);
                     Calibration.cleanup(retainFrom);
@@ -965,7 +970,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     TransmitterData.cleanup(last_send_previous);
                     Log.d(TAG, "onDataChanged SYNC_DB_PATH delete PebbleMovement < last_send_previous=" + JoH.dateTimeText(last_send_previous_step_sensor));
                     PebbleMovement.cleanup(2);//retain 2 days
-                    Treatments.cleanup(last_send_previous_treatments-(3*24*60*60*1000));//retain 3 day
+                    Treatments.cleanup(last_send_previous_treatments-three_days_ms);//retain 3 day for Table Views
                     BloodTest.cleanup(3);
                     JoH.releaseWakeLock(wl);
                 } else if (path.equals(RESET_DB_PATH)) {//KS
@@ -1021,7 +1026,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         Log.e(TAG, "onDataChanged CLEAR_LOGS_PATH exception on UserError ", e);
                     }
                 } else if (path.equals(CLEAR_TREATMENTS_PATH)) {
-                    Log.d(TAG, "onDataChanged CLEAR_TREATMENTS_PATH=" + path);
+                    Log.d(TAG, "onDataChanged CLEAR_TREATMENTS_PATH=" + path + " last_send_previous_treatments=" + JoH.dateTimeText(last_send_previous_treatments));
                     try {
                         Treatments.cleanup(last_send_previous_treatments);
                     } catch (Exception e) {
@@ -1147,6 +1152,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                     last_send_previous_treatments = timeOfLastEntry;
                                     PersistentStore.setLong(pref_last_send_previous_treatments, last_send_previous_treatments);
                                     Log.d(TAG, "DATA_ITEM_RECEIVED_PATH received!  Updated last_send_previous_treatments=" + JoH.dateTimeText(last_send_previous_treatments));
+                                    Treatments.cleanupBloodTest(last_send_previous_treatments);//delete BloodTest entered via keypad
                                 }
                                 else {
                                     Log.d(TAG, "DATA_ITEM_RECEIVED_PATH received! Duplicate confirmation! Ignore timeOfLastEntry=" + JoH.dateTimeText(timeOfLastEntry));
@@ -1191,8 +1197,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             BloodTest.createFromCal(bloodtest, timeoffset, "Manual Entry", treatment.uuid);
         }
         else Log.d(TAG, "createTreatment bloodtest=0 " + bloodtest);
-        resendData(context);
-        requestData(context);
+        showTreatments(context, "all");
+        SendData(context, SYNC_TREATMENTS_PATH, null);
+        //requestData(context);//send to phone if connected
     }
 
     public synchronized static void sendTreatment(String notes) {
@@ -1292,7 +1299,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
             dataMap.putByteArray(G5_FIRMWARE_MARKER, PersistentStore.getBytes(G5_FIRMWARE_MARKER + dex_txid));
             dataMap.putString("dex_txid", dex_txid);
-            sendData(WEARABLE_FIELD_SENDPATH, dataMap.toByteArray());
+            sendData(WEARABLE_G5BATTERY_PAYLOAD, dataMap.toByteArray());
         }
     }
 
@@ -1365,6 +1372,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         final PowerManager.WakeLock wl = JoH.getWakeLock(getApplicationContext(), "watchlistener-SYNC_PREF_DATA",120000);
         try {
             Log.d(TAG, "syncPrefData dataMap=" + dataMap);
+            if (localnode == null || (localnode != null && localnode.isEmpty())) setLocalNodeName();
 
             String dexCollector = dataMap.getString(DexCollectionType.DEX_COLLECTION_METHOD, "None");//BluetoothWixel "DexcomG5"
             Log.d(TAG, "syncPrefData dataMap dexCollector=" + dexCollector + " mPrefs DexCollectionType.DEX_COLLECTION_METHOD:" + mPrefs.getString(DexCollectionType.DEX_COLLECTION_METHOD, "xxxxxxxx"));
@@ -1398,8 +1406,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 Log.d(TAG, "syncPrefData node_wearG5 set empty string to localnode:" + localnode);
             }
             //if (!node_wearG5.equals(localnode)) {
-            if (!fuzzyNodeCompare(localnode,node_wearG5)) {
-                //change = true;
+            if (force_wearG5 && !fuzzyNodeCompare(localnode,node_wearG5)) {
+                Log.d(TAG, "syncPrefData localnode != node_wearG5 disable force_wearG5 for this watch device! \nlocalnode: " + localnode + "\nnode_wearG5:" + node_wearG5);
                 force_wearG5 = false;
             }
 
@@ -1408,7 +1416,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 prefs.putBoolean("force_wearG5", force_wearG5);
             }
             if (enable_wearG5 != mPrefs.getBoolean("enable_wearG5", false)) {
-                Log.d(TAG, "syncPrefData enable_wearG5:" + force_wearG5);
+                Log.d(TAG, "syncPrefData enable_wearG5:" + enable_wearG5);
                 prefs.putBoolean("enable_wearG5", enable_wearG5);
             }
 
@@ -1672,6 +1680,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private synchronized void syncCalibrationData(DataMap dataMap, Context context) {//KS
         Log.d(TAG, "syncCalibrationData");
 
+        boolean changed = false;
         ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
         if (entries != null) {
 
@@ -1694,6 +1703,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                             bgData.sensor = sensor;
                             if (exists != null) {
                                 Log.d(TAG, "syncCalibrationData Calibration exists for uuid=" + bgData.uuid + " bg=" + bgData.bg + " timestamp=" + bgData.timestamp + " timeString=" +  JoH.dateTimeText(bgData.timestamp));
+                                if (exists.slope != bgData.slope || exists.slope_confidence != bgData.slope_confidence || exists.timestamp != bgData.timestamp || exists.bg != bgData.bg) {//slope* indicates if shown on graph
+                                    changed = true;
+                                }
                                 exists.adjusted_raw_value = bgData.adjusted_raw_value;
                                 exists.bg = bgData.bg;
                                 exists.check_in = bgData.check_in;
@@ -1722,6 +1734,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                 exists.save();
                             }
                             else {
+                                changed = true;
                                 bgData.save();
                                 //final boolean adjustPast = mPrefs.getBoolean("rewrite_history", true);
                                 Log.d(TAG, "syncCalibrationData Calibration does not exist for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" +  JoH.dateTimeText(bgData.timestamp));
@@ -1736,7 +1749,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     }
                 }
             }
-            showTreatments(context, "cals");
+            if (changed) {
+                showTreatments(context, "cals");
+            }
         }
     }
 
@@ -1751,6 +1766,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private synchronized void syncTreatmentsData(DataMap dataMap, Context context) {
         Log.d(TAG, "syncTreatmentsData");
 
+        boolean changed = false;
         String action = dataMap.getString("action");
         if (action.equals("delete")) {
             Log.d(TAG, "syncTreatmentsData Delete Treatments");
@@ -1773,52 +1789,32 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         if (record != null) {
                             Treatments data = gson.fromJson(record, Treatments.class);
                             Treatments exists = Treatments.byuuid(data.uuid);
-                            if (action.equals("insert")) {
-                                if (exists != null) {
-                                    Log.d(TAG, "syncTreatmentsData save existing Treatments for action insert uuid=" + data.uuid + " timestamp=" + data.timestamp + " timeString=" + JoH.dateTimeText(data.timestamp) + " carbs=" + data.carbs + " insulin=" + data.insulin);
-                                    exists.enteredBy = data.enteredBy;
-                                    exists.eventType = data.eventType;
-                                    exists.insulin = data.insulin;
-                                    exists.carbs = data.carbs;
-                                    exists.created_at = data.created_at;
-                                    exists.notes = (data.notes != null && !data.notes.isEmpty() ? data.notes : exists.notes);
-                                    exists.timestamp = data.timestamp;
-                                    exists.save();
-                                } else {
-                                    data.save();
-                                    Log.d(TAG, "syncTreatmentsData create new treatment for action insert uuid=" + data.uuid + " timestamp=" + data.timestamp + " timeString=" + JoH.dateTimeText(data.timestamp) + " carbs=" + data.carbs + " insulin=" + data.insulin);
+                            if (exists != null) {
+                                Log.d(TAG, "syncTreatmentsData save existing Treatments for action insert uuid=" + data.uuid + " timestamp=" + data.timestamp + " timeString=" + JoH.dateTimeText(data.timestamp) + " carbs=" + data.carbs + " insulin=" + data.insulin + " exists.systime=" + JoH.dateTimeText(exists.systimestamp));
+                                if (exists.timestamp != data.timestamp) {//currently only tracking timestamp on watch
+                                    changed = true;
                                 }
+                                exists.enteredBy = data.enteredBy;
+                                exists.eventType = data.eventType;
+                                exists.insulin = data.insulin;
+                                exists.carbs = data.carbs;
+                                exists.created_at = data.created_at;
+                                exists.notes = data.notes;
+                                exists.timestamp = data.timestamp;
+                                exists.systimestamp = exists.systimestamp > 0 ? exists.systimestamp : data.timestamp < last_send_previous_treatments ? data.timestamp : last_send_previous_treatments > 0 ? last_send_previous_treatments - 1 : JoH.tsl();
+                                exists.save();
+                            } else {
+                                changed = true;
+                                data.systimestamp = data.timestamp < last_send_previous_treatments ? data.timestamp : last_send_previous_treatments > 0 ? last_send_previous_treatments - 1 : JoH.tsl();
+                                data.save();
+                                Log.d(TAG, "syncTreatmentsData create new treatment for action insert uuid=" + data.uuid + " timestamp=" + data.timestamp + " timeString=" + JoH.dateTimeText(data.timestamp) + " carbs=" + data.carbs + " insulin=" + data.insulin + " systime=" + JoH.dateTimeText(data.systimestamp));
                             }
                         }
                     }
                 }
-                showTreatments(context, "treats");
-            }
-        }
-    }
-
-    private void showTreatments(Context context, String extra) {
-        Log.d(TAG, "showTreatments enter");
-        long startTime = new Date().getTime() - (60000 * 60 * 24);
-        Intent messageIntent = new Intent();
-        messageIntent.setAction(Intent.ACTION_SEND);
-        messageIntent.putExtra("message", "ACTION_G5BG");
-        DataMap treatsDataMap = null;
-        if (mPrefs.getBoolean("show_wear_treatments", false)) {
-            switch (extra) {
-                case "treats":
-                    treatsDataMap = getTreatments(startTime);
-                    break;
-                case "cals":
-                    treatsDataMap = getCalibrations(startTime);
-                    break;
-                case "bts":
-                    treatsDataMap = getBloodTests(startTime);
-                    break;
-            }
-            if (treatsDataMap != null) {
-                messageIntent.putExtra(extra, treatsDataMap.toBundle());
-                LocalBroadcastManager.getInstance(context).sendBroadcast(messageIntent);
+                if (changed) {
+                    showTreatments(context, "treats");
+                }
             }
         }
     }
@@ -1826,6 +1822,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private synchronized void syncBloodTestData(DataMap dataMap, Context context) {//KS
         Log.d(TAG, "syncBloodTestData");
 
+        boolean changed = false;
         ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
         if (entries != null) {
 
@@ -1844,7 +1841,10 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                         BloodTest data = gson.fromJson(record, BloodTest.class);
                         BloodTest exists = BloodTest.byUUID(data.uuid);
                         if (exists != null) {
-                            Log.d(TAG, "syncBloodTestData save existing BloodTest for uuid=" + data.uuid + " timestamp=" + data.timestamp + " timeString=" +  JoH.dateTimeText(data.timestamp) + " mgdl=" + data.mgdl);
+                            Log.d(TAG, "syncBloodTestData save existing BloodTest for uuid=" + data.uuid + " timestamp=" + data.timestamp + " timeString=" +  JoH.dateTimeText(data.timestamp) + " mgdl=" + data.mgdl + " state=" + data.state);
+                            if (exists.mgdl != data.mgdl || exists.state != data.state || exists.timestamp != data.timestamp) {//state indicates if deleted
+                                changed = true;
+                            }
                             exists.mgdl = data.mgdl;
                             exists.created_timestamp = data.created_timestamp;
                             exists.source = data.source;
@@ -1853,19 +1853,184 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                             exists.save();
                         }
                         else {
+                            changed = true;
                             data.save();
-                            Log.d(TAG, "syncBloodTestData create new BloodTest for uuid=" + data.uuid + " timestamp=" + data.timestamp + " timeString=" +  JoH.dateTimeText(data.timestamp) + " mgdl=" + data.mgdl);
+                            Log.d(TAG, "syncBloodTestData create new BloodTest for uuid=" + data.uuid + " timestamp=" + data.timestamp + " timeString=" +  JoH.dateTimeText(data.timestamp) + " mgdl=" + data.mgdl + " state=" + data.state);
                         }
                     }
                 }
             }
-            showTreatments(context, "bts");
+            if (changed) {
+                showTreatments(context, "bts");
+            }
         }
+    }
+
+    public static void showTreatments(Context context, String extra) {
+        Log.d(TAG, "showTreatments enter");
+        long startTime = new Date().getTime() - (60000 * 60 * 5);//Max Chart time?
+        Intent messageIntent = new Intent();
+        messageIntent.setAction(Intent.ACTION_SEND);
+        messageIntent.putExtra("message", "ACTION_G5BG");
+        DataMap treatsDataMap = null;
+        if (Home.getPreferencesBooleanDefaultFalse("show_wear_treatments")) {
+            switch (extra) {
+                case "all":
+                    treatsDataMap = getTreatments(startTime);
+                    if (treatsDataMap != null) {
+                        messageIntent.putExtra("treats", treatsDataMap.toBundle());
+                    }
+                    treatsDataMap = getCalibrations(startTime);
+                    if (treatsDataMap != null) {
+                        messageIntent.putExtra("cals", treatsDataMap.toBundle());
+                    }
+                    treatsDataMap = getBloodTests(startTime);
+                    if (treatsDataMap != null) {
+                        messageIntent.putExtra("bts", treatsDataMap.toBundle());
+                    }
+                    break;
+                case "treats":
+                    treatsDataMap = getTreatments(startTime);
+                    if (treatsDataMap != null) {
+                        messageIntent.putExtra("treats", treatsDataMap.toBundle());
+                    }
+                    break;
+                case "cals":
+                    treatsDataMap = getCalibrations(startTime);
+                    if (treatsDataMap != null) {
+                        messageIntent.putExtra("cals", treatsDataMap.toBundle());
+                    }
+                    break;
+                case "bts":
+                    treatsDataMap = getBloodTests(startTime);
+                    if (treatsDataMap != null) {
+                        messageIntent.putExtra("bts", treatsDataMap.toBundle());
+                    }
+                    break;
+            }
+            mPrefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+            if (mPrefs.getBoolean("extra_status_line", false)) {
+                messageIntent.putExtra("extra_status_line", extraStatusLine(mPrefs));
+            }
+            LocalBroadcastManager.getInstance(context).sendBroadcast(messageIntent);
+        }
+    }
+
+    public static DataMap getTreatments(long startTime) {
+        Treatments last = Treatments.last();
+        if (last != null) {
+            Log.d(TAG, "getTreatments last.timestamp:" +  JoH.dateTimeText(last.timestamp));
+        }
+        List<Treatments> graph = Treatments.latestForGraph(60, startTime);
+        if (!graph.isEmpty()) {
+            Log.d(TAG, "getTreatments graph size=" + graph.size());
+            final ArrayList<DataMap> dataMaps = new ArrayList<>(graph.size());
+            DataMap entries = null;
+            //if (includeTreatment(last)) entries = dataMapForWatchface(last);
+            for (Treatments data : graph) {
+                if (includeTreatment(data)) {
+                    if (entries == null) {
+                        entries = dataMapForWatchface(data);
+                        dataMaps.add(dataMapForWatchface(data));
+                    }
+                    else
+                        dataMaps.add(dataMapForWatchface(data));
+                }
+            }
+            if (entries != null) {
+                entries.putDataMapArrayList("entries", dataMaps);
+                Log.d(TAG, "getTreatments entries=" + entries);
+            }
+            return entries;
+        }
+        else return null;
+    }
+    private static boolean includeTreatment(Treatments data) {
+        if (data.carbs > 0 || data.insulin > 0)
+            return true;
+        else if (data.notes != null && !data.notes.isEmpty() && data.notes.indexOf("watchkeypad") < 0)//generated by Simulation
+            return true;
+        else
+            return false;
+    }
+    private static DataMap dataMapForWatchface(Treatments data) {
+        DataMap dataMap = new DataMap();
+        //dataMap.putString("notes", data.notes);//TODO
+        dataMap.putDouble("timestamp", data.timestamp);
+        dataMap.putDouble("high", data.carbs);
+        dataMap.putDouble("low", data.insulin);
+        return dataMap;
+    }
+
+    public static DataMap getCalibrations(long startTime) {
+        Calibration last = Calibration.last();
+        if (last != null) {
+            Log.d(TAG, "getCalibrations last.timestamp:" +  JoH.dateTimeText(last.timestamp));
+        }
+        List<Calibration> graph = Calibration.latestForGraph(60, startTime, Long.MAX_VALUE);
+        //calibrations = Calibration.latestForGraph(numValues, start - (3 * Constants.DAY_IN_MS), end);
+        if (!graph.isEmpty()) {
+            Log.d(TAG, "getCalibrations graph size=" + graph.size());
+            final ArrayList<DataMap> dataMaps = new ArrayList<>(graph.size());
+            DataMap entries = null;
+            //if (last.slope_confidence != 0) entries = dataMapForWatchface(last);
+            for (Calibration data : graph) {
+                if (data.slope_confidence != 0) {
+                    if (entries == null) {
+                        entries = dataMapForWatchface(data);
+                        dataMaps.add(dataMapForWatchface(data));
+                    }
+                    else
+                        dataMaps.add(dataMapForWatchface(data));
+                }
+            }
+            if (entries != null) {
+                entries.putDataMapArrayList("entries", dataMaps);
+                Log.d(TAG, "getCalibrations entries=" + entries);
+            }
+            return entries;
+        }
+        else return null;
+    }
+    private static DataMap dataMapForWatchface(Calibration data) {
+        DataMap dataMap = new DataMap();
+        dataMap.putDouble("timestamp", data.timestamp);
+        dataMap.putDouble("sgvDouble", data.bg);
+        return dataMap;
+    }
+    public static DataMap getBloodTests(long startTime) {
+        BloodTest last = BloodTest.last();
+        if (last != null) {
+            Log.d(TAG, "getBloodTests last.timestamp:" +  JoH.dateTimeText(last.timestamp));
+        }
+        List<BloodTest> graph = BloodTest.latestForGraph(60, startTime);
+        if (!graph.isEmpty()) {
+            Log.d(TAG, "getBloodTests graph size=" + graph.size());
+            final ArrayList<DataMap> dataMaps = new ArrayList<>(graph.size());
+            DataMap entries = dataMapForWatchface(graph.get(0));
+            for (BloodTest data : graph) {
+                dataMaps.add(dataMapForWatchface(data));
+            }
+            entries.putDataMapArrayList("entries", dataMaps);
+            Log.d(TAG, "getBloodTests entries=" + entries);
+            return entries;
+        }
+        else {
+            Log.d(TAG, "getBloodTests no entries for startTime=" + JoH.dateTimeText(startTime));
+            return null;
+        }
+    }
+    private static DataMap dataMapForWatchface(BloodTest data) {
+        DataMap dataMap = new DataMap();
+        dataMap.putDouble("timestamp", data.timestamp);
+        dataMap.putDouble("sgvDouble", data.mgdl);
+        return dataMap;
     }
 
     private synchronized void syncBgData(DataMap dataMap, Context context) {//KS
         Log.d(TAG, "syncBGData");
 
+        boolean changed = false;
         ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
         Log.d(TAG, "syncBGData add BgReading Table" );
         if (entries != null) {
@@ -1887,6 +2052,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                             BgReading bgData = gson.fromJson(bgrecord, BgReading.class);
                             BgReading exists = BgReading.getForTimestampExists(bgData.timestamp);
                             exists = exists != null ? exists : BgReading.findByUuid(bgData.uuid);
+                            String calibrationUuid = entry.getString("calibrationUuid");
                             if (exists != null) {
                                 Log.d(TAG, "syncBGData BG already exists for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" +  JoH.dateTimeText(bgData.timestamp));
                                 Log.d(TAG, "syncBGData exists timeString=" +  JoH.dateTimeText(exists.timestamp) + "  exists.calibration.uuid=" + exists.calibration.uuid + " exists=" + exists.toS());
@@ -1912,58 +2078,43 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                 exists.noise = bgData.noise;
                                 exists.time_since_sensor_started = bgData.time_since_sensor_started;
 
-                                String calibrationUuid = entry.getString("calibrationUuid");
-                                if (calibrationUuid != null && !calibrationUuid.isEmpty()) {
-                                    Calibration calibration = Calibration.byuuid(calibrationUuid);
-                                    if (calibration != null) {
-                                        exists.calibration = calibration;
-                                        exists.sensor = sensor;
-                                        exists.save();
+                                Calibration calibration = Calibration.byuuid(calibrationUuid);
+                                calibration = calibration != null ? calibration : Calibration.byuuid(exists.calibration_uuid);
+                                if (calibration != null) {
+                                    exists.calibration = calibration;
+                                    exists.calibration_uuid = calibration.uuid;
+                                    exists.sensor = sensor;
+                                    exists.sensor_uuid = sensor.uuid;
+                                    if (exists.calculated_value != bgData.calculated_value) {
+                                        changed = true;
                                     }
-                                    else {
-                                        Log.e(TAG, "syncBGData calibrationUuid not found by byuuid; calibrationUuid=" + calibrationUuid + " bgData.calibration_uuid=" + bgData.calibration_uuid);
-                                    }
+                                    exists.save();
                                 }
                                 else {
-                                    Log.e(TAG, "syncBGData calibrationUuid not sent");
+                                    Log.e(TAG, "syncBGData existing BgReading calibrationUuid not found by byuuid; calibrationUuid=" + calibrationUuid + " bgData.calibration_uuid=" + bgData.calibration_uuid + " bgData.uuid=" + bgData.uuid + " timeString=" +  JoH.dateTimeText(bgData.timestamp));
                                 }
                             } else {
-                                Calibration calibration = Calibration.byuuid(bgData.calibration_uuid);
+                                Calibration calibration = Calibration.byuuid(calibrationUuid);
+                                calibration = calibration != null ? calibration : Calibration.byuuid(bgData.calibration_uuid);
                                 if (calibration != null) {
-                                    bgData.calibration = calibration;
-                                    bgData.sensor = sensor;
                                     Log.d(TAG, "syncBGData add BG; does NOT exist for uuid=" + bgData.uuid + " timestamp=" + bgData.timestamp + " timeString=" + JoH.dateTimeText(bgData.timestamp));
-                                    String calibrationUuid = entry.getString("calibrationUuid");
-                                    if (calibrationUuid != null && !calibrationUuid.isEmpty()) {
-                                        calibration = Calibration.byuuid(calibrationUuid);
-                                        if (calibration != null) {
-                                            bgData.calibration = calibration;
-                                            bgData.sensor = sensor;
-                                            bgData.save();
-                                        }
-                                        else {
-                                            Log.e(TAG, "syncBGData calibrationUuid not found by byuuid; calibrationUuid=" + calibrationUuid + " bgData.calibration_uuid=" + bgData.calibration_uuid);
-                                        }
-                                    }
-                                    else {
-                                        Log.e(TAG, "syncBGData calibrationUuid not sent");
-                                    }
-
-                                    //BgSendQueue.handleNewBgReading(bgData, "create", getApplicationContext() );
-                                    exists = BgReading.findByUuid(bgData.uuid);
-                                    if (exists != null)
-                                        Log.d(TAG, "syncBGData BG GSON saved BG: " + exists.toS());
-                                    else
-                                        Log.e(TAG, "syncBGData BG GSON NOT saved");
+                                    bgData.calibration = calibration;
+                                    bgData.calibration_uuid = calibration.uuid;
+                                    bgData.sensor = sensor;
+                                    bgData.sensor_uuid = sensor.uuid;
+                                    changed = true;
+                                    bgData.save();
                                 }
                                 else {
-                                    Log.e(TAG, "syncBGData bgData.calibration_uuid not found by byuuid; calibration_uuid=" + bgData.calibration_uuid);
+                                    Log.e(TAG, "syncBGData new BgReading calibrationUuid not found by byuuid; calibrationUuid=" + calibrationUuid + " bgData.calibration_uuid=" + bgData.calibration_uuid + " bgData.uuid=" + bgData.uuid + " timeString=" +  JoH.dateTimeText(bgData.timestamp));
                                 }
                             }
                         }
                     }
                 }
-                resendData(getApplicationContext());
+                if (changed) {//otherwise, wait for doBackground ACTION_RESEND
+                    resendData(getApplicationContext());
+                }
             }
         }
     }
@@ -2296,10 +2447,20 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         Log.d(TAG, "=== LIST AVAILABLE SENSORS ===");
     }
 
+    private void setLocalNodeName () {
+        forceGoogleApiConnect();
+        NodeApi.GetLocalNodeResult localnodes = Wearable.NodeApi.getLocalNode(googleApiClient).await(60, TimeUnit.SECONDS);
+        Node getnode = localnodes.getNode();
+        localnode = getnode != null ? getnode.getDisplayName() + "|" + getnode.getId() : "";
+        Log.d(TAG, "setLocalNodeName.  localnode=" + localnode);
+    }
+
     @Override
     public void onCapabilityChanged(CapabilityInfo capabilityInfo) {
         Node phoneNode = updatePhoneSyncBgsCapability(capabilityInfo);
         Log.d(TAG, "onCapabilityChanged mPhoneNodeID:" + (phoneNode != null ? phoneNode.getId() : "") );//mPhoneNodeId
+        //onPeerConnected and onPeerDisconnected deprecated at the same time as BIND_LISTENER
+        sendPrefSettings();//from onPeerConnected
     }
 
     @Override

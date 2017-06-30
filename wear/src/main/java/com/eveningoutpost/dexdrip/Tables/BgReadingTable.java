@@ -13,12 +13,14 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.BgReading;
 //import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,11 +56,19 @@ public class BgReadingTable extends ListActivity {//implements NavigationDrawerF
     }*/
 
     private void getData() {
-        UserError.Log.d(TAG, "getData");
-        final List<BgReading> latest = BgReading.latest(72);//5000
-        ListAdapter adapter = new BgReadingAdapter(this, latest);
+        final long startTime = new Date().getTime() - (60000 * 60 * 24 * 3);//3 days
+        final List<BgReading> latest = BgReading.latestForGraph(216, startTime);
 
+        ListAdapter adapter = new BgReadingAdapter(this, latest);
         this.setListAdapter(adapter);
+
+        String msg = "";
+        int size = 0;
+        if (latest != null) size = latest.size();
+        if (size == 0) {
+            msg = getResources().getString(R.string.notify_table_size, "BgReading", size);
+            JoH.static_toast(xdrip.getAppContext(), msg, Toast.LENGTH_SHORT);
+        }
     }
 
     public static class BgReadingCursorAdapterViewHolder {

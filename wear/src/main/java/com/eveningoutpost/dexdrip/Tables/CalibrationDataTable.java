@@ -11,13 +11,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -37,11 +40,19 @@ public class CalibrationDataTable extends ListActivity {//implements NavigationD
     }
 
     private void getData() {
-        final List<Calibration> latest = Calibration.latest(50);
+        final long startTime = new Date().getTime() - (60000 * 60 * 24 * 3);//3 days
+        final List<Calibration> latest = Calibration.latestForGraph(60, startTime);
 
         CalibrationDataCursorAdapter adapter = new CalibrationDataCursorAdapter(this, latest);
-
         this.setListAdapter(adapter);
+
+        String msg = "";
+        int size = 0;
+        if (latest != null) size = latest.size();
+        if (size == 0) {
+            msg = getResources().getString(R.string.notify_table_size, "Calibration", size);
+            JoH.static_toast(xdrip.getAppContext(), msg, Toast.LENGTH_SHORT);
+        }
     }
 
 

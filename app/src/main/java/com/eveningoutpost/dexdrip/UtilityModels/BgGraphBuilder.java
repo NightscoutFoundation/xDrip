@@ -1446,7 +1446,7 @@ public class BgGraphBuilder {
                                     if (d)
                                         Log.d(TAG, "Predictive hours updated to: " + predictivehours);
                                 } else {
-                                    Log.d(TAG, "IOB DEBUG: " + (fuzzed_timestamp - end_time) + " " + iob.iob);
+                                    //KS Log.d(TAG, "IOB DEBUG: " + (fuzzed_timestamp - end_time) + " " + iob.iob);
                                     if (!iob_shown_already && (Math.abs(fuzzed_timestamp - end_time) < 5) && (iob.iob > 0)) {
                                         iob_shown_already = true;
                                         // show current iob

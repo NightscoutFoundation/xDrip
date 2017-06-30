@@ -108,7 +108,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                                 if ((calibration != null) && allow_undo.equals("true")) {
                                                     UndoRedo.addUndoCalibration(calibration.uuid);
                                                 }
-                                                startWatchUpdaterService(getApplicationContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
+                                                //startWatchUpdaterService(getApplicationContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
                                             } else {
                                                 // follower sends the calibration data onwards only if sourced from interactive request
                                                 if (from_interactive.equals("true")) {
@@ -172,7 +172,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                 Calibration calibration = Calibration.create(calValue, getApplicationContext());
                                 if (calibration != null) {
                                     UndoRedo.addUndoCalibration(calibration.uuid);
-                                    startWatchUpdaterService(v.getContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
+                                    //startWatchUpdaterService(v.getContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
 
                                 } else {
                                     Log.e(TAG, "Calibration creation resulted in null");

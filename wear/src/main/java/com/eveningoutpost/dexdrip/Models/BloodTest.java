@@ -388,7 +388,7 @@ public class BloodTest extends Model {
                     .where("state & ? != 0", BloodTest.STATE_VALID)
                     .where("timestamp >= " + Math.max(startTime, 0))
                     .where("timestamp <= " + endTime)
-                    .orderBy("timestamp asc") // warn asc!
+                    .orderBy("timestamp desc") // warn asc!
                     .limit(number)
                     .execute();
         } catch (android.database.sqlite.SQLiteException e) {

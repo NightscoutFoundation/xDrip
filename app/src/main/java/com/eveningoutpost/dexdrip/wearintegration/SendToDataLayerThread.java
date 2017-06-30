@@ -41,7 +41,7 @@ class SendToDataLayerThread extends AsyncTask<DataMap,Void,Void> {
     protected void onPreExecute()
     {
         concurrency++;
-        if ((concurrency > 8) || ((concurrency > 3 && (lastlock != 0) && (JoH.tsl() - lastlock) > 300000))) {
+        if ((concurrency > 12) || ((concurrency > 3 && (lastlock != 0) && (JoH.tsl() - lastlock) > 300000))) {//KS increase from 8 to 12
             // error if 9 concurrent threads or lock held for >5 minutes with concurrency of 4
             final String err = "Wear Integration deadlock detected!! "+((lastlock !=0) ? "locked" : "")+" state:"+state+" @"+ JoH.hourMinuteString();
             Home.toaststaticnext(err);

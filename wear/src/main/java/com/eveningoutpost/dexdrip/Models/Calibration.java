@@ -1111,6 +1111,10 @@ public class Calibration extends Model {
                 .execute();
     }
 
+    public static List<Calibration> latestForGraph(int number, long startTime) {
+        return latestForGraph(number, startTime, Long.MAX_VALUE);
+    }
+
     public static List<Calibration> latestForGraph(int number, long startTime, long endTime) {
         return new Select()
                 .from(Calibration.class)
