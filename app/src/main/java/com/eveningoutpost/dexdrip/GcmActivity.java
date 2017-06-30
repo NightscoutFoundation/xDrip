@@ -606,8 +606,8 @@ public class GcmActivity extends FauxActivity {
         }
     }
 
-    public static void clearLastCalibration() {
-        sendMessage(myIdentity(), "clc", "");
+    public static void clearLastCalibration(String uuid) {
+        sendMessage(myIdentity(), "clc", uuid);
     }
 
     private static synchronized String sendMessageNow(String identity, String action, String payload, byte[] bpayload) {

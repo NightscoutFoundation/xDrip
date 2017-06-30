@@ -200,7 +200,13 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                 if (Home.get_master_or_follower() && Home.follower_or_accept_follower()) Treatments.delete_by_uuid(filter(payload));
             } else if (action.equals("clc")) {
                 Log.i(TAG, "Attempting to clear last calibration");
-                if (Home.get_master_or_follower() && Home.follower_or_accept_follower()) Calibration.clearLastCalibration();
+                if (Home.get_master_or_follower() && Home.follower_or_accept_follower()) {
+                    if (payload.length() > 0) {
+                        Calibration.clearCalibrationByUUID(payload);
+                    } else {
+                        Calibration.clearLastCalibration();
+                    }
+                }
             } else if (action.equals("cal")) {
                 if (Home.get_master_or_follower() && Home.follower_or_accept_follower()) {
                     String[] message_array = filter(payload).split("\\s+");
