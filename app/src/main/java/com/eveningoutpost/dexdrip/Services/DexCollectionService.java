@@ -145,6 +145,11 @@ public class DexCollectionService extends Service {
 
     private final String DEFAULT_BT_PIN = "000000"; // HM10/11 default pin
 
+    public final UUID CCCD = UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG);
+    public final UUID nrfDataService = UUID.fromString(HM10Attributes.NRF_UART_SERVICE);
+    public final UUID nrfDataRXCharacteristic = UUID.fromString(HM10Attributes.NRF_UART_TX);
+    public final UUID nrfDataTXCharacteristic = UUID.fromString(HM10Attributes.NRF_UART_RX);
+
     @Override
     public IBinder onBind(Intent intent) {
         throw new UnsupportedOperationException("Not yet implemented");
@@ -498,59 +503,115 @@ public class DexCollectionService extends Service {
             if (gattService == null) {
                 Log.w(TAG, "onServicesDiscovered: service " + xDripDataService + " not found");
                 listAvailableServices(mBluetoothGatt);
-                JoH.releaseWakeLock(wl);
-                return;
+                // try next
             }
-
-            final BluetoothGattCharacteristic gattCharacteristic = gattService.getCharacteristic(xDripDataCharacteristic);
-            if (gattCharacteristic == null) {
-                Log.w(TAG, "onServicesDiscovered: characteristic " + xDripDataCharacteristic + " not found");
-                JoH.releaseWakeLock(wl);
-                return;
-            }
-
-            mCharacteristic = gattCharacteristic;
-            final int charaProp = gattCharacteristic.getProperties();
-            if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
-                // TODO isn't this condition always true, shouldn't it be & instead of | ?
-                mBluetoothGatt.setCharacteristicNotification(gattCharacteristic, true);
-
-                try {
-                    final BluetoothGattDescriptor bdescriptor = gattCharacteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
-                    Log.i(TAG, "Bluetooth Notification Descriptor found: " + bdescriptor.getUuid());
-                    bdescriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    mBluetoothGatt.writeDescriptor(bdescriptor);
-                } catch (Exception e) {
-                    Log.e(TAG, "Error setting notification value descriptor: " + e);
+            else
+            {
+                final BluetoothGattCharacteristic gattCharacteristic = gattService.getCharacteristic(xDripDataCharacteristic);
+                if (gattCharacteristic == null) {
+                    Log.w(TAG, "onServicesDiscovered: characteristic " + xDripDataCharacteristic + " not found");
+                    JoH.releaseWakeLock(wl);
+                    JoH.releaseWakeLock(wl);
+                    return;
                 }
 
-                // Experimental support for "Transmiter PL" from Marek Macner @FPV-UAV
-                //if (use_transmiter_pl_bluetooth) {
+                mCharacteristic = gattCharacteristic;
+                final int charaProp = gattCharacteristic.getProperties();
+                if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+                    // TODO isn't this condition always true, shouldn't it be & instead of | ?
+                    mBluetoothGatt.setCharacteristicNotification(gattCharacteristic, true);
+
+                    try {
+                        final BluetoothGattDescriptor bdescriptor = gattCharacteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
+                        Log.i(TAG, "Bluetooth Notification Descriptor found: " + bdescriptor.getUuid());
+                        bdescriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                        mBluetoothGatt.writeDescriptor(bdescriptor);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error setting notification value descriptor: " + e);
+                    }
+
+                    // Experimental support for "Transmiter PL" from Marek Macner @FPV-UAV
+                    //if (use_transmiter_pl_bluetooth) {
                     // BluetoothGattDescriptor descriptor = gattCharacteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
                     //   Log.i(TAG, "Transmiter Descriptor found: " + descriptor.getUuid());
                     //   descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     //   mBluetoothGatt.writeDescriptor(descriptor);
-                //}
+                    //}
 
-                // Experimental support for rfduino from Tomasz Stachowicz
-                if (use_rfduino_bluetooth) {
-                    //  BluetoothGattDescriptor descriptor = gattCharacteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
-                    //  Log.i(TAG, "Transmiter Descriptor found use_rfduino_bluetooth: " + descriptor.getUuid());
-                    //  descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    //  mBluetoothGatt.writeDescriptor(descriptor);
-                    Log.w(TAG, "onServicesDiscovered: use_rfduino_bluetooth send characteristic " + xDripDataCharacteristicSend + " found");
-                    mCharacteristicSend = gattService.getCharacteristic(xDripDataCharacteristicSend);
+                    // Experimental support for rfduino from Tomasz Stachowicz
+                    if (use_rfduino_bluetooth) {
+                        //  BluetoothGattDescriptor descriptor = gattCharacteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
+                        //  Log.i(TAG, "Transmiter Descriptor found use_rfduino_bluetooth: " + descriptor.getUuid());
+                        //  descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                        //  mBluetoothGatt.writeDescriptor(descriptor);
+                        Log.w(TAG, "onServicesDiscovered: use_rfduino_bluetooth send characteristic " + xDripDataCharacteristicSend + " found");
+                        mCharacteristicSend = gattService.getCharacteristic(xDripDataCharacteristicSend);
+                    } else {
+                        mCharacteristicSend = mCharacteristic;
+                    }
+
+
                 } else {
-                    mCharacteristicSend = mCharacteristic;
+                    Log.w(TAG, "onServicesDiscovered: characteristic " + xDripDataCharacteristic + " not found");
                 }
-
-
-            } else {
-                Log.w(TAG, "onServicesDiscovered: characteristic " + xDripDataCharacteristic + " not found");
             }
+
+            final BluetoothGattService nrfGattService = mBluetoothGatt.getService(nrfDataService);
+            if (nrfGattService == null) {
+                Log.w(TAG, "onServicesDiscovered: service " + nrfGattService + " not found");
+                listAvailableServices(mBluetoothGatt);
+                JoH.releaseWakeLock(wl);
+                return;
+            }
+            else {
+               final BluetoothGattCharacteristic nrfGattCharacteristic = nrfGattService.getCharacteristic(nrfDataRXCharacteristic);
+                if (nrfGattCharacteristic == null) {
+                    Log.w(TAG, "onServicesDiscovered: characteristic " + nrfGattCharacteristic + " not found");
+                    JoH.releaseWakeLock(wl);
+                    return;
+                } else {
+                    mCharacteristic = nrfGattCharacteristic;
+                    final int charaProp = nrfGattCharacteristic.getProperties();
+                    if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+                        // TODO isn't this condition always true, shouldn't it be & instead of | ?
+                        mBluetoothGatt.setCharacteristicNotification(nrfGattCharacteristic, true);
+
+                        try {
+                            final BluetoothGattDescriptor bdescriptor = nrfGattCharacteristic.getDescriptor(UUID.fromString(HM10Attributes.CLIENT_CHARACTERISTIC_CONFIG));
+                            Log.i(TAG, "Bluetooth Notification Descriptor found: " + bdescriptor.getUuid());
+                            bdescriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                            mBluetoothGatt.writeDescriptor(bdescriptor);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error setting notification value descriptor: " + e);
+                        }
+                    }
+                    mCharacteristic = nrfGattCharacteristic;
+                    mCharacteristicSend = nrfGattService.getCharacteristic(nrfDataTXCharacteristic);
+                    if (mCharacteristicSend == null) {
+                        Log.w(TAG, "onServicesDiscovered: characteristic " + mCharacteristicSend + " not found");
+                        JoH.releaseWakeLock(wl);
+                        return;
+                    }
+                }
+            }
+
+
+
+            BluetoothGattDescriptor descriptor = mCharacteristic.getDescriptor(CCCD);
+            if(descriptor!=null)
+            {
+                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                mBluetoothGatt.writeDescriptor(descriptor);
+            }
+            mBluetoothGatt.readCharacteristic(mCharacteristic);
 
             checkImmediateSend(); // TODO maybe find a better home for this
             JoH.releaseWakeLock(wl);
+        }
+
+        @Override
+        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            onCharacteristicChanged(gatt,characteristic);
         }
 
         @Override
@@ -639,6 +700,12 @@ public class DexCollectionService extends Service {
             status("Error: mCharacteristic was null in sendBtMessage");
             Log.e(TAG, lastState);
             return false;
+        }
+
+        if(mCharacteristicSend!=null && mCharacteristicSend != mCharacteristic)
+        {
+            mCharacteristicSend.setValue(value);
+            return mBluetoothGatt.writeCharacteristic(mCharacteristicSend);
         }
 
         mCharacteristic.setValue(value);
@@ -787,6 +854,12 @@ public class DexCollectionService extends Service {
                         CheckBridgeBattery.checkBridgeBattery();
                     }
                 }
+            } else if(buffer.length>10 && new String(buffer) != null && new String(buffer).startsWith("battery: ")){
+                //bluereader intermidiate support
+                if(BgReading.last()==null || BgReading.last().timestamp + (4*60*1000) < System.currentTimeMillis())
+                {
+                    sendBtMessage(new byte[]{0x6C});
+                }
             } else {
                 processNewTransmitterData(TransmitterData.create(buffer, len, timestamp), timestamp);
             }
@@ -808,6 +881,8 @@ public class DexCollectionService extends Service {
             Log.wtf(TAG, "Ignoring probably erroneous Transmiter_PL data: " + transmitterData.raw_data);
             return;
         }
+
+
 
         sensor.latest_battery_level = (sensor.latest_battery_level != 0) ? Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level) : transmitterData.sensor_battery_level;
         sensor.save();
