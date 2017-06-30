@@ -102,10 +102,7 @@ public class xDripWidget extends AppWidgetProvider {
 
                 if (dg == null) {
                     // if not using best glucose helper
-                    if ((BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER)
-                            && (BgGraphBuilder.best_bg_estimate > 0)
-                            && (BgGraphBuilder.last_bg_estimate > 0)
-                            && (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("bg_compensate_noise", false))) {
+                    if (BestGlucose.compensateNoise()) {
                         estimate = BgGraphBuilder.best_bg_estimate; // this needs scaling based on noise intensity
                         estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
                         slope_arrow = BgReading.slopeToArrowSymbol(estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000)); // delta by minute

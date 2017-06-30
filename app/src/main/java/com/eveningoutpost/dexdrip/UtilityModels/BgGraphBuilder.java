@@ -103,6 +103,7 @@ public class BgGraphBuilder {
     public static final int FUZZER = (1000 * 30 * 5); // 2.5 mins?
     public final static long DEXCOM_PERIOD = 300000;
     public final static double NOISE_TRIGGER = 10;
+    public final static double NOISE_TRIGGER_ULTRASENSITIVE = 1;
     public final static double NOISE_TOO_HIGH_FOR_PREDICT = 60;
     public final static double NOISE_HIGH = 200;
     public final static double NOISE_FORGIVE = 100;
@@ -284,6 +285,7 @@ public class BgGraphBuilder {
         if (thisnoise > NOISE_HIGH) return "Extreme";
         if (thisnoise > NOISE_TOO_HIGH_FOR_PREDICT) return "Very High";
         if (thisnoise > NOISE_TRIGGER) return "High";
+        if (thisnoise > NOISE_TRIGGER_ULTRASENSITIVE && Home.getPreferencesBooleanDefaultFalse("engineering_mode") && Home.getPreferencesBooleanDefaultFalse("bg_compensate_noise_ultrasensitive")) return "Some";
         return "Low";
     }
 
@@ -1226,7 +1228,11 @@ public class BgGraphBuilder {
                 }
 
                 final boolean show_noise_working_line;
-                if ((last_noise > NOISE_TRIGGER) && prefs.getBoolean("bg_compensate_noise", false)) {
+                if (last_noise > NOISE_TRIGGER ||
+                        (last_noise > BgGraphBuilder.NOISE_TRIGGER_ULTRASENSITIVE
+                                && Home.getPreferencesBooleanDefaultFalse("engineering_mode")
+                                && Home.getPreferencesBooleanDefaultFalse("bg_compensate_noise_ultrasensitive")
+                        )) {
                     show_noise_working_line = true;
                 } else {
                     show_noise_working_line = prefs.getBoolean("show_noise_workings", false);
