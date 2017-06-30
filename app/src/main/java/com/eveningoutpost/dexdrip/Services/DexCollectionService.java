@@ -397,7 +397,7 @@ public class DexCollectionService extends Service {
                     }
                     last_poll_sent = JoH.tsl();
                     if ((JoH.msSince(lastPacketTime) > Home.stale_data_millis()) && (JoH.ratelimit("poll-request-part-b", 15))) {
-                        Log.d(TAG, "Stale data so requesting backfill");
+                        Log.e(TAG, "Stale data so requesting backfill");
                         sendBtMessage(XbridgePlus.sendLast15BRequestPacket());
                     } else {
                         sendBtMessage(XbridgePlus.sendDataRequestPacket());
