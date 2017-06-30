@@ -33,6 +33,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.android.gms.wearable.DataMap;
 import com.ustwo.clockwise.common.WatchMode;
@@ -90,7 +91,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public PowerManager.WakeLock wakeLock;
     // related to manual layout
     public View layoutView;
-    public String mStatusLine;
+    public String mStatusLine = "";
     private final Point displaySize = new Point();
     private int specW, specH;
 
@@ -163,12 +164,22 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 setSmallFontsize(false);
                 chart = (LineChartView) stub.findViewById(R.id.chart);
                 layoutSet = true;
+                Context context = xdrip.getAppContext();
+                if (Home.get_forced_wear()) {
+                    if (d) Log.d(TAG, "performViewSetup FORCE WEAR init BGs for graph");
+                    BgSendQueue.resendData(context);
+                }
+                if ((chart != null) && sharedPrefs.getBoolean("show_wear_treatments", false)) {
+                    if (d) Log.d(TAG, "performViewSetup init Treatments for graph");
+                    ListenerService.showTreatments(context, "all");
+                }
                 showAgoRawBattStatus();
                 mRelativeLayout.measure(specW, specH);
                 mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                         mRelativeLayout.getMeasuredHeight());
             }
         });
+        Log.d(TAG, "performViewSetup requestData");
         ListenerService.requestData(this);
         wakeLock.acquire(50);
     }
@@ -179,7 +190,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         int fontsize =  Integer.parseInt(smallFontsizeArray[fontvalue-1]);
         if (d) Log.d(TAG, "setSmallFontsize fontsize=" + fontsize + " fontvalue=" + fontvalue);
         mDelta.setTextSize(fontsize);
-        //stepsButton.setTextSize(fontsize);
+        stepsButton.setTextSize(fontsize);
         setStatusTextSize(fontsize);
         if (fontvalue == 1) {
             mStatus.setMaxLines(1);
@@ -298,7 +309,13 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         @Override
         public void onReceive(Context context, Intent intent) {
             DataMap dataMap;
-            Bundle bundle = intent.getBundleExtra("msg");
+            Bundle bundle = intent.getExtras();
+            String extra_status_line = bundle.getString("extra_status_line");
+            if (layoutSet && bundle != null && extra_status_line != null && !extra_status_line.isEmpty()) {
+                if (d) Log.d(TAG, "MessageReceiver extra_status_line=" + extra_status_line);
+                mExtraStatusLine = extra_status_line;
+            }
+            bundle = intent.getBundleExtra("msg");
             if (layoutSet && bundle != null) {
                 dataMap = DataMap.fromBundle(bundle);
                 String msg = dataMap.getString("msg", "");
@@ -311,6 +328,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 if (mTimeStepsRcvd <= dataMap.getLong("steps_timestamp", 0)) {
                     mStepsCount = dataMap.getInt("steps", 0);
                     mTimeStepsRcvd = dataMap.getLong("steps_timestamp", 0);
+                    showSteps();
                 }
             }
             bundle = intent.getBundleExtra(Home.HOME_FULL_WAKEUP);
@@ -327,22 +345,21 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             }
             if (sharedPrefs.getBoolean("show_wear_treatments", false)) {
                 Bundle treatsbundle = intent.getBundleExtra("treats");
-                if (treatsbundle != null) {
+                if (layoutSet && treatsbundle != null) {
                     DataMap treatsdataMap = DataMap.fromBundle(treatsbundle);
                     if (d) Log.d(TAG, "MessageReceiver treatsDataList.size=" + (treatsDataList != null ? treatsDataList.size() : "0"));
-                    if (treatsdataMap != null)
-                        addToWatchSetTreats(treatsdataMap, treatsDataList);
+                    if (treatsdataMap != null) addToWatchSetTreats(treatsdataMap, treatsDataList);
                     if (d) Log.d(TAG, "MessageReceiver treatsDataList.size=" + treatsDataList.size());
                 }
                 treatsbundle = intent.getBundleExtra("cals");
-                if (treatsbundle != null) {
+                if (layoutSet && treatsbundle != null) {
                     DataMap calDataMap = DataMap.fromBundle(treatsbundle);
                     if (d) Log.d(TAG, "MessageReceiver calDataList.size=" + (calDataList != null ? calDataList.size() : "0"));
                     if (calDataMap != null) addToWatchSetTreats(calDataMap, calDataList);
                     if (d) Log.d(TAG, "MessageReceiver calDataList.size=" + calDataList.size());
                 }
                 treatsbundle = intent.getBundleExtra("bts");
-                if (treatsbundle != null) {
+                if (layoutSet && treatsbundle != null) {
                     DataMap btDataMap = DataMap.fromBundle(treatsbundle);
                     if (d) Log.d(TAG, "MessageReceiver btDataList.size=" + (btDataList != null ? btDataList.size() : "0"));
                     if (btDataMap != null) addToWatchSetTreats(btDataMap, btDataList);
@@ -379,15 +396,18 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 avgDelta = dataMap.getString("avgDelta", "");
                 delta = dataMap.getString("delta");
 
-                mExtraStatusLine = dataMap.getString("extra_status_line");
+                extra_status_line = bundle.getString("extra_status_line");
+                if (d) Log.d(TAG, "MessageReceiver DATA extra_status_line=" + extra_status_line);
+                if (extra_status_line != null)
+                    mExtraStatusLine = extra_status_line;
 
-                //showAgoRawBattStatus();
+                showAgoRawBattStatus();
 
 
-                //if (chart != null) {
+                if (chart != null) {
                     addToWatchSet(dataMap);
                     //setupCharts();
-                //}
+                }
                 /*mRelativeLayout.measure(specW, specH);
                 mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                         mRelativeLayout.getMeasuredHeight());
@@ -403,23 +423,19 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 wakeLock.acquire(50);
                 externalStatusString = dataMap.getString("externalStatusString");
 
-                /*showAgoRawBattStatus();
+                showAgoRawBattStatus();
 
-                mRelativeLayout.measure(specW, specH);
+                /*mRelativeLayout.measure(specW, specH);
                 mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                         mRelativeLayout.getMeasuredHeight());
                 invalidate();
                 setColor();*/
             }
             if (layoutSet) {
-                showAgoRawBattStatus();
-                if (chart != null) {
-                    setupCharts();
-                }
                 mRelativeLayout.measure(specW, specH);
                 mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                         mRelativeLayout.getMeasuredHeight());
-                invalidate();
+                //invalidate();//to conserve battery, use onTimeChanged() default of one minute instead
                 setColor();
             }
         }
@@ -435,17 +451,41 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         }
     }
 
+    private void showSteps() {
+        if (sharedPrefs.getBoolean("showSteps", false)) {
+            stepsButton.setVisibility(View.VISIBLE);
+            stepsButton.setText(String.format("%d", mStepsCount));
+            if (mStepsCount > 0) {
+                DecimalFormat df = new DecimalFormat("#.##");
+                Double km = (((double) mStepsCount) / 2000.0d) * 1.6d;
+                Double mi = (((double) mStepsCount) / 2000.0d) * 1.0d;
+                if (d) Log.d(TAG, "showSteps Sensor mStepsCount=" + mStepsCount + " km=" + km + " mi=" + mi + " rcvd=" + JoH.dateTimeText(mTimeStepsRcvd));
+                mStepsToast = getResources().getString(R.string.label_show_steps, mStepsCount) +
+                        (km > 0.0 ? "\n" + getResources().getString(R.string.label_show_steps_km, df.format(km)) : "0") +
+                        (mi > 0.0 ? "\n" + getResources().getString(R.string.label_show_steps_mi, df.format(mi)) : "0") +
+                        "\n" + getResources().getString(R.string.label_show_steps_rcvdtime, JoH.dateTimeText(mTimeStepsRcvd));
+            }
+            else {
+                mStepsToast = getResources().getString(R.string.label_show_steps, mStepsCount) +
+                        ("\n" + getResources().getString(R.string.label_show_steps_km, "0")) +
+                        ("\n" + getResources().getString(R.string.label_show_steps_mi, "0")) +
+                        "\n" + getResources().getString(R.string.label_show_steps_rcvdtime, JoH.dateTimeText(mTimeStepsRcvd));
+            }
+        }
+        else {
+            stepsButton.setVisibility(View.GONE);
+            mStepsToast = "";
+            if (d) Log.d(TAG, "showSteps GONE mStepsCount = " + getResources().getString(R.string.label_show_steps, mStepsCount));
+        }
+    }
+
     private void showAgoRawBattStatus() {
 
         String uploaderXBatteryText = "";
         String uploaderBatteryText = "";
         String timestampText = "";
 
-        boolean showAvgDelta = sharedPrefs.getBoolean("showAvgDelta", false);
         mDelta.setText(delta);
-        if(showAvgDelta){
-            mDelta.append("  " + avgDelta);
-        }
 
         if( mTimestamp == null || mUploaderBattery == null|| mStatus == null){
             return;
@@ -469,38 +509,10 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         */
         mRaw.setVisibility(View.GONE);
 
-        if (sharedPrefs.getBoolean("showSteps", false)) {
-            stepsButton.setText(String.format("%d", mStepsCount));
-            stepsButton.setVisibility(View.VISIBLE);
 
-            if (mStepsCount > 0) {
-                DecimalFormat df = new DecimalFormat("#.##");
-                Double km = (((double) mStepsCount) / 2000.0d) * 1.6d;
-                Double mi = (((double) mStepsCount) / 2000.0d) * 1.0d;
-                if (d) Log.d(TAG, "showAgoRawBattStatus Sensor mStepsCount=" + mStepsCount + " km=" + km + " mi=" + mi + " rcvd=" + JoH.dateTimeText(mTimeStepsRcvd));
-                mStepsToast = getResources().getString(R.string.label_show_steps, mStepsCount) +
-                        (km > 0.0 ? "\n" + getResources().getString(R.string.label_show_steps_km, df.format(km)) : "0") +
-                        (mi > 0.0 ? "\n" + getResources().getString(R.string.label_show_steps_mi, df.format(mi)) : "0") +
-                        "\n" + getResources().getString(R.string.label_show_steps_rcvdtime, JoH.dateTimeText(mTimeStepsRcvd));
-            }
-            else {
-                mStepsToast = getResources().getString(R.string.label_show_steps, mStepsCount) +
-                        ("\n" + getResources().getString(R.string.label_show_steps_km, "0")) +
-                        ("\n" + getResources().getString(R.string.label_show_steps_mi, "0")) +
-                        "\n" + getResources().getString(R.string.label_show_steps_rcvdtime, JoH.dateTimeText(mTimeStepsRcvd));
-            }
-        }
-        else {
-            stepsButton.setVisibility(View.GONE);
-            mStepsToast = "";
-            if (d) Log.d(TAG, "Sensor showSteps GONE mStepsCount = " + getResources().getString(R.string.label_show_steps, mStepsCount));
-        }
 
         //xBridge Battery:
-        mShowXBattery = false;
-        if (sharedPrefs.getBoolean("showBridgeBattery", false) && xBattery > 0 && DexCollectionType.hasBattery()) {
-            mShowXBattery = true;
-        }
+        mShowXBattery = sharedPrefs.getBoolean("showBridgeBattery", false) && xBattery > 0 && DexCollectionType.hasBattery();
         if (d) Log.d(TAG, "showAgoRawBattStatus mShowXBattery=" + mShowXBattery + " xBattery=" + xBattery);
         if (mShowXBattery) {//see app/home.java displayCurrentInfo()
             //mUploaderXBattery.setText((showStatus ? "B: " : "Bridge: ") + xbatteryString + ((mXBattery < 200) ? "%" : "mV"));
@@ -538,7 +550,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         if (!isCollectorRunning && enable_wearG5) {
             Class<?> serviceClass = DexCollectionType.getCollectorServiceClass();
             if (serviceClass != null) {
-                Log.d(TAG, "DexCollectionType.getCollectorServiceClass(): " + serviceClass.getName());
+                //Log.d(TAG, "DexCollectionType.getCollectorServiceClass(): " + serviceClass.getName());
                 isCollectorRunning = isServiceRunning(serviceClass);
             }
         }
@@ -579,7 +591,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
             // Loop through the running services
             for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
-                if (d) Log.d(TAG, "isServiceRunning: getClassName=" + service.service.getClassName() + " getShortClassName=" + service.service.getShortClassName());
+                //if (d) Log.d(TAG, "isServiceRunning: getClassName=" + service.service.getClassName() + " getShortClassName=" + service.service.getShortClassName());
                 if (serviceClass.getName().equals(service.service.getClassName())) return true;
             }
         }
@@ -698,8 +710,8 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         int minutes_since   = (int) Math.floor(timeSince()/(1000*60));
         int maxDelay = 16;
         if (sharedPrefs.getBoolean("enable_wearG5", false)) {
-            maxDelay = 4;
-            Log.d(TAG, "missedReadingAlert Enter minutes_since " + minutes_since + " call requestData if >= 4 minutes mod 5");//KS
+            maxDelay = 5;
+            Log.d(TAG, "missedReadingAlert Enter minutes_since " + minutes_since + " call requestData if >= 5 minutes mod 5");//KS
         }
 
         if (minutes_since >= maxDelay && ((minutes_since - maxDelay) % 5) == 0) {//KS TODO reduce time for debugging; add notifications
@@ -708,6 +720,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                         .setVibrate(vibratePattern);
             NotificationManager mNotifyMgr = (NotificationManager) getApplicationContext().getSystemService(getApplicationContext().NOTIFICATION_SERVICE);
             mNotifyMgr.notify(missed_readings_alert_id, notification.build());*/
+            Log.d(TAG, "missedReadingAlert requestData");//KS
             ListenerService.requestData(this); // attempt to recover missing data
         }
     }
@@ -744,23 +757,15 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
     public void addToWatchSetTreats(DataMap dataMap, ArrayList<BgWatchData> dataList) {
 
         if (d) Log.d(TAG, "addToWatchSetTreats dataList.size()=" + (dataList != null ? dataList.size() : "0"));
-        dataList.clear();
+        dataList.clear();//necessary since treatments, bloodtest and calibrations can be deleted/invalidated
         ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
         if (entries != null) {
             if (d) Log.d(TAG, "addToWatchSetTreats entries.size()=" + entries.size() + " entries=" + entries);
             for (DataMap entry : entries) {
                 addDataMapTreats(entry, dataList);
             }
-        } else {
-            //addDataMapTreats(dataMap);
         }
 
-        for (int i = 0; i < dataList.size(); i++) {
-            if (dataList.get(i).timestamp < (new Date().getTime() - (1000 * 60 * 60 * 5))) {
-                dataList.remove(i); //Get rid of anything more than 5 hours old
-                break;
-            }
-        }
         if (d) Log.d(TAG, "addToWatchSetTreats dataList.size()=" + dataList.size());
     }
 
@@ -777,7 +782,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
         if (size > 0) {
             if (bgDataList.contains(bgdata)) {
                 int i = bgDataList.indexOf(bgdata);
-                //BgWatchData bgd = bgDataList.get(bgDataList.indexOf(bgdata));
+                BgWatchData bgd = bgDataList.get(bgDataList.indexOf(bgdata));
                 //Log.d(TAG, "addToWatchSet replace indexOf=" + i + " bgDataList.sgv=" + bgd.sgv + " bgDataList.timestamp" + bgd.timestamp);
                 bgDataList.set(i, bgdata);
             } else {
@@ -806,13 +811,14 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
 
         for (int i = 0; i < bgDataList.size(); i++) {
             if (bgDataList.get(i).timestamp < (new Date().getTime() - (1000 * 60 * 60 * 5))) {
+                Log.d(TAG, "addToWatchSet Remove bgDataList.get(i).timestamp: " + JoH.dateTimeText((long)bgDataList.get(i).timestamp)+ " i: " + i);
                 bgDataList.remove(i); //Get rid of anything more than 5 hours old
-                break;
             }
         }
     }
 
     public void setupCharts() {
+        Log.d(TAG, "setupCharts bgDataList.size()=" + bgDataList.size());
         if(bgDataList.size() > 0) { //Dont crash things just because we dont have values, people dont like crashy things
             int timeframe = Integer.parseInt(sharedPrefs.getString("chart_timeframe", "5"));
             boolean doMgdl = (sharedPrefs.getString("units", "mgdl").equals("mgdl"));
@@ -826,7 +832,8 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             //chart.setOnValueTouchListener(bgGraphBuilder.getOnValueSelectTooltipListener(mActivity));//TODO
             chart.setViewportCalculationEnabled(true);
             chart.setMaximumViewport(chart.getMaximumViewport());
-        } else {
+        } else if (!Home.get_forced_wear()){
+            Log.d(TAG, "setupCharts requestData");
             ListenerService.requestData(this);
         }
     }

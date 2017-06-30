@@ -236,9 +236,10 @@ public class Treatments extends Model {
 
     public static void pushTreatmentSyncToWatch(Treatments treatment, boolean is_new) {
         Log.d(TAG, "pushTreatmentSyncToWatch Add treatment to UploaderQueue.");
-        // only sync to nightscout if source of change was not from nightscout
-        if (UploaderQueue.newEntryForWatch(is_new ? "insert" : "update", treatment) != null) {
-            SyncService.startSyncService(3000); // sync in 3 seconds
+        if (Home.getPreferencesBooleanDefaultFalse("wear_sync")) {
+            if (UploaderQueue.newEntryForWatch(is_new ? "insert" : "update", treatment) != null) {
+                SyncService.startSyncService(3000); // sync in 3 seconds
+            }
         }
     }
 

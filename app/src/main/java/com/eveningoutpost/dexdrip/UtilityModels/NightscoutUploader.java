@@ -409,7 +409,7 @@ public class NightscoutUploader {
                                             t.save();
                                             // sync again!
                                            // pushTreatmentSync(t, false);
-                                            pushTreatmentSyncToWatch(t, true);
+                                            if (Home.get_show_wear_treatments()) pushTreatmentSyncToWatch(t, true);
                                             new_data = true;
                                         } else {
                                             if (existing != null) {
@@ -430,7 +430,7 @@ public class NightscoutUploader {
                                                         existing.notes = notes;
                                                     }
                                                     existing.save();
-                                                    pushTreatmentSyncToWatch(existing, false);
+                                                    if (Home.get_show_wear_treatments()) pushTreatmentSyncToWatch(existing, false);
                                                     new_data = true;
                                                 }
                                             } else {

@@ -34,7 +34,7 @@ public class SyncService extends IntentService {
         enableRESTUpload = prefs.getBoolean("cloud_storage_api_enable", false);
         enableMongoUpload = prefs.getBoolean("cloud_storage_mongodb_enable", false);
         enableInfluxUpload = prefs.getBoolean("cloud_storage_influxdb_enable", false);
-        enableWearUpload = Home.get_show_wear_treatments();
+        enableWearUpload = prefs.getBoolean("wear_sync", false);
         attemptSend();
     }
 

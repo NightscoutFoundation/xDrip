@@ -56,7 +56,7 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
             if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_influxdb_enable")) {
                 circuits.add(UploaderQueue.INFLUXDB_RESTAPI);
             }
-            if (Home.get_show_wear_treatments()) {
+            if (Home.getPreferencesBooleanDefaultFalse("wear_sync")) {
                 circuits.add(UploaderQueue.WATCH_WEARAPI);
             }
 

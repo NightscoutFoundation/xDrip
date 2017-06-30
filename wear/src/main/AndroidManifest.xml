@@ -109,7 +109,18 @@
         </service>
         <service android:name=".ListenerService">
             <intent-filter>
-                <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
+                <!-- <action android:name="com.google.android.gms.wearable.BIND_LISTENER" /> -->
+                <!-- listeners receive events that match the action and data filters -->
+                <action android:name="com.google.android.gms.wearable.CAPABILITY_CHANGED" />
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <!-- filters by Constants.EXTRA_ATTRACTIONS
+                Constants.START_ATTRACTION_PATH ('/start/attraction') and
+                Constants.START_NAVIGATION_PATH ('/start/navigation')
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/start"/> -->
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/xdrip"/>
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/nightscout"/>
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/sendstatustowear"/>
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/openwearsettings"/>
             </intent-filter>
         </service>
         <service

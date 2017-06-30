@@ -8,40 +8,13 @@
     <LinearLayout
         android:id="@+id/menuextras_layout"
         android:layout_width="36dp"
-        android:layout_height="66dp"
+        android:layout_height="60dp"
         android:orientation="vertical"
         android:textAlignment="center"
         android:baselineAligned="false"
         android:layout_gravity="left|top"
         android:gravity="left|top">
 
-        <LinearLayout
-            android:id="@+id/steps_layout"
-            android:layout_width="36dp"
-            android:orientation="vertical"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:baselineAligned="false"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:gravity="center_horizontal|center_vertical">
-
-            <Button
-                android:layout_width="30dp"
-                android:layout_height="36dp"
-                android:drawableTop="@drawable/ic_walk_grey600_24dp"
-                android:id="@+id/walkButton"
-                android:paddingBottom="0dp"
-                android:paddingEnd="0dp"
-                android:paddingTop="0dp"
-                android:paddingStart="0dp"
-                android:layout_marginRight="0dp"
-                android:layout_marginTop="0dp"
-                android:background="@android:color/transparent"
-                android:text="99999"
-                android:textSize="10sp"
-                android:textAlignment="gravity"
-                android:gravity="center_horizontal|center_vertical" />
-        </LinearLayout>
         <LinearLayout
             android:id="@+id/menu_layout"
             android:layout_width="30dp"
@@ -70,6 +43,33 @@
                 android:gravity="center_horizontal|center_vertical"
                 android:layout_below="@+id/walkButton"
                 android:layout_alignStart="@+id/walkButton" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/steps_layout"
+            android:layout_width="36dp"
+            android:orientation="vertical"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:baselineAligned="false"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:gravity="center_horizontal|center_vertical">
+
+            <Button
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:drawableTop="@drawable/ic_directions_walk_white_18dp"
+                android:id="@+id/walkButton"
+                android:paddingBottom="0dp"
+                android:paddingEnd="0dp"
+                android:paddingTop="0dp"
+                android:paddingStart="0dp"
+                android:layout_marginRight="0dp"
+                android:layout_marginTop="0dp"
+                android:background="@android:color/transparent"
+                android:text="12345"
+                android:textSize="10sp"
+                android:textAlignment="gravity"
+                android:gravity="center_horizontal|center_vertical" />
         </LinearLayout>
     </LinearLayout>
 

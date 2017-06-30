@@ -118,7 +118,7 @@ public class CalibrationDataTable extends ListActivity implements NavigationDraw
                         public void onClick(DialogInterface dialog, int which) {
                             switch (which){
                                 case DialogInterface.BUTTON_POSITIVE:
-                                    calibration.invalidate();
+                                    calibration.clear_byuuid(calibration.uuid, false);
                                     notifyDataSetChanged();
                                     break;
 

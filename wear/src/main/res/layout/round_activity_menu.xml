@@ -47,13 +47,13 @@
             <ImageButton
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:src="@drawable/ic_local_dining_white_48dp"
+                android:src="@drawable/ic_cloud_download_white_48pt"
                 android:scaleType="centerCrop"
                 android:id="@+id/refreshdbbutton" />
             <ImageButton
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:src="@drawable/ic_redo_variant_grey600_24dp"
+                android:src="@drawable/ic_autorenew_white_48dp"
                 android:scaleType="centerCrop"
                 android:id="@+id/restartcollectorbutton" />
             <ImageButton

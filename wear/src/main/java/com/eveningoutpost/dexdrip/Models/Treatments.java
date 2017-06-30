@@ -267,13 +267,49 @@ public class Treatments extends Model {
                 .orderBy("systimestamp desc")
                 .executeSingle();
     }
-
-    public static Treatments last() {
+    /*public static Treatments last() {
         fixUpTable();
         return new Select()
                 .from(Treatments.class)
                 .orderBy("_ID desc")
                 .executeSingle();
+    }*/
+
+    public static Treatments lastCarbsOrInsulin() {
+        fixUpTable();
+        //.where("carbs > 0 OR insulin > 0 OR (notes IS NOT NULL AND notes != '' AND notes NOT LIKE '%watchkeypad%'")
+        List<Treatments> treatl =  new Select()
+                .from(Treatments.class)
+                .where("carbs > 0 OR insulin > 0 OR notes IS NOT NULL")
+                .orderBy("timestamp desc")
+                .execute();
+        if ((treatl != null) && (treatl.size() > 0)) {
+            return treatl.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    public static Treatments last() {
+        final List<Treatments> treatl = last(1);
+        if ((treatl != null) && (treatl.size() > 0)) {
+            return treatl.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    public static List<Treatments> last(int num) {
+        try {
+            return new Select()
+                    .from(Treatments.class)
+                    .orderBy("timestamp desc")
+                    .limit(num)
+                    .execute();
+        } catch (android.database.sqlite.SQLiteException e) {
+            fixUpTable();
+            return null;
+        }
     }
 
     public static Treatments byuuid(String uuid) {
@@ -309,6 +345,20 @@ public class Treatments extends Model {
             List<Treatments> data = new Select()
                     .from(Treatments.class)
                     .where("systimestamp < ?", timestamp)//timestamp
+                    .orderBy("systimestamp desc")
+                    .execute();
+            if (data != null) Log.d(TAG, "cleanup Treatments size=" + data.size());
+            new Cleanup().execute(data);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception running cleanup " + e.toString());
+        }
+    }
+
+    public static void cleanupBloodTest(long timestamp) {
+        try {
+            List<Treatments> data = new Select()
+                    .from(Treatments.class)
+                    .where("systimestamp < ? and carbs = 0 and insulin = 0", timestamp)//timestamp
                     .orderBy("systimestamp desc")
                     .execute();
             if (data != null) Log.d(TAG, "cleanup Treatments size=" + data.size());
@@ -488,7 +538,7 @@ public class Treatments extends Model {
     }
 
     public static List<Treatments> latestForGraphSystime(int number, double startTime) {
-        return latestForGraph(number, startTime, JoH.ts());
+        return latestForGraphSystime(number, startTime, JoH.ts());
     }
 
     public static List<Treatments> latestForGraphSystime(int number, double startTime, double endTime) {
@@ -514,7 +564,7 @@ public class Treatments extends Model {
         return new Select()
                 .from(Treatments.class)
                 .where("timestamp >= ? and timestamp <= ?", df.format(startTime), df.format(endTime))
-                .orderBy("timestamp asc")
+                .orderBy("timestamp desc")
                 .limit(number)
                 .execute();
     }

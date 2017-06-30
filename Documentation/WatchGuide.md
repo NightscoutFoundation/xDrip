@@ -235,6 +235,11 @@ Treatment data points can be displayed on the watchface graph by enabling the "S
 Once enabled, treatments entered via the phone or watch UI will be displayed on the watch.  Insulin, Carbs, Notes are displayed with a green diamond.  Bloodtests are displayed with a red square, and Calibrations are displayed with a red circle.  Each of these are outlined with a yellow rim for a 3-dimensional effect.  Treatments entered on the watch will be saved to the Wear database and posted to the phone upon next connection.  Likewise, treatments entered on the phone will be posted to the watch upon next connection so that data should remain in-sync when Show Treatments is enabled.
 
 Note, this process only supports treatments entered by the Keyboard Input Activity.  Spoken Treatment is currently not supported since many watches do not support speech recognition well.  Treatments entered via the Spoken Treatment Activity continues to work as before and requires a connection to the phone for data to be processed.
+Here is the typical setup and process on the watch for Spoken Treatments.
+
+	1. Associate the Spoken Treatment app with "Take a note" Action in your phone's Android Wear for the watch. Your phone may also have the option to select Google Keep as well.
+	2. Say "Ok Google" to your watch.  It is slow so you have to speak clearly. Then say, "Take a note". The watch should display the speak icon.
+	3. Then speak your treatment, slowly and distinctly, for example, "1 carb".  This activates the Spoken Treatment activity with the mic icon. Press the mic icon, and the approval screen should be displayed.
 
 <img align="middle" src="./images/prefs-show-treatments.png" title="XDrip Show Treatments Preference">
 

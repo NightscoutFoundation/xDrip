@@ -71,7 +71,7 @@ public class CalibrationOverride extends ActivityWithMenu {
                                 UndoRedo.addUndoCalibration(calibration.uuid);
                                 GcmActivity.pushCalibration(string_value, "0");
 
-                                startWatchUpdaterService(v.getContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
+                                //startWatchUpdaterService(v.getContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
 
                             } else {
                                 Log.e(TAG, "Calibration creation resulted in null");

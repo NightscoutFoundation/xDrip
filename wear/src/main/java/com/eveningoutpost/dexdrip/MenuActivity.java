@@ -2,10 +2,8 @@ package com.eveningoutpost.dexdrip;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.wearable.view.WatchViewStub;
 import android.view.View;
 import android.widget.Button;
@@ -14,26 +12,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
-import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Tables.BgReadingTable;
 import com.eveningoutpost.dexdrip.Tables.BloodTestTable;
 import com.eveningoutpost.dexdrip.Tables.CalibrationDataTable;
-import com.eveningoutpost.dexdrip.Tables.SensorDataTable;
 import com.eveningoutpost.dexdrip.Tables.TreatmentsTable;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
-import java.nio.charset.StandardCharsets;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
-import static com.eveningoutpost.dexdrip.ListenerService.SendData;
-import static com.eveningoutpost.dexdrip.ListenerService.WEARABLE_INITDB_PATH;
+import static com.eveningoutpost.dexdrip.ListenerService.WEARABLE_INITTREATMENTS_PATH;
 
 /**
  * Adapted from WearDialer which is:
@@ -172,7 +161,7 @@ public class MenuActivity extends Activity {
                 break;
             case "refreshdb":
                 refreshdbbutton.setBackgroundColor(onColor);
-                ListenerService.SendData(this, WEARABLE_INITDB_PATH, null);
+                ListenerService.SendData(this, WEARABLE_INITTREATMENTS_PATH, null);
                 msg = getResources().getString(R.string.notify_refreshdb);
                 JoH.static_toast(xdrip.getAppContext(), msg, Toast.LENGTH_SHORT);
                 break;
