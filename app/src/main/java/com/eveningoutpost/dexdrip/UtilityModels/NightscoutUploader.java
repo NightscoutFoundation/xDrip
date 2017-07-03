@@ -565,7 +565,11 @@ public class NightscoutUploader {
             }
 
             try {
-                postTreatments(nightscoutService, secret);
+                if (Home.getPreferencesBooleanDefaultFalse("send_treatments_to_nightscout")) {
+                    postTreatments(nightscoutService, secret);
+                } else {
+                    Log.d(TAG,"Skipping treatment upload due to preference disabled");
+                }
             } catch (Exception e) {
                 Log.e(TAG, "Exception uploading REST API treatments: " + e.getMessage());
                 if (e.getMessage().equals("Not Found")) {
