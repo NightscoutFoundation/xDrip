@@ -58,7 +58,7 @@
     <string name="pref_message_mongodb_device_status_collection">This is the name of the collection where the battery and other device data will be stored</string>
 
     <!-- API Settings -->
-    <string name="pref_title_api">API Upload (REST)</string>
+    <string name="pref_title_api">Nightscout Sync (REST-API)</string>
     <string name="pref_title_api_enabled">Enabled</string>
     <string name="pref_summary_api_enabled">The REST API is an alternative to direct mongodb upload</string>
     <string name="pref_title_api_url">Base URL</string>
