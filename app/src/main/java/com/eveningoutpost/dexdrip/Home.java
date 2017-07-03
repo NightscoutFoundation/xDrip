@@ -2596,10 +2596,7 @@ public class Home extends ActivityWithMenu {
                 }
 
                 // TODO this should be partially already be covered by dg - recheck
-                if ((BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER)
-                        && (BgGraphBuilder.best_bg_estimate > 0)
-                        && (BgGraphBuilder.last_bg_estimate > 0)
-                        && (prefs.getBoolean("bg_compensate_noise", false))) {
+                if (BestGlucose.compensateNoise()) {
                     estimate = BgGraphBuilder.best_bg_estimate; // this maybe needs scaling based on noise intensity
                     estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
                     slope_arrow = BgReading.slopeToArrowSymbol(estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000)); // delta by minute
@@ -2654,11 +2651,7 @@ public class Home extends ActivityWithMenu {
 
             //display_delta = bgGraphBuilder.unitizedDeltaString(true, true, is_follower);
             display_delta = dg.unitized_delta;
-            // TODO reduce duplication of logic
-            if ((BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER)
-                    && (BgGraphBuilder.best_bg_estimate > 0)
-                    && (BgGraphBuilder.last_bg_estimate > 0)
-                    && (prefs.getBoolean("bg_compensate_noise", false))) {
+            if (BestGlucose.compensateNoise()) {
                 //final double estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
                 display_delta = bgGraphBuilder.unitizedDeltaStringRaw(true, true, estimated_delta);
                 addDisplayDelta();

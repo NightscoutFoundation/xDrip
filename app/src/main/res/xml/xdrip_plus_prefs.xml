@@ -273,6 +273,14 @@
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="\u26A0 Smooth sensor noise" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="bg_compensate_noise_ultrasensitive"
+                android:dependency="bg_compensate_noise"
+                android:summary="@string/try_to_work_around_noisy_readings_ultrasensitive"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="\u26A0 Smooth sensor noise ultrasensitive" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="show_showcase"
