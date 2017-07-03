@@ -758,6 +758,8 @@ public class Preferences extends PreferenceActivity {
             final Preference old_school_calibration_mode = findPreference("old_school_calibration_mode");
             final Preference extraTagsForLogs = findPreference("extra_tags_for_logging");
             final Preference enableBF = findPreference("enable_bugfender");
+            final PreferenceCategory displayCategory = (PreferenceCategory) findPreference("xdrip_plus_display_category");
+
 
             findPreference("bluetooth_meter_enabled").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -978,6 +980,15 @@ public class Preferences extends PreferenceActivity {
             }
 
             final boolean engineering_mode = this.prefs.getBoolean("engineering_mode",false);
+
+            if (!engineering_mode) {
+                try {
+                    displayCategory.removePreference(findPreference("bg_compensate_noise_ultrasensitive"));
+                } catch (Exception e) {
+                    //
+                }
+            }
+
 
             if (!engineering_mode) {
                 try {
