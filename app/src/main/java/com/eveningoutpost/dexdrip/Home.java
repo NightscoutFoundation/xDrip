@@ -989,7 +989,7 @@ public class Home extends ActivityWithMenu {
                 (btnInsulinDose.getVisibility() == View.INVISIBLE)) {
             hideAllTreatmentButtons(); // we clear values here also
             //send toast to wear - closes the confirmation activity on the watch
-            WatchUpdaterService.sendWearLocalToast("Treatment processed", Toast.LENGTH_LONG);
+            WatchUpdaterService.sendWearToast("Treatment processed", Toast.LENGTH_LONG);
             return true;
         } else {
             return false;
