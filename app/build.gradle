@@ -124,7 +124,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.eveningoutpost.dexdrip"
+        applicationId "jamorham.xdrip.plus.variant1"
         minSdkVersion 18
         // increasing target SDK version can cause compatibility issues with Android 7+
         //noinspection ExpiredTargetSdkVersion

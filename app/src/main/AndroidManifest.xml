@@ -75,7 +75,7 @@
 
         <provider
             android:name="com.activeandroid.content.ContentProvider"
-            android:authorities="${applicationId}"
+            android:authorities="com.example4"
             android:enabled="true"
             android:exported="false" />
         <provider
