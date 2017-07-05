@@ -1,7 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
 import android.annotation.SuppressLint;
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -28,13 +27,13 @@ import com.eveningoutpost.dexdrip.Models.PredictionData;
 import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
-
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -57,7 +56,6 @@ public class NFCReaderX {
     private static final Lock read_lock = new ReentrantLock();
     private static final boolean useReaderMode = true;
     private static boolean nfc_enabled = false;
-    private static int file_num = 0;
 
 
     public static void stopNFC(Activity context) {
@@ -94,7 +92,10 @@ public class NFCReaderX {
     @SuppressLint("NewApi")
     public static void doNFC(final Activity context) {
 
+      
+        Log.e(TAG, "doNFC called");
         if (!useNFC()) return;
+        Log.e(TAG, "doNFC1 called");
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(context);
 
@@ -170,6 +171,7 @@ public class NFCReaderX {
     }
 
     private static synchronized void doTheScan(final Activity context, Tag tag, boolean showui) {
+      Log.e(TAG, "doTheScan called");
         synchronized (tag_lock) {
             if (!tag_discovered) {
                 if (!useNFC()) return;
@@ -203,7 +205,7 @@ public class NFCReaderX {
 
     // via intents
     public static void tagFound(Activity context, Intent data) {
-
+        Log.e(TAG, "tagFound");
         if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(data.getAction())) {
             Tag tag = data.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             doTheScan(context, tag, true);
@@ -231,34 +233,29 @@ public class NFCReaderX {
             tag_discovered = false;
             Home.startHomeWithExtra(context, null, null);
             Home.staticBlockUI(context, false);
-            /*
-            try {
-                if (tag == null) return;
-                if (!NFCReaderX.useNFC()) return;
-                if (succeeded) {
-                    final String tagId = bytesToHexString(tag.getId());
-
-                    mResult = parseData(0, tagId, data);
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult));
-                            Home.staticRefreshBGCharts();
-                        }
-                    }.start();
-                } else {
-                    Log.d(TAG, "Scan did not succeed so ignoring buffer");
-                }
-                Home.startHomeWithExtra(context, null, null);
-
-            } catch (IllegalStateException e) {
-                Log.e(TAG, "Illegal state exception in postExecute: " + e);
-
-            } finally {
-                tag_discovered = false; // right place?
-                Home.staticBlockUI(context, false);
-            }
-            */
+        }
+        
+        void WriteToFile(String dir, String file, byte []data) {
+          
+          if (data == null) {
+            Log.e(TAG, "Writing to file " + file + "Data is null.");
+            return;
+          }
+          
+          SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+          String currentDateandTime = sdf.format(new Date());
+          
+          String file_name = dir + '/' + file+ "_" + currentDateandTime + ".dat";
+          try {
+            Log.e(TAG, "Writing to file " + file_name + ", size = " + data.length);
+            FileOutputStream f = new FileOutputStream(new File(file_name));
+            f.write(data);
+            //f.flush();
+            f.close();
+          }catch (IOException e) {
+            Log.e(TAG, "Cought exception when trying to write file", e);
+        }
+          
         }
 
         @Override
@@ -266,29 +263,35 @@ public class NFCReaderX {
             Tag tag = params[0];
             //NfcOsHandle handle = this.osFunctions.getCommunicationHandle(tag);
             NfcV internalHandle = NfcV.get(tag);
+
+            
+            String Directory = context.getApplicationInfo().dataDir;
+            
             
             try {
-                internalHandle.connect(); //??????? is this enough
+                internalHandle.connect();
                 Log.e(TAG, "After connect");
-                getPatchInfo(internalHandle);
+                byte[] data = getPatchInfo(internalHandle);
+                WriteToFile(Directory, "PatchInfo", data);
                 Log.e(TAG, "After getPatchInfo");
-                byte[] data = readPatchFram(internalHandle, 0 , 0x158);
+                data = readPatchFram(internalHandle, 0 , 0x158);
                 internalHandle.close();
-                Log.e(TAG, "Writing to file " + file_num + ", size = " + data.length);
-                
-                FileOutputStream f = new FileOutputStream(new File("/data/data/com.eveningoutpost.dexdrip/files/scan"+ file_num + ".dat"));
-                NFCReaderX.file_num++;
-                f.write(data);
-                f.flush();
-                f.close();
+                WriteToFile(Directory, "scan", data);
+                //Log.e(TAG, "Writing to file " + file_num + ", size = " + data.length);
+
+                //FileOutputStream f = new FileOutputStream(new File("/data/data/com.eveningoutpost.dexdrip/files/scan"+ file_num + ".dat"));
+                //NFCReaderX.file_num++;
+                //f.write(data);
+                //f.flush();
+                //f.close();
             }
             catch (IOException e) {
                 Log.e(TAG, "Cought exception on doInBackground - readPatchFram failed", e);
             }
             return tag;
-            
+
         }
-        
+
         public byte[] getPatchInfo(NfcV handle) {
             byte[] bArr = null;
                 byte[] response = tranceiveWithRetries(handle, new byte[]{(byte) 2, (byte) -95, (byte) 7, (byte) -62, (byte) -83, (byte) 117, (byte) 33});
@@ -297,7 +300,7 @@ public class NFCReaderX {
                 }
             return bArr;
         }
-        
+
         private byte[] readPatchFram(NfcV handle, int startAddress, int numberOfBytes) throws IOException {
             int startBlockOffset = startAddress % 8;
             int blockStartAddress = startAddress - startBlockOffset;
@@ -325,11 +328,11 @@ public class NFCReaderX {
             }
             return Arrays.copyOfRange(paddedArray, startBlockOffset, startBlockOffset + numberOfBytes);
         }
-        
+
         private static boolean responseIsSuccess(byte[] response) {
             return response != null && response.length > 0 && (response[0] & 1) == 0;
         }
-        
+
         // better handle exceptions
         private byte[] tranceiveWithRetries(NfcV handle, byte[] command) {
             byte[] response = null;
@@ -347,10 +350,42 @@ public class NFCReaderX {
             }
             return response;
         }
+
         
+        
+        //@Override
+        protected void onPostExecuteOld(Tag tag) {
+            try {
+                if (tag == null) return;
+                if (!NFCReaderX.useNFC()) return;
+                if (succeeded) {
+                    final String tagId = bytesToHexString(tag.getId());
+
+                    mResult = parseData(0, tagId, data);
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            LibreAlarmReceiver.processReadingDataTransferObject(new ReadingData.TransferObject(1, mResult));
+                            Home.staticRefreshBGCharts();
+                        }
+                    }.start();
+                } else {
+                    Log.d(TAG, "Scan did not succeed so ignoring buffer");
+                }
+                Home.startHomeWithExtra(context, null, null);
+
+            } catch (IllegalStateException e) {
+                Log.e(TAG, "Illegal state exception in postExecute: " + e);
+
+            } finally {
+                tag_discovered = false; // right place?
+                Home.staticBlockUI(context, false);
+            }
+        }
+
 
         //@Override
-        protected Tag doInBackgroundOrig(Tag... params) {
+        protected Tag doInBackgroundOld(Tag... params) {
             if (!NFCReaderX.useNFC()) return null;
             if (read_lock.tryLock()) {
 
