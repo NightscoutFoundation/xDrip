@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
 import android.annotation.SuppressLint;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -28,6 +29,9 @@ import com.eveningoutpost.dexdrip.Models.ReadingData;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +57,7 @@ public class NFCReaderX {
     private static final Lock read_lock = new ReentrantLock();
     private static final boolean useReaderMode = true;
     private static boolean nfc_enabled = false;
+    private static int file_num = 0;
 
 
     public static void stopNFC(Activity context) {
@@ -222,6 +227,11 @@ public class NFCReaderX {
 
         @Override
         protected void onPostExecute(Tag tag) {
+            Log.d(TAG, "onPostExecute!!!");
+            tag_discovered = false;
+            Home.startHomeWithExtra(context, null, null);
+            Home.staticBlockUI(context, false);
+            /*
             try {
                 if (tag == null) return;
                 if (!NFCReaderX.useNFC()) return;
@@ -248,11 +258,99 @@ public class NFCReaderX {
                 tag_discovered = false; // right place?
                 Home.staticBlockUI(context, false);
             }
+            */
         }
-
 
         @Override
         protected Tag doInBackground(Tag... params) {
+            Tag tag = params[0];
+            //NfcOsHandle handle = this.osFunctions.getCommunicationHandle(tag);
+            NfcV internalHandle = NfcV.get(tag);
+            
+            try {
+                internalHandle.connect(); //??????? is this enough
+                Log.e(TAG, "After connect");
+                getPatchInfo(internalHandle);
+                Log.e(TAG, "After getPatchInfo");
+                byte[] data = readPatchFram(internalHandle, 0 , 0x158);
+                internalHandle.close();
+                Log.e(TAG, "Writing to file " + file_num + ", size = " + data.length);
+                
+                FileOutputStream f = new FileOutputStream(new File("/data/data/com.eveningoutpost.dexdrip/files/scan"+ file_num + ".dat"));
+                NFCReaderX.file_num++;
+                f.write(data);
+                f.flush();
+                f.close();
+            }
+            catch (IOException e) {
+                Log.e(TAG, "Cought exception on doInBackground - readPatchFram failed", e);
+            }
+            return tag;
+            
+        }
+        
+        public byte[] getPatchInfo(NfcV handle) {
+            byte[] bArr = null;
+                byte[] response = tranceiveWithRetries(handle, new byte[]{(byte) 2, (byte) -95, (byte) 7, (byte) -62, (byte) -83, (byte) 117, (byte) 33});
+                if (responseIsSuccess(response)) {
+                    bArr = Arrays.copyOfRange(response, 1, response.length);
+                }
+            return bArr;
+        }
+        
+        private byte[] readPatchFram(NfcV handle, int startAddress, int numberOfBytes) throws IOException {
+            int startBlockOffset = startAddress % 8;
+            int blockStartAddress = startAddress - startBlockOffset;
+            int bytesToRead = numberOfBytes + startBlockOffset;
+            if (bytesToRead % 8 != 0) {
+                bytesToRead += 8 - (bytesToRead % 8);
+            }
+            int firstBlock = blockStartAddress / 8;
+            byte[] paddedArray = new byte[bytesToRead];
+            int blocksToRead = bytesToRead / 8;
+            int blockIndex = 0;
+            while (blockIndex < blocksToRead) {
+                int blockNumber = firstBlock + blockIndex;
+                int multiblockReadNumberBlocks = Math.min(3, blocksToRead - blockIndex);
+                byte[] response = tranceiveWithRetries(handle, blockNumber <= 255 ? new byte[]{(byte) 2, (byte) 35, (byte) blockNumber, (byte) (multiblockReadNumberBlocks - 1)} : new byte[]{(byte) 2, (byte) -77, (byte) 7, (byte) blockNumber, (byte) (blockNumber >> 8), (byte) (multiblockReadNumberBlocks - 1)});
+                if (!responseIsSuccess(response) || response.length < (multiblockReadNumberBlocks * 8) + 1) {
+                    return null;
+                }
+                for (int b = 0; b < multiblockReadNumberBlocks; b++) {
+                    for (int i = 0; i < 8; i++) {
+                        paddedArray[(blockIndex * 8) + i] = response[((b * 8) + i) + 1];
+                    }
+                    blockIndex++;
+                }
+            }
+            return Arrays.copyOfRange(paddedArray, startBlockOffset, startBlockOffset + numberOfBytes);
+        }
+        
+        private static boolean responseIsSuccess(byte[] response) {
+            return response != null && response.length > 0 && (response[0] & 1) == 0;
+        }
+        
+        // better handle exceptions
+        private byte[] tranceiveWithRetries(NfcV handle, byte[] command) {
+            byte[] response = null;
+            int i = 0;
+            while (i < 3) {
+                    try {
+                        response = handle.transceive(command);
+                    } catch (IOException e) {
+                        Log.e(TAG, "Cought exception on tranceiveWithRetries - retrying");
+                    }
+                    if (responseIsSuccess(response)) {
+                        return response;
+                    }
+                    i++;
+            }
+            return response;
+        }
+        
+
+        //@Override
+        protected Tag doInBackgroundOrig(Tag... params) {
             if (!NFCReaderX.useNFC()) return null;
             if (read_lock.tryLock()) {
 
