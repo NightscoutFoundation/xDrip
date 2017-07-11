@@ -1233,7 +1233,8 @@ public class WatchUpdaterService extends WearableListenerService implements
         if (bg != null) {
             forceGoogleApiConnect();
             if (wear_integration) {
-                new SendToDataLayerThread(WEARABLE_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap(bg, mPrefs, new BgGraphBuilder(getApplicationContext())));
+                final int battery = BgSendQueue.getBatteryLevel(getApplicationContext());
+                new SendToDataLayerThread(WEARABLE_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, dataMap(bg, mPrefs, new BgGraphBuilder(getApplicationContext()), battery));
             }
         }
     }
@@ -1248,10 +1249,11 @@ public class WatchUpdaterService extends WearableListenerService implements
             List<BgReading> graph_bgs = BgReading.latestForGraph(60, startTime);
             BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(getApplicationContext());
             if (!graph_bgs.isEmpty()) {
-                DataMap entries = dataMap(last_bg, mPrefs, bgGraphBuilder);
+                final int battery = BgSendQueue.getBatteryLevel(getApplicationContext());
+                DataMap entries = dataMap(last_bg, mPrefs, bgGraphBuilder, battery);
                 final ArrayList<DataMap> dataMaps = new ArrayList<>(graph_bgs.size());
                 for (BgReading bg : graph_bgs) {
-                    dataMaps.add(dataMap(bg, mPrefs, bgGraphBuilder));
+                    dataMaps.add(dataMap(bg, mPrefs, bgGraphBuilder, battery));
                 }
                 entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
                 entries.putDataMapArrayList("entries", dataMaps);
@@ -1309,12 +1311,12 @@ public class WatchUpdaterService extends WearableListenerService implements
     }
 
 
-    private DataMap dataMap(BgReading bg, SharedPreferences sPrefs, BgGraphBuilder bgGraphBuilder) {
+    private DataMap dataMap(BgReading bg, SharedPreferences sPrefs, BgGraphBuilder bgGraphBuilder, int battery) {
         Double highMark = Double.parseDouble(sPrefs.getString("highValue", "170"));
         Double lowMark = Double.parseDouble(sPrefs.getString("lowValue", "70"));
         DataMap dataMap = new DataMap();
 
-        int battery = BgSendQueue.getBatteryLevel(getApplicationContext());
+        //int battery = BgSendQueue.getBatteryLevel(getApplicationContext());
 
         dataMap.putString("sgvString", bgGraphBuilder.unitized_string(bg.calculated_value));
         dataMap.putString("slopeArrow", bg.slopeArrow());
@@ -1750,7 +1752,8 @@ public class WatchUpdaterService extends WearableListenerService implements
                 else
                     latest = BgReading.latest(count);
                 if ((last != null) && (latest != null && !latest.isEmpty())) {
-                    Log.d(TAG, "sendWearBgData latest count = " + latest.size());
+                    final int battery = BgSendQueue.getBatteryLevel(xdrip.getAppContext());
+                    Log.d(TAG, "sendWearBgData latest count = " + latest.size() + " battery=" + battery);
                     final DataMap entries = dataMap(last);
                     final ArrayList<DataMap> dataMaps = new ArrayList<>(latest.size());
                     final Sensor sensor = Sensor.currentSensor();
@@ -1762,6 +1765,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                         }
                     }
                     entries.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
+                    entries.putInt("battery", battery);
                     entries.putDataMapArrayList("entries", dataMaps);
                     new SendToDataLayerThread(WEARABLE_BG_DATA_PATH, googleApiClient).executeOnExecutor(xdrip.executor, entries);
                 } else

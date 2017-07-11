@@ -22,7 +22,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.wearable.view.WatchViewStub;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
-import android.util.Log;
+//KS import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowInsets;
@@ -35,6 +35,7 @@ import android.widget.TextView;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.google.android.gms.wearable.DataMap;
 import com.ustwo.clockwise.common.WatchMode;
 import com.ustwo.clockwise.wearable.WatchFace;
@@ -422,6 +423,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 dataMap = DataMap.fromBundle(bundle);
                 wakeLock.acquire(50);
                 externalStatusString = dataMap.getString("externalStatusString");
+                if (d) Log.d(TAG, "MessageReceiver externalStatusString=" + externalStatusString);
 
                 showAgoRawBattStatus();
 
@@ -435,7 +437,8 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 mRelativeLayout.measure(specW, specH);
                 mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                         mRelativeLayout.getMeasuredHeight());
-                //invalidate();//to conserve battery, use onTimeChanged() default of one minute instead
+                if (sharedPrefs.getBoolean("refresh_on_change", false))
+                    invalidate();//to conserve battery, use onTimeChanged() default of one minute instead
                 setColor();
             }
         }
@@ -555,9 +558,9 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
             }
         }
         if (isCollectorRunning) {//Wear Collector
-            Log.d(TAG, DexCollectionType.getDexCollectionType() + " is running.");
             int wearBattery = getWearBatteryLevel(getApplication());
             String wearBatteryString = "" + wearBattery;
+            Log.d(TAG, DexCollectionType.getDexCollectionType() + " is running. batteryString=" + batteryString + " wearBatteryString=" + wearBatteryString);
             batteryLevel = (wearBattery >= 30) ? 1 : 0;
             uploaderBatteryText = getResources().getString(R.string.label_show_uploader_wear, wearBatteryString);
             if (showStatus || mShowXBattery)
@@ -566,7 +569,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 mUploaderBattery.setText(uploaderBatteryText);//"Wear: " + batteryString + "%"
         }
         else {//Phone Collector
-            Log.d(TAG, "Collector running on phone");
+            Log.d(TAG, "Collector running on phone batteryString=" + batteryString);
             uploaderBatteryText = getResources().getString(R.string.label_show_uploader, batteryString);
             if (showStatus || mShowXBattery)
                 mUploaderBattery.setText(getResources().getString(R.string.label_show_uploader_abbrv, batteryString));//"U: " + batteryString + "%"

@@ -244,7 +244,8 @@ public class BgSendQueue extends Model {
                 Log.d("BgSendQueue", "handleNewBgReading Broadcast BG data to watch");
                 resendData(context);
                 if (prefs.getBoolean("force_wearG5", false)) {
-                    ListenerService.requestData(context);//Gets called by watchface in missedReadingAlert so not needed here
+                    //ListenerService.requestData(context);//Gets called by watchface in missedReadingAlert so not needed here
+                    ListenerService.SendData(context, ListenerService.SYNC_ALL_DATA, null);//Do not need to request data from phone using requestData which performs a resend
                 }
             }
 
@@ -258,13 +259,19 @@ public class BgSendQueue extends Model {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         if (prefs.getBoolean("enable_wearG5", false) && prefs.getBoolean("force_wearG5", false)) {
-            ListenerService.requestData(context);
+            //ListenerService.requestData(context);
+            ListenerService.SendData(context, ListenerService.SYNC_ALL_DATA, null);
         }
     }
 
+    public static void resendData(Context context) {
+        final int battery = BgSendQueue.getBatteryLevel(context.getApplicationContext());
+        resendData(context, battery);
+    }
+
     //KS start from WatchUpdaterService
-    public static void resendData(Context context) {//KS
-        Log.d("BgSendQueue", "resendData enter");
+    public static void resendData(Context context, int battery) {//KS
+        Log.d("BgSendQueue", "resendData enter battery=" + battery);
         long startTime = new Date().getTime() - (60000 * 60 * 24);
         Intent messageIntent = new Intent();
         messageIntent.setAction(Intent.ACTION_SEND);
@@ -281,9 +288,9 @@ public class BgSendQueue extends Model {
             Log.d("BgSendQueue", "resendData graph_bgs size=" + graph_bgs.size());
             final ArrayList<DataMap> dataMaps = new ArrayList<>(graph_bgs.size());
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
-            DataMap entries = dataMap(last_bg, sharedPrefs, bgGraphBuilder, context);
+            DataMap entries = dataMap(last_bg, sharedPrefs, bgGraphBuilder, context, battery);
             for (BgReading bg : graph_bgs) {
-                dataMaps.add(dataMap(bg, sharedPrefs, bgGraphBuilder, context));
+                dataMaps.add(dataMap(bg, sharedPrefs, bgGraphBuilder, context, battery));
             }
             entries.putDataMapArrayList("entries", dataMaps);
             if (sharedPrefs.getBoolean("extra_status_line", false)) {
@@ -324,12 +331,12 @@ public class BgSendQueue extends Model {
         return dataMap;
     }
 
-    private static DataMap dataMap(BgReading bg, SharedPreferences sPrefs, BgGraphBuilder bgGraphBuilder, Context context) {//KS
+    private static DataMap dataMap(BgReading bg, SharedPreferences sPrefs, BgGraphBuilder bgGraphBuilder, Context context, int battery) {//KS
         Double highMark = Double.parseDouble(sPrefs.getString("highValue", "140"));
         Double lowMark = Double.parseDouble(sPrefs.getString("lowValue", "60"));
         DataMap dataMap = new DataMap();
 
-        int battery = BgSendQueue.getBatteryLevel(context.getApplicationContext());
+        //int battery = BgSendQueue.getBatteryLevel(context.getApplicationContext());
 
         dataMap.putString("sgvString", bgGraphBuilder.unitized_string(bg.calculated_value));
         dataMap.putString("slopeArrow", bg.slopeArrow());
