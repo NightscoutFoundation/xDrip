@@ -226,29 +226,61 @@ public class DatabaseUtil {
                 zipOutputStream.putNextEntry(new ZipEntry("export" + DateFormat.format("yyyyMMdd-kkmmss", System.currentTimeMillis()) + ".csv"));
                 printStream = new PrintStream(zipOutputStream);
 
-                printStream.println("DAY;TIME;UDT_CGMS");
-
+                //add threadment ang BGlucose Header
+                printStream.println("DAY;TIME;UDT_CGMS;BG_LEVEL;CH_GR;BOLUS;REMARK");
 
                 SQLiteDatabase db = Cache.openDatabase();
-                //Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, "timestamp >= ? AND timestamp <=  ? AND calculated_value > ?", new String[]{"" + bounds.start, "" + bounds.stop, CUTOFF}, null, null, orderBy);
-
-                Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, null, null, null, null, "timestamp ASC");//KS
-
+                // Set all needed Vars
                 double value;
+                String valueIE;
+                String valueKH;
+                String notes;
+
                 long timestamp;
                 java.text.DateFormat df = new SimpleDateFormat("dd.MM.yyyy;HH:mm;");
                 Date date = new Date();
 
+                //Extract CGMS-Values
+                Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, null, null, null, null, "timestamp ASC");//KS
                 if (cur.moveToFirst()) {
                     do {
                         timestamp = cur.getLong(0);
                         value = cur.getDouble(1);
                         if(value > 13){
                             date.setTime(timestamp);
-                            printStream.println(df.format(date) + Math.round(value));
+                            printStream.println(df.format(date) + Math.round(value) + ";;;;");
                         }
+                    } while (cur.moveToNext());
+                }
 
+                //Extract Mesurement-Values (used Calibration table,as there seems to be more Values, maybe add BloodTest later)
+                cur = db.query("Calibration", new String[]{"timestamp", "bg"}, null, null, null, null, "timestamp ASC");
+                if (cur.moveToFirst()) {
+                    do {
+                        timestamp = cur.getLong(0);
+                        value = cur.getDouble(1);
+                        if(value > 0 ){
+                            date.setTime(timestamp);
+                            printStream.println(df.format(date) + ";" + Math.round(value) + ";;;");
+                        }
+                    } while (cur.moveToNext());
+                }
 
+                //Extract Treatment-Values
+                cur = db.query("Treatments", new String[]{"timestamp", "carbs", "insulin", "notes"}, null, null, null, null, "timestamp ASC");
+                if (cur.moveToFirst()) {
+                    do {
+                        timestamp  = cur.getLong(0);
+                        valueKH    = cur.getString(1);
+                        valueIE    = cur.getString(2);
+                        notes      = cur.getString(3);
+                        if (notes == null) notes = "";
+                        if (valueIE.equals("0")) valueIE = "";
+                        if (valueKH.equals("0")) valueKH = "";
+                        if (!valueIE.equals("") || !valueKH.equals("") || !notes.equals("")){
+                            date.setTime(timestamp);
+                            printStream.println(df.format(date) + ";;" + valueKH + ";" + valueIE + ";" + notes);
+                        }
                     } while (cur.moveToNext());
                 }
 
