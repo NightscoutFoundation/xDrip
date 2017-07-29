@@ -206,7 +206,8 @@ public class DatabaseUtil {
 
         try {
 
-            final String databaseName = new Configuration.Builder(context).create().getDatabaseName();
+            //seems to be not used?
+            // final String databaseName = new Configuration.Builder(context).create().getDatabaseName();
 
             final String dir = getExternalDir();
             makeSureDirectoryExists(dir);
@@ -226,18 +227,22 @@ public class DatabaseUtil {
                 zipOutputStream.putNextEntry(new ZipEntry("export" + DateFormat.format("yyyyMMdd-kkmmss", System.currentTimeMillis()) + ".csv"));
                 printStream = new PrintStream(zipOutputStream);
 
-                //add threadment ang BGlucose Header
+                //add Treatment and BGlucose Header
                 printStream.println("DAY;TIME;UDT_CGMS;BG_LEVEL;CH_GR;BOLUS;REMARK");
 
                 SQLiteDatabase db = Cache.openDatabase();
+
                 // Set all needed Vars
                 double value;
                 String valueIE;
-                String valueKH;
+                String valueCHO;
                 String notes;
 
                 long timestamp;
+
                 java.text.DateFormat df = new SimpleDateFormat("dd.MM.yyyy;HH:mm;");
+                //df.setTimeZone(TimeZone.getDefault()); did not change the time-slope, so turned it off...
+
                 Date date = new Date();
 
                 //Extract CGMS-Values
@@ -253,7 +258,7 @@ public class DatabaseUtil {
                     } while (cur.moveToNext());
                 }
 
-                //Extract Mesurement-Values (used Calibration table,as there seems to be more Values, maybe add BloodTest later)
+                //Extract Calibration-BG-Values
                 cur = db.query("Calibration", new String[]{"timestamp", "bg"}, null, null, null, null, "timestamp ASC");
                 if (cur.moveToFirst()) {
                     do {
@@ -271,15 +276,15 @@ public class DatabaseUtil {
                 if (cur.moveToFirst()) {
                     do {
                         timestamp  = cur.getLong(0);
-                        valueKH    = cur.getString(1);
+                        valueCHO    = cur.getString(1);
                         valueIE    = cur.getString(2);
                         notes      = cur.getString(3);
                         if (notes == null) notes = "";
                         if (valueIE.equals("0")) valueIE = "";
-                        if (valueKH.equals("0")) valueKH = "";
-                        if (!valueIE.equals("") || !valueKH.equals("") || !notes.equals("")){
+                        if (valueCHO.equals("0")) valueCHO = "";
+                        if (!valueIE.equals("") || !valueCHO.equals("") || !notes.equals("")){
                             date.setTime(timestamp);
-                            printStream.println(df.format(date) + ";;" + valueKH + ";" + valueIE + ";" + notes);
+                            printStream.println(df.format(date) + ";;" + valueCHO + ";" + valueIE + ";" + notes);
                         }
                     } while (cur.moveToNext());
                 }
