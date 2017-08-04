@@ -18,8 +18,10 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
+
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 
 import java.util.UUID;
@@ -31,6 +33,7 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private static double lastExternalCalibrationValue = 0;
     public static final long estimatedInterstitialLagSeconds = 600; // how far behind venous glucose do we estimate
+    private static final String LAST_EXTERNAL_CALIBRATION = "last-external-calibration-value";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,11 +103,15 @@ public class AddCalibration extends AppCompatActivity implements NavigationDrawe
                                     // Sanity checking can go here
 
                                     if (calValue > 0) {
+                                        if (lastExternalCalibrationValue == 0) {
+                                            lastExternalCalibrationValue = PersistentStore.getDouble(LAST_EXTERNAL_CALIBRATION);
+                                        }
                                         if (calValue != lastExternalCalibrationValue) {
 
                                             if (!Home.get_follower()) {
                                                 lastExternalCalibrationValue = calValue;
-                                                Calibration calibration = Calibration.create(calValue, bgAgeNumber, getApplicationContext(), (note_only.equals("true")), localEstimatedInterstitialLagSeconds);
+                                                PersistentStore.setDouble(LAST_EXTERNAL_CALIBRATION, calValue);
+                                                final Calibration calibration = Calibration.create(calValue, bgAgeNumber, getApplicationContext(), (note_only.equals("true")), localEstimatedInterstitialLagSeconds);
                                                 if ((calibration != null) && allow_undo.equals("true")) {
                                                     UndoRedo.addUndoCalibration(calibration.uuid);
                                                 }
