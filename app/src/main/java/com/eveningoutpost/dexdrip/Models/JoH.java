@@ -578,6 +578,11 @@ public class JoH {
 
     }
 
+    public static String getRFC822String(long timestamp) {
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+        return dateFormat.format(new Date(timestamp));
+    }
+
     public static PowerManager.WakeLock getWakeLock(final String name, int millis) {
         final PowerManager pm = (PowerManager) xdrip.getAppContext().getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, name);
