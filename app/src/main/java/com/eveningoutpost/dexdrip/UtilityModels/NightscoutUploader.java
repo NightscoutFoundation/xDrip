@@ -17,6 +17,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.base.Charsets;
@@ -38,6 +39,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -83,6 +85,10 @@ public class NightscoutUploader {
         public static String last_exception;
         public static final String VIA_NIGHTSCOUT_TAG = "via Nightscout";
 
+        private static final String LAST_SUCCESS_TREATMENT_DOWNLOAD = "NS-Last-Treatment-Download-Modified";
+        private static final String ETAG = "ETAG";
+
+
         private static int failurecount = 0;
         private static HashSet<String> bad_uuids = new HashSet<>();
         private static HashSet<String> bad_bloodtest_uuids = new HashSet<>();
@@ -115,7 +121,8 @@ public class NightscoutUploader {
             Call<ResponseBody> upsertTreatments(@Header("api-secret") String secret, @Body RequestBody body);
 
             @GET("treatments")
-            Call<ResponseBody> downloadTreatments(@Header("api-secret") String secret);
+                // retrofit2/okhttp3 could do the if-modified-since natively using cache
+            Call<ResponseBody> downloadTreatments(@Header("api-secret") String secret, @Header("If-Modified-Since") String ifmodified);
 
             @GET("treatments.json")
             Call<ResponseBody> findTreatmentByUUID(@Header("api-secret") String secret, @Query("find[uuid]") String uuid);
@@ -257,6 +264,9 @@ public class NightscoutUploader {
             Log.e(TAG, "Unable to process API Base URL: " + e);
             return false;
         }
+
+
+
         // process a list of base uris
         for (String baseURI : baseURIs) {
             try {
@@ -287,8 +297,29 @@ public class NightscoutUploader {
                     final Response<ResponseBody> r;
                     if (hashedSecret != null) {
                         doStatusUpdate(nightscoutService, retrofit.baseUrl().url().toString(), hashedSecret); // update status if needed
-                        r = nightscoutService.downloadTreatments(hashedSecret).execute();
+                        final String LAST_MODIFIED_KEY = LAST_SUCCESS_TREATMENT_DOWNLOAD + CipherUtils.getMD5(uri.toString()); // per uri marker
+                        String last_modified_string = PersistentStore.getString(LAST_MODIFIED_KEY);
+                        if (last_modified_string.equals("")) last_modified_string = JoH.getRFC822String(0);
+                        final long request_start = JoH.tsl();
+                        r = nightscoutService.downloadTreatments(hashedSecret, last_modified_string).execute();
+
+                        if ((r != null) && (r.raw().networkResponse().code() == HttpURLConnection.HTTP_NOT_MODIFIED)) {
+                            Log.d(TAG, "Treatments on " + uri.getHost() + ":" + uri.getPort() + " not modified since: " + last_modified_string);
+                            continue; // skip further processing of this url
+                        }
+
                         if ((r != null) && (r.isSuccess())) {
+
+                            last_modified_string = r.raw().header("Last-Modified", JoH.getRFC822String(request_start));
+                            final String this_etag = r.raw().header("Etag", "");
+                            if (this_etag.length() > 0) {
+                                // older versions of nightscout don't support if-modified-since so check the etag for duplication
+                                if (this_etag.equals(PersistentStore.getString(ETAG + LAST_MODIFIED_KEY))) {
+                                    Log.d(TAG, "Skipping Treatments on " + uri.getHost() + ":" + uri.getPort() + " due to etag duplicate: " + this_etag);
+                                    continue;
+                                }
+                                PersistentStore.setString(ETAG + LAST_MODIFIED_KEY, this_etag);
+                            }
                             final String response = r.body().string();
                             if (d) Log.d(TAG, "Response: " + response);
                             final JSONArray jsonArray = new JSONArray(response);
@@ -440,6 +471,7 @@ public class NightscoutUploader {
                                     }
                                 }
                             }
+                            PersistentStore.setString(LAST_MODIFIED_KEY, last_modified_string);
                         } else {
                             Log.d(TAG, "Failed to get treatments from: " + baseURI);
                         }
