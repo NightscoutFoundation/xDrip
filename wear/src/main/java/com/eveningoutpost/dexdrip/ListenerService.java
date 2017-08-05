@@ -2458,8 +2458,17 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     @Override
     public void onCapabilityChanged(CapabilityInfo capabilityInfo) {
         Node phoneNode = updatePhoneSyncBgsCapability(capabilityInfo);
-        Log.d(TAG, "onCapabilityChanged mPhoneNodeID:" + (phoneNode != null ? phoneNode.getId() : "") );//mPhoneNodeId
+        Log.d(TAG, "onCapabilityChanged mPhoneNodeID:" + (phoneNode != null ? phoneNode.getId() : ""));//mPhoneNodeId
         //onPeerConnected and onPeerDisconnected deprecated at the same time as BIND_LISTENER
+
+        if (phoneNode != null && phoneNode.getId().length() > 0) {
+            if (JoH.ratelimit("on-connected-nodes-sync", 1200)) {
+                Log.d(TAG, "onCapabilityChanged event - attempting resync");
+                requestData();
+            } else {
+                Log.d(TAG, "onCapabilityChanged event - ratelimited");
+            }
+        }
         sendPrefSettings();//from onPeerConnected
     }
 
