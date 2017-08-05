@@ -129,6 +129,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     private static final String WEARABLE_TOAST_LOCAL_NOTIFICATON = "/xdrip_plus_local_toast";
     public static final String WEARABLE_G5BATTERY_PAYLOAD = "/xdrip_plus_battery_payload";
     private static final String CAPABILITY_WEAR_APP = "wear_app_sync_bgs";
+    private static final String LAST_RECORD_TIMESTAMP = "wear-sync-last-treatment-record-ts";
     private static String localnode = "";
     private String mWearNodeId = null;
     static final int GET_CAPABILITIES_TIMEOUT_MS = 5000;
@@ -489,9 +490,25 @@ public class WatchUpdaterService extends WearableListenerService implements
                     String record = entry.getString("entry");
                     if (record != null && record.length() > 1) {
                         Log.d(TAG, "Received wearable: voice payload: " + record);
-                        receivedText(getApplicationContext(), record);
-                        Log.d(TAG, "syncTreatmentsData add Table record=" + record);
                         long timestamp = entry.getLong("timestamp");
+                        if (timestamp <= PersistentStore.getLong(LAST_RECORD_TIMESTAMP)) {
+                            Log.e(TAG,"Ignoring repeated or older sync timestamp");
+                            continue;
+                        }
+                        final long since = JoH.msSince(timestamp);
+                        if ((since < 0) || (since > Constants.HOUR_IN_MS * 11)) {
+                            // this still isn't perfect due to lack of date field or full timestamp processing
+                            JoH.static_toast_long("Rejecting wear treatment as time out of range!");
+                            UserError.Log.e(TAG, "Rejecting wear treatment due to time: " + record);
+                        } else {
+                            if (record.contains("uuid null")) {
+                                Log.e(TAG,"Skipping xx uuid null record!");
+                                continue;
+                            }
+                            receivedText(getApplicationContext(), record);
+                            PersistentStore.setLong(LAST_RECORD_TIMESTAMP, timestamp);
+                        }
+                        Log.d(TAG, "syncTreatmentsData add Table record=" + record);
                         timeOfLastEntry = (long) timestamp + 1;
                         Log.d(TAG, "syncTreatmentsData WATCH treatments timestamp=" + JoH.dateTimeText((long) timestamp));
                     }
