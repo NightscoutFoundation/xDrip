@@ -135,6 +135,7 @@ public class WatchUpdaterService extends WearableListenerService implements
     static final int GET_CAPABILITIES_TIMEOUT_MS = 5000;
 
     private static final String TAG = "jamorham watchupdater";
+    private static final String LAST_WATCH_RECEIVED_TEXT = "watch-last-received-text";
     private static GoogleApiClient googleApiClient;
     private static long lastRequest = 0;//KS
     private static final Integer sendTreatmentsCount = 60;//KS
@@ -147,7 +148,12 @@ public class WatchUpdaterService extends WearableListenerService implements
     private SharedPreferences mPrefs;
     private SharedPreferences.OnSharedPreferenceChangeListener mPreferencesListener;
 
-    public static void receivedText(Context context, String text) {
+    public synchronized static void receivedText(Context context, String text) {
+        if (text.equals(PersistentStore.getString(LAST_WATCH_RECEIVED_TEXT))) {
+            Log.e(TAG, "Received text is same as previous, ignoring: " + text);
+            return;
+        }
+        PersistentStore.setString(LAST_WATCH_RECEIVED_TEXT, text);
         startHomeWithExtra(context, WEARABLE_VOICE_PAYLOAD, text);
     }
 
@@ -496,10 +502,9 @@ public class WatchUpdaterService extends WearableListenerService implements
                             continue;
                         }
                         final long since = JoH.msSince(timestamp);
-                        if ((since < 0) || (since > Constants.HOUR_IN_MS * 11)) {
-                            // this still isn't perfect due to lack of date field or full timestamp processing
+                        if ((since < 0) || (since > Constants.HOUR_IN_MS * 72)) {
                             JoH.static_toast_long("Rejecting wear treatment as time out of range!");
-                            UserError.Log.e(TAG, "Rejecting wear treatment due to time: " + record);
+                            UserError.Log.e(TAG, "Rejecting wear treatment due to time: " + record + " since: " + since);
                         } else {
                             if (record.contains("uuid null")) {
                                 Log.e(TAG,"Skipping xx uuid null record!");
@@ -510,7 +515,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                         }
                         Log.d(TAG, "syncTreatmentsData add Table record=" + record);
                         timeOfLastEntry = (long) timestamp + 1;
-                        Log.d(TAG, "syncTreatmentsData WATCH treatments timestamp=" + JoH.dateTimeText((long) timestamp));
+                        Log.d(TAG, "syncTreatmentsData WATCH treatments timestamp=" + JoH.dateTimeText(timestamp));
                     }
                 }
             }

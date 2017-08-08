@@ -2468,8 +2468,8 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             } else {
                 Log.d(TAG, "onCapabilityChanged event - ratelimited");
             }
+            sendPrefSettings();//from onPeerConnected
         }
-        sendPrefSettings();//from onPeerConnected
     }
 
     @Override
