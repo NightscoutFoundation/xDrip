@@ -730,6 +730,7 @@ public class Preferences extends PreferenceActivity {
             final Preference pebbleDeltaUnits = findPreference("pebble_show_delta_units");
             final Preference pebbleShowArrows = findPreference("pebble_show_arrows");
             final Preference pebbleVibrateNoSignal = findPreference("pebble_vibrate_no_signal");
+            final Preference pebbleVibrateNoBluetooth = findPreference("pebble_vibrate_no_bluetooth");
             final Preference pebbleTinyDots = findPreference("pebble_tiny_dots");
             final EditTextPreference pebbleSpecialValue = (EditTextPreference) findPreference("pebble_special_value");
             bindPreferenceSummaryToValueAndEnsureNumeric(pebbleSpecialValue);
@@ -1243,6 +1244,7 @@ public class Preferences extends PreferenceActivity {
                             watchCategory.removePreference(pebbleSpecialValue);
                             watchCategory.removePreference(pebbleSpecialText);
                             watchCategory.removePreference(pebbleVibrateNoSignal);
+                            watchCategory.removePreference(pebbleVibrateNoBluetooth);
                         }
 
                         // Add New one
@@ -1257,6 +1259,7 @@ public class Preferences extends PreferenceActivity {
                             watchCategory.addPreference(pebbleDeltaUnits);
                             watchCategory.addPreference(pebbleShowArrows);
                             watchCategory.addPreference(pebbleVibrateNoSignal);
+                            watchCategory.addPreference(pebbleVibrateNoBluetooth);
                         }
 
                         if (oldPebbleType != 1) {
@@ -1342,6 +1345,15 @@ public class Preferences extends PreferenceActivity {
             });
 
             pebbleTinyDots.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    Context context = preference.getContext();
+                    context.startService(new Intent(context, PebbleWatchSync.class));
+                    return true;
+                }
+            });
+
+            pebbleVibrateNoBluetooth.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     Context context = preference.getContext();

@@ -5,6 +5,8 @@
         android:key="smart_watch_options"
         android:summary="@string/pebble_and_android_wear_options"
         android:title="@string/smart_watch_features">
+        <PreferenceScreen
+            android:title="@string/android_wear_integration">
         <PreferenceCategory
             android:key="watch_integration"
             android:title="@string/wear_integration">
@@ -84,6 +86,8 @@
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/pref_use_wear_health" />
         </PreferenceCategory>
+        </PreferenceScreen>
+        <PreferenceScreen android:title="@string/pebble_integration">
         <PreferenceCategory
             android:key="pebble_integration"
             android:title="@string/pebble_integration">
@@ -102,8 +106,6 @@
                 android:key="broadcast_to_pebble_type"
                 android:summary="@string/standard_or_trend_pebble_watchface"
                 android:title="@string/choose_pebble_watchface" />
-
-
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="broadcast_to_pebble"
@@ -171,7 +173,12 @@
                 android:key="pebble_vibrate_no_signal"
                 android:summary="@string/vibrate_watch_to_alert_no_data"
                 android:title="@string/vibrate_when_missed_signal" />
-
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="broadcast_to_pebble"
+                android:key="pebble_vibrate_no_bluetooth"
+                android:summary="@string/vibrate_watch_to_alert_no_bluetooth"
+                android:title="@string/vibrate_when_no_bluetooth" />
             <EditTextPreference
                 android:defaultValue="99"
                 android:dependency="broadcast_to_pebble"
@@ -192,6 +199,7 @@
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="Use Pebble Health Data" />
         </PreferenceCategory>
+
         <PreferenceCategory
             android:key="pebble_installers"
             android:title="@string/install_pebble_apps">
@@ -205,6 +213,7 @@
                     android:targetPackage="@string/local_target_package" />
             </Preference>
         </PreferenceCategory>
+        </PreferenceScreen>
     </PreferenceScreen>
 
     <PreferenceCategory
