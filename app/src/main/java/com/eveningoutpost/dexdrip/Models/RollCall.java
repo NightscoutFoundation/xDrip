@@ -131,11 +131,15 @@ public class RollCall {
         final String loaded = PersistentStore.getString(ROLLCALL_SAVED_INDEX);
         final HashMap<String, RollCall> hashmap = new HashMap<>();
         try {
-            final Gson gson = new GsonBuilder().create();
-            final String[] array = gson.fromJson(loaded, String[].class);
-            for (String json : array) {
-                RollCall item = gson.fromJson(json, RollCall.class);
-                hashmap.put(item.getHash(), item);
+            if ((loaded != null) && (loaded.length() > 0)) {
+                final Gson gson = new GsonBuilder().create();
+                final String[] array = gson.fromJson(loaded, String[].class);
+                if (array != null) {
+                    for (String json : array) {
+                        RollCall item = gson.fromJson(json, RollCall.class);
+                        hashmap.put(item.getHash(), item);
+                    }
+                }
             }
         } catch (Exception e) {
             UserError.Log.e(TAG, "Error loading index: " + e);
