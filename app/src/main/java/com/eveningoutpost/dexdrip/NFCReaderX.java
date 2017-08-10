@@ -56,6 +56,22 @@ public class NFCReaderX {
     private static final Lock read_lock = new ReentrantLock();
     private static final boolean useReaderMode = true;
     private static boolean nfc_enabled = false;
+    
+    final protected static char[] hexArray = "0123456789ABCDEF ".toCharArray();
+    
+    public static String bytesToHex(byte[] bytes) {
+      if(bytes == null) {
+        return "null";
+      }
+      char[] hexChars = new char[bytes.length * 3];
+      for (int j = 0; j < bytes.length; j++) {
+          int v = bytes[j] & 0xFF;
+          hexChars[j * 3] = hexArray[v >>> 4];
+          hexChars[j * 3 + 1] = hexArray[v & 0x0F];
+          hexChars[j * 3 + 2] = hexArray[16];
+      }
+      return new String(hexChars);
+  }
 
 
     public static void stopNFC(Activity context) {
@@ -273,10 +289,12 @@ public class NFCReaderX {
                 Log.e(TAG, "After connect");
                 byte[] data = getPatchInfo(internalHandle);
                 WriteToFile(Directory, "PatchInfo", data);
-                Log.e(TAG, "After getPatchInfo");
+                Log.e(TAG, "After getPatchInfo data = " + bytesToHex(data));
                 data = readPatchFram(internalHandle, 0 , 0x158);
+                
                 internalHandle.close();
                 WriteToFile(Directory, "scan", data);
+                Log.e(TAG, "After readPatchFram data = " + bytesToHex(data));
                 //Log.e(TAG, "Writing to file " + file_num + ", size = " + data.length);
 
                 //FileOutputStream f = new FileOutputStream(new File("/data/data/com.eveningoutpost.dexdrip/files/scan"+ file_num + ".dat"));
