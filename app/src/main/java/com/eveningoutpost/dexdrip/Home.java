@@ -1764,7 +1764,11 @@ public class Home extends ActivityWithMenu {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                                 toast("Recommend that you change WiFi to always be on during sleep");
-                                startActivity(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
+                                try {
+                                    startActivity(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
+                                } catch (ActivityNotFoundException e) {
+                                    JoH.static_toast_long("Ooops this device doesn't seem to have a wifi settings page!");
+                                }
 
                             }
                         });
