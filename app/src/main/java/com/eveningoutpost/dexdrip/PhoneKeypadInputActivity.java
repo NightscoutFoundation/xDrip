@@ -17,6 +17,8 @@ import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.eveningoutpost.dexdrip.Home.startHomeWithExtra;
+
 
 /**
  * Adapted from WearDialer which is:
@@ -179,7 +181,7 @@ public class PhoneKeypadInputActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Home.startHomeWithExtra(getApplicationContext(), Home.START_SPEECH_RECOGNITION, "ok");
+                        startHomeWithExtra(getApplicationContext(), Home.START_SPEECH_RECOGNITION, "ok");
                         finish();
                     }
                 });
@@ -187,7 +189,7 @@ public class PhoneKeypadInputActivity extends Activity {
                 new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        Home.startHomeWithExtra(getApplicationContext(), Home.START_TEXT_RECOGNITION, "ok");
+                        startHomeWithExtra(getApplicationContext(), Home.START_TEXT_RECOGNITION, "ok");
                         finish();
                         return true;
                     }
@@ -306,7 +308,8 @@ public class PhoneKeypadInputActivity extends Activity {
         if (mystring.length() > 1) {
             //SendData(this, WEARABLE_VOICE_PAYLOAD, mystring.getBytes(StandardCharsets.UTF_8));
             resetValues();
-            WatchUpdaterService.receivedText(this, mystring); // reuse watch handling function to send data to home
+            //WatchUpdaterService.receivedText(this, mystring); // reuse watch handling function to send data to home
+            startHomeWithExtra(this, WatchUpdaterService.WEARABLE_VOICE_PAYLOAD, mystring); // send data to home directly
             finish();
         }
     }
