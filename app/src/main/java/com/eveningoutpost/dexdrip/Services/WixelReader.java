@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.MapsActivity;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -591,6 +592,9 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
                 {
                     PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt("parakeet_battery", LastReading.UploaderBatteryLife).apply();
                     CheckBridgeBattery.checkParakeetBattery();
+                    if (Home.get_master()) {
+                        GcmActivity.sendParakeetBattery(LastReading.UploaderBatteryLife);
+                    }
                 }
 
     		}

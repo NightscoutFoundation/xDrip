@@ -32,6 +32,7 @@ import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
+import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 import com.eveningoutpost.dexdrip.utils.WebAppHelper;
@@ -45,6 +46,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static com.eveningoutpost.dexdrip.Models.JoH.showNotification;
 
 
 public class GcmListenerSvc extends FirebaseMessagingService {
@@ -292,6 +295,26 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                 if (Home.get_follower()) {
                     Log.i(TAG, "Received bridge battery level update");
                     Home.setPreferencesInt("bridge_battery", Integer.parseInt(payload));
+                    CheckBridgeBattery.checkBridgeBattery();
+                }
+            } else if (action.equals("pbu")) {
+                if (Home.get_follower()) {
+                    Log.i(TAG, "Received parakeet battery level update");
+                    Home.setPreferencesInt("parakeet_battery", Integer.parseInt(payload));
+                    CheckBridgeBattery.checkParakeetBattery();
+                }
+            } else if (action.equals("not")) {
+                if (Home.get_follower()) {
+                    try {
+                        final int GCM_NOTIFICATION_ITEM = 543;
+                        final String[] payloadA = payload.split("\\^");
+                        final String title = payloadA[0];
+                        final String body = payloadA[1];
+                        final PendingIntent pendingIntent = android.app.PendingIntent.getActivity(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), Home.class), android.app.PendingIntent.FLAG_UPDATE_CURRENT);
+                        showNotification(title, body, pendingIntent, GCM_NOTIFICATION_ITEM, true, true, false);
+                    } catch (Exception e) {
+                        UserError.Log.e(TAG, "Error showing follower notification with payload: " + payload);
+                    }
                 }
             } else if (action.equals("sbr")) {
                 if ((Home.get_master()) && JoH.ratelimit("gcm-sbr", 300)) {
