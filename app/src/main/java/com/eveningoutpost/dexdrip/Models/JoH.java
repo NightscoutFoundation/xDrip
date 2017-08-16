@@ -980,6 +980,10 @@ public class JoH {
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri) {
+        showNotification(title, content, intent, notificationId, sound, vibrate, deleteIntent, sound_uri, null);
+    }
+
+    public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri, String bigmsg) {
         final Notification.Builder mBuilder = notificationBuilder(title, content, intent);
         final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
         if (vibrate) mBuilder.setVibrate(vibratePattern);
@@ -988,6 +992,10 @@ public class JoH {
         if (sound) {
             Uri soundUri = (sound_uri != null) ? sound_uri : RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             mBuilder.setSound(soundUri);
+        }
+
+        if (bigmsg != null) {
+            mBuilder.setStyle(new Notification.BigTextStyle().bigText(bigmsg));
         }
 
         final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);

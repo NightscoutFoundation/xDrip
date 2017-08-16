@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -9,6 +10,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.MegaStatus;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -81,9 +83,13 @@ public class NightscoutUploader {
         private static final int CONNECTION_TIMEOUT = 30000;
         private static final boolean d = false;
 
+        public static long last_success_time = -1;
         public static long last_exception_time = -1;
+        public static int last_exception_count = 0;
         public static String last_exception;
         public static final String VIA_NIGHTSCOUT_TAG = "via Nightscout";
+
+        private static boolean notification_shown = false;
 
         private static final String LAST_SUCCESS_TREATMENT_DOWNLOAD = "NS-Last-Treatment-Download-Modified";
         private static final String ETAG = "ETAG";
@@ -484,9 +490,7 @@ public class NightscoutUploader {
 
             } catch (Exception e) {
                 String msg = "Unable to do REST API Download " + e + " " + e.getMessage() + " url: " + baseURI;
-                last_exception = msg;
-                last_exception_time = JoH.tsl();
-                Log.e(TAG, msg);
+                handleRestFailure(msg);
             }
         }
         Log.d(TAG, "doRESTtreatmentDownload() finishing run");
@@ -542,11 +546,11 @@ public class NightscoutUploader {
                         doLegacyRESTUploadTo(nightscoutService, glucoseDataSets);
                     }
                     any_successes = true;
+                    last_success_time = JoH.tsl();
+                    last_exception_count = 0;
                 } catch (Exception e) {
                     String msg = "Unable to do REST API Upload: " + e.getMessage() + " url: " + baseURI + " marking record: " + (any_successes ? "succeeded" : "failed");
-                    last_exception = msg;
-                    last_exception_time = JoH.tsl();
-                    Log.e(TAG, msg);
+                    handleRestFailure(msg);
                 }
             }
             return any_successes;
@@ -608,11 +612,35 @@ public class NightscoutUploader {
                     final String msg = "Please ensure careportal plugin is enabled on nightscout for treatment upload!";
                     Log.wtf(TAG, msg);
                     Home.toaststaticnext(msg);
-                    last_exception = msg;
-                    last_exception_time = JoH.tsl();
+                    handleRestFailure(msg);
                 }
             }
         }
+
+    private static synchronized void handleRestFailure(String msg) {
+        last_exception = msg;
+        last_exception_time = JoH.tsl();
+        last_exception_count++;
+        if (last_exception_count > 5) {
+            if (Home.getPreferencesBooleanDefaultFalse("warn_nightscout_failures")) {
+                if (JoH.ratelimit("nightscout-error-notification", 1800)) {
+                    notification_shown = true;
+                    JoH.showNotification("Nightscout Failure", "REST-API upload to Nightscout has failed " + last_exception_count
+                                    + " times. With message: " + last_exception + " " + ((last_success_time > 0) ? "Last succeeded: " + JoH.dateTimeText(last_success_time) : ""),
+                            MegaStatus.getStatusPendingIntent("Uploaders"), Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, true, true, null, null, msg);
+                }
+            } else {
+                Log.e(TAG, "Cannot alert for nightscout failures as preference setting is disabled");
+            }
+        } else {
+            if (notification_shown) {
+                JoH.cancelNotification(Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID);
+                notification_shown = false;
+            }
+        }
+        Log.e(TAG, msg);
+    }
+
 
     private void populateV1APIBGEntry(JSONArray array, BgReading record) throws Exception {
         JSONObject json = new JSONObject();

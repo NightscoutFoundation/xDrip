@@ -3359,6 +3359,10 @@ public class Home extends ActivityWithMenu {
         };
     }
 
+    public static PendingIntent getHomePendingIntent() {
+        return PendingIntent.getActivity(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), Home.class), android.app.PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
    /* class SnackbarUriListener implements ActionClickListener {
         Uri uri;
 

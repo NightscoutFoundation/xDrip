@@ -19,4 +19,9 @@ public class Constants {
     public static final double LIBRE_MULTIPLIER = 117.64705; // to match (raw/8.5)*1000
 
 
+    /* Notification IDs */
+
+    static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
+
+
 }

@@ -378,7 +378,7 @@ public class UploaderQueue extends Model {
                 int count_total = count_pending + count_completed;
 
                 if (count_total > 0) {
-                    l.add(new StatusItem(circuits_for_stats.valueAt(i).toString(), count_pending + " " + type));
+                    l.add(new StatusItem(circuits_for_stats.valueAt(i).toString(), count_pending + " " + type, (count_pending > 1000) ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
                 }
             }
 
@@ -398,8 +398,14 @@ public class UploaderQueue extends Model {
         }
 
         if (MongoSendTask.exception != null) {
-            l.add(new StatusItem("Exception", MongoSendTask.exception.toString(), StatusItem.Highlight.BAD));
-
+            l.add(new StatusItem("Exception", MongoSendTask.exception.toString(), StatusItem.Highlight.BAD, "long-press",
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            JoH.static_toast_long("Cleared error message");
+                            MongoSendTask.exception = null;
+                        }
+                    }));
         }
 
 
@@ -419,6 +425,10 @@ public class UploaderQueue extends Model {
         // enumerate status items for nightscout rest-api
         if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable")) {
             try {
+
+                /*if (NightscoutUploader.last_success_time > 0) {
+                    l.add(new StatusItem("REST Success", JoH.niceTimeSince(NightscoutUploader.last_success_time) + " ago", StatusItem.Highlight.NORMAL));
+                }*/
 
                 if ((processedBaseURIs == null) || (JoH.ratelimit("uploader-base-urls-cache", 60))) {
                     // Rebuild url cache
@@ -445,7 +455,7 @@ public class UploaderQueue extends Model {
                     try {
                         final String store_marker = "nightscout-status-poll-" + processedBaseURIs.get(i);
                         final JSONObject status = new JSONObject(PersistentStore.getString(store_marker));
-                        l.add(new StatusItem(processedBaseURInames.get(i), status.getString("name") + " " + status.getString("version"), StatusItem.Highlight.NORMAL, "long-press",
+                        l.add(new StatusItem(processedBaseURInames.get(i), status.getString("name") + " " + status.getString("version"), status.getString("version").startsWith("0.8") ? StatusItem.Highlight.CRITICAL : StatusItem.Highlight.NORMAL, "long-press",
                                 new Runnable() {
                                     @Override
                                     public void run() {
@@ -489,7 +499,7 @@ public class UploaderQueue extends Model {
         ///
 
         if (NightscoutUploader.last_exception_time > 0) {
-            l.add(new StatusItem("REST-API problem\n" + JoH.dateTimeText(NightscoutUploader.last_exception_time), NightscoutUploader.last_exception, JoH.msSince(NightscoutUploader.last_exception_time) < (Constants.MINUTE_IN_MS * 6) ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
+            l.add(new StatusItem("REST-API problem\n" + JoH.dateTimeText(NightscoutUploader.last_exception_time) + " (" + NightscoutUploader.last_exception_count + ")", NightscoutUploader.last_exception, JoH.msSince(NightscoutUploader.last_exception_time) < (Constants.MINUTE_IN_MS * 6) ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
         }
 
         if (last_cleanup > 0)
