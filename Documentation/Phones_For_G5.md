@@ -39,6 +39,7 @@ Blu R1 HD | 6.0
 Sony Xperia Z3 Compact (D5803) | 6.0.1
 Huawei Y6 (SCL-L21) | 5.1
 Huawei P8 Lite (ALE-L21) | 6.0
+LG V10c (LG-D415) | 5.0.2
 
 Does your phone achieve better than 90% capture rate with G5 but isn't on this list? Please let us know!
 
