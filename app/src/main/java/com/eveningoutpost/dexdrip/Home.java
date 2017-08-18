@@ -237,6 +237,7 @@ public class Home extends ActivityWithMenu {
     long watchkeypad_timestamp = -1;
     private wordDataWrapper searchWords = null;
     private AlertDialog dialog;
+    private AlertDialog helper_dialog;
 
     private static final boolean oneshot = true;
     private static ShowcaseView myShowcase;
@@ -2261,7 +2262,7 @@ public class Home extends ActivityWithMenu {
                 notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
                 showUncalibratedSlope();
                 Log.d(TAG, "Asking for calibration A: Uncalculated BG readings: " + BgReading.latest(2).size() + " / Calibrations size: " + calibrations.size());
-
+                promptForCalibration();
             }
         } else {
             if (BgReading.latestUnCalculated(2).size() < 2) {
@@ -2272,8 +2273,35 @@ public class Home extends ActivityWithMenu {
                     notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
                     showUncalibratedSlope();
                     Log.d(TAG, "Asking for calibration B: Uncalculated BG readings: " + BgReading.latestUnCalculated(2).size() + " / Calibrations size: " + calibrations.size());
+                    promptForCalibration();
                 }
             }
+        }
+    }
+
+    private synchronized void promptForCalibration() {
+        if ((helper_dialog != null) && (helper_dialog.isShowing())) return;
+        if (JoH.ratelimit("calibrate-sensor_prompt", 10)) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            final Context context = this;
+            builder.setTitle("Calibrate Sensor?");
+            builder.setMessage("We have some readings!\n\nNext we need the first calibration blood test.\n\nReady to calibrate now?");
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    helper_dialog = null;
+                }
+            });
+            builder.setPositiveButton("Calibrate", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    helper_dialog = null;
+                    startActivity(new Intent(context, DoubleCalibrationActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                }
+            });
+            helper_dialog = builder.create();
+            helper_dialog.show();
         }
     }
 
