@@ -26,6 +26,7 @@ public enum DexCollectionType {
     WifiDexBridgeWixel("WifiDexbridgeWixel"),
     Follower("Follower"),
     LibreAlarm("LibreAlarm"),
+    NSEmulator("NSEmulator"),
     Manual("Manual");
 
     String internalName;

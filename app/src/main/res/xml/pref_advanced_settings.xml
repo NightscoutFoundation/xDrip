@@ -374,6 +374,12 @@
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
+                    android:key="status_line_pump_reservoir"
+                    android:summary="Display pump reservoir information if available"
+                    android:title="Pump Reservoir" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="extra_status_line"
                     android:key="status_line_royce_ratio"
                     android:summary="Show treatment carb/insulin ratio"
                     android:title="Carb/Insulin Ratio" />

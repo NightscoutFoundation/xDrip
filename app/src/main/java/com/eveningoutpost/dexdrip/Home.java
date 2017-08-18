@@ -71,6 +71,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
+import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
@@ -82,6 +83,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.UtilityModels.NightscoutUploader;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
@@ -2071,6 +2073,9 @@ public class Home extends ActivityWithMenu {
         } else {
             btnRedo.setVisibility(View.INVISIBLE);
         }
+
+        final DexCollectionType collector = DexCollectionType.getDexCollectionType();
+        // TODO unify code using DexCollectionType methods
         boolean isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
         // port this lot to DexCollectionType to avoid multiple lookups of the same preference
         boolean isDexbridgeWixel = CollectionServiceStarter.isDexBridgeOrWifiandDexBridge();
@@ -2090,7 +2095,7 @@ public class Home extends ActivityWithMenu {
         }
         if (isWifiWixel || isWifiBluetoothWixel) {
             updateCurrentBgInfoForWifiWixel(notificationText);
-        } else if (is_follower) {
+        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator)) {
             displayCurrentInfo();
             getApplicationContext().startService(new Intent(getApplicationContext(), Notifications.class));
         } else if (!alreadyDisplayedBgInfoCommon && DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) {
@@ -2345,7 +2350,7 @@ public class Home extends ActivityWithMenu {
         df.setMaximumFractionDigits(0);
 
         final boolean isDexbridge = CollectionServiceStarter.isDexBridgeOrWifiandDexBridge();
-        final boolean hasBtWixel = DexCollectionType.hasBtWixel();
+       // final boolean hasBtWixel = DexCollectionType.hasBtWixel();
         final boolean isLimitter = CollectionServiceStarter.isLimitter();
         //boolean isWifiWixel = CollectionServiceStarter.isWifiandBTWixel(getApplicationContext()) | CollectionServiceStarter.isWifiWixel(getApplicationContext());
       //  if (isDexbridge||isLimitter||hasBtWixel||is_follower) {
@@ -2372,6 +2377,7 @@ public class Home extends ActivityWithMenu {
         } else {
             dexbridgeBattery.setVisibility(View.INVISIBLE);
         }
+
         if (DexCollectionType.hasWifi()) {
             final int bridgeBattery = prefs.getInt("parakeet_battery", 0);
             if (bridgeBattery > 0) {
@@ -2391,6 +2397,7 @@ public class Home extends ActivityWithMenu {
         } else {
             parakeetBattery.setVisibility(View.INVISIBLE);
         }
+
         if (!prefs.getBoolean("display_bridge_battery", true)) {
             dexbridgeBattery.setVisibility(View.INVISIBLE);
             parakeetBattery.setVisibility(View.INVISIBLE);
@@ -2430,7 +2437,7 @@ public class Home extends ActivityWithMenu {
                 GcmActivity.requestPing();
             }
         }
-        BgReading lastBgReading = BgReading.lastNoSenssor();
+        final BgReading lastBgReading = BgReading.lastNoSenssor();
         boolean predictive = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("predictive_bg", false);
         if (isBTShare) {
             predictive = false;
@@ -2498,7 +2505,8 @@ public class Home extends ActivityWithMenu {
                 || prefs.getBoolean("status_line_insulin", false)
                 || prefs.getBoolean("status_line_royce_ratio", false)
                 || prefs.getBoolean("status_line_accuracy", false)
-                || prefs.getBoolean("status_line_capture_percentage", false)) {
+                || prefs.getBoolean("status_line_capture_percentage", false)
+                || prefs.getBoolean("status_line_pump_reservoir", false)) {
 
             final StatsResult statsResult = new StatsResult(prefs, getPreferencesBooleanDefaultFalse("extra_status_stats_24h"));
 
@@ -2558,6 +2566,12 @@ public class Home extends ActivityWithMenu {
                     extraline.append(((accuracy != null) ? " " + accuracy : ""));
                 }
             }
+
+            if (prefs.getBoolean("status_line_pump_reservoir", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                extraline.append(PumpStatus.getReservoirString());
+            }
+
         }
         if (prefs.getBoolean("extra_status_calibration_plugin", false)) {
             final CalibrationAbstract plugin = getCalibrationPluginFromPreferences(); // make sure do this only once
