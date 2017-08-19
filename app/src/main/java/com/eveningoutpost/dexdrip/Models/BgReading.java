@@ -967,7 +967,7 @@ public class BgReading extends Model implements ShareUploadableBg {
                     bgr.save();
                     if (do_notification) {
                         xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
-                        BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), true); // pebble and widget
+                        BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), Home.get_follower()); // pebble and widget and follower
                     }
                 } else {
                     Log.d(TAG, "Ignoring duplicate bgr record due to timestamp: " + json);
