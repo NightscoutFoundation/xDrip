@@ -76,7 +76,7 @@ public class PumpStatus {
         final double value = getBolusIoB();
         if (value > -1) {
             // return "\u231B" + " " + JoH.qs(value, 1) + "U ";
-            return "\u23F3" + "" + JoH.qs(value, 1) + "U ";
+            return "\u23F3" + "" + JoH.qs(value, 2) + "U ";
         } else {
             return "";
         }
