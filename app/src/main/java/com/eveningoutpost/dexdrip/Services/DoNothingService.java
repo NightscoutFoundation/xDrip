@@ -172,7 +172,9 @@ public class DoNothingService extends Service {
                 if (JoH.ratelimit("follower-bg-status", 5)) {
                     last_bg = BgReading.last();
                 }
-                l.add(new StatusItem("Glucose Data", JoH.niceTimeSince(last_bg.timestamp)+" ago"));
+                if (last_bg != null) {
+                    l.add(new StatusItem("Glucose Data", JoH.niceTimeSince(last_bg.timestamp)+" ago"));
+                }
             } else {
                 last_bg = BgReading.last();
             }
