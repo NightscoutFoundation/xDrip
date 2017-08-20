@@ -168,6 +168,21 @@ public class NightscoutUploader {
         }
     }
 
+    public static boolean isNightscoutCompatible(String url) {
+        final String vers = getNightscoutVersion(url);
+        return !(vers.startsWith("0.8") || vers.startsWith("0.7") || vers.startsWith("0.6"));
+    }
+
+    public static String getNightscoutVersion(String url) {
+        try {
+            final String store_marker = "nightscout-status-poll-" + url;
+            final JSONObject status = new JSONObject(PersistentStore.getString(store_marker));
+            return status.getString("version");
+        } catch (Exception e) {
+            return "Unknown";
+        }
+    }
+
     private void doStatusUpdate(NightscoutService nightscoutService, String url, String hashedSecret) {
         final String store_marker = "nightscout-status-poll-" + url;
         final String old_data = PersistentStore.getString(store_marker);
@@ -282,6 +297,7 @@ public class NightscoutUploader {
                     Log.d(TAG, "Skipping Nighscout download from: " + uri.getHost() + " due to no LAN connection");
                     continue;
                 }
+
                 if (uri.getPath().endsWith("/v1/")) apiVersion = 1;
                 String baseURL;
                 String secret = uri.getUserInfo();
@@ -297,6 +313,12 @@ public class NightscoutUploader {
 
                 final Retrofit retrofit = new Retrofit.Builder().baseUrl(baseURL).client(client).build();
                 final NightscoutService nightscoutService = retrofit.create(NightscoutService.class);
+
+                final String checkurl = retrofit.baseUrl().url().toString();
+                if (!isNightscoutCompatible(checkurl)) {
+                    Log.e(TAG, "Nightscout version: " + getNightscoutVersion(checkurl) + " on " + checkurl + " is not compatible with the Rest-API download feature!");
+                    continue;
+                }
 
                 if (apiVersion == 1) {
                     final String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
