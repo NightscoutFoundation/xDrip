@@ -471,6 +471,11 @@ public class GcmActivity extends FauxActivity {
         }
     }
 
+    public static void sendPumpStatus(String json) {
+        if (JoH.pratelimit("gcm-psu", 180)) {
+            sendMessage("psu", json);
+        }
+    }
 
     public static void requestBGsync() {
         if (token != null) {

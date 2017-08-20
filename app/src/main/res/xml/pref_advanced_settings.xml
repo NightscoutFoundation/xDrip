@@ -375,8 +375,8 @@
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
                     android:key="status_line_pump_reservoir"
-                    android:summary="Display pump reservoir information if available"
-                    android:title="Pump Reservoir" />
+                    android:summary="Display pump status information if available"
+                    android:title="Pump Status" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"

@@ -2569,7 +2569,9 @@ public class Home extends ActivityWithMenu {
 
             if (prefs.getBoolean("status_line_pump_reservoir", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
+                extraline.append(PumpStatus.getBolusIoBString());
                 extraline.append(PumpStatus.getReservoirString());
+                extraline.append(PumpStatus.getBatteryString());
             }
 
         }

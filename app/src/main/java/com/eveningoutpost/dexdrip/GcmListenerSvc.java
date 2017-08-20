@@ -31,6 +31,7 @@ import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
+import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.CipherUtils;
@@ -302,6 +303,11 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                     Log.i(TAG, "Received parakeet battery level update");
                     Home.setPreferencesInt("parakeet_battery", Integer.parseInt(payload));
                     CheckBridgeBattery.checkParakeetBattery();
+                }
+            } else if (action.equals("psu")) {
+                if (Home.get_follower()) {
+                    Log.i(TAG, "Received pump status update");
+                    PumpStatus.fromJson(payload);
                 }
             } else if (action.equals("not")) {
                 if (Home.get_follower()) {
