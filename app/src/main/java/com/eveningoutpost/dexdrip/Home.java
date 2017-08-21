@@ -3183,8 +3183,10 @@ public class Home extends ActivityWithMenu {
 
         if (item.getItemId() == R.id.action_export_csv_sidiary) {
 
+            long from = Home.getPreferencesLong("sidiary_last_exportdate", 0);
             final GregorianCalendar date = new GregorianCalendar();
             final DatePickerFragment datePickerFragment = new DatePickerFragment();
+            if(from > 0)datePickerFragment.setInitiallySelectedDate(from);
             datePickerFragment.setAllowFuture(false);
             datePickerFragment.setTitle(getString(R.string.sidiary_date_title));
             datePickerFragment.setDateCallback(new ProfileAdapter.DatePickerCallbacks() {
@@ -3205,7 +3207,7 @@ public class Home extends ActivityWithMenu {
                         protected void onPostExecute(String filename) {
                             super.onPostExecute(filename);
                             if (filename != null) {
-
+                                Home.setPreferencesLong("sidiary_last_exportdate", System.currentTimeMillis());
                                 snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), "Share database..."), Home.this);
                             } else {
                                 Toast.makeText(Home.this, "Could not export CSV :(", Toast.LENGTH_LONG).show();
