@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.Models.JoH;
+
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -286,7 +288,7 @@ public class KeypadInputActivity extends Activity {
     private void submitAll() {
 
         String mystring = "";
-        mystring += "1 watchkeypad ";
+        mystring += (JoH.tsl()/1000)+" watchkeypad ";
         mystring += (getValue("time").length() > 0) ? getValue("time") + " time " : getTime() + " time ";
         mystring += (getValue("bloodtest").length() > 0) ? getValue("bloodtest") + " blood " : "";
         mystring += (getValue("carbs").length() > 0) ? (!getValue("carbs").equals("0") ? getValue("carbs") + " carbs " : "") : "";

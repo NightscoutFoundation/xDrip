@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.UtilityModels;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -9,6 +10,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.MegaStatus;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
@@ -17,6 +19,7 @@ import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
+import com.eveningoutpost.dexdrip.utils.CipherUtils;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.common.base.Charsets;
@@ -38,6 +41,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -79,9 +83,17 @@ public class NightscoutUploader {
         private static final int CONNECTION_TIMEOUT = 30000;
         private static final boolean d = false;
 
+        public static long last_success_time = -1;
         public static long last_exception_time = -1;
+        public static int last_exception_count = 0;
         public static String last_exception;
         public static final String VIA_NIGHTSCOUT_TAG = "via Nightscout";
+
+        private static boolean notification_shown = false;
+
+        private static final String LAST_SUCCESS_TREATMENT_DOWNLOAD = "NS-Last-Treatment-Download-Modified";
+        private static final String ETAG = "ETAG";
+
 
         private static int failurecount = 0;
         private static HashSet<String> bad_uuids = new HashSet<>();
@@ -115,7 +127,8 @@ public class NightscoutUploader {
             Call<ResponseBody> upsertTreatments(@Header("api-secret") String secret, @Body RequestBody body);
 
             @GET("treatments")
-            Call<ResponseBody> downloadTreatments(@Header("api-secret") String secret);
+                // retrofit2/okhttp3 could do the if-modified-since natively using cache
+            Call<ResponseBody> downloadTreatments(@Header("api-secret") String secret, @Header("If-Modified-Since") String ifmodified);
 
             @GET("treatments.json")
             Call<ResponseBody> findTreatmentByUUID(@Header("api-secret") String secret, @Query("find[uuid]") String uuid);
@@ -152,6 +165,21 @@ public class NightscoutUploader {
                 final NightscoutUploader uploader = new NightscoutUploader(xdrip.getAppContext());
                 uploader.downloadRest(500);
             }
+        }
+    }
+
+    public static boolean isNightscoutCompatible(String url) {
+        final String vers = getNightscoutVersion(url);
+        return !(vers.startsWith("0.8") || vers.startsWith("0.7") || vers.startsWith("0.6"));
+    }
+
+    public static String getNightscoutVersion(String url) {
+        try {
+            final String store_marker = "nightscout-status-poll-" + url;
+            final JSONObject status = new JSONObject(PersistentStore.getString(store_marker));
+            return status.getString("version");
+        } catch (Exception e) {
+            return "Unknown";
         }
     }
 
@@ -257,6 +285,9 @@ public class NightscoutUploader {
             Log.e(TAG, "Unable to process API Base URL: " + e);
             return false;
         }
+
+
+
         // process a list of base uris
         for (String baseURI : baseURIs) {
             try {
@@ -266,6 +297,7 @@ public class NightscoutUploader {
                     Log.d(TAG, "Skipping Nighscout download from: " + uri.getHost() + " due to no LAN connection");
                     continue;
                 }
+
                 if (uri.getPath().endsWith("/v1/")) apiVersion = 1;
                 String baseURL;
                 String secret = uri.getUserInfo();
@@ -282,13 +314,40 @@ public class NightscoutUploader {
                 final Retrofit retrofit = new Retrofit.Builder().baseUrl(baseURL).client(client).build();
                 final NightscoutService nightscoutService = retrofit.create(NightscoutService.class);
 
+                final String checkurl = retrofit.baseUrl().url().toString();
+                if (!isNightscoutCompatible(checkurl)) {
+                    Log.e(TAG, "Nightscout version: " + getNightscoutVersion(checkurl) + " on " + checkurl + " is not compatible with the Rest-API download feature!");
+                    continue;
+                }
+
                 if (apiVersion == 1) {
                     final String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
                     final Response<ResponseBody> r;
                     if (hashedSecret != null) {
                         doStatusUpdate(nightscoutService, retrofit.baseUrl().url().toString(), hashedSecret); // update status if needed
-                        r = nightscoutService.downloadTreatments(hashedSecret).execute();
+                        final String LAST_MODIFIED_KEY = LAST_SUCCESS_TREATMENT_DOWNLOAD + CipherUtils.getMD5(uri.toString()); // per uri marker
+                        String last_modified_string = PersistentStore.getString(LAST_MODIFIED_KEY);
+                        if (last_modified_string.equals("")) last_modified_string = JoH.getRFC822String(0);
+                        final long request_start = JoH.tsl();
+                        r = nightscoutService.downloadTreatments(hashedSecret, last_modified_string).execute();
+
+                        if ((r != null) && (r.raw().networkResponse().code() == HttpURLConnection.HTTP_NOT_MODIFIED)) {
+                            Log.d(TAG, "Treatments on " + uri.getHost() + ":" + uri.getPort() + " not modified since: " + last_modified_string);
+                            continue; // skip further processing of this url
+                        }
+
                         if ((r != null) && (r.isSuccess())) {
+
+                            last_modified_string = r.raw().header("Last-Modified", JoH.getRFC822String(request_start));
+                            final String this_etag = r.raw().header("Etag", "");
+                            if (this_etag.length() > 0) {
+                                // older versions of nightscout don't support if-modified-since so check the etag for duplication
+                                if (this_etag.equals(PersistentStore.getString(ETAG + LAST_MODIFIED_KEY))) {
+                                    Log.d(TAG, "Skipping Treatments on " + uri.getHost() + ":" + uri.getPort() + " due to etag duplicate: " + this_etag);
+                                    continue;
+                                }
+                                PersistentStore.setString(ETAG + LAST_MODIFIED_KEY, this_etag);
+                            }
                             final String response = r.body().string();
                             if (d) Log.d(TAG, "Response: " + response);
                             final JSONArray jsonArray = new JSONArray(response);
@@ -440,6 +499,7 @@ public class NightscoutUploader {
                                     }
                                 }
                             }
+                            PersistentStore.setString(LAST_MODIFIED_KEY, last_modified_string);
                         } else {
                             Log.d(TAG, "Failed to get treatments from: " + baseURI);
                         }
@@ -452,9 +512,7 @@ public class NightscoutUploader {
 
             } catch (Exception e) {
                 String msg = "Unable to do REST API Download " + e + " " + e.getMessage() + " url: " + baseURI;
-                last_exception = msg;
-                last_exception_time = JoH.tsl();
-                Log.e(TAG, msg);
+                handleRestFailure(msg);
             }
         }
         Log.d(TAG, "doRESTtreatmentDownload() finishing run");
@@ -510,11 +568,11 @@ public class NightscoutUploader {
                         doLegacyRESTUploadTo(nightscoutService, glucoseDataSets);
                     }
                     any_successes = true;
+                    last_success_time = JoH.tsl();
+                    last_exception_count = 0;
                 } catch (Exception e) {
                     String msg = "Unable to do REST API Upload: " + e.getMessage() + " url: " + baseURI + " marking record: " + (any_successes ? "succeeded" : "failed");
-                    last_exception = msg;
-                    last_exception_time = JoH.tsl();
-                    Log.e(TAG, msg);
+                    handleRestFailure(msg);
                 }
             }
             return any_successes;
@@ -576,11 +634,35 @@ public class NightscoutUploader {
                     final String msg = "Please ensure careportal plugin is enabled on nightscout for treatment upload!";
                     Log.wtf(TAG, msg);
                     Home.toaststaticnext(msg);
-                    last_exception = msg;
-                    last_exception_time = JoH.tsl();
+                    handleRestFailure(msg);
                 }
             }
         }
+
+    private static synchronized void handleRestFailure(String msg) {
+        last_exception = msg;
+        last_exception_time = JoH.tsl();
+        last_exception_count++;
+        if (last_exception_count > 5) {
+            if (Home.getPreferencesBooleanDefaultFalse("warn_nightscout_failures")) {
+                if (JoH.ratelimit("nightscout-error-notification", 1800)) {
+                    notification_shown = true;
+                    JoH.showNotification("Nightscout Failure", "REST-API upload to Nightscout has failed " + last_exception_count
+                                    + " times. With message: " + last_exception + " " + ((last_success_time > 0) ? "Last succeeded: " + JoH.dateTimeText(last_success_time) : ""),
+                            MegaStatus.getStatusPendingIntent("Uploaders"), Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, true, true, null, null, msg);
+                }
+            } else {
+                Log.e(TAG, "Cannot alert for nightscout failures as preference setting is disabled");
+            }
+        } else {
+            if (notification_shown) {
+                JoH.cancelNotification(Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID);
+                notification_shown = false;
+            }
+        }
+        Log.e(TAG, msg);
+    }
+
 
     private void populateV1APIBGEntry(JSONArray array, BgReading record) throws Exception {
         JSONObject json = new JSONObject();

@@ -944,19 +944,30 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static void bgReadingInsertFromJson(String json, boolean do_notification) {
+        bgReadingInsertFromJson(json, do_notification, false);
+    }
+
+    public static void bgReadingInsertFromJson(String json, boolean do_notification, boolean force_sensor) {
         if ((json == null) || (json.length() == 0)) {
             Log.e(TAG, "bgreadinginsertfromjson passed a null or zero length json");
             return;
         }
-        BgReading bgr = fromJSON(json);
+        final BgReading bgr = fromJSON(json);
         if (bgr != null) {
             try {
                 if (readingNearTimeStamp(bgr.timestamp) == null) {
                     FixCalibration(bgr);
+                    if (force_sensor) {
+                        final Sensor forced_sensor = Sensor.currentSensor();
+                        if (forced_sensor != null) {
+                            bgr.sensor = forced_sensor;
+                            bgr.sensor_uuid = forced_sensor.uuid;
+                        }
+                    }
                     bgr.save();
                     if (do_notification) {
                         xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
-                        BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), true); // pebble and widget
+                        BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), Home.get_follower()); // pebble and widget and follower
                     }
                 } else {
                     Log.d(TAG, "Ignoring duplicate bgr record due to timestamp: " + json);

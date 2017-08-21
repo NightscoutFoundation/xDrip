@@ -50,6 +50,7 @@ public class BloodTest extends Model {
     private static long highest_timestamp = 0;
     private static boolean patched = false;
     private final static String TAG = "BloodTest";
+    private final static String LAST_BT_AUTO_CALIB_UUID = "last-bt-auto-calib-uuid";
     private final static boolean d = false;
 
     @Expose
@@ -405,8 +406,13 @@ public class BloodTest extends Model {
                 return;
             }
 
-            if ((bt.uuid != null) && (bt.uuid.length() > 1) && PersistentStore.getString("last-bt-auto-calib-uuid").equals(bt.uuid)) {
-                Log.d(TAG, "Already processed uuid: " + bt.uuid);
+            if ((bt.uuid == null) || (bt.uuid.length() < 8)) {
+                Log.d(TAG, "opportunisitic: invalid uuid");
+                return;
+            }
+
+            if ((bt.uuid != null) && (bt.uuid.length() > 1) && PersistentStore.getString(LAST_BT_AUTO_CALIB_UUID).equals(bt.uuid)) {
+                Log.d(TAG, "opportunistic: Already processed uuid: " + bt.uuid);
                 return;
             }
 
@@ -458,7 +464,7 @@ public class BloodTest extends Model {
 
 
             Log.d(TAG, "opportunistic: attempting auto calibration");
-            PersistentStore.setString("last-bt-auto-calib-uuid", bt.uuid);
+            PersistentStore.setString(LAST_BT_AUTO_CALIB_UUID, bt.uuid);
             Home.startHomeWithExtra(xdrip.getAppContext(),
                     Home.BLUETOOTH_METER_CALIBRATION,
                     BgGraphBuilder.unitized_string_static(bt.mgdl),

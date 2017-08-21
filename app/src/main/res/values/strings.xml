@@ -421,6 +421,8 @@
     <string name="display_slope_arrows">Display Slope Arrows</string>
     <string name="vibrate_watch_to_alert_no_data">Vibrate watch to alert when we are not getting any glucose data</string>
     <string name="vibrate_when_missed_signal">Vibrate when missed signal</string>
+    <string name="vibrate_watch_to_alert_no_bluetooth">Vibrate watch to alert when bluetooth disconnects</string>
+    <string name="vibrate_when_no_bluetooth">Vibrate when no bluetooth</string>
     <string name="special_glucose_value_to_display_message">Special glucose value to display the message below</string>
     <string name="bluetooth_wakelocks">Bluetooth Wakelocks</string>
     <string name="compatible_broadcast">Compatible Broadcast</string>
