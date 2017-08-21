@@ -129,6 +129,11 @@ public class FirstPageFragment extends Fragment {
                 } else {
                     updateText(localView, stdevView, (Math.round(stdev * Constants.MG_DL_TO_MMOL_L * 100) / 100d) + " mmol/l");
                 }
+
+                TextView coefficientOfVariation = (TextView) localView.findViewById(R.id.textView_coefficient_of_variation);
+                updateText(localView, coefficientOfVariation, Math.round(1000d*stdev/mean)/10d + "%");
+
+
             }
         }
 

@@ -71,6 +71,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
+import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
@@ -82,6 +83,7 @@ import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.UtilityModels.NightscoutUploader;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
@@ -130,6 +132,7 @@ import static com.eveningoutpost.dexdrip.Models.BloodTest.pushBloodTestSyncToWat
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPlugin;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
@@ -233,8 +236,10 @@ public class Home extends ActivityWithMenu {
     boolean timeset = false;
     boolean watchkeypad = false;
     boolean watchkeypadset = false;
+    long watchkeypad_timestamp = -1;
     private wordDataWrapper searchWords = null;
     private AlertDialog dialog;
+    private AlertDialog helper_dialog;
 
     private static final boolean oneshot = true;
     private static ShowcaseView myShowcase;
@@ -789,23 +794,32 @@ public class Home extends ActivityWithMenu {
     private void processAndApproveTreatment() {
         // preserve globals before threading off
         final double myglucosenumber = thisglucosenumber;
-        final double mytimeoffset = thistimeoffset;
+        double mytimeoffset = thistimeoffset;
         // proccess and approve all treatments
         // TODO Handle BG Tests here also
         if (watchkeypad) {
-            JoH.static_toast_long("Treatment processed");
-            WatchUpdaterService.sendWearLocalToast("Treatment processed", Toast.LENGTH_LONG);
-            Long time = Treatments.getTimeStampWithOffset(mytimeoffset);
-            Treatments exists = Treatments.byTimestamp(time);
-            if (exists == null) {
-                Log.d(TAG, "processAndApproveTreatment create watchkeypad Treatment carbs=" + thiscarbsnumber + " insulin=" + thisinsulinnumber + " timestamp=" + JoH.dateTimeText(time) + " uuid=" + thisuuid);
-                Treatments.create(thiscarbsnumber, thisinsulinnumber, time, thisuuid);
+            // calculate absolute offset
+            long treatment_timestamp = watchkeypad_timestamp - (long) mytimeoffset;
+            mytimeoffset = JoH.tsl() - treatment_timestamp;
+            Log.d(TAG, "Watch Keypad timestamp is: " + JoH.dateTimeText(treatment_timestamp) + " Original offset: " + JoH.qs(thistimeoffset) + " New: " + JoH.qs(mytimeoffset));
+            if ((mytimeoffset > (DAY_IN_MS * 3)) || (mytimeoffset < -HOUR_IN_MS * 3)) {
+                Log.e(TAG, "Treatment timestamp out of range: " + mytimeoffset);
+                JoH.static_toast_long("Treatment time wrong");
+                WatchUpdaterService.sendWearLocalToast("Treatment error", Toast.LENGTH_LONG);
+            } else {
+                JoH.static_toast_long("Treatment processed");
+                WatchUpdaterService.sendWearLocalToast("Treatment processed", Toast.LENGTH_LONG);
+                long time = Treatments.getTimeStampWithOffset(mytimeoffset);
+                // sanity check timestamp
+                final Treatments exists = Treatments.byTimestamp(time);
+                if (exists == null) {
+                    Log.d(TAG, "processAndApproveTreatment create watchkeypad Treatment carbs=" + thiscarbsnumber + " insulin=" + thisinsulinnumber + " timestamp=" + JoH.dateTimeText(time) + " uuid=" + thisuuid);
+                    Treatments.create(thiscarbsnumber, thisinsulinnumber, time, thisuuid);
+                } else {
+                    Log.d(TAG, "processAndApproveTreatment Treatment already exists carbs=" + thiscarbsnumber + " insulin=" + thisinsulinnumber + " timestamp=" + JoH.dateTimeText(time));
+                }
             }
-            else {
-                Log.d(TAG, "processAndApproveTreatment Treatment already exists carbs=" + thiscarbsnumber + " insulin=" + thisinsulinnumber + " timestamp=" + JoH.dateTimeText(time));
-            }
-        }
-        else {
+        } else {
             WatchUpdaterService.sendWearToast("Treatment processed", Toast.LENGTH_LONG);
             Treatments.create(thiscarbsnumber, thisinsulinnumber, Treatments.getTimeStampWithOffset(mytimeoffset));
         }
@@ -815,12 +829,17 @@ public class Home extends ActivityWithMenu {
             updateCurrentBgInfo("approve button");
         }
         if (watchkeypad) {
-            if (myglucosenumber > 0)
-                BloodTest.createFromCal(myglucosenumber, mytimeoffset, "Manual Entry", thisuuid);
+            if (myglucosenumber > 0) {
+                if ((mytimeoffset > (DAY_IN_MS * 3)) || (mytimeoffset < -HOUR_IN_MS * 3)) {
+                    Log.e(TAG, "Treatment bloodtest timestamp out of range: " + mytimeoffset);
+                } else {
+                    BloodTest.createFromCal(myglucosenumber, mytimeoffset, "Manual Entry", thisuuid);
+                }
+            }
             watchkeypad = false;
             watchkeypadset = false;
-        }
-        else
+            watchkeypad_timestamp = -1;
+        } else
             processCalibrationNoUI(myglucosenumber, mytimeoffset);
         staticRefreshBGCharts();
     }
@@ -1217,10 +1236,10 @@ public class Home extends ActivityWithMenu {
         allWords = allWords.trim();
         allWords = allWords.replaceAll(":", "."); // fix real times
         allWords = allWords.replaceAll("(\\d)([a-zA-Z])", "$1 $2"); // fix like 22mm
-        allWords = allWords.replaceAll("([0-9].[0-9])([0-9][0-9])", "$1 $2"); // fix multi number order like blood 3.622 grams
+        allWords = allWords.replaceAll("([0-9]\\.[0-9])([0-9][0-9])", "$1 $2"); // fix multi number order like blood 3.622 grams
         allWords = allWords.toLowerCase();
 
-        Log.d(TAG, "Processing speech input allWords: " + allWords + " UUID: " + thisuuid);
+        Log.d(TAG, "Processing speech input allWords second: " + allWords + " UUID: " + thisuuid);
 
         if (allWords.contentEquals("delete last treatment")
                 || allWords.contentEquals("cancel last treatment")
@@ -1320,9 +1339,10 @@ public class Home extends ActivityWithMenu {
         switch (thisword) {
 
             case "watchkeypad":
-                if ((watchkeypadset == false) && (thisnumber > 0)) {
+                if ((watchkeypadset == false) && (thisnumber > 1501968469)) {
                     watchkeypad = true;
                     watchkeypadset = true;
+                    watchkeypad_timestamp = (long)(thisnumber * 1000);
                     Log.d(TAG, "Treatment entered on watchkeypad: " + Double.toString(thisnumber));
                 } else {
                     Log.d(TAG, "watchkeypad already set");
@@ -1749,7 +1769,11 @@ public class Home extends ActivityWithMenu {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                                 toast("Recommend that you change WiFi to always be on during sleep");
-                                startActivity(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
+                                try {
+                                    startActivity(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
+                                } catch (ActivityNotFoundException e) {
+                                    JoH.static_toast_long("Ooops this device doesn't seem to have a wifi settings page!");
+                                }
 
                             }
                         });
@@ -2051,6 +2075,9 @@ public class Home extends ActivityWithMenu {
         } else {
             btnRedo.setVisibility(View.INVISIBLE);
         }
+
+        final DexCollectionType collector = DexCollectionType.getDexCollectionType();
+        // TODO unify code using DexCollectionType methods
         boolean isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
         // port this lot to DexCollectionType to avoid multiple lookups of the same preference
         boolean isDexbridgeWixel = CollectionServiceStarter.isDexBridgeOrWifiandDexBridge();
@@ -2070,7 +2097,7 @@ public class Home extends ActivityWithMenu {
         }
         if (isWifiWixel || isWifiBluetoothWixel) {
             updateCurrentBgInfoForWifiWixel(notificationText);
-        } else if (is_follower) {
+        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator)) {
             displayCurrentInfo();
             getApplicationContext().startService(new Intent(getApplicationContext(), Notifications.class));
         } else if (!alreadyDisplayedBgInfoCommon && DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) {
@@ -2242,7 +2269,7 @@ public class Home extends ActivityWithMenu {
                 notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
                 showUncalibratedSlope();
                 Log.d(TAG, "Asking for calibration A: Uncalculated BG readings: " + BgReading.latest(2).size() + " / Calibrations size: " + calibrations.size());
-
+                promptForCalibration();
             }
         } else {
             if (BgReading.latestUnCalculated(2).size() < 2) {
@@ -2253,8 +2280,35 @@ public class Home extends ActivityWithMenu {
                     notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
                     showUncalibratedSlope();
                     Log.d(TAG, "Asking for calibration B: Uncalculated BG readings: " + BgReading.latestUnCalculated(2).size() + " / Calibrations size: " + calibrations.size());
+                    promptForCalibration();
                 }
             }
+        }
+    }
+
+    private synchronized void promptForCalibration() {
+        if ((helper_dialog != null) && (helper_dialog.isShowing())) return;
+        if (JoH.ratelimit("calibrate-sensor_prompt", 10)) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            final Context context = this;
+            builder.setTitle("Calibrate Sensor?");
+            builder.setMessage("We have some readings!\n\nNext we need the first calibration blood test.\n\nReady to calibrate now?");
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    helper_dialog = null;
+                }
+            });
+            builder.setPositiveButton("Calibrate", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    helper_dialog = null;
+                    startActivity(new Intent(context, DoubleCalibrationActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                }
+            });
+            helper_dialog = builder.create();
+            helper_dialog.show();
         }
     }
 
@@ -2298,7 +2352,7 @@ public class Home extends ActivityWithMenu {
         df.setMaximumFractionDigits(0);
 
         final boolean isDexbridge = CollectionServiceStarter.isDexBridgeOrWifiandDexBridge();
-        final boolean hasBtWixel = DexCollectionType.hasBtWixel();
+       // final boolean hasBtWixel = DexCollectionType.hasBtWixel();
         final boolean isLimitter = CollectionServiceStarter.isLimitter();
         //boolean isWifiWixel = CollectionServiceStarter.isWifiandBTWixel(getApplicationContext()) | CollectionServiceStarter.isWifiWixel(getApplicationContext());
       //  if (isDexbridge||isLimitter||hasBtWixel||is_follower) {
@@ -2325,6 +2379,7 @@ public class Home extends ActivityWithMenu {
         } else {
             dexbridgeBattery.setVisibility(View.INVISIBLE);
         }
+
         if (DexCollectionType.hasWifi()) {
             final int bridgeBattery = prefs.getInt("parakeet_battery", 0);
             if (bridgeBattery > 0) {
@@ -2344,6 +2399,7 @@ public class Home extends ActivityWithMenu {
         } else {
             parakeetBattery.setVisibility(View.INVISIBLE);
         }
+
         if (!prefs.getBoolean("display_bridge_battery", true)) {
             dexbridgeBattery.setVisibility(View.INVISIBLE);
             parakeetBattery.setVisibility(View.INVISIBLE);
@@ -2383,7 +2439,7 @@ public class Home extends ActivityWithMenu {
                 GcmActivity.requestPing();
             }
         }
-        BgReading lastBgReading = BgReading.lastNoSenssor();
+        final BgReading lastBgReading = BgReading.lastNoSenssor();
         boolean predictive = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("predictive_bg", false);
         if (isBTShare) {
             predictive = false;
@@ -2451,7 +2507,8 @@ public class Home extends ActivityWithMenu {
                 || prefs.getBoolean("status_line_insulin", false)
                 || prefs.getBoolean("status_line_royce_ratio", false)
                 || prefs.getBoolean("status_line_accuracy", false)
-                || prefs.getBoolean("status_line_capture_percentage", false)) {
+                || prefs.getBoolean("status_line_capture_percentage", false)
+                || prefs.getBoolean("status_line_pump_reservoir", false)) {
 
             final StatsResult statsResult = new StatsResult(prefs, getPreferencesBooleanDefaultFalse("extra_status_stats_24h"));
 
@@ -2511,6 +2568,14 @@ public class Home extends ActivityWithMenu {
                     extraline.append(((accuracy != null) ? " " + accuracy : ""));
                 }
             }
+
+            if (prefs.getBoolean("status_line_pump_reservoir", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                extraline.append(PumpStatus.getBolusIoBString());
+                extraline.append(PumpStatus.getReservoirString());
+                extraline.append(PumpStatus.getBatteryString());
+            }
+
         }
         if (prefs.getBoolean("extra_status_calibration_plugin", false)) {
             final CalibrationAbstract plugin = getCalibrationPluginFromPreferences(); // make sure do this only once
@@ -2598,10 +2663,7 @@ public class Home extends ActivityWithMenu {
                 }
 
                 // TODO this should be partially already be covered by dg - recheck
-                if ((BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER)
-                        && (BgGraphBuilder.best_bg_estimate > 0)
-                        && (BgGraphBuilder.last_bg_estimate > 0)
-                        && (prefs.getBoolean("bg_compensate_noise", false))) {
+                if (BestGlucose.compensateNoise()) {
                     estimate = BgGraphBuilder.best_bg_estimate; // this maybe needs scaling based on noise intensity
                     estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
                     slope_arrow = BgReading.slopeToArrowSymbol(estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000)); // delta by minute
@@ -2656,11 +2718,7 @@ public class Home extends ActivityWithMenu {
 
             //display_delta = bgGraphBuilder.unitizedDeltaString(true, true, is_follower);
             display_delta = dg.unitized_delta;
-            // TODO reduce duplication of logic
-            if ((BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER)
-                    && (BgGraphBuilder.best_bg_estimate > 0)
-                    && (BgGraphBuilder.last_bg_estimate > 0)
-                    && (prefs.getBoolean("bg_compensate_noise", false))) {
+            if (BestGlucose.compensateNoise()) {
                 //final double estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
                 display_delta = bgGraphBuilder.unitizedDeltaStringRaw(true, true, estimated_delta);
                 addDisplayDelta();
@@ -3345,6 +3403,10 @@ public class Home extends ActivityWithMenu {
                 Home.this.startActivity(Intent.createChooser(shareIntent, text));
             }
         };
+    }
+
+    public static PendingIntent getHomePendingIntent() {
+        return PendingIntent.getActivity(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), Home.class), android.app.PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
    /* class SnackbarUriListener implements ActionClickListener {

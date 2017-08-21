@@ -274,7 +274,7 @@ public class DexCollectionService extends Service {
             //final long retry_in = (Constants.SECOND_IN_MS * 25);
             final long retry_in = whenToRetryNext();
             Log.d(TAG, "setRetryTimer: Restarting in: " + (retry_in / Constants.SECOND_IN_MS) + " seconds");
-            JoH.cancelAlarm(this, serviceIntent);
+            //JoH.cancelAlarm(this, serviceIntent);
             serviceIntent = PendingIntent.getService(this, 0, new Intent(this, this.getClass()), PendingIntent.FLAG_UPDATE_CURRENT);
             retry_time = JoH.wakeUpIntent(this, retry_in, serviceIntent);
         } else {
@@ -286,7 +286,7 @@ public class DexCollectionService extends Service {
         if (shouldServiceRun()) {
             final long retry_in = use_polling ? whenToPollNext() : (Constants.MINUTE_IN_MS * 6);
             Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (Constants.MINUTE_IN_MS)) + " minutes");
-            JoH.cancelAlarm(this, serviceFailoverIntent);
+            //JoH.cancelAlarm(this, serviceFailoverIntent);
             serviceFailoverIntent = PendingIntent.getService(this, 1, new Intent(this, this.getClass()), PendingIntent.FLAG_UPDATE_CURRENT);
             failover_time = JoH.wakeUpIntent(this, retry_in, serviceFailoverIntent);
             retry_time = 0; // only one alarm will run

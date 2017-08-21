@@ -10,8 +10,11 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.Intents;
+import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,9 +68,17 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                             case Intents.XDRIP_PLUS_NS_EMULATOR:
 
                                 // in future this could have its own data source perhaps instead of follower
-                                if (!Home.get_follower()) {
-                                    Log.e(TAG, "Received NSEmulator data but we are not a follower");
+                                if (!Home.get_follower() && DexCollectionType.getDexCollectionType() != DexCollectionType.NSEmulator) {
+                                    Log.e(TAG, "Received NSEmulator data but we are not a follower or emulator receiver");
                                     return;
+                                }
+
+                                if (!Home.get_follower()) {
+                                    // must be NSEmulator here
+                                    if (!Sensor.isActive()) {
+                                        // warn about problems running without a sensor record
+                                        Home.toaststaticnext("Please use: Start Sensor from the menu for best results!");
+                                    }
                                 }
 
                                 if (bundle == null) break;
@@ -99,7 +110,7 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
                                                         faux_bgr.put("filtered_data", json_object.getDouble("sgv"));
 
                                                         Log.d(TAG, "Received NSEmulator SGV: " + faux_bgr);
-                                                        bgReadingInsertFromJson(faux_bgr.toString());
+                                                        bgReadingInsertFromJson(faux_bgr.toString(), true, true); // notify and force sensor
                                                         break;
                                                     default:
                                                         Log.e(TAG, "Unknown entries type: " + type);
@@ -112,6 +123,52 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
 
                                         }
                                         break;
+
+                                    case "devicestatus":
+                                        final String ddata = bundle.getString("data");
+
+                                        if ((ddata != null) && (ddata.length() > 0)) {
+                                            try {
+                                                Log.d(TAG, "Got device status data: " + ddata);
+                                                final JSONArray json_array = new JSONArray(ddata);
+                                                final JSONObject json_object = json_array.getJSONObject(0);
+                                                final JSONObject json_pump_object = json_object.getJSONObject("pump");
+
+                                                try {
+                                                    final double reservoir = json_pump_object.getDouble("reservoir");
+                                                    PumpStatus.setReservoir(reservoir);
+
+                                                } catch (JSONException e) {
+                                                    Log.d(TAG, "Got exception when processing reservoir: " + e);
+                                                }
+
+                                                try {
+                                                    final JSONObject battery_object = json_pump_object.getJSONObject("battery");
+                                                    final double battery_percent = battery_object.getDouble("percent");
+                                                    PumpStatus.setBattery(battery_percent);
+
+                                                } catch (JSONException e) {
+                                                    Log.d(TAG, "Got exception when processing battery: " + e);
+                                                }
+
+                                                try {
+                                                    final JSONObject iob_object = json_pump_object.getJSONObject("iob");
+                                                    final double bolus_iob = iob_object.getDouble("bolusiob");
+                                                    PumpStatus.setBolusIoB(bolus_iob);
+
+                                                } catch (JSONException e) {
+                                                    Log.d(TAG, "Got exception when processing iob: " + e);
+                                                }
+
+                                            } catch (JSONException e) {
+                                                Log.e(TAG, "Got JSON exception: " + e);
+                                            } catch (Exception e) {
+                                                Log.e(TAG, "Got processing exception: " + e);
+                                            }
+                                            PumpStatus.syncUpdate();
+                                        }
+                                        break;
+
                                     default:
                                         Log.d(TAG, "Unprocessed collection: " + collection);
 
