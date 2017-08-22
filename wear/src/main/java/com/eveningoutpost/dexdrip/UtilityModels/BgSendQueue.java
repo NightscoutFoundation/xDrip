@@ -24,9 +24,11 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.ListenerService;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 //KS import com.eveningoutpost.dexdrip.Models.Calibration;
+import com.eveningoutpost.dexdrip.Models.BloodTest;
 import com.eveningoutpost.dexdrip.Models.Calibration;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
+import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 
 
@@ -46,6 +48,7 @@ import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.google.android.gms.wearable.DataMap;
 
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -241,7 +244,7 @@ public class BgSendQueue extends Model {
                 Log.d("BgSendQueue", "handleNewBgReading Broadcast BG data to watch");
                 resendData(context);
                 if (prefs.getBoolean("force_wearG5", false)) {
-                    ListenerService.requestData(context);
+                    ListenerService.requestData(context);//Gets called by watchface in missedReadingAlert so not needed here
                 }
             }
 
@@ -261,8 +264,11 @@ public class BgSendQueue extends Model {
 
     //KS start from WatchUpdaterService
     public static void resendData(Context context) {//KS
-        long startTime = new Date().getTime() - (60000 * 60 * 24);
         Log.d("BgSendQueue", "resendData enter");
+        long startTime = new Date().getTime() - (60000 * 60 * 24);
+        Intent messageIntent = new Intent();
+        messageIntent.setAction(Intent.ACTION_SEND);
+        messageIntent.putExtra("message", "ACTION_G5BG");
 
         BgReading last_bg = BgReading.last();
         if (last_bg != null) {
@@ -280,16 +286,17 @@ public class BgSendQueue extends Model {
                 dataMaps.add(dataMap(bg, sharedPrefs, bgGraphBuilder, context));
             }
             entries.putDataMapArrayList("entries", dataMaps);
+            if (sharedPrefs.getBoolean("extra_status_line", false)) {
+                //messageIntent.putExtra("extra_status_line", extraStatusLine(sharedPrefs));
+                entries.putString("extra_status_line", extraStatusLine(sharedPrefs));
+            }
             Log.d("BgSendQueue", "resendData entries=" + entries);
+            messageIntent.putExtra("data", entries.toBundle());
 
-            Intent messageIntent = new Intent();
-            messageIntent.setAction(Intent.ACTION_SEND);
-            messageIntent.putExtra("message", "ACTION_G5BG");
             DataMap stepsDataMap = getSensorSteps(sharedPrefs);
             if (stepsDataMap != null) {
                 messageIntent.putExtra("steps", stepsDataMap.toBundle());
             }
-            messageIntent.putExtra("data", entries.toBundle());
             LocalBroadcastManager.getInstance(context).sendBroadcast(messageIntent);
         }
     }
@@ -337,9 +344,9 @@ public class BgSendQueue extends Model {
         dataMap.putInt("bridge_battery", sPrefs.getInt("bridge_battery", -1));//Used in DexCollectionService
         //TODO: Add raw again
         //dataMap.putString("rawString", threeRaw((prefs.getString("units", "mgdl").equals("mgdl"))));
-        if (sPrefs.getBoolean("extra_status_line", false)) {
-            dataMap.putString("extra_status_line", extraStatusLine(sPrefs));
-        }
+        //if (sPrefs.getBoolean("extra_status_line", false)) {
+        //    dataMap.putString("extra_status_line", extraStatusLine(sPrefs));
+        //}
         return dataMap;
     }
 
@@ -465,24 +472,28 @@ public class BgSendQueue extends Model {
                 if (extraline.length() != 0) extraline.append(' ');
                 extraline.append(statsResult.getStdevUnitised());
             }
-            if (prefs.getBoolean("status_line_carbs", false)) {
-                if (extraline.length() != 0) extraline.append(' ');
+            if (prefs.getBoolean("status_line_carbs", false) && prefs.getBoolean("show_wear_treatments", false)) {
+                if (extraline.length() != 0 && extraline.charAt(extraline.length()-1) != ' ') extraline.append(' ');
                 //extraline.append("Carbs: " + statsResult.getTotal_carbs());
                 double carbs = statsResult.getTotal_carbs();
-                extraline.append(carbs == -1 ? "" : "Carbs: " + carbs);
+                extraline.append(carbs == -1 ? "" : "Carbs:" + carbs);
+                Log.d("BgSendQueue", "extraStatusLine carbs=" + carbs);
             }
-            if (prefs.getBoolean("status_line_insulin", false)) {
-                if (extraline.length() != 0) extraline.append(' ');
+            else
+                Log.d("BgSendQueue", "extraStatusLine getTotal_carbs=-1");
+
+            if (prefs.getBoolean("status_line_insulin", false) && prefs.getBoolean("show_wear_treatments", false)) {
+                if (extraline.length() != 0 && extraline.charAt(extraline.length()-1) != ' ') extraline.append(' ');
                 double insulin = statsResult.getTotal_insulin();
-                extraline.append(insulin == -1 ? "" : "U: " + JoH.qs(insulin, 2));
+                extraline.append(insulin == -1 ? "" : "U:" + JoH.qs(insulin, 2));
             }
-            if (prefs.getBoolean("status_line_royce_ratio", false)) {
-                if (extraline.length() != 0) extraline.append(' ');
+            if (prefs.getBoolean("status_line_royce_ratio", false) && prefs.getBoolean("show_wear_treatments", false)) {
+                if (extraline.length() != 0 && extraline.charAt(extraline.length()-1) != ' ') extraline.append(' ');
                 double ratio = statsResult.getRatio();
-                extraline.append(ratio == -1 ? "" : "C/I: " + JoH.qs(ratio, 2));
+                extraline.append(ratio == -1 ? "" : "C/I:" + JoH.qs(ratio, 2));
             }
             if (prefs.getBoolean("status_line_capture_percentage", false)) {
-                if (extraline.length() != 0) extraline.append(' ');
+                if (extraline.length() != 0 && extraline.charAt(extraline.length()-1) != ' ') extraline.append(' ');
                 final String accuracy = null;//KS TODO = BloodTest.evaluateAccuracy(WEEK_IN_MS);
                 extraline.append(statsResult.getCapturePercentage(false) + ((accuracy != null) ? " " + accuracy : ""));
             }

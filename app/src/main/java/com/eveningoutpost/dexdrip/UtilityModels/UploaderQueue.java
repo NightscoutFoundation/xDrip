@@ -72,6 +72,7 @@ public class UploaderQueue extends Model {
     public static final long NIGHTSCOUT_RESTAPI = 1 << 1;
     public static final long TEST_OUTPUT_PLUGIN = 1 << 2;
     public static final long INFLUXDB_RESTAPI = 1 << 3;
+    public static final long WATCH_WEARAPI = 1 << 4;
 
 
     public static final long DEFAULT_UPLOAD_CIRCUITS = 0;
@@ -82,6 +83,7 @@ public class UploaderQueue extends Model {
             append(NIGHTSCOUT_RESTAPI, "Nightscout REST");
             append(TEST_OUTPUT_PLUGIN, "Test Plugin");
             append(INFLUXDB_RESTAPI, "InfluxDB REST");
+            append(WATCH_WEARAPI, "Watch Wear API");
         }
     };
 
@@ -146,7 +148,41 @@ public class UploaderQueue extends Model {
         result.bitfield_wanted = DEFAULT_UPLOAD_CIRCUITS
                 | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_mongodb_enable") ? MONGO_DIRECT : 0)
                 | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable") ? NIGHTSCOUT_RESTAPI : 0)
-                | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_influxdb_enable") ? INFLUXDB_RESTAPI : 0);
+                | (Home.getPreferencesBooleanDefaultFalse("cloud_storage_influxdb_enable") ? INFLUXDB_RESTAPI : 0)
+                | (Home.getPreferencesBooleanDefaultFalse("wear_sync") ? WATCH_WEARAPI : 0);
+        if (result.bitfield_wanted == 0) return null; // no queue required
+        result.timestamp = JoH.tsl();
+        result.reference_id = obj.getId();
+        // TODO this probably could be neater
+        if (result.reference_uuid == null)
+            result.reference_uuid = obj instanceof BgReading ? ((BgReading) obj).uuid : null;
+        if (result.reference_uuid == null)
+            result.reference_uuid = obj instanceof Treatments ? ((Treatments) obj).uuid : null;
+        if (result.reference_uuid == null)
+            result.reference_uuid = obj instanceof Calibration ? ((Calibration) obj).uuid : null;
+        if (result.reference_uuid == null)
+            result.reference_uuid = obj instanceof BloodTest ? ((BloodTest) obj).uuid : null;
+
+        if (result.reference_uuid == null) {
+            Log.d(TAG, "reference_uuid was null so refusing to create new entry");
+            return null;
+        }
+
+        result.action = action;
+
+        result.bitfield_complete = 0;
+        result.type = obj.getClass().getSimpleName();
+        result.saveit();
+        if (d) UserError.Log.d(TAG, result.toS());
+        last_new_entry = JoH.tsl();
+        return result;
+    }
+
+    public static UploaderQueue newEntryForWatch(String action, Model obj) {
+        UserError.Log.d(TAG, "new entry called for watch");
+        final UploaderQueue result = new UploaderQueue();
+        result.bitfield_wanted = DEFAULT_UPLOAD_CIRCUITS
+                | (Home.getPreferencesBooleanDefaultFalse("wear_sync") ? WATCH_WEARAPI : 0);
         if (result.bitfield_wanted == 0) return null; // no queue required
         result.timestamp = JoH.tsl();
         result.reference_id = obj.getId();
@@ -268,6 +304,20 @@ public class UploaderQueue extends Model {
     }
 
 
+    public static void emptyQueue() {
+        fixUpTable();
+        try {
+            new Delete()
+                    .from(UploaderQueue.class)
+                    .execute();
+            last_cleanup = JoH.tsl();
+            JoH.static_toast_long("Uploader queue emptied!");
+        } catch (Exception e) {
+            UserError.Log.d(TAG, "Exception cleaning uploader queue: " + e);
+        }
+    }
+
+
     public static void cleanQueue() {
         // delete all completed records > 24 hours old
         fixUpTable();
@@ -328,7 +378,7 @@ public class UploaderQueue extends Model {
                 int count_total = count_pending + count_completed;
 
                 if (count_total > 0) {
-                    l.add(new StatusItem(circuits_for_stats.valueAt(i).toString(), count_pending + " " + type));
+                    l.add(new StatusItem(circuits_for_stats.valueAt(i).toString(), count_pending + " " + type, (count_pending > 1000) ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
                 }
             }
 
@@ -348,8 +398,14 @@ public class UploaderQueue extends Model {
         }
 
         if (MongoSendTask.exception != null) {
-            l.add(new StatusItem("Exception", MongoSendTask.exception.toString(), StatusItem.Highlight.BAD));
-
+            l.add(new StatusItem("Exception", MongoSendTask.exception.toString(), StatusItem.Highlight.BAD, "long-press",
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            JoH.static_toast_long("Cleared error message");
+                            MongoSendTask.exception = null;
+                        }
+                    }));
         }
 
 
@@ -369,6 +425,10 @@ public class UploaderQueue extends Model {
         // enumerate status items for nightscout rest-api
         if (Home.getPreferencesBooleanDefaultFalse("cloud_storage_api_enable")) {
             try {
+
+                /*if (NightscoutUploader.last_success_time > 0) {
+                    l.add(new StatusItem("REST Success", JoH.niceTimeSince(NightscoutUploader.last_success_time) + " ago", StatusItem.Highlight.NORMAL));
+                }*/
 
                 if ((processedBaseURIs == null) || (JoH.ratelimit("uploader-base-urls-cache", 60))) {
                     // Rebuild url cache
@@ -395,7 +455,7 @@ public class UploaderQueue extends Model {
                     try {
                         final String store_marker = "nightscout-status-poll-" + processedBaseURIs.get(i);
                         final JSONObject status = new JSONObject(PersistentStore.getString(store_marker));
-                        l.add(new StatusItem(processedBaseURInames.get(i), status.getString("name") + " " + status.getString("version"), StatusItem.Highlight.NORMAL, "long-press",
+                        l.add(new StatusItem(processedBaseURInames.get(i), status.getString("name") + " " + status.getString("version"), status.getString("version").startsWith("0.8") ? StatusItem.Highlight.CRITICAL : StatusItem.Highlight.NORMAL, "long-press",
                                 new Runnable() {
                                     @Override
                                     public void run() {
@@ -439,7 +499,7 @@ public class UploaderQueue extends Model {
         ///
 
         if (NightscoutUploader.last_exception_time > 0) {
-            l.add(new StatusItem("REST-API problem\n" + JoH.dateTimeText(NightscoutUploader.last_exception_time), NightscoutUploader.last_exception, JoH.msSince(NightscoutUploader.last_exception_time) < (Constants.MINUTE_IN_MS * 6) ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
+            l.add(new StatusItem("REST-API problem\n" + JoH.dateTimeText(NightscoutUploader.last_exception_time) + " (" + NightscoutUploader.last_exception_count + ")", NightscoutUploader.last_exception, JoH.msSince(NightscoutUploader.last_exception_time) < (Constants.MINUTE_IN_MS * 6) ? StatusItem.Highlight.BAD : StatusItem.Highlight.NORMAL));
         }
 
         if (last_cleanup > 0)

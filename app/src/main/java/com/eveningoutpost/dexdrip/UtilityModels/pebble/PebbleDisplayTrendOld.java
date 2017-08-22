@@ -43,6 +43,8 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
     public static final int MESSAGE_KEY = 10;
     public static final int VIBE_KEY = 11;
 
+    private static final int NO_BLUETOOTH_KEY = 111;
+
     public static final int SYNC_KEY = 1000;
     public static final int PLATFORM_KEY = 1001;
     public static final int VERSION_KEY = 1002;
@@ -239,6 +241,9 @@ public class PebbleDisplayTrendOld extends PebbleDisplayAbstract {
 
             String msg = PreferenceManager.getDefaultSharedPreferences(this.context).getString("pebble_special_value", "");
 
+            this.dictionary.addInt8(NO_BLUETOOTH_KEY, (byte) (getBooleanValue("pebble_vibrate_no_bluetooth") ? 0x01 : 0x00));
+
+            // TODO I think special message is only appropriate with flat trend
             if (bgReadingS.equalsIgnoreCase(msg)) {
                 this.dictionary.addString(MESSAGE_KEY, PreferenceManager.getDefaultSharedPreferences(this.context).getString("pebble_special_text", "BAZINGA!"));
             } else {

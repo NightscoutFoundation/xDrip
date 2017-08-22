@@ -5,6 +5,8 @@
         android:key="smart_watch_options"
         android:summary="@string/pebble_and_android_wear_options"
         android:title="@string/smart_watch_features">
+        <PreferenceScreen
+            android:title="@string/android_wear_integration">
         <PreferenceCategory
             android:key="watch_integration"
             android:title="@string/wear_integration">
@@ -70,6 +72,12 @@
                 android:summary="@string/pref_summary_wear_logs_prefix"
                 android:textIsSelectable="true"
                 android:title="@string/pref_wear_logs_prefix" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="wear_sync"
+                android:key="show_wear_treatments"
+                android:summary="@string/pref_summary_show_treatments"
+                android:title="@string/pref_show_treatments" />
             <SwitchPreference
                 android:defaultValue="true"
                 android:key="use_pebble_health"
@@ -78,6 +86,8 @@
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/pref_use_wear_health" />
         </PreferenceCategory>
+        </PreferenceScreen>
+        <PreferenceScreen android:title="@string/pebble_integration">
         <PreferenceCategory
             android:key="pebble_integration"
             android:title="@string/pebble_integration">
@@ -96,8 +106,6 @@
                 android:key="broadcast_to_pebble_type"
                 android:summary="@string/standard_or_trend_pebble_watchface"
                 android:title="@string/choose_pebble_watchface" />
-
-
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="broadcast_to_pebble"
@@ -165,7 +173,12 @@
                 android:key="pebble_vibrate_no_signal"
                 android:summary="@string/vibrate_watch_to_alert_no_data"
                 android:title="@string/vibrate_when_missed_signal" />
-
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="broadcast_to_pebble"
+                android:key="pebble_vibrate_no_bluetooth"
+                android:summary="@string/vibrate_watch_to_alert_no_bluetooth"
+                android:title="@string/vibrate_when_no_bluetooth" />
             <EditTextPreference
                 android:defaultValue="99"
                 android:dependency="broadcast_to_pebble"
@@ -186,6 +199,7 @@
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="Use Pebble Health Data" />
         </PreferenceCategory>
+
         <PreferenceCategory
             android:key="pebble_installers"
             android:title="@string/install_pebble_apps">
@@ -199,6 +213,7 @@
                     android:targetPackage="@string/local_target_package" />
             </Preference>
         </PreferenceCategory>
+        </PreferenceScreen>
     </PreferenceScreen>
 
     <PreferenceCategory
@@ -356,6 +371,12 @@
                     android:key="status_line_insulin"
                     android:summary="@string/show_total_insulin"
                     android:title="@string/total_insulin" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="extra_status_line"
+                    android:key="status_line_pump_reservoir"
+                    android:summary="Display pump status information if available"
+                    android:title="Pump Status" />
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
@@ -577,6 +598,11 @@
                 android:key="engineering_mode"
                 android:summary="@string/allow_unsafe_settings"
                 android:title="@string/engineering_mode" />
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="save_db_ondemand"
+                android:summary="@string/allow_daily_db_save"
+                android:title="@string/daily_save_db" />
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_other_misc_extra_screen"
                 android:summary=""

@@ -273,6 +273,14 @@
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="\u26A0 Smooth sensor noise" />
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="bg_compensate_noise_ultrasensitive"
+                android:dependency="bg_compensate_noise"
+                android:summary="@string/try_to_work_around_noisy_readings_ultrasensitive"
+                android:switchTextOff="@string/short_off_text_for_switches"
+                android:switchTextOn="@string/short_on_text_for_switches"
+                android:title="\u26A0 Smooth sensor noise ultrasensitive" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="show_showcase"
@@ -496,6 +504,12 @@
                 android:key="plus_follow_master"
                 android:summary="@string/this_device_will_send_data_to_followers"
                 android:title="@string/be_master_for_followers" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:dependency="plus_follow_master"
+                android:key="plus_accept_follower_actions"
+                android:summary="Treatments and Calibrations from followers will be accepted"
+                android:title="Accept follower actions" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:dependency="plus_follow_master"

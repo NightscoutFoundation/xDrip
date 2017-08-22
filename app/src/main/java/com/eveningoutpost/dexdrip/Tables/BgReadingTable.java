@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.app.ListActivity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.BgReading;
 import com.eveningoutpost.dexdrip.NavigationDrawerFragment;
 import com.eveningoutpost.dexdrip.R;
@@ -96,6 +98,14 @@ public class BgReadingTable extends ListActivity implements NavigationDrawerFrag
             tag.raw_data_slope.setText(Double.toString(bgReading.raw_data));
             tag.raw_data_timestamp.setText(new Date(bgReading.timestamp).toString());
 
+            if (bgReading.ignoreForStats) {
+                // red invalid/cancelled/overridden
+                view.setBackgroundColor(Color.parseColor("#660000"));
+            } else {
+                // normal grey
+                view.setBackgroundColor(Color.parseColor("#212121"));
+            }
+
             view.setLongClickable(true);
             view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
@@ -107,11 +117,13 @@ public class BgReadingTable extends ListActivity implements NavigationDrawerFrag
                                 case DialogInterface.BUTTON_POSITIVE:
                                     bgReading.ignoreForStats = true;
                                     bgReading.save();
+                                    if (Home.getPreferencesBooleanDefaultFalse("wear_sync")) BgReading.pushBgReadingSyncToWatch(bgReading, false);
                                     break;
 
                                 case DialogInterface.BUTTON_NEGATIVE:
                                     bgReading.ignoreForStats = false;
                                     bgReading.save();
+                                    if (Home.getPreferencesBooleanDefaultFalse("wear_sync")) BgReading.pushBgReadingSyncToWatch(bgReading, false);
                                     break;
                             }
                         }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/raw_data_list_item">
+
+    <TextView android:id="@+id/raw_data_id"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="24sp" />
+
+    <TextView android:id="@+id/raw_data_value"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="12sp"/>
+
+    <TextView android:id="@+id/raw_data_slope"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="12sp"/>
+
+    <TextView android:id="@+id/raw_data_timestamp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="12sp"/>
+
+
+</LinearLayout>

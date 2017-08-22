@@ -17,11 +17,13 @@ import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.EGVRecord;
 import com.eveningoutpost.dexdrip.ImportedLibraries.dexcom.records.SensorRecord;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.Services.SyncService;
 import com.eveningoutpost.dexdrip.ShareModels.ShareUploadableBg;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
+import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.messages.BgReadingMessage;
 import com.eveningoutpost.dexdrip.messages.BgReadingMultiMessage;
@@ -369,7 +371,7 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static BgReading create(double raw_data, double filtered_data, Context context, Long timestamp, boolean quick) {
-        BgReading bgReading = new BgReading();
+        final BgReading bgReading = new BgReading();
         Sensor sensor = Sensor.currentSensor();
         if (sensor == null) {
             Log.i("BG GSON: ", bgReading.toS());
@@ -538,6 +540,15 @@ public class BgReading extends Model implements ShareUploadableBg {
         BgSendQueue.handleNewBgReading(bgReading, "create", context);
 
         Log.i("BG GSON: ", bgReading.toS());
+    }
+
+    public static void pushBgReadingSyncToWatch(BgReading bgReading, boolean is_new) {
+        Log.d(TAG, "pushTreatmentSyncToWatch Add treatment to UploaderQueue.");
+        if (Home.getPreferencesBooleanDefaultFalse("wear_sync")) {
+            if (UploaderQueue.newEntryForWatch(is_new ? "insert" : "update", bgReading) != null) {
+                SyncService.startSyncService(3000); // sync in 3 seconds
+            }
+        }
     }
 
     public static String activeSlopeArrow() {
@@ -749,6 +760,43 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    public static List<BgReading> latest_till(long till, int number) {
+        return latest_till(till, number, Home.get_follower());
+    }
+
+    public static List<BgReading> latest_till(long till, int number, boolean is_follower) {
+        if (is_follower) {
+            // exclude sensor information when working as a follower
+            return new Select()
+                    .from(BgReading.class)
+                    .where("calculated_value != 0")
+                    .where("raw_data != 0") // TODO XXX
+                    .orderBy("timestamp desc")
+                    .limit(number)
+                    .execute();
+        } else {
+            Sensor sensor = Sensor.currentSensor();
+            if (sensor == null) {
+                return null;
+            }
+            return new Select()
+                    .from(BgReading.class)
+                    .where("Sensor = ? ", sensor.getId())
+                    .where("calculated_value != 0")
+                    .where("raw_data != 0")
+                    .orderBy("timestamp desc")
+                    .limit(number)
+                    .execute();
+        }
+    }
+
+    public static boolean isDataStale() {
+        final BgReading last = lastNoSenssor();
+        if (last == null) return true;
+        return JoH.msSince(last.timestamp) > Home.stale_data_millis();
+    }
+
+
     public static List<BgReading> latestUnCalculated(int number) {
         Sensor sensor = Sensor.currentSensor();
         if (sensor == null) { return null; }
@@ -772,6 +820,21 @@ public class BgReading extends Model implements ShareUploadableBg {
     public static List<BgReading> latestForGraph(int number, long startTime, long endTime) {
         return new Select()
                 .from(BgReading.class)
+                .where("timestamp >= " + Math.max(startTime, 0))
+                .where("timestamp <= " + endTime)
+                .where("calculated_value != 0")
+                .where("raw_data != 0")
+                .orderBy("timestamp desc")
+                .limit(number)
+                .execute();
+    }
+
+    public static List<BgReading> latestForGraphSensor(int number, long startTime, long endTime) {
+        Sensor sensor = Sensor.currentSensor();
+        if (sensor == null) { return null; }
+        return new Select()
+                .from(BgReading.class)
+                .where("Sensor = ? ", sensor.getId())
                 .where("timestamp >= " + Math.max(startTime, 0))
                 .where("timestamp <= " + endTime)
                 .where("calculated_value != 0")
@@ -881,19 +944,30 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static void bgReadingInsertFromJson(String json, boolean do_notification) {
+        bgReadingInsertFromJson(json, do_notification, false);
+    }
+
+    public static void bgReadingInsertFromJson(String json, boolean do_notification, boolean force_sensor) {
         if ((json == null) || (json.length() == 0)) {
             Log.e(TAG, "bgreadinginsertfromjson passed a null or zero length json");
             return;
         }
-        BgReading bgr = fromJSON(json);
+        final BgReading bgr = fromJSON(json);
         if (bgr != null) {
             try {
                 if (readingNearTimeStamp(bgr.timestamp) == null) {
                     FixCalibration(bgr);
+                    if (force_sensor) {
+                        final Sensor forced_sensor = Sensor.currentSensor();
+                        if (forced_sensor != null) {
+                            bgr.sensor = forced_sensor;
+                            bgr.sensor_uuid = forced_sensor.uuid;
+                        }
+                    }
                     bgr.save();
                     if (do_notification) {
                         xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), Notifications.class)); // alerts et al
-                        BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), true); // pebble and widget
+                        BgSendQueue.handleNewBgReading(bgr, "create", xdrip.getAppContext(), Home.get_follower()); // pebble and widget and follower
                     }
                 } else {
                     Log.d(TAG, "Ignoring duplicate bgr record due to timestamp: " + json);

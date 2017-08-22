@@ -62,17 +62,13 @@ public class Home extends BaseWatchFace {
             }
             chartTapTime = eventTime;
         }
-        if (tapType == TAP_TYPE_TAP&&
-                ((x >=mDirectionDelta.getLeft() &&
-                x <= mDirectionDelta.getRight()&&
-                y >= mDirectionDelta.getTop() &&
-                y <= mDirectionDelta.getBottom()) )) {//||
+        if (tapType == TAP_TYPE_TAP && linearLayout(mDirectionDelta, x, y)) {
             if (eventTime - fontsizeTapTime < 800) {
                 setSmallFontsize(true);
             }
             fontsizeTapTime = eventTime;
         }
-        if (tapType == TAP_TYPE_TOUCH && x >=mDirectionDelta.getLeft() && linearLayout(mLinearLayout, x, y)) {
+        if (tapType == TAP_TYPE_TOUCH && linearLayout(mLinearLayout, x, y)) {
             JoH.static_toast_short(mStatusLine);
         }
         if (tapType == TAP_TYPE_TOUCH && linearLayout(mStepsLinearLayout, x, y)) {
@@ -84,6 +80,11 @@ public class Home extends BaseWatchFace {
             if (sharedPrefs.getBoolean("extra_status_line", false) && mExtraStatusLine != null && !mExtraStatusLine.isEmpty()) {
                 JoH.static_toast_long(mExtraStatusLine);
             }
+        }
+        if (tapType == TAP_TYPE_TOUCH && linearLayout(mMenuLinearLayout, x, y)) {
+            Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intent);
         }
     }
 
@@ -97,6 +98,7 @@ public class Home extends BaseWatchFace {
 
     private void changeChartTimeframe() {
         int timeframe = Integer.parseInt(sharedPrefs.getString("chart_timeframe", "3"));
+        Log.e(TAG, "changeChartTimeframe timeframe: " + timeframe);
         timeframe = (timeframe%5) + 1;
         sharedPrefs.edit().putString("chart_timeframe", "" + timeframe).commit();
     }

@@ -4,35 +4,83 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/steps_layout"
-        android:layout_width="36dp"
+        android:id="@+id/menuextras_layout"
+        android:layout_width="70dp"
+        android:layout_height="80dp"
         android:orientation="vertical"
-        android:layout_height="wrap_content"
         android:textAlignment="center"
         android:baselineAligned="false"
-        android:layout_gravity="center_horizontal|center_vertical"
-        android:gravity="center_horizontal|center_vertical">
+        android:paddingStart="0dp"
+        android:layout_gravity="left|top"
+        android:gravity="left|top">
 
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="40dp"
-            android:drawableTop="@drawable/ic_walk_grey600_24dp"
-            android:id="@+id/walkButton"
-            android:paddingBottom="0dp"
-            android:paddingEnd="0dp"
-            android:paddingTop="0dp"
-            android:paddingStart="0dp"
-            android:layout_marginRight="0dp"
-            android:layout_marginTop="0dp"
-            android:background="@android:color/transparent"
-            android:text="99999"
-            android:textSize="10sp"
-            android:textAlignment="gravity"
-            android:gravity="center_horizontal|center_vertical"/>
+        <LinearLayout
+            android:layout_width="70dp"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:baselineAligned="false"
+            android:paddingTop="25dp"
+            android:paddingStart="20dp"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:gravity="center_horizontal|center_vertical">
+            <LinearLayout
+                android:id="@+id/menu_layout"
+                android:layout_width="30dp"
+                android:orientation="vertical"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:paddingTop="10dp"
+                android:baselineAligned="false"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:gravity="center_horizontal|center_vertical">
+                    <Button
+                    android:layout_width="20dp"
+                    android:layout_height="30dp"
+                    android:drawableRight="@drawable/menu"
+                    android:id="@+id/menuButton"
+                    android:paddingBottom="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="15dp"
+                    android:paddingStart="0dp"
+                    android:layout_marginRight="0dp"
+                    android:layout_marginTop="0dp"
+                    android:background="@android:color/transparent"
+                    android:text=""
+                    android:textSize="0sp"
+                    android:textAlignment="gravity"
+                    android:gravity="center_horizontal|center_vertical"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/steps_layout"
+                android:layout_width="40dp"
+                android:orientation="vertical"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:baselineAligned="false"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:gravity="center_horizontal|center_vertical">
+                <Button
+                    android:layout_width="40dp"
+                    android:layout_height="30dp"
+                    android:drawableTop="@drawable/ic_directions_walk_white_18dp"
+                    android:id="@+id/walkButton"
+                    android:paddingBottom="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingStart="0dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="0dp"
+                    android:background="@android:color/transparent"
+                    android:text="12345"
+                    android:textSize="10sp"
+                    android:textAlignment="gravity"
+                    android:gravity="center_horizontal|center_vertical"/>
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/directiondelta_layout"
+    <LinearLayout
         android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical|center_horizontal"
@@ -50,14 +98,24 @@
             android:layout_gravity="center"
             android:layout_marginBottom="-5dp" />
 
-        <TextView android:id="@+id/sgvString"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="45sp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="999"
-        android:layout_gravity="center" />
+        <LinearLayout
+            android:id="@+id/directiondelta_layout"
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:baselineAligned="false"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:gravity="center_horizontal|center_vertical">
+            <TextView android:id="@+id/sgvString"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="45sp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="999"
+                android:layout_gravity="center" />
+        </LinearLayout>
 
         <TextView android:id="@+id/rawString"
             android:layout_width="wrap_content"

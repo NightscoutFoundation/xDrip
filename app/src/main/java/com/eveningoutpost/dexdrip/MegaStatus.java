@@ -9,6 +9,7 @@ package com.eveningoutpost.dexdrip;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -95,6 +96,12 @@ public class MegaStatus extends ActivityWithMenu {
     private static final String IP_COLLECTOR = "IP Collector";
     private static final String XDRIP_PLUS_SYNC = "Followers";
     private static final String UPLOADERS = "Uploaders";
+
+    public static PendingIntent getStatusPendingIntent(String section_name) {
+        final Intent intent = new Intent(xdrip.getAppContext(), MegaStatus.class);
+        intent.setAction(section_name);
+        return PendingIntent.getActivity(xdrip.getAppContext(), 0, intent, android.app.PendingIntent.FLAG_UPDATE_CURRENT);
+    }
 
     private void populateSectionList() {
 
@@ -183,7 +190,15 @@ public class MegaStatus extends ActivityWithMenu {
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         // switch to last used position if it exists
-        final int saved_position = (int) PersistentStore.getLong("mega-status-last-page");
+        int saved_position = (int) PersistentStore.getLong("mega-status-last-page");
+
+        // if triggered from pending intent, flip to named section if we can
+        final String action = getIntent().getAction();
+        if ((action != null) && (action.length() > 0)) {
+            int action_position = sectionList.indexOf(action);
+            if (action_position > -1) saved_position = action_position;
+        }
+
         if ((saved_position > 0) && (saved_position < sectionList.size())) {
             currentPage = saved_position;
             mViewPager.setCurrentItem(saved_position);

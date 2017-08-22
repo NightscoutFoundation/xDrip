@@ -37,7 +37,7 @@
             android:value="41" />
         <meta-data
             android:name="AA_MODELS"
-            android:value="com.eveningoutpost.dexdrip.Models.ActiveBgAlert,com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice,com.eveningoutpost.dexdrip.Models.AlertType,com.eveningoutpost.dexdrip.Models.BgReading,com.eveningoutpost.dexdrip.Models.Calibration,com.eveningoutpost.dexdrip.Models.CalibrationRequest,com.eveningoutpost.dexdrip.Models.PebbleMovement,com.eveningoutpost.dexdrip.Models.Sensor,com.eveningoutpost.dexdrip.Models.TransmitterData,com.eveningoutpost.dexdrip.Models.Treatments,com.eveningoutpost.dexdrip.Models.UserError,com.eveningoutpost.dexdrip.Models.UserNotification,com.eveningoutpost.dexdrip.ShareModels.Models,com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue,com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue,com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue"/>
+            android:value="com.eveningoutpost.dexdrip.Models.ActiveBgAlert,com.eveningoutpost.dexdrip.Models.ActiveBluetoothDevice,com.eveningoutpost.dexdrip.Models.AlertType,com.eveningoutpost.dexdrip.Models.BgReading,com.eveningoutpost.dexdrip.Models.Calibration,com.eveningoutpost.dexdrip.Models.CalibrationRequest,com.eveningoutpost.dexdrip.Models.PebbleMovement,com.eveningoutpost.dexdrip.Models.BloodTest,com.eveningoutpost.dexdrip.Models.Sensor,com.eveningoutpost.dexdrip.Models.TransmitterData,com.eveningoutpost.dexdrip.Models.Treatments,com.eveningoutpost.dexdrip.Models.UserError,com.eveningoutpost.dexdrip.Models.UserNotification,com.eveningoutpost.dexdrip.ShareModels.Models,com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue,com.eveningoutpost.dexdrip.UtilityModels.CalibrationSendQueue,com.eveningoutpost.dexdrip.UtilityModels.SensorSendQueue"/>
 
         <service
             android:name=".Home"
@@ -109,7 +109,21 @@
         </service>
         <service android:name=".ListenerService">
             <intent-filter>
-                <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
+                <action android:name="com.google.android.gms.wearable.CAPABILITY_CHANGED" />
+                <data android:scheme="wear" android:host="*"/>
+            </intent-filter>
+            <intent-filter>
+                <!-- <action android:name="com.google.android.gms.wearable.BIND_LISTENER" /> -->
+                <!-- listeners receive events that match the action and data filters -->
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <!-- filters by Constants.EXTRA_ATTRACTIONS
+                Constants.START_ATTRACTION_PATH ('/start/attraction') and
+                Constants.START_NAVIGATION_PATH ('/start/navigation')
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/start"/> -->
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/xdrip"/>
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/nightscout"/>
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/sendstatustowear"/>
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/openwearsettings"/>
             </intent-filter>
         </service>
         <service
@@ -183,6 +197,30 @@
             android:name=".SnoozeActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/snooze" />
+        <activity
+            android:name=".MenuActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="Menu" />
+        <activity
+            android:name=".Tables.CalibrationDataTable"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/calibration_data_table" />
+        <activity
+            android:name=".Tables.BgReadingTable"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/bg_readings_table" />
+        <activity
+            android:name=".Tables.SensorDataTable"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/sensor_table" />
+        <activity
+            android:name=".Tables.BloodTestTable"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/bg_readings_table" />
+        <activity
+            android:name=".Tables.TreatmentsTable"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/bg_readings_table" />
     </application>
 
 </manifest>

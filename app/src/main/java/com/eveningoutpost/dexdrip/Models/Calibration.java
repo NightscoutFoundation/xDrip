@@ -42,16 +42,17 @@ class DexParameters extends SlopeParameters {
     DexParameters() {
         LOW_SLOPE_1 = 0.75;
         LOW_SLOPE_2 = 0.70;
-        HIGH_SLOPE_1 = 1.3;
-        HIGH_SLOPE_2 = 1.4;
+        HIGH_SLOPE_1 = 1.5;
+        HIGH_SLOPE_2 = 1.6;
         DEFAULT_LOW_SLOPE_LOW = 0.75;
         DEFAULT_LOW_SLOPE_HIGH = 0.70;
         DEFAULT_SLOPE = 1;
-        DEFAULT_HIGH_SLOPE_HIGH = 1.3;
-        DEFAULT_HIGH_SLOPE_LOW = 1.2;
+        DEFAULT_HIGH_SLOPE_HIGH = 1.5;
+        DEFAULT_HIGH_SLOPE_LOW = 1.4;
     }
 
 }
+
 
 class DexOldSchoolParameters extends SlopeParameters {
     /*
@@ -526,8 +527,9 @@ public class Calibration extends Model {
                     BgSendQueue.handleNewBgReading(bgReading, "update", context);
                     // TODO probably should add a more fine grained prefs option in future
                     calculate_w_l_s(prefs.getBoolean("infrequent_calibration", false));
-                    adjustRecentBgReadings(adjustPast ? 30 : 2);
                     CalibrationSendQueue.addToQueue(calibration, context);
+                    BgReading.pushBgReadingSyncToWatch(bgReading, false);
+                    adjustRecentBgReadings(adjustPast ? 30 : 2);
                     context.startService(new Intent(context, Notifications.class));
                     Calibration.requestCalibrationIfRangeTooNarrow();
                     newFingerStickData();
@@ -777,6 +779,7 @@ public class Calibration extends Model {
                     bgReading.calculated_value = new_calculated_value;
 
                     bgReading.save();
+                    BgReading.pushBgReadingSyncToWatch(bgReading, false);
                     i += 1;
                 }
             } catch (NullPointerException e) {
@@ -795,6 +798,7 @@ public class Calibration extends Model {
                     bgReading.calculated_value = newYvalue;
                     BgReading.updateCalculatedValue(bgReading);
                     bgReading.save();
+                    BgReading.pushBgReadingSyncToWatch(bgReading, false);
                 }
             } catch (NullPointerException e) {
                 Log.wtf(TAG, "Null pointer in AdjustRecentReadings ==2: " + e);
@@ -805,6 +809,7 @@ public class Calibration extends Model {
             // TODO this method call is probably only needed when we are called for initial calibration, it should probably be moved
             bgReadings.get(0).find_new_raw_curve();
             bgReadings.get(0).find_new_curve();
+            BgReading.pushBgReadingSyncToWatch(bgReadings.get(0), false);
         } catch (NullPointerException e) {
             Log.wtf(TAG, "Got null pointer exception in adjustRecentBgReadings");
         }
@@ -857,6 +862,20 @@ public class Calibration extends Model {
         }
     }
 
+    public static void clearCalibrationByUUID(String uuid) {
+        final Calibration calibration = Calibration.byuuid(uuid);
+        if (calibration != null) {
+            CalibrationRequest.clearAll();
+            Log.d(TAG, "Trying to clear last calibration: " + uuid);
+            calibration.invalidate();
+            CalibrationSendQueue.addToQueue(calibration, xdrip.getAppContext());
+            newFingerStickData();
+        } else {
+            Log.d(TAG,"Could not find calibration to clear: "+uuid);
+        }
+    }
+
+
 
     public String toS() {
         Gson gson = new GsonBuilder()
@@ -891,7 +910,7 @@ public class Calibration extends Model {
             CalibrationSendQueue.addToQueue(calibration, xdrip.getAppContext());
             newFingerStickData();
             if (from_interactive) {
-                GcmActivity.clearLastCalibration();
+                GcmActivity.clearLastCalibration(uuid);
             }
         }
     }
@@ -1057,9 +1076,29 @@ public class Calibration extends Model {
                 .execute();
     }
 
+    public static List<Calibration> latestForGraph(int number, long startTime) {
+        return latestForGraph(number, startTime, (long)JoH.ts());
+    }
+
     public static List<Calibration> latestForGraph(int number, long startTime, long endTime) {
         return new Select()
                 .from(Calibration.class)
+                .where("timestamp >= " + Math.max(startTime, 0))
+                .where("timestamp <= " + endTime)
+                .where("(slope != 0 or slope_confidence = ?)", note_only_marker)
+                .orderBy("timestamp desc")
+                .limit(number)
+                .execute();
+    }
+
+    public static List<Calibration> latestForGraphSensor(int number, long startTime, long endTime) {
+        Sensor sensor = Sensor.currentSensor();
+        if (sensor == null) {
+            return null;
+        }
+        return new Select()
+                .from(Calibration.class)
+                .where("Sensor = ? ", sensor.getId())
                 .where("timestamp >= " + Math.max(startTime, 0))
                 .where("timestamp <= " + endTime)
                 .where("(slope != 0 or slope_confidence = ?)", note_only_marker)

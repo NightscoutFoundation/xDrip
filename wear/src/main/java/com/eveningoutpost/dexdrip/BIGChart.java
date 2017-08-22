@@ -36,6 +36,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.google.android.gms.wearable.DataMap;
 import com.ustwo.clockwise.wearable.WatchFace;
 import com.ustwo.clockwise.common.WatchFaceTime;
@@ -60,8 +61,10 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     public RelativeLayout mRelativeLayout;
     //public LinearLayout mLinearLayout;
     public Button stepsButton;
+    public Button menuButton;
     public LinearLayout mDirectionDelta;
     public LinearLayout mStepsLinearLayout;
+    public LinearLayout mMenuLinearLayout;
     public String mExtraStatusLine = "";
     public String mStepsToast = "";
     public int mStepsCount = 0;
@@ -80,6 +83,10 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     public LineChartView chart;
     public double datetime;
     public ArrayList<BgWatchData> bgDataList = new ArrayList<>();
+    public ArrayList<BgWatchData> treatsDataList = new ArrayList<>();
+    public ArrayList<BgWatchData> calDataList = new ArrayList<>();
+    public ArrayList<BgWatchData> btDataList = new ArrayList<>();
+    private final static boolean d = true; // debug flag, could be read from preferences
     public PowerManager.WakeLock wakeLock;
     // related to manual layout
     public View layoutView;
@@ -146,14 +153,26 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
                 statusView = (TextView) stub.findViewById(R.id.aps_status);
                 stepsButton=(Button)stub.findViewById(R.id.walkButton);
                 mStepsLinearLayout = (LinearLayout) stub.findViewById(R.id.steps_layout);
+                menuButton=(Button)stub.findViewById(R.id.menuButton);
+                mMenuLinearLayout = (LinearLayout) stub.findViewById(R.id.menu_layout);
                 mDirectionDelta = (LinearLayout) stub.findViewById(R.id.directiondelta_layout);
                 layoutSet = true;
+                Context context = xdrip.getAppContext();
+                if (Home.get_forced_wear()) {
+                    if (d) Log.d(TAG, "performViewSetup FORCE WEAR init BGs for graph");
+                    BgSendQueue.resendData(context);
+                }
+                if ((chart != null) && sharedPrefs.getBoolean("show_wear_treatments", false)) {
+                    if (d) Log.d(TAG, "performViewSetup init Treatments for graph");
+                    ListenerService.showTreatments(context, "all");
+                }
                 showAgeAndStatus();
                 mRelativeLayout.measure(specW, specH);
                 mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                         mRelativeLayout.getMeasuredHeight());
             }
         });
+        Log.d(TAG, "performViewSetup requestData");
         ListenerService.requestData(this);
         wakeLock.acquire(50);
     }
@@ -180,6 +199,11 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
             if (sharedPrefs.getBoolean("extra_status_line", false) && mExtraStatusLine != null && !mExtraStatusLine.isEmpty()) {
                 JoH.static_toast_long(mExtraStatusLine);
             }
+        }
+        if (tapType == TAP_TYPE_TOUCH && linearLayout(mMenuLinearLayout, x, y)) {
+            Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intent);
         }
     }
 
@@ -266,7 +290,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     protected void onDraw(Canvas canvas) {
         if(layoutSet) {
             this.mRelativeLayout.draw(canvas);
-            Log.d(TAG, "onDraw");
+            if (d) Log.d(TAG, "onDraw");
             if (sharedPrefs.getBoolean("showOpaqueCard", true)) {
                 int cardWidth = mCardRect.width();
                 int cardHeight = mCardRect.height();
@@ -310,7 +334,13 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         @Override
         public void onReceive(Context context, Intent intent) {
             DataMap dataMap;
-            Bundle bundle = intent.getBundleExtra("msg");
+            Bundle bundle = intent.getExtras();
+            String extra_status_line = bundle.getString("extra_status_line");
+            if (layoutSet && bundle != null && extra_status_line != null && !extra_status_line.isEmpty()) {
+                if (d) Log.d(TAG, "MessageReceiver extra_status_line=" + extra_status_line);
+                mExtraStatusLine = extra_status_line;
+            }
+            bundle = intent.getBundleExtra("msg");
             if (layoutSet && bundle != null) {
                 dataMap = DataMap.fromBundle(bundle);
                 String msg = dataMap.getString("msg", "");
@@ -323,7 +353,35 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
                 if (mTimeStepsRcvd <= dataMap.getLong("steps_timestamp", 0)) {
                     mStepsCount = dataMap.getInt("steps", 0);
                     mTimeStepsRcvd = dataMap.getLong("steps_timestamp", 0);
+                    showSteps();
                 }
+            }
+            if (sharedPrefs.getBoolean("show_wear_treatments", false)) {
+                Bundle treatsbundle = intent.getBundleExtra("treats");
+                if (layoutSet && treatsbundle != null) {
+                    DataMap treatsdataMap = DataMap.fromBundle(treatsbundle);
+                    if (d) Log.d(TAG, "MessageReceiver treatsDataList.size=" + (treatsDataList != null ? treatsDataList.size() : "0"));
+                    if (treatsdataMap != null)
+                        addToWatchSetTreats(treatsdataMap, treatsDataList);
+                    if (d) Log.d(TAG, "MessageReceiver treatsDataList.size=" + treatsDataList.size());
+                }
+                treatsbundle = intent.getBundleExtra("cals");
+                if (layoutSet && treatsbundle != null) {
+                    DataMap calDataMap = DataMap.fromBundle(treatsbundle);
+                    if (d) Log.d(TAG, "MessageReceiver calDataList.size=" + (calDataList != null ? calDataList.size() : "0"));
+                    if (calDataMap != null) addToWatchSetTreats(calDataMap, calDataList);
+                    if (d) Log.d(TAG, "MessageReceiver calDataList.size=" + calDataList.size());
+                }
+                treatsbundle = intent.getBundleExtra("bts");
+                if (layoutSet && treatsbundle != null) {
+                    DataMap btDataMap = DataMap.fromBundle(treatsbundle);
+                    if (d) Log.d(TAG, "MessageReceiver btDataList.size=" + (btDataList != null ? btDataList.size() : "0"));
+                    if (btDataMap != null) addToWatchSetTreats(btDataMap, btDataList);
+                    if (d) Log.d(TAG, "MessageReceiver btDataList.size=" + btDataList.size());
+                }
+            }
+            else {
+                clearTreatmentLists();
             }
             bundle = intent.getBundleExtra("data");
             if (layoutSet && bundle != null) {
@@ -346,25 +404,27 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
                 final java.text.DateFormat timeFormat = DateFormat.getTimeFormat(BIGChart.this);
                 mTime.setText(timeFormat.format(System.currentTimeMillis()));
 
-                showAgeAndStatus();
-
                 String delta = dataMap.getString("delta");
                 if (delta.endsWith(" mg/dl")) {
                     mDelta.setText(delta.substring(0, delta.length() - 6));
                 } else if (delta.endsWith(" mmol/l")) {
                     mDelta.setText(delta.substring(0, delta.length() - 7));
                 }
-                mExtraStatusLine = dataMap.getString("extra_status_line");
+                extra_status_line = bundle.getString("extra_status_line");
+                if (d) Log.d(TAG, "MessageReceiver DATA extra_status_line=" + extra_status_line);
+                if (extra_status_line != null)
+                    mExtraStatusLine = extra_status_line;
 
+                showAgeAndStatus();
                 if (chart != null) {
                     addToWatchSet(dataMap);
-                    setupCharts();
+                    //setupCharts();
                 }
-                mRelativeLayout.measure(specW, specH);
+                /*mRelativeLayout.measure(specW, specH);
                 mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                         mRelativeLayout.getMeasuredHeight());
                 invalidate();
-                setColor();
+                setColor();*/
 
                 //start animation?
                 // dataMap.getDataMapArrayList("entries") == null -> not on "resend data".
@@ -385,40 +445,41 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
 
                 showAgeAndStatus();
 
-                mRelativeLayout.measure(specW, specH);
+                /*mRelativeLayout.measure(specW, specH);
                 mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                         mRelativeLayout.getMeasuredHeight());
                 invalidate();
+                setColor();*/
+            }
+            if (layoutSet) {
+                mRelativeLayout.measure(specW, specH);
+                mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
+                        mRelativeLayout.getMeasuredHeight());
+                //invalidate();//to conserve battery, use onTimeChanged() default of one minute
                 setColor();
             }
         }
     }
 
-
-    private void showAgeAndStatus() {
-
-        if( mTimestamp != null){
-            mTimestamp.setText(readingAge(true));
+    private void clearTreatmentLists() {
+        if (!sharedPrefs.getBoolean("show_wear_treatments", false)) {
+            if (d)
+                Log.d(TAG, "clearTreatmentLists show_wear_treatments = false; clear treatment lists");
+            treatsDataList.clear();
+            calDataList.clear();
+            btDataList.clear();
         }
+    }
 
-        boolean showStatus = sharedPrefs.getBoolean("showExternalStatus", true);
-
-        if(showStatus){
-            statusView.setText(externalStatusString);
-            statusView.setVisibility(View.VISIBLE);
-        } else {
-            statusView.setVisibility(View.GONE);
-        }
-
+    private void showSteps() {
         if (sharedPrefs.getBoolean("showSteps", false)) {
-            stepsButton.setText(String.format("%d", mStepsCount));
             stepsButton.setVisibility(View.VISIBLE);
-
+            stepsButton.setText(String.format("%d", mStepsCount));
             if (mStepsCount > 0) {
                 DecimalFormat df = new DecimalFormat("#.##");
-                Double km = (((double)mStepsCount) / 2000.0d) * 1.6d;
-                Double mi = (((double)mStepsCount)/ 2000.0d) * 1.0d;
-                Log.d(TAG, "showAgoRawBattStatus Sensor mStepsCount=" + mStepsCount+ " km=" + km + " mi=" + mi);
+                Double km = (((double) mStepsCount) / 2000.0d) * 1.6d;
+                Double mi = (((double) mStepsCount) / 2000.0d) * 1.0d;
+                if (d) Log.d(TAG, "showSteps Sensor mStepsCount=" + mStepsCount + " km=" + km + " mi=" + mi + " rcvd=" + JoH.dateTimeText(mTimeStepsRcvd));
                 mStepsToast = getResources().getString(R.string.label_show_steps, mStepsCount) +
                         (km > 0.0 ? "\n" + getResources().getString(R.string.label_show_steps_km, df.format(km)) : "0") +
                         (mi > 0.0 ? "\n" + getResources().getString(R.string.label_show_steps_mi, df.format(mi)) : "0") +
@@ -434,7 +495,23 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         else {
             stepsButton.setVisibility(View.GONE);
             mStepsToast = "";
-            Log.d(TAG, "Sensor showSteps GONE mStepsCount = " + getResources().getString(R.string.label_show_steps, mStepsCount));
+            if (d) Log.d(TAG, "showSteps GONE mStepsCount = " + getResources().getString(R.string.label_show_steps, mStepsCount));
+        }
+    }
+
+    private void showAgeAndStatus() {
+
+        if( mTimestamp != null){
+            mTimestamp.setText(readingAge(true));
+        }
+
+        boolean showStatus = sharedPrefs.getBoolean("showExternalStatus", true);
+
+        if(showStatus){
+            statusView.setText(externalStatusString);
+            statusView.setVisibility(View.VISIBLE);
+        } else {
+            statusView.setVisibility(View.GONE);
         }
     }
 
@@ -455,6 +532,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key){
         setColor();
         if(layoutSet){
+            clearTreatmentLists();
             showAgeAndStatus();
             mRelativeLayout.measure(specW, specH);
             mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
@@ -486,7 +564,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     }
 
     void startAnimation() {
-        Log.d(TAG, "CircleWatchface start startAnimation");
+        if (d) Log.d(TAG, "CircleWatchface start startAnimation");
 
         Thread animator = new Thread() {
 
@@ -518,20 +596,20 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         mRelativeLayout.measure(specW, specH);
         mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                 mRelativeLayout.getMeasuredHeight());
-        Log.d(TAG, "resetRelativeLayout specW=" + specW + " specH=" + specH + " mRelativeLayout.getMeasuredWidth()=" + mRelativeLayout.getMeasuredWidth() + " mRelativeLayout.getMeasuredHeight()=" + mRelativeLayout.getMeasuredHeight());
+        if (d) Log.d(TAG, "resetRelativeLayout specW=" + specW + " specH=" + specH + " mRelativeLayout.getMeasuredWidth()=" + mRelativeLayout.getMeasuredWidth() + " mRelativeLayout.getMeasuredHeight()=" + mRelativeLayout.getMeasuredHeight());
     }
 
     private void displayCard() {
         int cardWidth = mCardRect.width();
         int cardHeight = mCardRect.height();
-        Log.d(TAG, "displayCard WatchFace.onCardPeek: getWidth()=" + getWidth() + " getHeight()=" + getHeight() + " cardWidth=" + cardWidth + " cardHeight=" + cardHeight);
+        if (d) Log.d(TAG, "displayCard WatchFace.onCardPeek: getWidth()=" + getWidth() + " getHeight()=" + getHeight() + " cardWidth=" + cardWidth + " cardHeight=" + cardHeight);
 
         if (cardHeight > 0 && cardWidth > 0) {
             if (getCurrentWatchMode() != WatchMode.INTERACTIVE) {
                 // get height of visible area (not including card)
                 int visibleWidth = getWidth() - cardWidth;
                 int visibleHeight = getHeight() - cardHeight;
-                Log.d(TAG, "onCardPeek WatchFace.onCardPeek: visibleWidth=" + visibleWidth + " visibleHeight=" + visibleHeight);
+                if (d) Log.d(TAG, "onCardPeek WatchFace.onCardPeek: visibleWidth=" + visibleWidth + " visibleHeight=" + visibleHeight);
                 mRelativeLayout.layout(0, 0, visibleWidth, visibleHeight);
             }
             else
@@ -549,7 +627,7 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
             displayCard();
             int cardWidth = peekCardRect.width();
             int cardHeight = peekCardRect.height();
-            Log.d(TAG, "onCardPeek WatchFace.onCardPeek: getWidth()=" + getWidth() + " getHeight()=" + getHeight() + " cardWidth=" + cardWidth + " cardHeight=" + cardHeight);
+            if (d) Log.d(TAG, "onCardPeek WatchFace.onCardPeek: getWidth()=" + getWidth() + " getHeight()=" + getHeight() + " cardWidth=" + cardWidth + " cardHeight=" + cardHeight);
         }
     }
 
@@ -643,8 +721,8 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
         int minutes_since = (int) Math.floor(timeSince() / (1000 * 60));
         int maxDelay = 16;
         if (sharedPrefs.getBoolean("enable_wearG5", false)) {
-            maxDelay = 4;
-            Log.d(TAG, "missedReadingAlert Enter minutes_since " + minutes_since + " call requestData if >= 4 minutes mod 5");//KS
+            maxDelay = 5;
+            Log.d(TAG, "missedReadingAlert Enter minutes_since " + minutes_since + " call requestData if >= 5 minutes mod 5");//KS
         }
 
         if (minutes_since >= maxDelay && ((minutes_since - maxDelay) % 5) == 0) {//KS TODO reduce time for debugging; add notifications
@@ -653,8 +731,53 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
                     .setVibrate(vibratePattern);
             NotificationManager mNotifyMgr = (hNotificationManager) getApplicationContext().getSystemService(getApplicationContext().NOTIFICATION_SERVICE);
             mNotifyMgr.notify(missed_readings_alert_id, notification.build());*/
+            Log.d(TAG, "missedReadingAlert requestData");//KS
             ListenerService.requestData(this); // attempt to recover missing data
         }
+    }
+
+    public void addDataMapTreats(DataMap dataMap, ArrayList<BgWatchData> dataList) {//KS
+        double sgv = dataMap.getDouble("sgvDouble");
+        double high = dataMap.getDouble("high");//carbs
+        double low = dataMap.getDouble("low");//insulin
+        double timestamp = dataMap.getDouble("timestamp");
+
+        if (d) Log.d(TAG, "addDataMapTreats entry=" + dataMap);
+
+        final int size = (dataList != null ? dataList.size() : 0);
+        BgWatchData bgdata = new BgWatchData(sgv, high, low, timestamp);
+        if (d) Log.d(TAG, "addDataMapTreats bgdata.sgv=" + bgdata.sgv + " bgdata.carbs=" + bgdata.high  + " bgdata.insulin=" + bgdata.low + " bgdata.timestamp=" + bgdata.timestamp + " timestamp=" + JoH.dateTimeText((long)bgdata.timestamp));
+        if (size > 0) {
+            if (dataList.contains(bgdata)) {
+                int i = dataList.indexOf(bgdata);
+                if (d) {
+                    BgWatchData data = dataList.get(dataList.indexOf(bgdata));
+                    Log.d(TAG, "addDataMapTreats replace indexOf=" + i + " treatsDataList.carbs=" + data.high + " treatsDataList.insulin=" + data.low + " treatsDataList.timestamp=" + data.timestamp);
+                }
+                dataList.set(i, bgdata);
+            } else {
+                if (d) Log.d(TAG, "addDataMapTreats add " + " treatsDataList.carbs=" + bgdata.high  + " treatsDataList.insulin=" + bgdata.low + " entry.timestamp=" + bgdata.timestamp);
+                dataList.add(bgdata);
+            }
+        }
+        else {
+            dataList.add(bgdata);
+        }
+        if (d) Log.d(TAG, "addDataMapTreats dataList.size()=" + dataList.size());
+    }
+    public void addToWatchSetTreats(DataMap dataMap, ArrayList<BgWatchData> dataList) {
+
+        if (d) Log.d(TAG, "addToWatchSetTreats dataList.size()=" + (dataList != null ? dataList.size() : "0"));
+        dataList.clear();//necessary since treatments, bloodtest and calibrations can be deleted/invalidated
+        ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
+        if (entries != null) {
+            if (d) Log.d(TAG, "addToWatchSetTreats entries.size()=" + entries.size() + " entries=" + entries);
+            for (DataMap entry : entries) {
+                addDataMapTreats(entry, dataList);
+            }
+        }
+
+        if (d) Log.d(TAG, "addToWatchSetTreats dataList.size()=" + dataList.size());
     }
 
     public void addDataMap(DataMap dataMap) {//KS
@@ -685,11 +808,11 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
 
     public void addToWatchSet(DataMap dataMap) {
 
-        Log.d(TAG, "addToWatchSet bgDataList.size()=" + bgDataList.size());
+        if (d) Log.d(TAG, "addToWatchSet bgDataList.size()=" + bgDataList.size());
 
         ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
         if (entries != null) {
-            Log.d(TAG, "addToWatchSet entries.size()=" + entries.size());
+            if (d) Log.d(TAG, "addToWatchSet entries.size()=" + entries.size());
             for (DataMap entry : entries) {
                 addDataMap(entry);
             }
@@ -708,16 +831,17 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
     public void setupCharts() {
         if(bgDataList.size() > 0) { //Dont crash things just because we dont have values, people dont like crashy things
             int timeframe = Integer.parseInt(sharedPrefs.getString("chart_timeframe", "5"));
+            boolean doMgdl = (sharedPrefs.getString("units", "mgdl").equals("mgdl"));
             if (lowResMode) {
-                bgGraphBuilder = new BgGraphBuilder(getApplicationContext(), bgDataList, pointSize, midColor, timeframe);
+                bgGraphBuilder = new BgGraphBuilder(getApplicationContext(), bgDataList, treatsDataList, calDataList, btDataList, pointSize, midColor, timeframe, doMgdl);
             } else {
-                bgGraphBuilder = new BgGraphBuilder(getApplicationContext(), bgDataList, pointSize, highColor, lowColor, midColor, timeframe);
+                bgGraphBuilder = new BgGraphBuilder(getApplicationContext(), bgDataList, treatsDataList, calDataList, btDataList, pointSize, highColor, lowColor, midColor, timeframe, doMgdl);
             }
 
             chart.setLineChartData(bgGraphBuilder.lineData());
             chart.setViewportCalculationEnabled(true);
             chart.setMaximumViewport(chart.getMaximumViewport());
-        } else {
+        } else if (!Home.get_forced_wear()){
             ListenerService.requestData(this);
         }
     }

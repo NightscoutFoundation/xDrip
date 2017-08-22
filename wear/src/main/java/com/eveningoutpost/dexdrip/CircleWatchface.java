@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.Models.JoH;
+import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
 import com.google.android.gms.wearable.DataMap;
 import com.ustwo.clockwise.wearable.WatchFace;
 import com.ustwo.clockwise.common.WatchFaceTime;
@@ -81,6 +82,7 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
     private String delta = "";
     //public TreeSet<BgWatchData> bgDataList = new TreeSet<BgWatchData>();
     public ArrayList<BgWatchData> bgDataList = new ArrayList<>();
+    private final static boolean d = true; // debug flag, could be read from preferences
 
     private View layoutView;
     private int specW;
@@ -90,6 +92,8 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
     public LinearLayout mDirectionDelta;
     public Button stepsButton;
     public LinearLayout mStepsLinearLayout;
+    public Button menuButton;
+    public LinearLayout mMenuLinearLayout;
     public String mExtraStatusLine = "";
     public String mStepsToast = "";
     public int mStepsCount = 0;
@@ -128,6 +132,12 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
             prepareLayout();
             prepareDrawTime();
 
+            Context context = xdrip.getAppContext();
+            if (Home.get_forced_wear()) {
+                if (d) Log.d(TAG, "performViewSetup FORCE WEAR init BGs for graph");
+                BgSendQueue.resendData(context);
+            }
+            Log.d(TAG, "performViewSetup requestData");
             ListenerService.requestData(this); //usually connection is not set up yet  //KS uncomment
         } finally {
             wakeLock.release();
@@ -178,6 +188,11 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
                 JoH.static_toast_long(mExtraStatusLine);
             }
         }
+        if (tapType == TAP_TYPE_TOUCH && linearLayout(mMenuLinearLayout, x, y)) {
+            Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intent);
+        }
     }
 
     private boolean linearLayout(LinearLayout layout,int x, int y) {
@@ -188,26 +203,25 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         return false;
     }
 
-    private synchronized void prepareLayout() {
-
-        Log.d(TAG, "CircleWatchface start startPrepareLayout");
-
-        // prepare fields
-
-        TextView textView = null;
-
-        mDirectionDelta = (LinearLayout) myLayout.findViewById(R.id.directiondelta_layout);
-        stepsButton=(Button)myLayout.findViewById(R.id.walkButton);
-        mStepsLinearLayout = (LinearLayout) myLayout.findViewById(R.id.steps_layout);
+    private boolean showSteps() {
+        boolean changed = false;
+        String current = "";
+        String previous = "";
         if (sharedPrefs.getBoolean("showSteps", false)) {
-            stepsButton.setText(String.format("%d", mStepsCount));
             stepsButton.setVisibility(View.VISIBLE);
+            current = String.format("%d", mStepsCount);
+            previous = String.valueOf(stepsButton.getText());
+            if (!previous.equals(current)) {
+                changed = true;
+                stepsButton.setText(current);
+                if (d) Log.d(TAG, "showSteps changed mStepsCount previous=" + previous + " current=" + current);
+            }
 
             if (mStepsCount > 0) {
                 DecimalFormat df = new DecimalFormat("#.##");
                 Double km = (((double) mStepsCount) / 2000.0d) * 1.6d;
                 Double mi = (((double) mStepsCount) / 2000.0d) * 1.0d;
-                Log.d(TAG, "showAgoRawBattStatus Sensor mStepsCount=" + mStepsCount + " km=" + km + " mi=" + mi + " rcvd=" + JoH.dateTimeText(mTimeStepsRcvd));
+                if (d) Log.d(TAG, "showSteps Sensor mStepsCount=" + mStepsCount + " km=" + km + " mi=" + mi + " rcvd=" + JoH.dateTimeText(mTimeStepsRcvd));
                 mStepsToast = getResources().getString(R.string.label_show_steps, mStepsCount) +
                         (km > 0.0 ? "\n" + getResources().getString(R.string.label_show_steps_km, df.format(km)) : "0") +
                         (mi > 0.0 ? "\n" + getResources().getString(R.string.label_show_steps_mi, df.format(mi)) : "0") +
@@ -223,8 +237,25 @@ public class CircleWatchface extends WatchFace implements SharedPreferences.OnSh
         else {
             stepsButton.setVisibility(View.GONE);
             mStepsToast = "";
-            Log.d(TAG, "Sensor showSteps GONE mStepsCount = " + getResources().getString(R.string.label_show_steps, mStepsCount));
+            if (d) Log.d(TAG, "showSteps GONE mStepsCount = " + getResources().getString(R.string.label_show_steps, mStepsCount));
         }
+        return changed;
+    }
+
+    private synchronized void prepareLayout() {
+
+        Log.d(TAG, "CircleWatchface start startPrepareLayout");
+
+        // prepare fields
+
+        TextView textView = null;
+
+        mDirectionDelta = (LinearLayout) myLayout.findViewById(R.id.directiondelta_layout);
+        menuButton=(Button)myLayout.findViewById(R.id.menuButton);
+        mMenuLinearLayout = (LinearLayout) myLayout.findViewById(R.id.menu_layout);
+        stepsButton=(Button)myLayout.findViewById(R.id.walkButton);
+        mStepsLinearLayout = (LinearLayout) myLayout.findViewById(R.id.steps_layout);
+        showSteps();
 
         textView = (TextView) myLayout.findViewById(R.id.sgvString);
         if (sharedPrefs.getBoolean("showBG", true)) {

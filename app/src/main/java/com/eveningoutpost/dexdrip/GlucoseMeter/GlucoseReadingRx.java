@@ -31,6 +31,7 @@ public class GlucoseReadingRx extends BluetoothCHelper {
     public int sampleLocation;
     public String device;
 
+    public GlucoseReadingRx() {}
 
     public GlucoseReadingRx(byte[] packet) {
         this(packet, null);

@@ -79,6 +79,7 @@ public class GcmActivity extends FauxActivity {
     private static final long MAX_ACK_OUTSTANDING_MS = 3600000;
     private static int recursion_depth = 0;
     private static int last_bridge_battery = -1;
+    private static int last_parakeet_battery = -1;
     private static final int MAX_RECURSION = 30;
     private static final int MAX_QUEUE_SIZE = 300;
     private static final int RELIABLE_MAX_PAYLOAD = 1800;
@@ -375,6 +376,21 @@ public class GcmActivity extends FauxActivity {
         }
     }
 
+    public static void sendParakeetBattery(final int battery) {
+        if (battery != last_parakeet_battery) {
+            if (JoH.pratelimit("gcm-pbu", 1800)) {
+                GcmActivity.sendMessage("pbu", Integer.toString(battery));
+                last_parakeet_battery = battery;
+            }
+        }
+    }
+
+    public static void sendNotification(String title, String message) {
+        if (JoH.pratelimit("gcm-not", 30)) {
+            GcmActivity.sendMessage("not", title.replaceAll("\\^", "") + "^" + message.replaceAll("\\^", ""));
+        }
+    }
+
     private static void sendRealSnoozeToRemote() {
         if (JoH.pratelimit("gcm-sra", 60)) {
             String wifi_ssid = JoH.getWifiSSID();
@@ -455,6 +471,11 @@ public class GcmActivity extends FauxActivity {
         }
     }
 
+    public static void sendPumpStatus(String json) {
+        if (JoH.pratelimit("gcm-psu", 180)) {
+            sendMessage("psu", json);
+        }
+    }
 
     public static void requestBGsync() {
         if (token != null) {
@@ -474,6 +495,7 @@ public class GcmActivity extends FauxActivity {
     }
 
     static void syncBGTable2() {
+        if (!Sensor.isActive()) return;
         new Thread() {
             @Override
             public void run() {
@@ -541,17 +563,8 @@ public class GcmActivity extends FauxActivity {
     }
 
     public static void pushTreatmentAsync(final Treatments thistreatment) {
-        new Thread() {
-            @Override
-            public void run() {
-                push_treatment(thistreatment);
-            }
-        }.start();
-    }
-
-    private static void push_treatment(Treatments thistreatment) {
         if ((thistreatment.uuid == null) || (thistreatment.uuid.length() < 5)) return;
-        String json = thistreatment.toJSON();
+        final String json = thistreatment.toJSON();
         sendMessage(myIdentity(), "nt", json);
     }
 
@@ -587,32 +600,35 @@ public class GcmActivity extends FauxActivity {
             // For master, we now send the entire table, no need to send this specific table each time
             return;
         }
-        String currenttime = Double.toString(new Date().getTime());
-        String tosend = currenttime + " " + bg_value + " " + seconds_ago;
-        sendMessage(myIdentity(), "cal", tosend);
+        if (Home.get_follower()) {
+            final String currenttime = Double.toString(new Date().getTime());
+            final String tosend = currenttime + " " + bg_value + " " + seconds_ago;
+            sendMessage(myIdentity(), "cal", tosend);
+        }
     }
 
     static void pushCalibration2(double bgValue, String uuid, long offset) {
         Log.i(TAG, "pushCalibration2 called: " + JoH.qs(bgValue, 1) + " " + uuid + " " + offset);
+        if (Home.get_master_or_follower()) {
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+            final String unit = prefs.getString("units", "mgdl");
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
-        final String unit = prefs.getString("units", "mgdl");
+            if (unit.compareTo("mgdl") != 0) {
+                bgValue = bgValue * Constants.MMOLL_TO_MGDL;
+            }
 
-        if (unit.compareTo("mgdl") != 0) {
-            bgValue = bgValue * Constants.MMOLL_TO_MGDL;
+            if ((bgValue < 40) || (bgValue > 400)) {
+                Log.wtf(TAG, "Invalid out of range calibration glucose mg/dl value of: " + bgValue);
+                JoH.static_toast_long("Calibration out of range: " + bgValue + " mg/dl");
+                return;
+            }
+            final String json = newCalibrationToJson(bgValue, uuid, offset);
+            GcmActivity.sendMessage(myIdentity(), "cal2", json);
         }
-
-        if ((bgValue < 40) || (bgValue > 400)) {
-            Log.wtf(TAG, "Invalid out of range calibration glucose mg/dl value of: " + bgValue);
-            JoH.static_toast_long("Calibration out of range: " + bgValue + " mg/dl");
-            return;
-        }
-        String json = newCalibrationToJson(bgValue, uuid, offset);
-        GcmActivity.sendMessage(myIdentity(), "cal2", json);
     }
 
-    public static void clearLastCalibration() {
-        sendMessage(myIdentity(), "clc", "");
+    public static void clearLastCalibration(String uuid) {
+        sendMessage(myIdentity(), "clc", uuid);
     }
 
     private static synchronized String sendMessageNow(String identity, String action, String payload, byte[] bpayload) {

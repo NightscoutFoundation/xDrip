@@ -11,6 +11,7 @@
         <item>LimiTTer</item>
         <item>xDrip+ Sync Follower</item>
         <item>LibreAlarm</item>
+        <item>640G / EverSense</item>
     </string-array>
 
     <string-array name="DexCollectionMethodValues">
@@ -24,6 +25,7 @@
         <item>LimiTTer</item>
         <item>Follower</item>
         <item>LibreAlarm</item>
+        <item>NSEmulator</item>
 
     </string-array>
 

@@ -71,6 +71,7 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
+import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
@@ -82,10 +83,12 @@ import com.eveningoutpost.dexdrip.UtilityModels.JamorhamShowcaseDrawer;
 import com.eveningoutpost.dexdrip.UtilityModels.NightscoutUploader;
 import com.eveningoutpost.dexdrip.UtilityModels.Notifications;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
+import com.eveningoutpost.dexdrip.UtilityModels.PumpStatus;
 import com.eveningoutpost.dexdrip.UtilityModels.SendFeedBack;
 import com.eveningoutpost.dexdrip.UtilityModels.ShotStateStore;
 import com.eveningoutpost.dexdrip.UtilityModels.UndoRedo;
 import com.eveningoutpost.dexdrip.UtilityModels.UpdateActivity;
+import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.languageeditor.LanguageEditor;
@@ -125,9 +128,11 @@ import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
 import lecho.lib.hellocharts.view.PreviewLineChartView;
 
+import static com.eveningoutpost.dexdrip.Models.BloodTest.pushBloodTestSyncToWatch;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
+import static com.eveningoutpost.dexdrip.UtilityModels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPlugin;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPluginFromPreferences;
@@ -223,13 +228,18 @@ public class Home extends ActivityWithMenu {
     double thisinsulinnumber = 0;
     double thistimeoffset = 0;
     String thisword = "";
+    String thisuuid = "";
     private static String nexttoast;
     boolean carbsset = false;
     boolean insulinset = false;
     boolean glucoseset = false;
     boolean timeset = false;
+    boolean watchkeypad = false;
+    boolean watchkeypadset = false;
+    long watchkeypad_timestamp = -1;
     private wordDataWrapper searchWords = null;
     private AlertDialog dialog;
+    private AlertDialog helper_dialog;
 
     private static final boolean oneshot = true;
     private static ShowcaseView myShowcase;
@@ -529,32 +539,35 @@ public class Home extends ActivityWithMenu {
         }
 
 
-        if ((checkedeula) && Experience.isNewbie() && !Home.getPreferencesStringWithDefault("units", "mgdl").equals("mmol")) {
-            Log.d(TAG, "Newbie mmol prompt");
-            if (Experience.defaultUnitsAreMmol()) {
-                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Glucose units mmol/L or mg/dL");
-                builder.setMessage("Is your typical blood glucose value:\n\n5.5 (mmol/L)\nor\n100 (mg/dL)\n\nPlease select below");
+        if ((checkedeula) && Experience.isNewbie()) {
+            if (!SdcardImportExport.handleBackup(this)) {
+                if (!Home.getPreferencesStringWithDefault("units", "mgdl").equals("mmol")) {
+                    Log.d(TAG, "Newbie mmol prompt");
+                    if (Experience.defaultUnitsAreMmol()) {
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setTitle("Glucose units mmol/L or mg/dL");
+                        builder.setMessage("Is your typical blood glucose value:\n\n5.5 (mmol/L)\nor\n100 (mg/dL)\n\nPlease select below");
 
-                builder.setNegativeButton("5.5", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        Home.setPreferencesString("units", "mmol");
-                        Preferences.handleUnitsChange(null, "mmol", null);
-                        Home.staticRefreshBGCharts();
-                        toast("Settings updated to mmol/L");
+                        builder.setNegativeButton("5.5", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                Home.setPreferencesString("units", "mmol");
+                                Preferences.handleUnitsChange(null, "mmol", null);
+                                Home.staticRefreshBGCharts();
+                                toast("Settings updated to mmol/L");
+                            }
+                        });
+
+                        builder.setPositiveButton("100", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                        builder.create().show();
                     }
-                });
-
-                builder.setPositiveButton("100", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                builder.create().show();
-
+                }
             }
         }
 
@@ -705,7 +718,9 @@ public class Home extends ActivityWithMenu {
                     } else if (calibration_type.equals("auto")) {
                         Log.d(TAG, "Creating bloodtest  record from cal input data");
                         BloodTest.createFromCal(glucosenumber, timeoffset, "Manual Entry");
+                        GcmActivity.syncBloodTests();
                         if ((!Home.getPreferencesBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto"))
+                                && (DexCollectionType.getDexCollectionType() != DexCollectionType.Follower)
                                 && (JoH.pratelimit("ask_about_auto_calibration", 86400 * 30))) {
                             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                             builder.setTitle("Enable automatic calibration");
@@ -779,17 +794,53 @@ public class Home extends ActivityWithMenu {
     private void processAndApproveTreatment() {
         // preserve globals before threading off
         final double myglucosenumber = thisglucosenumber;
-        final double mytimeoffset = thistimeoffset;
-        WatchUpdaterService.sendWearToast("Treatment processed", Toast.LENGTH_LONG);
+        double mytimeoffset = thistimeoffset;
         // proccess and approve all treatments
         // TODO Handle BG Tests here also
-        Treatments.create(thiscarbsnumber, thisinsulinnumber, Treatments.getTimeStampWithOffset(mytimeoffset));
+        if (watchkeypad) {
+            // calculate absolute offset
+            long treatment_timestamp = watchkeypad_timestamp - (long) mytimeoffset;
+            mytimeoffset = JoH.tsl() - treatment_timestamp;
+            Log.d(TAG, "Watch Keypad timestamp is: " + JoH.dateTimeText(treatment_timestamp) + " Original offset: " + JoH.qs(thistimeoffset) + " New: " + JoH.qs(mytimeoffset));
+            if ((mytimeoffset > (DAY_IN_MS * 3)) || (mytimeoffset < -HOUR_IN_MS * 3)) {
+                Log.e(TAG, "Treatment timestamp out of range: " + mytimeoffset);
+                JoH.static_toast_long("Treatment time wrong");
+                WatchUpdaterService.sendWearLocalToast("Treatment error", Toast.LENGTH_LONG);
+            } else {
+                JoH.static_toast_long("Treatment processed");
+                WatchUpdaterService.sendWearLocalToast("Treatment processed", Toast.LENGTH_LONG);
+                long time = Treatments.getTimeStampWithOffset(mytimeoffset);
+                // sanity check timestamp
+                final Treatments exists = Treatments.byTimestamp(time);
+                if (exists == null) {
+                    Log.d(TAG, "processAndApproveTreatment create watchkeypad Treatment carbs=" + thiscarbsnumber + " insulin=" + thisinsulinnumber + " timestamp=" + JoH.dateTimeText(time) + " uuid=" + thisuuid);
+                    Treatments.create(thiscarbsnumber, thisinsulinnumber, time, thisuuid);
+                } else {
+                    Log.d(TAG, "processAndApproveTreatment Treatment already exists carbs=" + thiscarbsnumber + " insulin=" + thisinsulinnumber + " timestamp=" + JoH.dateTimeText(time));
+                }
+            }
+        } else {
+            WatchUpdaterService.sendWearToast("Treatment processed", Toast.LENGTH_LONG);
+            Treatments.create(thiscarbsnumber, thisinsulinnumber, Treatments.getTimeStampWithOffset(mytimeoffset));
+        }
         hideAllTreatmentButtons();
 
         if (hideTreatmentButtonsIfAllDone()) {
             updateCurrentBgInfo("approve button");
         }
-        processCalibrationNoUI(myglucosenumber, mytimeoffset);
+        if (watchkeypad) {
+            if (myglucosenumber > 0) {
+                if ((mytimeoffset > (DAY_IN_MS * 3)) || (mytimeoffset < -HOUR_IN_MS * 3)) {
+                    Log.e(TAG, "Treatment bloodtest timestamp out of range: " + mytimeoffset);
+                } else {
+                    BloodTest.createFromCal(myglucosenumber, mytimeoffset, "Manual Entry", thisuuid);
+                }
+            }
+            watchkeypad = false;
+            watchkeypadset = false;
+            watchkeypad_timestamp = -1;
+        } else
+            processCalibrationNoUI(myglucosenumber, mytimeoffset);
         staticRefreshBGCharts();
     }
 
@@ -803,7 +854,7 @@ public class Home extends ActivityWithMenu {
                 last_speech_time = JoH.ts();
                 naturalLanguageRecognition(receivedText);
             }
-            if (bundle.getString(WatchUpdaterService.WEARABLE_APPROVE_TREATMENT) != null)
+            if (bundle.getString(WatchUpdaterService.WEARABLE_APPROVE_TREATMENT) != null || watchkeypad)
                 processAndApproveTreatment();
             else if (bundle.getString(WatchUpdaterService.WEARABLE_CANCEL_TREATMENT) != null)
                 cancelTreatment();
@@ -862,6 +913,7 @@ public class Home extends ActivityWithMenu {
             } else if (bundle.getString(Home.ACTIVITY_SHOWCASE_INFO) != null) {
                 showcasemenu(SHOWCASE_MOTION_DETECTION);
             } else if (bundle.getString(Home.BLOOD_TEST_ACTION) != null) {
+                Log.d(TAG, "BLOOD_TEST_ACTION");
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Blood Test Action");
                 builder.setMessage("What would you like to do?");
@@ -898,6 +950,7 @@ public class Home extends ActivityWithMenu {
                                         dialog.dismiss();
                                         bt.removeState(BloodTest.STATE_VALID);
                                         GcmActivity.syncBloodTests();
+                                        if (Home.get_show_wear_treatments()) BloodTest.pushBloodTestSyncToWatch(bt, false);
                                         staticRefreshBGCharts();
                                         JoH.static_toast_short("Deleted!");
                                     }
@@ -1149,7 +1202,10 @@ public class Home extends ActivityWithMenu {
     }
 
     private String classifyWord(String word) {
-        // convert fuzzy recognised word to our keyword from lexicon
+        if (word == null) return null;
+        if (word.equals("watchkeypad")) return "watchkeypad";
+        if (word.equals("uuid")) return "uuid";
+// convert fuzzy recognised word to our keyword from lexicon
         for (wordData thislex : searchWords.entries) {
             if (thislex.matchWords.contains(word)) {
                 Log.d(TAG, "Matched spoken word: " + word + " => " + thislex.lexicon);
@@ -1168,13 +1224,20 @@ public class Home extends ActivityWithMenu {
                     Toast.LENGTH_LONG).show();
             return;
         }
+        Log.d(TAG, "Processing speech input allWords: " + allWords);
+        thisuuid = "";
+        int end = allWords.indexOf(" uuid ");
+        if (end > 0) {
+            thisuuid = (end > 0 ? allWords.substring(0, end) : "");
+            allWords = allWords.substring(end + 6, allWords.length());
+        }
         allWords = allWords.trim();
         allWords = allWords.replaceAll(":", "."); // fix real times
         allWords = allWords.replaceAll("(\\d)([a-zA-Z])", "$1 $2"); // fix like 22mm
-        allWords = allWords.replaceAll("([0-9].[0-9])([0-9][0-9])", "$1 $2"); // fix multi number order like blood 3.622 grams
+        allWords = allWords.replaceAll("([0-9]\\.[0-9])([0-9][0-9])", "$1 $2"); // fix multi number order like blood 3.622 grams
         allWords = allWords.toLowerCase();
 
-        Log.d(TAG, "Processing speech input: " + allWords);
+        Log.d(TAG, "Processing speech input allWords second: " + allWords + " UUID: " + thisuuid);
 
         if (allWords.contentEquals("delete last treatment")
                 || allWords.contentEquals("cancel last treatment")
@@ -1211,6 +1274,8 @@ public class Home extends ActivityWithMenu {
             BloodTest.cleanup(-100000);
         } else if (allWords.contentEquals("delete all persistent store")) {
             SdcardImportExport.deletePersistentStore();
+        } else if (allWords.contentEquals("delete uploader queue")) {
+            UploaderQueue.emptyQueue();
         } else if (allWords.contentEquals("clear battery warning")) {
             try {
                 final Sensor sensor = Sensor.currentSensor();
@@ -1224,6 +1289,8 @@ public class Home extends ActivityWithMenu {
         }
 
         // reset parameters for new speech
+        watchkeypad = false;
+        watchkeypadset = false;
         glucoseset = false;
         insulinset = false;
         carbsset = false;
@@ -1231,7 +1298,7 @@ public class Home extends ActivityWithMenu {
         thisnumber = -1;
         thisword = "";
 
-        String[] wordsArray = allWords.split(" ");
+        final String[] wordsArray = allWords.split(" ");
         for (int i = 0; i < wordsArray.length; i++) {
             // per word in input stream
             try {
@@ -1240,21 +1307,45 @@ public class Home extends ActivityWithMenu {
                 handleWordPair();
             } catch (NumberFormatException nfe) {
                 // detection of number or not
-                String result = classifyWord(wordsArray[i]);
+                final String result = classifyWord(wordsArray[i]);
                 if (result != null)
                     thisword = result;
                 handleWordPair();
+                if (thisword.equals("note")) {
+                    String note_text = "";
+                    for (int j = i + 1; j < wordsArray.length; j++) {
+                        if (note_text.length() > 0) note_text += " ";
+                        note_text += wordsArray[j];
+                    }
+                    if (note_text.length() > 0) {
+                        // TODO respect historic timeset?
+                        Treatments.create_note(note_text, JoH.tsl());
+                        staticRefreshBGCharts();
+                        break; // don't process any more
+                    }
+                }
             }
         }
     }
 
     private void handleWordPair() {
         boolean preserve = false;
-        if ((thisnumber == -1) || (thisword == "")) return;
+        if ((thisnumber == -1) || (thisword.equals(""))) return;
 
         Log.d(TAG, "GOT WORD PAIR: " + thisnumber + " = " + thisword);
 
         switch (thisword) {
+
+            case "watchkeypad":
+                if ((watchkeypadset == false) && (thisnumber > 1501968469)) {
+                    watchkeypad = true;
+                    watchkeypadset = true;
+                    watchkeypad_timestamp = (long)(thisnumber * 1000);
+                    Log.d(TAG, "Treatment entered on watchkeypad: " + Double.toString(thisnumber));
+                } else {
+                    Log.d(TAG, "watchkeypad already set");
+                }
+                break;
 
             case "rapid":
                 if ((insulinset == false) && (thisnumber > 0)) {
@@ -1371,7 +1462,7 @@ public class Home extends ActivityWithMenu {
         }
 
         // don't show approve/cancel if we only have time
-        if (insulinset || glucoseset || carbsset) {
+        if ((insulinset || glucoseset || carbsset) && !watchkeypad) {
             btnApprove.setVisibility(View.VISIBLE);
             btnCancel.setVisibility(View.VISIBLE);
 
@@ -1408,7 +1499,7 @@ public class Home extends ActivityWithMenu {
 
         }
 
-        if (insulinset || glucoseset || carbsset || timeset) {
+        if ((insulinset || glucoseset || carbsset || timeset) && !watchkeypad) {
             if (chart != null) {
                 chart.setAlpha((float) 0.10);
             }
@@ -1600,6 +1691,7 @@ public class Home extends ActivityWithMenu {
 
     @Override
     protected void onResume() {
+
         xdrip.checkForcedEnglish(xdrip.getAppContext());
         super.onResume();
         handleFlairColors();
@@ -1675,7 +1767,11 @@ public class Home extends ActivityWithMenu {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                                 toast("Recommend that you change WiFi to always be on during sleep");
-                                startActivity(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
+                                try {
+                                    startActivity(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
+                                } catch (ActivityNotFoundException e) {
+                                    JoH.static_toast_long("Ooops this device doesn't seem to have a wifi settings page!");
+                                }
 
                             }
                         });
@@ -1865,6 +1961,16 @@ public class Home extends ActivityWithMenu {
         return get_follower() || get_master();
     }
 
+
+    public static boolean get_show_wear_treatments() {
+        return getPreferencesBooleanDefaultFalse("wear_sync") &&
+                getPreferencesBooleanDefaultFalse("show_wear_treatments");
+    }
+
+    public static boolean follower_or_accept_follower() {
+        return get_follower() || Home.getPreferencesBoolean("plus_accept_follower_actions", true);
+    }
+
     public static boolean get_forced_wear() {
         return getPreferencesBooleanDefaultFalse("wear_sync") &&
                 getPreferencesBooleanDefaultFalse("enable_wearG5") &&
@@ -1967,6 +2073,9 @@ public class Home extends ActivityWithMenu {
         } else {
             btnRedo.setVisibility(View.INVISIBLE);
         }
+
+        final DexCollectionType collector = DexCollectionType.getDexCollectionType();
+        // TODO unify code using DexCollectionType methods
         boolean isBTWixel = CollectionServiceStarter.isBTWixel(getApplicationContext());
         // port this lot to DexCollectionType to avoid multiple lookups of the same preference
         boolean isDexbridgeWixel = CollectionServiceStarter.isDexBridgeOrWifiandDexBridge();
@@ -1986,7 +2095,7 @@ public class Home extends ActivityWithMenu {
         }
         if (isWifiWixel || isWifiBluetoothWixel) {
             updateCurrentBgInfoForWifiWixel(notificationText);
-        } else if (is_follower) {
+        } else if (is_follower || collector.equals(DexCollectionType.NSEmulator)) {
             displayCurrentInfo();
             getApplicationContext().startService(new Intent(getApplicationContext(), Notifications.class));
         } else if (!alreadyDisplayedBgInfoCommon && DexCollectionType.getDexCollectionType() == DexCollectionType.LibreAlarm) {
@@ -2114,6 +2223,28 @@ public class Home extends ActivityWithMenu {
         final boolean isSensorActive = Sensor.isActive();
         if (!isSensorActive) {
             notificationText.setText(R.string.now_start_your_sensor);
+
+            if (!Experience.gotData() && JoH.ratelimit("start-sensor_prompt", 20)) {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                final Context context = this;
+                builder.setTitle("Start Sensor?");
+                builder.setMessage("Data Source is set to: " + DexCollectionType.getDexCollectionType().toString() + "\n\nDo you want to change settings or start sensor?");
+                builder.setNegativeButton("Change settings", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        startActivity(new Intent(context, Preferences.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    }
+                });
+                builder.setPositiveButton("Start sensor", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        startActivity(new Intent(context, StartNewSensor.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    }
+                });
+                builder.create().show();
+            }
+
             return;
         }
 
@@ -2136,7 +2267,7 @@ public class Home extends ActivityWithMenu {
                 notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
                 showUncalibratedSlope();
                 Log.d(TAG, "Asking for calibration A: Uncalculated BG readings: " + BgReading.latest(2).size() + " / Calibrations size: " + calibrations.size());
-
+                promptForCalibration();
             }
         } else {
             if (BgReading.latestUnCalculated(2).size() < 2) {
@@ -2147,8 +2278,35 @@ public class Home extends ActivityWithMenu {
                     notificationText.setText(R.string.please_enter_two_calibrations_to_get_started);
                     showUncalibratedSlope();
                     Log.d(TAG, "Asking for calibration B: Uncalculated BG readings: " + BgReading.latestUnCalculated(2).size() + " / Calibrations size: " + calibrations.size());
+                    promptForCalibration();
                 }
             }
+        }
+    }
+
+    private synchronized void promptForCalibration() {
+        if ((helper_dialog != null) && (helper_dialog.isShowing())) return;
+        if (JoH.ratelimit("calibrate-sensor_prompt", 10)) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            final Context context = this;
+            builder.setTitle("Calibrate Sensor?");
+            builder.setMessage("We have some readings!\n\nNext we need the first calibration blood test.\n\nReady to calibrate now?");
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    helper_dialog = null;
+                }
+            });
+            builder.setPositiveButton("Calibrate", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    helper_dialog = null;
+                    startActivity(new Intent(context, DoubleCalibrationActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                }
+            });
+            helper_dialog = builder.create();
+            helper_dialog.show();
         }
     }
 
@@ -2192,7 +2350,7 @@ public class Home extends ActivityWithMenu {
         df.setMaximumFractionDigits(0);
 
         final boolean isDexbridge = CollectionServiceStarter.isDexBridgeOrWifiandDexBridge();
-        final boolean hasBtWixel = DexCollectionType.hasBtWixel();
+       // final boolean hasBtWixel = DexCollectionType.hasBtWixel();
         final boolean isLimitter = CollectionServiceStarter.isLimitter();
         //boolean isWifiWixel = CollectionServiceStarter.isWifiandBTWixel(getApplicationContext()) | CollectionServiceStarter.isWifiWixel(getApplicationContext());
       //  if (isDexbridge||isLimitter||hasBtWixel||is_follower) {
@@ -2219,6 +2377,7 @@ public class Home extends ActivityWithMenu {
         } else {
             dexbridgeBattery.setVisibility(View.INVISIBLE);
         }
+
         if (DexCollectionType.hasWifi()) {
             final int bridgeBattery = prefs.getInt("parakeet_battery", 0);
             if (bridgeBattery > 0) {
@@ -2238,6 +2397,7 @@ public class Home extends ActivityWithMenu {
         } else {
             parakeetBattery.setVisibility(View.INVISIBLE);
         }
+
         if (!prefs.getBoolean("display_bridge_battery", true)) {
             dexbridgeBattery.setVisibility(View.INVISIBLE);
             parakeetBattery.setVisibility(View.INVISIBLE);
@@ -2277,7 +2437,7 @@ public class Home extends ActivityWithMenu {
                 GcmActivity.requestPing();
             }
         }
-        BgReading lastBgReading = BgReading.lastNoSenssor();
+        final BgReading lastBgReading = BgReading.lastNoSenssor();
         boolean predictive = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("predictive_bg", false);
         if (isBTShare) {
             predictive = false;
@@ -2345,7 +2505,8 @@ public class Home extends ActivityWithMenu {
                 || prefs.getBoolean("status_line_insulin", false)
                 || prefs.getBoolean("status_line_royce_ratio", false)
                 || prefs.getBoolean("status_line_accuracy", false)
-                || prefs.getBoolean("status_line_capture_percentage", false)) {
+                || prefs.getBoolean("status_line_capture_percentage", false)
+                || prefs.getBoolean("status_line_pump_reservoir", false)) {
 
             final StatsResult statsResult = new StatsResult(prefs, getPreferencesBooleanDefaultFalse("extra_status_stats_24h"));
 
@@ -2380,15 +2541,15 @@ public class Home extends ActivityWithMenu {
             if (prefs.getBoolean("status_line_carbs", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
                 //extraline.append("Carbs: " + statsResult.getTotal_carbs());
-                extraline.append("Carbs: " + Math.round(statsResult.getTotal_carbs()));
+                extraline.append("Carbs:" + Math.round(statsResult.getTotal_carbs()));
             }
             if (prefs.getBoolean("status_line_insulin", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
-                extraline.append("U: " + JoH.qs(statsResult.getTotal_insulin(), 2));
+                extraline.append("U:" + JoH.qs(statsResult.getTotal_insulin(), 2));
             }
             if (prefs.getBoolean("status_line_royce_ratio", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
-                extraline.append("C/I: " + JoH.qs(statsResult.getRatio(), 2));
+                extraline.append("C/I:" + JoH.qs(statsResult.getRatio(), 2));
             }
             if (prefs.getBoolean("status_line_capture_percentage", false)) {
                 if (extraline.length() != 0) extraline.append(' ');
@@ -2405,6 +2566,14 @@ public class Home extends ActivityWithMenu {
                     extraline.append(((accuracy != null) ? " " + accuracy : ""));
                 }
             }
+
+            if (prefs.getBoolean("status_line_pump_reservoir", false)) {
+                if (extraline.length() != 0) extraline.append(' ');
+                extraline.append(PumpStatus.getBolusIoBString());
+                extraline.append(PumpStatus.getReservoirString());
+                extraline.append(PumpStatus.getBatteryString());
+            }
+
         }
         if (prefs.getBoolean("extra_status_calibration_plugin", false)) {
             final CalibrationAbstract plugin = getCalibrationPluginFromPreferences(); // make sure do this only once
@@ -2492,10 +2661,7 @@ public class Home extends ActivityWithMenu {
                 }
 
                 // TODO this should be partially already be covered by dg - recheck
-                if ((BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER)
-                        && (BgGraphBuilder.best_bg_estimate > 0)
-                        && (BgGraphBuilder.last_bg_estimate > 0)
-                        && (prefs.getBoolean("bg_compensate_noise", false))) {
+                if (BestGlucose.compensateNoise()) {
                     estimate = BgGraphBuilder.best_bg_estimate; // this maybe needs scaling based on noise intensity
                     estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
                     slope_arrow = BgReading.slopeToArrowSymbol(estimated_delta / (BgGraphBuilder.DEXCOM_PERIOD / 60000)); // delta by minute
@@ -2550,11 +2716,7 @@ public class Home extends ActivityWithMenu {
 
             //display_delta = bgGraphBuilder.unitizedDeltaString(true, true, is_follower);
             display_delta = dg.unitized_delta;
-            // TODO reduce duplication of logic
-            if ((BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER)
-                    && (BgGraphBuilder.best_bg_estimate > 0)
-                    && (BgGraphBuilder.last_bg_estimate > 0)
-                    && (prefs.getBoolean("bg_compensate_noise", false))) {
+            if (BestGlucose.compensateNoise()) {
                 //final double estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
                 display_delta = bgGraphBuilder.unitizedDeltaStringRaw(true, true, estimated_delta);
                 addDisplayDelta();
@@ -2954,6 +3116,7 @@ public class Home extends ActivityWithMenu {
                 break;
             case R.id.action_open_watch_settings:
                 startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_OPEN_SETTINGS));
+                break;
             case R.id.action_sync_watch_db:
                 startService(new Intent(this, WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_RESET_DB));
                 break;
@@ -3238,6 +3401,10 @@ public class Home extends ActivityWithMenu {
                 Home.this.startActivity(Intent.createChooser(shareIntent, text));
             }
         };
+    }
+
+    public static PendingIntent getHomePendingIntent() {
+        return PendingIntent.getActivity(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), Home.class), android.app.PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
    /* class SnackbarUriListener implements ActionClickListener {

@@ -464,23 +464,35 @@ public class BgGraphBuilder {
     }
 
     public String unitized_string(double value) {
+        return unitized_string(value, doMgdl);
+    }
+
+    public static String unitized_string_static(double value) {
+        return unitized_string(value, Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl"));
+    }
+    public static String unitized_string_with_units_static(double value) {
+        final boolean domgdl = Home.getPreferencesStringWithDefault("units", "mgdl").equals("mgdl");
+        return unitized_string(value, domgdl)+" "+(domgdl ? "mg/dl" : "mmol/l");
+    }
+
+    public static String unitized_string(double value, boolean doMgdl) {
         DecimalFormat df = new DecimalFormat("#");
         if (value >= 400) {
             return "HIGH";
         } else if (value >= 40) {
-            if(doMgdl) {
+            if (doMgdl) {
                 df.setMaximumFractionDigits(0);
                 return df.format(value);
             } else {
                 df.setMaximumFractionDigits(1);
-                //next line ensures mmol/l value is XX.x always.  Required by PebbleSync, and probably not a bad idea.
+                //next line ensures mmol/l value is XX.x always.  Required by PebbleWatchSync, and probably not a bad idea.
                 df.setMinimumFractionDigits(1);
                 return df.format(mmolConvert(value));
             }
         } else if (value > 12) {
             return "LOW";
         } else {
-            switch((int)value) {
+            switch ((int) value) {
                 case 0:
                     return "??0";
                 case 1:

@@ -9,7 +9,7 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     tools:context=".KeypadInputActivity"
-    tools:deviceIds="wear_rect">
+    tools:deviceIds="wear_round">
 
     <TextView
         android:id="@+id/dialed_no_textview"

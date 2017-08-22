@@ -102,6 +102,13 @@
 
 {"lexicon": "units",
     "matchWords":[
+    ]},
+
+{"lexicon": "note",
+    "matchWords":[
+        "note",
+        "notes",
+        "night"
     ]}
 
 ]}

@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.MapsActivity;
 import com.eveningoutpost.dexdrip.Models.BgReading;
@@ -18,12 +19,15 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
+import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.Mdns;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+
+import org.json.JSONException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -453,6 +457,8 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
             statusLog(hostName, JoH.hourMinuteString() + " " + e.toString());
         } catch (IllegalArgumentException e) {
             Log.e(TAG, "Argument error on: " + hostName + " " + e.toString());
+        } catch (NullPointerException e) {
+            Log.e(TAG,"Got null pointer exception "+hostName+" " +e.toString());
         }
         return trd_list;
     }
@@ -585,6 +591,10 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
                 if (LastReading.UploaderBatteryLife > 0)
                 {
                     PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt("parakeet_battery", LastReading.UploaderBatteryLife).apply();
+                    CheckBridgeBattery.checkParakeetBattery();
+                    if (Home.get_master()) {
+                        GcmActivity.sendParakeetBattery(LastReading.UploaderBatteryLife);
+                    }
                 }
 
     		}

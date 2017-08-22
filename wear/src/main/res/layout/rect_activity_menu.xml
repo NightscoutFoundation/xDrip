@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    android:paddingBottom="1dp"
+    android:paddingLeft="6dp"
+    android:paddingRight="6dp"
+    android:paddingTop="1dp"
+    tools:context=".MenuActivity"
+    tools:deviceIds="wear_rect">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.7"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/action_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="sans-serif-condensed"
+            android:gravity="center"
+            android:textSize="10sp"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
+            android:paddingTop="25dp"
+            android:background="@android:color/transparent"
+            android:text="@string/action_buttons_text"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"/>
+        <LinearLayout
+            android:id="@+id/default_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+            <ImageButton
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_colorize_white_48dp"
+                android:scaleType="centerCrop"
+                android:id="@+id/addtreatmentbutton" />
+            <ImageButton
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_cloud_download_white_48pt"
+                android:scaleType="centerCrop"
+                android:id="@+id/refreshdbbutton" />
+            <ImageButton
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_autorenew_white_48dp"
+                android:scaleType="centerCrop"
+                android:id="@+id/restartcollectorbutton" />
+            <ImageButton
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_icon"
+                android:scaleType="centerCrop"
+                android:id="@+id/xdripprefsbutton" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/table_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="sans-serif-condensed"
+            android:gravity="center"
+            android:textSize="10sp"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
+            android:paddingTop="6dp"
+            android:background="@android:color/transparent"
+            android:text="@string/table_buttons_text"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"/>
+        <LinearLayout
+            android:id="@+id/tables_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+            <ImageButton
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_touch_app_white_48dp"
+                android:scaleType="centerCrop"
+                android:id="@+id/bloodtesttabbutton" />
+            <ImageButton
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_local_dining_white_48dp"
+                android:scaleType="centerCrop"
+                android:id="@+id/treatmenttabbutton" />
+            <ImageButton
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_action_communication_invert_colors_on"
+                android:scaleType="centerCrop"
+                android:id="@+id/calibrationtabbutton" />
+            <ImageButton
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_icon"
+                android:scaleType="centerCrop"
+                android:id="@+id/bgtabbutton" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

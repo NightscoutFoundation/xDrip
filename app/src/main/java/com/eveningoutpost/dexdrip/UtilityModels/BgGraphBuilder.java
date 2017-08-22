@@ -28,6 +28,7 @@ import com.eveningoutpost.dexdrip.Models.Iob;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
 import com.eveningoutpost.dexdrip.Models.Profile;
+import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.R;
@@ -103,6 +104,7 @@ public class BgGraphBuilder {
     public static final int FUZZER = (1000 * 30 * 5); // 2.5 mins?
     public final static long DEXCOM_PERIOD = 300000;
     public final static double NOISE_TRIGGER = 10;
+    public final static double NOISE_TRIGGER_ULTRASENSITIVE = 1;
     public final static double NOISE_TOO_HIGH_FOR_PREDICT = 60;
     public final static double NOISE_HIGH = 200;
     public final static double NOISE_FORGIVE = 100;
@@ -284,6 +286,7 @@ public class BgGraphBuilder {
         if (thisnoise > NOISE_HIGH) return "Extreme";
         if (thisnoise > NOISE_TOO_HIGH_FOR_PREDICT) return "Very High";
         if (thisnoise > NOISE_TRIGGER) return "High";
+        if (thisnoise > NOISE_TRIGGER_ULTRASENSITIVE && Home.getPreferencesBooleanDefaultFalse("engineering_mode") && Home.getPreferencesBooleanDefaultFalse("bg_compensate_noise_ultrasensitive")) return "Some";
         return "Low";
     }
 
@@ -1226,7 +1229,11 @@ public class BgGraphBuilder {
                 }
 
                 final boolean show_noise_working_line;
-                if ((last_noise > NOISE_TRIGGER) && prefs.getBoolean("bg_compensate_noise", false)) {
+                if (last_noise > NOISE_TRIGGER ||
+                        (last_noise > BgGraphBuilder.NOISE_TRIGGER_ULTRASENSITIVE
+                                && Home.getPreferencesBooleanDefaultFalse("engineering_mode")
+                                && Home.getPreferencesBooleanDefaultFalse("bg_compensate_noise_ultrasensitive")
+                        )) {
                     show_noise_working_line = true;
                 } else {
                     show_noise_working_line = prefs.getBoolean("show_noise_workings", false);
@@ -1280,8 +1287,10 @@ public class BgGraphBuilder {
                             mylabel = mylabel + (Double.toString(treatment.carbs) + "g").replace(".0g", "g");
                         }
                         pv.setLabel(mylabel); // standard label
+                        //Log.d(TAG, "watchkeypad pv.mylabel: " + mylabel);
                         if ((treatment.notes != null) && (treatment.notes.length() > 0)) {
                             pv.note = treatment.notes;
+                            //Log.d(TAG, "watchkeypad pv.note: " + pv.note + " mylabel: " + mylabel);
                             try {
                                 final Pattern p = Pattern.compile(".*?pos:([0-9.]+).*");
                                 final Matcher m = p.matcher(treatment.enteredBy);
@@ -1443,7 +1452,7 @@ public class BgGraphBuilder {
                                     if (d)
                                         Log.d(TAG, "Predictive hours updated to: " + predictivehours);
                                 } else {
-                                    Log.d(TAG, "IOB DEBUG: " + (fuzzed_timestamp - end_time) + " " + iob.iob);
+                                    //KS Log.d(TAG, "IOB DEBUG: " + (fuzzed_timestamp - end_time) + " " + iob.iob);
                                     if (!iob_shown_already && (Math.abs(fuzzed_timestamp - end_time) < 5) && (iob.iob > 0)) {
                                         iob_shown_already = true;
                                         // show current iob
@@ -1487,18 +1496,20 @@ public class BgGraphBuilder {
                         String bwp_update = "";
                         if (d)
                             Log.i(TAG, "Predictive BWP: Current prediction: " + JoH.qs(predictedbg) + " / carbs: " + JoH.qs(evaluation[0]) + " insulin: " + JoH.qs(evaluation[1]));
-                        if (((low_occurs_at < 1) || Home.getPreferencesBooleanDefaultFalse("always_show_bwp")) && (Home.getPreferencesBooleanDefaultFalse("show_bwp"))) {
-                            if (evaluation[0] > Profile.minimum_carb_recommendation) {
-                                //PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));
-                                //iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));
-                                bwp_update = "\u224F" + " Carbs: " + JoH.qs(evaluation[0], 0);
-                                //annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
-                            } else if (evaluation[1] > Profile.minimum_insulin_recommendation) {
-                                //PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (11 * bgScale));
-                                //iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
+                        if (!BgReading.isDataStale()) {
+                            if (((low_occurs_at < 1) || Home.getPreferencesBooleanDefaultFalse("always_show_bwp")) && (Home.getPreferencesBooleanDefaultFalse("show_bwp"))) {
+                                if (evaluation[0] > Profile.minimum_carb_recommendation) {
+                                    //PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (10 * bgScale));
+                                    //iv.setLabel("+Carbs: " + JoH.qs(evaluation[0], 0));
+                                    bwp_update = "\u224F" + " Carbs: " + JoH.qs(evaluation[0], 0);
+                                    //annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
+                                } else if (evaluation[1] > Profile.minimum_insulin_recommendation) {
+                                    //PointValue iv = new PointValue((float) fuzzed_timestamp, (float) (11 * bgScale));
+                                    //iv.setLabel("+Insulin: " + JoH.qs(evaluation[1], 1));
 
-                                bwp_update = "\u224F" + " Insulin: " + JoH.qs(evaluation[1], 1) + ((low_occurs_at > 0) ? (" " + "\u26A0") : ""); // warning symbol
-                                //annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
+                                    bwp_update = "\u224F" + " Insulin: " + JoH.qs(evaluation[1], 1) + ((low_occurs_at > 0) ? (" " + "\u26A0") : ""); // warning symbol
+                                    //annotationValues.add(iv); // needs to be different value list so we can make annotation nicer
+                                }
                             }
                         }
                         Home.updateStatusLine("bwp", bwp_update); // always send so we can blank if needed

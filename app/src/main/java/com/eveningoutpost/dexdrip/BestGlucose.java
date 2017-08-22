@@ -203,10 +203,7 @@ public class BestGlucose {
         }
 
         // TODO Noise uses plugin in bggraphbuilder
-        if ((BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER)
-                && (BgGraphBuilder.best_bg_estimate > 0)
-                && (BgGraphBuilder.last_bg_estimate > 0)
-                && (prefs.getBoolean("bg_compensate_noise", false))) {
+        if (compensateNoise()) {
             estimate = BgGraphBuilder.best_bg_estimate; // this maybe needs scaling based on noise intensity
             estimated_delta = BgGraphBuilder.best_bg_estimate - BgGraphBuilder.last_bg_estimate;
             // TODO handle ratio when period is not dexcom period?
@@ -280,6 +277,17 @@ public class BestGlucose {
         if (d)
             Log.d(TAG, "dg result: " + dg.unitized + " previous: " + BgGraphBuilder.unitized_string(previous_estimate, doMgdl));
         return dg;
+    }
+
+    protected static boolean compensateNoise() {
+        return (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER
+                || (BgGraphBuilder.last_noise > BgGraphBuilder.NOISE_TRIGGER_ULTRASENSITIVE
+                        && Home.getPreferencesBooleanDefaultFalse("engineering_mode")
+                        && Home.getPreferencesBooleanDefaultFalse("bg_compensate_noise_ultrasensitive")
+                ))
+                && (BgGraphBuilder.best_bg_estimate > 0)
+                && (BgGraphBuilder.last_bg_estimate > 0)
+                && (prefs.getBoolean("bg_compensate_noise", false));
     }
 
     public static String unitizedDeltaString(boolean showUnit, boolean highGranularity, boolean doMgdl, double value1, long timestamp1, double value2, long timestamp2) {

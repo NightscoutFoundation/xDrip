@@ -77,7 +77,7 @@ public class DoubleCalibrationActivity extends ActivityWithMenu {
                             } else {
                                 Calibration.initialCalibration(calValue_1, calValue_2, getApplicationContext());
 
-                                startWatchUpdaterService(v.getContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
+                                //startWatchUpdaterService(v.getContext(), WatchUpdaterService.ACTION_SYNC_CALIBRATION, TAG);
 
                                 Intent tableIntent = new Intent(v.getContext(), Home.class);
                                 startActivity(tableIntent);

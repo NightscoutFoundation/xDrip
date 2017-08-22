@@ -730,6 +730,7 @@ public class Preferences extends PreferenceActivity {
             final Preference pebbleDeltaUnits = findPreference("pebble_show_delta_units");
             final Preference pebbleShowArrows = findPreference("pebble_show_arrows");
             final Preference pebbleVibrateNoSignal = findPreference("pebble_vibrate_no_signal");
+            final Preference pebbleVibrateNoBluetooth = findPreference("pebble_vibrate_no_bluetooth");
             final Preference pebbleTinyDots = findPreference("pebble_tiny_dots");
             final EditTextPreference pebbleSpecialValue = (EditTextPreference) findPreference("pebble_special_value");
             bindPreferenceSummaryToValueAndEnsureNumeric(pebbleSpecialValue);
@@ -758,6 +759,8 @@ public class Preferences extends PreferenceActivity {
             final Preference old_school_calibration_mode = findPreference("old_school_calibration_mode");
             final Preference extraTagsForLogs = findPreference("extra_tags_for_logging");
             final Preference enableBF = findPreference("enable_bugfender");
+            final PreferenceCategory displayCategory = (PreferenceCategory) findPreference("xdrip_plus_display_category");
+
 
             findPreference("bluetooth_meter_enabled").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -978,6 +981,15 @@ public class Preferences extends PreferenceActivity {
             }
 
             final boolean engineering_mode = this.prefs.getBoolean("engineering_mode",false);
+
+            if (!engineering_mode) {
+                try {
+                    displayCategory.removePreference(findPreference("bg_compensate_noise_ultrasensitive"));
+                } catch (Exception e) {
+                    //
+                }
+            }
+
 
             if (!engineering_mode) {
                 try {
@@ -1232,6 +1244,7 @@ public class Preferences extends PreferenceActivity {
                             watchCategory.removePreference(pebbleSpecialValue);
                             watchCategory.removePreference(pebbleSpecialText);
                             watchCategory.removePreference(pebbleVibrateNoSignal);
+                            watchCategory.removePreference(pebbleVibrateNoBluetooth);
                         }
 
                         // Add New one
@@ -1246,6 +1259,7 @@ public class Preferences extends PreferenceActivity {
                             watchCategory.addPreference(pebbleDeltaUnits);
                             watchCategory.addPreference(pebbleShowArrows);
                             watchCategory.addPreference(pebbleVibrateNoSignal);
+                            watchCategory.addPreference(pebbleVibrateNoBluetooth);
                         }
 
                         if (oldPebbleType != 1) {
@@ -1331,6 +1345,15 @@ public class Preferences extends PreferenceActivity {
             });
 
             pebbleTinyDots.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    Context context = preference.getContext();
+                    context.startService(new Intent(context, PebbleWatchSync.class));
+                    return true;
+                }
+            });
+
+            pebbleVibrateNoBluetooth.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     Context context = preference.getContext();

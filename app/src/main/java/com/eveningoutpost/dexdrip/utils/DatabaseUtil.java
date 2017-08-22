@@ -47,6 +47,12 @@ public class DatabaseUtil {
     }
 
     public static String saveSql(Context context) {
+        // TecMunky 6/23/17 overload saveSql function to call modified function
+        return DatabaseUtil.saveSql(context, "export");
+    }
+
+    public static String saveSql(Context context, String prefix) {
+        // TecMunky 6/23/17 modify function with added prefix string variable
 
         FileInputStream srcStream = null;
         BufferedInputStream biStream = null;
@@ -64,7 +70,10 @@ public class DatabaseUtil {
 
             final StringBuilder sb = new StringBuilder();
             sb.append(dir);
-            sb.append("/export");
+            //sb.append("/export");
+            // TecMunky 6/23/17 replace "/export" with "/" and prefix
+            sb.append("/");
+            sb.append(prefix);
             sb.append(DateFormat.format("yyyyMMdd-kkmmss", System.currentTimeMillis()));
             sb.append(".zip");
             zipFilename = sb.toString();
@@ -78,7 +87,7 @@ public class DatabaseUtil {
 
                     foStream = new FileOutputStream(zipOutputFile);
                     zipOutputStream = new ZipOutputStream(new BufferedOutputStream(foStream));
-                    zipOutputStream.putNextEntry(new ZipEntry("export" + DateFormat.format("yyyyMMdd-kkmmss", System.currentTimeMillis()) + ".sqlite"));
+                    zipOutputStream.putNextEntry(new ZipEntry(prefix + DateFormat.format("yyyyMMdd-kkmmss", System.currentTimeMillis()) + ".sqlite"));
 
                     byte buffer[] = new byte[BUFFER_SIZE];
                     int count;
@@ -197,7 +206,8 @@ public class DatabaseUtil {
 
         try {
 
-            final String databaseName = new Configuration.Builder(context).create().getDatabaseName();
+            //seems to be not used?
+            // final String databaseName = new Configuration.Builder(context).create().getDatabaseName();
 
             final String dir = getExternalDir();
             makeSureDirectoryExists(dir);
@@ -217,29 +227,65 @@ public class DatabaseUtil {
                 zipOutputStream.putNextEntry(new ZipEntry("export" + DateFormat.format("yyyyMMdd-kkmmss", System.currentTimeMillis()) + ".csv"));
                 printStream = new PrintStream(zipOutputStream);
 
-                printStream.println("DAY;TIME;UDT_CGMS");
-
+                //add Treatment and BGlucose Header
+                printStream.println("DAY;TIME;UDT_CGMS;BG_LEVEL;CH_GR;BOLUS;REMARK");
 
                 SQLiteDatabase db = Cache.openDatabase();
-                //Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, "timestamp >= ? AND timestamp <=  ? AND calculated_value > ?", new String[]{"" + bounds.start, "" + bounds.stop, CUTOFF}, null, null, orderBy);
 
-                Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, null, null, null, null, "timestamp ASC");//KS
-
+                // Set all needed Vars
                 double value;
+                String valueIE;
+                String valueCHO;
+                String notes;
+
                 long timestamp;
+
                 java.text.DateFormat df = new SimpleDateFormat("dd.MM.yyyy;HH:mm;");
+                //df.setTimeZone(TimeZone.getDefault()); did not change the time-slope, so turned it off...
+
                 Date date = new Date();
 
+                //Extract CGMS-Values
+                Cursor cur = db.query("bgreadings", new String[]{"timestamp", "calculated_value"}, null, null, null, null, "timestamp ASC");//KS
                 if (cur.moveToFirst()) {
                     do {
                         timestamp = cur.getLong(0);
                         value = cur.getDouble(1);
                         if(value > 13){
                             date.setTime(timestamp);
-                            printStream.println(df.format(date) + Math.round(value));
+                            printStream.println(df.format(date) + Math.round(value) + ";;;;");
                         }
+                    } while (cur.moveToNext());
+                }
 
+                //Extract Calibration-BG-Values
+                cur = db.query("Calibration", new String[]{"timestamp", "bg"}, null, null, null, null, "timestamp ASC");
+                if (cur.moveToFirst()) {
+                    do {
+                        timestamp = cur.getLong(0);
+                        value = cur.getDouble(1);
+                        if(value > 0 ){
+                            date.setTime(timestamp);
+                            printStream.println(df.format(date) + ";" + Math.round(value) + ";;;");
+                        }
+                    } while (cur.moveToNext());
+                }
 
+                //Extract Treatment-Values
+                cur = db.query("Treatments", new String[]{"timestamp", "carbs", "insulin", "notes"}, null, null, null, null, "timestamp ASC");
+                if (cur.moveToFirst()) {
+                    do {
+                        timestamp  = cur.getLong(0);
+                        valueCHO    = cur.getString(1);
+                        valueIE    = cur.getString(2);
+                        notes      = cur.getString(3);
+                        if (notes == null) notes = "";
+                        if (valueIE.equals("0")) valueIE = "";
+                        if (valueCHO.equals("0")) valueCHO = "";
+                        if (!valueIE.equals("") || !valueCHO.equals("") || !notes.equals("")){
+                            date.setTime(timestamp);
+                            printStream.println(df.format(date) + ";;" + valueCHO + ";" + valueIE + ";" + notes);
+                        }
                     } while (cur.moveToNext());
                 }
 

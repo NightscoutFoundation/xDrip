@@ -58,7 +58,7 @@
     <string name="pref_message_mongodb_device_status_collection">This is the name of the collection where the battery and other device data will be stored</string>
 
     <!-- API Settings -->
-    <string name="pref_title_api">API Upload (REST)</string>
+    <string name="pref_title_api">Nightscout Sync (REST-API)</string>
     <string name="pref_title_api_enabled">Enabled</string>
     <string name="pref_summary_api_enabled">The REST API is an alternative to direct mongodb upload</string>
     <string name="pref_title_api_url">Base URL</string>
@@ -245,6 +245,8 @@
     <string name="pref_summary_sync_wear_logs">Send Wear logs to Event Viewer</string>
     <string name="pref_wear_logs_prefix">Wear Log Prefix</string>
     <string name="pref_summary_wear_logs_prefix">Prefix used for Wear log entries</string>
+    <string name="pref_show_treatments">Show Treatments</string>
+    <string name="pref_summary_show_treatments">Show Treatment points on graph</string>
     <string name="pref_use_wear_health">Use Wear Health Data</string>
     <string name="pref_summary_use_wear_health">Collect and display Step counter when available</string>
 
@@ -419,6 +421,8 @@
     <string name="display_slope_arrows">Display Slope Arrows</string>
     <string name="vibrate_watch_to_alert_no_data">Vibrate watch to alert when we are not getting any glucose data</string>
     <string name="vibrate_when_missed_signal">Vibrate when missed signal</string>
+    <string name="vibrate_watch_to_alert_no_bluetooth">Vibrate watch to alert when bluetooth disconnects</string>
+    <string name="vibrate_when_no_bluetooth">Vibrate when no bluetooth</string>
     <string name="special_glucose_value_to_display_message">Special glucose value to display the message below</string>
     <string name="bluetooth_wakelocks">Bluetooth Wakelocks</string>
     <string name="compatible_broadcast">Compatible Broadcast</string>
@@ -609,6 +613,8 @@
     <string name="disable_log_transmitter_battery_warning">Disable the warning for low transmitter battery state on the home screen. (Only relevant for DIY receivers.)</string>
     <string name="engineering_mode">Engineering mode</string>
     <string name="allow_unsafe_settings">Allows changing the most unsafe settings which could break everything!</string>
+    <string name="daily_save_db">Save Database Daily</string>
+    <string name="allow_daily_db_save">Allows the Daily Intent Service to save the database before purging</string>
     <string name="options_for_extra_line">Options for the extra line</string>
     <string name="todays_average_value">Today\'s average value.</string>
     <string name="ac1_estimation_dcct">A1c estimation in DCCT format (%)</string>
@@ -809,4 +815,5 @@
     <string name="repeat_sound">Repeat sound</string>
     <string name="enable_telemetry">Enable Telemetry</string>
     <string name="send_data_to_developers">Send data to developers about success rates of different devices</string>
+    <string name="try_to_work_around_noisy_readings_ultrasensitive">Start to work around noisy readings even on very low noise levels (engineering mode ony)</string>
 </resources>

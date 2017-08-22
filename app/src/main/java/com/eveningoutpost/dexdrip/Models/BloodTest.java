@@ -50,6 +50,7 @@ public class BloodTest extends Model {
     private static long highest_timestamp = 0;
     private static boolean patched = false;
     private final static String TAG = "BloodTest";
+    private final static String LAST_BT_AUTO_CALIB_UUID = "last-bt-auto-calib-uuid";
     private final static boolean d = false;
 
     @Expose
@@ -124,6 +125,10 @@ public class BloodTest extends Model {
     private static final long CLOSEST_READING_MS = 30000; // 30 seconds
 
     public static BloodTest create(long timestamp_ms, double mgdl, String source) {
+        return create(timestamp_ms, mgdl, source, null);
+    }
+
+    public static BloodTest create(long timestamp_ms, double mgdl, String source, String suggested_uuid) {
 
         if ((timestamp_ms == 0) || (mgdl == 0)) {
             UserError.Log.e(TAG, "Either timestamp or mgdl is zero - cannot create reading");
@@ -149,7 +154,7 @@ public class BloodTest extends Model {
             final BloodTest bt = new BloodTest();
             bt.timestamp = timestamp_ms;
             bt.mgdl = mgdl;
-            bt.uuid = UUID.randomUUID().toString();
+            bt.uuid = suggested_uuid == null ? UUID.randomUUID().toString() : suggested_uuid;
             bt.created_timestamp = JoH.tsl();
             bt.state = STATE_VALID;
             bt.source = source;
@@ -165,6 +170,10 @@ public class BloodTest extends Model {
     }
 
     public static BloodTest createFromCal(double bg, double timeoffset, String source) {
+        return createFromCal(bg, timeoffset, source, null);
+    }
+
+    public static BloodTest createFromCal(double bg, double timeoffset, String source, String suggested_uuid) {
         final String unit = Home.getPreferencesStringWithDefault("units", "mgdl");
 
         if (unit.compareTo("mgdl") != 0) {
@@ -177,7 +186,16 @@ public class BloodTest extends Model {
             return null;
         }
 
-        return create((long) (new Date().getTime() - timeoffset), bg, source);
+        return create((long) (new Date().getTime() - timeoffset), bg, source, suggested_uuid);
+    }
+
+    public static void pushBloodTestSyncToWatch(BloodTest bt, boolean is_new) {
+        Log.d(TAG, "pushTreatmentSyncToWatch Add treatment to UploaderQueue.");
+        if (Home.getPreferencesBooleanDefaultFalse("wear_sync")) {
+            if (UploaderQueue.newEntryForWatch(is_new ? "insert" : "update", bt) != null) {
+                SyncService.startSyncService(3000); // sync in 3 seconds
+            }
+        }
     }
 
     public static BloodTest last() {
@@ -286,6 +304,10 @@ public class BloodTest extends Model {
                 }
                 bt = new BloodTest();
                 is_new = true;
+            } else {
+                if (bt.state != Wire.get(btm.state, BloodTestMessage.DEFAULT_STATE)) {
+                    is_new = true;
+                }
             }
             bt.timestamp = Wire.get(btm.timestamp, BloodTestMessage.DEFAULT_TIMESTAMP);
             bt.mgdl = Wire.get(btm.mgdl, BloodTestMessage.DEFAULT_MGDL);
@@ -384,8 +406,13 @@ public class BloodTest extends Model {
                 return;
             }
 
-            if ((bt.uuid != null) && (bt.uuid.length() > 1) && PersistentStore.getString("last-bt-auto-calib-uuid").equals(bt.uuid)) {
-                Log.d(TAG, "Already processed uuid: " + bt.uuid);
+            if ((bt.uuid == null) || (bt.uuid.length() < 8)) {
+                Log.d(TAG, "opportunisitic: invalid uuid");
+                return;
+            }
+
+            if ((bt.uuid != null) && (bt.uuid.length() > 1) && PersistentStore.getString(LAST_BT_AUTO_CALIB_UUID).equals(bt.uuid)) {
+                Log.d(TAG, "opportunistic: Already processed uuid: " + bt.uuid);
                 return;
             }
 
@@ -437,7 +464,7 @@ public class BloodTest extends Model {
 
 
             Log.d(TAG, "opportunistic: attempting auto calibration");
-            PersistentStore.setString("last-bt-auto-calib-uuid", bt.uuid);
+            PersistentStore.setString(LAST_BT_AUTO_CALIB_UUID, bt.uuid);
             Home.startHomeWithExtra(xdrip.getAppContext(),
                     Home.BLUETOOTH_METER_CALIBRATION,
                     BgGraphBuilder.unitized_string_static(bt.mgdl),

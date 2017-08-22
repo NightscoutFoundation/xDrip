@@ -140,6 +140,7 @@ public class JoH {
     public static long msSince(long when) {
         return (tsl() - when);
     }
+
     public static long msTill(long when) {
         return (when - tsl());
     }
@@ -174,7 +175,6 @@ public class JoH {
             return null;
         }
     }
-
 
 
     public static String compressString(String source) {
@@ -304,8 +304,6 @@ public class JoH {
             return new byte[0];
         }
     }
-
-
 
 
     public static String ucFirst(String input) {
@@ -535,6 +533,7 @@ public class JoH {
     public static String niceTimeTill(long t) {
         return niceTimeScalar(-msSince(t));
     }
+
     // temporary
     public static String niceTimeScalar(long t) {
         String unit = "second";
@@ -577,6 +576,11 @@ public class JoH {
     public static double tolerantParseDouble(String str) throws NumberFormatException {
         return Double.parseDouble(str.replace(",", "."));
 
+    }
+
+    public static String getRFC822String(long timestamp) {
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+        return dateFormat.format(new Date(timestamp));
     }
 
     public static PowerManager.WakeLock getWakeLock(final String name, int millis) {
@@ -652,8 +656,9 @@ public class JoH {
                             || wifi_state == NetworkInfo.DetailedState.CAPTIVE_PORTAL_CHECK) {
                         String ssid = wifiInfo.getSSID();
                         if (ssid.equals("<unknown ssid>")) return null; // WifiSsid.NONE;
-                        if (ssid.charAt(0)=='"') ssid=ssid.substring(1);
-                        if (ssid.charAt(ssid.length()-1)=='"') ssid=ssid.substring(0,ssid.length()-1);
+                        if (ssid.charAt(0) == '"') ssid = ssid.substring(1);
+                        if (ssid.charAt(ssid.length() - 1) == '"')
+                            ssid = ssid.substring(0, ssid.length() - 1);
                         return ssid;
                     }
                 }
@@ -695,10 +700,17 @@ public class JoH {
         return mainHandler.postDelayed(theRunnable, delay);
     }
 
-    public static void removeUiThreadRunnable(Runnable theRunnable)
-    {
+    public static void removeUiThreadRunnable(Runnable theRunnable) {
         final Handler mainHandler = new Handler(xdrip.getAppContext().getMainLooper());
         mainHandler.removeCallbacks(theRunnable);
+    }
+
+    public static void hardReset() {
+        try {
+            android.os.Process.killProcess(android.os.Process.myPid());
+        } catch (Exception e) {
+            // not much to do
+        }
     }
 
     public static void static_toast(final Context context, final String msg, final int length) {
@@ -931,14 +943,23 @@ public class JoH {
 
     public static long wakeUpIntent(Context context, long delayMs, PendingIntent pendingIntent) {
         final long wakeTime = JoH.tsl() + delayMs;
-        Log.d(TAG, "Scheduling wakeup intent: " + dateTimeText(wakeTime));
-        final AlarmManager alarm = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
-        } else
-            alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+        if (pendingIntent != null) {
+            Log.d(TAG, "Scheduling wakeup intent: " + dateTimeText(wakeTime));
+            final AlarmManager alarm = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+            try {
+                alarm.cancel(pendingIntent);
+            } catch (Exception e) {
+                Log.e(TAG, "Exception cancelling alarm in wakeUpIntent: " + e);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                alarm.setExact(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+            } else
+                alarm.set(AlarmManager.RTC_WAKEUP, wakeTime, pendingIntent);
+        } else {
+            Log.e(TAG, "wakeUpIntent - pending intent was null!");
+        }
         return wakeTime;
     }
 
@@ -959,6 +980,10 @@ public class JoH {
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri) {
+        showNotification(title, content, intent, notificationId, sound, vibrate, deleteIntent, sound_uri, null);
+    }
+
+    public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri, String bigmsg) {
         final Notification.Builder mBuilder = notificationBuilder(title, content, intent);
         final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
         if (vibrate) mBuilder.setVibrate(vibratePattern);
@@ -967,6 +992,10 @@ public class JoH {
         if (sound) {
             Uri soundUri = (sound_uri != null) ? sound_uri : RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             mBuilder.setSound(soundUri);
+        }
+
+        if (bigmsg != null) {
+            mBuilder.setStyle(new Notification.BigTextStyle().bigText(bigmsg));
         }
 
         final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -1071,9 +1100,14 @@ public class JoH {
                     }
                     try {
                         UserError.Log.e(TAG, "Pairing type: " + type);
-                        device.setPairingConfirmation(true);
-                        JoH.static_toast_short("Pairing");
-                        broadcastReceiver.abortBroadcast();
+                        if (type != PAIRING_VARIANT_PIN) {
+                            device.setPairingConfirmation(true);
+                            JoH.static_toast_short("xDrip Pairing");
+                            broadcastReceiver.abortBroadcast();
+                        } else {
+                            Log.d(TAG,"Attempting to passthrough PIN pairing");
+                        }
+
                     } catch (Exception e) {
                         UserError.Log.e(TAG, "Could not set pairing confirmation due to exception: " + e);
                         if (JoH.ratelimit("failed pair confirmation", 200)) {
