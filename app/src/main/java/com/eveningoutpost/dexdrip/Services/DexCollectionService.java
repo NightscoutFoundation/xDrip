@@ -778,7 +778,7 @@ public class DexCollectionService extends Service {
         mConnectionState = STATE_DISCONNECTED;
     }
 
-    public void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
+    public synchronized void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
         long timestamp = new Date().getTime();
         last_time_seen = JoH.ts();
         watchdog_count=0;
@@ -866,7 +866,7 @@ public class DexCollectionService extends Service {
         }
     }
 
-    private void processNewTransmitterData(TransmitterData transmitterData, long timestamp) {
+    private synchronized void processNewTransmitterData(TransmitterData transmitterData, long timestamp) {
         if (transmitterData == null) {
             return;
         }
