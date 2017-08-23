@@ -2306,7 +2306,11 @@ public class Home extends ActivityWithMenu {
                 }
             });
             helper_dialog = builder.create();
-            helper_dialog.show();
+            try {
+                helper_dialog.show();
+            } catch (Exception e) {
+                UserError.Log.e(TAG, "Could not display calibration prompt helper: " + e);
+            }
         }
     }
 
