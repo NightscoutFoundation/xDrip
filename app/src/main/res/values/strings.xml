@@ -816,4 +816,5 @@
     <string name="enable_telemetry">Enable Telemetry</string>
     <string name="send_data_to_developers">Send data to developers about success rates of different devices</string>
     <string name="try_to_work_around_noisy_readings_ultrasensitive">Start to work around noisy readings even on very low noise levels (engineering mode ony)</string>
+    <string name="sidiary_date_title">Esport starting from when?</string>
 </resources>

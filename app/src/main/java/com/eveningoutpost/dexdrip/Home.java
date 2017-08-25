@@ -92,6 +92,8 @@ import com.eveningoutpost.dexdrip.UtilityModels.UploaderQueue;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.languageeditor.LanguageEditor;
+import com.eveningoutpost.dexdrip.profileeditor.DatePickerFragment;
+import com.eveningoutpost.dexdrip.profileeditor.ProfileAdapter;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
 import com.eveningoutpost.dexdrip.utils.BgToSpeech;
@@ -117,6 +119,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
@@ -128,6 +131,7 @@ import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
 import lecho.lib.hellocharts.view.PreviewLineChartView;
 
+import static com.eveningoutpost.dexdrip.Models.BgReading.AGE_ADJUSTMENT_TIME;
 import static com.eveningoutpost.dexdrip.Models.BloodTest.pushBloodTestSyncToWatch;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
@@ -3182,33 +3186,41 @@ public class Home extends ActivityWithMenu {
 
 
         if (item.getItemId() == R.id.action_export_csv_sidiary) {
-            new AsyncTask<Void, Void, String>() {
+
+            long from = Home.getPreferencesLong("sidiary_last_exportdate", 0);
+            final GregorianCalendar date = new GregorianCalendar();
+            final DatePickerFragment datePickerFragment = new DatePickerFragment();
+            if(from > 0)datePickerFragment.setInitiallySelectedDate(from);
+            datePickerFragment.setAllowFuture(false);
+            datePickerFragment.setTitle(getString(R.string.sidiary_date_title));
+            datePickerFragment.setDateCallback(new ProfileAdapter.DatePickerCallbacks() {
                 @Override
-                protected String doInBackground(Void... params) {
-                    return DatabaseUtil.saveCSV(getBaseContext());
+                public void onDateSet(int year, int month, int day) {
+                    date.set(year, month, day);
+                    date.set(Calendar.HOUR_OF_DAY, 0);
+                    date.set(Calendar.MINUTE, 0);
+                    date.set(Calendar.SECOND, 0);
+                    date.set(Calendar.MILLISECOND, 0);
+                    new AsyncTask<Void, Void, String>() {
+                        @Override
+                        protected String doInBackground(Void... params) {
+                            return DatabaseUtil.saveCSV(getBaseContext(), date.getTimeInMillis());
+                        }
+
+                        @Override
+                        protected void onPostExecute(String filename) {
+                            super.onPostExecute(filename);
+                            if (filename != null) {
+                                Home.setPreferencesLong("sidiary_last_exportdate", System.currentTimeMillis());
+                                snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), "Share database..."), Home.this);
+                            } else {
+                                Toast.makeText(Home.this, "Could not export CSV :(", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }.execute();
                 }
-
-                @Override
-                protected void onPostExecute(String filename) {
-                    super.onPostExecute(filename);
-                    if (filename != null) {
-
-                        snackBar(R.string.share, getString(R.string.exported_to) + filename, makeSnackBarUriLauncher(Uri.fromFile(new File(filename)), "Share database..."), Home.this);
-
-                       /* SnackbarManager.show(
-                                Snackbar.with(Home.this)
-                                        .type(SnackbarType.MULTI_LINE)
-                                        .duration(4000)
-                                        .text("Exported to " + filename) // text to display
-                                        .actionLabel("Share") // action button label
-                                        .actionListener(new SnackbarUriListener(Uri.fromFile(new File(filename)))),
-                                Home.this);*/
-                    } else {
-                        Toast.makeText(Home.this, "Could not export CSV :(", Toast.LENGTH_LONG).show();
-                    }
-                }
-            }.execute();
-
+            });
+            datePickerFragment.show(getFragmentManager(), "DatePicker");
             return true;
         }
 
