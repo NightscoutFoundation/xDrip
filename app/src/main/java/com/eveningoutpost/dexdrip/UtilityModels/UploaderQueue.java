@@ -168,6 +168,11 @@ public class UploaderQueue extends Model {
             return null;
         }
 
+        if (result.reference_id < 0) {
+            UserError.Log.wtf(TAG, "ERROR ref id was: " + result.reference_id + " for uuid: " + result.reference_uuid + " refusing to create");
+            return null;
+        }
+
         result.action = action;
 
         result.bitfield_complete = 0;
@@ -178,6 +183,7 @@ public class UploaderQueue extends Model {
         return result;
     }
 
+    // TODO remove duplicated functionality, replace with generic multi-purpose method
     public static UploaderQueue newEntryForWatch(String action, Model obj) {
         UserError.Log.d(TAG, "new entry called for watch");
         final UploaderQueue result = new UploaderQueue();
@@ -198,6 +204,11 @@ public class UploaderQueue extends Model {
 
         if (result.reference_uuid == null) {
             Log.d(TAG, "reference_uuid was null so refusing to create new entry");
+            return null;
+        }
+
+        if (result.reference_id < 0) {
+            UserError.Log.wtf(TAG, "Watch ERROR ref id was: " + result.reference_id + " for uuid: " + result.reference_uuid + " refusing to create");
             return null;
         }
 
