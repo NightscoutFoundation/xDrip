@@ -71,7 +71,6 @@ import com.eveningoutpost.dexdrip.Models.Sensor;
 import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Services.ActivityRecognizedService;
-import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.PlusSyncService;
 import com.eveningoutpost.dexdrip.Services.WixelReader;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
@@ -131,8 +130,6 @@ import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
 import lecho.lib.hellocharts.view.PreviewLineChartView;
 
-import static com.eveningoutpost.dexdrip.Models.BgReading.AGE_ADJUSTMENT_TIME;
-import static com.eveningoutpost.dexdrip.Models.BloodTest.pushBloodTestSyncToWatch;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.UtilityModels.ColorCache.getCol;
 import static com.eveningoutpost.dexdrip.UtilityModels.Constants.DAY_IN_MS;
@@ -3236,6 +3233,7 @@ public class Home extends ActivityWithMenu {
         return super.onOptionsItemSelected(item);
     }
 
+    // TODO reduce duplicated functionality
     public static boolean getPreferencesBooleanDefaultFalse(final String pref) {
         if ((prefs == null) && (xdrip.getAppContext() != null)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
@@ -3347,6 +3345,18 @@ public class Home extends ActivityWithMenu {
         }
         return false;
     }
+
+    public static boolean removePreferencesItem(final String pref) {
+        if ((prefs == null) && (xdrip.getAppContext() != null)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
+        }
+        if (prefs != null) {
+            prefs.edit().remove(pref).apply();
+            return true;
+        }
+        return false;
+    }
+
 
     public static double convertToMgDlIfMmol(double value) {
         if (!getPreferencesStringWithDefault("units", "mgdl").equals("mgdl")) {
