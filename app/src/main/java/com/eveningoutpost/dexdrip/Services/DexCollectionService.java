@@ -650,6 +650,10 @@ public class DexCollectionService extends Service {
                 }
                 status("Enabled " + getString(R.string.blukon));
                 static_use_blukon = true; // doesn't ever get unset
+
+
+                Home.setPreferencesInt("bridge_battery", 100);//force battery to max until getting right value
+                Home.setPreferencesInt("nfc_sensor_age", 1);//in min, set to max first
             }
 
             // TODO is this duplicated in some situations?

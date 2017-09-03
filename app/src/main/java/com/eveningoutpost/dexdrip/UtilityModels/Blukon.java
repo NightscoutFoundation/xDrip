@@ -65,11 +65,10 @@ public class Blukon {
             UserError.Log.e(TAG, "null buffer passed to decodeBlukonPacket");
             return null;
         }
-        //BluCon code by gregorybel
 
+        //BluCon code by gregorybel
         final String strRecCmd = CipherUtils.bytesToHex(buffer).toLowerCase();
         UserError.Log.i(TAG, "BlueCon data: " + strRecCmd);
-
 
 
          /* if we find battery state set it lke this:
@@ -120,8 +119,6 @@ public class Blukon {
             currentCommand = "010d0900";
             UserError.Log.i(TAG, "getPatchInfo");
 
-
-
         } else if (currentCommand.startsWith("010d0b00") /*getUnknownCmd1*/ && strRecCmd.startsWith("8bdb")) {
             cmdFound = 1;
             UserError.Log.e(TAG, "gotUnknownCmd1 (010d0b00): "+strRecCmd);
@@ -132,6 +129,19 @@ public class Blukon {
         } else if (currentCommand.startsWith("010d0a00") /*getUnknownCmd2*/ && strRecCmd.startsWith("8bda")) {
             cmdFound = 1;
             UserError.Log.e(TAG, "gotUnknownCmd2 (010d0a00): "+strRecCmd);
+
+            currentCommand = "010d0e0127";
+            UserError.Log.i(TAG, "getSensorAge");
+
+        } else if (currentCommand.startsWith("010d0e0127") /*getSensorAge*/ && strRecCmd.startsWith("8bde")) {
+            cmdFound = 1;
+            UserError.Log.i(TAG, "SensorAge received");
+
+            int sensorAge = sensorAge(buffer);
+
+            if ((sensorAge > 0) && (sensorAge < 200000)) {
+                Home.setPreferencesInt("nfc_sensor_age", sensorAge);//in min
+            }
 
             currentCommand = "010d0e0103";
             UserError.Log.i(TAG, "getNowGlucoseDataIndexCommand");
@@ -163,6 +173,11 @@ public class Blukon {
 
             currentCommand = "010c0e00";
             UserError.Log.i(TAG, "Send sleep cmd");
+
+        }  else if (strRecCmd.startsWith("cb020000")) {
+            UserError.Log.e(TAG, "is bridge battery low????!");
+
+            Home.setPreferencesInt("bridge_battery", 0);
         }
 
         if (currentCommand.length() > 0 && cmdFound == 1) {
@@ -172,9 +187,7 @@ public class Blukon {
             if (cmdFound == 0) {
                 UserError.Log.e(TAG, "*******************************COMMAND NOT FOUND!!!!!!!!!!-> " + strRecCmd);
             }
-            if (strRecCmd.startsWith("cb020000")) {
-                UserError.Log.e(TAG, "is bridge battery low????!");
-            }
+
             return null;
         }
 
@@ -260,6 +273,14 @@ public class Blukon {
         curGluc = getGlucose(rawGlucose);
 
         return curGluc;
+    }
+
+
+    private static int sensorAge(byte[] input) {
+        int sensorAge = ((input[3 + 5] & 0xFF) << 8) | (input[3 + 4] & 0xFF);
+        UserError.Log.i(TAG, "sensorAge=" + sensorAge);
+
+        return sensorAge;
     }
 
     public static void doPinDialog(final Activity activity, final Runnable runnable) {
