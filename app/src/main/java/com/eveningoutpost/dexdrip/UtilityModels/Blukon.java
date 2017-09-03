@@ -92,8 +92,10 @@ public class Blukon {
 
             if (currentCommand.startsWith("810a00")) {//ACK sent
                 //ack received
-                currentCommand = "010d0e0103";
-                UserError.Log.i(TAG, "getNowGlucoseDataIndexCommand");
+
+                currentCommand = "010d0b00";
+                UserError.Log.i(TAG, "getUnknownCmd1: " + currentCommand);
+
             } else {
                 UserError.Log.i(TAG, "Got sleep ack, resetting initialstate!");
                 currentCommand = "";
@@ -111,18 +113,28 @@ public class Blukon {
             currentCommand = "";
         }
 
-/*
-        010d0b00
-        010d0a00
-
-  currentCommand = "010d0b00";
-            UserError.Log.i(TAG, "getUnknownCmd1");*/
-
         if (currentCommand == "" && strRecCmd.equalsIgnoreCase("cb010000")) {
             cmdFound = 1;
             UserError.Log.i(TAG, "wakeup received");
+
             currentCommand = "010d0900";
             UserError.Log.i(TAG, "getPatchInfo");
+
+
+
+        } else if (currentCommand.startsWith("010d0b00") /*getUnknownCmd1*/ && strRecCmd.startsWith("8bdb")) {
+            cmdFound = 1;
+            UserError.Log.e(TAG, "gotUnknownCmd1 (010d0b00): "+strRecCmd);
+
+            currentCommand = "010d0a00";
+            UserError.Log.i(TAG, "getUnknownCmd2 "+ currentCommand);
+
+        } else if (currentCommand.startsWith("010d0a00") /*getUnknownCmd2*/ && strRecCmd.startsWith("8bda")) {
+            cmdFound = 1;
+            UserError.Log.e(TAG, "gotUnknownCmd2 (010d0a00): "+strRecCmd);
+
+            currentCommand = "010d0e0103";
+            UserError.Log.i(TAG, "getNowGlucoseDataIndexCommand");
         } else if (currentCommand.startsWith("010d0900") /*getPatchInfo*/ && strRecCmd.startsWith("8bd9")) {
             cmdFound = 1;
             UserError.Log.i(TAG, "Patch Info received");
@@ -171,6 +183,7 @@ public class Blukon {
 
     private static synchronized void processNewTransmitterData(TransmitterData transmitterData) {
         if (transmitterData == null) {
+            UserError.Log.e(TAG, "transmitterData is NULL");
             return;
         }
 
