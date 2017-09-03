@@ -32,6 +32,7 @@ public class Blukon {
     private static enum BLUKON_STATES {
         INITIAL
     }
+    private static int m_getNowGlucoseDataIndexCommand = 0;
 
     public static String getPin() {
         final String thepin = Home.getPreferencesStringWithDefault(BLUKON_PIN_PREF, null);
@@ -144,13 +145,15 @@ public class Blukon {
             }
 
             currentCommand = "010d0e0103";
+            m_getNowGlucoseDataIndexCommand = 1;
             UserError.Log.i(TAG, "getNowGlucoseDataIndexCommand");
+
         } else if (currentCommand.startsWith("010d0900") /*getPatchInfo*/ && strRecCmd.startsWith("8bd9")) {
             cmdFound = 1;
             UserError.Log.i(TAG, "Patch Info received");
             currentCommand = "810a00";
             UserError.Log.i(TAG, "Send ACK");
-        } else if (currentCommand.startsWith("010d0e0103") /*getNowDataIndex*/ && strRecCmd.startsWith("8bde")) {
+        } else if (currentCommand.startsWith("010d0e0103") /*getNowDataIndex*/ && m_getNowGlucoseDataIndexCommand == 1 && strRecCmd.startsWith("8bde")) {
             cmdFound = 1;
             UserError.Log.i(TAG, "gotNowDataIndex");
 
@@ -158,6 +161,7 @@ public class Blukon {
             UserError.Log.i(TAG, "block Number is "+blockNumber);
 
             currentCommand = "010d0e010"+ Integer.toHexString(blockNumber);//getNowGlucoseData
+            m_getNowGlucoseDataIndexCommand = 0;
 
             UserError.Log.i(TAG, "getNowGlucoseData");
 
