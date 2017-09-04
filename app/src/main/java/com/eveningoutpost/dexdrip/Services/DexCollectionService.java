@@ -247,6 +247,7 @@ public class DexCollectionService extends Service {
 
         retry_backoff = 0;
         poll_backoff = 0;
+        servicesDiscovered = null;
 
         Log.i(TAG, "SERVICE STOPPED");
     }
@@ -404,7 +405,8 @@ public class DexCollectionService extends Service {
                 public void run() {
                     Log.d(TAG, "Polling for data");
                     int wait_counter = 0;
-                    while (!servicesDiscovered && wait_counter < 10) {
+                    //noinspection PointlessBooleanExpression
+                    while (servicesDiscovered != true && wait_counter < 10) {
                         Log.d(TAG, "Waiting for service discovery: " + servicesDiscovered + " count: " + wait_counter);
                         try {
                             Thread.sleep(200); // delay for wakeup readiness
@@ -451,7 +453,7 @@ public class DexCollectionService extends Service {
 
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
-        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+        public synchronized void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             final PowerManager.WakeLock wl = JoH.getWakeLock("bluetooth-gatt", 60000);
             try {
                 if (Home.getPreferencesBoolean("bluetooth_excessive_wakelocks", true)) {
@@ -465,14 +467,22 @@ public class DexCollectionService extends Service {
                 switch (newState) {
                     case BluetoothProfile.STATE_CONNECTED:
                         mConnectionState = STATE_CONNECTED;
-                        servicesDiscovered = false;
+                        if ((servicesDiscovered == null) || Home.getPreferencesBoolean("always_discover_services", true)) {
+                            Log.d(TAG, "Requesting to discover services: previous: " + servicesDiscovered);
+                            servicesDiscovered = false;
+                        }
                         ActiveBluetoothDevice.connected();
                         Log.i(TAG, "onConnectionStateChange: Connected to GATT server.");
                         if (JoH.ratelimit("attempt-connection", 30)) {
                             attemptConnection(); // refresh status info
                         }
-                        Log.d(TAG,"Calling discoverServices");
-                        mBluetoothGatt.discoverServices();
+                        //noinspection PointlessBooleanExpression
+                        if (servicesDiscovered != true) {
+                            Log.d(TAG, "Calling discoverServices");
+                            mBluetoothGatt.discoverServices();
+                        } else {
+                            Log.d(TAG, "Services already discovered");
+                        }
                         break;
                     case BluetoothProfile.STATE_DISCONNECTED:
                         Log.i(TAG, "onConnectionStateChange: State disconnected.");
@@ -519,8 +529,8 @@ public class DexCollectionService extends Service {
 
             final BluetoothGattService gattService = mBluetoothGatt.getService(xDripDataService);
             if (gattService == null) {
-                Log.w(TAG, "onServicesDiscovered: service " + xDripDataService + " not found");
                 if (!static_use_blukon) {
+                    Log.w(TAG, "onServicesDiscovered: xdrip service " + xDripDataService + " not found");
                     // TODO this should be reworked to be an efficient selector
                     listAvailableServices(mBluetoothGatt);
                 }
@@ -651,7 +661,7 @@ public class DexCollectionService extends Service {
                 status("Enabled " + getString(R.string.blukon));
                 static_use_blukon = true; // doesn't ever get unset
                 Blukon.initialize();
-                
+
             }
 
             // TODO is this duplicated in some situations?
@@ -846,7 +856,7 @@ public class DexCollectionService extends Service {
     public synchronized void setSerialDataToTransmitterRawData(byte[] buffer, int len) {
         long timestamp = new Date().getTime();
         last_time_seen = JoH.ts();
-        watchdog_count=0;
+        watchdog_count = 0;
         if (static_use_blukon && Blukon.checkBlukonPacket(buffer)) {
             final byte[] reply = Blukon.decodeBlukonPacket(buffer);
             if (reply != null) {
@@ -863,6 +873,9 @@ public class DexCollectionService extends Service {
         } else {
 
             if (((buffer.length > 0) && (buffer[0] == 0x07 || buffer[0] == 0x11 || buffer[0] == 0x15)) || CollectionServiceStarter.isDexBridgeOrWifiandDexBridge()) {
+                if ((buffer.length == 1) && (buffer[0] == 0x00)) {
+                    return; // null packet
+                }
                 Log.i(TAG, "setSerialDataToTransmitterRawData: Dealing with Dexbridge packet!");
                 int DexSrc;
                 int TransmitterID;
@@ -906,7 +919,7 @@ public class DexCollectionService extends Service {
                             sendBtMessage(txidMessage);
                         }
                         Home.setPreferencesInt("bridge_battery", ByteBuffer.wrap(buffer).get(11));
-                       // PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt("bridge_battery", ByteBuffer.wrap(buffer).get(11)).apply();
+                        // PreferenceManager.getDefaultSharedPreferences(mContext).edit().putInt("bridge_battery", ByteBuffer.wrap(buffer).get(11)).apply();
                         last_battery_level = Home.getPreferencesInt("bridge_battery", -1);
                         //All is OK, so process it.
                         //first, tell the wixel it is OK to sleep.
@@ -926,10 +939,9 @@ public class DexCollectionService extends Service {
                         CheckBridgeBattery.checkBridgeBattery();
                     }
                 }
-            } else if(buffer.length>10 && new String(buffer) != null && new String(buffer).startsWith("battery: ")){
+            } else if (buffer.length > 10 && new String(buffer) != null && new String(buffer).startsWith("battery: ")) {
                 //bluereader intermidiate support
-                if(BgReading.last()==null || BgReading.last().timestamp + (4*60*1000) < System.currentTimeMillis())
-                {
+                if (BgReading.last() == null || BgReading.last().timestamp + (4 * 60 * 1000) < System.currentTimeMillis()) {
                     sendBtMessage(new byte[]{0x6C});
                 }
             } else {

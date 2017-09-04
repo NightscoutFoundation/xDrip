@@ -509,6 +509,11 @@
                     android:title="@string/g5_bluetooth_watchdog" />
                 <CheckBoxPreference
                     android:defaultValue="true"
+                    android:key="always_discover_services"
+                    android:summary="Probe Bluetooth services on every connect"
+                    android:title="Always discover services" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
                     android:key="close_gatt_on_ble_disconnect"
                     android:summary="@string/close_gatt"
                     android:title="@string/close_gatt_on_ble_disconnect" />
