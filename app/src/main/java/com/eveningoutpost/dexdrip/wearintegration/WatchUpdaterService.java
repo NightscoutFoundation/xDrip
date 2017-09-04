@@ -257,7 +257,7 @@ public class WatchUpdaterService extends WearableListenerService implements
 
         if (nfc_sensor_age != mPrefs.getInt("nfc_sensor_age", 0)) {//Used by DexCollectionService
             change = true;
-            prefs.putInt("nfc_sensor_age", bridge_battery);
+            prefs.putInt("nfc_sensor_age", nfc_sensor_age);
             Log.d(TAG, "syncPrefData commit nfc_sensor_age: " + nfc_sensor_age);
         }
 
