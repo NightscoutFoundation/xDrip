@@ -650,6 +650,8 @@ public class DexCollectionService extends Service {
                 }
                 status("Enabled " + getString(R.string.blukon));
                 static_use_blukon = true; // doesn't ever get unset
+                Blukon.initialize();
+                
             }
 
             // TODO is this duplicated in some situations?

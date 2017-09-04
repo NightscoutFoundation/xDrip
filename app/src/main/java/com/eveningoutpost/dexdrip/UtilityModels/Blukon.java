@@ -28,6 +28,11 @@ public class Blukon {
     private static final String BLUKON_PIN_PREF = "Blukon-bluetooth-pin";
 
     private static int m_nowGlucoseOffset = 0;
+    private static String currentCommand = "";
+    private static enum BLUKON_STATES {
+        INITIAL
+    }
+    private static int m_getNowGlucoseDataIndexCommand = 0;
 
     public static String getPin() {
         final String thepin = Home.getPreferencesStringWithDefault(BLUKON_PIN_PREF, null);
@@ -45,6 +50,11 @@ public class Blukon {
         Home.removePreferencesItem(BLUKON_PIN_PREF);
     }
 
+    public static void initialize() {
+        Home.setPreferencesInt("bridge_battery", 0); //force battery to no-value before first reading
+        Home.setPreferencesInt("nfc_sensor_age", 0); //force sensor age to no-value before first reading
+    }
+
     public static boolean isBlukonPacket(byte[] buffer) {
     /* -53  0xCB -117 0x8B */
         return !((buffer == null) || (buffer.length < 3)) && (buffer[0] == (byte) 0xCB || buffer[0] == (byte) 0x8B);
@@ -55,71 +65,148 @@ public class Blukon {
     }
 
     public static byte[] decodeBlukonPacket(byte[] buffer) {
+        int cmdFound = 0;
 
         if (buffer == null) {
             UserError.Log.e(TAG, "null buffer passed to decodeBlukonPacket");
             return null;
         }
+
         //BluCon code by gregorybel
-
         final String strRecCmd = CipherUtils.bytesToHex(buffer).toLowerCase();
-        String strByteSend = "";
-
         UserError.Log.i(TAG, "BlueCon data: " + strRecCmd);
 
-        //TODO add states!
+
+         /* if we find battery state set it lke this:
+             Home.setPreferencesInt("bridge_battery", ByteBuffer.wrap(buffer).get(11));
+         */
+
+
         if (strRecCmd.equalsIgnoreCase("cb010000")) {
             UserError.Log.i(TAG, "wakeup received");
-            strByteSend = "010d0900";
-            UserError.Log.i(TAG, "getPatchInfo");
-        } else {
-            if (strRecCmd.startsWith("8bd9")) {
-                UserError.Log.i(TAG, "Patch Info received");
-                strByteSend = "810a00";
-                UserError.Log.i(TAG, "Send ACK");
-            } else if (strRecCmd.startsWith("8b0a00")) {
-                UserError.Log.i(TAG, "Got ACK");
-                strByteSend = "010d0e0103";
-                UserError.Log.i(TAG, "getNowGlucoseDataIndexCommand");
-            } else if (strRecCmd.startsWith("8bde03")) {
-                UserError.Log.i(TAG, "gotNowDataIndex");
-                //strByteSend = "010d0e0108";
+            currentCommand = "";
+            cmdFound = 1;
+        }
 
+        // BluconACKRespons will come in two different situations
+        // 1) after we have sent an ackwakeup command
+        // 2) after we have a sleep command
+        if (strRecCmd.startsWith("8b0a00")) {
+            cmdFound = 1;
+            UserError.Log.i(TAG, "Got ACK");
 
-                int blockNumber = blockNumberForNowGlucoseData(buffer);
-                UserError.Log.i(TAG, "block Number is " + blockNumber);
+            if (currentCommand.startsWith("810a00")) {//ACK sent
+                //ack received
 
-                strByteSend = "010d0e010" + Integer.toHexString(blockNumber);//getNowGlucoseData
+                currentCommand = "010d0b00";
+                UserError.Log.i(TAG, "getUnknownCmd1: " + currentCommand);
 
-
-                UserError.Log.i(TAG, "getNowGlucoseData");
-            } else if (strRecCmd.startsWith("8bde")) {
-                final int currentGlucose = nowGetGlucoseValue(buffer);
-
-                UserError.Log.i(TAG, "*****************got getNowGlucoseData = " + currentGlucose);
-
-                processNewTransmitterData(TransmitterData.create(currentGlucose, currentGlucose, 0, JoH.tsl()));
-
-
-                strByteSend = "010c0e00";
-                UserError.Log.i(TAG, "Send sleep cmd");
-            } else if (strRecCmd.startsWith("8bde08")) {
-                UserError.Log.e(TAG, "Got error");
+            } else {
+                UserError.Log.i(TAG, "Got sleep ack, resetting initialstate!");
+                currentCommand = "";
             }
         }
 
-        if (strByteSend.length() > 0) {
-            UserError.Log.d(TAG, "Sending reply: " + strByteSend);
-            return CipherUtils.hexToBytes(strByteSend);
+        if (strRecCmd.startsWith("8b1a02")) {
+            cmdFound = 1;
+            UserError.Log.e(TAG, "Got NACK");
+
+            if (strRecCmd.startsWith("8b1a020014")) {
+                UserError.Log.e(TAG, "Got error: UNKNOWN");
+            }
+
+            currentCommand = "";
+        }
+
+        if (currentCommand == "" && strRecCmd.equalsIgnoreCase("cb010000")) {
+            cmdFound = 1;
+            UserError.Log.i(TAG, "wakeup received");
+
+            currentCommand = "010d0900";
+            UserError.Log.i(TAG, "getPatchInfo");
+
+        } else if (currentCommand.startsWith("010d0b00") /*getUnknownCmd1*/ && strRecCmd.startsWith("8bdb")) {
+            cmdFound = 1;
+            UserError.Log.e(TAG, "gotUnknownCmd1 (010d0b00): "+strRecCmd);
+
+            currentCommand = "010d0a00";
+            UserError.Log.i(TAG, "getUnknownCmd2 "+ currentCommand);
+
+        } else if (currentCommand.startsWith("010d0a00") /*getUnknownCmd2*/ && strRecCmd.startsWith("8bda")) {
+            cmdFound = 1;
+            UserError.Log.e(TAG, "gotUnknownCmd2 (010d0a00): "+strRecCmd);
+
+            currentCommand = "010d0e0127";
+            UserError.Log.i(TAG, "getSensorAge");
+
+        } else if (currentCommand.startsWith("010d0e0127") /*getSensorAge*/ && strRecCmd.startsWith("8bde")) {
+            cmdFound = 1;
+            UserError.Log.i(TAG, "SensorAge received");
+
+            int sensorAge = sensorAge(buffer);
+
+            if ((sensorAge > 0) && (sensorAge < 200000)) {
+                Home.setPreferencesInt("nfc_sensor_age", sensorAge);//in min
+            }
+
+            currentCommand = "010d0e0103";
+            m_getNowGlucoseDataIndexCommand = 1;
+            UserError.Log.i(TAG, "getNowGlucoseDataIndexCommand");
+
+        } else if (currentCommand.startsWith("010d0900") /*getPatchInfo*/ && strRecCmd.startsWith("8bd9")) {
+            cmdFound = 1;
+            UserError.Log.i(TAG, "Patch Info received");
+            currentCommand = "810a00";
+            UserError.Log.i(TAG, "Send ACK");
+        } else if (currentCommand.startsWith("010d0e0103") /*getNowDataIndex*/ && m_getNowGlucoseDataIndexCommand == 1 && strRecCmd.startsWith("8bde")) {
+            cmdFound = 1;
+            UserError.Log.i(TAG, "gotNowDataIndex");
+
+            int blockNumber = blockNumberForNowGlucoseData(buffer);
+            UserError.Log.i(TAG, "block Number is "+blockNumber);
+
+            currentCommand = "010d0e010"+ Integer.toHexString(blockNumber);//getNowGlucoseData
+            m_getNowGlucoseDataIndexCommand = 0;
+
+            UserError.Log.i(TAG, "getNowGlucoseData");
+
+
+        } else if (currentCommand.startsWith("010d0e01") /*getNowGlucoseData*/ && strRecCmd.startsWith("8bde")) {
+            cmdFound = 1;
+            int currentGlucose = nowGetGlucoseValue(buffer);
+
+            UserError.Log.i(TAG, "*****************got getNowGlucoseData = " + currentGlucose);
+
+            processNewTransmitterData(TransmitterData.create(currentGlucose, currentGlucose, 0 /*battery level force to 0 as unknown*/, JoH.tsl()));
+
+
+            currentCommand = "010c0e00";
+            UserError.Log.i(TAG, "Send sleep cmd");
+
+        }  else if (strRecCmd.startsWith("cb020000")) {
+            UserError.Log.e(TAG, "is bridge battery low????!");
+
+            Home.setPreferencesInt("bridge_battery", 0);
+        }
+
+        if (currentCommand.length() > 0 && cmdFound == 1) {
+            UserError.Log.d(TAG, "Sending reply: " + currentCommand);
+            return CipherUtils.hexToBytes(currentCommand);
         } else {
+            if (cmdFound == 0) {
+                UserError.Log.e(TAG, "*******************************COMMAND NOT FOUND!!!!!!!!!!-> " + strRecCmd);
+            }
+
             return null;
         }
 
     }
 
 
+
     private static synchronized void processNewTransmitterData(TransmitterData transmitterData) {
         if (transmitterData == null) {
+            UserError.Log.e(TAG, "transmitterData is NULL");
             return;
         }
 
@@ -134,12 +221,12 @@ public class Blukon {
         BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, xdrip.getAppContext(), transmitterData.timestamp);
     }
 
-    /*
- * extract trend index from FRAM block #3 from the libre sensor
- * input: string with blucon answer to trend index request, including 6 starting protocol bytes
- * return: 2 byte string containing the next abolute block index to be read from
- * the libre sensor
- */
+    /* @keencave
+     * extract trend index from FRAM block #3 from the libre sensor
+     * input: blucon answer to trend index request, including 6 starting protocol bytes
+     * return: 2 byte containing the next absolute block index to be read from
+     * the libre sensor
+     */
 
     private static int blockNumberForNowGlucoseData(byte[] input) {
         int nowGlucoseIndex2 = 0;
@@ -147,7 +234,7 @@ public class Blukon {
 
         nowGlucoseIndex2 = (int) input[5];
 
-        // caculate byte position in sensor body
+        // calculate byte position in sensor body
         nowGlucoseIndex2 = (nowGlucoseIndex2 * 6) + 4;
 
         // decrement index to get the index where the last valid BG reading is stored
@@ -167,31 +254,28 @@ public class Blukon {
         return (nowGlucoseIndex3);
     }
 
-        /*
- * rescale raw BG reading to BG data format used in xDrip+
- * use 8.5 devider
- * raw format is in 1000 range
- * xDrip format is 100 range
- */
-
+    /* @keencave
+     * rescale raw BG reading to BG data format used in xDrip+
+     * use 8.5 devider
+     * raw format is in 1000 range
+     */
     private static int getGlucose(long rawGlucose) {
-        // standard devicder for raw Libre data (1000 range) to 100 range
+        // standard divider for raw Libre data (1000 range)
         return (int) (rawGlucose * Constants.LIBRE_MULTIPLIER);
     }
 
-        /*
- * extract BG reading from the raw data block containing the most recent BG reading
- * input: bytearray with blucon answer including 3 header protocol bytes
- * uses nowGlucoseOffset to calculate the offset of the two bytes neede
- * return: BG reading in float
- */
+    /* @keencave
+     * extract BG reading from the raw data block containing the most recent BG reading
+     * input: bytearray with blucon answer including 3 header protocol bytes
+     * uses nowGlucoseOffset to calculate the offset of the two bytes needed
+     * return: BG reading as int
+     */
 
     private static int nowGetGlucoseValue(byte[] input) {
         final int curGluc;
         final long rawGlucose;
 
         // grep 2 bytes with BG data from input bytearray, mask out 12 LSB bits and rescale for xDrip+
-        //rawGlucose = (input[3+m_nowGlucoseOffset+1]&0x0F)*16 + input[3+m_nowGlucoseOffset];
         rawGlucose = ((input[3 + m_nowGlucoseOffset + 1] & 0x0F) << 8) | (input[3 + m_nowGlucoseOffset] & 0xFF);
         UserError.Log.i(TAG, "rawGlucose=" + rawGlucose);
 
@@ -199,6 +283,14 @@ public class Blukon {
         curGluc = getGlucose(rawGlucose);
 
         return curGluc;
+    }
+
+
+    private static int sensorAge(byte[] input) {
+        int sensorAge = ((input[3 + 5] & 0xFF) << 8) | (input[3 + 4] & 0xFF);
+        UserError.Log.i(TAG, "sensorAge=" + sensorAge);
+
+        return sensorAge;
     }
 
     public static void doPinDialog(final Activity activity, final Runnable runnable) {
