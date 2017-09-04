@@ -10,6 +10,7 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.gson.annotations.Expose;
@@ -49,12 +50,12 @@ public class TransmitterData extends Model {
 
     public static synchronized TransmitterData create(byte[] buffer, int len, Long timestamp) {
         if (len < 6) { return null; }
-        TransmitterData transmitterData = new TransmitterData();
+        final TransmitterData transmitterData = new TransmitterData();
         try {
             if ((buffer[0] == 0x11 || buffer[0] == 0x15) && buffer[1] == 0x00) {
                 //this is a dexbridge packet.  Process accordingly.
                 Log.i(TAG, "create Processing a Dexbridge packet");
-                ByteBuffer txData = ByteBuffer.allocate(len);
+                final ByteBuffer txData = ByteBuffer.allocate(len);
                 txData.order(ByteOrder.LITTLE_ENDIAN);
                 txData.put(buffer, 0, len);
                 transmitterData.raw_data = txData.getInt(2);
@@ -111,14 +112,17 @@ public class TransmitterData extends Model {
 
             //Stop allowing readings that are older than the last one - or duplicate data, its bad! (from savek-cc)
             final TransmitterData lastTransmitterData = TransmitterData.last();
-            if (lastTransmitterData != null && lastTransmitterData.timestamp >= timestamp) {
+            if (lastTransmitterData != null && lastTransmitterData.timestamp >= transmitterData.timestamp) {
+                Log.e(TAG, "Rejecting TransmitterData constraint: last: " + JoH.dateTimeText(lastTransmitterData.timestamp) + " > this: " + JoH.dateTimeText(transmitterData.timestamp));
                 return null;
             }
-            if (lastTransmitterData != null && lastTransmitterData.raw_data == transmitterData.raw_data && Math.abs(lastTransmitterData.timestamp - timestamp) < (120000)) {
+            if (lastTransmitterData != null && lastTransmitterData.raw_data == transmitterData.raw_data && Math.abs(lastTransmitterData.timestamp - transmitterData.timestamp) < (Constants.MINUTE_IN_MS * 2)) {
+                Log.e(TAG, "Rejecting identical TransmitterData constraint: last: " + JoH.dateTimeText(lastTransmitterData.timestamp) + " due to 2 minute rule this: " + JoH.dateTimeText(transmitterData.timestamp));
                 return null;
             }
             final Calibration lastCalibration = Calibration.lastValid();
-            if (lastCalibration != null && lastCalibration.timestamp > timestamp) {
+            if (lastCalibration != null && lastCalibration.timestamp > transmitterData.timestamp) {
+                Log.e(TAG, "Rejecting historical TransmitterData constraint: calib: " + JoH.dateTimeText(lastCalibration.timestamp) + " > this: " + JoH.dateTimeText(transmitterData.timestamp));
                 return null;
             }
 
@@ -134,7 +138,7 @@ public class TransmitterData extends Model {
 
     public static synchronized TransmitterData create(int raw_data, int filtered_data, int sensor_battery_level, long timestamp) {
         TransmitterData lastTransmitterData = TransmitterData.last();
-        if (lastTransmitterData != null && lastTransmitterData.raw_data == raw_data && Math.abs(lastTransmitterData.timestamp - new Date().getTime()) < (120000)) { //Stop allowing duplicate data, its bad!
+        if (lastTransmitterData != null && lastTransmitterData.raw_data == raw_data && Math.abs(lastTransmitterData.timestamp - new Date().getTime()) < (Constants.MINUTE_IN_MS * 2)) { //Stop allowing duplicate data, its bad!
             return null;
         }
 
@@ -150,7 +154,7 @@ public class TransmitterData extends Model {
 
     public static synchronized TransmitterData create(int raw_data ,int sensor_battery_level, long timestamp) {
         TransmitterData lastTransmitterData = TransmitterData.last();
-        if (lastTransmitterData != null && lastTransmitterData.raw_data == raw_data && Math.abs(lastTransmitterData.timestamp - new Date().getTime()) < (120000)) { //Stop allowing duplicate data, its bad!
+        if (lastTransmitterData != null && lastTransmitterData.raw_data == raw_data && Math.abs(lastTransmitterData.timestamp - new Date().getTime()) < (Constants.MINUTE_IN_MS * 2)) { //Stop allowing duplicate data, its bad!
             return null;
         }
 
@@ -167,6 +171,13 @@ public class TransmitterData extends Model {
         return new Select()
                 .from(TransmitterData.class)
                 .orderBy("_ID desc")
+                .executeSingle();
+    }
+
+    public static TransmitterData lastByTimestamp() {
+        return new Select()
+                .from(TransmitterData.class)
+                .orderBy("timestamp desc")
                 .executeSingle();
     }
 
