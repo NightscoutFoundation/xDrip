@@ -661,7 +661,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
     private void sendPrefSettings() {//KS
 
-        Log.d(TAG, "sendPrefSettings enter localnode=" + localnode);
+        Log.d(TAG, "sendPrefSettings enter");
         forceGoogleApiConnect();
         DataMap dataMap = new DataMap();
         boolean enable_wearG5 = mPrefs.getBoolean("enable_wearG5", false);
@@ -2464,10 +2464,20 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
     private void setLocalNodeName () {
         forceGoogleApiConnect();
-        NodeApi.GetLocalNodeResult localnodes = Wearable.NodeApi.getLocalNode(googleApiClient).await(60, TimeUnit.SECONDS);
-        Node getnode = localnodes.getNode();
-        localnode = getnode != null ? getnode.getDisplayName() + "|" + getnode.getId() : "";
-        Log.d(TAG, "setLocalNodeName.  localnode=" + localnode);
+        PendingResult<NodeApi.GetLocalNodeResult> result = Wearable.NodeApi.getLocalNode(googleApiClient);
+        result.setResultCallback(new ResultCallback<NodeApi.GetLocalNodeResult>() {
+            @Override
+            public void onResult(NodeApi.GetLocalNodeResult getLocalNodeResult) {
+                if (!getLocalNodeResult.getStatus().isSuccess()) {
+                    Log.e(TAG, "ERROR: failed to getLocalNode Status=" + getLocalNodeResult.getStatus().getStatusMessage());
+                } else {
+                    Log.d(TAG, "getLocalNode Status=: " + getLocalNodeResult.getStatus().getStatusMessage());
+                    Node getnode = getLocalNodeResult.getNode();
+                    localnode = getnode != null ? getnode.getDisplayName() + "|" + getnode.getId() : "";
+                    Log.d(TAG, "setLocalNodeName.  localnode=" + localnode);
+                }
+            }
+        });
     }
 
     @Override
