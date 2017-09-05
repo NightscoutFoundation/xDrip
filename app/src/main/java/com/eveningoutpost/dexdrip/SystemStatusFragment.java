@@ -254,9 +254,14 @@ public class SystemStatusFragment extends Fragment {
                 transmitter_status_view.append(" - very low");
             } else if (td.sensor_battery_level <= Constants.TRANSMITTER_BATTERY_LOW) {
                 transmitter_status_view.append(" - low");
-                transmitter_status_view.append("\n(experimental interpretation)");
             } else {
                 transmitter_status_view.append(" - ok");
+            }
+
+            if (prefs.getString("btDevice","").equals("blueReader")) {
+                transmitter_status_view.append(" (" + ((td.sensor_battery_level - 3300) * 100 / (prefs.getInt("blueReader_Full_Battery", 3800) - 3300)) + "%)");
+                //set for BlueReader Battery the other way... todo bring it at the right updateplace
+                PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).edit().putInt("bridge_battery", (td.sensor_battery_level - 3300) * 100 / (prefs.getInt("blueReader_Full_Battery", 3800) - 3300)).apply();
             }
         }
 
