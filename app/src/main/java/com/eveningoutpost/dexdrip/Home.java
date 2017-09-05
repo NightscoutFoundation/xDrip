@@ -1839,7 +1839,7 @@ public class Home extends ActivityWithMenu {
                     paint.setColor(Color.parseColor("#FFFFAA"));
                     paint.setStyle(Paint.Style.STROKE);
                     paint.setAlpha(100);
-                    canvas.drawText(getString(R.string.transmitter_battery), 10, chart.getHeight() / 3 - (int) (1.2 * px), paint);
+                    canvas.drawText(getString(R.string.transmitter_battery) + " (" + sensor.latest_battery_level + ")", 10, chart.getHeight() / 3 - (int) (1.2 * px), paint);
                     if (sensor.latest_battery_level <= Constants.TRANSMITTER_BATTERY_EMPTY) {
                         paint.setTextSize((int) (px * 1.5));
                         canvas.drawText(getString(R.string.very_low), 10, chart.getHeight() / 3, paint);
@@ -2371,6 +2371,8 @@ public class Home extends ActivityWithMenu {
             } else {
                 if (isDexbridge) {
                     dexbridgeBattery.setText(getString(R.string.xbridge_battery) + ": " + bridgeBattery + "%");
+                } else if (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString ("btDevice","").equals("blueReader")) {
+                    dexbridgeBattery.setText("blueReader" + ": " + bridgeBattery + "%");
                 } else if (isLimitter){
                     dexbridgeBattery.setText(getString(R.string.limitter_battery) + ": " + bridgeBattery + "%");
                 } else {

@@ -300,6 +300,9 @@ public class BluetoothScan extends ListActivityWithMenu {
         Toast.makeText(this, R.string.connecting_to_device, Toast.LENGTH_LONG).show();
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        //store information that device is a blueReader
+        prefs.edit().putString("btDevice", device.getName()).apply();
+
         synchronized (ActiveBluetoothDevice.table_lock) {
             ActiveBluetoothDevice btDevice = new Select().from(ActiveBluetoothDevice.class)
                     .orderBy("_ID desc")
@@ -379,7 +382,7 @@ public class BluetoothScan extends ListActivityWithMenu {
                     prefs.edit().putString("dex_collection_method", "LimiTTer").apply();
                 }
                 returnToHome();
-            } else if (device.getName().toLowerCase().contains("blueReader")) {
+            } else if (device.getName().toLowerCase().contains("bluereader")) {
                 if (!CollectionServiceStarter.isLimitter()) {
                     prefs.edit().putString("dex_collection_method", "LimiTTer").apply();
                 }
