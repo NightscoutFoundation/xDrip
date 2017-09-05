@@ -76,12 +76,6 @@ public class Blukon {
         final String strRecCmd = CipherUtils.bytesToHex(buffer).toLowerCase();
         UserError.Log.i(TAG, "BlueCon data: " + strRecCmd);
 
-
-         /* if we find battery state set it lke this:
-             Home.setPreferencesInt("bridge_battery", ByteBuffer.wrap(buffer).get(11));
-         */
-
-
         if (strRecCmd.equalsIgnoreCase("cb010000")) {
             UserError.Log.i(TAG, "wakeup received");
             currentCommand = "";
@@ -109,10 +103,14 @@ public class Blukon {
 
         if (strRecCmd.startsWith("8b1a02")) {
             cmdFound = 1;
-            UserError.Log.e(TAG, "Got NACK");
+            UserError.Log.e(TAG, "Got NACK on cmd=" + currentCommand + " with error=" + strRecCmd.substring(6));
 
             if (strRecCmd.startsWith("8b1a020014")) {
-                UserError.Log.e(TAG, "Got error: UNKNOWN");
+                //reason unknown!
+            }
+
+            if (strRecCmd.startsWith("8b1a02000f")) {
+                UserError.Log.e(TAG, "Libre sensor not present!");
             }
 
             currentCommand = "";
@@ -127,14 +125,14 @@ public class Blukon {
 
         } else if (currentCommand.startsWith("010d0b00") /*getUnknownCmd1*/ && strRecCmd.startsWith("8bdb")) {
             cmdFound = 1;
-            UserError.Log.e(TAG, "gotUnknownCmd1 (010d0b00): "+strRecCmd);
+            UserError.Log.w(TAG, "gotUnknownCmd1 (010d0b00): "+strRecCmd);
 
             currentCommand = "010d0a00";
             UserError.Log.i(TAG, "getUnknownCmd2 "+ currentCommand);
 
         } else if (currentCommand.startsWith("010d0a00") /*getUnknownCmd2*/ && strRecCmd.startsWith("8bda")) {
             cmdFound = 1;
-            UserError.Log.e(TAG, "gotUnknownCmd2 (010d0a00): "+strRecCmd);
+            UserError.Log.w(TAG, "gotUnknownCmd2 (010d0a00): "+strRecCmd);
 
             currentCommand = "010d0e0127";
             UserError.Log.i(TAG, "getSensorAge");
@@ -150,7 +148,7 @@ public class Blukon {
             }
 
             currentCommand = "010d0e0103";
-            m_getNowGlucoseDataIndexCommand = 1;
+            m_getNowGlucoseDataIndexCommand = 1;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
             UserError.Log.i(TAG, "getNowGlucoseDataIndexCommand");
 
         } else if (currentCommand.startsWith("010d0900") /*getPatchInfo*/ && strRecCmd.startsWith("8bd9")) {
@@ -186,15 +184,20 @@ public class Blukon {
         }  else if (strRecCmd.startsWith("cb020000")) {
             UserError.Log.e(TAG, "is bridge battery low????!");
 
-            Home.setPreferencesInt("bridge_battery", 0);
+            Home.setPreferencesInt("bridge_battery", 1);
+        } else if (strRecCmd.startsWith("cbdb0000")) {
+            //something to do with really low battery????
+
         }
+
+
 
         if (currentCommand.length() > 0 && cmdFound == 1) {
             UserError.Log.d(TAG, "Sending reply: " + currentCommand);
             return CipherUtils.hexToBytes(currentCommand);
         } else {
             if (cmdFound == 0) {
-                UserError.Log.e(TAG, "*******************************COMMAND NOT FOUND!!!!!!!!!!-> " + strRecCmd);
+                UserError.Log.e(TAG, "************COMMAND NOT FOUND! -> " + strRecCmd);
             }
 
             return null;
