@@ -267,6 +267,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                     case WEARABLE_REPLYMSG_PATH:
                                     case WEARABLE_G5BATTERY_PAYLOAD:
                                     case WEARABLE_SNOOZE_ALERT:
+                                    case WEARABLE_PREF_DATA_PATH:
                                     case SYNC_BGS_PATH:
                                     case SYNC_LOGS_PATH:
                                     case SYNC_LOGS_REQUESTED_PATH:
@@ -695,7 +696,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(this).edit();
         if (!node_wearG5.equals(dataMap.getString("node_wearG5", ""))) {
             Log.d(TAG, "sendPrefSettings save to SharedPreferences - node_wearG5:" + dataMap.getString("node_wearG5", ""));
-            prefs.putString("node_wearG5", node_wearG5);
+            prefs.putString("node_wearG5", dataMap.getString("node_wearG5", ""));
             prefs.commit();
         }
     }
