@@ -90,6 +90,7 @@ public class DexCollectionService extends Service {
     private static int mStaticStateWatch = 0; // default unknown
     private static byte[] immediateSend;
     private static String bondedState;
+    private static int bondingTries = 0;
     private BluetoothDevice device;
     private BluetoothGattCharacteristic mCharacteristic;
     // Experimental support for rfduino from Tomasz Stachowicz
@@ -248,6 +249,7 @@ public class DexCollectionService extends Service {
         retry_backoff = 0;
         poll_backoff = 0;
         servicesDiscovered = null;
+        bondingTries = 0;
 
         Log.i(TAG, "SERVICE STOPPED");
     }
@@ -521,8 +523,14 @@ public class DexCollectionService extends Service {
                 if ((mDeviceAddress != null) && (device != null) && (!areWeBonded(mDeviceAddress))) {
                     if (JoH.ratelimit("dexcollect-create-bond", 20)) {
                         Log.d(TAG, "Attempting to create bond to: " + mDeviceAddress);
-                        device.setPin(JoH.convertPinToBytes(DEFAULT_BT_PIN));
-                        device.createBond();
+                        bondingTries++;
+                        if (bondingTries > 5) {
+                            Home.toaststaticnext("Bonding failing so disabling bonding feature");
+                            Home.setPreferencesBoolean(PREF_DEX_COLLECTION_BONDING, false);
+                        } else {
+                            device.setPin(JoH.convertPinToBytes(DEFAULT_BT_PIN));
+                            device.createBond();
+                        }
                     }
                 }
             }
@@ -1080,7 +1088,7 @@ public class DexCollectionService extends Service {
 
         if (Home.getPreferencesBooleanDefaultFalse(PREF_DEX_COLLECTION_BONDING)) {
             if (bondedState != null) {
-                l.add(new StatusItem("Bluetooth Pairing", (bondedState.length() > 0) ? "Bonded" : "Not bonded", (bondedState.length() > 0) ? StatusItem.Highlight.GOOD : StatusItem.Highlight.NOTICE, "long-press",
+                l.add(new StatusItem("Bluetooth Pairing", (bondedState.length() > 0) ? "Bonded" : "Not bonded" + (bondingTries > 1 ? " (" + bondingTries + ")" : ""), (bondedState.length() > 0) ? StatusItem.Highlight.GOOD : StatusItem.Highlight.NOTICE, "long-press",
                         new Runnable() {
                             @Override
                             public void run() {
