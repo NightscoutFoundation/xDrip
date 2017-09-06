@@ -64,6 +64,8 @@ public class Blukon {
         return isBlukonPacket(buffer) && getPin() != null; // TODO can't be unset yet and isn't proper subtype test yet
     }
 
+
+    // .*(dexdrip|gatt|Blukon).
     public static byte[] decodeBlukonPacket(byte[] buffer) {
         int cmdFound = 0;
 
@@ -106,17 +108,20 @@ public class Blukon {
             UserError.Log.e(TAG, "Got NACK on cmd=" + currentCommand + " with error=" + strRecCmd.substring(6));
 
             if (strRecCmd.startsWith("8b1a020014")) {
-                //reason unknown!
+                UserError.Log.e(TAG, "Timeout, retry!");
+
+                //we could retry here from beginning
+                //sending again getPatchInfo doesn't help!
             }
 
             if (strRecCmd.startsWith("8b1a02000f")) {
-                UserError.Log.e(TAG, "Libre sensor not present!");
+                UserError.Log.e(TAG, "Libre sensor has been removed!");
             }
 
             currentCommand = "";
         }
 
-        if (currentCommand == "" && strRecCmd.equalsIgnoreCase("cb010000")) {
+        if (currentCommand.equals("") && strRecCmd.equalsIgnoreCase("cb010000")) {
             cmdFound = 1;
             UserError.Log.i(TAG, "wakeup received");
 
