@@ -38,7 +38,7 @@ public class PlusSyncService extends Service {
         startSyncService(context, "clearAndRestart");
     }
 
-    public static void startSyncService(Context context, String source) {
+    public synchronized static void startSyncService(Context context, String source) {
         if (created) {
             Log.d(TAG, "Already created");
             return;

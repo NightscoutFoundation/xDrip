@@ -167,7 +167,7 @@ public class Preferences extends PreferenceActivity {
                     return;
                 }
 
-                SharedPreferences.Editor editor = prefs.edit();
+                final SharedPreferences.Editor editor = prefs.edit();
                 int changes = 0;
                 for (Map.Entry<String, String> entry : prefsmap.entrySet()) {
                     String key = entry.getKey();
@@ -183,6 +183,7 @@ public class Preferences extends PreferenceActivity {
                 }
                 editor.apply();
                 refreshFragments();
+                ExtraLogTags.readPreference(Home.getPreferencesStringDefaultBlank("extra_tags_for_logging"));
                 Toast.makeText(getApplicationContext(), "Loaded " + Integer.toString(changes) + " preferences from QR code", Toast.LENGTH_LONG).show();
                 PlusSyncService.clearandRestartSyncService(getApplicationContext());
                 if (prefs.getString("dex_collection_method", "").equals("Follower")) {

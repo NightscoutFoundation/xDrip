@@ -9,6 +9,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -67,6 +68,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -1137,6 +1139,19 @@ public class JoH {
         } catch (Exception e) {
             return "";
         }
+    }
+
+    private static boolean refreshDeviceCache(String thisTAG, BluetoothGatt gatt){
+        try {
+            final Method method = gatt.getClass().getMethod("refresh", new Class[0]);
+            if (method != null) {
+                return (Boolean) method.invoke(gatt, new Object[0]);
+            }
+        }
+        catch (Exception e) {
+            Log.e(thisTAG, "An exception occured while refreshing gatt device cache: "+e);
+        }
+        return false;
     }
 
     public synchronized static void setBluetoothEnabled(Context context, boolean state) {
