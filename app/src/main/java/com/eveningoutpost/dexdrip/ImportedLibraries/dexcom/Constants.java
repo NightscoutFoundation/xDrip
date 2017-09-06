@@ -57,6 +57,8 @@ public class Constants {
     public final static int CRC_LEN = 2;
     public static final int TRANSMITTER_BATTERY_LOW = 210;
     public static final int TRANSMITTER_BATTERY_EMPTY = 207;
+    public static final int BLUEREADER_TRANSMITTER_BATTERY_LOW = 25;
+    public static final int BLUEREADER_TRANSMITTER_BATTERY_EMPTY = 10;
 
     public enum BATTERY_STATES {
         NONE,
