@@ -545,11 +545,17 @@ public class DexCollectionService extends Service {
 
             final BluetoothGattService gattService = mBluetoothGatt.getService(xDripDataService);
             if (gattService == null) {
+
                 if (!static_use_blukon) {
                     Log.w(TAG, "onServicesDiscovered: xdrip service " + xDripDataService + " not found");
                     // TODO this should be reworked to be an efficient selector
                     listAvailableServices(mBluetoothGatt);
                 }
+
+                //add just to check if this work for bluereader
+                if (!prefs.getString("btDevice","").equals("blueReader"))  Log.w(TAG, "onServicesDiscovered: service " + xDripDataService + " not found");
+                listAvailableServices(mBluetoothGatt);
+
                 // try next
             }
             else
@@ -1004,6 +1010,7 @@ public class DexCollectionService extends Service {
                 }
             } else if (buffer.length > 10 && new String(buffer) != null && new String(buffer).startsWith("battery: ")) {
                 //bluereader intermidiate support
+
                 if (BgReading.last() == null || BgReading.last().timestamp + (4 * 60 * 1000) < System.currentTimeMillis()) {
                     sendBtMessage(new byte[]{0x6C});
                 }
@@ -1029,13 +1036,23 @@ public class DexCollectionService extends Service {
             return;
         }
 
-
-
-        sensor.latest_battery_level = (sensor.latest_battery_level != 0) ? Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level) : transmitterData.sensor_battery_level;
+        //add momentum Battery filler for bluereader
+        if (prefs.getString("btDevice","").equals("blueReader")) {
+            prefs.edit().putInt("bridge_battery", ((transmitterData.sensor_battery_level - 3300) * 100 / (prefs.getInt("blueReader_Full_Battery", 3800)-3300))).apply();
+            sensor.latest_battery_level = ((transmitterData.sensor_battery_level - 3300) * 100 / (prefs.getInt("blueReader_Full_Battery", 3800)-3300));
+            Log.w(TAG,"blueReader-Bat: " + transmitterData.sensor_battery_level + "|" + sensor.latest_battery_level + "|" + prefs.getInt("blueReader_Full_Battery", 3800)); // writing all batinfo to make a curve and Day estimation
+            if (transmitterData.sensor_battery_level > prefs.getInt("blueReader_Full_Battery", 3800)) {
+                prefs.edit().putInt("blueReader_Full_Battery", transmitterData.sensor_battery_level).apply();
+                Log.w(TAG, "blueReader_Full_Battery set to: " + transmitterData.sensor_battery_level) ;
+            }
+        } else {
+            sensor.latest_battery_level = (sensor.latest_battery_level != 0) ? Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level) : transmitterData.sensor_battery_level;
+        }
         sensor.save();
 
         last_transmitter_Data = transmitterData;
         Log.d(TAG, "BgReading.create: new BG reading at " + timestamp + " with a timestamp of " + transmitterData.timestamp);
+        //Log.w(TAG, "transmitterdata:" +transmitterData.raw_data );
         BgReading.create(transmitterData.raw_data, transmitterData.filtered_data, this, transmitterData.timestamp);
     }
 
