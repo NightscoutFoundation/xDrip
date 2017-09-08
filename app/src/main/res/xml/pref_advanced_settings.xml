@@ -485,6 +485,12 @@
                     android:key="infrequent_calibration"
                     android:summary="@string/use_infrequent_calibrations"
                     android:title="@string/infrequent_calibrations" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="use_non_fixed_li_parameters"
+                    android:summary="Enable to allow variable slopes with Libre collection methods"
+                    android:title="Non-fixed Libre slopes" />
+
             </PreferenceScreen>
 
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"

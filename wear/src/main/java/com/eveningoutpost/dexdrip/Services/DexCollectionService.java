@@ -375,6 +375,9 @@ public class DexCollectionService extends Service {
                         mConnectionState = STATE_CONNECTED;
                         ActiveBluetoothDevice.connected();
                         Log.i(TAG, "onConnectionStateChange: Connected to GATT server.");
+                        if (JoH.ratelimit("attempt-connection", 30)) {
+                            attemptConnection(); // refresh status info
+                        }
                         mBluetoothGatt.discoverServices();
                         break;
                     case BluetoothProfile.STATE_DISCONNECTED:
