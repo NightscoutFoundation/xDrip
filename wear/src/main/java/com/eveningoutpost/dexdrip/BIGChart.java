@@ -455,7 +455,8 @@ public class BIGChart extends WatchFace implements SharedPreferences.OnSharedPre
                 mRelativeLayout.measure(specW, specH);
                 mRelativeLayout.layout(0, 0, mRelativeLayout.getMeasuredWidth(),
                         mRelativeLayout.getMeasuredHeight());
-                //invalidate();//to conserve battery, use onTimeChanged() default of one minute
+                if (sharedPrefs.getBoolean("refresh_on_change", false))
+                    invalidate();//to conserve battery, use onTimeChanged() default of one minute instead
                 setColor();
             }
         }

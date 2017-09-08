@@ -100,6 +100,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     private static final String SYNC_TREATMENTS_PATH = "/xdrip_plus_syncweartreatments";
     private static final String SYNC_LOGS_REQUESTED_PATH = "/xdrip_plus_syncwearlogsrequested";
     private static final String SYNC_STEP_SENSOR_PATH = "/xdrip_plus_syncwearstepsensor";
+    public static final String SYNC_ALL_DATA = "/xdrip_plus_syncalldata";//KS
     private static final String CLEAR_LOGS_PATH = "/xdrip_plus_clearwearlogs";
     private static final String CLEAR_TREATMENTS_PATH = "/xdrip_plus_clearweartreatments";
     private static final String STATUS_COLLECTOR_PATH = "/xdrip_plus_statuscollector";
@@ -266,6 +267,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                     case WEARABLE_REPLYMSG_PATH:
                                     case WEARABLE_G5BATTERY_PAYLOAD:
                                     case WEARABLE_SNOOZE_ALERT:
+                                    case WEARABLE_PREF_DATA_PATH:
                                     case SYNC_BGS_PATH:
                                     case SYNC_LOGS_PATH:
                                     case SYNC_LOGS_REQUESTED_PATH:
@@ -278,7 +280,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                             sendMessagePayload(node, "SYNC_TREATMENTS_PATH", SYNC_TREATMENTS_PATH, datamap.toByteArray());
                                         }
                                         break;
-                                    default:
+                                    case WEARABLE_RESEND_PATH:
+                                        Log.d(TAG, "doInBackground WEARABLE_RESEND_PATH");
+                                        sendMessagePayload(node, "WEARABLE_RESEND_PATH", path, payload);
+                                    default://SYNC_ALL_DATA
+                                        Log.d(TAG, "doInBackground SYNC_ALL_DATA");
                                         if (enable_wearG5) {//KS
                                             datamap = getWearTransmitterData(send_bg_count, last_send_previous, 0);//KS 36 data for last 3 hours; 288 for 1 day
                                             if (datamap != null) {
@@ -302,7 +308,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                                         if (datamap != null) {
                                             sendMessagePayload(node, "SYNC_TREATMENTS_PATH", SYNC_TREATMENTS_PATH, datamap.toByteArray());
                                         }
-                                        sendMessagePayload(node, "WEARABLE_RESEND_PATH", path, payload);
+                                        //sendMessagePayload(node, "WEARABLE_RESEND_PATH", path, payload);
                                         if (PersistentStore.getBoolean(G5_BATTERY_WEARABLE_SEND)) {
                                             PersistentStore.setBoolean(G5_BATTERY_WEARABLE_SEND, false);
                                             sendPersistentStore();
@@ -656,7 +662,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
     private void sendPrefSettings() {//KS
 
-        Log.d(TAG, "sendPrefSettings enter localnode=" + localnode);
+        Log.d(TAG, "sendPrefSettings enter");
         forceGoogleApiConnect();
         DataMap dataMap = new DataMap();
         boolean enable_wearG5 = mPrefs.getBoolean("enable_wearG5", false);
@@ -690,7 +696,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         SharedPreferences.Editor prefs = PreferenceManager.getDefaultSharedPreferences(this).edit();
         if (!node_wearG5.equals(dataMap.getString("node_wearG5", ""))) {
             Log.d(TAG, "sendPrefSettings save to SharedPreferences - node_wearG5:" + dataMap.getString("node_wearG5", ""));
-            prefs.putString("node_wearG5", node_wearG5);
+            prefs.putString("node_wearG5", dataMap.getString("node_wearG5", ""));
             prefs.commit();
         }
     }
@@ -852,6 +858,10 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             else if (key.compareTo("use_wear_health") == 0 || key.compareTo("showSteps") == 0 || key.compareTo("step_delay_time") == 0) {
                 setupStepSensor();
             }
+            else if (key.compareTo("sync_wear_logs") == 0) {
+                last_send_previous_log = JoH.tsl();
+                PersistentStore.setLong(pref_last_send_previous_log, last_send_previous_log);
+            }
             /*else if (key.compareTo("show_wear_treatments") == 0) {
                 Log.d(TAG, "OnSharedPreferenceChangeListener sendPrefSettings for key=" + key);
                 Context context = xdrip.getAppContext();
@@ -907,8 +917,10 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
                 } else if (path.equals(NEW_STATUS_PATH)) {
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
-                    sendLocalMessage("status", dataMap);
-                    Log.d(TAG, "onDataChanged NEW_STATUS_PATH=" + path);
+                    boolean showExternalStatus = mPrefs.getBoolean("showExternalStatus", true);
+                    Log.d(TAG, "onDataChanged NEW_STATUS_PATH=" + path + " showExternalStatus=" + showExternalStatus);
+                    if (showExternalStatus)
+                        sendLocalMessage("status", dataMap);
                 } else if (path.equals(WEARABLE_TOAST_LOCAL_NOTIFICATON)) {
                     dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     sendLocalMessage("msg", dataMap);
@@ -2031,8 +2043,9 @@ public class ListenerService extends WearableListenerService implements GoogleAp
         Log.d(TAG, "syncBGData");
 
         boolean changed = false;
+        int battery = dataMap.getInt("battery");
         ArrayList<DataMap> entries = dataMap.getDataMapArrayList("entries");
-        Log.d(TAG, "syncBGData add BgReading Table" );
+        Log.d(TAG, "syncBGData add BgReading Table battery=" + battery );
         if (entries != null) {
 
             Gson gson = new GsonBuilder()
@@ -2113,8 +2126,11 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                     }
                 }
                 if (changed) {//otherwise, wait for doBackground ACTION_RESEND
-                    resendData(getApplicationContext());
+                    Log.d(TAG, "syncBGData BG data has changed, refresh watchface, phone battery=" + battery );
+                    resendData(getApplicationContext(), battery);
                 }
+                else
+                    Log.d(TAG, "syncBGData BG data has NOT changed, do not refresh watchface, phone battery=" + battery );
             }
         }
     }
@@ -2449,10 +2465,20 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
     private void setLocalNodeName () {
         forceGoogleApiConnect();
-        NodeApi.GetLocalNodeResult localnodes = Wearable.NodeApi.getLocalNode(googleApiClient).await(60, TimeUnit.SECONDS);
-        Node getnode = localnodes.getNode();
-        localnode = getnode != null ? getnode.getDisplayName() + "|" + getnode.getId() : "";
-        Log.d(TAG, "setLocalNodeName.  localnode=" + localnode);
+        PendingResult<NodeApi.GetLocalNodeResult> result = Wearable.NodeApi.getLocalNode(googleApiClient);
+        result.setResultCallback(new ResultCallback<NodeApi.GetLocalNodeResult>() {
+            @Override
+            public void onResult(NodeApi.GetLocalNodeResult getLocalNodeResult) {
+                if (!getLocalNodeResult.getStatus().isSuccess()) {
+                    Log.e(TAG, "ERROR: failed to getLocalNode Status=" + getLocalNodeResult.getStatus().getStatusMessage());
+                } else {
+                    Log.d(TAG, "getLocalNode Status=: " + getLocalNodeResult.getStatus().getStatusMessage());
+                    Node getnode = getLocalNodeResult.getNode();
+                    localnode = getnode != null ? getnode.getDisplayName() + "|" + getnode.getId() : "";
+                    Log.d(TAG, "setLocalNodeName.  localnode=" + localnode);
+                }
+            }
+        });
     }
 
     @Override
