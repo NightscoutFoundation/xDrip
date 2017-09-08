@@ -363,7 +363,7 @@ public class GcmActivity extends FauxActivity {
     }
 
     public static void sendSensorBattery(final int battery) {
-        if (JoH.pratelimit("gcm-sbu", 300)) {
+        if (JoH.pratelimit("gcm-sbu", 3600)) {
             GcmActivity.sendMessage("sbu", Integer.toString(battery));
         }
     }

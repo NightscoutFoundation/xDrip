@@ -604,13 +604,14 @@ public class WixelReader extends AsyncTask<String, Void, Void > {
 
     private void setSerialDataToTransmitterRawData(int raw_data, int filtered_data, int sensor_battery_leve, Long CaptureTime) {
 
-        TransmitterData transmitterData = TransmitterData.create(raw_data, filtered_data, sensor_battery_leve, CaptureTime);
+        final TransmitterData transmitterData = TransmitterData.create(raw_data, filtered_data, sensor_battery_leve, CaptureTime);
         if (transmitterData != null) {
-            Sensor sensor = Sensor.currentSensor();
+            final Sensor sensor = Sensor.currentSensor();
             if (sensor != null) {
                 BgReading bgReading = BgReading.create(transmitterData.raw_data, filtered_data, mContext, CaptureTime);
 
-                sensor.latest_battery_level = (sensor.latest_battery_level!=0)?Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level):transmitterData.sensor_battery_level;
+                //sensor.latest_battery_level = (sensor.latest_battery_level!=0)?Math.min(sensor.latest_battery_level, transmitterData.sensor_battery_level):transmitterData.sensor_battery_level;
+                sensor.latest_battery_level = transmitterData.sensor_battery_level; // don't lock it only going downwards
                 sensor.save();
             } else {
                 Log.d(TAG, "No Active Sensor, Data only stored in Transmitter Data");

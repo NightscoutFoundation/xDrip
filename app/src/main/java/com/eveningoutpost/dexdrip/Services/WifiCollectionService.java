@@ -17,6 +17,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.Models.JoH;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
 import com.eveningoutpost.dexdrip.UtilityModels.StatusItem;
@@ -136,7 +137,7 @@ public class WifiCollectionService extends Service {
             //AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
             PersistentStore.setLong(WIFI_COLLECTION_WAKEUP, calendar.getTimeInMillis() + retry_in);
 
-            JoH.wakeUpIntent(this, retry_in, PendingIntent.getService(this, 0, new Intent(this, WifiCollectionService.class), PendingIntent.FLAG_UPDATE_CURRENT));
+            JoH.wakeUpIntent(this, retry_in, PendingIntent.getService(this, Constants.WIFI_COLLECTION_SERVICE_ID, new Intent(this, this.getClass()), PendingIntent.FLAG_UPDATE_CURRENT));
           /*  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + retry_in, PendingIntent.getService(this, 0, new Intent(this, WifiCollectionService.class), 0));
             } else if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {

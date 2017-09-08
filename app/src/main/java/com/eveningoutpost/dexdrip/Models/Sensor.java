@@ -174,24 +174,27 @@ public class Sensor extends Model {
     }
 
     public static void updateBatteryLevel(Sensor sensor, int sensorBatteryLevel, boolean from_sync) {
-        if(sensorBatteryLevel < 120) {
+        if (sensorBatteryLevel < 120) {
             // This must be a wrong battery level. Some transmitter send those every couple of readings
             // even if the battery is ok.
             return;
         }
         int startBatteryLevel = sensor.latest_battery_level;
-        if(sensor.latest_battery_level == 0) {
-            sensor.latest_battery_level = sensorBatteryLevel;
-        } else {
-            sensor.latest_battery_level = Math.min(sensor.latest_battery_level, sensorBatteryLevel);
-        }
-        if(startBatteryLevel == sensor.latest_battery_level) {
+        //  if(sensor.latest_battery_level == 0) {
+        // allow sensor battery level to go up and down
+        sensor.latest_battery_level = sensorBatteryLevel;
+        //  } else {
+        //     sensor.latest_battery_level = Math.min(sensor.latest_battery_level, sensorBatteryLevel);
+        // }
+        if (startBatteryLevel == sensor.latest_battery_level) {
             // no need to update anything if nothing has changed.
             return;
         }
         sensor.save();
         SensorSendQueue.addToQueue(sensor);
-        if ((!from_sync) && (Home.get_master())) { GcmActivity.sendSensorBattery(sensor.latest_battery_level); }
+        if ((!from_sync) && (Home.get_master())) {
+            GcmActivity.sendSensorBattery(sensor.latest_battery_level);
+        }
     }
 
     public static void updateSensorLocation(String sensor_location) {
