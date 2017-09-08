@@ -98,6 +98,8 @@
     <string name="pref_summary_always_get_new_keys">This will attempt a full authentication each read attempt. Redundant if Unbond before each read is also selected.</string>
     <string name="pref_always_unbond_G5">Unbond G5/read</string>
     <string name="pref_summary_always_unbond_G5">This will remove the G5 from your device\'s paired device list, and attempt a full authentication and bonding with each read attempt.</string>
+    <string name="pref_refresh_on_change">Refresh On Change</string>
+    <string name="pref_summary_refresh_on_change">Refresh face on data change instead of every minute</string>
     <string name="pref_show_treatments">Show Treatments</string>
     <string name="pref_summary_show_treatments">Show Treatment points on graph</string>
     <string name="pref_show_steps">Show Steps</string>

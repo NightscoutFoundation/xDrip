@@ -96,6 +96,13 @@
          -->
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="refresh_on_change"
+            android:title="@string/pref_refresh_on_change"
+            android:summary="@string/pref_summary_refresh_on_change"
+            app:wear_iconOff="@drawable/settings_off"
+            app:wear_iconOn="@drawable/settings_on" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="show_wear_treatments"
             android:title="@string/pref_show_treatments"
             android:summary="@string/pref_summary_show_treatments"
