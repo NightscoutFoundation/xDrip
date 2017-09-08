@@ -103,6 +103,7 @@ public class BgSendQueue extends Model {
     }
 
     public static void handleNewBgReading(BgReading bgReading, String operation_type, Context context, boolean is_follower, boolean quick) {
+        // TODO use JoH
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "sendQueue");
@@ -113,7 +114,7 @@ public class BgSendQueue extends Model {
                 UploaderQueue.newEntry(operation_type, bgReading);
             }
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
             // all this other UI stuff probably shouldn't be here but in lieu of a better method we keep with it..
 
@@ -132,6 +133,7 @@ public class BgSendQueue extends Model {
                 Log.i("SENSOR QUEUE:", "Broadcast data");
                 final Bundle bundle = new Bundle();
 
+                // TODO this cannot handle out of sequence data due to displayGlucose taking most recent?!
                 // use display glucose if enabled and available
                 if ((prefs.getBoolean("broadcast_data_use_best_glucose", false)) && ((dg = BestGlucose.getDisplayGlucose()) != null)) {
                     bundle.putDouble(Intents.EXTRA_BG_ESTIMATE, dg.mgdl);
