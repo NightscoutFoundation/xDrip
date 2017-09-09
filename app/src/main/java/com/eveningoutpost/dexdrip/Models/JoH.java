@@ -1141,7 +1141,7 @@ public class JoH {
         }
     }
 
-    private static boolean refreshDeviceCache(String thisTAG, BluetoothGatt gatt){
+    public static boolean refreshDeviceCache(String thisTAG, BluetoothGatt gatt){
         try {
             final Method method = gatt.getClass().getMethod("refresh", new Class[0]);
             if (method != null) {
