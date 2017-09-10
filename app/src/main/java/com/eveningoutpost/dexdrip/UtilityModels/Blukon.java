@@ -33,8 +33,12 @@ public class Blukon {
     private static enum BLUKON_STATES {
         INITIAL
     }
-    private static int m_getNowGlucoseDataIndexCommand = 0;
-    private static int m_gotOneTimeUnknownCmd = 0;
+    private static boolean m_getNowGlucoseDataIndexCommand = false;
+    private static boolean m_gotOneTimeUnknownCmd = false;
+    private static int GET_SENSOR_AGE_DELAY_MS =  3 * 3600;
+    private static final String BLUKON_GETSENSORAGE_TIMER = "blukon-getSensorAge-timer";
+    private static boolean m_getNowGlucoseDataCommand = false;// to be sure we wait for a GlucoseData Block and not using another block
+    private static long m_timeLastBg = 0;
 
     public static String getPin() {
         final String thepin = Home.getPreferencesStringWithDefault(BLUKON_PIN_PREF, null);
@@ -55,8 +59,11 @@ public class Blukon {
     public static void initialize() {
         Home.setPreferencesInt("bridge_battery", 100); //force battery to 100% before first reading
         Home.setPreferencesInt("nfc_sensor_age", 0); //force sensor age to no-value before first reading
-        m_gotOneTimeUnknownCmd = 0;
-        PersistentStore.setLong("blukon-4-hourly-scan", JoH.tsl());
+        m_gotOneTimeUnknownCmd = false;
+        PersistentStore.setLong(BLUKON_GETSENSORAGE_TIMER, JoH.tsl());
+        m_getNowGlucoseDataCommand = false;
+        m_getNowGlucoseDataIndexCommand = false;
+        m_timeLastBg = 0;
     }
 
     public static boolean isBlukonPacket(byte[] buffer) {
@@ -83,7 +90,7 @@ public class Blukon {
         UserError.Log.i(TAG, "BlueCon data: " + strRecCmd);
 
         if (strRecCmd.equalsIgnoreCase("cb010000")) {
-            UserError.Log.i(TAG, "wakeup received");
+            UserError.Log.i(TAG, "Reset currentCommand");
             currentCommand = "";
             cmdFound = 1;
         }
@@ -99,17 +106,16 @@ public class Blukon {
                 //ack received
 
                 //This command will be asked only one time after first connect and never again
-                if (m_gotOneTimeUnknownCmd == 0) {
+                if (m_gotOneTimeUnknownCmd == false) {
                     currentCommand = "010d0b00";
                     UserError.Log.i(TAG, "getUnknownCmd1: " + currentCommand);
                 } else {
-                    if (JoH.pratelimit("blukon-4-hourly-scan",4 * 3600)) {
-                        // do something only once every 4 hours
+                    if (JoH.pratelimit(BLUKON_GETSENSORAGE_TIMER, GET_SENSOR_AGE_DELAY_MS)) {
                         currentCommand = "010d0e0127";
                         UserError.Log.i(TAG, "getSensorAge");
                     } else {
                         currentCommand = "010d0e0103";
-                        m_getNowGlucoseDataIndexCommand = 1;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
+                        m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
                         UserError.Log.i(TAG, "getNowGlucoseDataIndexCommand");
                     }
                 }
@@ -132,9 +138,9 @@ public class Blukon {
                 UserError.Log.e(TAG, "Libre sensor has been removed!");
             }
 
-            m_gotOneTimeUnknownCmd = 0;
+            m_gotOneTimeUnknownCmd = false;
             currentCommand = "";
-            PersistentStore.setLong("blukon-4-hourly-scan", JoH.tsl()); // set to current time to force timer to be set back
+            PersistentStore.setLong(BLUKON_GETSENSORAGE_TIMER, JoH.tsl()); // set to current time to force timer to be set back
         }
 
         if (currentCommand.equals("") && strRecCmd.equalsIgnoreCase("cb010000")) {
@@ -160,7 +166,7 @@ public class Blukon {
         } else if (currentCommand.startsWith("010d0a00") /*getUnknownCmd2*/ && strRecCmd.startsWith("8bda")) {
             cmdFound = 1;
             UserError.Log.w(TAG, "gotUnknownCmd2 (010d0a00): "+strRecCmd);
-            m_gotOneTimeUnknownCmd = 1;
+            m_gotOneTimeUnknownCmd = true;
 
             currentCommand = "010d0e0127";
             UserError.Log.i(TAG, "getSensorAge");
@@ -175,10 +181,10 @@ public class Blukon {
                 Home.setPreferencesInt("nfc_sensor_age", sensorAge);//in min
             }
             currentCommand = "010d0e0103";
-            m_getNowGlucoseDataIndexCommand = 1;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
+            m_getNowGlucoseDataIndexCommand = true;//to avoid issue when gotNowDataIndex cmd could be same as getNowGlucoseData (case block=3)
             UserError.Log.i(TAG, "getNowGlucoseDataIndexCommand");
 
-        } else if (currentCommand.startsWith("010d0e0103") /*getNowDataIndex*/ && m_getNowGlucoseDataIndexCommand == 1 && strRecCmd.startsWith("8bde")) {
+        } else if (currentCommand.startsWith("010d0e0103") /*getNowDataIndex*/ && m_getNowGlucoseDataIndexCommand == true && strRecCmd.startsWith("8bde")) {
             cmdFound = 1;
             UserError.Log.i(TAG, "gotNowDataIndex");
 
@@ -186,21 +192,22 @@ public class Blukon {
             UserError.Log.i(TAG, "block Number is "+blockNumber);
 
             currentCommand = "010d0e010"+ Integer.toHexString(blockNumber);//getNowGlucoseData
-            m_getNowGlucoseDataIndexCommand = 0;
-
+            m_getNowGlucoseDataIndexCommand = false;
+            m_getNowGlucoseDataCommand = true;
             UserError.Log.i(TAG, "getNowGlucoseData");
 
-
-        } else if (currentCommand.startsWith("010d0e01") /*getNowGlucoseData*/ && strRecCmd.startsWith("8bde")) {
+        } else if (currentCommand.startsWith("010d0e01") /*getNowGlucoseData*/ && m_getNowGlucoseDataCommand == true && strRecCmd.startsWith("8bde")) {
             cmdFound = 1;
             int currentGlucose = nowGetGlucoseValue(buffer);
 
-            UserError.Log.i(TAG, "*****************got getNowGlucoseData = " + currentGlucose);
+            UserError.Log.i(TAG, "************got getNowGlucoseData=" + currentGlucose);
+            m_timeLastBg = JoH.tsl();
 
             processNewTransmitterData(TransmitterData.create(currentGlucose, currentGlucose, 0 /*battery level force to 0 as unknown*/, JoH.tsl()));
 
             currentCommand = "010c0e00";
             UserError.Log.i(TAG, "Send sleep cmd");
+            m_getNowGlucoseDataCommand = false;
 
         }  else if (strRecCmd.startsWith("cb020000")) {
             cmdFound = 1;
@@ -221,7 +228,7 @@ public class Blukon {
             return CipherUtils.hexToBytes(currentCommand);
         } else {
             if (cmdFound == 0) {
-                UserError.Log.e(TAG, "************COMMAND NOT FOUND! -> " + strRecCmd);
+                UserError.Log.e(TAG, "***COMMAND NOT FOUND! -> " + strRecCmd + " on currentCmd=" + currentCommand);
             }
 
             return null;
@@ -233,7 +240,7 @@ public class Blukon {
 
     private static synchronized void processNewTransmitterData(TransmitterData transmitterData) {
         if (transmitterData == null) {
-            UserError.Log.e(TAG, "Got duplicated data!");
+            UserError.Log.e(TAG, "Got duplicated data! Last BG at " + JoH.dateTimeText(m_timeLastBg));
             return;
         }
 
