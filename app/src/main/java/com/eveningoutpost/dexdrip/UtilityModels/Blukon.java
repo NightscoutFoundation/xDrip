@@ -35,7 +35,7 @@ public class Blukon {
     }
     private static boolean m_getNowGlucoseDataIndexCommand = false;
     private static boolean m_gotOneTimeUnknownCmd = false;
-    private static int GET_SENSOR_AGE_DELAY_MS =  3 * 3600;
+    private static int GET_SENSOR_AGE_DELAY =  3 * 3600;
     private static final String BLUKON_GETSENSORAGE_TIMER = "blukon-getSensorAge-timer";
     private static boolean m_getNowGlucoseDataCommand = false;// to be sure we wait for a GlucoseData Block and not using another block
     private static long m_timeLastBg = 0;
