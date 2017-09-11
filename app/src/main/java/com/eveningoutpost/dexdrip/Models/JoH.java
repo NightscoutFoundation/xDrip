@@ -102,7 +102,7 @@ public class JoH {
 
     private static double benchmark_time = 0;
     private static Map<String, Double> benchmarks = new HashMap<String, Double>();
-    private static final Map<String, Long> rateLimits = new HashMap<String, Long>();
+    private static final Map<String, Long> rateLimits = new HashMap<>();
 
     // qs = quick string conversion of double for printing
     public static String qs(double x) {
@@ -381,6 +381,15 @@ public class JoH {
         if (this_hash.equals(last_hash)) return false;
         PersistentStore.setString(id, this_hash);
         return true;
+    }
+
+    public static synchronized void clearRatelimit(final String name) {
+        if (PersistentStore.getLong(name) > 0) {
+            PersistentStore.setLong(name, 0);
+        }
+        if (rateLimits.containsKey(name)) {
+            rateLimits.remove(name);
+        }
     }
 
     // return true if below rate limit (persistent version)
