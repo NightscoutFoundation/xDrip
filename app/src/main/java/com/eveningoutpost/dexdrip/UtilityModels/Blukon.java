@@ -227,9 +227,10 @@ public class Blukon {
             int currentGlucose = nowGetGlucoseValue(buffer);
 
             UserError.Log.i(TAG, "************got getNowGlucoseData=" + currentGlucose);
-            m_timeLastBg = JoH.tsl();
 
             processNewTransmitterData(TransmitterData.create(currentGlucose, currentGlucose, 0 /*battery level force to 0 as unknown*/, JoH.tsl()));
+
+            m_timeLastBg = JoH.tsl();
             currentCommand = "010c0e00";
             UserError.Log.i(TAG, "Send sleep cmd");
             m_getNowGlucoseDataCommand = false;
@@ -274,7 +275,9 @@ Bytes 2 - 5 (0 indexing) are different on different sensors
 Bytes 0 - 1 (0 indexing) is the ordinary block request answer (0x8B 0xD9).
 Remark: Byte #17 (0 indexing) contains the SensorStatusByte.
 
-     switch (sensorData.sensorStatusByte)
+private static int blockNumberForNowGlucoseData(byte sensorStatusByte) {
+
+     switch (sensorStatusByte)
   {
     case 0x01:
       sensorData.sensorStatusString = "not yet started";
