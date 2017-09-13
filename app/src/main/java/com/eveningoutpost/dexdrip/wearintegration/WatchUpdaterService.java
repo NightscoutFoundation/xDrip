@@ -748,6 +748,17 @@ public class WatchUpdaterService extends WearableListenerService implements
         myContext.stopService(new Intent(myContext, G5CollectionService.class));
     }
 
+    public static void startSelf() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (JoH.ratelimit("start-wear", 5)) {
+                    xdrip.getAppContext().startService(new Intent(xdrip.getAppContext(), WatchUpdaterService.class).setAction(WatchUpdaterService.ACTION_RESEND));
+                }
+            }
+        }).start();
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         final PowerManager.WakeLock wl = JoH.getWakeLock("watchupdate-onstart",60000);
