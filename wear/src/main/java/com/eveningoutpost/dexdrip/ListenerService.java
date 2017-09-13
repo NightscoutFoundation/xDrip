@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.Models.Treatments;
 import com.eveningoutpost.dexdrip.Models.UserError;
 import com.eveningoutpost.dexdrip.Models.UserError.Log;
 import com.eveningoutpost.dexdrip.Models.PebbleMovement;
+import com.eveningoutpost.dexdrip.Services.CustomComplicationProviderService;
 import com.eveningoutpost.dexdrip.Services.DexCollectionService;
 import com.eveningoutpost.dexdrip.Services.G5CollectionService;//KS
 import com.eveningoutpost.dexdrip.UtilityModels.*;
@@ -2128,6 +2129,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
                 if (changed) {//otherwise, wait for doBackground ACTION_RESEND
                     Log.d(TAG, "syncBGData BG data has changed, refresh watchface, phone battery=" + battery );
                     resendData(getApplicationContext(), battery);
+                    CustomComplicationProviderService.refresh();
                 }
                 else
                     Log.d(TAG, "syncBGData BG data has NOT changed, do not refresh watchface, phone battery=" + battery );
