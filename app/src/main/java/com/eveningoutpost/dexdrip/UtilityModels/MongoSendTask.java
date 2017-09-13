@@ -88,7 +88,7 @@ public class MongoSendTask extends AsyncTask<String, Void, Void> {
                                         }
                                     } else if (type.equals(Calibration.class.getSimpleName())) {
                                         final Calibration this_cal = Calibration.byid(up.reference_id);
-                                        if (this_cal != null) {
+                                        if ((this_cal != null) && (this_cal.isValid())) {
                                             calibrations.add(this_cal);
                                         } else {
                                             Log.wtf(TAG, "Calibration with ID: " + up.reference_id + " appears to have been deleted");
