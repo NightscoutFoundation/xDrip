@@ -210,6 +210,7 @@
             </intent-filter>
         </activity>
         <activity
+            android:launchMode="singleTop"
             android:name=".LocationPermissionActivity"
             android:label="title_activity_location_permission" >
             android:theme="android:theme="@style/Theme.AppCompat.Light"

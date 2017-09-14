@@ -30,6 +30,7 @@ import com.eveningoutpost.dexdrip.Services.G5CollectionService;
 import com.eveningoutpost.dexdrip.UtilityModels.AlertPlayer;
 import com.eveningoutpost.dexdrip.UtilityModels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.UtilityModels.BgSendQueue;
+import com.eveningoutpost.dexdrip.UtilityModels.Blukon;
 import com.eveningoutpost.dexdrip.UtilityModels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.UtilityModels.Constants;
 import com.eveningoutpost.dexdrip.UtilityModels.PersistentStore;
@@ -1371,6 +1372,7 @@ public class WatchUpdaterService extends WearableListenerService implements
         return dataMap;
     }
 
+    // These are the settings which get sent to Wear device
     private void sendPrefSettings() {//KS
         forceGoogleApiConnect();
         DataMap dataMap = new DataMap();
@@ -1438,6 +1440,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             }
 
             dataMap.putBoolean("show_wear_treatments", Home.getPreferencesBooleanDefaultFalse("show_wear_treatments"));
+            dataMap.putString(Blukon.BLUKON_PIN_PREF, Home.getPreferencesStringDefaultBlank(Blukon.BLUKON_PIN_PREF));
         }
         //Step Counter
         dataMap.putBoolean("use_wear_health", mPrefs.getBoolean("use_pebble_health", true));
