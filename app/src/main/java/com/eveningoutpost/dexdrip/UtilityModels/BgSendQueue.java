@@ -212,14 +212,14 @@ public class BgSendQueue extends Model {
             }
 
             // send to wear
-            /*if ((!quick) && (prefs.getBoolean("wear_sync", false))) {//KS not necessary since MongoSendTask sends UploaderQueue.newEntry BG to WatchUpdaterService.sendWearUpload
+            if ((!quick) && (prefs.getBoolean("wear_sync", false)) && !Home.get_forced_wear()) {//KS not necessary since MongoSendTask sends UploaderQueue.newEntry BG to WatchUpdaterService.sendWearUpload
                 context.startService(new Intent(context, WatchUpdaterService.class));
                 if (prefs.getBoolean("excessive_wakelocks", false)) {
                     powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                             "wear-quickFix3").acquire(15000);
 
                 }
-            }*/
+            }
 
             // send to pebble
             if ((!quick) && (prefs.getBoolean("broadcast_to_pebble", false) )
